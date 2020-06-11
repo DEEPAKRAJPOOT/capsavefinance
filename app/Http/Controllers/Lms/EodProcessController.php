@@ -69,100 +69,41 @@ class EodProcessController extends Controller {
     }
     
     public function viewEodProcess(Request $request)
-    {                
-        $today = \Carbon\Carbon::now();
-        $sys_curr_date = $today->format('Y-m-d H:i:s');
-        
+    {            
+        $enable_process_start = false;
+
         $whereCond=[];
-        $eodCount = $this->lmsRepo->getEodDataCount();      
-        $whereCond['is_active'] = $eodCount == 1 ? 1 : 0;
-        $latestEod = $this->lmsRepo->getLatestEodProcess($whereCond);
-        //if ($request->has('sys_curr_date') && !empty($request->get('sys_curr_date'))) {
-        //    $sys_curr_date = $request->get('sys_curr_date');            
-        //    $sys_start_date_eq = date('Y-m-d', strtotime($sys_curr_date));
-        //} else 
-        if ($latestEod) {
-            $start = new \Carbon\Carbon($latestEod->sys_start_date);
-            $start = $start->addDays(1);
-            $sys_curr_date = $start->format('Y-m-d') . " " . date('H:i:s');
-            $sys_start_date_eq = $start->toDateString();
-        } else {
-            $sys_start_date_eq = $today->format('Y-m-d');
-        }
-        
-        
-        
-        //dd($sys_curr_date, $sys_start_date_eq, $current_date);
-        
-        $whereCond=[];
-        //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.RUNNING'), config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
-        //$whereCond['sys_start_date_eq'] = $sys_start_date_eq;        
-        //$whereCond['sys_start_date_tz_eq'] = $sys_start_date_eq; 
         $whereCond['is_active'] = 1;
-        $eodProcess = $this->lmsRepo->getEodProcess($whereCond);             
-        $eod_process_id = $eodProcess ? $eodProcess->eod_process_id : '';        
+        $eodProcess = $this->lmsRepo->getEodProcess($whereCond);
         $status = $eodProcess ? $eodProcess->status : '';
         $disp_status = $eodProcess ? config('lms.EOD_PROCESS_STATUS_LIST')[$eodProcess->status] : '';
         $sys_start_date = $eodProcess ? $eodProcess->sys_start_date : '';
         $total_hours = $eodProcess ? $eodProcess->total_hours : '';
         $sys_end_date = $eodProcess ? $eodProcess->sys_end_date : '';
-        
-        if ($eod_process_id) {
-            $running_hours = round(abs(strtotime($sys_curr_date) - strtotime($sys_start_date))/3600, 1);                        
-        } else {
-            $running_hours = '';
+        $eod_process_id = $eodProcess ? $eodProcess->eod_process_id : null;
+
+        if($eod_process_id){
+            $enable_process_start = $eod_process_id && $eodProcess->status == 0 && !in_array($eodProcess->status,[config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')]);
         }
-        
-        $whereCond=[];
-        $whereCond['eod_process_id'] = $eod_process_id;
-        $statusLog = $this->lmsRepo->getEodProcessLog($whereCond);
-        
-        if ($eodProcess && $eodProcess->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')) {
-            $start = new \Carbon\Carbon($eodProcess->sys_start_date);
-            $start = $start->addDays(1);
-            $sys_curr_date = $start->format('Y-m-d') . " " . date('H:i:s');
-        }
-        
-        $current_date = \Helpers::convertDateTimeFormat($sys_curr_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s');
-        
-        $statusArr = config('lms.EOD_PASS_FAIL_STATUS');
-        
-        $enable_sys_start = $eod_process_id && $status != 1 ? 0 : 1;
-        
-        $enable_process_start = !$eod_process_id || isset($eodProcess->status) && in_array($eodProcess->status,[config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')])  ? 0 : 1;
         
         return view('lms.eod.eod_process')
-                ->with('current_date', $current_date)
-                ->with('sys_start_date', $sys_start_date)
-                ->with('sys_end_date', $sys_end_date)
-                ->with('running_hours', $running_hours)
-                ->with('status', $disp_status)
-                ->with('eodData', $eodProcess)
-                ->with('statusLog', $statusLog)
-                ->with('statusArr', $statusArr)
-                ->with('eod_process_id', $eod_process_id)
-                ->with('total_hours', $total_hours)
-                ->with('enable_sys_start', $enable_sys_start)
-                ->with('enable_process_start', $enable_process_start)
-                ->with('sys_curr_date', $sys_curr_date);
-                
-                
+        ->with('enable_process_start', $enable_process_start)
+        ->with('eod_process_id', $eod_process_id)
+        ->with('sys_start_date',$sys_start_date);
     }
     
     public function saveEodProcess(Request $request)
     {
         $flag = $request->get('flag');
         $eod_process_id = $request->get('eod_process_id');
-        $sys_curr_date  = $request->get('sys_curr_date');
+        $sys_curr_date  = \Carbon\Carbon::now()->toDateTimeString();
         try {
-            if ($flag == 2) {
-                $addlData['sys_curr_date'] = $sys_curr_date;
-                $this->startEodProcess($eod_process_id, $addlData);
-                $message = 'Eod Process is started successfully';
-            }
+            $addlData['sys_curr_date'] = $sys_curr_date;
+            $this->startEodProcess($eod_process_id, $addlData);
+            $message = 'Eod Process is started successfully';
                         
             Session::flash('message', $message);
-            return redirect()->route('eod_process', ['sys_curr_date' => $sys_curr_date]);
+            return redirect()->route('eod_process', ['sys_curr_date' => $sys_curr_date,'eod_process_id'=>$eod_process_id]);
             
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);

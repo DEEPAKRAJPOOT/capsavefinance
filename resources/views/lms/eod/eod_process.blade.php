@@ -16,285 +16,62 @@
                 <li class="active">EOD Process</li>
             </ol>
         </div>
-        <div class="clearfix"></div>
     </section>
     <div class="row grid-margin ">
         <div class="col-md-12  mb-4">
             <div class="card">
                 <div class="card-body">
                     <div class="form-fields">
-                        <form id="frm-sys-start" method="post" action="{{ route('save_process') }}" enctype= multipart/form-data>
-                            @csrf 
-                            <div class="active" id="details">
-                                <div class="form-sections">
+                        <div class="active" id="details">
+                            <div class="form-sections">
 
-                                    <div class="clearfix"></div>                                    
-                                    <div class="row">
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label for="">Current System Date</label>
-                                            </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="">Current System Date: <span id="current-date"></span></label>
                                         </div>
-                                        <div class="col-8">
-                                            <div class="form-group">
-                                                <label for=""><span id="current-date">{{ $current_date }}</span></label>                                                        
-                                            </div>
-                                        </div>                                        
-                                        {{-- <div class="col-4">
-                                            <div class="form-group">
-                                                <input type="submit" id="submit" name="btn_process"  class="btn btn-primary ml-2 btn-sm" {{ $enable_sys_start ? '' : 'disabled' }} value="Start System">                                                 
-                                            </div>
-                                        </div> --}}
                                     </div>
-                                    @if ($eod_process_id)
-                                    <div class="row">
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label for="">System Started at</label>
-                                            </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <input type="submit" id="submit" name="btn_process"  class="pull-right btn btn-primary ml-2 btn-sm" {{ $enable_process_start ? '' : 'disabled' }} value="Run Eod Process">
                                         </div>
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label for=""><span id="current-date">{{ !empty($sys_start_date) ? \Helpers::convertDateTimeFormat($sys_start_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') : '' }}</span></label>                                                        
-                                            </div>
-                                        </div>                                                                                                                        
-                                    </div>
-                                    @endif
+                                    </div>                                    
                                 </div>
                             </div>
-                            {{-- <input type="hidden" value="1" id="sys_start_flag" name="flag">
-                            <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">     
-                            <input type="hidden" value="{{ $sys_curr_date }}" name="sys_curr_date">
-                        </form>
-                         --}}
-                        <form id="frm-sys-start" method="post" action="{{ route('save_process') }}" enctype= multipart/form-data>
-                            @csrf 
-                            <div class="active" id="details">
-                                <div class="form-sections">
-
-                                    <div class="clearfix"></div>
-                                    <div class="row">
-                                    @if($enable_process_start)
-                                    
-
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label for="">Running Hours</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label for="">{{ $running_hours }}</label>                                                        
-                                            </div>
-                                        </div>
-                                                                       
-                                    @else
-                                    
-
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label for="">Total Hours</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label for="">{{ $total_hours }}</label>                                                        
-                                            </div>
-                                        </div>
-                                    
-                                    @endif
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <input type="submit" id="submit" name="btn_process"  class="btn btn-primary ml-2 btn-sm" {{ $enable_process_start ? '' : 'disabled' }} value="Run Eod Process">
-                                            </div>
-                                        </div>                                    
-                                    </div>
-                                    <div class="row">
-                                    @if(!$enable_process_start)
-                                    
-
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label for="">System Stopped at</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="form-group">
-                                                <label for="">{{ !empty($sys_end_date) ? \Helpers::convertDateTimeFormat($sys_end_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') : '' }}</label>                                                        
-                                            </div>
-                                        </div>
-                                                                       
-                                    @endif                                    
-                                    
-                                </div>
-                            </div>
-                            <input type="hidden" value="2" name="flag">
-                            <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">
-                            <input type="hidden" value="{{ $sys_curr_date }}" name="sys_curr_date">
-                        </form>   
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">Status</label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">{{ $status }}</label>                                                        
-                                </div>
-                            </div>                                                     
                         </div>
-                        
-                        <p class="mt-2"><strong>Summary</strong></p> 
                         <hr>
-                        <div class="col-12 dataTables_wrapper mt-4">
+                        <div class="row dataTables_wrapper mt-4">
                             <div class="overflow">
-                                <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
-                                                <table id="lmsSoaList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
-                                                    <thead>
-                                                    <tr role="row">
-                                                            <th>Current System Date</th>
-                                                            <th>System Started at</th>
-                                                            <th>System Stopped at</th>
-                                                            <th>Eod Process Starded at</th>
-                                                            <th>Eod Process Stopped at</th>
-                                                            <th>Total Hours</th>
-                                                            <th>Tally Posting Status</th>
-                                                            <th>Interest Accrual Status</th>
-                                                            <th>Repayment Status</th>
-                                                            <th>Disbursal Status</th>
-                                                            <th>Charge Posting Status</th>
-                                                            <th>Overdue Interest Accrual Status</th>
-                                                            <th>Disbursal Block Status</th>
-                                                            <th>Manually Posted Running Transaction Status</th>
-                                                        </tr>
-                                                    </thead>
-
-
-
-
-
-
-
-
-
-                                                    <tbody></tbody>
-                                                </table>
-                                            </div>
-                                            <div id="lmsSoaList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
-                                        </div>
+                                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+                                    <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
+                                        <table id="eodProcessList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                            <thead>
+                                            <tr role="row">
+                                                    <th>Current System Date</th>
+                                                    <th>System Started at</th>
+                                                    <th>System Stopped at</th>
+                                                    <th>Eod Processed By</th>
+                                                    <th>Eod Process Starded at</th>
+                                                    <th>Eod Process Stopped at</th>
+                                                    <th>Total Hours</th>
+                                                    <th>Tally Posting Status</th>
+                                                    <th>Interest Accrual Status</th>
+                                                    <th>Repayment Status</th>
+                                                    <th>Disbursal Status</th>
+                                                    <th>Charge Posting Status</th>
+                                                    <th>Overdue Interest Accrual Status</th>
+                                                    <th>Disbursal Block Status</th>
+                                                    <th>Manually Posted Running Transaction Status</th>
+                                                    <th>Final Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
                                     </div>
+                                    <div id="eodProcessList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>
-
-
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">Tally Posting Status</label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">{{ $statusLog ? $statusArr[$statusLog->tally_status] : '' }}</label>                                                        
-                                </div>
-                            </div>                                                     
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">Interest Accrual Status</label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">{{ $statusLog ? $statusArr[$statusLog->int_accrual_status] : '' }}</label>                                                        
-                                </div>
-                            </div>                                                     
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">Repayment Status</label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">{{ $statusLog ? $statusArr[$statusLog->repayment_status] : '' }}</label>                                                        
-                                </div>
-                            </div>                                                     
-                        </div>
-
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">Disbursal Status</label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">{{ $statusLog ? $statusArr[$statusLog->disbursal_status] : '' }}</label>                                                        
-                                </div>
-                            </div>                                                     
-                        </div>                        
-                        
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">Charge Posting Status</label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">{{ $statusLog ? $statusArr[$statusLog->charge_post_status] : '' }}</label>                                                        
-                                </div>
-                            </div>                                                     
-                        </div> 
-                        
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">Overdue Interest Accrual Status</label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">{{ $statusLog ? $statusArr[$statusLog->overdue_int_accrual_status] : '' }}</label>                                                        
-                                </div>
-                            </div>                                                     
-                        </div> 
-                        
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">Disbursal Block Status</label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">{{ $statusLog ? $statusArr[$statusLog->disbursal_block_status] : '' }}</label>                                                        
-                                </div>
-                            </div>                                                     
-                        </div>  
-
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">Manually Posted Running Transaction Status </label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="">{{ $statusLog ? $statusArr[$statusLog->running_trans_posting_settled] : '' }}</label>                                                        
-                                </div>
-                            </div>                                                     
-                        </div>                       
                     </div>
                 </div>
             </div>
@@ -306,26 +83,22 @@
 <script>
 var messages = {
     _token : "{{ csrf_token() }}",
-    update_eod_batch_process_url : "{{ route('update_eod_batch_process') }}",
-    eod_status : "{{ $eodData ? $eodData->status : '' }}",
-    sys_start_date : "{{ $eodData ? $eodData->sys_start_date : '' }}",
-    eod_process_start_date : "{{ $eodData ? $eodData->eod_process_start : '' }}",
+    update_eod_batch_process_url : "{{ route('update_eod_batch_process',['eod_process_id'=>$eod_process_id]) }}",
+    sys_start_date: "{{ $sys_start_date }}"
 };    
 function currentDateTime() {
-    var today = new Date();
-    //var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    var sysStartDate = new Date(messages.sys_start_date);
+    var curDate = new Date();
+
+    var diff = curDate - sysStartDate;
+
+    var today = curDate.setSeconds(diff/1000);
     
     var years = today.getFullYear().toString().length == 1 ? '0'+today.getFullYear() : today.getFullYear();
     var months = today.getMonth().toString().length == 1 ? '0'+(today.getMonth()+1) : today.getMonth();
     var days = today.getDate().toString().length == 1 ? '0'+today.getDate() : today.getDate();
     var date = days+'-'+months+'-'+years;
     
-    //var ampm = d.getHours() >= 12 ? 'pm' : 'am',
-    //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-    //var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    //days[d.getDay()]+' '+months[d.getMonth()]+' '+d.getDate()+' '+d.getFullYear()+' '+hours+':'+minutes+ampm;
-        
-    //var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     var hours = today.getHours().toString().length == 1 ? '0'+today.getHours() : today.getHours();
     var minutes = today.getMinutes().toString().length == 1 ? '0'+today.getMinutes() : today.getMinutes();
     var seconds = today.getSeconds().toString().length == 1 ? '0'+today.getSeconds() : today.getSeconds();    
@@ -366,7 +139,7 @@ function updateEodStatus() {
         }); 
     }
 }
-//display_c();
+display_c();
 $(document).ready(function(){    
     updateEodStatus();    
 })
