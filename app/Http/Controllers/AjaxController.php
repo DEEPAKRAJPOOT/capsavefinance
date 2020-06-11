@@ -4458,7 +4458,27 @@ if ($err) {
         sleep($waitTime);
         
         \App::make('App\Http\Controllers\Lms\EodProcessController')->process();
-         
+             
+        $current_datetime = \Carbon\Carbon::now()->toDateTimeString();
+        $current_user_id = \Auth::user() ? \Auth::user()->user_id : 1;
+        $this->lmsRepo->updateEodProcess(['is_active' => 0], ['is_active' => 1]);                
+        $data=[];
+        $data['status'] = config('lms.EOD_PROCESS_STATUS.RUNNING');
+        $data['sys_start_date'] = $current_datetime;
+        $data['is_active'] = 1;                
+        $data['created_by'] = $current_user_id;
+        $data['updated_by'] = $current_user_id;
+        $eodProcess = $this->lmsRepo->saveEodProcess($data);
+        if ($eodProcess) {
+            $eod_process_id = $eodProcess->eod_process_id;
+            
+            $logData=[];
+            $logData['eod_process_id'] = $eod_process_id;
+            $logData['created_by'] = $current_user_id;
+            $logData['updated_by'] = $current_user_id;
+            $this->lmsRepo->saveEodProcessLog($logData);                    
+        }
+        
         return response()->json(['status' => 1]);
     }    
 

@@ -155,32 +155,6 @@ class EodProcessController extends Controller {
         $eod_process_id = $request->get('eod_process_id');
         $sys_curr_date  = $request->get('sys_curr_date');
         try {
-                        
-            //$current_datetime = \Carbon\Carbon::now()->toDateTimeString();
-            $current_datetime = $sys_curr_date;
-            $current_user_id = \Auth::user() ? \Auth::user()->user_id : 1;
-            
-            if ($flag == 1) {                                              
-                $this->lmsRepo->updateEodProcess(['is_active' => 0], ['is_active' => 1]);                
-                $data=[];
-                $data['status'] = config('lms.EOD_PROCESS_STATUS.RUNNING');
-                $data['sys_start_date'] = $current_datetime;
-                $data['is_active'] = 1;                
-                $data['created_by'] = $current_user_id;
-                $data['updated_by'] = $current_user_id;
-                $eodProcess = $this->lmsRepo->saveEodProcess($data);
-                if ($eodProcess) {
-                    $eod_process_id = $eodProcess->eod_process_id;
-                    
-                    $logData=[];
-                    $logData['eod_process_id'] = $eod_process_id;
-                    $logData['created_by'] = $current_user_id;
-                    $logData['updated_by'] = $current_user_id;
-                    $this->lmsRepo->saveEodProcessLog($logData);                    
-                }
-                $message = 'System is started successfully';
-            }
-            
             if ($flag == 2) {
                 $addlData['sys_curr_date'] = $sys_curr_date;
                 $this->startEodProcess($eod_process_id, $addlData);

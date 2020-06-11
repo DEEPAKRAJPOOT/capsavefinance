@@ -35,16 +35,16 @@
                                                 <label for="">Current System Date</label>
                                             </div>
                                         </div>
-                                        <div class="col-4">
+                                        <div class="col-8">
                                             <div class="form-group">
                                                 <label for=""><span id="current-date">{{ $current_date }}</span></label>                                                        
                                             </div>
                                         </div>                                        
-                                        <div class="col-4">
+                                        {{-- <div class="col-4">
                                             <div class="form-group">
                                                 <input type="submit" id="submit" name="btn_process"  class="btn btn-primary ml-2 btn-sm" {{ $enable_sys_start ? '' : 'disabled' }} value="Start System">                                                 
                                             </div>
-                                        </div>                                         
+                                        </div> --}}
                                     </div>
                                     @if ($eod_process_id)
                                     <div class="row">
@@ -62,11 +62,11 @@
                                     @endif
                                 </div>
                             </div>
-                            <input type="hidden" value="1" id="sys_start_flag" name="flag">
+                            {{-- <input type="hidden" value="1" id="sys_start_flag" name="flag">
                             <input type="hidden" value="{{ $eod_process_id }}" name="eod_process_id">     
                             <input type="hidden" value="{{ $sys_curr_date }}" name="sys_curr_date">
                         </form>
-                        
+                         --}}
                         <form id="frm-sys-start" method="post" action="{{ route('save_process') }}" enctype= multipart/form-data>
                             @csrf 
                             <div class="active" id="details">
@@ -147,6 +147,51 @@
                         
                         <p class="mt-2"><strong>Summary</strong></p> 
                         <hr>
+                        <div class="col-12 dataTables_wrapper mt-4">
+                            <div class="overflow">
+                                <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
+                                                <table id="lmsSoaList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                                                    <thead>
+                                                    <tr role="row">
+                                                            <th>Current System Date</th>
+                                                            <th>System Started at</th>
+                                                            <th>System Stopped at</th>
+                                                            <th>Eod Process Starded at</th>
+                                                            <th>Eod Process Stopped at</th>
+                                                            <th>Total Hours</th>
+                                                            <th>Tally Posting Status</th>
+                                                            <th>Interest Accrual Status</th>
+                                                            <th>Repayment Status</th>
+                                                            <th>Disbursal Status</th>
+                                                            <th>Charge Posting Status</th>
+                                                            <th>Overdue Interest Accrual Status</th>
+                                                            <th>Disbursal Block Status</th>
+                                                            <th>Manually Posted Running Transaction Status</th>
+                                                        </tr>
+                                                    </thead>
+
+
+
+
+
+
+
+
+
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                            <div id="lmsSoaList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
                         <div class="row">
                             <div class="col-4">
                                 <div class="form-group">
