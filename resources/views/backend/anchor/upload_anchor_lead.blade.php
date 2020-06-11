@@ -80,13 +80,11 @@
                 }
                 });
 
-            $('form#anchorForm').validate();
-            
-            $("#saveAnch").click(function(){
-            if($('form#anchorForm').valid()){                
-            $("#saveAnch").attr("disabled","disabled");
-            }  
-            });            
+            $("#anchorForm").submit(function(){
+                if($(this).valid()){
+                    $("#saveAnch").attr("disabled","disabled");
+                }
+            });
    
  });
  

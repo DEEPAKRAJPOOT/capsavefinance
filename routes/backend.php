@@ -686,7 +686,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('update-backend-lead', [
                 'as' => 'update_backend_lead',
                 'uses' => 'Backend\LeadController@updateBackendLead'
-            ]);   
+            ]);  
+            
+            downloadSample
         });
         
         Route::group(['prefix' => 'fircu'], function () {

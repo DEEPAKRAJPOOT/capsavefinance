@@ -76,9 +76,25 @@
         get_lead: "{{ URL::route('get_lead') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-
+        is_accept: "{{ Session::get('is_accept') }}",
+        message: "{{ Session::pull('message') }}",
     };
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
+<script>   
+     $(document).ready(function(){
+         
+     if(messages.is_accept == 1){
+        var parent =  window.parent;     
+        parent.jQuery("#editLead").modal('hide');  
+        //window.parent.jQuery('#my-loading').css('display','block');        
+        var alertmsg = '<div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>' + messages.message + '</div>';
+        parent.$("#iframeMessage").html(alertmsg);
+        parent.oTables.draw();
+       //window.parent.location.href = messages.paypal_gatway;
+    }
+        
+})
+</script>
 @endsection
