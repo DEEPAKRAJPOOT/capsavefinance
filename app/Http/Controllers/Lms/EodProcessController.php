@@ -31,37 +31,59 @@ class EodProcessController extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-    public function process($eod_process_id)
+    public function process($eod_process_id = null)
     {
         try {    
-            
-            $whereCond=[];        
-            $whereCond['eod_process_id'] = $eod_process_id;
-            $whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.FAILED'),config('lms.EOD_PROCESS_STATUS.STOPPED')];
-            $eodProcess = $this->lmsRepo->getEodProcess($whereCond);
+            $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id]);
+            if($eodDetails){
+                if($eodDetails->status == config('lms.EOD_PROCESS_STATUS.RUNNING')){
+                    $this->startEodProcess($eod_process_id);
+                }
 
-            if ($eodProcess) {
-                $transStartDate = $eodProcess->sys_start_date;                        
-                $transEndDate = $eodProcess->sys_end_date;
+                $whereCond=[];        
+                $whereCond['eod_process_id'] = $eod_process_id;
+                $whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.FAILED'),config('lms.EOD_PROCESS_STATUS.STOPPED')];
+                $eodProcess = $this->lmsRepo->getEodProcess($whereCond);
+
+                if ($eodProcess) {
+                    $transStartDate = $eodProcess->sys_start_date;                        
+                    $transEndDate = $eodProcess->sys_end_date;
+                    
+                    $this->checkDisbursal($transStartDate, $transEndDate, $eod_process_id);
+                    $this->checkInterestAccrual($transStartDate, $transEndDate, $eod_process_id);
+                    $this->checkRunningTransSettle($transStartDate, $transEndDate, $eod_process_id);
+                    $message = "Eod Process checks are done.";
+                } else {
+                    $message = "Unable to process the checks, as system is not started or stopped yet.";
+                }
                 
-                $this->checkDisbursal($transStartDate, $transEndDate, $eod_process_id);
-                $this->checkInterestAccrual($transStartDate, $transEndDate, $eod_process_id);
-                $this->checkRunningTransSettle($transStartDate, $transEndDate, $eod_process_id);
-                $message = "Eod Process checks are done.";
-            } else {
-                $message = "Unable to process the checks, as system is not started or stopped yet.";
-            }
+                \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.TALLY_POSTING'), config('lms.EOD_PASS_STATUS'), $eod_process_id);        
+                //\Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
+                \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.REPAYMENT'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
+                //\Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
+                \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.CHARGE_POST'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
+                \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.OVERDUE_INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
+                \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL_BLOCK'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
+                // \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.RUNNING_TRANS_POSTING_SETTLED'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
             
-            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.TALLY_POSTING'), config('lms.EOD_PASS_STATUS'), $eod_process_id);        
-            //\Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
-            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.REPAYMENT'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
-            //\Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
-            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.CHARGE_POST'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
-            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.OVERDUE_INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
-            \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL_BLOCK'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
-            // \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.RUNNING_TRANS_POSTING_SETTLED'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
-        
-            return $message;
+                return $message;
+                $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id]);
+                if($eodDetails && $eodDetails->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')){
+                    $current_datetime = \Carbon\Carbon::now()->toDateTimeString();
+                    $this->lmsRepo->updateEodProcess(['is_active' => 0], ['eod_process_id'=>$eod_process_id]);                
+                    $data=[];
+                    $data['status'] = config('lms.EOD_PROCESS_STATUS.RUNNING');
+                    $data['sys_start_date'] = $current_datetime;
+                    $data['is_active'] = 1;
+                    $eodProcess = $this->lmsRepo->saveEodProcess($data);
+                    if ($eodProcess) {
+                        $eod_process_id = $eodProcess->eod_process_id;
+                        $logData=[];
+                        $logData['eod_process_id'] = $eod_process_id;
+                        $this->lmsRepo->saveEodProcessLog($logData);                    
+                    }
+                }
+            }
             
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);

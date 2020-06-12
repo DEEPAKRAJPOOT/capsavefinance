@@ -4455,32 +4455,12 @@ if ($err) {
     public function updateEodProcessStatus(Request $request)
     { 
         $eod_process_id = $request->eod_process_id;
-        $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id]);
-        if($eodDetails){
-            if($eodDetails->status == config('lms.EOD_PROCESS_STATUS.RUNNING')){
-                \App::make('App\Http\Controllers\Lms\EodProcessController')->startEodProcess($eod_process_id);
-            }
-            \App::make('App\Http\Controllers\Lms\EodProcessController')->process($eod_process_id);
-            
-            $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id]);
-            if($eodDetails && $eodDetails->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')){
-                $current_datetime = \Carbon\Carbon::now()->toDateTimeString();
-            $this->lmsRepo->updateEodProcess(['is_active' => 0], ['eod_process_id'=>$eod_process_id]);                
-            $data=[];
-            $data['status'] = config('lms.EOD_PROCESS_STATUS.RUNNING');
-            $data['sys_start_date'] = $current_datetime;
-            $data['is_active'] = 1;
-            $eodProcess = $this->lmsRepo->saveEodProcess($data);
-            if ($eodProcess) {
-                $eod_process_id = $eodProcess->eod_process_id;
-                $logData=[];
-                $logData['eod_process_id'] = $eod_process_id;
-                $this->lmsRepo->saveEodProcessLog($logData);                    
-            }
+        if($eod_process_id){
+            \App::make('App\Http\Controllers\Lms\EodProcessController')->process();
+            return response()->json(['status' => 1]);
+        }else{
+            return response()->json(['status' => 0]);
         }
-    }
-        
-        return response()->json(['status' => 1]);
     }    
 
 
