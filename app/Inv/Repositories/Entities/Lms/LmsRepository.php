@@ -57,6 +57,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\Master\TallyEntry;
+use App\Inv\Repositories\Models\Lms\CibilReports;
 use BlankDataExceptions;
 use InvalidDataTypeExceptions;
 
@@ -1382,8 +1383,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}     
 	  
     
-    public function getEodDataCount()
-    {
+    public function getEodDataCount() {
         return EodProcess::getEodDataCount();
     }
 
@@ -1393,6 +1393,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     public function getActualTallyAmount() {
        return TallyEntry::getActualPostedAmount();
+    }
+
+    public function getCibilReports(array $whereCondition = [], $whereRawCondition = NULL) {
+       return CibilReports::getCibilReports($whereCondition, $whereRawCondition);
     }    
 
 }

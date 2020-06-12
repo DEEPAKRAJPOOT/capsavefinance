@@ -22,6 +22,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\CibilReportController@index',
             ]);
 
+            Route::get('/download_cibil', [
+                'as' => 'download_lms_cibil_reports',
+                'uses' => 'Lms\CibilReportController@downloadCibilReport'
+            ]);
+
             Route::get('/', [
                 'as' => 'lms_get_customer_list',
                 'uses' => 'Lms\CustomerController@list',

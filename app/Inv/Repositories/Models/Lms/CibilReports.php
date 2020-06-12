@@ -52,16 +52,25 @@ class CibilReports extends BaseModel {
         'created_by'
     ];
 
-    public static function getCibilReports(array $where = []) {
-        if (empty($where)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
-        }
+    public static function getCibilReportList(array $where = []) {
         if (!is_array($where)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
 
         $res = self::where($where)->get();
         return $res ?: false;
+    }
+
+
+    public static function getCibilReports(array $whereCondition = [], $whereRawCondition = NULL) {
+        if (!is_array($whereCondition)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        $res = self::where($whereCondition);       
+        if (!empty($whereRawCondition)) {
+            $res->whereRaw($whereRawCondition);
+        }
+        return $res;
     }
     
     public static function saveCibilReportsData(array $attributes = []) {
@@ -93,6 +102,10 @@ class CibilReports extends BaseModel {
             $resp['message'] = preg_replace('#[^A-Za-z./\s\_]+#', '', $errorInfo[2]) ?? 'Some DB Error occured. Try again.';  
         }
         return $resp;
+    }
+
+    public function users() {
+       return $this->belongsTo('App\Inv\Repositories\Models\User', 'created_by', 'user_id');
     }
 }
  
