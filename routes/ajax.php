@@ -1107,8 +1107,18 @@ Route::group(
     Route::post('update-eod-batch-process', [
         'as' => 'update_eod_batch_process',
         'uses' => 'AjaxController@updateEodProcessStatus'
-    ]);        
+    ]);    
+
+    Route::post('get_eod_list', [
+        'as' => 'get_eod_list',
+        'uses' => 'AjaxController@getEodList'
+    ]);
     
+    Route::post('get_eod_process_list', [
+        'as' => 'get_eod_process_list',
+        'uses' => 'AjaxController@getEodProcessList'
+    ]);
+
     Route::post('check-bank-acc-exist',[
         'as' => 'check_bank_acc_exist',
         'uses' => 'AjaxController@checkBankAccExist'

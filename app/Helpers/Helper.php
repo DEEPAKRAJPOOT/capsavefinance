@@ -1449,7 +1449,7 @@ class Helper extends PaypalHelper
     }
     
 
-    public static function updateEodProcess($eodProcessCheckType, $status)
+    public static function updateEodProcess($eodProcessCheckType, $status, $eod_process_id)
     {
         $eodProcessCheckTypeList = config('lms.EOD_PROCESS_CHECK_TYPE');
        
@@ -1462,10 +1462,7 @@ class Helper extends PaypalHelper
         $sys_start_date_eq = $today->format('Y-m-d');
         
         $whereCond=[];
-        //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
-        //$whereCond['eod_process_start_date_eq'] = $sys_start_date_eq;
-        //$whereCond['eod_process_start_date_tz_eq'] = $sys_start_date_eq;
-        $whereCond['is_active'] = 1;
+        $whereCond['eod_process_id'] = $eod_process_id;
         $eodProcess = $lmsRepo->getEodProcess($whereCond);
         if ($eodProcess) {
             $eod_process_id = $eodProcess->eod_process_id;
@@ -1493,12 +1490,10 @@ class Helper extends PaypalHelper
                 }
             }
             
-            
             if ($eod_status) {
                 $eodData = [];
                 $eodData['status'] = $eod_status;
-                //$eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
-                $eodData['eod_process_end'] = date('Y-m-d', strtotime($sys_start_date)) . " " . date('H:i:s');
+                $eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
                 $lmsRepo->saveEodProcess($eodData, $eod_process_id);
             }
            

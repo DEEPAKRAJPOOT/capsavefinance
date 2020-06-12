@@ -1390,7 +1390,6 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-	   
 			   
 	}     
 	  
@@ -1408,4 +1407,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
        return TallyEntry::getActualPostedAmount();
     }    
 
+	public function getEodList(){
+		return EodProcess::orderBy('eod_process_id','DESC')->get();
+	}
 }

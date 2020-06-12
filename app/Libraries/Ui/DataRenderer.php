@@ -6387,4 +6387,89 @@ class DataRenderer implements DataProviderInterface
                  })
               ->make(true);
     }   
+
+    public function getEodList(Request $request,$eod)
+    {  
+        return DataTables::of($eod)
+            ->rawColumns([])
+           
+            ->addColumn( 'current_sys_date', function ($eod) {
+                if($eod->created_at) 
+                return \Helpers::convertDateTimeFormat($eod->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
+            })
+
+            ->addColumn( 'sys_started_at', function ($eod) {
+                if($eod->sys_start_date) 
+                return \Helpers::convertDateTimeFormat($eod->sys_start_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
+            })
+
+            ->addColumn( 'sys_stopped_at', function ($eod) {
+                if($eod->sys_end_date)
+                return \Helpers::convertDateTimeFormat($eod->sys_end_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A'); 
+            })
+
+            ->addColumn( 'eod_process_mode', function ($eod) {
+                $processedBy = null;
+                switch ($eod->eod_process_mode) {
+                    case '1':
+                        $processedBy = 'Auto';
+                        break;
+                    case '2':
+                        $processedBy = 'Manual';
+                        break;
+                    default:
+                        $processedBy = ''; 
+                        break;
+                }
+                return $processedBy;
+            })
+
+            ->addColumn( 'eod_process_started_at', function ($eod) {
+                if($eod->eod_process_start) 
+                return \Helpers::convertDateTimeFormat($eod->eod_process_start, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
+            })
+
+            ->addColumn( 'eod_process_stopped_at', function ($eod) {
+                if($eod->eod_process_end)
+                return \Helpers::convertDateTimeFormat($eod->eod_process_end, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A'); 
+            })
+
+            ->addColumn( 'total_min', function ($eod) { 
+                if($eod->total_min){
+                    if($eod->total_min <= 60){
+                        $time = ($eod->total_min>1)?' Minutes':' Minute';
+                        return $eod->total_min . $time;  
+                    }else{
+                        $hour = $eod->total_min/60;
+                        $time = ($hour>1)?'Hours':'Hour';
+                        return $hour . $time;
+                    }
+                }
+            })
+
+            ->addColumn( 'status', function ($eod) { 
+                $status = null;
+                switch ($eod->status) {
+                    case '0':
+                        $status = 'Running'; 
+                        break;
+                    case '1':
+                        $status = 'Completed'; 
+                        break;
+                    case '2':
+                        $status = 'Stopped'; 
+                        break;
+                    case '3':
+                        $status = 'Failed'; 
+                        break;
+                    default:
+                        $status = ''; 
+                        break;
+                }
+                return $status;
+            })
+            // ->filter(function ($query) use ($request) {
+            // })
+            ->make(true);
+    } 
 }

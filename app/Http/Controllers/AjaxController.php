@@ -4453,31 +4453,32 @@ if ($err) {
     }
 
     public function updateEodProcessStatus(Request $request)
-    {
-        $waitTime = 10;
-        sleep($waitTime);
-        
-        \App::make('App\Http\Controllers\Lms\EodProcessController')->process();
-             
-        $current_datetime = \Carbon\Carbon::now()->toDateTimeString();
-        $current_user_id = \Auth::user() ? \Auth::user()->user_id : 1;
-        $this->lmsRepo->updateEodProcess(['is_active' => 0], ['is_active' => 1]);                
-        $data=[];
-        $data['status'] = config('lms.EOD_PROCESS_STATUS.RUNNING');
-        $data['sys_start_date'] = $current_datetime;
-        $data['is_active'] = 1;                
-        $data['created_by'] = $current_user_id;
-        $data['updated_by'] = $current_user_id;
-        $eodProcess = $this->lmsRepo->saveEodProcess($data);
-        if ($eodProcess) {
-            $eod_process_id = $eodProcess->eod_process_id;
+    { 
+        $eod_process_id = $request->eod_process_id;
+        $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id]);
+        if($eodDetails){
+            if($eodDetails->status == config('lms.EOD_PROCESS_STATUS.RUNNING')){
+                \App::make('App\Http\Controllers\Lms\EodProcessController')->startEodProcess($eod_process_id);
+            }
+            \App::make('App\Http\Controllers\Lms\EodProcessController')->process($eod_process_id);
             
-            $logData=[];
-            $logData['eod_process_id'] = $eod_process_id;
-            $logData['created_by'] = $current_user_id;
-            $logData['updated_by'] = $current_user_id;
-            $this->lmsRepo->saveEodProcessLog($logData);                    
+            $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id]);
+            if($eodDetails && $eodDetails->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')){
+                $current_datetime = \Carbon\Carbon::now()->toDateTimeString();
+            $this->lmsRepo->updateEodProcess(['is_active' => 0], ['eod_process_id'=>$eod_process_id]);                
+            $data=[];
+            $data['status'] = config('lms.EOD_PROCESS_STATUS.RUNNING');
+            $data['sys_start_date'] = $current_datetime;
+            $data['is_active'] = 1;
+            $eodProcess = $this->lmsRepo->saveEodProcess($data);
+            if ($eodProcess) {
+                $eod_process_id = $eodProcess->eod_process_id;
+                $logData=[];
+                $logData['eod_process_id'] = $eod_process_id;
+                $this->lmsRepo->saveEodProcessLog($logData);                    
+            }
         }
+    }
         
         return response()->json(['status' => 1]);
     }    
@@ -4507,6 +4508,24 @@ if ($err) {
         $condArr['type']  = 'pdf';
         $leaseRegisters['pdfUrl'] = route('download_reports', $condArr);
         return new JsonResponse($leaseRegisters);
+    }
+
+    public function getEodList(DataProviderInterface $dataProvider){
+        $eodList = $this->lmsRepo->getEodList();
+        $eod = $dataProvider->getEodList($this->request, $eodList);
+        return $eod;
+    }
+
+    public function getEodProcessList(Request $request){
+        $eod_process_id = $request->eod_process_id;
+        $eodLog = $this->lmsRepo->getEodProcessLog(['eod_process_id'=>$eod_process_id]);
+        if($eodLog){
+            $html = '<table class="table  table-td-right"> <tbody> <tr> <td class="text-left" width="30%"><b>Tally Posting Status</b></td> <td>'.config('lms.EOD_PASS_FAIL_STATUS.'.$eodLog->tally_status).'</td> <td class="text-left" width="30%"><b>Interest Accrual Status</b></td> <td>'.config('lms.EOD_PASS_FAIL_STATUS.'.$eodLog->int_accrual_status).'</td> </tr> <tr> <td class="text-left" width="30%"><b>Repayment Status</b></td> <td>'.config('lms.EOD_PASS_FAIL_STATUS.'.$eodLog->repayment_status).'</td> <td class="text-left" width="30%"><b>Disbursal Status</b></td> <td>'.config('lms.EOD_PASS_FAIL_STATUS.'.$eodLog->disbursal_status).'</td> </tr> <tr> <td class="text-left" width="30%"><b>Charge Posting Status</b></td> <td>'.config('lms.EOD_PASS_FAIL_STATUS.'.$eodLog->charge_post_status).'</td> <td class="text-left" width="30%"><b>Overdue Interest Accrual Status</b></td> <td>'.config('lms.EOD_PASS_FAIL_STATUS.'.$eodLog->overdue_int_accrual_status).'</td> </tr> <tr> <td class="text-left" width="30%"><b>Disbursal Block Status</b></td> <td>'.config('lms.EOD_PASS_FAIL_STATUS.'.$eodLog->disbursal_block_status).'</td> <td class="text-left" width="30%"><b>Manually Posted Running Transaction Status</b></td> <td>'.config('lms.EOD_PASS_FAIL_STATUS.'.$eodLog->running_trans_posting_settled).'</td> </tr> </tbody> </table>';
+        }else{
+            $html = "EOD report not Found.";
+        }
+
+        return new JsonResponse(['html'=>$html]);
     }
 
 }
