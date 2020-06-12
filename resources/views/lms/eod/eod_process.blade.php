@@ -87,13 +87,14 @@ var messages = {
     sys_start_date: "{{ $sys_start_date }}"
 };    
 function currentDateTime() {
-    var sysStartDate = new Date(messages.sys_start_date);
+   /* var sysStartDate = new Date(messages.sys_start_date);
     var curDate = new Date();
 
     var diff = curDate - sysStartDate;
 
-    var today = curDate.setSeconds(diff/1000);
-    
+    var today = new Date(sysStartDate.setSeconds(diff/1000));*/
+
+    var today = new Date();
     var years = today.getFullYear().toString().length == 1 ? '0'+today.getFullYear() : today.getFullYear();
     var months = today.getMonth().toString().length == 1 ? '0'+(today.getMonth()+1) : today.getMonth();
     var days = today.getDate().toString().length == 1 ? '0'+today.getDate() : today.getDate();
