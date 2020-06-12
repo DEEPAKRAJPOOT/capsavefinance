@@ -434,7 +434,12 @@ class Application extends BaseModel
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->join('users', 'app.user_id', '=', 'users.user_id')
                 ->join('app_product', 'app_product.app_id', '=', 'app.app_id')
-                ->where('app.user_id', \Auth::user()->user_id);
+                ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
+                ->join(DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
+                    $join->on( 'anchor_user.pan_no', '=', 'a.pan_no' );
+                })
+                ->setBindings([\Auth::user()->user_id]);
+                //->where('app.user_id', \Auth::user()->user_id);
         //$appData->groupBy('app.app_id');
         $appData = $appData->orderBy('app.app_id', 'DESC');
         return $appData;

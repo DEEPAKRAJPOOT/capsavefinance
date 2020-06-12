@@ -278,7 +278,8 @@ class ApplicationController extends Controller
         $bankdata = State::getBankData();
         $gst_no = $gstdata['pan_gst_hash'] ?? '';
         $appData = $this->appRepo->getAppDataByAppId($appId);
-    
+        $userId =  $appData->user_id;
+        
         if ($appId > 0) {
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
           

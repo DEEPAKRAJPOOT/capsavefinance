@@ -260,10 +260,12 @@ class User extends Authenticatable
                 ->join('lead_assign', function ($join) {
                     $join->on('lead_assign.assigned_user_id', '=', 'users.user_id');
                     $join->on('lead_assign.is_owner', '=', DB::raw("1"));                    
-                })                                  
+                })
+                ->join('anchor_user', 'anchor_user.user_id', '=', 'users.user_id')
                  ->where('users.user_type', 1);
         if ($roleData[0]->id == 11) {
-            $result->where('users.anchor_id', \Auth::user()->anchor_id);                        
+            //$result->where('users.anchor_id', \Auth::user()->anchor_id);                        
+            $result->where('anchor_user.anchor_id', \Auth::user()->anchor_id);                        
         } else if ($roleData[0]->is_superadmin != 1) {
             //$result->where('lead_assign.to_id', \Auth::user()->user_id);
             $result->whereIn('lead_assign.to_id', $userArr);            
