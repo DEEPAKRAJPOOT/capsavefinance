@@ -68,9 +68,7 @@ try {
                 },
                 dataType: 'json',
                 success: function ( json ) {
-                    div
-                        .html( json.html )
-                        .removeClass( 'loading' );
+                    div.html( json.html ).removeClass( 'loading' );
                 }
             } );
          
@@ -87,34 +85,51 @@ try {
 
 
     function currentDateTime() {
-        /* var sysStartDate = new Date(messages.sys_start_date);
-         var curDate = new Date();
-     
-         var diff = curDate - sysStartDate;
-     
-         var today = new Date(sysStartDate.setSeconds(diff/1000));*/
-     
-         var today = new Date();
-         var years = today.getFullYear().toString().length == 1 ? '0'+today.getFullYear() : today.getFullYear();
-         var months = today.getMonth().toString().length == 1 ? '0'+(today.getMonth()+1) : today.getMonth();
-         var days = today.getDate().toString().length == 1 ? '0'+today.getDate() : today.getDate();
-         var date = days+'-'+months+'-'+years;
-         
-         var hours = today.getHours().toString().length == 1 ? '0'+today.getHours() : today.getHours();
-         var minutes = today.getMinutes().toString().length == 1 ? '0'+today.getMinutes() : today.getMinutes();
-         var seconds = today.getSeconds().toString().length == 1 ? '0'+today.getSeconds() : today.getSeconds();    
-         var time = hours + ":" + minutes + ":" + seconds;    
-         
-         var dateTime = date+' '+time;
-         
-         //console.log('dateTime', dateTime);
-         document.getElementById('current-date').innerHTML = dateTime;
-         display_c();
+        if(messages.status == 0){
+            var realStartDate = new Date(messages.real_sys_start_date);
+            var sysStartDate = new Date(messages.sys_start_date);
+            var diff = realStartDate - sysStartDate;
+            var curDate = new Date();
+            var today = new Date(curDate.setSeconds(diff/1000));      
+        }else{
+            var today = new Date(messages.sys_end_date);
+        }
+        
+             
+        var sMonth = padValue(today.getMonth() + 1);
+        var sDay = padValue(today.getDate());
+        var sYear = today.getFullYear();
+        var sHour = today.getHours();
+        var sMinute = padValue(today.getMinutes());
+        var sAMPM = "AM";
+
+        var iHourCheck = parseInt(sHour);
+
+        if (iHourCheck > 12) {
+            sAMPM = "PM";
+            sHour = iHourCheck - 12;
+        }
+        else if (iHourCheck === 0) {
+            sHour = "12";
+        }
+
+        sHour = padValue(sHour);
+
+        dateTime =  sDay + "-" + sMonth + "-" + sYear + " " + sHour + ":" + sMinute + " " + sAMPM;
+        document.getElementById('current-date').innerHTML = dateTime;
+        display_c();
+    }
+    
+    function padValue(value) {
+        return (value < 10) ? "0" + value : value;
     }
     
     function display_c(){
-        var refresh=1000; // Refresh rate in milli seconds
-        setTimeout('currentDateTime()',refresh);
+        if(messages.status == 0){
+            setTimeout('currentDateTime()',1000);
+        }else{
+            currentDateTime();
+        }
     }
      
     function updateEodStatus() {
