@@ -17,6 +17,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\DisbursalController@uploadPfDf',
             ]);
 
+            Route::get('/cibil_report', [
+                'as' => 'cibil_report',
+                'uses' => 'Lms\CibilReportController@index',
+            ]);
+
             Route::get('/', [
                 'as' => 'lms_get_customer_list',
                 'uses' => 'Lms\CustomerController@list',
