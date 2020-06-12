@@ -27,6 +27,8 @@
         @include('layouts.front_header')
         <div class="container-fluid page-body-wrapper">
             <div class="row row-offcanvas row-offcanvas-right">
+                <!-- partial -->
+                <div id="iframeMessage" class="content-wrapper-msg"></div>
                 @include('layouts.partials.front_sidebar')
                 <!-- partial -->
                 @if(Session::has('message'))
@@ -140,6 +142,34 @@
 
         function setError(ele, msg){
             $(ele).after('<span class="error">'+msg+'</span>');
+        }
+
+        function replaceAlert(msg, type){
+            let alert_class;
+            switch(type){
+                case 'success':
+                    alert_class = 'alert-success';
+                    break;
+                case 'error':
+                    alert_class = 'alert-danger';
+                    break;
+                default:
+                    alert_class = 'alert-primary';
+                    break;
+            }
+
+            let alert_msg = '<div class="content-wrapper-msg" id="custom-alert">\
+                                <div class="'+alert_class+' alert" role="alert">\
+                                    <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>\
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">\
+                                        <span aria-hidden="true">×</span>\
+                                    </button>'
+                                    +msg+
+                                '</div>\
+                            </div>';
+
+            $('#custom-alert').remove();
+            $(alert_msg).insertAfter('#iframeMessage');
         }
     </script>
     @yield('jscript')

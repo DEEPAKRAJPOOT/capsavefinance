@@ -52,7 +52,7 @@ $(document).ready(function(){
 					$(".span_gst_text").show();		
 					setUnsetError(1);
 					$('input[name=is_gst_manual]').val('1');			
-			    	alert('No GST associated with the entered PAN.');
+			    	replaceAlert('No GST associated with the entered PAN.', 'error');
 			    }
 			    $('.isloader').hide();
 			  }
@@ -89,7 +89,7 @@ function fillGSTinput(datas){
 	})
         if(active==0)
         {
-            alert(datas[0].authStatus);
+            replaceAlert(datas[0].authStatus, 'error');
             return false;
          
         }
@@ -121,7 +121,7 @@ function fillEntity(gstinId){
 			    	getCIN(res.result.lgnm);
 			    	fillRegisteredAddress(res.result.pradr.adr);
 			    }else{
-			    	alert('No Entity associated with the entered GST.');
+			    	replaceAlert('No Entity associated with the entered GST.', 'error');
 			    	$('.isloader').hide();
 			    }
 			}

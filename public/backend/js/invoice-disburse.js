@@ -2,7 +2,7 @@
     $(document).on('click', '.disburseClickBtn', function(){
         var invoiceIds = $('#invoice_ids').val().trim();
         if (invoiceIds.length == 0) {
-            alert('Please select atleast one invoice');
+            replaceAlert('Please select atleast one invoice', 'error');
             return false;
         }
         var dataUrl = $(this).attr('data-url');
@@ -21,7 +21,7 @@
             }
             if(allInvIds.length != 0){
                 allInvIds.push(current_id);
-                allInvIds.join();
+                //allInvIds.join();
                 $('#invoice_ids').val(allInvIds.join());
             }else{
                 $('#invoice_ids').val(current_id);

@@ -54,7 +54,7 @@
                     }                            
                   else if(data==2)
                  {
-                      alert('Limit Exceed');
+                      replaceAlert('Limit Exceed', 'error');
                  }
                  else if(data==3)
                  {
@@ -107,7 +107,7 @@
                     }                            
                   else if(data==2)
                  {
-                      alert('Limit Exceed');
+                      replaceAlert('Limit Exceed', 'error');
                  }
                  else if(data==3)
                  {
@@ -436,7 +436,7 @@ function uploadFile(app_id,id)
         });
      
         if (arr.length == 0) {
-            alert('Please select atleast one checked');
+            replaceAlert('Please select atleast one checked', 'error');
             return false;
         }
         if (confirm('Are you sure, You want to approve it.'))
@@ -491,7 +491,7 @@ function uploadFile(app_id,id)
             arr[i++] = $(this).val();
         });
         if (arr.length == 0) {
-            alert('Please select atleast one checked');
+            replaceAlert('Please select atleast one checked', 'error');
             return false;
         }
         if (confirm('Are you sure? You want to disbursement queue.'))
@@ -610,7 +610,7 @@ function uploadFile(app_id,id)
                     }
                     else if(data==2)
                     {
-                         alert('Limit Exceed');
+                         replaceAlert('Limit Exceed', 'error');
                     }
                     else if(data==3)
                     {
@@ -688,7 +688,7 @@ function uploadFile(app_id,id)
                     }
                     else if(data==2)
                     {
-                         alert('Limit Exceed');
+                         replaceAlert('Limit Exceed', 'error');
                     }
                     else if(data==3)
                     {
@@ -766,7 +766,7 @@ function uploadFile(app_id,id)
                     }
                     else if(data==2)
                     {
-                         alert('Limit Exceed');
+                         replaceAlert('Limit Exceed', 'error');
                     }
                     else if(data==3)
                     {
@@ -844,7 +844,7 @@ function uploadFile(app_id,id)
                     }
                     else if(data==2)
                     {
-                         alert('Limit Exceed');
+                         replaceAlert('Limit Exceed', 'error');
                     }
                     else if(data==3)
                     {
@@ -922,7 +922,7 @@ function uploadFile(app_id,id)
                     }
                     else if(data==2)
                     {
-                         alert('Limit Exceed');
+                         replaceAlert('Limit Exceed', 'error');
                     }
                     else if(data==3)
                     {
@@ -999,7 +999,7 @@ function uploadFile(app_id,id)
                     }
                     else if(data==2)
                     {
-                         alert('Limit Exceed');
+                         replaceAlert('Limit Exceed', 'error');
                     }
                     else if(data==3)
                     {
