@@ -6412,10 +6412,10 @@ class DataRenderer implements DataProviderInterface
                 $processedBy = null;
                 switch ($eod->eod_process_mode) {
                     case '1':
-                        $processedBy = 'Auto';
+                        $processedBy = 'Automatically';
                         break;
                     case '2':
-                        $processedBy = 'Manual';
+                        $processedBy = 'Manually';
                         break;
                     default:
                         $processedBy = ''; 
@@ -6440,8 +6440,8 @@ class DataRenderer implements DataProviderInterface
                         $time = ($eod->total_min>1)?' Minutes':' Minute';
                         return $eod->total_min . $time;  
                     }else{
-                        $hour = $eod->total_min/60;
-                        $time = ($hour>1)?'Hours':'Hour';
+                        $hour = floor($eod->total_min/60);
+                        $time = ($hour>1)?' Hours':' Hour';
                         return $hour . $time;
                     }
                 }

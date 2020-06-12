@@ -4456,11 +4456,13 @@ if ($err) {
     { 
         $eod_process_id = $request->eod_process_id;
         if($eod_process_id){
-            \App::make('App\Http\Controllers\Lms\EodProcessController')->process();
-            return response()->json(['status' => 1]);
-        }else{
-            return response()->json(['status' => 0]);
+            if(\App::make('App\Http\Controllers\Lms\EodProcessController')->process($eod_process_id)){
+                return response()->json(['status' => 1]);
+            }
+            return response()->json(['status' => 2]);
         }
+        return response()->json(['status' => 0]);
+    
     }    
 
 

@@ -34,8 +34,14 @@ class EodProcessController extends Controller {
     public function process($eod_process_id = null)
     {
         try {    
-            $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id]);
+            if($eod_process_id){
+                $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id, 'status'=>[config('lms.EOD_PROCESS_STATUS.FAILED'),config('lms.EOD_PROCESS_STATUS.RUNNING')]]);
+            }else{
+                $eodDetails = $this->lmsRepo->getEodProcess(['is_active'=>1, 'status'=>[config('lms.EOD_PROCESS_STATUS.FAILED'),config('lms.EOD_PROCESS_STATUS.RUNNING')]]);
+            }
+            
             if($eodDetails){
+                $eod_process_id = $eodDetails->eod_process_id;
                 if($eodDetails->status == config('lms.EOD_PROCESS_STATUS.RUNNING')){
                     $this->startEodProcess($eod_process_id);
                 }
@@ -66,7 +72,6 @@ class EodProcessController extends Controller {
                 \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL_BLOCK'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
                 // \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.RUNNING_TRANS_POSTING_SETTLED'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
             
-                return $message;
                 $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id]);
                 if($eodDetails && $eodDetails->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')){
                     $current_datetime = \Carbon\Carbon::now()->toDateTimeString();
@@ -83,7 +88,9 @@ class EodProcessController extends Controller {
                         $this->lmsRepo->saveEodProcessLog($logData);                    
                     }
                 }
+                return true;
             }
+            return false;
             
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
@@ -123,13 +130,13 @@ class EodProcessController extends Controller {
     {
         $current_datetime = \Carbon\Carbon::now()->toDateTimeString();
         //$current_datetime = date('Y-m-d', strtotime($addlData['sys_curr_date'])) . " " . date('H:i:s');
-        $current_user_id = \Auth::user() ? \Auth::user()->user_id : 1;
+        $current_user_id = \Auth::user() ? \Auth::user()->user_id : null;
 
         $whereCond=[];        
         $whereCond['eod_process_id'] = $eod_process_id;
         $eodProcess = $this->lmsRepo->getEodProcess($whereCond);
         $sys_start_date = $eodProcess ? $eodProcess->sys_start_date : '';
-        $running_min = round(( abs(strtotime($current_datetime) - strtotime($sys_start_date)) )/60, 1);
+        $running_min = ceil(( abs(strtotime($current_datetime) - strtotime($sys_start_date)) )/60);
 
         $data=[];
         $data['status'] = config('lms.EOD_PROCESS_STATUS.STOPPED');
