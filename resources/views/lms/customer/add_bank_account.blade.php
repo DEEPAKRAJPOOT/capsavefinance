@@ -1,5 +1,10 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
+
+@foreach ($errors->all() as $error)
+    <div class="alert alert-danger" role="alert">{{ $error }}</div>
+@endforeach
+
 {!!
 Form::open(
 [
@@ -45,11 +50,13 @@ Form::open(
                 <label for="txtCreditPeriod">Confirm Account Number
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::password('confim_acc_no',
+                {!! Form::password('confim_acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
                 ['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number']) !!}
                 
             </div>
         </div>
+        @else
+            {!! Form::hidden('confim_acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,null) !!}
         @endif
        
         <div class="col-md-6">
@@ -89,7 +96,7 @@ Form::open(
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtCreditPeriod">Upload</label>  <span class="mandatory">*</span><br>
+                <label for="txtCreditPeriod">Upload</label>  {{-- <span class="mandatory">*</span> --}}<br>
                
                  <input type="file" {{isset($bankAccount->bank_account_id) ?  null : 'required' }} class="form-control" id="customFile" name="doc_file">
             </div>
