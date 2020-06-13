@@ -35,8 +35,9 @@
                 border-bottom:#c5c5c5 solid 1px;
             }
             td,th{
-                font-size: <?php echo count($pdfArr[0]) > 5 ? '10px' : '15px'; ?> !important;
+                font-size: <?php echo count($pdfArr[0]) > 8 ? '10px' : '15px'; ?> !important;
                 padding:5px;
+                text-align: center;
             }
             .pagenum:before {
                 content: counter(page);

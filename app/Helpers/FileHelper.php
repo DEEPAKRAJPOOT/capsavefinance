@@ -227,10 +227,10 @@ class FileHelper {
         exit; 
     } 
 
-    public function array_to_pdf($pdfArr) {
+    public function array_to_pdf($pdfArr, $view='reports.commonReport') {
        DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
        $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
-                ->loadView('reports.commonReport', ['pdfArr' => $pdfArr],[],'UTF-8');
+                ->loadView($view, $pdfArr,[],'UTF-8');
         return $pdf;
     }
 

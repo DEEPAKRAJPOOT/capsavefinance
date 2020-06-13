@@ -62,7 +62,8 @@ class CibilReportController extends Controller
            $toExportData['Cibil Report'] = $cibilArr;
            return $this->fileHelper->array_to_excel($toExportData);
        }
-       $pdf = $this->fileHelper->array_to_pdf($cibilArr);
+       $pdfArr = ['pdfArr' => $cibilArr];
+       $pdf = $this->fileHelper->array_to_pdf($pdfArr);
        return $pdf->download('CibilReport.pdf'); 
     }
 

@@ -108,7 +108,8 @@ class ReportController extends Controller
            $toExportData['Lease Register'] = $leaseArr;
            return $this->fileHelper->array_to_excel($toExportData);
        }
-       $pdf = $this->fileHelper->array_to_pdf($leaseArr);
+       $pdfArr = ['pdfArr' => $leaseArr];
+       $pdf = $this->fileHelper->array_to_pdf($pdfArr);
        return $pdf->download('leaseRegisterReport.pdf');        
     }
     
@@ -142,9 +143,8 @@ class ReportController extends Controller
     {
         $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
         $getInvoice  =  $this->invRepo->pdfInvoiceDue($request);
-        DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
-        $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
-                ->loadView('reports.downloadinvoicedue', ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user],[],'UTF-8');
+        $pdfArr = ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
+        $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadinvoicedue');
         return $pdf->download('InvoiceDueReport.pdf');  
     }
     
@@ -152,9 +152,8 @@ class ReportController extends Controller
     {
         $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
         $getInvoice  =  $this->invRepo->pdfInvoiceOverDue($request);
-        DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
-        $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
-                ->loadView('reports.downloadinvoiceoverdue', ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user],[],'UTF-8');
+        $pdfArr = ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
+        $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadinvoiceoverdue');
         return $pdf->download('InvoiceOverDueReport.pdf');  
     }
     
@@ -162,9 +161,8 @@ class ReportController extends Controller
    {
         $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
         $getInvoice  =  $this->invRepo->pdfInvoiceRealisation($request);
-        DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
-        $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
-                ->loadView('reports.downloadrealisation', ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user],[],'UTF-8');
+        $pdfArr = ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
+        $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadrealisation');
         return $pdf->download('InvoiceRealisation.pdf');    
    }
 }
