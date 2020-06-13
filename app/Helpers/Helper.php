@@ -1618,17 +1618,21 @@ class Helper extends PaypalHelper
     public static function getSysStartDate()
     {
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
-        $eodDetails = $lmsRepo->getEodProcess(['is_active'=>1, 'status'=>0]);
+        $eodDetails = $lmsRepo->getEodProcess(['is_active'=>1]);
         if($eodDetails){
-            $startTime = Carbon::parse($eodDetails->sys_start_date);
-            $finishTime = Carbon::parse($eodDetails->created_at);
-            $totalDuration = strtotime($startTime) - strtotime($finishTime);
-            if($totalDuration < 0){
-                $sys_start_date = Carbon::now()->subSeconds(abs($totalDuration))->format('Y-m-d H:i:s');
-            }elseif($totalDuration == 0){
-                $sys_start_date = Carbon::now()->format('Y-m-d H:i:s');
-            }elseif($totalDuration > 0){
-                $sys_start_date = Carbon::now()->addSeconds($totalDuration)->format('Y-m-d H:i:s');
+            if($eodDetails->status == config('lms.EOD_PROCESS_STATUS.RUNNING')){
+                $startTime = Carbon::parse($eodDetails->sys_start_date);
+                $finishTime = Carbon::parse($eodDetails->created_at);
+                $totalDuration = strtotime($startTime) - strtotime($finishTime);
+                if($totalDuration < 0){
+                    $sys_start_date = Carbon::now()->subSeconds(abs($totalDuration))->format('Y-m-d H:i:s');
+                }elseif($totalDuration == 0){
+                    $sys_start_date = Carbon::now()->format('Y-m-d H:i:s');
+                }elseif($totalDuration > 0){
+                    $sys_start_date = Carbon::now()->addSeconds($totalDuration)->format('Y-m-d H:i:s');
+                }
+            }else{
+                $sys_start_date = Carbon::parse($eodDetails->sys_end_date)->format('Y-m-d H:i:s');
             }
         }else{
             $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
