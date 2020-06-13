@@ -483,11 +483,21 @@ class ManualApportionmentHelper{
     }
     
     public function dailyIntAccrual(){
+        $cLog = [];
+        $cLog['cron_id'] = '1';
+        $cLog['exec_start_at'] = \Carbon\Carbon::now()->toDateTimeString();
+        $cLogDetails = $this->lmsRepo->createCronLog($cLog);
+        
         $curdate = Helpers::getSysStartDate();
         $invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true]);
         foreach ($invoiceList as $invId => $trans) {
             $this->intAccrual($invId);
         }
+
+        $cLog = [];
+        $cLog['exec_end_at'] = \Carbon\Carbon::now()->toDateTimeString();
+        $cLog['status'] = 1;
+        $this->lmsRepo->updateCronLog($cLog,$cLogDetails->cron_log_id);
     }
     
     public function getBankBaseRates($bank_id, $date=null){

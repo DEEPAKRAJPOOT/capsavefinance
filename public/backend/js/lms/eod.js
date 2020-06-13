@@ -143,11 +143,13 @@ try {
                 async:false,
                 beforeSend: function( xhr ) {
                 },    
-                success: function (res) {        
+                success: function (res) {  
+                    alert(res.message);
+                    if(res.status == 1){
+                        location.reload();
+                    }
                     table.draw();
-                },
-                complete:function(data){
-                    location.reload();
+                    parent.$('.isloader').show();
                 },
                 error: function (error) {
                     console.log(error);

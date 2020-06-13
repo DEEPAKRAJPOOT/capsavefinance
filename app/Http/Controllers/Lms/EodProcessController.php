@@ -87,8 +87,9 @@ class EodProcessController extends Controller {
                         $logData['eod_process_id'] = $eod_process_id;
                         $this->lmsRepo->saveEodProcessLog($logData);                    
                     }
+                    return true;
                 }
-                return true;
+                return false;
             }
             return false;
             

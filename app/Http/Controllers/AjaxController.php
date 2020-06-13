@@ -4455,14 +4455,17 @@ if ($err) {
     public function updateEodProcessStatus(Request $request)
     { 
         $eod_process_id = $request->eod_process_id;
+
+        if(!\Helpers::getInterestAccrualCronStatus()){
+            return response()->json(['status' => 3 , 'message'=>'Interest Accrual has not been calculated till date.']);
+        }
         if($eod_process_id){
             if(\App::make('App\Http\Controllers\Lms\EodProcessController')->process($eod_process_id)){
-                return response()->json(['status' => 1]);
+                return response()->json(['status' => 1, 'message'=>'Eod completed successfully!']);
             }
-            return response()->json(['status' => 2]);
+            return response()->json(['status' => 2, 'message'=>'Eod process failed!']);
         }
-        return response()->json(['status' => 0]);
-    
+        return response()->json(['status' => 0, 'message'=>'Eod detail missing! Please try again!']);
     }    
 
 

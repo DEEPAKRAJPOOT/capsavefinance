@@ -59,6 +59,7 @@ use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\Master\TallyEntry;
 use BlankDataExceptions;
 use InvalidDataTypeExceptions;
+use App\Inv\Repositories\Models\Lms\CronLog;
 
 /**
  * Lms Repository class
@@ -1393,7 +1394,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			   
 	}     
 	  
-    
+	   
     public function getEodDataCount()
     {
         return EodProcess::getEodDataCount();
@@ -1409,5 +1410,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	public function getEodList(){
 		return EodProcess::orderBy('eod_process_id','DESC')->get();
+	}
+
+	public function createCronLog($data){
+		return CronLog::createCronLog($data);
+	}
+
+	public function updateCronLog($data,$cronLogId){
+		return CronLog::updateCronLog($data,$cronLogId);
 	}
 }

@@ -28,6 +28,7 @@ use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\Lms\CronLog;
 use Illuminate\Http\File;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
 use Illuminate\Contracts\Support\Renderable;
@@ -1656,4 +1657,14 @@ class Helper extends PaypalHelper
      {
         return  Application::getDoAUsersByAppId($app_id);
      }
+
+    public static function getInterestAccrualCronStatus(){
+        $currentTimestamp = Carbon::now()->format('Y-m-d');
+        $cronLogDetails = CronLog::where('cron_id','1')->whereDate('exec_start_at',$currentTimestamp)
+        ->orderBy('cron_log_id','DESC')->first();
+        if($cronLogDetails){
+            return true;
+        } 
+        return false;
+    }
 }
