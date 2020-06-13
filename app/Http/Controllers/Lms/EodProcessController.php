@@ -107,7 +107,7 @@ class EodProcessController extends Controller {
         $status = $eodProcess ? $eodProcess->status : '';
         $disp_status = $eodProcess ? config('lms.EOD_PROCESS_STATUS_LIST')[$eodProcess->status] : '';
         $sys_start_date = $eodProcess->sys_start_date ? \Helpers::convertDateTimeFormat($eodProcess->sys_start_date, 'Y-m-d H:i:s', 'Y-m-d H:i:s') : '';
-        $total_min = $eodProcess ? $eodProcess->total_min : '';
+        $total_sec = $eodProcess ? $eodProcess->total_sec : '';
         $sys_end_date = $eodProcess->sys_end_date ? \Helpers::convertDateTimeFormat($eodProcess->sys_end_date, 'Y-m-d H:i:s', 'Y-m-d H:i:s') : '';
         $eod_process_id = $eodProcess ? $eodProcess->eod_process_id : null;
         $eod_status = $eodProcess ? $eodProcess->status:null;
@@ -136,13 +136,13 @@ class EodProcessController extends Controller {
         $whereCond['eod_process_id'] = $eod_process_id;
         $eodProcess = $this->lmsRepo->getEodProcess($whereCond);
         $sys_start_date = $eodProcess ? $eodProcess->sys_start_date : '';
-        $running_min = ceil(( abs(strtotime($current_datetime) - strtotime($sys_start_date)) )/60);
+        $running_sec = abs(strtotime($current_datetime) - strtotime($sys_start_date));
 
         $data=[];
         $data['status'] = config('lms.EOD_PROCESS_STATUS.STOPPED');
         $data['sys_end_date'] = $current_datetime;
         $data['eod_process_start'] = $current_datetime;
-        $data['total_min'] = $running_min;
+        $data['total_sec'] = $running_sec;
         $data['is_active'] = 1;
         $data['eod_process_mode'] = ($current_user_id)?2:1;
         $this->lmsRepo->saveEodProcess($data, $eod_process_id);        

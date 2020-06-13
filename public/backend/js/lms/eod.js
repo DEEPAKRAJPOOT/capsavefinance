@@ -34,7 +34,7 @@ try {
                 { data: "eod_process_mode" },
                 { data: "eod_process_started_at" },
                 { data: "eod_process_stopped_at" },
-                { data: "total_min" },
+                { data: "total_sec" },
                 { data: "status" }
             ],
             order: [[0, 'asc']]

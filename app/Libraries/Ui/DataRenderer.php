@@ -1,23 +1,26 @@
 <?php
 namespace App\Libraries\Ui;
-use DataTables;
+use DB;
+use Auth;
 use Config;
 use Helpers;
-use DB;
 use Session;
-use Auth;
+use DateTime;
+use DataTables;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
-use App\Inv\Repositories\Models\BizInvoice;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
-use App\Inv\Repositories\Models\AppAssignment;
-use App\Inv\Repositories\Models\Application;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
-use App\Inv\Repositories\Models\Master\DoaLevelRole;
-use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Models\Master\DoaLevelRole;
+use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -6391,7 +6394,7 @@ class DataRenderer implements DataProviderInterface
     public function getEodList(Request $request,$eod)
     {  
         return DataTables::of($eod)
-            ->rawColumns([])
+            ->rawColumns(['status'])
            
             ->addColumn( 'current_sys_date', function ($eod) {
                 if($eod->created_at) 
@@ -6426,24 +6429,29 @@ class DataRenderer implements DataProviderInterface
 
             ->addColumn( 'eod_process_started_at', function ($eod) {
                 if($eod->eod_process_start) 
-                return \Helpers::convertDateTimeFormat($eod->eod_process_start, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
+                return \Helpers::convertDateTimeFormat($eod->eod_process_start, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s A');
             })
 
             ->addColumn( 'eod_process_stopped_at', function ($eod) {
                 if($eod->eod_process_end)
-                return \Helpers::convertDateTimeFormat($eod->eod_process_end, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A'); 
+                return \Helpers::convertDateTimeFormat($eod->eod_process_end, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s A'); 
             })
 
-            ->addColumn( 'total_min', function ($eod) { 
-                if($eod->total_min){
-                    if($eod->total_min <= 60){
-                        $time = ($eod->total_min>1)?' Minutes':' Minute';
-                        return $eod->total_min . $time;  
-                    }else{
-                        $hour = floor($eod->total_min/60);
-                        $time = ($hour>1)?' Hours':' Hour';
-                        return $hour . $time;
-                    }
+            ->addColumn( 'total_sec', function ($eod) { 
+                if($eod->total_sec){
+                    $dt1 = new DateTime("@0");
+                    $dt2 = new DateTime("@$eod->total_sec");
+                    $days = $dt1->diff($dt2)->format('%a');
+                    $hours = $dt1->diff($dt2)->format('%h');
+                    $minutes = $dt1->diff($dt2)->format('%i');
+                    $seconds =  $dt1->diff($dt2)->format('%s');
+                    $result = '';
+                     
+                    $result .= $days? $days. ' days, ':''; 
+                    $result .= $hours? $hours. ' hours, ':''; 
+                    $result .= $minutes? $minutes. ' minutes, ':''; 
+                    $result .= $seconds? $seconds. ' seconds ':'';   
+                    return $result;              
                 }
             })
 
@@ -6451,16 +6459,16 @@ class DataRenderer implements DataProviderInterface
                 $status = null;
                 switch ($eod->status) {
                     case '0':
-                        $status = 'Running'; 
+                        $status = '<i class="fa fa-circle-o-notch fa-spin  fa-fw margin-bottom"></i>'; 
                         break;
                     case '1':
-                        $status = 'Completed'; 
+                        $status = '<i class="fa fa-check" title="Passed" style="color:green" aria-hidden="true"></i>'; 
                         break;
                     case '2':
-                        $status = 'Stopped'; 
+                        $status = '<i class="fa fa-ban" title="Stopped" style="color:black" aria-hidden="true"></i>'; 
                         break;
                     case '3':
-                        $status = 'Failed'; 
+                        $status = '<i class="fa fa-times" title="Failed" style="color:red" aria-hidden="true"></i>'; 
                         break;
                     default:
                         $status = ''; 

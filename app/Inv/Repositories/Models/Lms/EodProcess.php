@@ -49,7 +49,7 @@ class EodProcess extends BaseModel
         'sys_end_date',
         'eod_process_start',
         'eod_process_end',
-        'total_min',
+        'total_sec',
         'status',
         'is_active',
         'created_at',
