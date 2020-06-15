@@ -73,7 +73,7 @@
     @can('apport_refund_view')
     <li>
         <a class=" {{ ($active=='refundTrans')? 'active': null }} "
-            href="{{route('apport_refund_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">Refund
+            href="{{route('apport_refund_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">Adjustment
             Tran.</a>
     </li>
     @endcan
