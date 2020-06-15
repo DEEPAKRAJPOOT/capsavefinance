@@ -5893,7 +5893,7 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('select', function($trans){
                 $result = '';
                 $to = Carbon::createFromFormat('Y-m-d H:i:s', Helpers::getSysStartDate());
-                $from = Carbon::createFromFormat('Y-m-d H:i:s', $trans->sys_created_at);
+                $from = Carbon::createFromFormat('Y-m-d H:i:s', $trans->sys_created_at??$trans->created_at);
                 $days = $to->diffInDays($from);
                 $flag = true;
                 if($trans->invoice_disbursed_id ){
