@@ -218,7 +218,7 @@ class PaymentController extends Controller {
 					'parent_trans_id' =>$request->charges,
 					'user_id' => $request['user_id'],
 					'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
-					'trans_type' => (in_array($request->action_type, [3])) ? 7 : $request['trans_type'],
+					'trans_type' => (in_array($request->action_type, [3])) ? config('lms.TRANS_TYPE.TDS') : $request['trans_type'],
 					'amount' => str_replace(',', '', $request['amount']),
 					'entry_type' => 1,
 					'gst'=> $request['incl_gst'],
@@ -229,7 +229,6 @@ class PaymentController extends Controller {
 					'pay_from' => ($udata)?$udata->is_buyer:'',
 					'is_settled' => 1,
 					'is_posted_in_taaly' => 0,
-					'sys_date'=>\Helpers::getSysStartDate(),
 					'created_at' =>  $mytime,
                     'created_by' =>  $user_id,
                   ];

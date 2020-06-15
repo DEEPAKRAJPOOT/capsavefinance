@@ -577,15 +577,19 @@ class Transactions extends BaseModel {
     }
 
     /*** save repayment transaction details for invoice  **/
-    public static function saveRepaymentTrans($attr)
+    public static function saveRepaymentTrans($transactions)
     {
-          return self::create($attr);
+        $transactions['sys_updated_at'] = Helpers::getSysStartDate();
+        $transactions['sys_created_at'] = Helpers::getSysStartDate();
+        return self::create($transactions);
     }
     
     /*** save repayment transaction details for invoice  **/
-    public static function saveCharge($attr)
+    public static function saveCharge($transactions)
     {
-        return self::create($attr);
+        $transactions['sys_updated_at'] = Helpers::getSysStartDate();
+        $transactions['sys_created_at'] = Helpers::getSysStartDate();
+        return self::create($transactions);
     } 
     
     /*** get all transaction  **/
