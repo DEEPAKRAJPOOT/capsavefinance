@@ -4487,6 +4487,6 @@ if ($err) {
         $condArr['type']  = 'pdf';
         $leaseRegisters['pdfUrl'] = route('download_reports', $condArr);
         return new JsonResponse($leaseRegisters);
-    }
+    }    
 
 }

@@ -264,7 +264,7 @@ $messages = session()->get('message', false);
                     {
                         required: true,
                         email: true,
-                        isexistemail: true,
+                        //isexistemail: true,
                         messages:{'isexistemail' : "This email is already exist."}
                     });
                 });

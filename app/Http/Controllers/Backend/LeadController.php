@@ -641,9 +641,9 @@ class LeadController extends Controller {
        try {
             $arrAnchorVal = $request->all();    
 //            dd($arrAnchorVal);
-            $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
+            //$anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
             $arrUpdateAnchor =[];
-            if(!$anchUserInfo){
+            //if(!$anchUserInfo){
                 $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
                 $token = md5($hashval);
                 $arrAnchorData = [
@@ -682,10 +682,10 @@ class LeadController extends Controller {
                     Session::flash('operation_status',1);
                     return redirect()->route('get_anchor_lead_list');
                 }
-            }else{
-                Session::flash('error', trans('error_messages.email_already_exists'));
-                return redirect()->back()->withInput();
-            }
+            //}else{
+            //    Session::flash('error', trans('error_messages.email_already_exists'));
+            //    return redirect()->back()->withInput();
+            //}
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

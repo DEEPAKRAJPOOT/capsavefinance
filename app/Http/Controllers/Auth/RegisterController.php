@@ -105,12 +105,22 @@ use RegistersUsers,
         $arrData['is_active'] = 0;
         $arrData['is_active'] = 0;
         $userId = null;
-        $userDataArray = $this->userRepo->save($arrData, $userId);
+        
+        $userData = $this->userRepo->getUserByemail($data['email']);
+        if ($userData && $userData->user_id) {
+            $userDataArray = $userData;
+        } else {
+            $userDataArray = $this->userRepo->save($arrData, $userId);
+            if ($userDataArray) {
+                $detailArr['user_id'] = $userDataArray->user_id;
+                $detailArr['access_token'] = bcrypt($userDataArray->email);
+                $detailArr['created_by'] = $userDataArray->user_id;
+                $this->userRepo->saveUserDetails($detailArr);
+            }
+        }
+        
         if ($userDataArray) {
-            $detailArr['user_id'] = $userDataArray->user_id;
-            $detailArr['access_token'] = bcrypt($userDataArray->email);
-            $detailArr['created_by'] = $userDataArray->user_id;
-            $this->userRepo->saveUserDetails($detailArr);
+
             if (isset($data['anch_user_id']) && !empty($data['anch_user_id'])) {
                 
                 //Associate Business
@@ -275,12 +285,12 @@ use RegistersUsers,
             //dd($arrFileData);
             //echo "ddddssssd"; exit;
             //Saving data into database
-            $AnchorData = $this->userRepo->getAnchorByPan($arrFileData['pan_no']);
+            $AnchorData = $this->userRepo->getAnchorByPan($arrFileData['pan_no']);                        
 //            dd($AnchorData,'fdfjk');
-            if($AnchorData && $AnchorData->pan_no){
-                $arrFileData['h_anchor_id'] = $AnchorData->anchor_id;
-            }
-//            dd($arrFileData);
+            if($AnchorData && $AnchorData->pan_no){                    
+                //$arrFileData['h_anchor_id'] = $AnchorData->anchor_id;                
+            }          
+            dd($arrFileData);
             $user = $this->create($arrFileData);
             /// dd($user);
             if ($user) {
@@ -677,4 +687,41 @@ use RegistersUsers,
         return $userName;
     }
 
+    public function checkExistUserPan(Request $request)
+    {
+        $email = $request->get('email');
+        $pan = $request->get('pan');
+        $assocAnchId = $request->get('anchor_id');
+        $validate = $request->get('validate');
+        $result = [];
+        $result['message'] = '';
+        $result['status'] = true;
+        $result['validate'] = $validate;
+
+        $whereCond=[];
+        $whereCond[] = ['email', '=', $email];
+        $whereCond[] = ['anchor_id', '=', $assocAnchId];
+        $whereCond[] = ['is_registered', '=', '1'];
+        $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+        if (isset($anchUserData[0])) {
+            $result['validate'] = 1;
+            $result['status'] = false;
+            $result['message'] = 'This email is already exists';
+            return response()->json($result);
+        }
+        
+        
+        $whereCond=[];
+        $whereCond[] = ['pan_no', '=', $pan];         
+        $whereCond[] = ['email', '=', $email];
+        $whereCond[] = ['anchor_id', '!=', $assocAnchId];
+        $whereCond[] = ['is_registered', '=', '1'];
+        $AnchorData = $this->userRepo->getAnchorUserData($whereCond);        
+        if (!empty($pan) && isset($AnchorData[0])) {
+            $result['message'] = 'You are already exist with another anchor, if you register, you will also associate with this anchor, use the old credentials to login.';
+            return response()->json($result);
+        }
+                
+        return response()->json($result);
+    }
 }

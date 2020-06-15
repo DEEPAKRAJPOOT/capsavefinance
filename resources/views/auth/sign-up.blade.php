@@ -65,6 +65,7 @@
                                  </label>
                                   <input type="text" name="pan_no" id="pan_no" value="{{old('pan_no')}}" maxlength="10" class="form-control pan_no" tabindex="3" placeholder="PAN Number" >
                                  <span class="text-danger error">{{$errors->first('pan_no')}}</span>
+                                 <span class="text-danger check_exist_user_pan"></span>
                               </div>
                            </div> 
                             </div>
@@ -75,7 +76,7 @@
                                             <span class="mandatory">*</span>
                                         </label>
                                         <input type="hidden" name="send_otp" id="send-otp" value="">
-                                        <input type="text" name="email" id="email" value="@if($anchorDetail){{$anchorDetail->email}}@else{{old('email')}}@endif" class="form-control" tabindex="4" placeholder="Email"  @if($anchorDetail)readonly @else @endif>
+                                        <input type="text" name="email" id="email" value="@if($anchorDetail){{$anchorDetail->email}}@else{{old('email')}}@endif" class="form-control" tabindex="4" placeholder="Email"  @if($anchorDetail) readonly @else @endif>
 
                                         <span class="text-danger error"> {{$errors->first('email')}} </span>
                                     </div>
@@ -147,6 +148,10 @@
 @section('scripts')
 <script src='https://www.google.com/recaptcha/api.js'></script>
 <script type="text/javascript">
+var messages={
+  check_exist_user_pan_url:"{{ route('check_exist_user_pan') }}",
+  token : "{{ csrf_token() }}",
+}; 
     $(document).ready(function () {
             
             
@@ -165,29 +170,71 @@
                 }
             });
             
-//            $.validator.addMethod("isexistemail", function(value, element) {
-//                var email = value;
-//                let status = false;
-//                $.ajax({
-//                    url: messages.check_exist_email,
-//                    type: 'POST',
-//                    datatype: 'json',
-//                    async: false,
-//                    cache: false,
-//                    data: {
-//                        'email' : email,
-//                        '_token' : messages.token
-//                    },
-//                    success: function(response){
-//                       if(response['status'] === 'true'){
-//                          status = true;
-//                      }
-//                    }
-//                });
-//                return this.optional(element) || (status === true);
-//            });
+            $.validator.addMethod("isexistemail", function(value, element) {
+                var email = value;
+                let status = false;
+                $.ajax({
+                    //url: messages.check_exist_email,
+                    url: messages.check_exist_user_pan_url,
+                    type: 'POST',
+                    datatype: 'json',
+                    async: false,
+                    cache: false,
+                    data: {
+                        'email' : email,
+                        pan : $('#pan_no').val(),
+                        anchor_id : $("#h_anchor_id").val(), 
+                        validate : 1,
+                        '_token' : messages.token
+                    },
+                    success: function(response){
+                       if(response['status'] === true){
+                          status = true;
+                      }
+                    }
+                });
+                return this.optional(element) || (status === true);
+            });
+
+            $('#email').on('blur', function (event) {                
+                $(".check_exist_user_pan").html("");
+                $(this).rules("add",
+                {
+                    required: true,
+                    email: true,
+                    isexistemail: true,
+                    messages:{'isexistemail' : "This email is already exist."}
+                });
+                
+                $('#registerForm').valid();
+            });
+             
+            $('#pan_no').on('blur', function (event) { 
+                $.ajax({
+                    url: messages.check_exist_user_pan_url,
+                    type: 'POST',
+                    datatype: 'json',
+                    async: false,
+                    cache: false,
+                    data: {
+                        email : $('#email').val(),
+                        pan : $('#pan_no').val(),
+                        anchor_id : $("#h_anchor_id").val(),
+                        validate : '0',
+                        _token : messages.token
+                    },
+                    success: function(response){
+                        if (response.validate == '0') {
+                            $(".check_exist_user_pan").html(response.message);
+                        } else {
+                            $(".check_exist_user_pan").html("");
+                        }
+                    }
+                });
+            });
             
-            $('#SaveUser').on('click', function (event) {
+            
+            $('#registerForm').on('submit', function (event) {
                 
                 $('input.pan_no').each(function () {
                     $(this).rules("add",
@@ -210,16 +257,22 @@
                             required: true
                         });
                 });
-//                $('input.email').each(function () {
-//                    $(this).rules("add",
-//                    {
-//                        required: true,
-//                        email: true,
-//                        isexistemail: true,
-//                        messages:{'isexistemail' : "This email is already exist."}
-//                    });
-//                });               
                 
+                $('input.email').each(function () {
+                    $(this).rules("add",
+                    {
+                        required: true,
+                        email: true,
+                        isexistemail: true,
+                        messages:{'isexistemail' : "This email is already exist."}
+                    });
+                });               
+                
+                if (!$('#registerForm').valid()) {
+                    return false;
+                }
+                
+                return true;
             });
             
             $('form#registerForm').validate();
