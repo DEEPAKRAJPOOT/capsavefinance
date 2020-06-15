@@ -88,7 +88,7 @@ class SoaController extends Controller
         $maxPrincipalDPD = null;
         $maxInterestDPD = null;
         $result = null;
-		if($request->has('user_id')){
+		if($request->has('user_id') && $request->user_id){
             $result = $this->getUserLimitDetais($request->user_id);
             $user = $this->userRepo->lmsGetCustomer($request->user_id);
             $maxInterestDPD = $this->lmsRepo->getMaxDpdTransaction($request->user_id , config('lms.TRANS_TYPE.INTEREST'));
@@ -135,9 +135,11 @@ class SoaController extends Controller
                     }
                 }
             }
-            $userInfo->total_limit = number_format($totalLimit);
-            $userInfo->consume_limit = number_format($totalCunsumeLimit);
-            $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+            if($userInfo){
+                $userInfo->total_limit = number_format($totalLimit);
+                $userInfo->consume_limit = number_format($totalCunsumeLimit);
+                $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
+            }
             
             $data['userInfo'] = $userInfo;
             $data['application'] = $application;
