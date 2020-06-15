@@ -34,6 +34,9 @@ class EodProcessController extends Controller {
     public function process($eod_process_id = null)
     {
         try {    
+            $response = false;
+            $cLogDetails = Helper::cronLogBegin(2);
+
             if($eod_process_id){
                 $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id, 'status'=>[config('lms.EOD_PROCESS_STATUS.FAILED'),config('lms.EOD_PROCESS_STATUS.RUNNING')]]);
             }else{
@@ -87,12 +90,18 @@ class EodProcessController extends Controller {
                         $logData['eod_process_id'] = $eod_process_id;
                         $this->lmsRepo->saveEodProcessLog($logData);                    
                     }
-                    return true;
+                    $response = true;
                 }
-                return false;
+                $response = false;
             }
-            return false;
-            
+            $response = false;
+
+            if($cLogDetails){
+                Helper::cronLogEnd('1',$cLogDetails->cron_log_id);
+            }
+
+            return $response;
+
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }

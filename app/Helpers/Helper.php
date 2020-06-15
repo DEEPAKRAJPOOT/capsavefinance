@@ -1667,4 +1667,29 @@ class Helper extends PaypalHelper
         } 
         return false;
     }
+
+    public static function getEodProcessCronStatus(){
+        $currentTimestamp = Carbon::now()->format('Y-m-d');
+        $cronLogDetails = CronLog::where('cron_id','2')->whereDate('exec_start_at',$currentTimestamp)
+        ->orderBy('cron_log_id','DESC')->first();
+        if($cronLogDetails){
+            return true;
+        } 
+        return false;
+    }
+
+    public static function cronLogBegin(int $cronId){
+        $cLog = [];
+        $cLog['cron_id'] = $cronId;
+        $cLog['exec_start_at'] = \Carbon\Carbon::now()->toDateTimeString();
+        return CronLog::createCronLog($cLog);
+    }
+
+    public static function cronLogEnd(int $status, int $cronLogId){
+        $cLog = [];
+        $cLog['exec_end_at'] = \Carbon\Carbon::now()->toDateTimeString();
+        $cLog['status'] = $status;
+        return CronLog::updateCronLog($cLog,$cronLogId);
+    }
+
 }

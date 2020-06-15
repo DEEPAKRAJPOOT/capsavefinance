@@ -5,7 +5,7 @@ try {
         table = $('#eodProcessList').DataTable( {
             processing: true,
             serverSide: true,
-            pageLength: 50,
+            pageLength: 10,
             /*dom: 'lBrtip',
             bSort: false,*/
             responsive: true,
@@ -149,10 +149,11 @@ try {
                         location.reload();
                     }
                     table.draw();
-                    parent.$('.isloader').show();
+                    parent.$('.isloader').hide();
                 },
                 error: function (error) {
                     console.log(error);
+                    parent.$('.isloader').hide();
                 }
             }); 
         }
