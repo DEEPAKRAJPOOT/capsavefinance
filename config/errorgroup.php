@@ -19,24 +19,7 @@ return [
     /*
      * Group of people to whom the error should be reported
      */
-    'error_notification_group' => [
-        'pankaj.sharma@prolitus.com',
-        'anuj.chauhan@prolitus.com',
-        'gaurav.agarwal@prolitus.com',
-        'ravi.awasthi@prolitus.com',
-        'varun.dudani@zuron.in',
-        'binay.kumar@prolitus.com',
-        'gajendra.singh@prolitus.com',
-        'akash.kumar@prolitus.com',
-        'sudesh.kumar@prolitus.com',
-        'updesh.sharma@prolitus.com'
-    ],
+    'error_notification_group' => explode(',', env('ERROR_NOTIFICATION_GROUP','')),
     
-    'error_crif_notification_group' => [
-        'pankaj.sharma@prolitus.com',
-        'gaurav.agarwal@prolitus.com',
-        'varun.dudani@zuron.in',
-        'gajendra.singh@prolitus.com'
-      
-    ]
+    'error_crif_notification_group' => explode(',',  env('ERROR_CRIF_NOTIFICATION_GROUP',''))
 ];
