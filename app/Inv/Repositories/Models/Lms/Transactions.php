@@ -169,7 +169,7 @@ class Transactions extends BaseModel {
     }
 
     public function getWaiveOffAmount(){
-        return self::where(['parent_trans_id' => $this->trans_id, 'trans_type' => 36])->sum('amount');
+        return self::where(['parent_trans_id' => $this->trans_id, 'trans_type' => config('lms.TRANS_TYPE.WAVED_OFF')])->sum('amount');
     }
 
     public function getRefundableAmtAttribute(){
@@ -525,6 +525,10 @@ class Transactions extends BaseModel {
 
     public function getReversalParent() {
         return $this->belongsTo('App\Inv\Repositories\Models\Payment', 'trans_id', 'parent_trans_id');
+    }
+
+    public static function postedTxnsInTally() {
+        return self::where('is_posted_in_tally', 1)->get();
     }
 
     public static function getJournalTxnTally(array $where = []){

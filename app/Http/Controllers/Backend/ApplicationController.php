@@ -164,6 +164,8 @@ class ApplicationController extends Controller
 		$attribute['biz_id'] = $bizId;
 		$attribute['app_id'] = $appId;
 		$getCin = $this->userRepo->getCinByUserId($bizId);
+                $getProductType  =  $this->userRepo->checkLeasingProduct($appId);
+                
 		if(!empty($getCin))
 		{
 			$cin =    $getCin->cin; 
@@ -178,7 +180,8 @@ class ApplicationController extends Controller
 			'cin_no' => $cin,
 			'appId' => $appId, 
 			'bizId' => $bizId,
-			'edit' => $editFlag
+			'edit' => $editFlag,
+                        'is_lease' => $getProductType
 			]);
 			 
 		} catch (Exception $ex) {
@@ -493,7 +496,7 @@ class ApplicationController extends Controller
 					break;
 			}
 
-			$wf_status = 1;                
+			$wf_status = 2;                
 			Helpers::updateWfStage('doc_upload', $appId, $wf_status);
 			
 			$document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
@@ -1879,4 +1882,6 @@ class ApplicationController extends Controller
 		}
 	}
 
+    
+    
 }
