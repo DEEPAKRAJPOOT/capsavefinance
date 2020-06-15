@@ -58,6 +58,7 @@ class AnchorUser extends BaseModel {
         'l_name',
         'biz_name',
         'pan_no',
+        'biz_id',
         'email',
         'phone',
         'user_type',
@@ -213,4 +214,17 @@ class AnchorUser extends BaseModel {
         
         return ($arrAnchorData ? $arrAnchorData : FALSE);
     }
+    
+    public static function updateAnchorUserData($arrUserData, $whereCond){
+        $rowUpdate = self::where($whereCond)->update($arrUserData);
+        return ($rowUpdate ? true : false); 
+    }
+    
+    public static function getAnchorUserData($whereCond) {
+        $anchors = self::select('anchor_user.*')            
+            ->where($whereCond)            
+            ->get();            
+           return ($anchors ? $anchors : []);
+    }
+    
 }

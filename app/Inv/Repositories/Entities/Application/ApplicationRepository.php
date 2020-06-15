@@ -2329,6 +2329,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return BizEntityCin::getBizEntityCinData($whereCond);
     }     
+    
+    public function getBizDataByPan($pan, $userId=null) {
+        return Business::getBizDataByPan($pan, $userId);
+    }    
 
 }
 

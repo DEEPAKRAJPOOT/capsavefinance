@@ -74,6 +74,9 @@ class ApplicationController extends Controller
         $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
         $segmentList = $this->appRepo->getSegmentDropDown()->toArray();
 
+        $anchUserData = $this->userRepo->getAnchorUserData(['user_id' => $userId]);        
+        $pan = isset($anchUserData[0]) ? $anchUserData[0]->pan_no : '';
+        
         if($request->has('__signature') && $request->has('biz_id')){
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
             $app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
@@ -92,7 +95,7 @@ class ApplicationController extends Controller
                         ->with('constitutionList',$constitutionList)
                         ->with('segmentList',$segmentList);
         }else{
-            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types','industryList','constitutionList', 'segmentList']));
+            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types','industryList','constitutionList', 'segmentList', 'pan']));
         }
     }
 
@@ -110,6 +113,13 @@ class ApplicationController extends Controller
                 $business_info = $this->appRepo->updateCompanyDetail($arrFileData, $bizId, Auth::user()->user_id);
 
                 if ($business_info) {
+                    
+                    //Update Anchor Pan and Biz Id
+                    $arrAnchUser=[];
+                    $arrAnchUser['pan_no'] = $arrFileData['biz_pan_number'];
+                    $arrAnchUser['biz_id'] = $bizId;           
+                    $this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => Auth::user()->user_id]); 
+                
                     Session::flash('message',trans('success_messages.update_company_detail_successfully'));
                     return redirect()->route('promoter-detail',['app_id' =>  $request->app_id, 'biz_id' => $bizId, 'app_status'=>0]);
                 } else {
@@ -123,6 +133,13 @@ class ApplicationController extends Controller
                 
                             
                 if ($business_info) {
+                    
+                    //Update Anchor Pan and Biz Id
+                    $arrAnchUser=[];
+                    $arrAnchUser['pan_no'] = $arrFileData['biz_pan_number'];
+                    $arrAnchUser['biz_id'] = $business_info['biz_id'];           
+                    $this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => Auth::user()->user_id]); 
+                    
                     //Add application workflow stages
                     Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
                     

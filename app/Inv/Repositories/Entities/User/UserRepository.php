@@ -1689,5 +1689,14 @@ class UserRepository extends BaseRepositories implements UserInterface
     
     public function getAnchorByPan($pan){
         return AnchorUser::getAnchorByPan($pan);
+    }  
+    
+    
+    public function updateAnchorUserData($arrUserData, $whereCond){
+        return AnchorUser::updateAnchorUserData($arrUserData, $whereCond);
+    }    
+    
+    public function getAnchorUserData($whereCond) {
+        return AnchorUser::getAnchorUserData($whereCond);
     }    
 }

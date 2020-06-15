@@ -104,7 +104,7 @@ class ApplicationController extends Controller
 			//dd($business_info->gst->pan_gst_hash);
 			$industryList = $this->appRepo->getIndustryDropDown()->toArray();
 			$constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
-			$segmentList = $this->appRepo->getSegmentDropDown()->toArray();
+			$segmentList = $this->appRepo->getSegmentDropDown()->toArray();                        
 			if ($business_info) {
 				return view('backend.app.company_details')
 						->with(['business_info'=>$business_info, 'states'=>$states, 'product_ids'=> $product_ids])
@@ -141,6 +141,13 @@ class ApplicationController extends Controller
 			$business_info = $this->appRepo->updateCompanyDetail($arrFileData, $bizId, Auth::user()->user_id);
 
 			if ($business_info) {
+                                //Update Anchor Pan and Biz Id
+                                $appData = $this->appRepo->getAppData($appId);
+                                $arrAnchUser=[];
+                                $arrAnchUser['pan_no'] = $arrFileData['biz_pan_number'];
+                                $arrAnchUser['biz_id'] = $bizId;                                     
+                                $this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => $appData->user_id]); 
+
 				Session::flash('message',trans('success_messages.update_company_detail_successfully'));
 				return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId]);
 			} else {
@@ -1061,7 +1068,10 @@ class ApplicationController extends Controller
 		$constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
 		$segmentList = $this->appRepo->getSegmentDropDown()->toArray();
 
-		return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList', 'segmentList']));
+                $anchUserData = $this->userRepo->getAnchorUserData(['user_id' => $userId]);        
+                $pan = isset($anchUserData[0]) ? $anchUserData[0]->pan_no : '';
+        
+		return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList', 'segmentList', 'pan']));
 	}
 
 	/**

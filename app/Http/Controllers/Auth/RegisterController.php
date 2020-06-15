@@ -112,10 +112,35 @@ use RegistersUsers,
             $detailArr['created_by'] = $userDataArray->user_id;
             $this->userRepo->saveUserDetails($detailArr);
             if (isset($data['anch_user_id']) && !empty($data['anch_user_id'])) {
+                
+                //Associate Business
+                //$bizData = $this->application->getBizDataByPan($data['pan_no']);
+                //if (isset($bizData[0])) {
+                //    $bizId = $bizData[0]->biz_id;
+                //} else {
+                    /*
+                    $insBizData=[];
+                    $insBizData['user_id'] = $userDataArray->user_id;
+                    $newBizData = $this->application->createBusiness($insBizData);
+                    $bizId = $newBizData->biz_id;
+
+                    $bizPanGstArrData=[];
+                    $bizPanGstArrData['user_id']= $userDataArray->user_id;
+                    $bizPanGstArrData['biz_id'] = $bizId;
+                    $bizPanGstArrData['type']   = 1;
+                    $bizPanGstArrData['pan_gst_hash'] = $data['pan_no'];
+                    $this->appRepo->saveBizPanGstData($bizPanGstArrData);
+                     * 
+                     */
+                    //$bizId = null;
+                //}
+            
+            
                 $arrAnchUser['is_registered']=1;
                 $arrAnchUser['token']='';
                 $arrAnchUser['user_id']=$detailArr['user_id'];
                 $arrAnchUser['pan_no']=$data['pan_no'];
+                //$arrAnchUser['biz_id']=$bizId;
                 $arrAnchUser['anchor_id']=$data['h_anchor_id'];
                 //$anchId=$this->userRepo->getAnchorUsersByEmail($userDataArray->email);            
                 $this->userRepo->updateAnchorUser($data['anch_user_id'], $arrAnchUser);
@@ -134,7 +159,7 @@ use RegistersUsers,
                      $this->userRepo->createLeadAssign($arrLeadAssingData);
             
             //Add application workflow stages
-            Helpers::addWfAppStage('new_case', $userDataArray->user_id);
+            Helpers::addWfAppStage('new_case', $userDataArray->user_id);                          
         }
         return $userDataArray;
     }
