@@ -59,7 +59,7 @@ class DataRenderer implements DataProviderInterface
     public function getUsersList(Request $request, $user)
     {
         return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned'])
+                ->rawColumns(['id', 'checkbox', 'anchor', 'action', 'email','assigned'])
                 ->addColumn(
                     'id',
                     function ($user) {
@@ -86,8 +86,14 @@ class DataRenderer implements DataProviderInterface
                     'anchor',
                     function ($user) {                    
                     if($user->UserAnchorId){
-                      $userInfo=User::getUserByAnchorId((int) $user->UserAnchorId);
-                       $achorId= $userInfo->f_name.' '.$userInfo->l_name;
+                       //$userInfo=User::getUserByAnchorId((int) $user->UserAnchorId);
+                       //$achorId= $userInfo->f_name.' '.$userInfo->l_name;
+			$userInfo=AnchorUser::getAnchorsByUserId($user->user_id);
+                        $achorId='';
+                        foreach($userInfo as $userObj) {
+                            $achorId .= ($userObj)? ucwords($userObj->comp_name) : 'NA';
+                            $achorId .= '<br>';
+                        }
                     }else{
                       $achorId='N/A';  
                     }
@@ -183,7 +189,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
+                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','assoc_anchor', 'contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -253,8 +259,14 @@ class DataRenderer implements DataProviderInterface
                     /////return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
                     
                     if($app->anchor_id){
-                       $userInfo = User::getUserByAnchorId((int) $app->anchor_id);
-                       $achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                       //$userInfo = User::getUserByAnchorId((int) $app->anchor_id);
+                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                        $userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
+                        $achorName='';
+                        foreach($userInfo as $user) {
+                            $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
+                            $achorName .= '<br>';
+                        }                        
                     } else {
                        $achorName='';  
                     }                    
@@ -416,7 +428,7 @@ class DataRenderer implements DataProviderInterface
     public function getFiRcuAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action', 'status'])
+                ->rawColumns(['app_id', 'action','assoc_anchor', 'status'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -448,8 +460,15 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                       $userInfo=User::getUserByAnchorId((int)$app->anchor_id);
-                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                       //$userInfo=User::getUserByAnchorId((int)$app->anchor_id);
+                       //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+			$userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
+                        $achorName='';
+                        foreach($userInfo as $user) {
+                            $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
+                            $achorName .= '<br>';
+                        }
+                         
                     }else{
                       $achorName='';  
                     }                    
@@ -545,10 +564,10 @@ class DataRenderer implements DataProviderInterface
                          //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
                          $userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
                          $achorName='';
-                       foreach($userInfo as $user) {
-                       $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
-                       $achorName .= '<br>';
-                       }
+                        foreach($userInfo as $user) {
+                            $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
+                            $achorName .= '<br>';
+                        }
                     }else{
                       $achorName='';  
                     }                    
@@ -1967,7 +1986,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppLicationPool(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'contact','action','name'])
+                ->rawColumns(['app_id', 'contact','assoc_anchor','action','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -2003,8 +2022,15 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {
                     if($app->anchor_id){
-                       $userInfo = User::getUserByAnchorId($app->anchor_id);
-                       $achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                       //$userInfo = User::getUserByAnchorId($app->anchor_id);
+                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+			$userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
+                        $achorName='';
+                        foreach($userInfo as $user) {
+                            $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
+                            $achorName .= '<br>';
+                        }
+                        
                     } else {
                        $achorName='';  
                     }                    
@@ -4440,7 +4466,7 @@ class DataRenderer implements DataProviderInterface
     public function getColenderAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action', 'status'])
+                ->rawColumns(['app_id','assoc_anchor', 'action', 'status'])
                 ->addColumn('app_id', function ($app) {
                         $link = route('colender_view_offer', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
                         return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . \Helpers::formatIdWithPrefix($app->app_id, 'APP')  . "</a> ";
@@ -4469,8 +4495,14 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                    $userInfo=User::getUserByAnchorId((int)$app->anchor_id);
-                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                        //$userInfo=User::getUserByAnchorId((int)$app->anchor_id);
+                        //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+			$userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
+                        $achorName='';
+                        foreach($userInfo as $user) {
+                            $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
+                            $achorName .= '<br>';
+                        }
                     }else{
                       $achorName='';  
                     }                    
@@ -5620,7 +5652,7 @@ class DataRenderer implements DataProviderInterface
     public function getRenewalAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
+                ->rawColumns(['app_id','assignee', 'assigned_by','assoc_anchor', 'action','contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -5674,8 +5706,14 @@ class DataRenderer implements DataProviderInterface
                     /////return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
                     
                     if($app->anchor_id){
-                       $userInfo = User::getUserByAnchorId($app->anchor_id);
-                       $achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                       //$userInfo = User::getUserByAnchorId($app->anchor_id);
+                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+			$userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
+                        $achorName='';
+                        foreach($userInfo as $user) {
+                            $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
+                            $achorName .= '<br>';
+                        }                        
                     } else {
                        $achorName='';  
                     }                    
