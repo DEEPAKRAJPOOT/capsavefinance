@@ -57,6 +57,7 @@ class AnchorUser extends BaseModel {
         'name',
         'l_name',
         'biz_name',
+        'pan_no',
         'email',
         'phone',
         'user_type',
@@ -181,6 +182,7 @@ class AnchorUser extends BaseModel {
            return ($arrEmailUser ? $arrEmailUser : FALSE);
     }
     
+
     public function anchors(){
         return $this->hasMany('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');               
     }
@@ -199,5 +201,16 @@ class AnchorUser extends BaseModel {
             ->where('anchor_user.user_id', $userId)            
             ->get();            
            return ($anchors ? $anchors : []);
+    }
+    
+    /**
+     * function for get particular anchor detail using pan.
+     * @param type $pan
+     * @return type
+     */
+    public static function getAnchorByPan($pan){
+        $arrAnchorData = self::where('pan_no', '=', $pan)->first();
+        
+        return ($arrAnchorData ? $arrAnchorData : FALSE);
     }
 }

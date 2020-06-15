@@ -78,7 +78,7 @@ use RegistersUsers,
      * @return \App\User
      */
     protected function create(array $data) {
-
+//        dd($data);
         $arrData = [];
         $arrAnchUser=[];
         $arrDetailData = [];
@@ -91,6 +91,7 @@ use RegistersUsers,
         //$arrData['m_name'] = $data['m_name'];
         $arrData['l_name'] = $data['l_name'];
         $arrData['biz_name'] = $data['business_name'];
+//        $arrData['pan_no'] = $data['pan_no'];
         $arrData['email'] = $data['email'];
         $arrData['password'] = bcrypt($data['password']);
         $arrData['mobile_no'] = $data['mobile_no'];
@@ -113,7 +114,9 @@ use RegistersUsers,
             if (isset($data['anch_user_id']) && !empty($data['anch_user_id'])) {
                 $arrAnchUser['is_registered']=1;
                 $arrAnchUser['token']='';
-                $arrAnchUser['user_id']=$detailArr['user_id'];            
+                $arrAnchUser['user_id']=$detailArr['user_id'];
+                $arrAnchUser['pan_no']=$data['pan_no'];
+                $arrAnchUser['anchor_id']=$data['h_anchor_id'];
                 //$anchId=$this->userRepo->getAnchorUsersByEmail($userDataArray->email);            
                 $this->userRepo->updateAnchorUser($data['anch_user_id'], $arrAnchUser);
             }
@@ -247,6 +250,12 @@ use RegistersUsers,
             //dd($arrFileData);
             //echo "ddddssssd"; exit;
             //Saving data into database
+            $AnchorData = $this->userRepo->getAnchorByPan($arrFileData['pan_no']);
+//            dd($AnchorData,'fdfjk');
+            if($AnchorData && $AnchorData->pan_no){
+                $arrFileData['h_anchor_id'] = $AnchorData->anchor_id;
+            }
+//            dd($arrFileData);
             $user = $this->create($arrFileData);
             /// dd($user);
             if ($user) {

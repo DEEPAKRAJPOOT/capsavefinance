@@ -1679,11 +1679,15 @@ class UserRepository extends BaseRepositories implements UserInterface
            return   DB::table('app_product')->where(['app_id' => $appId,'product_id' =>3])->count();
         } catch (Exception $ex) {
            return $ex;
-        }
-     
+        }     
     }     
     
     public function getAnchorsByUserId($userId) {
         return AnchorUser::getAnchorsByUserId($userId);
+    }
+    
+    
+    public function getAnchorByPan($pan){
+        return AnchorUser::getAnchorByPan($pan);
     }    
 }
