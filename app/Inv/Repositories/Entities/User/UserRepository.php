@@ -1666,4 +1666,20 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getBusinessDetails($biz_id){
         return Business::find($biz_id);
     }
+    
+    /**
+     * check leasing product type
+     * 
+     * @return type mixed
+     */
+    public function checkLeasingProduct($appId)
+    {
+        try
+        {
+           return   DB::table('app_product')->where(['app_id' => $appId,'product_id' =>3])->count();
+        } catch (Exception $ex) {
+           return $ex;
+        }
+     
+    }     
 }

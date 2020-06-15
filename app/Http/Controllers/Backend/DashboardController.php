@@ -139,7 +139,7 @@ class DashboardController extends Controller
        $params = array (
            'http_header' => array(
                'timestamp' => date('Y-m-d H:i:s'),
-               'txn_id' => '111111jkkjkjk',
+               'txn_id' => $transId,
            ),
            'header' => array (
                'Maker_ID' => 'CAPSAVE.M',

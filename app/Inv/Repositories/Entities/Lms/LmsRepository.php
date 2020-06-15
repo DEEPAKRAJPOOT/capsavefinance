@@ -56,6 +56,7 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\ColenderShare;
+use App\Inv\Repositories\Models\Master\TallyEntry;
 use BlankDataExceptions;
 use InvalidDataTypeExceptions;
 
@@ -1388,6 +1389,14 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getEodDataCount()
     {
         return EodProcess::getEodDataCount();
+    }
+
+    public function postedTxnsInTally() {
+        return Transactions::postedTxnsInTally();
+    }
+
+    public function getActualTallyAmount() {
+       return TallyEntry::getActualPostedAmount();
     }    
 
     public function getAprvlRqUserByIds($ids = [])
