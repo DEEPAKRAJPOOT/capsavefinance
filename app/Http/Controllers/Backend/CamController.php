@@ -1691,11 +1691,12 @@ class CamController extends Controller
         $appType = $appData->app_type;
         $user = $appData->user;
         $user_type = $user->is_buyer;
-        $anchors = $user->anchors;
+        //$anchors = $user->anchors;               
+        $anchors = $this->userRepo->getAnchorsByUserId($user->user_id);
         $anchorArr=[];
         foreach($anchors as $anchor){
           array_push($anchorArr, $anchor->anchor_id);
-        }
+        }                        
         $anchorPrgms = $this->appRepo->getPrgmsByAnchor($anchorArr, $user_type);
       } else {
         $appType = '';

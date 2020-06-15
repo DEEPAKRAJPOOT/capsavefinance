@@ -180,4 +180,16 @@ class AnchorUser extends BaseModel {
             ->first();
            return ($arrEmailUser ? $arrEmailUser : FALSE);
     }
+    
+    public function anchors(){
+        return $this->hasMany('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');               
+    }
+    
+    public static function getAnchorsByUserId($userId) {
+        $anchors = self::select('anchor.*')
+            ->join('anchor', 'anchor_user.anchor_id', '=', 'anchor.anchor_id')
+            ->where('anchor_user.user_id', $userId)
+            ->get();
+           return ($anchors ? $anchors : []);
+    }
 }

@@ -1682,4 +1682,8 @@ class UserRepository extends BaseRepositories implements UserInterface
         }
      
     }     
+    
+    public function getAnchorsByUserId($userId) {
+        return AnchorUser::getAnchorsByUserId($userId);
+    }    
 }

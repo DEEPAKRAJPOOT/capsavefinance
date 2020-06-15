@@ -653,6 +653,10 @@ class User extends Authenticatable
     public function anchors(){
         return $this->hasMany('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');
     }
+    
+    public function anchorUsers(){
+        return $this->hasMany('App\Inv\Repositories\Models\AnchorUser', 'user_id', 'user_id');               
+    }    
 
     /**
      * Get Backend Users

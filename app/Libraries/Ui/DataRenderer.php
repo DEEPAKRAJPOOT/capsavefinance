@@ -18,6 +18,7 @@ use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\AnchorUser;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -507,7 +508,7 @@ class DataRenderer implements DataProviderInterface
     {
       
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action', 'status'])
+                ->rawColumns(['app_id', 'action', 'assoc_anchor', 'status'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -540,8 +541,14 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                    $userInfo=User::getUserByAnchorId((int) $app->anchor_id);
-                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                       //$userInfo=User::getUserByAnchorId((int) $app->anchor_id);
+                         //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                         $userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
+                         $achorName='';
+                       foreach($userInfo as $user) {
+                       $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
+                       $achorName .= '<br>';
+                       }
                     }else{
                       $achorName='';  
                     }                    

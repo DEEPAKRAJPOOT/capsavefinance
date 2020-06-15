@@ -251,7 +251,8 @@ trait ApplicationTrait
         $reviewerSummaryData = $this->appRepo->getReviewerSummaryData($appId, $bizId);
 
         $user = $this->appRepo->getAppData($appId)->user;
-        $anchors = $user->anchors;
+        //$anchors = $user->anchors;
+        $anchors = $this->userRepo->getAnchorsByUserId($user->user_id);
         $anchorArr=[];
         foreach($anchors as $anchor){
           $anchorArr[$anchor->anchor_id]  = $anchor->toArray();
