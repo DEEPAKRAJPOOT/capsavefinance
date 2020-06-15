@@ -76,7 +76,7 @@
                                             <span class="mandatory">*</span>
                                         </label>
                                         <input type="hidden" name="send_otp" id="send-otp" value="">
-                                        <input type="text" name="email" id="email" value="@if($anchorDetail){{$anchorDetail->email}}@else{{old('email')}}@endif" class="form-control" tabindex="4" placeholder="Email"  @if($anchorDetail) readonly @else @endif>
+                                        <input type="text" name="email" id="email" value="@if($anchorDetail){{$anchorDetail->email}}@else{{old('email')}}@endif" class="form-control" tabindex="4" placeholder="Email"  @if($anchorDetail)  @else @endif>
 
                                         <span class="text-danger error"> {{$errors->first('email')}} </span>
                                     </div>
@@ -195,19 +195,6 @@ var messages={
                 });
                 return this.optional(element) || (status === true);
             });
-
-            $('#email').on('blur', function (event) {                
-                $(".check_exist_user_pan").html("");
-                $(this).rules("add",
-                {
-                    required: true,
-                    email: true,
-                    isexistemail: true,
-                    messages:{'isexistemail' : "This email is already exist."}
-                });
-                
-                $('#registerForm').valid();
-            });
              
             $('#pan_no').on('blur', function (event) { 
                 $.ajax({
@@ -231,6 +218,7 @@ var messages={
                         }
                     }
                 });
+                
             });
             
             
@@ -258,15 +246,15 @@ var messages={
                         });
                 });
                 
-                $('input.email').each(function () {
-                    $(this).rules("add",
-                    {
-                        required: true,
-                        email: true,
-                        isexistemail: true,
-                        messages:{'isexistemail' : "This email is already exist."}
-                    });
-                });               
+                
+                $('#email').rules("add",
+                {
+                    required: true,
+                    email: true,
+                    isexistemail: true,
+                    messages:{'isexistemail' : "This email is already exist."}
+                });
+                               
                 
                 if (!$('#registerForm').valid()) {
                     return false;

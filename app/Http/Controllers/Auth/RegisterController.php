@@ -148,7 +148,7 @@ use RegistersUsers,
             
                 $arrAnchUser['is_registered']=1;
                 $arrAnchUser['token']='';
-                $arrAnchUser['user_id']=$detailArr['user_id'];
+                $arrAnchUser['user_id']=$userDataArray->user_id;
                 $arrAnchUser['pan_no']=$data['pan_no'];
                 //$arrAnchUser['biz_id']=$bizId;
                 $arrAnchUser['anchor_id']=$data['h_anchor_id'];
@@ -290,7 +290,7 @@ use RegistersUsers,
             if($AnchorData && $AnchorData->pan_no){                    
                 //$arrFileData['h_anchor_id'] = $AnchorData->anchor_id;                
             }          
-            dd($arrFileData);
+            
             $user = $this->create($arrFileData);
             /// dd($user);
             if ($user) {
@@ -708,8 +708,19 @@ use RegistersUsers,
             $result['status'] = false;
             $result['message'] = 'This email is already exists';
             return response()->json($result);
+        } else {        
+            $whereCond=[];       
+            $whereCond[] = ['email', '=', $email];
+            $whereCond[] = ['pan_no', '!=', $pan];
+            $whereCond[] = ['is_registered', '=', '1'];
+            $AnchorData = $this->userRepo->getAnchorUserData($whereCond);             
+            if (isset($AnchorData[0])) {                
+                $result['validate'] = 1;
+                $result['status'] = false;
+                $result['message'] = 'This email is already exists';
+                return response()->json($result);
+            }
         }
-        
         
         $whereCond=[];
         $whereCond[] = ['pan_no', '=', $pan];         
@@ -718,6 +729,7 @@ use RegistersUsers,
         $whereCond[] = ['is_registered', '=', '1'];
         $AnchorData = $this->userRepo->getAnchorUserData($whereCond);        
         if (!empty($pan) && isset($AnchorData[0])) {
+            $result['validate'] = '0';
             $result['message'] = 'You are already exist with another anchor, if you register, you will also associate with this anchor, use the old credentials to login.';
             return response()->json($result);
         }

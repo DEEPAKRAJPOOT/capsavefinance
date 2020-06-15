@@ -61,10 +61,10 @@
                                                 <th>Sr.No.</th>
                                                 <th>Name</th>
                                                 <th>Business Name</th>
-                                                <!--<th>PAN No.</th>-->
+                                                <th>PAN No.</th>
                                                 <th>Email</th>
                                                 <th>Mobile</th>
-<!--                                                <th>Anchor</th>-->
+                                                <th>Anchor</th>
                                                 <th>Created At</th>
                                                  <th>Status</th>
                                             </tr>

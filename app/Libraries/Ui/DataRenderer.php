@@ -19,6 +19,7 @@ use App\Inv\Repositories\Models\Master\DoaLevelRole;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AnchorUser;
+use App\Inv\Repositories\Models\Anchor;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -2211,7 +2212,7 @@ class DataRenderer implements DataProviderInterface
     {
         
         return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned', 'status'])
+                ->rawColumns(['id', 'checkbox', 'action', 'assoc_anchor', 'email','assigned', 'status'])
                 ->addColumn(
                     'id',
                     function ($user) {
@@ -2234,12 +2235,12 @@ class DataRenderer implements DataProviderInterface
                     return $biz_name;
 
                 })
-//                ->editColumn(
-//                    'pan_no',
-//                    function ($user) {
-//                    $pan_no = ($user->pan_no) ? $user->pan_no : '';
-//                    return $pan_no;
-//                })
+                ->editColumn(
+                    'pan_no',
+                    function ($user) {
+                    $pan_no = ($user->pan_no) ? $user->pan_no : '';
+                    return $pan_no;
+                })
                 ->editColumn(
                     'email',
                     function ($user) {
@@ -2252,6 +2253,27 @@ class DataRenderer implements DataProviderInterface
                     $achorId = $user->phone; 
                     return $achorId;
                 })
+                ->addColumn(
+                    'assoc_anchor',
+                    function ($user) {
+                    if($user->anchor_id){
+                       //$userInfo = User::getUserByAnchorId($app->anchor_id);
+                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+			//$userInfo=AnchorUser::getAnchorsByUserId($user->user_id);
+                        $userInfo=Anchor::getAnchorById($user->anchor_id);
+                        $achorName='';
+                        //foreach($userInfo as $usr) {
+                        if($userInfo) {
+                            $achorName = ($userInfo)? ucwords($userInfo->comp_name) : 'NA';
+                            //$achorName .= '<br>';
+                        }
+                        
+                    } else {
+                       $achorName='';  
+                    }                    
+                    return $achorName;
+                    
+                })                
                 ->editColumn(
                     'created_at',
                     function ($user) {
