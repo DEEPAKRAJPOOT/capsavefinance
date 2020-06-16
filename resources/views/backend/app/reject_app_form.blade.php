@@ -15,6 +15,23 @@ Form::open(
 !!}
 <div class="row">
     <div class="col-md-12">
+        <label for="reason"> Status
+                <span class="mandatory">*</span>
+        </label>
+        <div class="form-group form-check form-check-inline">
+            <input type="radio" class="form-check-input" id="status1" name="status" value="1">
+            <label class="form-check-label" for="status1">Reject</label>
+            <input type="radio" class="form-check-input" id="status2" name="status" value="2">
+            <label class="form-check-label" for="status2">Cancel</label>
+            <input type="radio" class="form-check-input" id="status3" name="status" value="3">
+            <label class="form-check-label" for="status3">Hold</label>
+            <input type="radio" class="form-check-input" id="status4" name="status" value="4">
+            <label class="form-check-label" for="status4">Data Pending</label>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
         <div class="form-group">
             <label for="reason"> Decline Reason
                 <span class="mandatory">*</span>
