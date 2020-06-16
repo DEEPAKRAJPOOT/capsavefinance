@@ -422,8 +422,8 @@ class LeadController extends Controller {
             $arrUpdateAnchor = [];
             foreach ($rowData as $key => $value) {
                 
-                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
-                if(!empty($value) && !$anchUserInfo){
+                //$anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
+                //if(!empty($value) && !$anchUserInfo){
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
                     if(trim($value[5])=='Buyer'){
@@ -462,7 +462,7 @@ class LeadController extends Controller {
                     Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
                 }
           }
-            }
+            //}
             //chmod($destinationPath . '/' . $fileName, 0775, true);
             unlink($destinationPath . '/' . $fileName);
             Session::flash('message', trans('backend_messages.anchor_registration_success'));
