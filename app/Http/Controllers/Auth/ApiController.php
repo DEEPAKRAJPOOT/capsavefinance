@@ -731,6 +731,7 @@ class ApiController
     		$err_code = $postdata['errorCode'];
     		$err_msg = $postdata['errorMessage'];
     		if (strtolower($status) != 'completed') {
+          $err_detail = $postdata['financialYearErrorDetails'];
     			$response['message'] =  $err_msg ?? "Some error occured.";
     			return print(json_encode($response));
     		}
