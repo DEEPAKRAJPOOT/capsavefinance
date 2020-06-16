@@ -92,10 +92,12 @@ class EodProcessController extends Controller {
                         $this->lmsRepo->saveEodProcessLog($logData);                    
                     }
                     $response = true;
+                }else{
+                    $response = false;
                 }
+            }else{
                 $response = false;
             }
-            $response = false;
 
             if($cLogDetails){
                 Helper::cronLogEnd('1',$cLogDetails->cron_log_id);
