@@ -74,7 +74,7 @@ class EodProcessController extends Controller {
                 \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.CHARGE_POST'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
                 \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.OVERDUE_INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
                 \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL_BLOCK'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
-                // \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.RUNNING_TRANS_POSTING_SETTLED'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
+                // \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.is_running_trans_settled'), config('lms.EOD_PASS_STATUS'), $eod_process_id);
             
                 $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id]);
                 if($eodDetails && $eodDetails->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')){
@@ -288,7 +288,7 @@ class EodProcessController extends Controller {
         } else {
             $status = config('lms.EOD_FAIL_STATUS'); 
         }
-        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.RUNNING_TRANS_POSTING_SETTLED'), $status, $eod_process_id);
+        \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.is_running_trans_settled'), $status, $eod_process_id);
         return $result;
     }
 }

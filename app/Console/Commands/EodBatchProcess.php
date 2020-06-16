@@ -61,7 +61,7 @@ class EodBatchProcess extends Command
                             throw new \Exception('Overdue Interest Accrual Status  Failed!');  
                         if($eodLog->disbursal_block_status == '2')
                             throw new \Exception('Disbursal Block Status  Failed!');  
-                        if($eodLog->running_trans_posting_settled == '2')
+                        if($eodLog->is_running_trans_settled == '2')
                             throw new \Exception('Manually Posted Running Transaction Status  Failed!'); 
                     }else{
                         throw new \Exception("Active EOD log missing");    

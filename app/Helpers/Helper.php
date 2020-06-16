@@ -1486,7 +1486,7 @@ class Helper extends PaypalHelper
                     $statusArr[] = $eodLog->charge_post_status;
                     $statusArr[] = $eodLog->overdue_int_accrual_status;
                     $statusArr[] = $eodLog->disbursal_block_status;
-                    $statusArr[] = $eodLog->running_trans_posting_settled;
+                    $statusArr[] = $eodLog->is_running_trans_settled;
                     $eod_status = in_array(2, $statusArr) ? config('lms.EOD_PROCESS_STATUS.FAILED') : (in_array(0, $statusArr) ? '' : config('lms.EOD_PROCESS_STATUS.COMPLETED'));
                 }
             }
@@ -1672,7 +1672,8 @@ class Helper extends PaypalHelper
         $currentTimestamp = Carbon::now()->format('Y-m-d');
         $cronLogDetails = CronLog::where('cron_id','2')->whereDate('exec_start_at',$currentTimestamp)
         ->orderBy('cron_log_id','DESC')->first();
-        if($cronLogDetails){
+
+        if($cronLogDetails && !self::checkEodProcess()){
             return true;
         } 
         return false;
