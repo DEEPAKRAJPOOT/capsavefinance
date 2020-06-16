@@ -1147,5 +1147,9 @@ Route::group(
         ]
     );
 
-
+    Route::post('check-exist-anchor-lead',[
+        'as' => 'check_exist_anchor_lead',
+        'uses' => 'AjaxController@checkExistAnchorLead'
+        ]
+    );  
 });

@@ -144,7 +144,7 @@ class ApplicationController extends Controller
                                 //Update Anchor Pan and Biz Id
                                 $appData = $this->appRepo->getAppData($appId);
                                 $arrAnchUser=[];
-                                $arrAnchUser['pan_no'] = $arrFileData['biz_pan_number'];
+                                //$arrAnchUser['pan_no'] = $arrFileData['biz_pan_number'];
                                 $arrAnchUser['biz_id'] = $bizId;                                     
                                 $this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => $appData->user_id]); 
 

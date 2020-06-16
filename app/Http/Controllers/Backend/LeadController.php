@@ -424,9 +424,17 @@ class LeadController extends Controller {
                 
                 //$anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
                 //if(!empty($value) && !$anchUserInfo){
+            if (!empty($request->post('assigned_anchor'))){
+                $anchorId = $request->post('assigned_anchor');
+            } else {
+                $anchorId = Auth::user()->anchor_id;
+            }
+            
             $whereCond=[];
-            $whereCond[] = ['email', '=', trim($value[3])];        
-            $whereCond[] = ['is_registered', '!=', '1'];
+            $whereCond[] = ['email', '=', trim($value[3])];     
+            $whereCond[] = ['anchor_id', '=', $anchorId];
+            $whereCond[] = ['anchor_id', '>', '0'];
+            //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
             if (!isset($anchUserData[0])) {
                 $hashval = time() . 'ANCHORLEAD' . $key;
@@ -448,9 +456,10 @@ class LeadController extends Controller {
                     'is_registered'=>0,
                     'registered_type'=>1,
                     'token' => $token,
+                    'anchor_id' => $anchorId
                 ];
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
-                
+                /*
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
                 if($getAnchorId && $getAnchorId->anchor_id!=''){
                 $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
@@ -458,6 +467,7 @@ class LeadController extends Controller {
                  $arrUpdateAnchor ['anchor_id'] =$request->post('assigned_anchor');
                 }
                $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
+                */
                 
                 if ($anchor_lead) {
                     $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
@@ -645,15 +655,24 @@ class LeadController extends Controller {
     public function saveManualAnchorLead(Request $request){
        try {
             $arrAnchorVal = $request->all();    
-//            dd($arrAnchorVal);
-            //$anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
+//            dd($arrAnchorVal);            
+                            
+            if (!empty($arrAnchorVal['assigned_anchor'])){
+                $anchorId = $arrAnchorVal['assigned_anchor'];
+            } else {
+                $anchorId = Auth::user()->anchor_id;
+            }
+            
+            //$anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));                        
             $arrUpdateAnchor =[];
             //if(!$anchUserInfo){
             $whereCond=[];
-            $whereCond[] = ['email', '=', trim($arrAnchorVal['email'])];        
-            $whereCond[] = ['is_registered', '!=', '1'];
+            $whereCond[] = ['email', '=', trim($arrAnchorVal['email'])];
+            $whereCond[] = ['anchor_id', '=', $anchorId];
+            $whereCond[] = ['anchor_id', '>', '0'];
+            //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
-            if (!isset($anchUserData[0])) {            
+            if (!isset($anchUserData[0])) {  
                 $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
                 $token = md5($hashval);
                 $arrAnchorData = [
@@ -669,9 +688,11 @@ class LeadController extends Controller {
                     'created_by' => Auth::user()->user_id,
                     'created_at' => \Carbon\Carbon::now(),
                     'token' => $token,
+                    'anchor_id' => $anchorId
                 ];
             
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
+                /*
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
             
                 if($getAnchorId && $getAnchorId->anchor_id!=''){
@@ -682,6 +703,8 @@ class LeadController extends Controller {
             
             
                 $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
+                 * 
+                 */
                 if($anchor_lead) {
                     $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
                     $anchLeadMailArr['name'] = trim($arrAnchorData['name']);

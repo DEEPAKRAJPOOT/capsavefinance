@@ -156,7 +156,8 @@ $messages = session()->get('message', false);
 
     var messages = {
         //get_lead: "{{ URL::route('get_lead') }}",
-        check_exist_email: "{{ URL::route('check_exist_email') }}",
+        //check_exist_email: "{{ URL::route('check_exist_email') }}",
+        check_exist_email: "{{ URL::route('check_exist_anchor_lead') }}",        
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
@@ -214,10 +215,11 @@ $messages = session()->get('message', false);
                     cache: false,
                     data: {
                         'email' : email,
+                        anchor_id : $("#assigned_anchor").val(),
                         '_token' : messages.token
                     },
                     success: function(response){
-                       if(response['status'] === 'true'){
+                       if(response['status'] === true){
                           status = true;
                       }
                     }
@@ -225,7 +227,12 @@ $messages = session()->get('message', false);
                 return this.optional(element) || (status === true);
             });
             
-            $('#saveAnch').on('click', function (event) {
+            $("#email").on('blur', function(){
+                $(this).rules('remove', 'isexistemail');
+            });
+            
+            //$('#saveAnch').on('click', function (event) {
+            $('#anchorForm').on('submit', function (event) {
                 $('input.f_name').each(function () {
                     $(this).rules("add",
                             {
@@ -259,15 +266,15 @@ $messages = session()->get('message', false);
 //                            messages: {'panValidator': 'Please enter correct PAN No.'}
 //                        })
 //                });
-                $('input.email').each(function () {
-                    $(this).rules("add",
+                //$('input.email').each(function () {
+                    $("#email").rules("add",
                     {
                         required: true,
                         email: true,
-                        //isexistemail: true,
+                        isexistemail: true,
                         messages:{'isexistemail' : "This email is already exist."}
                     });
-                });
+                //});
                 $('input.phone').each(function () {
                     $(this).rules("add",
                             {
@@ -311,6 +318,11 @@ $messages = session()->get('message', false);
                 });                
                 
                 // test if form is valid                
+                if (!$('#anchorForm').valid()) {
+                    return false;
+                }
+                
+                return true;                
             })
             //$("#btnAddMore").on('click', addInput);
             $('form#anchorForm').validate();

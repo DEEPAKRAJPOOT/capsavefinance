@@ -221,6 +221,9 @@ var messages={
                 
             });
             
+            $("#email").on('blur', function(){
+                $(this).rules('remove', 'isexistemail');
+            });
             
             $('#registerForm').on('submit', function (event) {
                 
