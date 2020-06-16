@@ -1922,7 +1922,8 @@ class ApplicationController extends Controller
                 }else{
                     $appStatus .= 'APP_DATA_PENDING';
                 }
-                
+                $fgfs = (int) config('common.mst_status_id')['APP_CANCEL'];
+                dd($fgfs);
                 $noteData = [
                         'app_id' => $app_id, 
                         'note_data' => $reason,
