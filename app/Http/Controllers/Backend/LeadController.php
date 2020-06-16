@@ -424,6 +424,11 @@ class LeadController extends Controller {
                 
                 //$anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
                 //if(!empty($value) && !$anchUserInfo){
+            $whereCond=[];
+            $whereCond[] = ['email', '=', trim($value[3])];        
+            $whereCond[] = ['is_registered', '!=', '1'];
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+            if (!isset($anchUserData[0])) {
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
                     if(trim($value[5])=='Buyer'){
@@ -462,7 +467,7 @@ class LeadController extends Controller {
                     Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
                 }
           }
-            //}
+            }
             //chmod($destinationPath . '/' . $fileName, 0775, true);
             unlink($destinationPath . '/' . $fileName);
             Session::flash('message', trans('backend_messages.anchor_registration_success'));
@@ -644,6 +649,11 @@ class LeadController extends Controller {
             //$anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
             $arrUpdateAnchor =[];
             //if(!$anchUserInfo){
+            $whereCond=[];
+            $whereCond[] = ['email', '=', trim($arrAnchorVal['email'])];        
+            $whereCond[] = ['is_registered', '!=', '1'];
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+            if (!isset($anchUserData[0])) {            
                 $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
                 $token = md5($hashval);
                 $arrAnchorData = [
@@ -682,10 +692,10 @@ class LeadController extends Controller {
                     Session::flash('operation_status',1);
                     return redirect()->route('get_anchor_lead_list');
                 }
-            //}else{
-            //    Session::flash('error', trans('error_messages.email_already_exists'));
-            //    return redirect()->back()->withInput();
-            //}
+            }else{
+                Session::flash('error', trans('error_messages.email_already_exists'));
+                return redirect()->back()->withInput();
+            }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
