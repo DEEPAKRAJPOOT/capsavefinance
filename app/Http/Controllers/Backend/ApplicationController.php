@@ -1882,6 +1882,70 @@ class ApplicationController extends Controller
 		}
 	}
 
-    
+    /**
+	 * Reject application
+	 * 
+	 * @param Request $request
+	 * @return view
+	 */
+	public function rejectApp(Request $request) {
+		$app_id = $request->get('app_id');
+		$biz_id = $request->get('biz_id');        
+		$user_id = $request->get('user_id');
+		return view('backend.app.reject_app_form')
+				->with('app_id', $app_id)
+				->with('biz_id', $biz_id)
+                                ->with('user_id', $user_id);
+	}
+        
+    /**
+	 * Save application rejection
+	 * 
+	 * @param Request $request
+	 * @return view
+	 */    
+	public function saveAppRejection(Request $request) {
+            try {
+                $app_id = $request->get('app_id');
+                $biz_id = $request->get('biz_id');
+                $user_id = $request->get('user_id');
+                $reason = $request->get('reason');
+                $noteData = [
+                        'app_id' => $app_id, 
+                        'note_data' => $reason,
+                        'created_at' => \Carbon\Carbon::now(),
+                        'created_by' => \Auth::user()->user_id
+                ];     
+
+
+	$result = $this->appRepo->saveAppNote($noteData)->latest()->first()->toArray();
+//                dd($result);;
+                if($result){
+                    $appStatusData = [
+                        'app_id' => $app_id,
+                        'user_id' => $user_id,
+                        'note_id' => $result['note_id'],
+                        'status_id' => (int) config('common.mst_status_id')['APP_REJECTED'],
+                        'created_at' => $result['created_at'],
+                        'created_by' => \Auth::user()->user_id
+                    ];
+//                    dd($appStatusData);
+                    $status = $this->appRepo->saveAppStatusLog($appStatusData);
+                    
+                    $arrUpdateApp=[
+			'curr_status_id'=>(int) config('common.mst_status_id')['APP_REJECTED'],
+                    ];
+			
+                    $appStatus = $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);
+//                    dd($status);
+                }
+                
+                Session::flash('message',trans('backend_messages.reject_app'));
+                //return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
+                return redirect()->route('application_list');
+            } catch (Exception $ex) {
+                    return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
+	}
     
 }
