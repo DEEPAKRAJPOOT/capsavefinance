@@ -372,10 +372,8 @@ class DataRenderer implements DataProviderInterface
                         }
                         
                         //Route for Application Rejection
-                        if ($app->curr_status_id === null && $app->curr_status_id !== config('common.mst_status_id')['APP_REJECTED']) {
-                           //if(Helpers ::checkPermission('add_app_note')){
-                                $act = $act . '<a title="Reject Application" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'user_id' => $app->user_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
-                            //}                            
+                        if (Helpers ::checkPermission('reject_app') && ($app->curr_status_id === null && $app->curr_status_id !== config('common.mst_status_id')['APP_REJECTED'])) {
+                           $act = $act . '<a title="Reject Application" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'user_id' => $app->user_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
                         }else{
                             $act = $app->reason;
                         }
