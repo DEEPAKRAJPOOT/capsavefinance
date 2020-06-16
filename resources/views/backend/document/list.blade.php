@@ -90,7 +90,7 @@
                                         <td width="20%"> {{ (isset($value->userFile->file_name)) ? $value->userFile->file_name : ''}} </td>
                                         <td width="20%"> {{ (isset($value->created_at)) ? date('d-m-Y', strtotime($value->created_at)) : ''}} </td>
                                         <td width="20%"> {{ (isset($value->comment)) ? $value->comment : ''}} </td>
-                                        <td width="20%"><a title="Download Document" href="{{ Storage::url($value->userFile->file_path) }}" download="{{ $value->userFile->file_name }}"><i class="fa fa-download"></i></a></td>
+                                        <td width="20%"><a title="Download Document" href="{{ route('download_storage_file', ['file_id' => $value->userFile->file_id ]) }}" ><i class="fa fa-download"></i></a></td>
                                         <td align="center" width="20%">
                                             @if( (request()->get('view_only') && in_array($data->ppDocument->doc_type_id, [2,3])) || ($data->ppDocument->doc_type_id == 4) )
                                             <a title="Delete Document" onclick="return confirm('Are you sure you want to delete this file?')" href="{{ Route('document_delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>

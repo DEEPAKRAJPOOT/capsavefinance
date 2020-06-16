@@ -843,7 +843,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {
                      $action ="";
                       if(($invoice->file_id != 0)) {
-                          $action .='<a href="'.Storage::URL($invoice->userFile->file_path).'" download ><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                          $action .='<a href="'.route('download_storage_file', ['file_id' => $invoice->userFile->file_id ]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
                          } else  {
                             /// return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
                            $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>
@@ -949,7 +949,7 @@ class DataRenderer implements DataProviderInterface
                      
                         $action ="";
                       if(($invoice->file_id != 0)) {
-                          $action .='<a href="'.Storage::URL($invoice->userFile->file_path).'" download ><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                          $action .='<a href="'.route('download_storage_file', ['file_id' => $invoice->userFile->file_id ]).'" ><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
                          } else  {
                             /// return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
                            $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>
@@ -2133,7 +2133,8 @@ class DataRenderer implements DataProviderInterface
                         $act .= "<a  data-toggle=\"modal\" data-target=\"#editAnchorFrm\" data-url =\"" . route('edit_anchor_reg', ['anchor_id' => $users->anchor_id]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Anchor Detail\"><i class=\"fa fa-edit\"></i></a>";
                      }
                      if(isset($users->file_path)){
-                        $act .= "<a  href=". Storage::url($users->file_path) ." class=\"btn btn-action-btn   btn-sm\" type=\"button\" target=\"blank\" title=\"View CAM\"> <i class=\"fa fa-eye\"></i></a>";
+                        $act .= "<a  href=". route('download_storage_file', ['file_id' => $users->file_id ]) ." class=\"btn btn-action-btn   btn-sm\" type=\"button\" target=\"blank\" title=\"View CAM\"> <i class=\"fa fa-eye\"></i></a>";
+                        // 
                      }
                      if(isset($users->bank_account_id)){
                         $act .= "<a  data-toggle=\"modal\" data-target=\"#edit_bank_account\" data-url =\"" . route('add_anchor_bank_account',['anchor_id' => $users->anchor_id,'bank_account_id'=>$users->bank_account_id]) . "\" data-height=\"475px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Bank Detail\"><i class=\"fa fa-plus-square\"></i></a>";
