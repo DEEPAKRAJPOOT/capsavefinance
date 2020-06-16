@@ -1918,8 +1918,7 @@ class ApplicationController extends Controller
                 ];     
 
 
-	$result = $this->appRepo->saveAppNote($noteData)->latest()->first()->toArray();
-//                dd($result);;
+                $result = $this->appRepo->saveAppNote($noteData)->latest()->first()->toArray();
                 if($result){
                     $appStatusData = [
                         'app_id' => $app_id,
@@ -1929,7 +1928,6 @@ class ApplicationController extends Controller
                         'created_at' => $result['created_at'],
                         'created_by' => \Auth::user()->user_id
                     ];
-//                    dd($appStatusData);
                     $status = $this->appRepo->saveAppStatusLog($appStatusData);
                     
                     $arrUpdateApp=[
@@ -1937,11 +1935,9 @@ class ApplicationController extends Controller
                     ];
 			
                     $appStatus = $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);
-//                    dd($status);
                 }
                 
                 Session::flash('message',trans('backend_messages.reject_app'));
-                //return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
                 return redirect()->route('application_list');
             } catch (Exception $ex) {
                     return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
