@@ -4459,7 +4459,7 @@ if ($err) {
         if(!\Helpers::getInterestAccrualCronStatus()){
             return response()->json(['status' => 3 , 'message'=>'Interest Accrual has not been calculated till date.']);
         }
-        if(!\Helpers::getEodProcessCronStatus()){
+        if(\Helpers::getEodProcessCronStatus()){
             return response()->json(['status' => 4 , 'message'=>'EOD is already run today.']);
         }
         if($eod_process_id){
