@@ -896,7 +896,7 @@ class ApiController
 
     private function _getBankReport($perfiostransactionid, $prolitus_txn, $appId) {
         $biz_perfios_id = $perfiostransactionid;
-        $perfios = new Perfios_lib();
+        $bsa = new Bsa_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
         $nameArr = $this->getLatestFileName($appId, 'banking', 'xlsx');
