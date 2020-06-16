@@ -46,6 +46,8 @@ class DisbursalBatch extends BaseModel {
 	protected $fillable = [
 		'batch_id',
 		'file_id',
+		'disbursal_api_log_id',
+		'batch_status',
 		'created_at',
 		'created_by',
 		'updated_at',

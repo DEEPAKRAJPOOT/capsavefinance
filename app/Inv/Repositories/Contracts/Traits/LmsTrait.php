@@ -1005,5 +1005,38 @@ trait LmsTrait
         $result = $this->lmsRepo->saveRefundData($saveRefundData);
         return $result;
     }
+
+    /**
+     * Prepare Disbursal Data
+     * 
+     * @param array $data
+     * @return mixed
+     */
+    protected function createDisbusalApiLogData($fileData, $response = [], $data = [])
+    {
+        /**
+        * disburseType = 1 for online and 2 for manually
+        */
+        $disbursalData = [];
+        
+        $disbursalData['disbursal_batch_id'] = $data['disbursal_batch_id'] ?? null;
+
+        $disbursalData['bank_type'] = $data['bank_type'] ?? null;
+        $disbursalData['txn_id'] = $response['header']['Tran_ID'] ?? null;
+        $disbursalData['enq_txn_id'] = $data['enq_txn_id'] ?? null;
+        $disbursalData['url'] = $response['url'] ?? null;
+        
+        $disbursalData['header'] = $response['http_header'] ?? null;
+        $disbursalData['req_text'] = $response['payload'] ?? null ;
+        $disbursalData['res_text'] = $response['response'] ?? null;
+        $disbursalData['file_id'] = $fileData['file_id'] ?? null;            
+        $disbursalData['status'] = ($response['header']['Status'] == 'Success') ? 1 : 0;
+
+        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                        
+        $disbursalData['created_by'] = Auth::user()->user_id;
+        $disbursalData['created_at'] = $curData;
+        return $disbursalData;
+    }
     
 }

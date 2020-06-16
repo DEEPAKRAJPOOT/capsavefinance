@@ -610,6 +610,7 @@ class InvoiceController extends Controller {
             $invoiceDisbursedIds = [];
             $disbursalIds = [];
             $disbursalData = [];
+            $otherData = [];
             $transId = _getRand(18);
 
             foreach ($supplierIds as $userid) {
@@ -680,7 +681,31 @@ class InvoiceController extends Controller {
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
                 if ($result['status'] == 'success') {
-                    $this->disburseTableInsert($exportData, $supplierIds, $allinvoices, $disburseType, $disburseDate);
+                    
+                    $fileDirPath = getPathByTxnId($transId);
+                    $time = date('y-m-d H:i:s');
+                    
+                    $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
+                    $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
+                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
+                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
+                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
+                    
+                    $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
+
+                    if(is_array($createOrUpdatefile)) {
+                        $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
+                    } else {
+                        $userFileSaved = $createOrUpdatefile->toArray();
+                    }
+                    
+                    $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
+                    $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result['result'], $otherData);
+                    $createDisbusalApiLog = $this->lmsRepo->saveUpdateDisbursalApiLog($disbusalApiLogData);
+                    if ($createDisbusalApiLog) {
+                        $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
+                    }
+                    $this->disburseTableInsert($exportData, $supplierIds, $allinvoices, $disburseType, $disburseDate, $disbursalApiLogId);
                 } else {
                     Session::flash('message',trans('backend_messages.disbursed_error'));
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors('message',trans('backend_messages.disbursed_error'));
@@ -694,19 +719,27 @@ class InvoiceController extends Controller {
         }             
     }
 
-    public function disburseTableInsert($exportData = [], $supplierIds = [], $allinvoices = [], $disburseType = null, $disburseDate) {
+    public function disburseTableInsert($exportData = [], $supplierIds = [], $allinvoices = [], $disburseType = null, $disburseDate, $disbursalApiLogId = null) {
         $totalInterest = 0;
         $totalMargin = 0;
         $batchId= _getRand(12);
         $creatorId = Auth::user()->user_id;
         $result = $this->export($exportData, $batchId);
         $file['file_path'] = $result['file_path'] ?? '';
+        $disbusalApiLogData = [];
+        $whereCondition = [];
+
         if ($file) {
             $createBatchFileData = $this->createBatchFileData($file);
             $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
             if ($createBatchFile) {
-                $createDisbursalBatch = $this->lmsRepo->createDisbursalBatch($createBatchFile, $batchId);
+                $createDisbursalBatch = $this->lmsRepo->createDisbursalBatch($createBatchFile, $batchId, $disbursalApiLogId);
                 $disbursalBatchId = $createDisbursalBatch->disbursal_batch_id;
+                if ($disbursalBatchId) {
+                    $disbusalApiLogData['disbursal_batch_id'] = $disbursalBatchId;
+                    $whereCondition['disbursal_api_log_id'] = $disbursalApiLogId;
+                    $createDisbusalApiLog = $this->lmsRepo->saveUpdateDisbursalApiLog($disbusalApiLogData, $whereCondition);
+                }
             }
         }
 

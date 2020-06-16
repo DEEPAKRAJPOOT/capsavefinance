@@ -32,6 +32,7 @@ use Illuminate\Http\File;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
 use Illuminate\Contracts\Support\Renderable;
 use ZanySoft\Zip\Zip;
+use App\Inv\Repositories\Models\UserFile;
 
 class Helper extends PaypalHelper
 {
@@ -1648,4 +1649,34 @@ class Helper extends PaypalHelper
      {
         return  Application::getDoAUsersByAppId($app_id);
      }
+
+    public static function uploadOrUpdateFileWithContent($active_filename_fullpath, $fileContents, $appendFlag = false) {
+        $diskStoragePath = Storage::disk('public');
+        $defaultPath = $diskStoragePath->path('');
+        $realPath = str_replace($defaultPath, '', $active_filename_fullpath);
+        if ($diskStoragePath->exists($active_filename_fullpath)) {
+            $fileContents = (is_array($fileContents)) ? json_encode($fileContents): $fileContents;
+            $isUpdated = $diskStoragePath->append($realPath, $fileContents);
+        } else {
+            $isSaved = $diskStoragePath->put($realPath, $fileContents);
+        }
+        if (isset($isSaved)) {
+            $mimetype = $diskStoragePath->getMimeType($realPath);
+            $metadata = $diskStoragePath->getMetaData($realPath);
+            $inputArr['file_path'] = $realPath;
+            $inputArr['file_type'] = $mimetype;
+            $inputArr['file_name'] = basename($realPath);
+            $inputArr['file_size'] = $metadata['size'];
+            $inputArr['file_encp_key'] =  md5('2');
+            $inputArr['created_by'] = 1;
+            $inputArr['updated_by'] = 1;
+            return $inputArr;
+        }
+        if (isset($isUpdated) && $appendFlag) {
+            $fileData = UserFile::where('file_path', $realPath)
+                ->first();
+            return $fileData ?? false;
+        }
+        return $isUpdated ? $isUpdated : $isSaved;
+    }
 }

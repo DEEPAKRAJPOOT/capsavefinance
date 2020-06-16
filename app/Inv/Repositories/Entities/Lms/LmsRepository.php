@@ -57,6 +57,7 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\Master\TallyEntry;
+use App\Inv\Repositories\Models\Lms\DisbursalApiLog;
 use BlankDataExceptions;
 use InvalidDataTypeExceptions;
 
@@ -744,11 +745,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     /**
      * create Disburse Api Log
      */
-    public static function createDisbursalBatch($file, $batchId = null)
+    public static function createDisbursalBatch($file, $batchId = null, $disbursalApiLogId = null)
     {   
         if (!empty($batchId)) {
-            $disburseBatch['batch_id'] = ($batchId) ?? $batchId;
+            $disburseBatch['batch_id'] = $batchId ?? null;
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
+            $disburseBatch['disbursal_api_log_id'] = $disbursalApiLogId ?? null;
+            $disburseBatch['batch_status'] = 1;
         }
         return DisbursalBatch::create($disburseBatch);
     }
@@ -1407,4 +1410,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     		return RefundReq::getAprvlRqUserByIds($ids);
     	}
     }
+
+    /**
+	 * Save or Update Disbursal Api Log
+	 * 
+	 * @param array $data
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public function saveUpdateDisbursalApiLog($data, $whereCondition=[])
+	{
+		return DisbursalApiLog::saveUpdateDisbursalApiLog($data, $whereCondition);
+	}
 }

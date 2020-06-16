@@ -169,4 +169,7 @@ return [
         'COMPLETED' => '40',
         'REVERT_BACK'=> '42'
     ],
+    'BANK_TYPE' => [
+        'IDFC' => '1'
+    ],
 ];

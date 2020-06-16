@@ -53,15 +53,6 @@ class Idfc_lib{
      	if ($getApiResponse) {
      		return [$txn_id, $payload, $http_header, $response['result']];
      	}
-     	logFile($url, 'D', '', '', $txn_id);
-		logFile($payload, 'D', '', '', $txn_id);
-		logFile($http_header, 'D', '', '', $txn_id);
-		logFile($response['result'], 'D', '', '', $txn_id);
-
-		// $file_name = md5($txn_id).'.txt';
-		// $this->_saveLogFile($payload, $file_name, 'Outgoing');
-		// die("here");
-     	// $this->_saveLogFile($response, $file_name, 'Incoming');
 
 		if (!empty($response['error_no'])) {
 			$resp['code'] 	 = "CurlError : " . $response['error_no'];
@@ -74,6 +65,11 @@ class Idfc_lib{
 			return $resp;
 		}
 		$result = $this->_parseResult($response['result'], $method);
+		$result['result']['url'] = $url;
+		$result['result']['payload'] = $payload;
+		$result['result']['http_header'] = $http_header;
+		$result['result']['response'] = $response['result'];
+
 		return $result;
     }
 
@@ -195,7 +191,10 @@ class Idfc_lib{
 	    }else{
 	    	$result['status'] = 'success';
 	    	$result['message'] = 'success';
-	    	$result['result'] = ['header'=> $header,'body'=> $body];
+	    	$result['result'] = [
+	    		'header'=> $header,
+	    		'body'=> $body
+	    		];
 	    }
 	    return $result;
     }
