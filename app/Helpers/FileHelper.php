@@ -101,9 +101,12 @@ class FileHelper {
             $file_name = "Report - " . _getRand(15).".xlsx";
         }
         $activeSheet = 0;
+        $lastkey = array_key_last($toExportData);
         $objPHPExcel = new PHPExcel();
-        $objPHPExcel->createSheet();
         foreach ($toExportData as $title => $data) {
+            if ($title != $lastkey) {
+                $objPHPExcel->createSheet();
+            }
             $rec_count = count($data[0]);
             $header_cols = array_keys($data[0]);
             $sheetTitle = $title;

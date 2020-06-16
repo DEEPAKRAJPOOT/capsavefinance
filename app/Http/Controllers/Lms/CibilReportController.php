@@ -14,6 +14,236 @@ class CibilReportController extends Controller
 	public function __construct(FileHelper $file_helper, InvLmsRepoInterface $lms_repo){
 		$this->fileHelper = $file_helper;
 		$this->lmsRepo = $lms_repo;
+
+    $this->cibilArray = [
+      'HD' => [
+          [
+          'Segment Identifier' => NULL,
+          'Member ID' => NULL,
+          'Previous Member ID' => NULL,
+          'Date of Creation & Certification of Input File' => NULL,
+          'Reporting / Cycle Date' => NULL,
+          'Information Type' => NULL,
+          'Filler' => NULL,
+          ]
+      ],
+      'BS' => [
+          [
+          'Segment Identifier' => NULL,
+          'Member Branch Code' => NULL,
+          'Previous Member Branch Code' => NULL,
+          'Borrower’s Name' => NULL,
+          'Borrower Short Name' => NULL,
+          'Company Registration Number' => NULL,
+          'Date of Incorporation' => NULL,
+          'PAN' => NULL,
+          'CIN' => NULL,
+          'TIN' => NULL,
+          'Service Tax #' => NULL,
+          'Other ID' => NULL,
+          'Borrower’s Legal Constitution' => NULL,
+          'Business Category' => NULL,
+          'Business/ Industry Type' => NULL,
+          'Class of Activity 1' => NULL,
+          'Class of Activity 2' => NULL,
+          'Class of Activity 3' => NULL,
+          'SIC Code' => NULL,
+          'Sales Figure' => NULL,
+          'Financial Year' => NULL,
+          'Number of Employees' => NULL,
+          'Credit  Rating' => NULL,
+          'Assessment Agency / Authority' => NULL,
+          'Credit Rating As On' => NULL,
+          'Credit Rating Expiry Date' => NULL,
+          'Filler' => NULL,
+          ]
+      ],
+      'AS' => [
+          [
+          'Segment Identifier' => NULL,
+          'Borrower Office Location Type' => NULL,
+          'Borrower Office DUNS Number' => NULL,
+          'Address Line 1' => NULL,
+          'Address Line 2' => NULL,
+          'Address Line 3' => NULL,
+          'City/Town' => NULL,
+          'District' => NULL,
+          'State/Union Territory' => NULL,
+          'Pin Code' => NULL,
+          'Country' => NULL,
+          'Mobile Number(s)' => NULL,
+          'Telephone Area Code' => NULL,
+          'Telephone Number(s)' => NULL,
+          'Fax Area Code' => NULL,
+          'Fax Number(s)' => NULL,
+          'Filler' => NULL,
+          ]
+      ],
+      'RS' => [
+          [
+          'Segment Identifier' => NULL,
+          'Relationship DUNS Number' => NULL,
+          'Related Type' => NULL,
+          'Relationship' => NULL,
+          'Business Entity Name' => NULL,
+          'Business Category' => NULL,
+          'Business / Industry Type' => NULL,
+          'Individual Name Prefix' => NULL,
+          'Full Name' => NULL,
+          'Gender' => NULL,
+          'Company Registration Number' => NULL,
+          'Date of Incorporation' => NULL,
+          'Date of Birth' => NULL,
+          'PAN' => NULL,
+          'Voter ID' => NULL,
+          'Passport Number' => NULL,
+          'Driving Licence ID' => NULL,
+          'UID' => NULL,
+          'Ration Card No' => NULL,
+          'CIN' => NULL,
+          'DIN' => NULL,
+          'TIN' => NULL,
+          'Service Tax #' => NULL,
+          'Other ID' => NULL,
+          'Percentage of Control' => NULL,
+          'Address Line 1' => NULL,
+          'Address Line 2' => NULL,
+          'Address Line 3' => NULL,
+          'City/Town' => NULL,
+          'District' => NULL,
+          'State/Union Territory' => NULL,
+          'Pin Code' => NULL,
+          'Country' => NULL,
+          'Mobile Number(s)' => NULL,
+          'Telephone Number(s)' => NULL,
+          'Telephone Area Code' => NULL,
+          'Fax Number(s)' => NULL,
+          'Fax Area Code' => NULL,
+          'Filler' => NULL,
+         ]
+      ],
+      'CR' => [
+          [
+          'Segment Identifier' => NULL,
+          'Account Number' => NULL,
+          'Previous Account Number' => NULL,
+          'Facility / Loan Activation / Sanction Date' => NULL,
+          'Sanctioned Amount/ Notional Amount of Contract' => NULL,
+          'Currency Code' => NULL,
+          'Credit Type' => NULL,
+          'Tenure / Weighted Average maturity period of Contracts' => NULL,
+          'Repayment Frequency' => NULL,
+          'Drawing Power' => NULL,
+          'Current   Balance / Limit Utilized /Mark to Market' => NULL,
+          'Notional Amount of Out-standing Restructured Contracts' => NULL,
+          'Loan Expiry / Maturity Date' => NULL,
+          'Loan Renewal Date' => NULL,
+          'Asset Classification/Days Past Due (DPD)' => NULL,
+          'Asset Classification Date' => NULL,
+          'Amount Overdue / Limit Overdue' => NULL,
+          'Overdue Bucket 01 ( 1 – 30 days)' => NULL,
+          'Overdue Bucket 02 ( 31 – 60 days)' => NULL,
+          'Overdue Bucket 03 ( 61 – 90 days)' => NULL,
+          'Overdue Bucket 04 (91 – 180 days)' => NULL,
+          'Overdue Bucket 05 (Above 180 days)' => NULL,
+          'High Credit' => NULL,
+          'Installment Amount' => NULL,
+          'Last Repaid Amount' => NULL,
+          'Account Status' => NULL,
+          'Account Status Date' => NULL,
+          'Written Off Amount' => NULL,
+          'Settled Amount' => NULL,
+          'Major reasons for Restructuring' => NULL,
+          'Amount of Contracts Classified as NPA' => NULL,
+          'Asset based Security coverage' => NULL,
+          'Guarantee Coverage' => NULL,
+          'Bank Remark Code' => NULL,
+          'Wilful Default Status' => NULL,
+          'Date Classified as Wilful Default' => NULL,
+          'Suit Filed Status' => NULL,
+          'Suit Reference Number' => NULL,
+          'Suit Amount in Rupees' => NULL,
+          'Date of Suit' => NULL,
+          'Dispute ID No.' => NULL,
+          'Transaction Type Code' => NULL,
+          'OTHER_BK' => NULL,
+          'UFCE (Amount)' => NULL,
+          'UFCE Date' => NULL,
+        ]
+      ],
+      'GS' => [
+          [
+          'Segment Identifier' => NULL,
+          'Guarantor DUNS Number' => NULL,
+          'Guarantor Type' => NULL,
+          'Business Category' => NULL,
+          'Business / Industry Type' => NULL,
+          'Guarantor Entity Name' => NULL,
+          'Individual Name Prefix' => NULL,
+          'Full Name' => NULL,
+          'Gender' => NULL,
+          'Company Registration Number' => NULL,
+          'Date of Incorporation' => NULL,
+          'Date of Birth' => NULL,
+          'PAN' => NULL,
+          'Voter ID' => NULL,
+          'Passport Number' => NULL,
+          'Driving Licence ID' => NULL,
+          'UID' => NULL,
+          'Ration Card No' => NULL,
+          'CIN' => NULL,
+          'DIN' => NULL,
+          'TIN' => NULL,
+          'Service Tax #' => NULL,
+          'Other ID' => NULL,
+          'Address Line 1' => NULL,
+          'Address Line 2' => NULL,
+          'Address Line 3' => NULL,
+          'City/Town' => NULL,
+          'District' => NULL,
+          'State/Union Territory' => NULL,
+          'Pin Code' => NULL,
+          'Country' => NULL,
+          'Mobile Number(s)' => NULL,
+          'Telephone Area Code' => NULL,
+          'Telephone Number(s)' => NULL,
+          'Fax Area Code' => NULL,
+          'Fax Number(s)' => NULL,
+          'Filler' => NULL,
+          ]
+      ],
+      'SS' => [
+         [
+          'Segment Identifier' => NULL,
+          'Value of Security' => NULL,
+          'Currency Type' => NULL,
+          'Type of Security' => NULL,
+          'Security Classification' => NULL,
+          'Date of Valuation' => NULL,
+          'Filler' => NULL,
+        ]
+      ],
+      'CD' => [
+          [
+          'Segment Identifier' => NULL,
+          'Date of Dishonour' => NULL,
+          'Amount' => NULL,
+          'Instrument / Cheque Number' => NULL,
+          'Number of times dishonoured' => NULL,
+          'Cheque Issue Date' => NULL,
+          'Reason for Dishonour' => NULL,
+          'Filler' => NULL,
+         ]
+      ],
+      'TS' => [
+          [
+          'Segment identifier' => NULL,
+          'Number of Borrower Segments' => NULL,
+          'Number of Credit Facility Segments' => NULL,
+          'Filler' => NULL,
+          ]
+      ]
+    ];
 	}
 
 	
@@ -59,12 +289,347 @@ class CibilReportController extends Controller
          ];
        }
        if (strtolower($request->type) == 'excel') {
+           $this->getCibilData();
            $toExportData['Cibil Report'] = $cibilArr;
            return $this->fileHelper->array_to_excel($toExportData);
        }
+       $this->saveCibilData();
        $pdfArr = ['pdfArr' => $cibilArr];
        $pdf = $this->fileHelper->array_to_pdf($pdfArr);
        return $pdf->download('CibilReport.pdf'); 
+    }
+
+    public function getCibilData() {
+      $userCibilData = [];
+      $cibilUserData = $this->lmsRepo->getCibilUserData();
+      foreach ($cibilUserData as $key => $cibilData) {
+        $ac_no = $cibilData->ac_no;
+        $segment_identifier = strtoupper($cibilData->segment_identifier);
+        $segment_data = json_decode($cibilData->segment_data, true);
+        $merge_segment = array_merge(['ac_no' => $ac_no], $segment_data);
+        $userCibilData[$segment_identifier][]  = array_merge($merge_segment, ['Final Formula' => implode('|', $merge_segment)]);
+      }
+      return $this->fileHelper->array_to_excel($userCibilData);
+    }
+
+    public function saveCibilData() {
+      $hd = $this->_getHDData();
+      $bs = $this->_getBSData();
+      $as = $this->_getASData();
+      $rs = $this->_getRSData();
+      $cr = $this->_getCRData();
+      $gs = $this->_getGSData();
+      $ss = $this->_getSSData();
+      $cd = $this->_getCDData();
+      $ts = $this->_getTSData();
+      dd(array_merge($hd,$bs,$as,$rs,$cr,$gs,$ss,$cd,$ts));
+    }
+
+    private function _getHDData() {
+      $data = [
+        'Segment Identifier' => 'HD',
+        'Member ID' => NULL,
+        'Previous Member ID' => NULL,
+        'Date of Creation & Certification of Input File' => NULL,
+        'Reporting / Cycle Date' => NULL,
+        'Information Type' => '01',
+        'Filler' => NULL,
+      ];
+      $hd[] = [
+        'ac_no' => '',
+        'segment_identifier' => $data['Segment Identifier'],
+        'segment_data' => json_encode($data),
+        'created_at' => '2020-06-05 12:15:35',
+        'created_by' => Auth::user()->user_id,
+      ];
+      return $hd;
+    }
+
+    private function _getBSData() {
+      $data = [
+          'Segment Identifier' => 'BS',
+          'Member Branch Code' => NULL,
+          'Previous Member Branch Code' => NULL,
+          'Borrower’s Name' => NULL,
+          'Borrower Short Name' => NULL,
+          'Company Registration Number' => NULL,
+          'Date of Incorporation' => NULL,
+          'PAN' => NULL,
+          'CIN' => NULL,
+          'TIN' => NULL,
+          'Service Tax #' => NULL,
+          'Other ID' => NULL,
+          'Borrower’s Legal Constitution' => NULL,
+          'Business Category' => NULL,
+          'Business/ Industry Type' => NULL,
+          'Class of Activity 1' => NULL,
+          'Class of Activity 2' => NULL,
+          'Class of Activity 3' => NULL,
+          'SIC Code' => NULL,
+          'Sales Figure' => NULL,
+          'Financial Year' => NULL,
+          'Number of Employees' => NULL,
+          'Credit  Rating' => NULL,
+          'Assessment Agency / Authority' => NULL,
+          'Credit Rating As On' => NULL,
+          'Credit Rating Expiry Date' => NULL,
+          'Filler' => NULL,
+      ];
+      $bs[] = [
+        'ac_no' => '',
+        'segment_identifier' => $data['Segment Identifier'],
+        'segment_data' => json_encode($data),
+        'created_at' => '2020-06-05 12:15:35',
+        'created_by' => Auth::user()->user_id,
+      ];
+      return $bs;
+    }
+
+    private function _getASData() {
+        $data = [
+          'Segment Identifier' => 'AS',
+          'Borrower Office Location Type' => NULL,
+          'Borrower Office DUNS Number' => NULL,
+          'Address Line 1' => NULL,
+          'Address Line 2' => NULL,
+          'Address Line 3' => NULL,
+          'City/Town' => NULL,
+          'District' => NULL,
+          'State/Union Territory' => NULL,
+          'Pin Code' => NULL,
+          'Country' => NULL,
+          'Mobile Number(s)' => NULL,
+          'Telephone Area Code' => NULL,
+          'Telephone Number(s)' => NULL,
+          'Fax Area Code' => NULL,
+          'Fax Number(s)' => NULL,
+          'Filler' => NULL,
+      ];
+      $as[] = [
+        'ac_no' => '',
+        'segment_identifier' => $data['Segment Identifier'],
+        'segment_data' => json_encode($data),
+        'created_at' => '2020-06-05 12:15:35',
+        'created_by' => Auth::user()->user_id,
+      ];
+      return $as;
+    }
+
+    private function _getRSData() {
+      $data = [
+          'Segment Identifier' => 'RS',
+          'Relationship DUNS Number' => NULL,
+          'Related Type' => NULL,
+          'Relationship' => NULL,
+          'Business Entity Name' => NULL,
+          'Business Category' => NULL,
+          'Business / Industry Type' => NULL,
+          'Individual Name Prefix' => NULL,
+          'Full Name' => NULL,
+          'Gender' => NULL,
+          'Company Registration Number' => NULL,
+          'Date of Incorporation' => NULL,
+          'Date of Birth' => NULL,
+          'PAN' => NULL,
+          'Voter ID' => NULL,
+          'Passport Number' => NULL,
+          'Driving Licence ID' => NULL,
+          'UID' => NULL,
+          'Ration Card No' => NULL,
+          'CIN' => NULL,
+          'DIN' => NULL,
+          'TIN' => NULL,
+          'Service Tax #' => NULL,
+          'Other ID' => NULL,
+          'Percentage of Control' => NULL,
+          'Address Line 1' => NULL,
+          'Address Line 2' => NULL,
+          'Address Line 3' => NULL,
+          'City/Town' => NULL,
+          'District' => NULL,
+          'State/Union Territory' => NULL,
+          'Pin Code' => NULL,
+          'Country' => NULL,
+          'Mobile Number(s)' => NULL,
+          'Telephone Number(s)' => NULL,
+          'Telephone Area Code' => NULL,
+          'Fax Number(s)' => NULL,
+          'Fax Area Code' => NULL,
+          'Filler' => NULL,
+      ];
+      $rs[] = [
+        'ac_no' => '',
+        'segment_identifier' => $data['Segment Identifier'],
+        'segment_data' => json_encode($data),
+        'created_at' => '2020-06-05 12:15:35',
+        'created_by' => Auth::user()->user_id,
+      ];
+      return $rs;
+    }
+
+
+    private function _getCRData() {
+      $data = [
+          'Segment Identifier' => 'CR',
+          'Account Number' => NULL,
+          'Previous Account Number' => NULL,
+          'Facility / Loan Activation / Sanction Date' => NULL,
+          'Sanctioned Amount/ Notional Amount of Contract' => NULL,
+          'Currency Code' => NULL,
+          'Credit Type' => NULL,
+          'Tenure / Weighted Average maturity period of Contracts' => NULL,
+          'Repayment Frequency' => NULL,
+          'Drawing Power' => NULL,
+          'Current   Balance / Limit Utilized /Mark to Market' => NULL,
+          'Notional Amount of Out-standing Restructured Contracts' => NULL,
+          'Loan Expiry / Maturity Date' => NULL,
+          'Loan Renewal Date' => NULL,
+          'Asset Classification/Days Past Due (DPD)' => NULL,
+          'Asset Classification Date' => NULL,
+          'Amount Overdue / Limit Overdue' => NULL,
+          'Overdue Bucket 01 ( 1 – 30 days)' => NULL,
+          'Overdue Bucket 02 ( 31 – 60 days)' => NULL,
+          'Overdue Bucket 03 ( 61 – 90 days)' => NULL,
+          'Overdue Bucket 04 (91 – 180 days)' => NULL,
+          'Overdue Bucket 05 (Above 180 days)' => NULL,
+          'High Credit' => NULL,
+          'Installment Amount' => NULL,
+          'Last Repaid Amount' => NULL,
+          'Account Status' => NULL,
+          'Account Status Date' => NULL,
+          'Written Off Amount' => NULL,
+          'Settled Amount' => NULL,
+          'Major reasons for Restructuring' => NULL,
+          'Amount of Contracts Classified as NPA' => NULL,
+          'Asset based Security coverage' => NULL,
+          'Guarantee Coverage' => NULL,
+          'Bank Remark Code' => NULL,
+          'Wilful Default Status' => NULL,
+          'Date Classified as Wilful Default' => NULL,
+          'Suit Filed Status' => NULL,
+          'Suit Reference Number' => NULL,
+          'Suit Amount in Rupees' => NULL,
+          'Date of Suit' => NULL,
+          'Dispute ID No.' => NULL,
+          'Transaction Type Code' => NULL,
+          'OTHER_BK' => NULL,
+          'UFCE (Amount)' => NULL,
+          'UFCE Date' => NULL,
+      ];
+      $cr[] = [
+        'ac_no' => '',
+        'segment_identifier' => $data['Segment Identifier'],
+        'segment_data' => json_encode($data),
+        'created_at' => '2020-06-05 12:15:35',
+        'created_by' => Auth::user()->user_id,
+      ];
+      return $cr;
+    }
+
+    private function _getGSData() {
+      $data =  [
+          'Segment Identifier' => 'GS',
+          'Guarantor DUNS Number' => NULL,
+          'Guarantor Type' => NULL,
+          'Business Category' => NULL,
+          'Business / Industry Type' => NULL,
+          'Guarantor Entity Name' => NULL,
+          'Individual Name Prefix' => NULL,
+          'Full Name' => NULL,
+          'Gender' => NULL,
+          'Company Registration Number' => NULL,
+          'Date of Incorporation' => NULL,
+          'Date of Birth' => NULL,
+          'PAN' => NULL,
+          'Voter ID' => NULL,
+          'Passport Number' => NULL,
+          'Driving Licence ID' => NULL,
+          'UID' => NULL,
+          'Ration Card No' => NULL,
+          'CIN' => NULL,
+          'DIN' => NULL,
+          'TIN' => NULL,
+          'Service Tax #' => NULL,
+          'Other ID' => NULL,
+          'Address Line 1' => NULL,
+          'Address Line 2' => NULL,
+          'Address Line 3' => NULL,
+          'City/Town' => NULL,
+          'District' => NULL,
+          'State/Union Territory' => NULL,
+          'Pin Code' => NULL,
+          'Country' => NULL,
+          'Mobile Number(s)' => NULL,
+          'Telephone Area Code' => NULL,
+          'Telephone Number(s)' => NULL,
+          'Fax Area Code' => NULL,
+          'Fax Number(s)' => NULL,
+          'Filler' => NULL,
+      ];
+      $gs[] = [
+        'ac_no' => '',
+        'segment_identifier' => $data['Segment Identifier'],
+        'segment_data' => json_encode($data),
+        'created_at' => '2020-06-05 12:15:35',
+        'created_by' => Auth::user()->user_id,
+      ];
+      return $gs;
+    }
+
+     private function _getSSData() {    
+      $data = [
+          'Segment Identifier' => 'SS',
+          'Value of Security' => NULL,
+          'Currency Type' => NULL,
+          'Type of Security' => NULL,
+          'Security Classification' => NULL,
+          'Date of Valuation' => NULL,
+          'Filler' => NULL,
+      ];
+      $ss[] = [
+        'ac_no' => '',
+        'segment_identifier' => $data['Segment Identifier'],
+        'segment_data' => json_encode($data),
+        'created_at' => '2020-06-05 12:15:35',
+        'created_by' => Auth::user()->user_id,
+      ];
+      return $ss;
+    }
+    private function _getCDData() {
+      $data = [
+          'Segment Identifier' => 'CD',
+          'Date of Dishonour' => NULL,
+          'Amount' => NULL,
+          'Instrument / Cheque Number' => NULL,
+          'Number of times dishonoured' => NULL,
+          'Cheque Issue Date' => NULL,
+          'Reason for Dishonour' => NULL,
+          'Filler' => NULL,
+      ];
+      $cd[] = [
+        'ac_no' => '',
+        'segment_identifier' => $data['Segment Identifier'],
+        'segment_data' => json_encode($data),
+        'created_at' => '2020-06-05 12:15:35',
+        'created_by' => Auth::user()->user_id,
+      ];
+      return $cd;
+    }
+    private function _getTSData() {
+      $data = [
+          'Segment Identifier' => 'TS',
+          'Number of Borrower Segments' => NULL,
+          'Number of Credit Facility Segments' => NULL,
+          'Filler' => NULL,
+      ];
+      $ts[] = [
+        'ac_no' => '',
+        'segment_identifier' => $data['Segment Identifier'],
+        'segment_data' => json_encode($data),
+        'created_at' => '2020-06-05 12:15:35',
+        'created_by' => Auth::user()->user_id,
+      ];
+      return $ts;
     }
 
 }
