@@ -35,8 +35,9 @@
                 border-bottom:#c5c5c5 solid 1px;
             }
             td,th{
-                font-size: 9px !important;
+                font-size: <?php echo count($pdfArr[0]) > 8 ? '10px' : '15px'; ?> !important;
                 padding:5px;
+                text-align: center;
             }
             .pagenum:before {
                 content: counter(page);
@@ -62,17 +63,17 @@
                 <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
                        <tr>
                         @php
-                           $header_cols = array_keys($leaseRegister[0]);
+                           $header_cols = array_keys($pdfArr[0]);
                            foreach($header_cols as $key) {
                              $key = ucwords(str_replace('_', ' ', $key));
                              echo "<th>".$key."</th>";
                            }
                         @endphp
                        </tr>
-                       @foreach($leaseRegister as $lease)
+                       @foreach($pdfArr as $val)
                         <tr>
                         @php
-                           foreach($lease as $rec) {
+                           foreach($val as $rec) {
                              echo "<td>".$rec."</td>";
                            }
                         @endphp
