@@ -317,9 +317,17 @@ class DataRenderer implements DataProviderInterface
                     function ($app) {
                     $app_status = config('common.app_status');                    
                     $status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
-                    $curr_app_status_id = config('common.mst_status_id')['APP_REJECTED'];
-                    if($app->curr_status_id !== null && $curr_app_status_id === 43){
+                    if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_REJECTED']){
                         $status = 'Rejected';
+                    }
+                    if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_CANCEL']){
+                        $status = 'Canceled';
+                    }
+                    if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_HOLD']){
+                        $status = 'On Hold';
+                    }
+                    if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_DATA_PENDING']){
+                        $status = 'Data Pending';
                     }
                     return $status;
                 })
