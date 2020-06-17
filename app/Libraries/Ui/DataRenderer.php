@@ -321,7 +321,7 @@ class DataRenderer implements DataProviderInterface
                         $status = 'Rejected';
                     }
                     if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_CANCEL']){
-                        $status = 'Canceled';
+                        $status = 'Cancelled';
                     }
                     if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_HOLD']){
                         $status = 'On Hold';
