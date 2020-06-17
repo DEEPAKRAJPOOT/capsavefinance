@@ -382,7 +382,7 @@ class InvoiceController extends Controller {
             $transactionData = $this->createTransactionData($userId, ['amount' => $value['disburse_amt'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
             $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
 
-            $intrstAmt = round($interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
+            $intrstAmt = round($interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
             if ($intrstAmt > 0.00) {
                 $intrstDbtTrnsData = $this->createTransactionData($userId, ['amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'));
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
@@ -392,7 +392,7 @@ class InvoiceController extends Controller {
             }
 
             // Margin transaction $tranType = 10 
-            $marginAmt = round($margin, config('lms.DECIMAL_TYPE')['AMOUNT']);
+            $marginAmt = round($margin, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
             if ($marginAmt > 0.00) {
                 $marginTrnsData = $this->createTransactionData($userId, ['amount' => $marginAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.MARGIN'), 0);
                 $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
@@ -612,6 +612,7 @@ class InvoiceController extends Controller {
             $disbursalData = [];
             $otherData = [];
             $transId = _getRand(18);
+            $refNo = _getRand(12);
 
             foreach ($supplierIds as $userid) {
                 $disburseAmount = 0;
@@ -632,7 +633,7 @@ class InvoiceController extends Controller {
 
                         $totalInterest += $interest;
                         $totalMargin += $margin;
-                        $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
+                        $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                         $disburseAmount += $amount;
 
 
@@ -642,18 +643,20 @@ class InvoiceController extends Controller {
                 }
                 if($disburseType == 1) {
 
-                    $exportData[$userid]['RefNo'] = $disbursalData['invoice']['lms_user']['virtual_acc_id'];
+                    $exportData[$userid]['RefNo'] = $refNo;
                     $exportData[$userid]['Amount'] = $disburseAmount;
                     $exportData[$userid]['Debit_Acct_No'] = '21480259346';
                     $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
                     $exportData[$userid]['Debit_Mobile'] = '1234567890';
-                    $exportData[$userid]['Ben_IFSC'] = $disbursalData['invoice']['supplier_bank_detail']['ifsc_code'];
-                    $exportData[$userid]['Ben_Acct_No'] = $disbursalData['invoice']['supplier_bank_detail']['acc_no'];
+                    // $exportData[$userid]['Ben_IFSC'] = $disbursalData['invoice']['supplier_bank_detail']['ifsc_code'];
+                    $exportData[$userid]['Ben_IFSC'] = '109566016496';
+                    // $exportData[$userid]['Ben_Acct_No'] = $disbursalData['invoice']['supplier_bank_detail']['acc_no'];
+                    $exportData[$userid]['Ben_Acct_No'] = 'DNSB0000021';
                     $exportData[$userid]['Ben_Name'] = $disbursalData['invoice']['supplier_bank_detail']['acc_name'];
                     $exportData[$userid]['Ben_BankName'] = $disbursalData['invoice']['supplier_bank_detail']['bank']['bank_name'];
                     $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
                     $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
-                    $exportData[$userid]['Mode_of_Pay'] = 'IFT';
+                    $exportData[$userid]['Mode_of_Pay'] = 'NEFT';
                     $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
                     $exportData[$userid]['Remarks'] = 'test remarks';
 
@@ -680,6 +683,7 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
+                dd($result);
                 if ($result['status'] == 'success') {
                     
                     $fileDirPath = getPathByTxnId($transId);
@@ -760,6 +764,7 @@ class InvoiceController extends Controller {
                         $invoice['batch_id'] = $batchId;
                         $invoice['disburse_date'] = $disburseDate;
                         $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
+                        $invoice['tran_id'] = $exportData[$userid]['RefNo'];
                         
                         $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
                         $createInvoiceDisbursed = $this->lmsRepo->saveUpdateInvoiceDisbursed($invoiceDisbursedRequest);
@@ -782,7 +787,7 @@ class InvoiceController extends Controller {
 
                     $totalInterest += $interest;
                     $totalMargin += $margin;
-                    $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
+                    $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                     $disburseAmount += $amount;
 
                 }
@@ -876,7 +881,7 @@ class InvoiceController extends Controller {
 
                         $totalInterest += $interest;
                         $totalMargin += $margin;
-                        $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
+                        $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                         $disburseAmount += $amount;
 
 
@@ -953,7 +958,7 @@ class InvoiceController extends Controller {
 
                         $totalInterest += $interest;
                         $totalMargin += $margin;
-                        $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
+                        $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                         $disburseAmount += $amount;
 
                         
@@ -1398,5 +1403,10 @@ class InvoiceController extends Controller {
                return back();
              }
        }
-	
+
+	 public function disbursalBatchRequest(Request $req) {
+        
+
+        return view('backend.invoice.repaid_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+    }
 }

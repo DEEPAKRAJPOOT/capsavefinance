@@ -420,6 +420,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'account_closure',
                         'uses' => 'Backend\InvoiceController@accountClosure',
                     ]);
+
+                    Route::get('disbursal-batch-request', [
+                        'as' => 'backend_get_disbursal_batch_request',
+                        'uses' => 'Backend\InvoiceController@disbursalBatchRequest',
+                    ]);
                 }
             });
 

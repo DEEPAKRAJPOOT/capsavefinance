@@ -172,8 +172,8 @@ trait LmsTrait
         if($invoice['program_offer']['payment_frequency'] == 1) {
             $interest = $tInterest;
         }
-        //$disburseAmount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
-        $disburseAmount = round($fundedAmount, config('lms.DECIMAL_TYPE')['AMOUNT']);
+        //$disburseAmount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
+        $disburseAmount = round($fundedAmount, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
 
         $disbursalData['disbursal_id'] = $invoice['disbursal_id'] ?? null;
         $disbursalData['invoice_id'] = $invoice['invoice_id'] ?? null;

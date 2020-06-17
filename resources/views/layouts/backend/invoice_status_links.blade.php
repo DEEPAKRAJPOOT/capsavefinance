@@ -13,11 +13,20 @@
         <a class="invoiceLinkHover nav-link @if(Route::currentRouteName()=='backend_get_approve_invoice') active @endif"  href="{{Route('backend_get_approve_invoice')}}">Approved</a>
         @endif
     </li>
+
     <li class="nav-item">
         @if($flag == 1)
         <a class="invoiceLinkHover nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice',[ 'user_id' => $userInfo->user_id, 'app_id' => $userInfo->app->app_id, 'flag' => 1 ])}}">Disbursement Queue</a>
         @else
         <a class="invoiceLinkHover nav-link @if(Route::currentRouteName()=='backend_get_disbursed_invoice') active @endif"  href="{{Route('backend_get_disbursed_invoice')}}">Disbursement Queue</a>
+        @endif
+    </li>
+    
+    <li class="nav-item">
+        @if($flag == 1)
+        <a class="invoiceLinkHover nav-link @if(Route::currentRouteName()=='backend_get_disbursal_batch_request') active @endif"  href="{{Route('backend_get_disbursal_batch_request',[ 'user_id' => $userInfo->user_id, 'app_id' => $userInfo->app->app_id, 'flag' => 1 ])}}">Disbursal Request</a>
+        @else
+        <a class="invoiceLinkHover nav-link @if(Route::currentRouteName()=='backend_get_disbursal_batch_request') active @endif"  href="{{Route('backend_get_disbursal_batch_request')}}">Disbursal Request</a>
         @endif
     </li>
 

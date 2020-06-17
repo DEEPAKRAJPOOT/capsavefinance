@@ -150,7 +150,8 @@ return [
     ],    
     'DECIMAL_TYPE' => [
         'PERCENTAGE' => '2',
-        'AMOUNT'=>'5'
+        'AMOUNT'=>'5',
+        'AMOUNT_TWO_DECIMAL'=>'2'
     ],
     'STATUS' => [
         'PENDING' => '0',
