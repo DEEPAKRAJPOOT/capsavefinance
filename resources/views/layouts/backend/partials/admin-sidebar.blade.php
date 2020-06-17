@@ -234,9 +234,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('backend_get_invoice')}}">Manage Invoice</a>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" href="{{route('backend_get_bank_invoice')}}">Bank Invoice</a>
-                    </li> -->
                     @endcan
                 </ul>
             </div>
