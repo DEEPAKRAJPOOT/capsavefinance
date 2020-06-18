@@ -43,7 +43,7 @@ return [
     'paymentUpdated' => 'Payment updated successfully',
     'AdhocLimitCreated' => 'Adhoc Limit Successfully Created.',
     'AdhocLimitApproved' => 'Adhoc Limit Successfully Approved.',
-    'registration_success' => 'Registration is done successfully',
+    'registration_success' => 'Registration is done successfully, please login with old credential.',
     'existing_email' => 'This email is already exists',
     'register_different_anchor' => 'You are already exist with another anchor, if you register, you will also associate with this anchor, use the old credentials to login.',
 ];
