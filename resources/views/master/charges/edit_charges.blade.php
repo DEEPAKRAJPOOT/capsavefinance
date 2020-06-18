@@ -98,7 +98,7 @@
             </div>
             <div class="form-group col-md-3" id="gst_div">
                 <label for="chrg_type"></label>
-                <input type="hidden" class="form-control" readonly="readonly" name="gst_percentage" value="{{$charge_data->gst_percentage}}" placeholder="GST Percentage" style="height:35px; margin-bottom: -0px">
+                <input type="text" class="form-control" readonly="readonly" name="gst_percentage" value="{{($charge_data->gst_percentage) ? $charge_data->gst_percentage : Config::get('payment.gst')}}" placeholder="GST Percentage" style="height:35px; margin-bottom: -0px">
             </div>
         </div>
         <div class="row">
@@ -142,7 +142,8 @@
 <script type="text/javascript">
     var messages={
         check_applied_charge_url:"{{ route('check_applied_charge') }}",
-        token: "{{ csrf_token() }}"
+        token: "{{ csrf_token() }}",
+        gst_percentage: "{{Config::get('payment.gst')}}"
     }
     $(document).on('click', 'input[name="chrg_calculation_type"]', function (e) {
         if ($(this).val() == '2') {
@@ -156,6 +157,7 @@
     $(document).on('click', 'input[name="is_gst_applicable"]', function (e) {
         if ($(this).val() == '1') {
             $('#gst_div').show();
+            $('input[name="gst_percentage"]').val(messages.gst_percentage);
         } else {
             $('input[name="gst_percentage"]').val('');
             $('#gst_div').hide();
