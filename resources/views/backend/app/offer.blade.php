@@ -25,6 +25,12 @@ tr.border_bottom td {
                             <a class="card-title ">No offer found.</a>
                         </div>
                     </div>
+                    @elseif($is_shown == 0 && $isSalesManager == 1)
+                    <div class="card card-color mb-0">
+                        <div class="card-header">
+                            <a class="card-title ">No offer found.</a>
+                        </div>
+                    </div>
                     @else
                     <div class="row">
                         <div class="col-sm-12">
@@ -451,25 +457,30 @@ tr.border_bottom td {
                         </div>
                     </div>
                     @endif
-                    @if($offerStatus != 0 && $isSalesManager == 1)
-                    <form method="POST" action="{{route('accept_offer')}}">
+                    {{-- @if($offerStatus != 0 && $isSalesManager == 1) --}}
+                    <a data-toggle="modal" class="btn btn-success btn-sm"  style="float: right;" data-target="#rejectOfferFrame" data-url ="{{route('accept_offer_form', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="250px" data-width="100%" data-placement="top" >Reject Offer</a>
+                    <a data-toggle="modal" class="btn btn-success btn-sm" style="float: right; margin-right: 30px;" data-target="#acceptOfferFrame" data-url ="{{route('accept_offer_form', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="250px" data-width="100%" data-placement="top" >Accept Offer</a>
+
+
+                    <!-- <form method="POST" action="{{route('accept_offer')}}">
                         <div class="row">
                         @csrf
                         <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
                         <div class="col-md-12">
-                            <!-- <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject</button> -->
+                            <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject Offer</button>
                             <button class="btn btn-success btn-sm float-right" type="submit" name="btn_accept_offer">Accept Offer</button>
                         </div>
                         </div>  
-                    </form>
-                    @endif
+                    </form> -->
+                    {{-- @endif --}}
                 </div>
             </div>
         </div>
     </div>
 </div>
-
+{!!Helpers::makeIframePopup('acceptOfferFrame','Accept Offer', 'modal-md')!!}
+{!!Helpers::makeIframePopup('rejectOfferFrame','Reject Offer', 'modal-md')!!}
 @endsection
 @section('jscript')
 <script>

@@ -319,6 +319,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'view_offer',
                 'uses' => 'Backend\ApplicationController@showOffer'
             ]);
+
+            Route::get('accept-offer', [
+                'as' => 'accept_offer_form',
+                'uses' => 'Backend\ApplicationController@acceptOfferForm'
+            ]);
             
             Route::post('accept-offer', [
                 'as' => 'accept_offer',

@@ -1121,6 +1121,7 @@ class ApplicationController extends Controller
 		$termOfferData = $this->appRepo->getAllOffers($appId, 2);//for term loan
 		$leaseOfferData = $this->appRepo->getAllOffers($appId, 3);//for lease loan
 		$offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>NULL]);//to check the offer status
+		$is_shown = $this->appRepo->getOfferStatus([['app_id', $appId], ['is_approve', 1], ['is_active', 1]]);
 		$currentStage = Helpers::getCurrentWfStage($appId);   
 		$roleData = Helpers::getUserRole();        
 		$viewGenSancLettertBtn = ($currentStage && $currentStage->role_id == $roleData[0]->id) ? 1 : 0;
@@ -1149,6 +1150,7 @@ class ApplicationController extends Controller
 				->with('termOfferData', $termOfferData)
 				->with('leaseOfferData', $leaseOfferData)
 				->with('offerStatus', $offerStatus)
+				->with('is_shown', $is_shown)
 				->with('isSalesManager', $isSalesManager)
 				->with('currentStage', $currentStage)
 				->with('viewGenSancLettertBtn', $viewGenSancLettertBtn);      
@@ -1880,6 +1882,17 @@ class ApplicationController extends Controller
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 		}
+	}
+
+	public function acceptOfferForm(Request $request){
+		try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            return view('backend.cam.accept_offer')
+            ->with(['app_id' => $appId, 'biz_id' => $bizId]);
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
 	}
 
     
