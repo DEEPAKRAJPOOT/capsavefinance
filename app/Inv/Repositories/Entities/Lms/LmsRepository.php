@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\Lms\Batch;
@@ -1402,6 +1403,18 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     public function getCibilUserData(array $whereCondition = [], $whereRawCondition = NULL) {
        return CibilUserData::getCibilUserDataList($whereCondition, $whereRawCondition);
+    }  
+
+    public function insertCibilUserData(array $userData = []) {
+       return CibilUserData::insertBulkData($userData);
+    }
+
+    public function getAllBusinessData() {
+        return Business::get();
+    }
+
+    public function getAllBusinessAddrData(array $whereCond = []) {
+        return BusinessAddress::getBizAddresses($whereCond);
     }    
 
 }

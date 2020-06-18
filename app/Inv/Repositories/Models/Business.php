@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\BizPanGstApi;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\User;
 use Carbon\Carbon;
 use Auth;
 
@@ -425,13 +426,21 @@ class Business extends BaseModel
         ->first();
         return $arrData;
     }
-    public function  LmsUser()
-    {
+
+    public function  LmsUser() {
          return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
     }
-    public static function searchBusiness($search)
-    {
+
+    public static function searchBusiness($search) {
       return  self::with('LmsUser')->where("biz_entity_name","LIKE","{$search}%")->groupBy('user_id')->get();
+    }
+
+    public function constitution() {
+       return $this->belongsTo('App\Inv\Repositories\Models\Master\Constitution', 'biz_constitution', 'id');
+    }
+
+    public function users() {
+       return $this->belongsTo(User::Class, 'user_id', 'user_id');
     }
 
 }

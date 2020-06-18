@@ -105,7 +105,7 @@ class CibilUserData extends BaseModel {
        return $this->belongsTo('App\Inv\Repositories\Models\User', 'created_by', 'user_id');
     }
 
-    public function insertBulkData(array $userData = []) {
+    public static function insertBulkData(array $userData = []) {
     	 return self::insert($userData);
     }
 }

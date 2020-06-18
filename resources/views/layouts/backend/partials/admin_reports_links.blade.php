@@ -10,7 +10,11 @@
     </li>
      <li>
         <a class=" {{( $active=='realisationreport') ? 'active': null }} " href="{{route('report_realisationreport')}}"> Realisation Report </a>
+    </li>
     <li>
         <a class=" {{( $active=='consolidatedSoa') ? 'active': null }} " href="{{route('soa_consolidated_view')}}">SOA  </a>
+    </li>
+    <li>
+        <a class=" {{( $active=='cibil_report') ? 'active': null }} " href="{{route('cibil_report')}}">Cibil UserData </a>
     </li>
 </ul>  
