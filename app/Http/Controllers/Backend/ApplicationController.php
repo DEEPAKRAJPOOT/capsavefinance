@@ -1166,6 +1166,7 @@ class ApplicationController extends Controller
 		$appId = $request->get('app_id');        
 		$offerId = $request->get('offer_id');
 		$bizId = $request->get('biz_id');        
+        $cmntText = $request->get('comment_txt');
 		
 		try {
 			$offerData = [];
@@ -1174,6 +1175,7 @@ class ApplicationController extends Controller
 				$message = trans('backend_messages.accept_offer_success');
 				
 				$addl_data = [];
+				$addl_data['sharing_comment'] = $cmntText;
 				$currStage = Helpers::getCurrentWfStage($appId);
 				$wf_order_no = $currStage->order_no;
 				$nextStage = Helpers::getNextWfStage($wf_order_no);
@@ -1182,33 +1184,49 @@ class ApplicationController extends Controller
 				$addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
 									
 				//Update workflow stage
-				Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true, $addl_data);                
-				
-			} else if($request->has('btn_reject_offer')) {
-				$addl_data = [];
+				Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true, $addl_data);
+				//Insert Pre Sanctions Documents
+				$prgmDocsWhere = [];
+				$prgmDocsWhere['stage_code'] = 'upload_pre_sanction_doc';
+				$appData = $this->appRepo->getAppDataByAppId($appId);
+				$userId = $appData ? $appData->user_id : null;
+				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
+			} else if($request->has('btn_reject_offer')) {				
+				$offerData['status'] = 2;
+				$message = trans('backend_messages.offer_rejected');
+	            $appApprData = [
+	                'app_id' => $appId,
+	                'approver_user_id' => \Auth::user()->user_id,
+	                'status' => 2
+	              ];
+	            $this->appRepo->saveAppApprovers($appApprData);
+	            $addl_data = [];
+	            $addl_data['sharing_comment'] = $cmntText;
+	            $selRoleId = 6;
+	            $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
+	            $selUserId = $roles[0]->user_id;
+	            $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
+	            $currStage = Helpers::getCurrentWfStage($appId);
+	            Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
+	            Session::flash('operation_status', 1);
+	 
+				/*$addl_data = [];
 				$addl_data['sharing_comment'] = 'Reject comment goes here';
-				$offerData['status'] = 2; 
-				$message = trans('backend_messages.reject_offer_success');
+				$message = trans('backend_messages.reject_offer_success');*/
 				
 				//Update workflow stage
 				//Helpers::updateWfStage('approver', $appId, $wf_status = 2);
 				//Helpers::updateWfStage('sales_queue', $appId, $wf_status = 2);
 				//Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 2);
 				//Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 2);
-				$selRoleId = 6;
+
+				/*$selRoleId = 6;
 				$roles = $this->appRepo->getBackStageUsers($app_id, [$selRoleId]);
 				$selUserId = $roles[0]->user_id;
 				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
 				$currStage = Helpers::getCurrentWfStage($appId);
-				Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
+				Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);*/
 			}
-			
-			//Insert Pre Sanctions Documents
-			$prgmDocsWhere = [];
-			$prgmDocsWhere['stage_code'] = 'upload_pre_sanction_doc';
-			$appData = $this->appRepo->getAppDataByAppId($appId);
-			$userId = $appData ? $appData->user_id : null;
-			$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
 			
 			// $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
 			$savedOfferData = $this->appRepo->updateActiveOfferByAppId($appId, $offerData);

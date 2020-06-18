@@ -262,7 +262,7 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
         }
 
-        $rowUpdate = self::where(['app_id'=>(int) $app_id, 'is_active'=>1])->update($arr);
+        $rowUpdate = self::where(['app_id'=>(int) $app_id, 'is_active'=>1])->where('status', '<>', 2)->update($arr);
 
         return ($rowUpdate ? $rowUpdate : false);
     }
