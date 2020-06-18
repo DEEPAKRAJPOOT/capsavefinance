@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Master\Industry;
 use Carbon\Carbon;
 use Auth;
 
@@ -441,6 +442,10 @@ class Business extends BaseModel
 
     public function users() {
        return $this->belongsTo(User::Class, 'user_id', 'user_id');
+    }
+
+    public function industryType() {
+       return $this->belongsTo(Industry::Class, 'nature_of_biz', 'id');
     }
 
 }

@@ -247,18 +247,21 @@ class CibilReportController extends Controller
 	}
 
 	
-	public  function index(Request $request) {
-			/*$appId = 60;
-			$filesArr = $this->fileHelper->getLatestFileName($appId, 'banking', 'json');
-			$new_json_filename = $filesArr['new_file'];
-			$curr_json_filename = $filesArr['curr_file'];
-			$new_json_fullpath = $this->fileHelper->getToUploadPath($appId, 'banking'). '/'.$new_json_filename;
-			$curr_json_fullpath = $this->fileHelper->getToUploadPath($appId, 'banking'). '/'.$curr_json_filename;
-			$fileContents = getFinContent();
-			// $isSaved = $this->fileHelper->uploadFileWithContent($new_json_fullpath, $fileContents);
-			$isSaved = $this->fileHelper->readFileContent($curr_json_fullpath);
-			dd($isSaved);*/
+	  public  function index(Request $request) {
        return view('lms.cibilReport.list');
+    }
+
+    public function uploadFile() {
+      $appId = 60;
+      $filesArr = $this->fileHelper->getLatestFileName($appId, 'banking', 'json');
+      $new_json_filename = $filesArr['new_file'];
+      $curr_json_filename = $filesArr['curr_file'];
+      $new_json_fullpath = $this->fileHelper->getToUploadPath($appId, 'banking'). '/'.$new_json_filename;
+      $curr_json_fullpath = $this->fileHelper->getToUploadPath($appId, 'banking'). '/'.$curr_json_filename;
+      $fileContents = getFinContent();
+      $uploaded = $this->fileHelper->uploadFileWithContent($new_json_fullpath, $fileContents);
+      $getFile = $this->fileHelper->readFileContent($curr_json_fullpath);
+      dd($uploaded, $getFile);
     }
 
     public function downloadCibilReport(Request $request) {
@@ -364,7 +367,7 @@ class CibilReportController extends Controller
             'Other ID' => NULL,
             'Borrower’s Legal Constitution' => $bs_val->constitution->name,
             'Business Category' => NULL,
-            'Business/ Industry Type' => NULL,
+            'Business/ Industry Type' => $bs_val->industryType->name,
             'Class of Activity 1' => NULL,
             'Class of Activity 2' => NULL,
             'Class of Activity 3' => NULL,
@@ -378,6 +381,7 @@ class CibilReportController extends Controller
             'Credit Rating Expiry Date' => NULL,
             'Filler' => NULL,
         ];
+        dd($data);
         $bs[] = [
           'ac_no' => '',
           'segment_identifier' => $data['Segment Identifier'],
@@ -435,6 +439,7 @@ class CibilReportController extends Controller
     private function _getRSData($businessData) {
       foreach ($businessData as $rs_val) {
         $users = $rs_val->users;
+        $bizOwner = $rs_val->users;
         $addr_data = $rs_val->registeredAddress;
         $fullAddress = $addr_data->addr_1 . ' ' . $addr_data->addr_2. ' ' . $addr_data->city_name. ' ' .($addr_data->state->name ?? NULL) . ' ' . $addr_data->pin_code;
         $data = [
