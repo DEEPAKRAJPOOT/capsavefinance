@@ -88,9 +88,6 @@ class ChargeController extends Controller {
             }
             else
             {
-//                if($request->get('is_gst_applicable') == 2){
-//                    $arrChargesData['gst_percentage'] = null;
-//                }
                 $status = $this->masterRepo->saveCharges($arrChargesData);
 //                dd($status);
                 if($status)
