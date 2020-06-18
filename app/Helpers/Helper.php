@@ -32,6 +32,8 @@ use Illuminate\Http\File;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
 use Illuminate\Contracts\Support\Renderable;
 use ZanySoft\Zip\Zip;
+use App\Inv\Repositories\Models\AnchorUser;
+use App\Inv\Repositories\Models\Anchor;
 
 class Helper extends PaypalHelper
 {
@@ -1648,4 +1650,45 @@ class Helper extends PaypalHelper
      {
         return  Application::getDoAUsersByAppId($app_id);
      }
+    
+    /**
+     * Get Associated Anchors By User Id
+     * 
+     * @param int $userId
+     * @return string
+     */
+    public static function getAnchorsByUserId($userId) 
+    {
+        $anchors = AnchorUser::getAnchorsByUserId($userId);
+        $anchorsInfo = '';
+        if (count($anchors) > 0) {
+            foreach($anchors as $anchor) {
+                $anchorsInfo .= ucwords($anchor->comp_name);
+                $anchorsInfo .= '<br>';
+            }
+        } else {
+            $anchorsInfo = 'NA';
+        }
+        
+        return $anchorsInfo;
+    }
+    
+    /**
+     * Get Anchor Detail By Anchor Id
+     * 
+     * @param int $anchorId
+     * @return string
+     */
+    public static function getAnchorById($anchorId) 
+    {
+        $anchor = Anchor::getAnchorById($anchorId);
+        $anchorInfo = '';
+        if ($anchor) {
+            $anchorInfo = ucwords($anchor->comp_name);
+        } else {
+            $anchorInfo = 'NA';
+        }
+        
+        return $anchorInfo;
+    }    
 }

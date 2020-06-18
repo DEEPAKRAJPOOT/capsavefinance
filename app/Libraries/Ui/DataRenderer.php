@@ -89,12 +89,7 @@ class DataRenderer implements DataProviderInterface
                     if($user->UserAnchorId){
                        //$userInfo=User::getUserByAnchorId((int) $user->UserAnchorId);
                        //$achorId= $userInfo->f_name.' '.$userInfo->l_name;
-			$userInfo=AnchorUser::getAnchorsByUserId($user->user_id);
-                        $achorId='';
-                        foreach($userInfo as $userObj) {
-                            $achorId .= ($userObj)? ucwords($userObj->comp_name) : 'NA';
-                            $achorId .= '<br>';
-                        }
+                        $achorId = Helpers::getAnchorsByUserId($user->user_id);
                     }else{
                       $achorId='N/A';  
                     }
@@ -262,12 +257,7 @@ class DataRenderer implements DataProviderInterface
                     if($app->anchor_id){
                        //$userInfo = User::getUserByAnchorId((int) $app->anchor_id);
                        //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-                        $userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
-                        $achorName='';
-                        foreach($userInfo as $user) {
-                            $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
-                            $achorName .= '<br>';
-                        }                        
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     } else {
                        $achorName='';  
                     }                    
@@ -463,13 +453,7 @@ class DataRenderer implements DataProviderInterface
                      if($app->anchor_id){
                        //$userInfo=User::getUserByAnchorId((int)$app->anchor_id);
                        //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
-			$userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
-                        $achorName='';
-                        foreach($userInfo as $user) {
-                            $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
-                            $achorName .= '<br>';
-                        }
-                         
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id); 
                     }else{
                       $achorName='';  
                     }                    
@@ -563,12 +547,7 @@ class DataRenderer implements DataProviderInterface
                      if($app->anchor_id){
                        //$userInfo=User::getUserByAnchorId((int) $app->anchor_id);
                          //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
-                         $userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
-                         $achorName='';
-                        foreach($userInfo as $user) {
-                            $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
-                            $achorName .= '<br>';
-                        }
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     }else{
                       $achorName='';  
                     }                    
@@ -2025,13 +2004,7 @@ class DataRenderer implements DataProviderInterface
                     if($app->anchor_id){
                        //$userInfo = User::getUserByAnchorId($app->anchor_id);
                        //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-			$userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
-                        $achorName='';
-                        foreach($userInfo as $user) {
-                            $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
-                            $achorName .= '<br>';
-                        }
-                        
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     } else {
                        $achorName='';  
                     }                    
@@ -2259,15 +2232,7 @@ class DataRenderer implements DataProviderInterface
                     if($user->anchor_id){
                        //$userInfo = User::getUserByAnchorId($app->anchor_id);
                        //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-			//$userInfo=AnchorUser::getAnchorsByUserId($user->user_id);
-                        $userInfo=Anchor::getAnchorById($user->anchor_id);
-                        $achorName='';
-                        //foreach($userInfo as $usr) {
-                        if($userInfo) {
-                            $achorName = ($userInfo)? ucwords($userInfo->comp_name) : 'NA';
-                            //$achorName .= '<br>';
-                        }
-                        
+                        $achorName = Helpers::getAnchorById($user->anchor_id);                        
                     } else {
                        $achorName='';  
                     }                    
@@ -4524,13 +4489,8 @@ class DataRenderer implements DataProviderInterface
                     function ($app) {                        
                      if($app->anchor_id){
                         //$userInfo=User::getUserByAnchorId((int)$app->anchor_id);
-                        //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
-			$userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
-                        $achorName='';
-                        foreach($userInfo as $user) {
-                            $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
-                            $achorName .= '<br>';
-                        }
+                        //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';                        
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     }else{
                       $achorName='';  
                     }                    
@@ -5736,12 +5696,7 @@ class DataRenderer implements DataProviderInterface
                     if($app->anchor_id){
                        //$userInfo = User::getUserByAnchorId($app->anchor_id);
                        //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-			$userInfo=AnchorUser::getAnchorsByUserId($app->user_id);
-                        $achorName='';
-                        foreach($userInfo as $user) {
-                            $achorName .= ($user)? ucwords($user->comp_name) : 'NA';
-                            $achorName .= '<br>';
-                        }                        
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     } else {
                        $achorName='';  
                     }                    
