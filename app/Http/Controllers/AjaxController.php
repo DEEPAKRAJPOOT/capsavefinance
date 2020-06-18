@@ -4515,7 +4515,7 @@ if ($err) {
 
             if (isset($anchUserData[0])) {
                 $result['status'] = false;
-                $result['message'] = 'This email is already exists';              
+                $result['message'] = trans('success_messages.existing_email');
             }
         }
         

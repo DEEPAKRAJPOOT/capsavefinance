@@ -9,7 +9,7 @@ return [
     'education_saved_successfully' => 'Education details have been saved successfully.',
     'skill_saved_successfully' => 'Skills have been saved successfully',
     'research_saved_successfully' => 'Research and publications details have been saved successfully',
-    'registration_completed' => 'Thanks for registering on Inventrust. Please verify the account through Email.',
+    'registration_completed' => 'Thanks for registering on Capsave. Please verify the account through Email.',
     'email_verified_please_login' => 'Thanks for verifying your account through Email. Please check your mail for the credentials to login.',
     'otp_sent_messages' => 'OTP Code is sent to your email account successfully',
     'otp_attempts_finish' => 'You have reached OTP limit, So you can request for OTP after 30 minutes again.',
@@ -43,4 +43,7 @@ return [
     'paymentUpdated' => 'Payment updated successfully',
     'AdhocLimitCreated' => 'Adhoc Limit Successfully Created.',
     'AdhocLimitApproved' => 'Adhoc Limit Successfully Approved.',
+    'registration_success' => 'Registration is done successfully',
+    'existing_email' => 'This email is already exists',
+    'register_different_anchor' => 'You are already exist with another anchor, if you register, you will also associate with this anchor, use the old credentials to login.',
 ];

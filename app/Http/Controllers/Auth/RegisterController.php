@@ -297,12 +297,30 @@ use RegistersUsers,
                 if (!Session::has('userId')) {
                     Session::put('userId', (int) $user->user_id);
                 }
-                /// $this->sendVerificationLink($user->user_id);
-                $verifyLink = Crypt::encrypt($user['email']);
-                $this->verifyUser($verifyLink);
-                Session::flash('message', trans('success_messages.basic_saved_successfully'));
-                //return redirect(route('education_details'));
-                return redirect()->route('otp', ['token' => Crypt::encrypt($user['email'])]);
+
+                $whereCond=[];
+                $whereCond[] = ['pan_no', '=', $arrFileData['pan_no']];         
+                $whereCond[] = ['email', '=', trim($arrFileData['email'])];
+                $whereCond[] = ['anchor_id', '!=', $arrFileData['h_anchor_id']];
+                $whereCond[] = ['is_registered', '=', '1'];
+                $AnchorData = $this->userRepo->getAnchorUserData($whereCond);        
+                if (isset($AnchorData[0])) {
+                    $userMailArr=[];
+                    $userMailArr['name'] = $user->f_name . ' ' . $user->l_name;
+                    $userMailArr['email'] = $user->email;
+                    Event::dispatch("NOTIFY_EXISTING_USER", serialize($userMailArr));
+
+                    Session::flash('message', trans('success_messages.registration_success'));
+                    return redirect(route('login_open'));             
+                } else {            
+
+                    /// $this->sendVerificationLink($user->user_id);
+                    $verifyLink = Crypt::encrypt($user['email']);
+                    $this->verifyUser($verifyLink);
+                    Session::flash('message', trans('success_messages.basic_saved_successfully'));
+                    //return redirect(route('education_details'));
+                    return redirect()->route('otp', ['token' => Crypt::encrypt($user['email'])]);
+                }                
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -706,7 +724,7 @@ use RegistersUsers,
         if (isset($anchUserData[0])) {
             $result['validate'] = 1;
             $result['status'] = false;
-            $result['message'] = 'This email is already exists';
+            $result['message'] = trans('success_messages.existing_email');
             return response()->json($result);
         } else {        
             $whereCond=[];       
@@ -717,7 +735,7 @@ use RegistersUsers,
             if (isset($AnchorData[0])) {                
                 $result['validate'] = 1;
                 $result['status'] = false;
-                $result['message'] = 'This email is already exists';
+                $result['message'] = trans('success_messages.existing_email');
                 return response()->json($result);
             }
         }
@@ -730,7 +748,7 @@ use RegistersUsers,
         $AnchorData = $this->userRepo->getAnchorUserData($whereCond);        
         if (!empty($pan) && isset($AnchorData[0])) {
             $result['validate'] = '0';
-            $result['message'] = 'You are already exist with another anchor, if you register, you will also associate with this anchor, use the old credentials to login.';
+            $result['message'] = trans('success_messages.register_different_anchor');
             return response()->json($result);
         }
                 

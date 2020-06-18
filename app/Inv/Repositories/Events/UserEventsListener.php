@@ -761,6 +761,41 @@ class UserEventsListener extends BaseEvent
             });
         }
     }
+    
+    public function onRegdWithSamePan($user) {
+        $this->func_name = __FUNCTION__; 
+        $user = unserialize($user);
+        $email_content = EmailTemplate::getEmailTemplate("NOTIFY_EXISTING_USER");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%name'],
+                [ucwords($user['name'])],
+                $email_content->message
+            );
+            Mail::send('email', ['varContent' => $mail_body,
+                ],
+                function ($message) use ($user, $email_content, $mail_body) {
+                    if( env('SEND_MAIL_ACTIVE') == 1){
+                        $email = explode(',', env('SEND_MAIL'));
+                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+                        $message->cc(explode(',', env('SEND_MAIL_CC')));
+                    }else{
+                        $email = $user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($email_content->subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_type' => $this->func_name,
+                    'name' => $user['name'],
+                    'subject' => $email_content->subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }    
 
     /**
      * Event subscribers
@@ -873,5 +908,9 @@ class UserEventsListener extends BaseEvent
             'App\Inv\Repositories\Events\UserEventsListener@onRenewApplication'
         );        
 
+        $events->listen(
+            'NOTIFY_EXISTING_USER', 
+            'App\Inv\Repositories\Events\UserEventsListener@onRegdWithSamePan'
+        );          
     }
 }
