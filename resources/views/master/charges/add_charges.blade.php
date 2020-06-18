@@ -163,8 +163,10 @@
         $(document).on('click', 'input[name="is_gst_applicable"]', function (e) {
             if ($(this).val() == '1')
                 $('#gst_div').show();
-            else
+            else{
+                $('input[name="gst_percentage"]').val('');
                 $('#gst_div').hide();
+            }
         })
 
 
