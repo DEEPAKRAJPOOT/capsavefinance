@@ -4022,7 +4022,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'currency',
                 function ($trans) {
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                         return '';
                     }else{
                         return 'INR';
@@ -4039,28 +4039,30 @@ class DataRenderer implements DataProviderInterface
             )->editColumn(
                 'debit',
                 function ($trans) {
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                    /*if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                         return '';
                     }
-                    elseif($trans->entry_type=='0'){
+                    else*/
+                    if($trans->entry_type=='0' && $trans->amount > '0'){
                         $this->soa_balance += $trans->amount;
                         return number_format($trans->amount,2);
                     }else{
-                        return '0.00';
+                        return '';
                     }
                 }
             )
             ->editColumn(
                 'credit',
                 function ($trans) {
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                    /*if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                         return '';
                     }
-                    elseif($trans->entry_type=='1'){
+                    else*/
+                    if($trans->entry_type=='1' && $trans->amount > '0'){
                         $this->soa_balance -= $trans->amount;
                         return '('.number_format($trans->amount,2).')';
                     }else{
-                        return '(0.00)';
+                        return '';
                     }
                 }
             )
@@ -4075,10 +4077,11 @@ class DataRenderer implements DataProviderInterface
                 function ($trans) {
 
                     $data = '';
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                    /*if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                         $data = '';
                     }
-                    elseif($this->soa_balance<0){
+                    else*/
+                    if($this->soa_balance<0){
                         $data = '<span style="color:red">'.number_format(abs($this->soa_balance), 2).'</span>';
                     }else{
                         $data = '<span style="color:green">'.number_format(abs($this->soa_balance), 2).'</span>';
@@ -4158,7 +4161,7 @@ class DataRenderer implements DataProviderInterface
             return $trans->transname;
         })
         ->editColumn('currency', function ($trans) {
-            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                 return '';
             }else{
                 return 'INR';
@@ -4171,7 +4174,7 @@ class DataRenderer implements DataProviderInterface
             }
         })
         ->editColumn('debit', function ($trans) {
-            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                 return '';
             }elseif($trans->entry_type=='0'){
                 $this->colender_debit = ($trans->amount*$this->colender_share);
@@ -4181,7 +4184,7 @@ class DataRenderer implements DataProviderInterface
             }
         })
         ->editColumn('credit',  function ($trans) {
-            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                 return '';
             }elseif($trans->entry_type=='1'){
                 $this->colender_credit = ($trans->amount*$this->colender_share);
@@ -4199,7 +4202,7 @@ class DataRenderer implements DataProviderInterface
         ->editColumn('balance', function ($trans) {
             $data = '';
             $this->colender_balance = ($this->colender_balance + $this->colender_debit - $this->colender_credit);
-            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                 $data = '';
             }
             elseif($this->colender_balance<0){
