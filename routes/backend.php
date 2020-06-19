@@ -269,12 +269,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_app_note',
                 'uses' => 'Backend\ApplicationController@saveAppNote'
             ]); 
-            
+
             Route::get('reject-app', [
                 'as' => 'reject_app',
                 'uses' => 'Backend\ApplicationController@rejectApp'
             ]);
-            
+
             Route::post('save-app-rejection', [
                 'as' => 'save_app_rejection',
                 'uses' => 'Backend\ApplicationController@saveAppRejection'

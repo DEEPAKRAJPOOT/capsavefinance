@@ -182,7 +182,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
+                ->rawColumns(['app_id','assignee', 'assigned_by', 'status', 'action','contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -322,9 +322,17 @@ class DataRenderer implements DataProviderInterface
                     function ($app) {
                     $app_status = config('common.app_status');                    
                     $status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
-                    $curr_app_status_id = config('common.mst_status_id')['APP_REJECTED'];
-                    if($app->curr_status_id !== null && $curr_app_status_id === 43){
-                        $status = 'Rejected';
+                    if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_REJECTED']){
+                        $status = 'Rejected'.'&nbsp;<button type="button" class="btn btn-default" data-toggle="popover" title="View Decline Reason" data-trigger="focus" data-content="'.$app->reason.'"><i class="fa fa-eye"></i></button>';                        
+                    }
+                    if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_CANCEL']){
+                        $status = 'Cancelled'.'&nbsp;<button type="button" class="btn btn-default" data-toggle="popover" title="View Decline Reason" data-trigger="focus" data-content="'.$app->reason.'"><i class="fa fa-eye"></i></button>';
+                    }
+                    if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_HOLD']){
+                        $status = 'On Hold'.'&nbsp;<button type="button" class="btn btn-default" data-toggle="popover" title="View Decline Reason" data-trigger="focus" data-content="'.$app->reason.'"><i class="fa fa-eye"></i></button>';
+                    }
+                    if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_DATA_PENDING']){
+                        $status = 'Data Pending'.'&nbsp;<button type="button" class="btn btn-default" data-toggle="popover" title="View Decline Reason" data-trigger="focus" data-content="'.$app->reason.'"><i class="fa fa-eye"></i></button>';
                     }
                     return $status;
                 })
@@ -375,13 +383,11 @@ class DataRenderer implements DataProviderInterface
                             $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-plus" aria-hidden="true"></i></a> ';
                             $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-times" aria-hidden="true"></i></a> ';
                         }
+                        
                         //Route for Application Rejection
-                        if ($app->curr_status_id === null && $app->curr_status_id !== config('common.mst_status_id')['APP_REJECTED']) {
-                           //if(Helpers ::checkPermission('add_app_note')){
-                                $act = $act . '<a title="Reject Application" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'user_id' => $app->user_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-times" aria-hidden="true"></i></a>';
-                            //}                            
-                        }else{
-                            $act = $app->reason;
+                        if (Helpers ::checkPermission('reject_app') && ($app->curr_status_id === null && $app->curr_status_id !== config('common.mst_status_id')['APP_REJECTED'])) {
+                    //    if (Helpers ::checkPermission('reject_app')) {
+                           $act = $act . '<a title="Reject Application" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'user_id' => $app->user_id]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
                         }
                         
                         return $act;
