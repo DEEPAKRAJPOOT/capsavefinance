@@ -1147,5 +1147,10 @@ Route::group(
         ]
     );
 
+    Route::get('get_unsettled_payments',[
+        'as' => 'get_unsettled_payments',
+        'uses' => 'AjaxController@unsettledPayments'
+        ]
+    );
 
 });

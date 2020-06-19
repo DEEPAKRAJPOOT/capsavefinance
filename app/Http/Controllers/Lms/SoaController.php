@@ -151,7 +151,7 @@ class SoaController extends Controller
     }
     
     public function getDebit($trans){
-        if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+        if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
             return '';
         }
         elseif($trans->entry_type=='0'){
@@ -162,7 +162,7 @@ class SoaController extends Controller
     }
     
     public function getCredit($trans){
-        if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+        if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
             return '';
         }
         elseif($trans->entry_type=='1'){
@@ -174,7 +174,7 @@ class SoaController extends Controller
     
     public function getBalance($trans){
         $data = '';
-        if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+        if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
             $data = '';
         }
         elseif($trans->balance<0){
@@ -198,10 +198,11 @@ class SoaController extends Controller
                 $preparedData[$key][$k]['batch_no'] = $data->batchNo;
                 $preparedData[$key][$k]['invoice_no'] = $data->invoiceno;
                 $preparedData[$key][$k]['narration'] = $data->narration;
-                $preparedData[$key][$k]['currency'] = trim($data->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')]) ? '' : 'INR');
+                $preparedData[$key][$k]['currency'] = trim($data->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')]) ? '' : 'INR');
                 $preparedData[$key][$k]['debit'] = $this->getDebit($data);
                 $preparedData[$key][$k]['credit'] = $this->getCredit($data);
                 $preparedData[$key][$k]['balance'] = $this->getBalance($data);
+                $preparedData[$key][$k]['soabackgroundcolor'] = $data->soabackgroundcolor;
             }
         }
         return $preparedData;
@@ -362,15 +363,13 @@ class SoaController extends Controller
                     ->setCellValue('K' . $rows, $rowData['balance'] ?: '');
                 
                 $color = 'FFFFFF';
-                if(strtolower($rowData['trans_type']) === 'repayment'){
-                    $color = "F3C714";
-                }elseif($rowData['payment_id']){
-                    $color = "FFE787";
+                if($rowData['soabackgroundcolor']){
+                    $color = trim($rowData['soabackgroundcolor'],'#');
                 }
                 
                 $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->getFill()->applyFromArray(array(
                     'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                    'startcolor' => array( 'rgb' => $color )
+                    'startcolor' => array( 'rgb' => $color)
                 ));
                 $rows++;
             }

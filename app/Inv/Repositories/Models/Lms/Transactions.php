@@ -245,8 +245,11 @@ class Transactions extends BaseModel {
             if($this->BatchNo)
             $data .= $this->BatchNo.' ';
             if($this->payment->transactionno)
-            $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.'<br> ';
+            $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.' ' ;
             $data .= ' Payment Allocated as Normal: INR '. number_format($this->payment->amount,2) . ' ';
+        }
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
+            $data .= ' Payment Failed as Normal: INR '. number_format($this->payment->amount,2) . ' ';
         }
         return trim($data);
     }
@@ -274,7 +277,7 @@ class Transactions extends BaseModel {
             if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
             $color = '#f3c714';
             else
-            $color = '#ffcc0078';
+            $color = '#ffe787';
         }
         return $color;
     }
