@@ -318,16 +318,16 @@ class DataRenderer implements DataProviderInterface
                     $app_status = config('common.app_status');                    
                     $status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
                     if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_REJECTED']){
-                        $status = 'Rejected'.'&nbsp;<a href="#" class="viewBtn" title="View Decline Reason" data-toggle="popover" data-trigger="focus" data-content="'.$app->reason.'"><i class="fa fa-eye"></i></a>';
+                        $status = 'Rejected'.'&nbsp;<button type="button" class="btn btn-default" data-toggle="popover" title="View Decline Reason" data-trigger="focus" data-content="'.$app->reason.'"><i class="fa fa-eye"></i></button>';                        
                     }
                     if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_CANCEL']){
-                        $status = 'Cancelled'.'&nbsp;<a href="#" class="viewBtn" title="View Decline Reason" data-toggle="popover" data-trigger="focus" data-content="'.$app->reason.'"><i class="fa fa-eye"></i></a>';
+                        $status = 'Cancelled'.'&nbsp;<button type="button" class="btn btn-default" data-toggle="popover" title="View Decline Reason" data-trigger="focus" data-content="'.$app->reason.'"><i class="fa fa-eye"></i></button>';
                     }
                     if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_HOLD']){
-                        $status = 'On Hold'.'&nbsp;<a href="#" class="viewBtn" title="View Decline Reason" data-toggle="popover" data-trigger="focus" data-content="'.$app->reason.'"><i class="fa fa-eye"></i></a>';
+                        $status = 'On Hold'.'&nbsp;<button type="button" class="btn btn-default" data-toggle="popover" title="View Decline Reason" data-trigger="focus" data-content="'.$app->reason.'"><i class="fa fa-eye"></i></button>';
                     }
                     if($app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_DATA_PENDING']){
-                        $status = 'Data Pending'.'&nbsp;<a href="#" class="viewBtn" title="View Decline Reason" data-toggle="popover" data-trigger="focus" data-content="'.$app->reason.'"><i class="fa fa-eye"></i></a>';
+                        $status = 'Data Pending'.'&nbsp;<button type="button" class="btn btn-default" data-toggle="popover" title="View Decline Reason" data-trigger="focus" data-content="'.$app->reason.'"><i class="fa fa-eye"></i></button>';
                     }
                     return $status;
                 })

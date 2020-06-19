@@ -44,7 +44,10 @@ try {
                 {data: 'status'},
                 {data: 'action'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6,7]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6,7]}],
+            drawCallback: function() {
+                $('[data-toggle="popover"]').popover();
+            }
 
         });
 
@@ -52,12 +55,7 @@ try {
         $('#searchbtn').on('click', function (e) {            
             oTable.draw();
         });
-        
-        $(this).on('click','.viewBtn', function(e){
-            e.preventDefault();
-            $('[data-toggle="popover"]').popover();
-        });
-                     
+                 
     });
 } catch (e) {
     if (typeof console !== 'undefined') {
