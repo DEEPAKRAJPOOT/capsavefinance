@@ -58,7 +58,7 @@ tr.border_bottom td {
                                                     <td>{{$supplyOffer->prgm_limit_amt}}</td>
                                                     <td><b>Grace Period (Days): </b></td>
                                                     <td>{{$supplyOffer->grace_period}}</td>
-                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($supplyOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($supplyOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
+                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($supplyOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($supplyOffer->status == 1)? 'Accepted': (($supplyOffer->status == 2)? 'Rejected': 'Pending')}}</label></td>
                                                 </tr>
                                                 
                                                 <tr>
@@ -274,7 +274,7 @@ tr.border_bottom td {
                                                     <td>Lease Loan</td>
                                                     <td><b>Apply Loan Amount: </b> </td>
                                                     <td>{{$termOffer->prgm_limit_amt}}</td>
-                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($termOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($termOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
+                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($termOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($termOffer->status == 1)? 'Accepted': (($termOffer->status == 2)? 'Rejected': 'Pending')}}</label></td>
                                                 </tr>
                                                 
                                                 <tr>
@@ -363,7 +363,7 @@ tr.border_bottom td {
                                                     <td width="25%">{{($leaseOffer->facility_type_id !='')? config('common.facility_type')[$leaseOffer->facility_type_id]: 'NA'}}</td>
                                                     <td><b>Equipment Type: </b></td>
                                                     <td>{{\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)->equipment_name}}</td>
-                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($leaseOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($leaseOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
+                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($leaseOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($leaseOffer->status == 1)? 'Accepted': (($leaseOffer->status == 2)? 'Rejected': 'Pending')}}</label></td>
                                                 </tr>
                                                 
                                                 <tr>
