@@ -1892,13 +1892,6 @@ class ApplicationController extends Controller
 		$app_id = $request->get('app_id');
 		$biz_id = $request->get('biz_id');        
 		$user_id = $request->get('user_id');
-		$status_id = $request->get('curr_status_id');
-		// dd($request->all());
-		// if($status_id){
-		// 	$noteData = $this->appRepo->getNoteDataById($status_id, $app_id);
-		// 	dd($noteData);
-		// }
-		// dd($request->all());
 		return view('backend.app.reject_app_form')
 				->with('app_id', $app_id)
 				->with('biz_id', $biz_id)
