@@ -51,7 +51,11 @@ try {
         //Search
         $('#searchbtn').on('click', function (e) {            
             oTable.draw();
-        });    
+        });
+        
+        $(this).on('click','.viewBtn', function(){
+            $('[data-toggle="popover"]').popover();
+        });
                      
     });
 } catch (e) {
