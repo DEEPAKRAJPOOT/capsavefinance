@@ -49,6 +49,7 @@ Form::open(
 {!! Form::hidden('app_id', $app_id) !!}
 {!! Form::hidden('biz_id', $biz_id) !!}
 {!! Form::hidden('user_id', $user_id) !!}
+{!! Form::hidden('note_id', $note_id) !!}
 <button type="submit" id="submit" class="btn btn-success btn-sm float-right submit">Submit</button>  
 {!!
 Form::close()

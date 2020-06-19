@@ -2330,9 +2330,13 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return BizEntityCin::getBizEntityCinData($whereCond);
     }    
 
-    public function getNoteDataById($statusId, $AppId){
-        return AppNote::getNoteDataById($statusId, $AppId);
+    public function getNoteDataById($noteId, $AppId){
+        return AppNote::getNoteDataById($noteId, $AppId);
     } 
+
+    public function findNoteDatabyNoteId($noteId){
+        return AppNote::findNoteDatabyNoteId($noteId);
+    }
 
 }
 
