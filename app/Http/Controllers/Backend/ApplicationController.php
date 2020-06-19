@@ -1892,17 +1892,20 @@ class ApplicationController extends Controller
 		$app_id = $request->get('app_id');
 		$biz_id = $request->get('biz_id');        
 		$user_id = $request->get('user_id');
-		$status_id = $request->get('curr_status_id');
+		$status_id = ($request->get('curr_status_id')) ?: '';
+		$reason = '';
 		// dd($request->all());
-		// if($status_id){
-		// 	$noteData = $this->appRepo->getNoteDataById($status_id, $app_id);
-		// 	dd($noteData);
-		// }
+		if($status_id){
+			$noteData = $this->appRepo->getNoteDataById($status_id, $app_id);
+			$reason = $noteData->note_data;
+		}
 		// dd($request->all());
 		return view('backend.app.reject_app_form')
 				->with('app_id', $app_id)
 				->with('biz_id', $biz_id)
-                                ->with('user_id', $user_id);
+				->with('user_id', $user_id)
+				->with('reason', $reason)
+				->with('status_id', $status_id);
 	}
         
     /**
