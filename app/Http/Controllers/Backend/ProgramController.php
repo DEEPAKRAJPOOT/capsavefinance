@@ -368,7 +368,10 @@ class ProgramController extends Controller {
             $dataForProgram = $this->prepareSubProgramData($request);
             $pkeys = $request->get('program_id');
 
-
+            if($request->get('interest_rate') == 1) {
+                $dataForProgram['base_rate_id'] = '';
+            }
+            
             /**
              * save program data
              */
