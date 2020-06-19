@@ -6,13 +6,21 @@
         @csrf
         <div class="row">
             <div class="form-group col-12">
-                <label for="comment_txt">Comment<span class="mandatory"></span></label>
-                <textarea type="text" id="comment_txt" name="comment_txt" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>       
+                @if(request()->get('btn_type') == 'reject')
+                <label for="comment_txt">Comment<span class="mandatory">*</span></label>
+                <textarea type="text" id="comment_txt" name="comment_txt" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
+                @elseif(request()->get('btn_type') == 'accept')
+                Do you want to accept these offers?
+                @endif      
             </div>
         </div>
         <div class="row">
             <div class="form-group col-md-12 mb-0">
-                <input type="submit" class="btn btn-success btn-sm pull-right" name="submit" id="yes" value="Submit" />
+                @if(request()->get('btn_type') == 'reject')
+                <input type="submit" class="btn btn-secondary btn-sm pull-right" name="btn_reject_offer" id="yes" value="Submit" />
+                @elseif(request()->get('btn_type') == 'accept')
+                <input type="submit" class="btn btn-success btn-sm pull-right" name="btn_accept_offer" id="yes" value="Yes" />
+                @endif
             </div>
         </div>
     </form>
@@ -39,18 +47,22 @@ $messages = session()->get('message', false);
     }
     </script>
 @endif
-<script>
-    /*$("#acceptOfferForm").validate({
-            rules: {
-                comment_txt: {
-                    required: true
+
+@if(request()->get('btn_type') == 'reject')
+    <script>
+        $("#acceptOfferForm").validate({
+                rules: {
+                    comment_txt: {
+                        required: true
+                    }
+                },
+                messages: {
+                    comment_txt:{
+                        required:'Please enter comment.'
+                    }
                 }
-            },
-            messages: {
-                comment_txt:{
-                    required:'Please enter comment.'
-                }
-            }
-        });*/
-</script>
+            });
+    </script>
+@endif
+
 @endsection

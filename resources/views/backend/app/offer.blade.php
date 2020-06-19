@@ -457,9 +457,10 @@ tr.border_bottom td {
                         </div>
                     </div>
                     @endif
-                    {{-- @if($offerStatus != 0 && $isSalesManager == 1) --}}
-                    <a data-toggle="modal" class="btn btn-success btn-sm"  style="float: right;" data-target="#rejectOfferFrame" data-url ="{{route('accept_offer_form', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="250px" data-width="100%" data-placement="top" >Reject Offer</a>
-                    <a data-toggle="modal" class="btn btn-success btn-sm" style="float: right; margin-right: 30px;" data-target="#acceptOfferFrame" data-url ="{{route('accept_offer_form', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="250px" data-width="100%" data-placement="top" >Accept Offer</a>
+                    @if($offerStatus != 0 && $isSalesManager == 1)
+                    <a data-toggle="modal" class="btn btn-success btn-sm"  style="float: right;" data-target="#rejectOfferFrame" data-url ="{{route('accept_offer_form', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'btn_type' => 'reject'])}}" data-height="250px" data-width="100%" data-placement="top" >Reject Offer</a>
+                    <a data-toggle="modal" class="btn btn-success btn-sm" style="float: right; margin-right: 30px;" data-target="#acceptOfferFrame" data-url ="{{route('accept_offer_form', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'btn_type' => 'accept'])}}" data-height="150px" data-width="100%" data-placement="top" >Accept Offer</a>
+                    @endif
 
 
                     <!-- <form method="POST" action="{{route('accept_offer')}}">
@@ -473,7 +474,6 @@ tr.border_bottom td {
                         </div>
                         </div>  
                     </form> -->
-                    {{-- @endif --}}
                 </div>
             </div>
         </div>

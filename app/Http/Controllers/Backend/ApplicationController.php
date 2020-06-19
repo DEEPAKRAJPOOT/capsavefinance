@@ -1199,7 +1199,8 @@ class ApplicationController extends Controller
 	                'approver_user_id' => \Auth::user()->user_id,
 	                'status' => 2
 	              ];
-	            $this->appRepo->saveAppApprovers($appApprData);
+	            //$this->appRepo->saveAppApprovers($appApprData);
+	            $this->appRepo->updateAppApprActiveFlag($appId);
 	            $addl_data = [];
 	            $addl_data['sharing_comment'] = $cmntText;
 	            $selRoleId = 6;
