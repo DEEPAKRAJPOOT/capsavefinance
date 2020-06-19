@@ -53,7 +53,8 @@ try {
             oTable.draw();
         });
         
-        $(this).on('click','.viewBtn', function(){
+        $(this).on('click','.viewBtn', function(e){
+            e.preventDefault();
             $('[data-toggle="popover"]').popover();
         });
                      
