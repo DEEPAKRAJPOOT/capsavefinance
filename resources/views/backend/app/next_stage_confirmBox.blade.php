@@ -140,7 +140,7 @@ var messages = {
                 
         $('.btn-move-next-stage').click(function() {            
             if ($('#frmMoveStage').valid()) {
-               /// parent.$('.isloader').show();
+                parent.$('.isloader').show();
             }
         });
         
@@ -149,8 +149,8 @@ var messages = {
         }
         
         if(messages.is_accept == 1){
-           parent.jQuery("#"+targetModel).modal('hide');  
            parent.oTable.draw();
+           parent.jQuery("#"+targetModel).modal('hide');  
            parent.$('.isloader').hide();           
         }
 
