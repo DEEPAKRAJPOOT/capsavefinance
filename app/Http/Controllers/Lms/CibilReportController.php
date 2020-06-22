@@ -403,22 +403,23 @@ class CibilReportController extends Controller
               '5' =>'Mgmt Address',
               '6' =>'Additional Address',
         ];
-        foreach ($businessData as $as_vall) {
-            $as_val = $as_vall->registeredAddress;
-            $fullAddress = $as_val->addr_1 . ' ' . $as_val->addr_2. ' ' . $as_val->city_name. ' ' .($as_val->state->name ?? NULL) . ' ' . $as_val->pin_code;
+        foreach ($businessData as $as_val) {
+            $addr_data = $as_val->registeredAddress;
+            $users = $rs_val->users;
+            $fullAddress = $addr_data->addr_1 . ' ' . $addr_data->addr_2. ' ' . $addr_data->city_name. ' ' .($addr_data->state->name ?? NULL) . ' ' . $addr_data->pin_code;
             $data = [
               'Segment Identifier' => 'AS',
-              'Borrower Office Location Type' => $addressType[$as_val->address_type] ?? NULL,
+              'Borrower Office Location Type' => $addressType[$addr_data->address_type] ?? NULL,
               'Borrower Office DUNS Number' => '999999999',
               'Address Line 1' => $fullAddress,
               'Address Line 2' => NULL,
               'Address Line 3' => NULL,
-              'City/Town' => $as_val->city_name,
+              'City/Town' => $addr_data->city_name,
               'District' => NULL,
-              'State/Union Territory' => $as_val->state->name ?? NULL,
-              'Pin Code' => $as_val->pin_code,
+              'State/Union Territory' => $addr_data->state->name ?? NULL,
+              'Pin Code' => $addr_data->pin_code,
               'Country' => NULL,
-              'Mobile Number(s)' => NULL,
+              'Mobile Number(s)' => $users->mobile_no,
               'Telephone Area Code' => NULL,
               'Telephone Number(s)' => NULL,
               'Fax Area Code' => NULL,
@@ -439,7 +440,7 @@ class CibilReportController extends Controller
     private function _getRSData($businessData) {
       foreach ($businessData as $rs_val) {
         $users = $rs_val->users;
-        $bizOwner = $rs_val->users;
+        // $bizOwner = $rs_val->users;
         $addr_data = $rs_val->registeredAddress;
         $fullAddress = $addr_data->addr_1 . ' ' . $addr_data->addr_2. ' ' . $addr_data->city_name. ' ' .($addr_data->state->name ?? NULL) . ' ' . $addr_data->pin_code;
         $data = [
@@ -449,7 +450,7 @@ class CibilReportController extends Controller
           'Relationship' => NULL,
           'Business Entity Name' => $rs_val->biz_entity_name,
           'Business Category' => NULL,
-          'Business / Industry Type' => NULL,
+          'Business / Industry Type' => $rs_val->industryType->name,
           'Individual Name Prefix' => NULL,
           'Full Name' => $users->f_name . ' '. $users->m_name . ' ' . $users->l_name,
           'Gender' => NULL,
