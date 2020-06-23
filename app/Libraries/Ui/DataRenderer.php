@@ -3273,7 +3273,8 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'anchor',
                     function ($customer) {
-                        $anchor = ($customer->user->anchor->comp_name) ?: '--';
+                        //$anchor = ($customer->user->anchor->comp_name) ?: '--';
+                        $anchor = Helpers::getAnchorsByUserId($customer->user_id);
                         $prgm =  ($customer->user->is_buyer == 1) ? 'Vender Finance' : 'Channel Finance';
                         $data = '';
                         $data .= $anchor ? '<span><b>Anchor:&nbsp;</b>'.$anchor.'</span>' : '';
