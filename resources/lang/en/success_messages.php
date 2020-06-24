@@ -46,4 +46,5 @@ return [
     'registration_success' => 'Registration is done successfully, please login with old credential.',
     'existing_email' => 'This email is already exists',
     'register_different_anchor' => 'You are already exist with another anchor, if you register, you will also associate with this anchor, use the old credentials to login.',
+    'basic_saved_successfully' => 'Registration is done successfully, Please verify the OTP',
 ];

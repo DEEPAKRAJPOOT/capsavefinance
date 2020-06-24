@@ -357,7 +357,7 @@ use RegistersUsers,
                 // echo $user->id; exit;
                 $verifyLink = route('verify_email', ['token' => Crypt::encrypt($user['email'])]);
                 $this->sendVerificationLink($user->user_id);
-                Session::flash('message', trans('success_messages.basic_saved_successfully'));
+                Session::flash('message', trans('Registration is done successfully.'));
                 //return redirect(route('education_details'));
                 return redirect()->route('thanks');
             } else {
