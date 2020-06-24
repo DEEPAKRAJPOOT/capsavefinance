@@ -244,21 +244,21 @@
                                     <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="t_o_f_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onfocusout="checkNumber(this)" id="existing_limits" class="form-control inr number_format" maxlength="20" value="{{isset($arrCamData->t_o_f_limit) ? $arrCamData->t_o_f_limit : ''}}"></td>
                                 </tr>
                                 <tr>
-                                    <td><b>Maximum Tenor of Invoices/tranch</b></td>
-                                    <td value=""></td>
+                                    <!-- <td><b>Maximum Tenor of Invoices/tranch</b></td>
+                                    <td value=""></td> -->
                                     <td><b>Purpose</b></td>
-                                    <td>
-                                        <input type="text" name="t_o_f_purpose" id="purpose" class="form-control" value="{{isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : ''}}">
+                                    <td colspan="3">
+                                        <input type="text" name="t_o_f_purpose" id="purpose" class="form-control" value="{{isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : ''}}" maxlength="250">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><b>Takeout</b></td>
+                                    {{--<td><b>Takeout</b></td>
                                     <td>
                                         <input type="text" name="t_o_f_takeout" id="takeout" class="form-control" value="{{isset($arrCamData->t_o_f_takeout) ? $arrCamData->t_o_f_takeout : ''}}" @if ($checkDisburseBtn=='showDisburseBtn') readonly="readonly" @endif>
-                                    </td>
+                                    </td>--}}
                                     <td><b>Recourse</b></td>
-                                    <td>
-                                        <input type="text" name="t_o_f_recourse" id="recourse" class="form-control" value="{{isset($arrCamData->t_o_f_recourse) ? $arrCamData->t_o_f_recourse : ''}}" @if ($checkDisburseBtn=='showDisburseBtn') readonly="readonly" @endif>
+                                    <td colspan="3">
+                                        <input type="text" name="t_o_f_recourse" id="recourse" class="form-control" maxlength="250" value="{{isset($arrCamData->t_o_f_recourse) ? $arrCamData->t_o_f_recourse : ''}}" @if ($checkDisburseBtn=='showDisburseBtn') readonly="readonly" @endif>
                                     </td>
                                 </tr>
                                 <tr>
