@@ -112,7 +112,7 @@ class Business extends BaseModel
                 'status'=>1,
                 'parent_pan_gst_id'=>0,
                 'biz_pan_gst_api_id'=>$bpga->biz_pan_gst_api_id,
-                'cin'=>$attributes['biz_cin'],
+                'cin'=>(isset($attributes['biz_cin'])? $attributes['biz_cin']: ''),
                 'created_at' => \Carbon\Carbon::now(),
                 'created_by'=>Auth::user()->user_id
             ]);
@@ -304,7 +304,7 @@ class Business extends BaseModel
                     'status'=>1,
                     'parent_pan_gst_id'=>0,
                     'biz_pan_gst_api_id'=>$bpga->biz_pan_gst_api_id,
-                    'cin'=>$attributes['biz_cin'],
+                    'cin'=>(isset($attributes['biz_cin'])? $attributes['biz_cin']: ''),
                     'created_at' => \Carbon\Carbon::now(),
                     'created_by'=>Auth::user()->user_id
                 ]);
@@ -344,7 +344,7 @@ class Business extends BaseModel
                 'gstno_pan_gst_id'=>0,
                 'is_gst_verified'=>1,
                 ]);
-        }else if(empty($attributes['pan_api_res']) && !empty($attributes['biz_cin'])){
+        }else if(empty($attributes['pan_api_res']) && isset($attributes['biz_cin'])){
             //update for parent GST
             BizPanGst::where(['type'=>2,'biz_id'=>$bizId, 'parent_pan_gst_id'=>0, 'biz_owner_id'=>null])->update([
                     'pan_gst_hash'=>$attributes['biz_gst_number'],
