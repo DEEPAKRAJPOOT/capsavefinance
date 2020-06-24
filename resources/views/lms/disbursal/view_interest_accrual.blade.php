@@ -46,7 +46,11 @@
                 <td><b>Penal days:</b></td>
                 <td>{{$disbursal->accruedInterestNotNull->count() }}</td>
                 <td><b>Penal Amount:</b></td>
-                <td>{{number_format((float)$disbursal->accruedInterest->sum('accrued_interest'), 2, '.', '')  }}</td>
+                <td>{{number_format((float)$disbursal->accruedInterest->whereNotNull('overdue_interest_rate')->sum('accrued_interest'), 2, '.', '')  }}</td>
+            </tr>
+            <tr>
+                <td><b>Total accured interest till date:</b></td>
+                <td colspan="3">{{number_format((float)$disbursal->accruedInterest->sum('accrued_interest'), 2, '.', '')  }}</td>
             </tr>
            {{--<tr>
                 <td><b>Outstanding Amount:</b></td>
