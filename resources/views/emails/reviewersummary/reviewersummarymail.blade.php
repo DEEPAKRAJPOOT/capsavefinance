@@ -159,7 +159,7 @@
                           <tr>
                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Interest Rate(%): </b></td>
                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->interest_rate}} %</td>
-                             <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Tenor (Days): </b></td>
+                             <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Tenor (Months): </b></td>
                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->tenor}}</td>
                           </tr>
                           <tr>
