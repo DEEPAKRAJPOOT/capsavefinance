@@ -86,8 +86,8 @@
         <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
         <script>
             $(".sign-UP .btn").click(function () {
-                $(".otp-section").fadeIn();
-                $("body").addClass("scroll-hiddin");
+                //$(".otp-section").fadeIn();
+                //$("body").addClass("scroll-hiddin");
             })
 
             $(".section-header button").click(function () {
