@@ -56,5 +56,18 @@ class AppNote extends BaseModel {
         return $appNote;
     }
 
+    public static function getNoteDataById($noteId, $appId){
+        $result = self::where('app_id', $appId)
+                    ->where('note_id', $noteId)
+                    ->latest()
+                    ->first();
+        return $result ?: false;
+    }
+
+    public static function findNoteDatabyNoteId($noteId){
+        $result = self::find((int)$noteId);
+        return $result ?: false;
+    }
+
 
 }

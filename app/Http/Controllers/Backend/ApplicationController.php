@@ -1892,10 +1892,22 @@ class ApplicationController extends Controller
 		$app_id = $request->get('app_id');
 		$biz_id = $request->get('biz_id');        
 		$user_id = $request->get('user_id');
+		$status_id = $request->get('curr_status_id') ?: '';
+		$note_id = $request->get('note_id');
+		$reason = '';
+		// dd($request->all());
+		if($note_id){
+			$noteData = $this->appRepo->getNoteDataById($note_id, $app_id);
+			$reason =  $noteData->note_data;
+		}
+		// dd($request->all());
 		return view('backend.app.reject_app_form')
 				->with('app_id', $app_id)
 				->with('biz_id', $biz_id)
-                                ->with('user_id', $user_id);
+				->with('user_id', $user_id)
+				->with('reason', $reason)
+				->with('status_id', $status_id)
+				->with('note_id', $note_id);
 	}
         
     /**
@@ -1906,12 +1918,13 @@ class ApplicationController extends Controller
 	 */    
 	public function saveAppRejection(Request $request) {
             try {
-//                dd($request->all());
+            //    dd($request->all());
                 $app_id = $request->get('app_id');
                 $biz_id = $request->get('biz_id');
                 $user_id = $request->get('user_id');
                 $reason = $request->get('reason');
-                $status = $request->get('status');
+				$status = $request->get('status');
+				$note_id = $request->get('note_id');
                 $appStatus = '';
                 if($status == 1){
                     $appStatus .= 'APP_REJECTED';
@@ -1921,14 +1934,20 @@ class ApplicationController extends Controller
                     $appStatus .= 'APP_HOLD';
                 }else{
                     $appStatus .= 'APP_DATA_PENDING';
-                }
+				}
+				
                 $noteData = [
                         'app_id' => $app_id, 
                         'note_data' => $reason,
                         'created_at' => \Carbon\Carbon::now(),
                         'created_by' => \Auth::user()->user_id
-                ];     
-
+				];   
+				
+				if($note_id){
+					$noteData = $this->appRepo->findNoteDatabyNoteId($note_id);
+					dd($noteData);
+				}
+				dd('save');
 
                 $result = $this->appRepo->saveAppNote($noteData)->latest()->first()->toArray();
                 if($result){
