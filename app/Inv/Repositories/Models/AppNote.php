@@ -68,6 +68,4 @@ class AppNote extends BaseModel {
         $result = self::find((int)$noteId);
         return $result ?: false;
     }
-
-
 }

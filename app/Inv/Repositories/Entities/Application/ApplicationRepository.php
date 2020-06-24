@@ -2338,6 +2338,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppNote::findNoteDatabyNoteId($noteId);
     }
 
+    public function getAllCommentsByAppId($appId){
+        return AppNote::showData($appId);
+    }
+
 }
 
 

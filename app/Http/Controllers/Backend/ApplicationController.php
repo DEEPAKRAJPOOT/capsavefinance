@@ -1932,7 +1932,7 @@ class ApplicationController extends Controller
                     $appStatus .= 'APP_CANCEL';
                 }else if($status == 3){
                     $appStatus .= 'APP_HOLD';
-                }else{
+                }else if($status == 4){
                     $appStatus .= 'APP_DATA_PENDING';
 				}
 				
@@ -1943,11 +1943,14 @@ class ApplicationController extends Controller
                         'created_by' => \Auth::user()->user_id
 				];   
 				
-				if($note_id){
-					$noteData = $this->appRepo->findNoteDatabyNoteId($note_id);
-					dd($noteData);
-				}
-				dd('save');
+				// if($note_id){
+				// 	$noteData = $this->appRepo->findNoteDatabyNoteId($note_id);
+				// 	dd($noteData);
+				// 	if($noteData){
+				// 		$this->appRepo->updateAppNote($noteData, $note_id);
+				// 	}
+				// }
+				// dd('save');
 
                 $result = $this->appRepo->saveAppNote($noteData)->latest()->first()->toArray();
                 if($result){
@@ -1973,6 +1976,23 @@ class ApplicationController extends Controller
             } catch (Exception $ex) {
                     return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
             }
+	}
+
+	public function getAppStatusList(Request $request){
+		// dd($request->all());
+		$app_id = $request->get('app_id');      
+		$user_id = $request->get('user_id');
+		$status_id = $request->get('curr_status_id');
+		$note_id = $request->get('note_id');
+
+		if($app_id){
+			$allCommentsData = $this->appRepo->getAllCommentsByAppId($app_id);
+			// dd($allCommentsData);
+		}
+
+		return view('backend.app.view_application_status')
+					->with('allCommentsData',$allCommentsData);
+
 	}
     
 }
