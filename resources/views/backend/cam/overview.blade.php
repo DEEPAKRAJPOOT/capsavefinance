@@ -244,8 +244,8 @@
                                     <td><span class="fa fa-inr" aria-hidden="true" style="position:absolute; margin:12px 5px; "></span><input type="text" name="t_o_f_limit" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onfocusout="checkNumber(this)" id="existing_limits" class="form-control inr number_format" maxlength="20" value="{{isset($arrCamData->t_o_f_limit) ? $arrCamData->t_o_f_limit : ''}}"></td>
                                 </tr>
                                 <tr>
-                                    <!-- <td><b>Maximum Tenor of Invoices/tranch</b></td>
-                                    <td value=""></td> -->
+                                    {{--<td><b>Maximum Tenor of Invoices/tranch</b></td>
+                                    <td value=""></td>--}}
                                     <td><b>Purpose</b></td>
                                     <td colspan="3">
                                         <input type="text" name="t_o_f_purpose" id="purpose" class="form-control" value="{{isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : ''}}" maxlength="250">
