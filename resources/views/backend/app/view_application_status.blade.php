@@ -112,7 +112,7 @@
                             <span style="font-size: small;"><strong>{{ $rowData->created_at }}</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#138864">
-                            <span style="font-size: small;"><strong>{{ $rowData->created_by }}</strong></span>
+                            <span style="font-size: small;"><strong>{{$rowData->f_name.' '.$data->m_name}}</strong></span>
                         </td>
                     </tr>
                     @endforeach
