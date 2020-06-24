@@ -58,7 +58,6 @@ class AppNote extends BaseModel {
 
     public static function getNoteDataById($noteId, $appId){
         $result = self::where('app_id', $appId)
-                    ->where('note_id', $noteId)
                     ->latest()
                     ->first();
         return $result ?: false;

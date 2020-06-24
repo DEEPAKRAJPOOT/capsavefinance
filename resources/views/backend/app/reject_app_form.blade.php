@@ -80,7 +80,7 @@ Form::close()
                         required: 'Atleast one radio button should be checked.'
                     },
                     reason: {
-                        required: 'Please enter your decline reason.'
+                        required: 'Please enter your comment.'
                     }
                 },
                 errorPlacement: function(error, element) {

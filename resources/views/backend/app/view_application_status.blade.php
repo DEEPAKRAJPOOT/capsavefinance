@@ -102,17 +102,17 @@
                     @endphp
                     @foreach($allCommentsData as $rowData)
                     <tr>
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#138864">
-                            <span style="font-size: small;"><strong>{{ $i++ }}</strong></span>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{ $i++ }}</span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#138864">
-                            <span style="font-size: small;"><strong>{{ $rowData->note_data }}</strong></span>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{ $rowData->note_data }}</span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#138864">
-                            <span style="font-size: small;"><strong>{{ $rowData->created_at }}</strong></span>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{ $rowData->created_at }}</span>
                         </td>
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#138864">
-                            <span style="font-size: small;"><strong>{{$rowData->f_name.' '.$data->m_name}}</strong></span>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$rowData->f_name.' '.$rowData->m_name}}</span>
                         </td>
                     </tr>
                     @endforeach
