@@ -3277,8 +3277,9 @@ class DataRenderer implements DataProviderInterface
                         $anchor = Helpers::getAnchorsByUserId($customer->user_id);
                         $prgm =  ($customer->user->is_buyer == 1) ? 'Vender Finance' : 'Channel Finance';
                         $data = '';
-                        $data .= $anchor ? '<span><b>Anchor:&nbsp;</b>'.$anchor.'</span>' : '';
-                        $data .= $prgm ? '<br><span><b>Program:&nbsp;</b>'.$prgm.'</span>' : '';
+                        //$data .= $anchor ? '<span><b>Anchor:&nbsp;</b>'.$anchor.'</span>' : '';
+                        //$data .= $prgm ? '<br><span><b>Program:&nbsp;</b>'.$prgm.'</span>' : '';
+                        $data .= $anchor;
                         return $data;
                 })
                 ->editColumn(
