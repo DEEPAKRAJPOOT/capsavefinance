@@ -4488,4 +4488,9 @@ if ($err) {
         return new JsonResponse($leaseRegisters);
     }
 
+    public function getBackendDisbursalBatchRequest(DataProviderInterface $dataProvider) {
+        $disbursalBatchRequest = $this->lmsRepo->lmsGetDisbursalBatchRequest();
+        $data = $dataProvider->lmsGetDisbursalBatchRequest($this->request, $disbursalBatchRequest);
+        return $data;
+    } 
 }

@@ -1146,6 +1146,10 @@ Route::group(
         'uses' => 'AjaxController@leaseRegister'
         ]
     );
-
+    Route::post('backend_ajax_get_disbursal_batch_request',[
+        'as' => 'backend_ajax_get_disbursal_batch_request',
+        'uses' => 'AjaxController@getBackendDisbursalBatchRequest'
+        ]
+    );
 
 });

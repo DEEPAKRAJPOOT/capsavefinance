@@ -1423,4 +1423,28 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return DisbursalApiLog::saveUpdateDisbursalApiLog($data, $whereCondition);
 	}
+
+	/**
+     * Get disbursal batch
+     * 
+     * @param integer $batchId
+     * @return array
+     */
+	public function lmsGetDisbursalBatchRequest()
+	{
+		return DisbursalBatch::lmsGetDisbursalBatchRequest();
+	}
+
+	/**
+     * Get disbursal batch
+     * 
+     * @param integer $batchId
+     * @return array
+     */
+	public function getdisbursalBatchByDBId($disbursalBatchId)
+	{
+		return DisbursalBatch::with('disbursal_api_log')
+				->where('disbursal_batch_id', $disbursalBatchId)
+				->first();
+	}
 }

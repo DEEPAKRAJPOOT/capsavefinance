@@ -612,9 +612,9 @@ class InvoiceController extends Controller {
             $disbursalData = [];
             $otherData = [];
             $transId = _getRand(18);
-            $refNo = _getRand(12);
 
             foreach ($supplierIds as $userid) {
+                $refNo = _getRand(12);
                 $disburseAmount = 0;
                 foreach ($allinvoices as $invoice) {
                     if($invoice['supplier_id'] == $userid) {
@@ -649,9 +649,9 @@ class InvoiceController extends Controller {
                     $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
                     $exportData[$userid]['Debit_Mobile'] = '1234567890';
                     // $exportData[$userid]['Ben_IFSC'] = $disbursalData['invoice']['supplier_bank_detail']['ifsc_code'];
-                    $exportData[$userid]['Ben_IFSC'] = '109566016496';
+                    $exportData[$userid]['Ben_IFSC'] = 'UTIB0000627';
                     // $exportData[$userid]['Ben_Acct_No'] = $disbursalData['invoice']['supplier_bank_detail']['acc_no'];
-                    $exportData[$userid]['Ben_Acct_No'] = 'DNSB0000021';
+                    $exportData[$userid]['Ben_Acct_No'] = '123456789012345';
                     $exportData[$userid]['Ben_Name'] = $disbursalData['invoice']['supplier_bank_detail']['acc_name'];
                     $exportData[$userid]['Ben_BankName'] = $disbursalData['invoice']['supplier_bank_detail']['bank']['bank_name'];
                     $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
@@ -683,9 +683,7 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
-                dd($result);
                 if ($result['status'] == 'success') {
-                    
                     $fileDirPath = getPathByTxnId($transId);
                     $time = date('y-m-d H:i:s');
                     
@@ -696,11 +694,10 @@ class InvoiceController extends Controller {
                         .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
                     
                     $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
-
                     if(is_array($createOrUpdatefile)) {
                         $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
                     } else {
-                        $userFileSaved = $createOrUpdatefile->toArray();
+                        $userFileSaved = $createOrUpdatefile;
                     }
                     
                     $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
@@ -751,6 +748,8 @@ class InvoiceController extends Controller {
             $disburseAmount = 0;
             $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
             $userData['disbursal_batch_id'] =$disbursalBatchId;
+            $userData['tran_id'] =$exportData[$userid]['RefNo'];;
+
             $disbursalRequest = $this->createDisbursalData($userData, $disburseAmount, $disburseType);
             $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disbursalRequest);
             $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);
@@ -764,7 +763,6 @@ class InvoiceController extends Controller {
                         $invoice['batch_id'] = $batchId;
                         $invoice['disburse_date'] = $disburseDate;
                         $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
-                        $invoice['tran_id'] = $exportData[$userid]['RefNo'];
                         
                         $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
                         $createInvoiceDisbursed = $this->lmsRepo->saveUpdateInvoiceDisbursed($invoiceDisbursedRequest);
@@ -1404,9 +1402,65 @@ class InvoiceController extends Controller {
              }
        }
 
-	 public function disbursalBatchRequest(Request $req) {
-        
+    public function disbursalBatchRequest(Request $req) {
+        try {
 
-        return view('backend.invoice.repaid_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo]);
+            if ($req->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            $flag = $req->get('flag') ?: null;
+            $batchData = $this->lmsRepo->getallBatch();
+
+            return view('backend.invoice.disbursal_batch_request')->with(['flag' => $flag, 'batchData' => $batchData]);
+            } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    public function disbursalPaymentEnquiry(Request $request)
+    {
+        try {
+
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            
+            $disbursalBatchId = $request->get('disbursal_batch_id');
+            $sysDate =  \Helpers::getSysStartDate();
+            date_default_timezone_set("Asia/Kolkata");
+            $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId)->toArray();
+            $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
+            
+            if(!empty($reqData)) {
+            
+                $http_header = [
+                    'timestamp' => date('Y-m-d H:i:s'),
+                    'txn_id' => $reqData['txn_id']
+                    ];
+
+                $header = [
+                    'Maker_ID' => "CAPSAVE.M",
+                    'Checker_ID' => "CAPSAVE.C1",
+                    'Approver_ID' => "CAPSAVE.C2"
+                    ];
+
+                $params = [
+                    'http_header' => $http_header,
+                    'header' => $header,
+                    'request' => $reqData
+                    ];
+
+                $idfcObj= new Idfc_lib();
+                $result = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $params);
+                dd($result);
+            }
+                    
+            Session::flash('message',trans('backend_messages.disbursed'));
+            return redirect()->back()->withErrors('message',trans('backend_messages.disbursed'));
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }             
     }
 }

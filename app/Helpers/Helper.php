@@ -1674,7 +1674,7 @@ class Helper extends PaypalHelper
         }
         if (isset($isUpdated) && $appendFlag) {
             $fileData = UserFile::where('file_path', $realPath)
-                ->first();
+                ->first()->toArray();
             return $fileData ?? false;
         }
         return $isUpdated ? $isUpdated : $isSaved;

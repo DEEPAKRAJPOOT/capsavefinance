@@ -6357,5 +6357,48 @@ class DataRenderer implements DataProviderInterface
                     }
                  })
               ->make(true);
+    }
+
+    /*
+     * 
+     * get all disbursal batch request
+     */
+    public function lmsGetDisbursalBatchRequest(Request $request, $disbursalBatchRequest)
+    {
+        return DataTables::of($disbursalBatchRequest)
+                ->rawColumns(['total_disburse_amount','status', 'action'])
+                ->editColumn(
+                    'batch_id',
+                    function ($disbursalBatchRequest) {
+                        return (isset($disbursalBatchRequest->batch_id)) ? $disbursalBatchRequest->batch_id : '';
+                    }
+                )
+                ->editColumn(
+                    'total_customer',
+                    function ($disbursalBatchRequest) {   
+                        return $disbursalBatchRequest->disbursal->count();
+                }) 
+                ->editColumn(
+                    'total_disburse_amount',
+                    function ($disbursalBatchRequest) {
+
+                        return '<i class="fa fa-inr"></i> '.number_format($disbursalBatchRequest->disbursal->sum('disburse_amount'), 2);
+                })
+                ->addColumn(
+                    'action',
+                    function ($disbursalBatchRequest) {
+                        $act = '<a   href="' . route('disbursal_payment_enquiry', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';
+                        
+                        return $act;
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('batch_id') != '') {
+                        if ($request->has('batch_id')) {
+                            $batch_id = trim($request->get('batch_id'));
+                            $query->where('batch_id', 'like',"%$batch_id%");
+                        }
+                    }
+                })
+                ->make(true);
     }   
 }

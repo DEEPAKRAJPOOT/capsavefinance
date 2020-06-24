@@ -59,6 +59,10 @@ class DisbursalBatch extends BaseModel {
 		return $this->hasMany('App\Inv\Repositories\Models\Lms\Disbursal', 'disbursal_batch_id', 'disbursal_batch_id'); 
 	}
 
+	public function disbursal_api_log() { 
+		return $this->belongsTo('App\Inv\Repositories\Models\Lms\DisburseApiLog', 'disbursal_api_log_id', 'disbursal_api_log_id'); 
+	}
+
 	public static function getAllBatches($from_date, $to_date){
 		$from_date = Carbon::createFromFormat('d/m/Y', $from_date)->format('Y-m-d');
 		$to_date = Carbon::createFromFormat('d/m/Y', $to_date)->format('Y-m-d');
@@ -71,4 +75,10 @@ class DisbursalBatch extends BaseModel {
 		ORDER BY rta_disbursal_batch.disbursal_batch_id DESC", [$from_date, $to_date]);
         return $result;    
 	}
+	
+	public static function lmsGetDisbursalBatchRequest()
+    {
+        return self::with('disbursal')->orderBy('disbursal_batch_id', 'DESC');
+    }
+
 }

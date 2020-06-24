@@ -425,6 +425,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'backend_get_disbursal_batch_request',
                         'uses' => 'Backend\InvoiceController@disbursalBatchRequest',
                     ]);
+
+                    Route::get('disbursal-batch-request', [
+                        'as' => 'backend_get_disbursal_batch_request',
+                        'uses' => 'Backend\InvoiceController@disbursalBatchRequest',
+                    ]);
+
+                    Route::get('disbursal-payment-enquiry', [
+                        'as' => 'disbursal_payment_enquiry',
+                        'uses' => 'Backend\InvoiceController@disbursalPaymentEnquiry',
+                    ]);
                 }
             });
 
