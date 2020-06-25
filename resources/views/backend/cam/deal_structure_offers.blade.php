@@ -195,8 +195,10 @@
                             @endif
                             ): </b></td>
                     <td>{{$offerCharge->chrg_value}}</td>
+                    @if(($supplyOffer->offerCharges->count() == $key+1) && ($supplyOffer->offerCharges->count() %2 != 0))
+                    <td colspan="2">&nbsp;</td>
+                    @endif
                     @if($key%2 != 0)
-                    <td></td>
                 </tr>
                 @endif
                 @endforeach
