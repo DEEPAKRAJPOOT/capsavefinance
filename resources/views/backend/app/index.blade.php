@@ -50,7 +50,7 @@
                     ])
                     !!}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
 
                     {!!
                     Form::select('is_assign',
@@ -60,7 +60,7 @@
                     'class'=>'form-control'))
                     !!}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
 
                     {!!
                     Form::select('status',
@@ -70,11 +70,11 @@
                     'class'=>'form-control'))
                     !!}
                 </div> 
-                <div class="col-md-3">
+                <div class="col-md-4">
 
                     {!!
                     Form::select('pan',
-                    $panList,
+                    [''=>'Select Pan'] + $panList,
                     null,
                     array('id' => 'pan',
                     'class'=>'form-control'))

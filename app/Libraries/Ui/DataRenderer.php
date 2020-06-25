@@ -175,6 +175,12 @@ class DataRenderer implements DataProviderInterface
                             });
                         }
                     }
+                    if ($request->get('pan') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $pan = $request->get('pan');
+                            $query->where('anchor_user.pan_no', $pan);
+                        });
+                    }                    
                 })
                 ->make(true);
     }
@@ -412,7 +418,7 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('pan') != '') {
                         $query->where(function ($query) use ($request) {
                             $pan = $request->get('pan');
-                            $query->where('app.is_assigned', $is_assigned);
+                            $query->where('anchor_user.pan_no', $pan);
                         });
                     }                    
                 })
@@ -2283,6 +2289,14 @@ class DataRenderer implements DataProviderInterface
                             });
                         }
                     }
+                    if ($request->has('pan')) {
+                        if ($request->get('pan') != '') {
+                            $query->where(function ($query) use ($request) {
+                                $pan = $request->get('pan');                                
+                                $query->where('anchor_user.pan_no',$pan);
+                            });
+                        }
+                    }                    
                 })
                 ->make(true);
     }

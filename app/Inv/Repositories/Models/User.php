@@ -262,7 +262,7 @@ class User extends Authenticatable
                     $join->on('lead_assign.assigned_user_id', '=', 'users.user_id');
                     $join->on('lead_assign.is_owner', '=', DB::raw("1"));                    
                 })
-                ->join('anchor_user', 'anchor_user.user_id', '=', 'users.user_id')
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'users.user_id')
                  ->where('users.user_type', 1);
         if ($roleData[0]->id == 11) {
             //$result->where('users.anchor_id', \Auth::user()->anchor_id);                        

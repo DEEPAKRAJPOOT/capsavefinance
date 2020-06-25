@@ -155,9 +155,10 @@ class Application extends BaseModel
                 ->leftJoin('role_user as assignee_ru', 'app_assign.to_id', '=', 'assignee_ru.user_id')
                 ->leftJoin('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
-                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');    
-                         
-                $query->where('users.anchor_id', \Auth::user()->anchor_id);            
+                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')
+                ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
+                
+                $query->where('anchor_user.anchor_id', \Auth::user()->anchor_id);            
         } else {
         $query  = $query->join('app_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');
@@ -175,8 +176,8 @@ class Application extends BaseModel
                 ->join('role_user as assignee_ru', 'app_assign.to_id', '=', 'assignee_ru.user_id')
                 ->join('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
-                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');    
-
+                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')    
+                ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
         }
                 //$query->where('users.anchor_user_id', \Auth::user()->user_id);            
                 //$query->where('users.anchor_id', \Auth::user()->anchor_id);              

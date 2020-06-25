@@ -47,7 +47,20 @@ class LeadController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return view('backend.lead.index');
+        
+        $whereCond=[];
+        $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
+
+        if ($roleData && $roleData->id == 11) {
+            $whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];                
+        }
+        $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+        $panList = [];
+        foreach($anchUserData as $anchUser) {
+            $panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->biz_name . ")";
+            //$panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->name . " " . $anchUser->l_name . ")";
+        }        
+        return view('backend.lead.index')->with('panList', $panList);
     }
 
     /**
@@ -631,8 +644,21 @@ class LeadController extends Controller {
     * 
     * @return type
     */
-     public function getAnchorLeadList() {        
-        return view('backend.anchor.anchor_lead_list');
+     public function getAnchorLeadList() {
+         
+        $whereCond=[];
+        $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
+
+        if ($roleData && $roleData->id == 11) {
+            $whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];                
+        }
+        $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+        $panList = [];
+        foreach($anchUserData as $anchUser) {
+            $panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->biz_name . ")";
+            //$panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->name . " " . $anchUser->l_name . ")";
+        }         
+        return view('backend.anchor.anchor_lead_list')->with('panList', $panList);
     }
     
      public function addManualAnchorLead() {

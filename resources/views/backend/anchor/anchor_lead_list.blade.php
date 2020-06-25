@@ -21,7 +21,20 @@
         <div class="card-body">
            
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-4">
+
+                    {!!
+                    Form::select('pan',
+                    [''=>'Select Pan'] + $panList,
+                    null,
+                    array('id' => 'pan',
+                    'class'=>'form-control'))
+                    !!}
+                </div>
+                <div class="col-sm-2">
+                    <button id="searchB" type="button" class="btn  btn-success btn-sm">Search</button>
+                </div>                
+                <div class="col-sm-6">
                     <div class="head-sec">
                         <div class="pull-right" style="margin-bottom: 10px;">
                         @can('add_anchor_lead')   

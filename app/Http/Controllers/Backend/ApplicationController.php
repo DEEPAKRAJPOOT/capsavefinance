@@ -64,13 +64,15 @@ class ApplicationController extends Controller
             
             $whereCond=[];
             $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
-            if ($roleData[0]->id == 11) {
+           
+            if ($roleData && $roleData->id == 11) {
                 $whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];                
             }
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
-            $panList = [''=>'Select Pan'];
+            $panList = [];
             foreach($anchUserData as $anchUser) {
                 $panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->biz_name . ")";
+                //$panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->name . " " . $anchUser->l_name . ")";
             }
 	   return view('backend.app.index')->with('panList', $panList);              
 	}
