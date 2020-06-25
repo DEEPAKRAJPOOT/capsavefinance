@@ -60,7 +60,7 @@
                                     @endif
                                     
                                     <div class="col-md-3">
-                                    <ul>
+                                    <ul class="treeList">
                                         <li>
 
                                             @php $checked = ($match==1)?'checked':'' @endphp

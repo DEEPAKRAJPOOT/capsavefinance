@@ -3,14 +3,15 @@
 
 try {
     jQuery(document).ready(function ($) {
-        
+        /*
         $("input[type='checkbox']").change(function () {
             $(this).siblings('ul')
                     .find("input[type='checkbox']")
                     .prop('checked', this.checked);
             $('#myerr').css('display','none');
         });
-                      
+        */
+       
         $('#checkAll').click(function () {
             $("input[type='checkbox']")
                     .prop('checked', true);
@@ -60,7 +61,7 @@ try {
         
         $("#tree").linkNestedCheckboxes();
         */
-       
+        /*
         $('input').on('change', function() {
             var $this = $(this);
             var checkboxes = $this.parents().children('input');
@@ -68,6 +69,22 @@ try {
                 return checkboxes.prop("checked", true);
             }
             checkboxes.prop("checked", false);
+        });
+        */
+
+        $('.treeList :checkbox').change(function (){
+            $(this).siblings('ul').find(':checkbox').prop('checked', this.checked);
+            if (this.checked) {
+                $(this).parentsUntil('.treeList', 'ul').siblings(':checkbox').prop('checked', true);
+            } else {
+                $(this).parentsUntil('.treeList', 'ul').each(function(){
+                    var $this = $(this);
+                    var childSelected = $this.find(':checkbox:checked').length;
+                    if (!childSelected) {
+                        $this.prev(':checkbox').prop('checked', false);
+                    }
+                });
+            }
         });       
     });
 
