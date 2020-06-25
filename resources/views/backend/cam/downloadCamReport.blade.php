@@ -6,16 +6,16 @@
       <link rel="stylesheet" href="{{url('backend/assets/css/data-table.css')}}" />
       <style>
          @page {
-            margin: 0px;
+            margin: 2cm;
          }
          /** Define the header rules **/
          header {
                position: fixed;
-               top:-0.5cm;
+               top:-1cm;
          }
          footer {
                position: fixed;
-               bottom:0.5cm;
+               bottom:1cm;
          }
         *{
             font-size:10px !important;
