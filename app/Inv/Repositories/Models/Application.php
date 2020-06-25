@@ -836,5 +836,19 @@ class Application extends BaseModel
          return self::where(['user_id' =>$uid,'status' => 2])->first();
          
      }
+     
+     public static function checkAppByPan($userId)
+     {
+        $appData = self::select('app.*')
+                ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id') 
+                ->join(DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
+                    $join->on( 'anchor_user.pan_no', '=', 'a.pan_no' );
+                })                                
+                ->setBindings([$userId])
+                ->whereIn('app.status', [0,1])
+                ->first();
+                       
+        return ($appData && $appData->app_id ? true : false);    
+     }
 
 }

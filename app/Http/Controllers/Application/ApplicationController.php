@@ -48,15 +48,16 @@ class ApplicationController extends Controller
     {
         $userId  = Session::has('userId') ? Session::get('userId') : (\Auth::user() ? \Auth::user()->user_id : 0);
         if (!$request->get('app_id')) {            
-            $where=[];
-            $where['user_id'] = $userId;
-            $where['status'] = [0,1];
-            $appData = $this->appRepo->getApplicationsData($where);
-
+            //$where=[];
+            //$where['user_id'] = $userId;
+            //$where['status'] = [0,1];
+            //$appData = $this->appRepo->getApplicationsData($where);
+            $appData = $this->appRepo->checkAppByPan($userId);
             $userData = $this->userRepo->getfullUserDetail($userId);           
             $isAnchorLead = $userData && !empty($userData->anchor_id);
 
-            if (isset($appData[0])) {
+            //if (isset($appData[0])) {
+            if ($appData) {
                 Session::flash('message', 'You can\'t create a new application before sanctions.');
                 return redirect()->back();
             }

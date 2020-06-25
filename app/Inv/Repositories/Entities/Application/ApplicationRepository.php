@@ -2334,6 +2334,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Business::getBizDataByPan($pan, $userId);
     }    
 
+     public function checkAppByPan($userId)
+     {
+         return Application::checkAppByPan($userId);
+     }    
 }
 
 
