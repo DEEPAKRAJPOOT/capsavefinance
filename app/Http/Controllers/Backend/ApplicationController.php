@@ -61,8 +61,18 @@ class ApplicationController extends Controller
 	 */
 	public function index()
 	{  
-	
-	   return view('backend.app.index');              
+            
+            $whereCond=[];
+            $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
+            if ($roleData[0]->id == 11) {
+                $whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];                
+            }
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+            $panList = [''=>'Select Pan'];
+            foreach($anchUserData as $anchUser) {
+                $panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->biz_name . ")";
+            }
+	   return view('backend.app.index')->with('panList', $panList);              
 	}
 	
 	public function addAppCopy(Request $request)

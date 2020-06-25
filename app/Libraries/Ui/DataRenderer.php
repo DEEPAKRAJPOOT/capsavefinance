@@ -407,8 +407,14 @@ class DataRenderer implements DataProviderInterface
                                 $query->where('app.renewal_status', $status);
                             }
                         });
-                    }                    
+                    }  
                     
+                    if ($request->get('pan') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $pan = $request->get('pan');
+                            $query->where('app.is_assigned', $is_assigned);
+                        });
+                    }                    
                 })
                 ->make(true);
     }

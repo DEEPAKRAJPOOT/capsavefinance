@@ -69,6 +69,16 @@
                     array('id' => 'status',
                     'class'=>'form-control'))
                     !!}
+                </div> 
+                <div class="col-md-3">
+
+                    {!!
+                    Form::select('pan',
+                    $panList,
+                    null,
+                    array('id' => 'pan',
+                    'class'=>'form-control'))
+                    !!}
                 </div>                
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>

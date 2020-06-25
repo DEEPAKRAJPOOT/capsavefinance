@@ -21,6 +21,7 @@ try {
                     d.search_keyword = $('input[name=search_keyword]').val();
                     d.is_assign = $('select[name=is_assign]').val();
                     d.status = $('select[name=status]').val();
+                    d.pan = $('select[name=pan]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
