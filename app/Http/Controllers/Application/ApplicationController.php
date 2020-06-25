@@ -103,7 +103,16 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
-
+            
+            $whereCond=[];
+            //$whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];      
+            $whereCond[] = ['user_id', '=', Auth::user()->user_id];            
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);            
+            if (isset($anchUserData[0]) && $anchUserData[0]->pan_no != $arrFileData['biz_pan_number']) {                
+                Session::flash('message', 'You can\'t changed the registered pan number.');
+                return redirect()->back();
+            }
+            
             if(request()->is_gst_manual == 1){
               $arrFileData['biz_gst_number'] = request()->get('biz_gst_number_text');
             }
