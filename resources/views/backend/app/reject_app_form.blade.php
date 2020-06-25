@@ -46,10 +46,10 @@ Form::open(
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
-            <label for="reason"> Comments
+            <label for="reason"> Comment
                 <span class="mandatory">*</span>
             </label>
-            <textarea type="text" name="reason" value="" class="form-control" tabindex="1" maxlength="500" placeholder="write reason..." data-error="#errNm2">{{ $reason }}</textarea>
+            <textarea type="text" name="reason" value="" class="form-control" tabindex="1" maxlength="500" placeholder="add comment" data-error="#errNm2">{{ $reason }}</textarea>
         </div>
         <div class="errorTxt">
             <span id="errNm2"></span>
