@@ -344,7 +344,7 @@ class Business extends BaseModel
                 'gstno_pan_gst_id'=>0,
                 'is_gst_verified'=>1,
                 ]);
-        }else if(empty($attributes['pan_api_res']) && isset($attributes['biz_cin'])){
+        }else if(empty($attributes['pan_api_res'])){
             //update for parent GST
             BizPanGst::where(['type'=>2,'biz_id'=>$bizId, 'parent_pan_gst_id'=>0, 'biz_owner_id'=>null])->update([
                     'pan_gst_hash'=>$attributes['biz_gst_number'],
@@ -352,12 +352,13 @@ class Business extends BaseModel
                     'updated_by'=>Auth::user()->user_id
                 ]);
 
-            //update for CIN
-            BizPanGst::where(['type'=>1,'biz_id'=>$bizId, 'parent_pan_gst_id'=>0, 'biz_owner_id'=>null])->update([
-                    'cin'=>$attributes['biz_cin'],
-                    'updated_by'=>Auth::user()->user_id
-                ]);
         }
+
+        //update for CIN
+        BizPanGst::where(['type'=>1,'biz_id'=>$bizId, 'parent_pan_gst_id'=>0, 'biz_owner_id'=>null])->update([
+                'cin'=>(isset($attributes['biz_cin']))? $attributes['biz_cin']: NULL,
+                'updated_by'=>Auth::user()->user_id
+            ]);
 
         // update into rta_app table
         $app = Application::where('biz_id',$bizId)->first();
