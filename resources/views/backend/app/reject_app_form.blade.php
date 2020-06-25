@@ -18,15 +18,25 @@ Form::open(
         <label for="reason"> Status
                 <span class="mandatory">*</span>
         </label>
-        <div class="form-group form-check form-check-inline">
-            <input type="radio" class="form-check-input" {{($status_id == config('common.mst_status_id')['APP_REJECTED']) ? 'checked' : ''}} id="status1" name="status" value="1" data-error="#errNm1">
-            <label class="form-check-label" for="status1">Reject</label>
-            <input type="radio" class="form-check-input" {{($status_id == config('common.mst_status_id')['APP_CANCEL']) ? 'checked' : ''}} id="status2" name="status" value="2" data-error="#errNm1">
-            <label class="form-check-label" for="status2">Cancel</label>
-            <input type="radio" class="form-check-input" {{($status_id == config('common.mst_status_id')['APP_HOLD']) ? 'checked' : ''}} id="status3" name="status" value="3" data-error="#errNm1">
-            <label class="form-check-label" for="status3">Hold</label>
-            <input type="radio" class="form-check-input" {{($status_id == config('common.mst_status_id')['APP_DATA_PENDING']) ? 'checked' : ''}} id="status4" name="status" value="4" data-error="#errNm1">
-            <label class="form-check-label" for="status4">Data Pending</label>
+        <div class="form-group form-check">
+            <ul class="custom-check-label">
+                <li>
+                    <input type="radio" class="form-check-input" {{($status_id == config('common.mst_status_id')['APP_REJECTED']) ? 'checked' : ''}} id="status1" name="status" value="1" data-error="#errNm1">
+                    <label class="form-check-label" for="status1">Reject</label>
+                </li>
+                <li>
+                    <input type="radio" class="form-check-input" {{($status_id == config('common.mst_status_id')['APP_CANCEL']) ? 'checked' : ''}} id="status2" name="status" value="2" data-error="#errNm1">
+                    <label class="form-check-label" for="status2">Cancel</label> 
+                </li>
+                <li>
+                    <input type="radio" class="form-check-input" {{($status_id == config('common.mst_status_id')['APP_HOLD']) ? 'checked' : ''}} id="status3" name="status" value="3" data-error="#errNm1">
+                    <label class="form-check-label" for="status3">Hold</label>
+                </li>
+                <li>
+                    <input type="radio" class="form-check-input" {{($status_id == config('common.mst_status_id')['APP_DATA_PENDING']) ? 'checked' : ''}} id="status4" name="status" value="4" data-error="#errNm1">
+                    <label class="form-check-label" for="status4">Data Pending</label>
+                </li>
+            </ul>
         </div>
         <div class="errorTxt">
             <span id="errNm1"></span>
