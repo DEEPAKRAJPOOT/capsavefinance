@@ -528,21 +528,20 @@ class ApplicationController extends Controller
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
-	
-	public function documentDelete($appDocFileId)
+	public function documentDelete(Request $request)
 	{
-		try {
-			$response = $this->docRepo->deleteDocument($appDocFileId);
-			
-			if ($response) {
-				Session::flash('message',trans('success_messages.deleted'));
-				return redirect()->back();
-			} else {
-				return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
-			}
-		} catch (Exception $ex) {
-			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-		}
+            try {
+                    $appDocFileId = $request->get('app_doc_file_id');
+                    $response = $this->docRepo->deleteDocument($appDocFileId);
+                    if ($response) {
+                            Session::flash('message',trans('success_messages.deleted'));
+                            return redirect()->back();
+                    } else {
+                            return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+                    }
+            } catch (Exception $ex) {
+                    return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
 	}
 	
 	/**
