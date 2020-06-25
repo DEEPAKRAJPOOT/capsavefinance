@@ -1,10 +1,9 @@
 body {
-	font-size: 13px;
+	font-size: 14px;
 }
 
 label {
 	font-weight: bold;
-        font-size: 13px;
 }
 
 label.fnt {
@@ -245,7 +244,7 @@ table.remove-tr-bg tbody tr {
 
 #PermissionsForm ul li {
 	float: left;
-	width: 100%;
+	width: 25%;
 	margin: 0 0 3px 0;
 	list-style-type: none;
 	min-height: 255px;
@@ -378,7 +377,7 @@ table.remove-tr-bg tbody tr {
 }
 
 .accordion .card-header:after {
-	font-family:'fontAwesome',sans-serif;
+	font-family: 'FontAwesome';
 	content: "-";
 	float: right;
 	position: absolute;
@@ -513,6 +512,7 @@ table.remove-tr-bg tbody tr {
 	left: 0;
 	top: 0;
 	opacity: 0;
+	top: 0px;
 }
 
 .document-list li {
@@ -666,7 +666,7 @@ ul.form-row-inline .li-row {
 .rating>label:before {
 	margin: 0 5px;
 	font-size: 1.25em;
-	font-family:'fontAwesome',sans-serif;
+	font-family: FontAwesome;
 	display: inline-block;
 	content: "\f005";
 }
@@ -794,7 +794,7 @@ ul.form-row-inline .li-row {
 }
 
 .trigger:after {
-	font-family:'fontAwesome',sans-serif;;
+	font-family: 'FontAwesome';
 	content: "+";
 	float: right;
 	position: absolute;
@@ -807,7 +807,7 @@ ul.form-row-inline .li-row {
 }
 
 .trigger.minus:after {
-	font-family:'fontAwesome',sans-serif;;
+	font-family: 'FontAwesome';
 	content: "-";
 	float: right;
 	position: absolute;
@@ -823,7 +823,7 @@ ul.form-row-inline .li-row {
 
 select.form-control {
 	color: #495057;
-	font-size: 13px;
+	font-size: 15px;
 	letter-spacing: 1px;
 }
 
@@ -839,12 +839,11 @@ select.form-control {
 }
 
 .table.overview-table .btn {
-    padding: .4rem .4rem;
-    vertical-align: top;
-    line-height: 20px;
-    font-size: 13px;
-    margin: 0 2px;
-    min-width: 30px;
+	padding: 0.1rem .5rem;
+	vertical-align: top;
+	line-height: 20px;
+	font-size: 13px;
+        margin: 0 3px;
 }
 
 .btn-success {
@@ -998,7 +997,7 @@ label.col-md-4 {
 
 .panel-title>a:before {
 	float: right;
-	font-family:'fontAwesome',sans-serif;
+	font-family: FontAwesome;
 	content: "\f056";
 	padding-right: 5px;
 	font-size: 30px;
@@ -1251,11 +1250,10 @@ span.multiselect-native-select select {
 }
 
 .form-control {
-    background: #fff;
-    box-shadow: 0 1px 1px 2px #f5f5f5;
-    border-radius: 7px;
-    border: none;
-    font-size: 13px !important;
+	background: #fff;
+	box-shadow: 0 1px 1px 2px #f5f5f5;
+	border-radius: 7px;
+	border: none;
 }
 
 .align-middle {
@@ -1314,7 +1312,7 @@ table tr td{position:relative;}
 header{padding:10px 0;margin-bottom:20px;border-bottom:1px solid #d8d8d8;}
 #logo{float:left;margin-top:8px;}
 #logo img{height:70px;}
-#company{float:right;width:100%;text-align:center;}
+#company{float:right;text-align:right;width:100%;text-align:center;}
 #details{margin-bottom:30px;}
 #client{padding-left:6px;border-left:6px solid #108763;float:left;}
 #client .to{color:#777777;}
@@ -1431,14 +1429,6 @@ ul.custom-tab li a{color: #7a7b7c;border-radius:  0 !important; border: 0 !impor
 ul.custom-tab li a:hover {color: #ffffff !important;border-color: 0 !important;background: #138864 !important;}
 ul.custom-tab li a:focus {color: #fff !important;border-color: 0 !important;}
 ul.custom-tab li a.active {color: #ffffff !important;border-color:0 !important;background: #138864 !important;}
-
-.table tr td:last-child {
-   white-space: nowrap;
-}
-
-.modal-body {
-    font-size: 13px;
-}
 
 ul.custom-check-label{display:flex;justify-content:space-between;padding:0;}
 ul.custom-check-label li{list-style:none;}
