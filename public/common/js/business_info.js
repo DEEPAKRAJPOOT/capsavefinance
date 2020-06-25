@@ -157,7 +157,7 @@ function fillCINInput(datas){
 	let res ='';
 	let option_html = '<option value="">Select CIN Number</option>';
 	$(datas.result).each(function(i,data){
-		if (data.score >= 0.95 ) {
+		if (data.score >= 0.80 ) {
          	res += data.cin+',';
 		 	option_html += '<option value="'+data.cin+'">'+data.cin+'</option>';
 		}
