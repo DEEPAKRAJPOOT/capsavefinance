@@ -81,11 +81,8 @@
     <body>
         <main>
             <div class="breakNow">
-                <table border="1px" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
+                <table border="1px" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1" class="table white-space table-striped cell-border dataTable no-footer overview-table">
                     <tr>
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#138864">
-                            <span style="font-size: small;"><strong>S. No.</strong></span>
-                        </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#138864">
                             <span style="font-size: small;"><strong>Status</strong></span>
                         </td>
@@ -93,15 +90,14 @@
                             <span style="font-size: small;"><strong>Comments</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#138864">
-                            <span style="font-size: small;"><strong>Created At</strong></span>
+                            <span style="font-size: small;"><strong>Created By</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#138864">
-                            <span style="font-size: small;"><strong>Created By</strong></span>
+                            <span style="font-size: small;"><strong>Created At</strong></span>
                         </td>
                     </tr>
                     @if($allCommentsData)
                     @php
-                        $i = 1;
                         $statusIdArr = [
                             43 => 'Rejected',
                             44 => 'Cancelled',
@@ -112,19 +108,16 @@
                     @foreach($allCommentsData as $rowData)
                     <tr>
                         <td style="border: 1px solid #ddd;padding: 5px;">
-                            <span style="font-size: small;">{{ $i++ }}</span>
-                        </td>
-                        <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{ $statusIdArr[$rowData->status_id] }}</span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{ $rowData->note_data }}</span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;">
-                            <span style="font-size: small;">{{ $rowData->created_at }}</span>
+                            <span style="font-size: small;">{{$rowData->f_name.' '.$rowData->m_name}}</span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;">
-                            <span style="font-size: small;">{{$rowData->f_name.' '.$rowData->m_name}}</span>
+                            <span style="font-size: small;">{{ $rowData->created_at }}</span>
                         </td>
                     </tr>
                     @endforeach
