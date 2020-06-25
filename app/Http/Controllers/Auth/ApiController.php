@@ -732,7 +732,7 @@ class ApiController
     		$err_msg = $postdata['errorMessage'];
     		if (strtolower($status) != 'completed') {
           //$err_detail = $postdata['financialYearErrorDetails'] ?? $postdata['errorDetailsForFinancialYear'];
-    			$response['message'] =  $err_msg ?? "Some error occured.";
+    			$response['message'] =  $err_msg ?? "Some error occured. While Parsing errorMessage";
     			return print(json_encode($response));
     		}
     		$perfios_data = FinanceModel::getPerfiosData($perfiostransactionid);
