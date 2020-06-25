@@ -87,7 +87,10 @@
                             <span style="font-size: small;"><strong>S. No.</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#138864">
-                            <span style="font-size: small;"><strong>Comments..</strong></span>
+                            <span style="font-size: small;"><strong>Status</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#138864">
+                            <span style="font-size: small;"><strong>Comments</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#138864">
                             <span style="font-size: small;"><strong>Created At</strong></span>
@@ -99,11 +102,20 @@
                     @if($allCommentsData)
                     @php
                         $i = 1;
+                        $statusIdArr = [
+                            43 => 'Rejected',
+                            44 => 'Cancelled',
+                            45 => 'On Hold',
+                            46 => 'Data Pending'
+                        ]
                     @endphp
                     @foreach($allCommentsData as $rowData)
                     <tr>
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{ $i++ }}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{ $statusIdArr[$rowData->status_id] }}</span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{ $rowData->note_data }}</span>
