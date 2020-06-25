@@ -6,7 +6,7 @@
       <link rel="stylesheet" href="{{url('backend/assets/css/data-table.css')}}" />
       <style>
          @page {
-            margin: 2cm;
+            margin-top: 2cm;
          }
          /** Define the header rules **/
          header {
