@@ -73,7 +73,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                         'name',
                         function ($user) {
-                    $panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>Business PAN:</strong> ' . $user->pan_no : ''; 
+                    $panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ''; 
                     $full_name = $user->f_name.' '.$user->l_name . $panInfo;
                     return $full_name;
                     
@@ -223,7 +223,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'biz_entity_name',
                     function ($app) {                        
-                        $panInfo = $app->pan_no && !empty($app->pan_no) ? '<br><strong>Business PAN:</strong> ' . $app->pan_no : ''; 
+                        $panInfo = $app->pan_no && !empty($app->pan_no) ? '<br><strong>PAN:</strong> ' . $app->pan_no : ''; 
                         return $app->biz_entity_name ? $app->biz_entity_name . $panInfo : '';
                 })
                 ->addColumn(
@@ -2221,7 +2221,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'biz_name',
                     function ($user) {
-                    //$panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>Business PAN:</strong> ' . $user->pan_no : ''; 
+                    //$panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ''; 
                     $biz_name = $user->biz_name;
                     return $biz_name;
 
