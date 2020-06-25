@@ -70,6 +70,7 @@
                     'class'=>'form-control'))
                     !!}
                 </div> 
+                
                 <div class="col-md-4">
 
                     {!!
@@ -79,7 +80,8 @@
                     array('id' => 'pan',
                     'class'=>'form-control'))
                     !!}
-                </div>                
+                </div>    
+                
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>
            <div class="row">     

@@ -28,7 +28,7 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by First name, Last name and Email',
+                    'placeholder' => 'Search by name and email',
                     'id'=>'by_name'
                     ])
                     !!}
@@ -43,6 +43,7 @@
                     'class'=>'form-control'))
                     !!}
                 </div>
+               
                 <div class="col-md-3">
 
                     {!!
@@ -52,7 +53,8 @@
                     array('id' => 'pan',
                     'class'=>'form-control'))
                     !!}
-                </div>                
+                </div>
+               
                 <div class="col-md-2">
                     <button id="searchB" type="button" class="btn  btn-success btn-sm">Search</button>
                 </div>

@@ -21,8 +21,9 @@
         <div class="card-body">
            
             <div class="row">
+                
                 <div class="col-sm-4">
-
+                   
                     {!!
                     Form::select('pan',
                     [''=>'Select Pan'] + $panList,
@@ -30,7 +31,17 @@
                     array('id' => 'pan',
                     'class'=>'form-control'))
                     !!}
+                   
+                   <!-- 
+                    {!!
+                    Form::text('pan',                    
+                    null,
+                    array('id' => 'pan',
+                    'class'=>'form-control', 'placeholder'=>'Search By Pan'))
+                    !!}
+                   -->
                 </div>
+                
                 <div class="col-sm-2">
                     <button id="searchB" type="button" class="btn  btn-success btn-sm">Search</button>
                 </div>                

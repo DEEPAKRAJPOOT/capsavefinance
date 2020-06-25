@@ -143,7 +143,7 @@ class Application extends BaseModel
                 'users.email',
                 'users.mobile_no',                
                 'app_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role',
-                'app_assign.app_assign_id', 'app.parent_app_id')
+                'app_assign.app_assign_id', 'app.parent_app_id','anchor_user.pan_no')
                 ->join('users', 'users.user_id', '=', 'app.user_id')  
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id');
         if ($roleData[0]->id == 11) {            
@@ -156,7 +156,7 @@ class Application extends BaseModel
                 ->leftJoin('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
                 ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')
-                ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
                 
                 $query->where('anchor_user.anchor_id', \Auth::user()->anchor_id);            
         } else {
@@ -177,7 +177,7 @@ class Application extends BaseModel
                 ->join('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
                 ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')    
-                ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
         }
                 //$query->where('users.anchor_user_id', \Auth::user()->user_id);            
                 //$query->where('users.anchor_id', \Auth::user()->anchor_id);              

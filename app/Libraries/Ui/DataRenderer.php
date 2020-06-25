@@ -60,7 +60,7 @@ class DataRenderer implements DataProviderInterface
     public function getUsersList(Request $request, $user)
     {
         return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'anchor', 'action', 'email','assigned'])
+                ->rawColumns(['id','name', 'checkbox', 'anchor', 'action', 'email','assigned'])
                 ->addColumn(
                     'id',
                     function ($user) {
@@ -73,7 +73,8 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                         'name',
                         function ($user) {
-                    $full_name = $user->f_name.' '.$user->l_name;
+                    $panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>Business PAN:</strong> ' . $user->pan_no : ''; 
+                    $full_name = $user->f_name.' '.$user->l_name . $panInfo;
                     return $full_name;
                     
                 })
@@ -161,7 +162,8 @@ class DataRenderer implements DataProviderInterface
                                 $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
                                 ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
                                 //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
@@ -191,7 +193,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','assoc_anchor', 'contact','name'])
+                ->rawColumns(['app_id','biz_entity_name','assignee', 'assigned_by', 'action','assoc_anchor', 'contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -221,7 +223,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'biz_entity_name',
                     function ($app) {                        
-                        return $app->biz_entity_name ? $app->biz_entity_name : '';
+                        $panInfo = $app->pan_no && !empty($app->pan_no) ? '<br><strong>Business PAN:</strong> ' . $app->pan_no : ''; 
+                        return $app->biz_entity_name ? $app->biz_entity_name . $panInfo : '';
                 })
                 ->addColumn(
                     'name',
@@ -387,7 +390,8 @@ class DataRenderer implements DataProviderInterface
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->where('app.app_id', 'like',"%$search_keyword%")
-                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
+                            ->orWhere('anchor_user.pan_no', 'like', "%$search_keyword%");
                         });                        
                     }
                     if ($request->get('is_assign') != '') {
@@ -2217,6 +2221,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'biz_name',
                     function ($user) {
+                    //$panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>Business PAN:</strong> ' . $user->pan_no : ''; 
                     $biz_name = $user->biz_name;
                     return $biz_name;
 
@@ -2295,6 +2300,7 @@ class DataRenderer implements DataProviderInterface
                             $query->where(function ($query) use ($request) {
                                 $pan = $request->get('pan');                                
                                 $query->where('anchor_user.pan_no',$pan);
+                                //$query->where('anchor_user.pan_no', 'like',"%$pan%");
                             });
                         }
                     }                    
