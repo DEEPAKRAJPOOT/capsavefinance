@@ -423,6 +423,7 @@ use RegistersUsers,
                     $otpArr['is_otp_resent'] = 0;
                     $otpArr['otp_exp_time'] = $formatted_date;
                     $otpArr['is_verified'] = 1;
+                    $otpArr['mobile_no'] = $userCheckArr->mobile_no;
                     $this->userRepo->saveOtp($otpArr);
                     $userMailArr['name'] = $name = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
@@ -540,6 +541,7 @@ use RegistersUsers,
                 $otpArr['is_otp_resent'] = 0;
                 $otpArr['otp_exp_time'] = $currentDate;
                 $otpArr['is_verified'] = 1;
+                $otpArr['mobile_no'] = $userCheckArr->mobile_no;
                 $this->userRepo->saveOtp($otpArr);
                 $userMailArr['name'] = $name =$userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                 $userMailArr['email'] = $userCheckArr->email;
@@ -571,11 +573,17 @@ use RegistersUsers,
                         $otpArr['is_otp_resent'] = 0;
                         $otpArr['otp_exp_time'] = $currentDate;
                         $otpArr['is_verified'] = 1;
+                        $otpArr['mobile_no'] = $userCheckArr->mobile_no;
                         $this->userRepo->saveOtp($otpArr);
                     }
                     $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
                     $userMailArr['otp'] = $Otpstring;
+                    $gupshup = new Gupshup_lib();
+                    $mobile_no = $userCheckArr->mobile_no;
+                    $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on Capsave.\r\n Regards";
+
+                    $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
                     Event::dispatch("user.sendotp", serialize($userMailArr));
                     return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_sent_messages'));
                 }

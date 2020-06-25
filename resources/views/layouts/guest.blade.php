@@ -22,7 +22,15 @@
             <div class="container">
                 <div class="d-flex">
                     <a href="#"><img src="{{url('frontend/assets/images/logo.svg')}}" alt="logo" width="150px"> </a>
+                    @if (Auth::user())
+                        <a style="padding-left: 80%;" href="{{ route('frontend_logout') }}" onclick="event.preventDefault();
+                            document.getElementById('logout-form').submit();">
+                             <span class="notification-text btn btn-primary verify-btn">Logout</span>
+                             <form id="logout-form" action="{{ route('frontend_logout') }}" method="POST" style="display: none;">{{ csrf_field() }}</form>
+                        </a>
+                    @endif
                 </div>
+            </div>
         </header>
         @yield('content')
         <div class="isloader" style="display:none;">  

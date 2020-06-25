@@ -579,7 +579,6 @@ class LeadController extends Controller {
             $anchId=(int)$anchId;
             $arrAnchorData = [
                 'comp_name' => $arrAnchorVal['comp_name'],
-                'comp_email' => $arrAnchorVal['email'],
                 'sales_user_id' => $arrAnchorVal['assigned_sale_mgr'],
                 'comp_phone' => $arrAnchorVal['phone'],
                 'comp_addr' => $arrAnchorVal['comp_addr'],
@@ -592,7 +591,6 @@ class LeadController extends Controller {
             $arrAnchorUserData = [
                 'f_name' => $arrAnchorVal['employee'],
                 'biz_name' => $arrAnchorData['comp_name'],
-                'email' => $arrAnchorData['comp_email'],
                 'mobile_no' => $arrAnchorData['comp_phone'],
             ];
             $Updateanchorinfo = $this->userRepo->updateUser($arrAnchorUserData, (int) $anchorInfo->user_id);
