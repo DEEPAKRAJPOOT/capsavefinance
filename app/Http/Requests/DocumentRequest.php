@@ -20,8 +20,8 @@ class DocumentRequest extends Request
     public function rules()
     {
         return [
-            'doc_file' => 'required|checkmime|max:1',
-            'doc_file.*' => 'required|checkmime|max:1'
+            'doc_file' => 'required|checkmime',
+            'doc_file.*' => 'required|checkmime'
         ];
     }
 

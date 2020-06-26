@@ -89,7 +89,6 @@
       search_business: "{{URL::route('search_business')}}",
       get_customer: "{{ route('get_customer') }}",
       get_to_settle_payments: "{{ route('get_to_settle_payments') }}",
-      //download_storage_file: "{{ route('download_storage_file',['file_id' => $invoice->userFile->file_id ]) }}",
       data_not_found: "{{ trans('error_messages.data_not_found') }}",
       token: "{{ csrf_token() }}",
       user_id:"{{ $user_id }}",

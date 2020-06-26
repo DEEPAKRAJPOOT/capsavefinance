@@ -74,16 +74,26 @@ class Mimes
      */
     public function isValid()
     {
-        $extension = strtolower($this->value->getClientOriginalExtension());
-
-        if (! array_key_exists($extension, $this->mimeTypes)) {
-            return false;
+        if (is_array($this->value)) {
+            foreach ($this->value as $key => $val) {
+                $extension = strtolower($val->getClientOriginalExtension());
+                if (! array_key_exists($extension, $this->mimeTypes)) {
+                    return false;
+                }
+                if (! in_array(strtolower($val->getMimeType()), $this->mimeTypes[$extension])) {
+                    return false;
+                }
+            }
+        } else {
+            $extension = strtolower($this->value->getClientOriginalExtension());
+            if (! array_key_exists($extension, $this->mimeTypes)) {
+                return false;
+            }
+            if (! in_array(strtolower($this->value->getMimeType()), $this->mimeTypes[$extension])) {
+                return false;
+            }
         }
-
-        if (! in_array(strtolower($this->value->getMimeType()), $this->mimeTypes[$extension])) {
-            return false;
-        }
-
+        
         return true;
     }
 }
