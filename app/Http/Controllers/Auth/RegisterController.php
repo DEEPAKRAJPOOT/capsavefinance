@@ -553,7 +553,13 @@ use RegistersUsers,
                     $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
                     if(Auth::loginUsingId($userDetails->user_id)) {
-                        return redirect()->route('business_information_open');
+                        $appData = $this->application->checkAppByPan($userId); 
+                        if ($appData) {
+                            //Session::flash('message', trans('error_messages.active_app_check'));                            
+                            return redirect()->route('front_application_list');
+                        } else {
+                            return redirect()->route('business_information_open');
+                        }
                     }
                     //return redirect()->route('login_open');
                 } else {

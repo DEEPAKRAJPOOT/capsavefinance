@@ -39,7 +39,7 @@ class RenewalController extends Controller {
 
         $flag = 0; 
         if (isset($appData[0])) {
-        //    Session::flash('message', 'You can\'t create a new application before sanctions.');
+        //    Session::flash('message', trans('error_messages.active_app_check'));
         //    return redirect()->back();
             $flag = 1; 
         }

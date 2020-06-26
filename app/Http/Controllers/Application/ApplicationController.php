@@ -58,7 +58,7 @@ class ApplicationController extends Controller
 
             //if (isset($appData[0])) {
             if ($appData) {
-                Session::flash('message', 'You can\'t create a new application before sanctions.');
+                Session::flash('message', trans('error_messages.active_app_check'));
                 return redirect()->back();
             }
         }

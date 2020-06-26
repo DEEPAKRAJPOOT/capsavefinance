@@ -1070,8 +1070,8 @@ class ApplicationController extends Controller
             $isAnchorLead = $userData && !empty($userData->anchor_id);
             
             //if (isset($appData[0])) {
-            if ($appData) {
-                Session::flash('message', 'You can\'t create a new application before sanctions.');
+            if ($appData) {                
+                Session::flash('message', trans('error_messages.active_app_check'));   
                 return redirect()->back();
             }
             
