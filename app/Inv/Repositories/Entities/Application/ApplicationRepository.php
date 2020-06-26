@@ -2337,7 +2337,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      public function checkAppByPan($userId)
      {
          return Application::checkAppByPan($userId);
-     }    
+     }
+     
+    public function getApplicationsByPan($userId)
+    {
+        return Application::getApplicationsByPan($userId);
+    }
 }
 
 
