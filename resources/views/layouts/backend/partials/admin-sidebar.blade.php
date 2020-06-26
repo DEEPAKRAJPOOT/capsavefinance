@@ -16,6 +16,7 @@
 	@endcan
     
         @if(config('lms.LMS_STATUS'))
+	@can('lease_register')
         <li class="nav-item">
             <a class="nav-link"  href="{{ route('lease_register') }}">
                 <i class="fa fa-files-o"></i>
@@ -24,6 +25,7 @@
             </a>
 
         </li>
+        @endcan
         @endif
 
 
