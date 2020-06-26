@@ -51,8 +51,8 @@ try {
         //Search
         $('#searchbtn').on('click', function (e) {            
             oTable.draw();
-        });    
-                     
+        });
+                 
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

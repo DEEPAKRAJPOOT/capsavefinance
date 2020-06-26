@@ -408,6 +408,7 @@ class userInvoiceController extends Controller
             $requestedData['created_at'] = \carbon\Carbon::now();
             $requestedData['created_by'] = Auth::user()->user_id;
             unset($company_data['state']);
+            $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
             $userInvoiceData = [
                 'user_id' => $requestedData['user_id'],
                 'user_invoice_rel_id' => $user_invoice_rel_id,
@@ -429,7 +430,7 @@ class userInvoiceController extends Controller
                 'inv_comp_data' => json_encode($company_data),
                 'registered_comp_id' => $registeredCompany['comp_addr_id'],
                 'comp_addr_register' => json_encode($registeredCompany),
-                'bank_id' => $company_data['bank_id'],
+                'bank_id' => $bank_id,
                 'is_active' => 1,
                 'created_at' => $requestedData['created_at'],
                 'created_by' => $requestedData['created_by'],
@@ -594,16 +595,17 @@ class userInvoiceController extends Controller
             $sgst_amt = 0;
             $sgst_rate = 0;
             $base_amt = $totalamount;
+            $totalGST = 18;
             if ($txn->gst == 1) {
-                $base_amt = $totalamount * 100/118;
+                $base_amt = $totalamount * 100/(100 + $totalGST);
                 if(!$is_state_diffrent) {
-                    $cgst_rate = 9;
+                    $cgst_rate = ($totalGST/2);
                     $cgst_amt = round((($base_amt * $cgst_rate)/100),2);
-                    $sgst_rate = 9;
+                    $sgst_rate = ($totalGST/2);
                     $sgst_amt = round((($base_amt * $sgst_rate)/100),2);
                 } else {
-                   $igst_rate = 18;
-                    $igst_amt = round((($base_amt * $igst_rate)/100),2); 
+                   $igst_rate = $totalGST;
+                   $igst_amt = round((($base_amt * $igst_rate)/100),2); 
                 }
             }
 
@@ -647,9 +649,9 @@ class userInvoiceController extends Controller
             $user_id = $request->get('user_id');
             $userAddresswithbiz = $this->UserInvRepo->getAddressByUserId($user_id);
             $capsave_addr = $this->UserInvRepo->getCapsavAddr();
-            if (empty($userAddresswithbiz) || $userAddresswithbiz->count() != 1) {
+            /*if (empty($userAddresswithbiz) || $userAddresswithbiz->count() != 1) {
                return redirect()->back()->with(['user_id' => $user_id])->with('error', 'Multiple / No default addresses found.');
-            }
+            }*/
             $result = $this->getUserLimitDetais($user_id);
             return view('lms.invoice.user_invoice_location')->with(['user_id'=> $user_id, 'capsave_addr' => $capsave_addr, 'user_addr' => $userAddresswithbiz,'userInfo' =>  $result['userInfo'], 'application' => $result['application'], 'anchors' =>  $result['anchors']]);
         } catch (Exception $ex) {

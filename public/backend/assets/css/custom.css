@@ -1430,3 +1430,6 @@ ul.custom-tab li a:hover {color: #ffffff !important;border-color: 0 !important;b
 ul.custom-tab li a:focus {color: #fff !important;border-color: 0 !important;}
 ul.custom-tab li a.active {color: #ffffff !important;border-color:0 !important;background: #138864 !important;}
 
+ul.custom-check-label{display:flex;justify-content:space-between;padding:0;}
+ul.custom-check-label li{list-style:none;}
+ul.custom-check-label li label{padding:0;font-weight: 400;}

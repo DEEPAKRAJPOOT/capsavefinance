@@ -72,7 +72,7 @@ use App\Inv\Repositories\Models\CamHygiene;
 use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\UserDetail;
-
+use App\Inv\Repositories\Models\BizEntityCin;
 
 /**
  * Application repository class
@@ -2306,6 +2306,40 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         } catch (Exception $ex) {
              return $ex;
         }
+    }
+    
+    /**
+     * Save Biz Entity Cin Data
+     * 
+     * @param array $bizEntityCinData
+     * @return mixed
+     */
+    public function saveBizEntityCinData($bizEntityCinData)
+    {
+        return BizEntityCin::create($bizEntityCinData);
+    }
+
+    /**
+     * Get Biz Entity Cin Data
+     * 
+     * @param array $whereCond
+     * @return mixed
+     */
+    public function getBizEntityCinData($whereCond=[])
+    {
+        return BizEntityCin::getBizEntityCinData($whereCond);
+    }    
+
+    public function getNoteDataById($noteId, $AppId){
+        return AppNote::getNoteDataById($noteId, $AppId);
+    } 
+
+    public function findNoteDatabyNoteId($noteId){
+        return AppNote::findNoteDatabyNoteId($noteId);
+    }
+
+    public function getAllCommentsByAppId($appId){
+        return AppNote::getAllCommentsByAppId($appId);
     }
 
 }

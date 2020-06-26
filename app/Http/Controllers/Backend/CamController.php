@@ -175,6 +175,10 @@ class CamController extends Controller
             $arrCamData = $request->all();
 
             $userId = Auth::user()->user_id;
+
+            if(!isset($arrCamData['t_o_f_takeout'])){
+              $arrCamData['t_o_f_takeout'] = NULL; 
+            }
             if(!isset($arrCamData['rating_no'])){
                     $arrCamData['rating_no'] = NULL;
             }
