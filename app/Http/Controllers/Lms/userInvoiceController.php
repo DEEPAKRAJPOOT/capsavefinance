@@ -408,6 +408,7 @@ class userInvoiceController extends Controller
             $requestedData['created_at'] = \carbon\Carbon::now();
             $requestedData['created_by'] = Auth::user()->user_id;
             unset($company_data['state']);
+            $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
             $userInvoiceData = [
                 'user_id' => $requestedData['user_id'],
                 'user_invoice_rel_id' => $user_invoice_rel_id,
@@ -429,7 +430,7 @@ class userInvoiceController extends Controller
                 'inv_comp_data' => json_encode($company_data),
                 'registered_comp_id' => $registeredCompany['comp_addr_id'],
                 'comp_addr_register' => json_encode($registeredCompany),
-                'bank_id' => $company_data['bank_id'],
+                'bank_id' => $bank_id,
                 'is_active' => 1,
                 'created_at' => $requestedData['created_at'],
                 'created_by' => $requestedData['created_by'],

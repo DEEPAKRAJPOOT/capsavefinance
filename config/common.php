@@ -101,6 +101,10 @@ return [
         'POST_SANCTION_DOC_UPLOADED'=>26,
         'OFFER_GENERATED'=>28,
         'DISBURSED'=>27,
+        'APP_REJECTED'=>43,
+        'APP_CANCEL'=>44,
+        'APP_HOLD'=>45,
+        'APP_DATA_PENDING'=>46,
     ],
     'facility_type' => [
         '1' => 'Rental Facility',

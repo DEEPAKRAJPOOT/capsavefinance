@@ -58,6 +58,7 @@ class AppStatusLog extends BaseModel
        'user_id',
        'app_id',
        'status_id',
+       'note_id',
        'created_by',
        'created_at'
    ];
