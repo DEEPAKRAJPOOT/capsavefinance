@@ -1453,7 +1453,7 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function lmsGetCustomers()
     {
 
-        $getAppId  = Application::where(['status' => 2])->pluck('app_id');
+        $getAppId  = Application::getSanctionApp();
         $result = LmsUser::whereIn('app_id',$getAppId)->with('user')->orderBy('lms_user_id','DESC');
         return $result ?: false;
     }

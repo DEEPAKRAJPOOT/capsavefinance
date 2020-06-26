@@ -851,4 +851,20 @@ class Application extends BaseModel
         return ($appData && $appData->app_id ? true : false);    
      }
 
+     public static function getSanctionApp() 
+     {
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
+        if (isset($roleData[0]) && $roleData[0]->id == 11) {
+            $getAppId  = self::select('app.*')
+                    ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
+                    ->where(['app.status' => 2])
+                    ->where(['anchor_user.anchor_id' => \Auth::user()->anchor_id])
+                    ->pluck('app.app_id');
+        } else {
+            $getAppId  = self::select('app.*')
+                    ->where(['status' => 2])
+                    ->pluck('app_id');            
+        }
+        return $getAppId;
+     }
 }
