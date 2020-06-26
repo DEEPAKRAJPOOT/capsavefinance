@@ -23,23 +23,23 @@
             <div class="row">
                 
                 <div class="col-sm-4">
-                   
+                   <!-- 
                     {!!
                     Form::select('pan',
-                    [''=>'Select Pan'] + $panList,
+                    [''=>'Select Pan'],
                     null,
                     array('id' => 'pan',
                     'class'=>'form-control'))
                     !!}
+                    -->
                    
-                   <!-- 
                     {!!
-                    Form::text('pan',                    
+                    Form::text('by_email',                    
                     null,
-                    array('id' => 'pan',
-                    'class'=>'form-control', 'placeholder'=>'Search By Pan'))
+                    array('id' => 'by_email',
+                    'class'=>'form-control', 'placeholder'=>'Search By name, email and pan'))
                     !!}
-                   -->
+                  
                 </div>
                 
                 <div class="col-sm-2">

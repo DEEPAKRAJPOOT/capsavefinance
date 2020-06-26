@@ -2278,10 +2278,10 @@ class DataRenderer implements DataProviderInterface
                         if ($request->has('by_email')) {
                             $query->where(function ($query) use ($request) {
                                 $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                                $query->where('anchor_user.name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('anchor_user.l_name', 'like', "%$by_nameOrEmail%")                               
+                                ->orWhere('anchor_user.email', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }

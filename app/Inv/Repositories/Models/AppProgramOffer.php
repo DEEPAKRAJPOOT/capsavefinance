@@ -14,6 +14,7 @@ use App\Inv\Repositories\Models\OfferCollateralSecurity;
 use App\Inv\Repositories\Models\OfferPersonalGuarantee;
 use App\Inv\Repositories\Models\OfferCorporateGuarantee;
 use App\Inv\Repositories\Models\OfferEscrowMechanism;
+use App\Inv\Repositories\Models\User;
 
 class AppProgramOffer extends BaseModel {
     /* The database table used by the model.
@@ -169,11 +170,19 @@ class AppProgramOffer extends BaseModel {
         // if (!is_int($appId)) {
         //     throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         // }
-
-        if(is_null($product_id) || $product_id == ''){
-            $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();
+        
+        $roleData = User::getBackendUser(\Auth::user()->user_id);            
+        $whereCond = [];
+        if (isset($roleData[0]) && $roleData[0]->id == 11) {   
+            $whereCond = ['anchor_id' => \Auth::user()->anchor_id, 'app_id' => $appId, 'is_active' => 1];
+        } else {
+            $whereCond = ['app_id' => $appId, 'is_active' => 1];
+        }
+        
+        if(is_null($product_id) || $product_id == ''){            
+            $offers = self::where($whereCond)->get();
         }else{
-            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where(['app_id'=>$appId, 'is_active'=>1])->with('offerCharges.chargeName')->get();
+            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where($whereCond)->with('offerCharges.chargeName')->get();
         }
         return $offers ? $offers : null;
     }

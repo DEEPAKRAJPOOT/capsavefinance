@@ -45,7 +45,7 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by App Id, Name',
+                    'placeholder' => 'Search by App Id, Name and Pan',
                     'id'=>'by_name'
                     ])
                     !!}
@@ -70,18 +70,18 @@
                     'class'=>'form-control'))
                     !!}
                 </div> 
-                
+                <!--
                 <div class="col-md-4">
 
                     {!!
                     Form::select('pan',
-                    [''=>'Select Pan'] + $panList,
+                    [''=>'Select Pan'],
                     null,
                     array('id' => 'pan',
                     'class'=>'form-control'))
                     !!}
                 </div>    
-                
+                -->
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>
            <div class="row">     
