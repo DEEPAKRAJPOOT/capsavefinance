@@ -1685,7 +1685,7 @@ class UserRepository extends BaseRepositories implements UserInterface
     
     /**
      * 
-     * @param type $anchoId
+     * @param type $emailId
      * @param type $attributes
      * @return type
      */

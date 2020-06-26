@@ -183,7 +183,7 @@ class AnchorUser extends BaseModel {
     
     /**
     * 
-    * @param type $anchId
+    * @param type $emailId
     * @param type $arrUserData
     * @return type
     * @throws BlankDataExceptions
