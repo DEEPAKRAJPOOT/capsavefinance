@@ -414,6 +414,14 @@ class DataRenderer implements DataProviderInterface
                                 $query->where('app.app_type', 2);
                             } else if ($status == 4) {
                                 $query->where('app.app_type', 3);
+                            }else if ($status == 5) {
+                                $query->where('app.curr_status_id', 43);
+                            }else if ($status == 6) {
+                                $query->where('app.curr_status_id', 44);
+                            }else if ($status == 7) {
+                                $query->where('app.curr_status_id', 45);
+                            }else if ($status == 8) {
+                                $query->where('app.curr_status_id', 46);
                             } else {
                                 
                                 //if ($status == 4) {
