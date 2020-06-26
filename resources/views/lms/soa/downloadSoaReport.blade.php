@@ -162,15 +162,7 @@
                         </td>
                     </tr>
                     @foreach($soaRec as $key => $record)
-                    @php
-                        $color = '';
-                        if(strtolower($record['trans_type']) === 'repayment'){
-                            $color = "#f3c714";
-                        }elseif($record['payment_id']){
-                            $color = "#ffcc0078";
-                        }
-                    @endphp
-                    <tr style="background: {{$color}};">
+                    <tr style="background: {{$record['soabackgroundcolor']}};">
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['customer_id']}}</span>
                         </td>

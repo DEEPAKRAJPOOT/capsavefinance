@@ -43,6 +43,7 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Crypt;
 
 class AjaxController extends Controller {
 
@@ -4487,6 +4488,31 @@ if ($err) {
         $condArr['type']  = 'pdf';
         $leaseRegisters['pdfUrl'] = route('download_reports', $condArr);
         return new JsonResponse($leaseRegisters);
+    }
+
+    public function unsettledPayments(Request $request){
+        $userId = $request->user_id;
+        $chrgId = $request->chrg_id;
+        $paymentType = config('lms.CHARGE_PAYMENT_TYPE_MAP.'.$chrgId);
+        $dataRecords = [];
+        if ($userId) {
+            $payments = Payment::getPayments(['is_settled' => 0, 'user_id' => $userId, 'payment_type' => $paymentType]);
+            foreach ($payments as $payment) {
+                $dataRecords[] =[
+                    'id'=>Crypt::encryptString($payment->payment_id),
+                    'amount'=>number_format($payment->amount),
+                    'paymentmode'=>$payment->paymentmode,
+                    'transactionno'=>$payment->transactionno,
+                    'date_of_payment'=>Carbon::parse($payment->date_of_payment)->format('d-m-Y')
+                ];
+            }
+        }
+        if(!empty($dataRecords)){
+            return response()->json(['status' => 1,'res' => $dataRecords]);
+        }else{
+            return response()->json(['status' => 0,'res' => $dataRecords]);
+        }
+        
     }
 
 }
