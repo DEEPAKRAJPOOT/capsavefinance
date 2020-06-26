@@ -34,8 +34,8 @@ class RegistrationFormRequest extends Request
             'business_name' => 'required',
             'email'  => 'required|email|max:50|unique:users',
             'mobile_no' => 'required|digits:10|min:0',
-            'password'   => 'required|min:6',
-            'password_confirm' => 'required|same:password',
+            'password'   => 'required|min:8|regex:/^((?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,})$/',
+            'password_confirm' => 'required|same:password|regex: /^(?!.*(.)\1\1)(.+)$/',
             'g-recaptcha-response' => 'required', 
             ];
     }
@@ -67,6 +67,8 @@ class RegistrationFormRequest extends Request
             'mobile_no.required'=>trans('error_messages.req_phone'),
             'password.required'=>trans('error_messages.req_password'),
             'password.min'=>trans('error_messages.minlen_password'),
+            'password.regex' => trans('error_messages.regex'),
+            'password.same' => trans('error_messages.same_password'),
             'password_confirm.required'=>trans('error_messages.req_confirm_password'),
 
             'mobile_no.min'=>trans('error_messages.phone_minlength'),

@@ -1681,5 +1681,16 @@ class UserRepository extends BaseRepositories implements UserInterface
            return $ex;
         }
      
-    }     
+    }
+    
+    /**
+     * 
+     * @param type $anchoId
+     * @param type $attributes
+     * @return type
+     */
+    public function updateAnchorUserByEmailId($emailId, $attributes = []) {
+        $result = AnchorUser::updateAnchorUserByEmailId($emailId, $attributes);
+        return $result ?: false;
+    }
 }

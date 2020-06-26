@@ -112,7 +112,7 @@ use RegistersUsers,
             $this->userRepo->saveUserDetails($detailArr);
             if (isset($data['anch_user_id']) && !empty($data['anch_user_id'])) {
                 $arrAnchUser['is_registered']=1;
-                $arrAnchUser['token']='';
+                //$arrAnchUser['token']='';
                 $arrAnchUser['user_id']=$detailArr['user_id'];            
                 //$anchId=$this->userRepo->getAnchorUsersByEmail($userDataArray->email);            
                 $this->userRepo->updateAnchorUser($data['anch_user_id'], $arrAnchUser);
@@ -204,7 +204,10 @@ use RegistersUsers,
                     $userArr = $this->userRepo->find($userId);
                 }
                 $anchorLeadInfo = $this->userRepo->getAnchorUsersByToken($anchortoken);
-                if(isset($anchortoken) && $anchorLeadInfo){
+                if(!empty($anchorLeadInfo) && $anchorLeadInfo->is_registered == 1){
+                   $email = $anchorLeadInfo->email;
+                   return redirect(route('otp', ['token' => Crypt::encrypt($email)]));
+                } else if(!empty($anchorLeadInfo) && $anchorLeadInfo->is_registered == 0){
                     $anchorDetail = $anchorLeadInfo;
                 }else{
                     $anchorDetail = '';
@@ -475,20 +478,20 @@ use RegistersUsers,
                     /* if ($userCheckArr->status == config('inv_common.USER_STATUS.Active')) {
                       return redirect(route('otp'))->withErrors(trans('error_messages.email_already_verified'));
                       } */
-                    //echo $userCheckArr->user_id; exit;
                     $userId = (int) $userCheckArr->user_id;
                     $userMailArr = [];
                     $userArr = [];
 
-                    /// $string = Helpers::randomPassword();
                     $date = new DateTime;
                     $currentDate = $date->format('Y-m-d H:i:s');
                     $userArr['is_otp_verified'] = 1;
                     $userArr['is_otp_resent'] = 0;
                     $userArr['otp_verified_updatetime'] = $currentDate;
-                    ////  $userArr['password'] = bcrypt($string);
+                    $userArr['is_active'] = 1;
                     $userCheckArr = $this->userRepo->getfullUserDetail($userId);
                     $this->userRepo->save($userArr, $userId);
+                    $arrAnchUser['token']='';                   
+                    $this->userRepo->updateAnchorUserByEmailId($userCheckArr->email, $arrAnchUser);
                     $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
                     if(Auth::loginUsingId($userDetails->user_id)) {
@@ -576,7 +579,7 @@ use RegistersUsers,
                         $otpArr['mobile_no'] = $userCheckArr->mobile_no;
                         $this->userRepo->saveOtp($otpArr);
                     }
-                    $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
+                    $userMailArr['name'] = $name = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
                     $userMailArr['otp'] = $Otpstring;
                     $gupshup = new Gupshup_lib();

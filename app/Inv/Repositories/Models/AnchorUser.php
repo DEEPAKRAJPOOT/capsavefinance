@@ -180,4 +180,39 @@ class AnchorUser extends BaseModel {
             ->first();
            return ($arrEmailUser ? $arrEmailUser : FALSE);
     }
+    
+    /**
+    * 
+    * @param type $anchId
+    * @param type $arrUserData
+    * @return type
+    * @throws BlankDataExceptions
+    * @throws InvalidDataTypeExceptions
+    */ 
+    public static function updateAnchorUserByEmailId($emailId, $arrUserData = [])
+    {
+        /**
+         * Check Email Id is not blank
+         */
+        if (empty($emailId)) {
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
+        }
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($arrUserData)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($arrUserData)) {
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
+        }
+
+        $rowUpdate = self::where('email', $emailId)->update($arrUserData);
+        return ($rowUpdate ? true : false);
+    }
 }

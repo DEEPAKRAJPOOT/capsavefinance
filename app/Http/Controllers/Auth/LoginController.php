@@ -94,15 +94,20 @@ use AuthenticatesUsers;
                 return redirect()->route('login_open');
             }
 
-            if ($this->attemptLogin($request)) {
-                return $this->sendLoginResponse($request);
-            }  
             // validate user OTP verified or not
             if (!$this->isOtpVerify($userInfo)) {
                 Session::flash('messages', trans('error_messages.login_verify_otp'));
                 return redirect()->route('login_open');
             }
+            
+            if (empty($userInfo->is_active) || $userInfo->is_active != 1) {
+                Session::flash('messages', 'You are not an active user');
+                return redirect()->route('login_open');
+            }
 
+            if ($this->attemptLogin($request)) {
+                return $this->sendLoginResponse($request);
+            }
             
             // If the login attempt was unsuccessful we will increment the number of attempts
             // to login and redirect the user back to the login form. Of course, when this
