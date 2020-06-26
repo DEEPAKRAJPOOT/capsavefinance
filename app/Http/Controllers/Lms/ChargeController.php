@@ -220,7 +220,7 @@ class ChargeController extends Controller
                     $getMstLog =  $this->lmsRepo->getChrgLog($request->chrg_name);
                     $arr  = [ 
                             "user_id" =>  $request->user_id,
-                            "payment_id"=>$paymentId,
+                            "payment_id"=>null,
                             "amount" =>   $totalSumAmount,
                             "soa_flag" =>1,
                             "gst"   => 1,
