@@ -1659,13 +1659,20 @@ class Helper extends PaypalHelper
      */
     public static function getAnchorsByUserId($userId) 
     {
-        $anchors = AnchorUser::getAnchorsByUserId($userId);
+        $anchors = AnchorUser::getAnchorsByUserId($userId);        
         $anchorsInfo = '';
-        if (count($anchors) > 0) {
-            foreach($anchors as $anchor) {
-                $anchorsInfo .= ucwords($anchor->comp_name);
-                $anchorsInfo .= '<br>';
+        if (count($anchors) == 1) {            
+            foreach($anchors as $anchor) {                
+                $anchorsInfo = ucwords($anchor->comp_name);                
             }
+        } else if (count($anchors) > 1) {
+            $anchorsInfo .= '<ul class="anchor-list" style="list-style-type: disc;padding: 10px;">';
+            foreach($anchors as $anchor) {
+                $anchorsInfo .= '<li>';
+                $anchorsInfo .= ucwords($anchor->comp_name);
+                $anchorsInfo .= '</li>';
+            }
+            $anchorsInfo .= '</ul>';
         } else {
             $anchorsInfo = 'NA';
         }

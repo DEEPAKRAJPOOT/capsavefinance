@@ -189,9 +189,11 @@ class AnchorUser extends BaseModel {
     }
     
     public static function getAnchorsByUserId($userId) {
-        $anchors = self::select('anchor.*')
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
+                
+        $query = self::select('anchor.*')
             //self::select('anchor.*', 'users.f_name', 'users.l_name', \DB::raw("CONCAT(rta_users.f_name,' ', IFNULL(rta_users.l_name, '')) AS comp_name"))
-            ->join('anchor', 'anchor_user.anchor_id', '=', 'anchor.anchor_id')
+            ->join('anchor', 'anchor_user.anchor_id', '=', 'anchor.anchor_id');
             /*
             ->join('users', function ($join) {               
                 $join->on('users.anchor_id', '=', 'anchor_user.anchor_id');
@@ -199,9 +201,13 @@ class AnchorUser extends BaseModel {
             })
              * 
              */
-            ->where('anchor_user.user_id', $userId)            
-            ->get();            
-           return ($anchors ? $anchors : []);
+        if (isset($roleData[0]) && $roleData[0]->id == 11) {
+            $query->where('anchor_user.anchor_id', \Auth::user()->anchor_id);
+        }
+        
+        $query->where('anchor_user.user_id', $userId);
+        $anchors = $query->get();            
+        return ($anchors ? $anchors : []);
     }
     
     /**
