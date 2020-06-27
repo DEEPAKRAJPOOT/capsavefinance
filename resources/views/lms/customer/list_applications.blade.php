@@ -27,7 +27,7 @@
                         <tbody>
                             @if($anchors->count() >0)
                             @foreach ($anchors AS $anchor)
-                            @if(!empty($anchor->anchor))
+                            @if(!empty($anchor->anchor) && ( ($userRole && $userRole->id == 11 && \Auth::user()->anchor_id == $anchor->anchor->anchor_id) || (!$userRole || ($userRole && $userRole->id != 11)) ))                            
                             <tr role="row" class="odd">
                                 <td class="sorting_1">{{ $anchor->anchor->anchor_id }}</td>
                                 <td>{{ $anchor->anchor->comp_name }}</td>
