@@ -200,16 +200,22 @@ class AppAssignment extends BaseModel
      * 
      * @return mixed
      */
-    public static function isAppCurrentAssignee($app_id, $to_id)
-    {                
+    public static function isAppCurrentAssignee($app_id, $to_id, $to_role_id=null)
+    { 
+        
         $assignData = self::where('app_id', $app_id)
                 ->where('is_owner', '1');
-        if (is_array($to_id)) {
-            $assignData->whereIn('to_id', $to_id);
-        } else {
-            $assignData->where('to_id', $to_id);
-        }
-        $assignData = $assignData->count();
+        $assignData->where(function($q) use($to_id, $to_role_id) {
+            if (is_array($to_id)) {
+                $q->orWhereIn('to_id', $to_id);
+            } else {
+                $q->orWhere('to_id', $to_id);
+            }
+            if (in_array(\Request::route()->getName(),['confirm_box','accept_application_pool']) && !is_null($to_role_id)) {
+                $q->orWhere('role_id', $to_role_id); 
+            }
+        });        
+        $assignData = $assignData->count();        
         return $assignData > 0 ? true : false;        
     }
     

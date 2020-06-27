@@ -1029,7 +1029,7 @@ class Helper extends PaypalHelper
                 $isViewOnly = 1;
             } else {
                 $userArr = self::getChildUsersWithParent($to_id);
-                $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr);
+                $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
             }
             return $isViewOnly ? 1 : 0;
         } catch (Exception $e) {
