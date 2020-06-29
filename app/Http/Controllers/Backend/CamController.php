@@ -2116,7 +2116,15 @@ class CamController extends Controller
         $viewData = $this->getCamReportData($request);
         $bizId = $request->get('biz_id');
         $appId = $request->get('app_id');
-        DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
+        $context = stream_context_create([ 
+            'ssl' => [ 
+                'verify_peer' => FALSE, 
+                'verify_peer_name' => FALSE,
+                'allow_self_signed'=> TRUE
+            ] 
+        ]);         
+        DPDF::setOptions(['isHtml5ParserEnabled'=> true]);        
+        DPDF::getDomPDF()->setHttpContext($context);
         $pdf = DPDF::loadView('backend.cam.downloadCamReport', $viewData,[],'UTF-8');
         self::generateCamPdf($appId, $bizId, $pdf->output());
         return $pdf->download('CamReport.pdf');          
