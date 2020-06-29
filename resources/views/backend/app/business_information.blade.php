@@ -44,7 +44,7 @@
 										</span>
                                                                                 <div class="relative">
                                                                                     <a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
-                                                                                    <input type="text" name="biz_pan_number" value="{{ $pan ? $pan : old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" readonly="readonly" >
+                                                                                    <input type="text" name="biz_pan_number" value="{{ $pan ? $pan : old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" @if ($pan) readonly="readonly" @endif >
                                                                                 </div>
 										@error('biz_pan_number')
 							                <span class="text-danger error">{{ $message }}</span>

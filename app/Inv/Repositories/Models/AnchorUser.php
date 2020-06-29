@@ -233,4 +233,13 @@ class AnchorUser extends BaseModel {
            return ($anchors ? $anchors : []);
     }
     
+    public static function getUsersByPan($userId) {
+        $anchorsUsers = self::join(\DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
+                    $join->on( 'anchor_user.pan_no', '=', 'a.pan_no' );
+                })
+                ->setBindings([$userId])
+                ->pluck('anchor_user.user_id');
+                
+        return $anchorsUsers;
+    }
 }
