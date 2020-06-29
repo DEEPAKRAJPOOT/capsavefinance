@@ -842,59 +842,7 @@
         </tr>
       </table>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p><p style="text-align:justify"><span style="color:#000000">Lupin Limited (Lupin) is a leading global pharmaceutical company headquartered in Mumbai (Maharashtra),&nbsp;India. Company&nbsp;manufactures and sell a wide range&nbsp;of branded and generics formulations, Active&nbsp;Pharmaceutical Ingredients (APIs), biotechnology&nbsp;products and Over-the-Counter (OTC) products&nbsp;in a variety of dosage forms and therapeutic&nbsp;categories. Lupin is committed to offer superior pharmaceutical solutions and make healthcare&nbsp;accessible to millions around the world. With over&nbsp;18 manufacturing units, nine research centres and&nbsp;more than 20,000 professionals working globally,&nbsp;Lupin has built a formidable pharmaceutical&nbsp;company that has the technical capabilities,&nbsp;manufacturing capacities, product portfolio and&nbsp;geographical reach to excel and grow.</span></p>
-
-<p style="text-align:justify"><span style="color:#000000">Founded by Dr. Desh Bandhu Gupta (an associate&nbsp;professor of chemistry at BITS Pilani, Rajasthan) in&nbsp;1968, Lupin is a significant player in key therapy&nbsp;areas such as cardiovascular, anti-TB (world&nbsp;leader), anti-asthma, anti-diabetic, anti-infective,&nbsp;gastro-intestinal (GI), central nervous system (CNS), and gynaecology. Their&nbsp;best-in-class infrastructure&nbsp;and consistent focus on knowledge accretion&nbsp;and innovation have enabled us to expand our&nbsp;presence in high-growth markets.</span></p>
-
-<p style="text-align:justify">&nbsp;</p>
-
-<p style="text-align:justify"><img alt="" class="img-responsive" height="147" src="https://admin.capsavefinance.com/storage/uploads/1_1593070297.jpg" width="400" /></p>
-
-<p style="text-align:justify">&nbsp;</p>
-
-<p style="text-align:justify"><span style="color:#000000">Lupin Limited (erstwhile Lupin Chemicals) was founded in 1968 by the Late Dr. Desh Bandhu Gupta, the father of the current Managing Director, Mr. Nilesh Gupta, when Dr. Gupta had bought the Lupin trademark from Charak Pharmaceuticals. Set up originally as a proprietary concern, Lupin was converted into a private limited company in 1972 and became a public limited company in 1992 and its market cap as on date is Rs. 386.92 Bn. In June 2001, Lupin Chemicals was merged with Lupin Laboratories Limited, following which the merged entity was renamed Lupin Limited. The amalgamation was aimed at leveraging the strengths of the two companies. Lupin is an integrated pharmaceutical company with a presence across research, manufacturing and marketing of formulations and APIs.</span></p>
-
-<p style="text-align:justify">&nbsp;</p>
-
-<p style="text-align:justify"><img alt="" class="img-responsive" height="114" src="https://admin.capsavefinance.com/storage/uploads/3_1593070468.jpg" width="400" /></p>
-
-<p style="text-align:justify"><span style="color:#000000"><strong>Business Model :</strong></span></p>
-
-<p style="text-align:justify"><span style="color:#000000">They operate in a highly regulated and&nbsp;competitive industry across multiple&nbsp;markets. They&nbsp;develop, manufacture&nbsp;and market a broad range of branded&nbsp;and generics formulations, APIs,&nbsp;and biosimilars across the US, India,&nbsp;Asia Pacific (APAC), Europe, Latin&nbsp;American (LATAM) and South Africa. They&nbsp;remain committed to deliver on&nbsp;our strategic intent to emerge as a&nbsp;formidable Complex Generics and&nbsp;specialty-focused pharmaceutical&nbsp;company with unique differentiators as&nbsp;a driving force.Lupin&rsquo;s purpose is deeply rooted in its vision to innovate and develop superior&nbsp;pharmaceutical solutions that are affordable and make healthcare accessible to all. We,therefore, have a business model that is centred around three key areas: Diversified&nbsp;portfolio, Efficient business operations and global reach.</span></p>
-
-<p style="text-align:justify"><strong><span style="color:#000000">Business Segments :</span></strong></p>
-
-<p style="text-align:justify"><span style="color:#000000">1. <strong>Generics :</strong>&nbsp;Generics business manufactures and markets&nbsp;branded and unbranded generics products across&nbsp;markets.</span></p>
-
-<p><span style="color:#000000">2.<strong>Complex Generics :&nbsp;</strong>Over the past few years, company has&nbsp;made strategic&nbsp;investments in capabilities and infrastructure to create&nbsp;development expertise across complex generics (in&nbsp;particular, across long-acting injectables, inhalation&nbsp;and biosimilars).</span></p>
-
-<p><span style="color:#000000">3.<strong>Specialty :&nbsp;T</strong>he specialty business demands higher investment&nbsp;outlay as well as focused management bandwidth. Company is&nbsp;directing their efforts in a very targeted manner&nbsp;and intend to leverage this infrastructure across&nbsp;multiple products in their&nbsp;chosen therapeutic areas.&nbsp;</span></p>
-
-<p><strong><em><span style="color:#000000">In addition to these three segments, they&nbsp;have other&nbsp;activities, primarily the sale of Active Pharmaceutical&nbsp;Ingredients (API) to third parties in more than 50&nbsp;countries worldwide and institutional sales of&nbsp;important anti-TB products.</span></em></strong></p>
-
-<p style="text-align:justify"><span style="color:#000000"><strong>Global reach :</strong></span></p>
-
-<p style="text-align:justify"><span style="color:#000000">They&nbsp;have 18 world-class manufacturing facilities that&nbsp;are spread across India, Japan, the US, Mexico, and&nbsp;Brazil. These facilities, which are benchmarked to&nbsp;international standards, are playing a critical role in&nbsp;achieving our global growth aspirations. Our facilities&nbsp;are approved by international regulatory agencies&nbsp;such as the U.S.FDA, the UK&rsquo;s MHRA, World Health&nbsp;Organisation (WHO), Japan&#39;s PMDA, Australia&rsquo;s TGA,&nbsp;and South Africa&rsquo;s MCC.</span></p>
-
-<p style="text-align:justify"><span style="color:#000000">The Company today has over 700 Global Corporate Quality Assurance professionals spread across all manufacturing locations engaged in developing and implementing policies that ensure quality and compliance with global regulatory standards. Consistency in meeting customer expectations and meeting regulatory quality and compliance norms are the true enablers and the critical differentiator that has made Lupin the global generic powerhouse it is today.</span></p>
-
-<p style="text-align:justify"><strong><span style="color:#000000">Awards and Recognition :</span></strong></p>
-
-<p style="text-align:justify"><span style="color:#000000">1. India Pharma Innovation of the Year Award 2019</span></p>
-
-<p><span style="color:#000000">2.&nbsp;McKesson Supplier of the Year Award for 2019 in US</span></p>
-
-<p><span style="color:#000000">3.Vinita Gupta: Vogue and IBM Businesswoman of the Year 2018 and&nbsp;Women of Worth 2018 by Outlook Business</span></p>
-
-<p><span style="color:#000000">4.Lupin ranked No.1 in the Biotech and Pharma,&nbsp;and No. 4 amongst large organisations in the&nbsp;list of top 100 &ndash; Great Place to Work 2017</span></p>
-
-<p><span style="color:#000000">5.India Pharma Bulk Drug Company of the Year 2018 by&nbsp;Department of Pharmaceuticals, Govt.&nbsp;of India</span></p>
-
-<p><span style="color:#000000">6.Silver Award for Lean Six Sigma Project from&nbsp;QCFI (Quality Circle Forum of India)</span></p>
-
-<p style="text-align:justify"><strong>Their strength in the US generics market is reflected in their market share. As of March 2019,65 of the 175 Generics products marketed by Lupin in the US were Ranked #1 by market&nbsp;share and 129 of the 175 were in the Top 3 by market share (IQVIA, March 2019). Their&nbsp;average market share per product at 33% is the highest amongst their peers.</strong></p>
-
-<p style="text-align:justify">&nbsp;</p></p>
+         <p>{!! isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : '' !!} </p>
       </div>
    </div>
 @endif
