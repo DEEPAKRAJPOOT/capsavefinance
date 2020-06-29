@@ -318,7 +318,7 @@ class DataRenderer implements DataProviderInterface
                     $app_status = config('common.app_status');                    
                     $status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
 
-                    $link = '<a title="View Application Status" href="#" data-toggle="modal" data-target="#viewApplicationStatus" data-url="' . route('view_app_status_list', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="250px" data-width="100%" data-placement="top" class="aprveAppListBtn">View Status</a>';
+                    $link = '<a title="View Application Status" href="#" data-toggle="modal" data-target="#viewApplicationStatus" data-url="' . route('view_app_status_list', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn">View Status</a>';
 
                     if(Helpers::checkPermission('view_app_status_list') && $app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_REJECTED']){
                         $status = 'Rejected'.$link;                        
@@ -414,6 +414,14 @@ class DataRenderer implements DataProviderInterface
                                 $query->where('app.app_type', 2);
                             } else if ($status == 4) {
                                 $query->where('app.app_type', 3);
+                            }else if ($status == 5) {
+                                $query->where('app.curr_status_id', 43);
+                            }else if ($status == 6) {
+                                $query->where('app.curr_status_id', 44);
+                            }else if ($status == 7) {
+                                $query->where('app.curr_status_id', 45);
+                            }else if ($status == 8) {
+                                $query->where('app.curr_status_id', 46);
                             } else {
                                 
                                 //if ($status == 4) {
