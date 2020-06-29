@@ -810,7 +810,7 @@ class ApplicationController extends Controller
                                
 				//Validate the stage
 				if ($currStage->stage_code == 'credit_mgr') {
-					$whereCondition = ['app_id' => $app_id];
+					$whereCondition = ['app_id' => $app_id, 'satus' => null];                                        
 					$offerData = $this->appRepo->getOfferData($whereCondition);
 					if (!$offerData) {
 						Session::flash('error_code', 'no_offer_found');
@@ -828,7 +828,7 @@ class ApplicationController extends Controller
                                             }                                            
                                         }
 				} else if ($currStage->stage_code == 'approver') {
-					$whereCondition = ['app_id' => $app_id];
+					$whereCondition = ['app_id' => $app_id, 'satus' => null];
 					$offerData = $this->appRepo->getOfferData($whereCondition);
 					if (!$offerData) {
 						Session::flash('error_code', 'no_offer_found');
@@ -847,7 +847,7 @@ class ApplicationController extends Controller
 				} else if ($currStage->stage_code == 'sales_queue') {
 					$whereCondition = ['app_id' => $app_id];
 					$offerData = $this->appRepo->getOfferData($whereCondition);
-					if (isset($offerData->is_approve) && $offerData->is_approve != 1) {
+					if (isset($offerData->status) && empty($offerData->status) ) {
 						Session::flash('error_code', 'no_offer_accepted');
 						return redirect()->back();
 					}

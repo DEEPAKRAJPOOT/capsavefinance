@@ -113,9 +113,16 @@ class AppProgramOffer extends BaseModel {
         
         $whereCondition['is_active'] = isset($whereCondition['is_active']) ? $whereCondition['is_active'] : 1;
         
-        $offerData = self::select('app_prgm_offer.*')
-                ->where($whereCondition)
-                ->first();      
+        $query = self::select('app_prgm_offer.*');
+        if (isset($whereCondition['status']) && is_null(isset($whereCondition['status']))) {
+            unset($whereCondition['status']);
+            $query->whereNull('status');
+            $query->where($whereCondition);
+        } else {
+            $query->where($whereCondition);
+        }               
+        
+        $offerData = $query->first();      
         return $offerData ? $offerData : null;
     }
 
