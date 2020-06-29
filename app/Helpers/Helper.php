@@ -1029,7 +1029,16 @@ class Helper extends PaypalHelper
                 $isViewOnly = 1;
             } else {
                 $userArr = self::getChildUsersWithParent($to_id);
-                $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
+                $curStage = WfAppStage::getCurrentWfStage($app_id);
+                if ($curStage && $curStage->stage_code == 'approver') {
+                    $whereCond=[];
+                    $whereCond['to_id'] = $to_id;
+                    $whereCond['app_id'] = $app_id;
+                    $assignData = AppAssignment::getAppAssignmentData($whereCond);
+                    $isViewOnly = $assignData && isset($assignData->app_assign_id) ? 1 : 0;
+                } else {
+                    $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
+                }
             }
             return $isViewOnly ? 1 : 0;
         } catch (Exception $e) {
