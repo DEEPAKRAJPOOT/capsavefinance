@@ -53,7 +53,9 @@ class ProcessMails implements ShouldQueue
                         if(is_null($assignmentData->to_id) && $assignmentData->role_id){
                             $event = "APPLICATION_MOVE_NEXT_POOL";
                             $to_all = true;
-                        }else{
+                        } else if ($assignmentData->to_id == $assignmentData->from_id) {
+                            $event = "APPLICATION_MOVE_LMS";
+                        } else {
                             $event = "APPLICATION_MOVE_NEXT_USER";
                         }
                     break;
@@ -89,17 +91,21 @@ class ProcessMails implements ShouldQueue
                     foreach($to_users as $user) {
                         $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                         $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
-                        $emailData['receiver_email'] = 'akash.kumar@prolitus.com';
-                        // $emailData['receiver_email'] = $user->email;
+                        // $emailData['receiver_email'] = 'akash.kumar@prolitus.com';
+                        $emailData['receiver_email'] = $user->email;
                         //$event = ($user->roles[0]->id =='8')?'APPLICATION_APPROVER_MAIL':$event;
                         \Event::dispatch($event, serialize($emailData));
                     }
                 }else{
-                    $user = $userRepo->getfullUserDetail($assignmentData->to_id);
+                    if ($event == 'APPLICATION_MOVE_LMS') {
+                        $user = $application->user;
+                    } else {
+                        $user = $userRepo->getfullUserDetail($assignmentData->to_id);
+                    }
                     $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                     $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
-                    $emailData['receiver_email'] = 'akash.kumar@prolitus.com';
-                    // $emailData['receiver_email'] = $user->email;
+                    // $emailData['receiver_email'] = 'akash.kumar@prolitus.com';
+                    $emailData['receiver_email'] = $user->email;
                     //$event = ($user->roles[0]->id =='8')?'APPLICATION_APPROVER_MAIL':$event;
                     \Event::dispatch($event, serialize($emailData));
                 }

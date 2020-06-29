@@ -762,6 +762,37 @@ class UserEventsListener extends BaseEvent
         }
     }
 
+    public function onApplicationMoveToLms($userData) {
+
+        
+        $user = unserialize($userData);
+        $this->func_name = __FUNCTION__;
+        //Send mail to User
+        $email_content = EmailTemplate::getEmailTemplate("APPLICATION_MOVE_LMS");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%sender_user_name', '%sender_role_name','%receiver_user_name','%receiver_role_name','%lead_id' ,'%app_id','%entity_name','%comment'],
+                [$user['sender_user_name'],$user['sender_role_name'],$user['receiver_user_name'],$user['receiver_role_name'],$user['lead_id'],$user['app_id'],$user['entity_name'],$user['comment']],
+                $email_content->message
+            );
+            $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
+                function ($message) use ($user, $mail_subject, $mail_body) {
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => array($user["receiver_email"]),
+                    'email_type' => $this->func_name,
+                    'name' => $user['receiver_user_name'],
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    } 
+    
     /**
      * Event subscribers
      *
@@ -871,6 +902,11 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'APPLICATION_RENEWAL_MAIL', 
             'App\Inv\Repositories\Events\UserEventsListener@onRenewApplication'
+        );
+
+        $events->listen(
+            'APPLICATION_MOVE_LMS', 
+            'App\Inv\Repositories\Events\UserEventsListener@onApplicationMoveToLms'
         );        
 
     }
