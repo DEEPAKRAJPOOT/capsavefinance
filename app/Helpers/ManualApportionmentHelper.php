@@ -187,8 +187,10 @@ class ManualApportionmentHelper{
 
     private function getpaymentSettled($transDate, $invDisbId, $payFreq){
         $intrest = 0;
+        $disbTransIds = null;
+        $intTransIds2 = null;
         if($payFreq == 2){
-            $disbTransIds = Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
+            $disbTransIds = Transactions::whereRaw("trans_date <=?",[$transDate]) 
             ->where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
             ->whereNull('link_trans_id') 
@@ -196,7 +198,8 @@ class ManualApportionmentHelper{
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
             ->pluck('trans_id')->toArray();
         
-            $intTransIds2 = Transactions::whereRaw("Month(trans_date) <?",[date('m', strtotime($transDate))]) 
+            $intTransIds2 = Transactions::whereRaw("(Month(trans_date) <=?) ",[date('m', strtotime($transDate))]) 
+            ->whereYear('trans_date',date('Y', strtotime($transDate)))
             ->where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
             ->whereNull('link_trans_id') 
@@ -207,7 +210,7 @@ class ManualApportionmentHelper{
             $transIds = array_merge($disbTransIds,$intTransIds2);
         }
         else{
-            $transIds = Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
+            $transIds = Transactions::whereRaw("trans_date <=?",[$transDate]) 
             ->where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
             ->whereNull('link_trans_id') 
@@ -216,7 +219,7 @@ class ManualApportionmentHelper{
             ->pluck('trans_id')->toArray();
         }
         
-        $Dr = Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
+        $Dr = Transactions::whereRaw("trans_date <=?",[$transDate]) 
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','0')
         ->where(function($query) use($transIds){
@@ -225,7 +228,7 @@ class ManualApportionmentHelper{
         })
         ->sum('amount');
 
-        $Cr =  Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
+        $Cr =  Transactions::whereRaw("trans_date <=?",[$transDate]) 
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','1')
         ->where(function($query) use($transIds){
