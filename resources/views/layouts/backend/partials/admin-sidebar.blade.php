@@ -16,6 +16,7 @@
 	@endcan
     
         @if(config('lms.LMS_STATUS'))
+	@can('lease_register')
         <li class="nav-item">
             <a class="nav-link"  href="{{ route('lease_register') }}">
                 <i class="fa fa-files-o"></i>
@@ -24,6 +25,7 @@
             </a>
 
         </li>
+        @endcan
         @endif
 
 
@@ -499,13 +501,16 @@
         </a>
         <div class="collapse" id="layoutsSubmenuFinance">
             <ul class="nav flex-column sub-menu">
+		@can('get_tally_batches')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_tally_batches') }}">Tally Batch</a>
                 </li>
+		@endcan
+		@can('get_fin_transactions')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_fin_transactions') }}">Transactions</a>
                 </li>
-
+		@endcan
 		<!--
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('create_je_config') }}">JE Config</a>
