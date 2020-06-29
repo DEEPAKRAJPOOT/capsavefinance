@@ -136,7 +136,8 @@
                                             </thead>
                                             <tbody>
                                             @if($prgmLimit->offer->count() != 0)
-                                            @foreach($prgmLimit->offer as $k=>$prgmOffer)
+                                            @foreach($prgmLimit->offer as $k=>$prgmOffer)					    
+					    @if ( ($userRole && $userRole->id == 11 && \Auth::user()->anchor_id == $prgmOffer->anchor_id) || (!$userRole || ($userRole && $userRole->id != 11)) )
                                             </tr>
                                                 <td>{{$prgmOffer->overdue_interest_rate}}%</td>
                                                 <td>{{$prgmOffer->interest_rate}}%</td>
@@ -148,6 +149,7 @@
                                                 <td>{{$prgmOffer->adhoc_interest_rate}}%</td>
                                                 <td><a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a></td>
                                             </tr>
+					    @endif
                                             @endforeach
                                             @else
                                                 <tr style="text-align: center;">

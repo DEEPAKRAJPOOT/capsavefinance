@@ -143,7 +143,7 @@ class Application extends BaseModel
                 'users.email',
                 'users.mobile_no',                
                 'app_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role',
-                'app_assign.app_assign_id', 'app.parent_app_id', 'note.note_data as reason', 'note.note_id')
+                'app_assign.app_assign_id', 'app.parent_app_id', 'note.note_data as reason', 'note.note_id','anchor_user.pan_no')
                 ->join('users', 'users.user_id', '=', 'app.user_id')  
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->leftjoin('note','app.app_id', '=', 'note.app_id');
@@ -156,9 +156,10 @@ class Application extends BaseModel
                 ->leftJoin('role_user as assignee_ru', 'app_assign.to_id', '=', 'assignee_ru.user_id')
                 ->leftJoin('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
-                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');    
-                         
-                $query->where('users.anchor_id', \Auth::user()->anchor_id);            
+                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
+                
+                $query->where('anchor_user.anchor_id', \Auth::user()->anchor_id);            
         } else {
         $query  = $query->join('app_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');
@@ -176,8 +177,8 @@ class Application extends BaseModel
                 ->join('role_user as assignee_ru', 'app_assign.to_id', '=', 'assignee_ru.user_id')
                 ->join('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
                 ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
-                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id');    
-
+                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')    
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
         }
                 //$query->where('users.anchor_user_id', \Auth::user()->user_id);            
                 //$query->where('users.anchor_id', \Auth::user()->anchor_id);              
@@ -431,11 +432,21 @@ class Application extends BaseModel
      */
     protected static function getUserApplications() 
     {  
-        $appData = self::distinct()->select('app.user_id','app.app_id','app_product.loan_amount', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at')
+        $usersIds = AnchorUser::getUsersByPan(\Auth::user()->user_id);        
+        $appData = self::distinct()->select('app.user_id','app.app_id','app_product.loan_amount', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at', 'anchor_user.pan_no')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->join('users', 'app.user_id', '=', 'users.user_id')
                 ->join('app_product', 'app_product.app_id', '=', 'app.app_id')
-                ->where('app.user_id', \Auth::user()->user_id);
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
+                //->join(DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
+                //    $join->on( 'anchor_user.pan_no', '=', 'a.pan_no' );
+                //})
+                //->setBindings([\Auth::user()->user_id]);
+        if (count($usersIds) > 0) {
+            $appData->whereIn('app.user_id', $usersIds);
+        } else {
+            $appData->where('app.user_id', \Auth::user()->user_id);
+        }
         //$appData->groupBy('app.app_id');
         $appData = $appData->orderBy('app.app_id', 'DESC');
         return $appData;
@@ -831,5 +842,66 @@ class Application extends BaseModel
          return self::where(['user_id' =>$uid,'status' => 2])->first();
          
      }
+     
+     public static function checkAppByPan($userId)
+     {
+        $appData = self::select('app.*')
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id') 
+                ->join(DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
+                    $join->on( 'anchor_user.pan_no', '=', 'a.pan_no' );
+                })                                
+                ->setBindings([$userId])
+                ->whereIn('app.status', [0,1])
+                ->first();
+                       
+        return ($appData && $appData->app_id ? true : false);    
+     }
 
+     public static function getSanctionApp() 
+     {
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
+        if (isset($roleData[0]) && $roleData[0]->id == 11) {
+            $getAppId  = self::select('app.*')
+                    ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
+                    ->where(['app.status' => 2])
+                    ->where(['anchor_user.anchor_id' => \Auth::user()->anchor_id])
+                    ->pluck('app.app_id');
+        } else {
+            $getAppId  = self::select('app.*')
+                    ->where(['status' => 2])
+                    ->pluck('app_id');            
+        }
+        return $getAppId;
+     }
+     
+    /**
+     * Get User Applications for Application list data tables
+     */
+    protected static function getApplicationsByPan($userId) 
+    {  
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
+        if (isset($roleData[0]) && $roleData[0]->id == 11) {            
+            $usersIds = AnchorUser::getUsersByPan($userId, \Auth::user()->anchor_id);
+        } else {
+            $usersIds = AnchorUser::getUsersByPan($userId);
+        }
+        
+        $appData = self::distinct()->select('app.user_id','app.app_id','app_product.loan_amount', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at','anchor_user.pan_no')
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
+                ->join('users', 'app.user_id', '=', 'users.user_id')
+                ->join('app_product', 'app_product.app_id', '=', 'app.app_id')
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
+                //->join(DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
+                //    $join->on( 'anchor_user.pan_no', '=', 'a.pan_no' );
+                //})
+                //->setBindings([$userId]);
+        if (count($usersIds) > 0) {
+            $appData->whereIn('app.user_id', $usersIds);
+        } else {
+            $appData->where('app.user_id', $userId);
+        }
+        //$appData->groupBy('app.app_id');
+        $appData = $appData->orderBy('app.app_id', 'DESC')->get();
+        return $appData ? $appData : [];
+    }     
 }

@@ -45,12 +45,12 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by App Id, Name',
+                    'placeholder' => 'Search by App Id, Name and Pan',
                     'id'=>'by_name'
                     ])
                     !!}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
 
                     {!!
                     Form::select('is_assign',
@@ -60,7 +60,7 @@
                     'class'=>'form-control'))
                     !!}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
 
                     {!!
                     Form::select('status',
@@ -69,7 +69,19 @@
                     array('id' => 'status',
                     'class'=>'form-control'))
                     !!}
-                </div>                
+                </div> 
+                <!--
+                <div class="col-md-4">
+
+                    {!!
+                    Form::select('pan',
+                    [''=>'Select Pan'],
+                    null,
+                    array('id' => 'pan',
+                    'class'=>'form-control'))
+                    !!}
+                </div>    
+                -->
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>
            <div class="row">     

@@ -24,6 +24,39 @@
                     <a href="#"><img src="{{url('frontend/assets/images/logo.svg')}}" alt="logo" width="150px"> </a>
                 </div>
         </header>
+                <div id="iframeMessage" class="content-wrapper-msg"></div>
+                @if(Session::has('message'))
+                <div class="content-wrapper-msg">
+                <div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>
+                    {{ Session::get('message') }}
+                </div>
+                </div>
+                @endif
+
+                 @if(Session::has('error'))
+                   <div class="content-wrapper-msg">
+                    <div class=" alert-danger alert" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ Session::get('error') }}
+                    </div>
+                   </div>
+                @endif
+
+                @if (count($errors) > 0)
+                  <div class="content-wrapper-msg">
+                <div class="alertMsgBox">
+                    <div class="alert alert-danger" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+                  </div>
+                @endif        
         @yield('content')
         <div class="isloader" style="display:none;">  
             <img src="{{asset('backend/assets/images/loader.gif')}}">
@@ -53,8 +86,8 @@
         <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
         <script>
             $(".sign-UP .btn").click(function () {
-                $(".otp-section").fadeIn();
-                $("body").addClass("scroll-hiddin");
+                //$(".otp-section").fadeIn();
+                //$("body").addClass("scroll-hiddin");
             })
 
             $(".section-header button").click(function () {

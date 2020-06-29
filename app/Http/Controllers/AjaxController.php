@@ -4489,7 +4489,7 @@ if ($err) {
         $condArr['type']  = 'pdf';
         $leaseRegisters['pdfUrl'] = route('download_reports', $condArr);
         return new JsonResponse($leaseRegisters);
-    }
+    }    
 
     public function unsettledPayments(Request $request){
         $userId = $request->user_id;
@@ -4516,4 +4516,36 @@ if ($err) {
         
     }
 
+    public function checkExistAnchorLead(Request $request)
+    {
+        $email = $request->get('email');        
+        $assocAnchId = $request->get('anchor_id');
+      
+        $result = [];
+        $result['message'] = '';
+        $result['status'] = true;        
+        
+        //$getAnchorId = $this->userRepo->getUserDetail(Auth::user()->user_id);
+        //if ($getAnchorId && $getAnchorId->anchor_id!=''){
+        if (!empty($assocAnchId)) {
+            $anchorId = $assocAnchId;
+        } else {
+            $anchorId = Auth::user()->anchor_id;
+        }
+        
+        if (!empty($anchorId)) {
+            $whereCond=[];
+            $whereCond[] = ['email', '=', trim($email)];
+            $whereCond[] = ['anchor_id', '=', $anchorId];
+            //$whereCond[] = ['is_registered', '!=', '1'];
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+
+            if (isset($anchUserData[0])) {
+                $result['status'] = false;
+                $result['message'] = trans('success_messages.existing_email');
+            }
+        }
+        
+        return response()->json($result);
+    }    
 }

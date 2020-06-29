@@ -1452,7 +1452,7 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function lmsGetCustomers()
     {
 
-        $getAppId  = Application::where(['status' => 2])->pluck('app_id');
+        $getAppId  = Application::getSanctionApp();
         $result = LmsUser::whereIn('app_id',$getAppId)->with('user')->orderBy('lms_user_id','DESC');
         return $result ?: false;
     }
@@ -1678,9 +1678,25 @@ class UserRepository extends BaseRepositories implements UserInterface
            return   DB::table('app_product')->where(['app_id' => $appId,'product_id' =>3])->count();
         } catch (Exception $ex) {
            return $ex;
-        }
-     
-    } 
-       
+        }     
+    }     
+    
+    public function getAnchorsByUserId($userId) {
+        return AnchorUser::getAnchorsByUserId($userId);
+    }
+    
+    
+    public function getAnchorByPan($pan){
+        return AnchorUser::getAnchorByPan($pan);
+    }  
+    
+    
+    public function updateAnchorUserData($arrUserData, $whereCond){
+        return AnchorUser::updateAnchorUserData($arrUserData, $whereCond);
+    }    
+    
+    public function getAnchorUserData($whereCond) {
+        return AnchorUser::getAnchorUserData($whereCond);
+    }    
 }
 

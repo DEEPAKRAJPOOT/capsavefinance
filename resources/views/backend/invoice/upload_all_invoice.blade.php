@@ -39,7 +39,7 @@
                                             @if(count($get_anchor) > 0)
                                               @if($anchor==11)
                                                @foreach($get_anchor as $row) 
-                                                    @php if(isset($row->anchorList->anchor_id)) {  @endphp
+                                                    @php if(isset($row->anchorList->anchor_id) && $row->anchorList->anchor_id == \Auth::user()->anchor_id) {  @endphp
                                                     <option value="{{{$row->anchorList->anchor_id}}}">{{{$row->anchorList->comp_name}}}</option>
                                                     @php }  @endphp
                                                     @endforeach

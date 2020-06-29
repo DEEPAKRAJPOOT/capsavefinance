@@ -61,8 +61,20 @@ class ApplicationController extends Controller
 	 */
 	public function index()
 	{  
-	
-	   return view('backend.app.index');              
+            
+            $whereCond=[];
+            $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
+           
+            if ($roleData && $roleData->id == 11) {
+                $whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];                
+            }
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+            $panList = [];
+            foreach($anchUserData as $anchUser) {
+                $panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->biz_name . ")";
+                //$panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->name . " " . $anchUser->l_name . ")";
+            }
+	   return view('backend.app.index')->with('panList', $panList);              
 	}
 	
 	public function addAppCopy(Request $request)
@@ -104,7 +116,7 @@ class ApplicationController extends Controller
 			//dd($business_info->gst->pan_gst_hash);
 			$industryList = $this->appRepo->getIndustryDropDown()->toArray();
 			$constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
-			$segmentList = $this->appRepo->getSegmentDropDown()->toArray();
+			$segmentList = $this->appRepo->getSegmentDropDown()->toArray();                        
 			if ($business_info) {
 				return view('backend.app.company_details')
 						->with(['business_info'=>$business_info, 'states'=>$states, 'product_ids'=> $product_ids])
@@ -141,6 +153,13 @@ class ApplicationController extends Controller
 			$business_info = $this->appRepo->updateCompanyDetail($arrFileData, $bizId, Auth::user()->user_id);
 
 			if ($business_info) {
+                                //Update Anchor Pan and Biz Id
+                                $appData = $this->appRepo->getAppData($appId);
+                                $arrAnchUser=[];
+                                //$arrAnchUser['pan_no'] = $arrFileData['biz_pan_number'];
+                                $arrAnchUser['biz_id'] = $bizId;                                     
+                                $this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => $appData->user_id]); 
+
 				Session::flash('message',trans('success_messages.update_company_detail_successfully'));
 				return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId]);
 			} else {
@@ -1042,16 +1061,17 @@ class ApplicationController extends Controller
 	public function showBusinessInformation()
 	{            
             $userId = request()->get('user_id');
-            $where=[];
-            $where['user_id'] = $userId;
-            $where['status'] = [0,1];
-            $appData = $this->appRepo->getApplicationsData($where);
-            
+            //$where=[];
+            //$where['user_id'] = $userId;
+            //$where['status'] = [0,1];
+            //$appData = $this->appRepo->getApplicationsData($where);
+            $appData = $this->appRepo->checkAppByPan($userId);            
             $userData = $this->userRepo->getfullUserDetail($userId);           
             $isAnchorLead = $userData && !empty($userData->anchor_id);
             
-            if (isset($appData[0])) {
-                Session::flash('message', 'You can\'t create a new application before sanctions.');
+            //if (isset($appData[0])) {
+            if ($appData) {                
+                Session::flash('message', trans('error_messages.active_app_check'));   
                 return redirect()->back();
             }
             
@@ -1061,7 +1081,10 @@ class ApplicationController extends Controller
 		$constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
 		$segmentList = $this->appRepo->getSegmentDropDown()->toArray();
 
-		return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList', 'segmentList']));
+                $anchUserData = $this->userRepo->getAnchorUserData(['user_id' => $userId]);        
+                $pan = isset($anchUserData[0]) ? $anchUserData[0]->pan_no : '';
+        
+		return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList', 'segmentList', 'pan']));
 	}
 
 	/**
@@ -1074,6 +1097,15 @@ class ApplicationController extends Controller
 
 			$arrFileData = $request->all();
 
+                        $whereCond=[];
+                        //$whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];      
+                        $whereCond[] = ['user_id', '=', $request->user_id];            
+                        $anchUserData = $this->userRepo->getAnchorUserData($whereCond);            
+                        if (isset($anchUserData[0]) && $anchUserData[0]->pan_no != $arrFileData['biz_pan_number']) {                
+                            Session::flash('message', 'You can\'t changed the registered pan number.');
+                            return redirect()->back();
+                        }
+      
 			if(request()->is_gst_manual == 1){
 				$arrFileData['biz_gst_number'] = request()->get('biz_gst_number_text');
 			}

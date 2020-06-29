@@ -53,6 +53,7 @@ class User extends Authenticatable
         'm_name',
         'l_name',
         'biz_name',
+//        'pan_no',
         'email',
         'password',
         'mobile_no',
@@ -256,14 +257,16 @@ class User extends Authenticatable
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         $result = self::select('users.user_id','users.f_name','users.l_name','users.email',
                 'users.mobile_no','users.created_at', 'users.anchor_id as UserAnchorId',
-                'users.is_buyer as AnchUserType','lead_assign.to_id')                
+                'users.is_buyer as AnchUserType','lead_assign.to_id','anchor_user.pan_no')                
                 ->join('lead_assign', function ($join) {
                     $join->on('lead_assign.assigned_user_id', '=', 'users.user_id');
                     $join->on('lead_assign.is_owner', '=', DB::raw("1"));                    
-                })                                  
+                })
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'users.user_id')
                  ->where('users.user_type', 1);
         if ($roleData[0]->id == 11) {
-            $result->where('users.anchor_id', \Auth::user()->anchor_id);                        
+            //$result->where('users.anchor_id', \Auth::user()->anchor_id);                        
+            $result->where('anchor_user.anchor_id', \Auth::user()->anchor_id);                        
         } else if ($roleData[0]->is_superadmin != 1) {
             //$result->where('lead_assign.to_id', \Auth::user()->user_id);
             $result->whereIn('lead_assign.to_id', $userArr);            
@@ -651,6 +654,10 @@ class User extends Authenticatable
     public function anchors(){
         return $this->hasMany('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');
     }
+    
+    public function anchorUsers(){
+        return $this->hasMany('App\Inv\Repositories\Models\AnchorUser', 'user_id', 'user_id');               
+    }    
 
     /**
      * Get Backend Users

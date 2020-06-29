@@ -22,18 +22,18 @@
     <div class="card">
         <div class="card-body">       
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     {!!
                     Form::text('by_email',
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by First name, Last name and Email',
+                    'placeholder' => 'Search by name, email and pan',
                     'id'=>'by_name'
                     ])
                     !!}
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
 
                     {!!
                     Form::select('is_assign',
@@ -43,6 +43,18 @@
                     'class'=>'form-control'))
                     !!}
                 </div>
+               <!--
+                <div class="col-md-3">
+
+                    {!!
+                    Form::select('pan',
+                    [''=>'Select Pan'],
+                    null,
+                    array('id' => 'pan',
+                    'class'=>'form-control'))
+                    !!}
+                </div>
+                -->
                 <div class="col-md-2">
                     <button id="searchB" type="button" class="btn  btn-success btn-sm">Search</button>
                 </div>

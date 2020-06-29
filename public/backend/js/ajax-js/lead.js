@@ -20,6 +20,7 @@ try {
                 data: function (d) {
                     d.by_email = $('input[name=by_email]').val();
                     d.is_assign = $('select[name=is_assign]').val();
+                    d.pan = $('select[name=pan]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -66,6 +67,7 @@ try {
                 data: function (d) {
                     d.by_email = $('input[name=by_email]').val();
                     d.is_assign = $('select[name=is_assign]').val();
+                    d.pan = $('select[name=pan]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -100,6 +102,7 @@ try {
                 data: function (d) {
                     d.by_email = $('input[name=by_email]').val();
                     d.is_assign = $('select[name=is_assign]').val();
+                    d.pan = $('select[name=pan]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -112,16 +115,23 @@ try {
                     {data: 'anchor_user_id'},
                     {data: 'name'},
                     {data: 'biz_name'},
+                    {data: 'pan_no'},
                     {data: 'email'},
                     {data: 'phone'},
-//                    {data: 'email'},
+                    {data: 'assoc_anchor'},
                     {data: 'created_at'},
                     {data: 'status'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6]}]
 
         });
-      
+        
+        //Search
+        $('#searchB').on('click', function (e) {
+            oTables2.draw();
+
+        });
+        
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

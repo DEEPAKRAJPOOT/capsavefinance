@@ -21,7 +21,31 @@
         <div class="card-body">
            
             <div class="row">
-                <div class="col-sm-12">
+                
+                <div class="col-sm-4">
+                   <!-- 
+                    {!!
+                    Form::select('pan',
+                    [''=>'Select Pan'],
+                    null,
+                    array('id' => 'pan',
+                    'class'=>'form-control'))
+                    !!}
+                    -->
+                   
+                    {!!
+                    Form::text('by_email',                    
+                    null,
+                    array('id' => 'by_email',
+                    'class'=>'form-control', 'placeholder'=>'Search By name, email and pan'))
+                    !!}
+                  
+                </div>
+                
+                <div class="col-sm-2">
+                    <button id="searchB" type="button" class="btn  btn-success btn-sm">Search</button>
+                </div>                
+                <div class="col-sm-6">
                     <div class="head-sec">
                         <div class="pull-right" style="margin-bottom: 10px;">
                         @can('add_anchor_lead')   
@@ -61,9 +85,10 @@
                                                 <th>Sr.No.</th>
                                                 <th>Name</th>
                                                 <th>Business Name</th>
+                                                <th>PAN No.</th>
                                                 <th>Email</th>
                                                 <th>Mobile</th>
-<!--                                                <th>Anchor</th>-->
+                                                <th>Anchor</th>
                                                 <th>Created At</th>
                                                  <th>Status</th>
                                             </tr>

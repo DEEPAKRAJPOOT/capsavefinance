@@ -1508,7 +1508,8 @@ class CamController extends Controller
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
-        $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';                    
+        $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';   
+        $userRole = $this->userRepo->getBackendUser(Auth::user()->user_id);
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
@@ -1520,7 +1521,8 @@ class CamController extends Controller
                 ->with('termPrgmLimitData', $termPrgmLimitData)
                 ->with('leasingPrgmLimitData', $leasingPrgmLimitData)
                 ->with('currStageCode', $currStageCode)
-                ->with('offerStatus', $offerStatus);
+                ->with('offerStatus', $offerStatus)
+                ->with('userRole', $userRole);
     }
     
     /**
@@ -1695,11 +1697,12 @@ class CamController extends Controller
         $appType = $appData->app_type;
         $user = $appData->user;
         $user_type = $user->is_buyer;
-        $anchors = $user->anchors;
+        //$anchors = $user->anchors;               
+        $anchors = $this->userRepo->getAnchorsByUserId($user->user_id);
         $anchorArr=[];
         foreach($anchors as $anchor){
           array_push($anchorArr, $anchor->anchor_id);
-        }
+        }                        
         $anchorPrgms = $this->appRepo->getPrgmsByAnchor($anchorArr, $user_type);
       } else {
         $appType = '';

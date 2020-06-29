@@ -43,7 +43,7 @@
 												<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 											</span>
 											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
-											<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" >
+											<input type="text" name="biz_pan_number" value="{{$pan ? $pan : old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10"  @if ($pan) readonly="readonly" @endif >
 											@error('biz_pan_number')
 												<span class="text-danger error">{{ $message }}</span>
 											@enderror

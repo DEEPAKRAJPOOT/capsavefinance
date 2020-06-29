@@ -434,5 +434,16 @@ class Business extends BaseModel
     {
       return  self::with('LmsUser')->where("biz_entity_name","LIKE","{$search}%")->groupBy('user_id')->get();
     }
+    
+    public static function getBizDataByPan($pan, $userId=null) {
+        $query = self::select('biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash','biz.cibil_score','biz_pan_gst.cin', 'biz.is_cibil_pulled')
+        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')                
+        ->where('biz_pan_gst.pan_gst_hash', $pan);
+        if (!is_null($userId)) {
+            $query->where('biz.user_id', $userId);
+        }         
+        $arrData = $query->get();
+        return $arrData;
+    }
 
 }

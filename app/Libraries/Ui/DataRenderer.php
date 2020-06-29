@@ -18,6 +18,8 @@ use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Models\AnchorUser;
+use App\Inv\Repositories\Models\Anchor;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -58,7 +60,7 @@ class DataRenderer implements DataProviderInterface
     public function getUsersList(Request $request, $user)
     {
         return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned'])
+                ->rawColumns(['id','name', 'checkbox', 'anchor', 'action', 'email','assigned'])
                 ->addColumn(
                     'id',
                     function ($user) {
@@ -71,7 +73,8 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                         'name',
                         function ($user) {
-                    $full_name = $user->f_name.' '.$user->l_name;
+                    $panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ''; 
+                    $full_name = $user->f_name.' '.$user->l_name . $panInfo;
                     return $full_name;
                     
                 })
@@ -85,8 +88,9 @@ class DataRenderer implements DataProviderInterface
                     'anchor',
                     function ($user) {                    
                     if($user->UserAnchorId){
-                      $userInfo=User::getUserByAnchorId((int) $user->UserAnchorId);
-                       $achorId= $userInfo->f_name.' '.$userInfo->l_name;
+                       //$userInfo=User::getUserByAnchorId((int) $user->UserAnchorId);
+                       //$achorId= $userInfo->f_name.' '.$userInfo->l_name;
+                        $achorId = Helpers::getAnchorsByUserId($user->user_id);
                     }else{
                       $achorId='N/A';  
                     }
@@ -158,7 +162,8 @@ class DataRenderer implements DataProviderInterface
                                 $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
                                 ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
                                 //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
@@ -172,6 +177,12 @@ class DataRenderer implements DataProviderInterface
                             });
                         }
                     }
+                    if ($request->get('pan') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $pan = $request->get('pan');
+                            $query->where('anchor_user.pan_no', $pan);
+                        });
+                    }                    
                 })
                 ->make(true);
     }
@@ -182,7 +193,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'status', 'action','contact','name'])
+                ->rawColumns(['app_id','biz_entity_name','assignee', 'assigned_by', 'action','assoc_anchor', 'contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -217,7 +228,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'biz_entity_name',
                     function ($app) {                        
-                        return $app->biz_entity_name ? $app->biz_entity_name : '';
+                        $panInfo = $app->pan_no && !empty($app->pan_no) ? '<br><strong>PAN:</strong> ' . $app->pan_no : ''; 
+                        return $app->biz_entity_name ? $app->biz_entity_name . $panInfo : '';
                 })
                 ->addColumn(
                     'name',
@@ -257,8 +269,9 @@ class DataRenderer implements DataProviderInterface
                     /////return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
                     
                     if($app->anchor_id){
-                       $userInfo = User::getUserByAnchorId((int) $app->anchor_id);
-                       $achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                       //$userInfo = User::getUserByAnchorId((int) $app->anchor_id);
+                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     } else {
                        $achorName='';  
                     }                    
@@ -378,11 +391,13 @@ class DataRenderer implements DataProviderInterface
                         if ($lmsStatus && $app->renewal_status == 1) {
                             $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 1]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></a> ';
                         }
-                        $where=[];
-                        $where['user_id'] = $app->user_id;
-                        $where['status'] = [0,1];
-                        $appData = Application::getApplicationsData($where);
-                        if ($lmsStatus && $app->status == 2 && !isset($appData[0])) { //Limit Enhancement
+
+                        //$where=[];
+                        //$where['user_id'] = $app->user_id;
+                        //$where['status'] = [0,1];
+                        //$appData = Application::getApplicationsData($where);
+                        $appData = Application::checkAppByPan($app->user_id);
+                        if ($lmsStatus && $app->status == 2 && !$appData) { //Limit Enhancement
                             $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-plus" aria-hidden="true"></i></a> ';
                             $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-times" aria-hidden="true"></i></a> ';
                         }
@@ -403,7 +418,8 @@ class DataRenderer implements DataProviderInterface
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
                             $query->where('app.app_id', 'like',"%$search_keyword%")
-                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
+                            ->orWhere('anchor_user.pan_no', 'like', "%$search_keyword%");
                         });                        
                     }
                     if ($request->get('is_assign') != '') {
@@ -438,8 +454,14 @@ class DataRenderer implements DataProviderInterface
                                 $query->where('app.renewal_status', $status);
                             }
                         });
-                    }                    
+                    }  
                     
+                    if ($request->get('pan') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $pan = $request->get('pan');
+                            $query->where('anchor_user.pan_no', $pan);
+                        });
+                    }                    
                 })
                 ->make(true);
     }
@@ -450,7 +472,7 @@ class DataRenderer implements DataProviderInterface
     public function getFiRcuAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action', 'status'])
+                ->rawColumns(['app_id', 'action','assoc_anchor', 'status'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -482,8 +504,9 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                       $userInfo=User::getUserByAnchorId((int)$app->anchor_id);
-                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                       //$userInfo=User::getUserByAnchorId((int)$app->anchor_id);
+                       //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id); 
                     }else{
                       $achorName='';  
                     }                    
@@ -542,7 +565,7 @@ class DataRenderer implements DataProviderInterface
     {
       
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action', 'status'])
+                ->rawColumns(['app_id', 'action', 'assoc_anchor', 'status'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -575,8 +598,9 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                    $userInfo=User::getUserByAnchorId((int) $app->anchor_id);
-                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                       //$userInfo=User::getUserByAnchorId((int) $app->anchor_id);
+                         //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     }else{
                       $achorName='';  
                     }                    
@@ -1995,7 +2019,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppLicationPool(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'contact','action','name'])
+                ->rawColumns(['app_id', 'contact','assoc_anchor','action','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -2031,8 +2055,9 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {
                     if($app->anchor_id){
-                       $userInfo = User::getUserByAnchorId($app->anchor_id);
-                       $achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                       //$userInfo = User::getUserByAnchorId($app->anchor_id);
+                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     } else {
                        $achorName='';  
                     }                    
@@ -2213,7 +2238,7 @@ class DataRenderer implements DataProviderInterface
     {
         
         return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned', 'status'])
+                ->rawColumns(['id', 'checkbox', 'action', 'assoc_anchor', 'email','assigned', 'status'])
                 ->addColumn(
                     'id',
                     function ($user) {
@@ -2232,9 +2257,16 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'biz_name',
                     function ($user) {
+                    //$panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ''; 
                     $biz_name = $user->biz_name;
                     return $biz_name;
 
+                })
+                ->editColumn(
+                    'pan_no',
+                    function ($user) {
+                    $pan_no = ($user->pan_no) ? $user->pan_no : '';
+                    return $pan_no;
                 })
                 ->editColumn(
                     'email',
@@ -2248,6 +2280,19 @@ class DataRenderer implements DataProviderInterface
                     $achorId = $user->phone; 
                     return $achorId;
                 })
+                ->addColumn(
+                    'assoc_anchor',
+                    function ($user) {
+                    if($user->anchor_id){
+                       //$userInfo = User::getUserByAnchorId($app->anchor_id);
+                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                        $achorName = Helpers::getAnchorById($user->anchor_id);                        
+                    } else {
+                       $achorName='';  
+                    }                    
+                    return $achorName;
+                    
+                })                
                 ->editColumn(
                     'created_at',
                     function ($user) {
@@ -2269,10 +2314,10 @@ class DataRenderer implements DataProviderInterface
                         if ($request->has('by_email')) {
                             $query->where(function ($query) use ($request) {
                                 $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                                $query->where('anchor_user.name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('anchor_user.l_name', 'like', "%$by_nameOrEmail%")                               
+                                ->orWhere('anchor_user.email', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
@@ -2286,6 +2331,15 @@ class DataRenderer implements DataProviderInterface
                             });
                         }
                     }
+                    if ($request->has('pan')) {
+                        if ($request->get('pan') != '') {
+                            $query->where(function ($query) use ($request) {
+                                $pan = $request->get('pan');                                
+                                $query->where('anchor_user.pan_no',$pan);
+                                //$query->where('anchor_user.pan_no', 'like',"%$pan%");
+                            });
+                        }
+                    }                    
                 })
                 ->make(true);
     }
@@ -3282,11 +3336,13 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'anchor',
                     function ($customer) {
-                        $anchor = ($customer->user->anchor->comp_name) ?: '--';
+                        //$anchor = ($customer->user->anchor->comp_name) ?: '--';
+                        $anchor = Helpers::getAnchorsByUserId($customer->user_id);
                         $prgm =  ($customer->user->is_buyer == 1) ? 'Vender Finance' : 'Channel Finance';
                         $data = '';
-                        $data .= $anchor ? '<span><b>Anchor:&nbsp;</b>'.$anchor.'</span>' : '';
-                        $data .= $prgm ? '<br><span><b>Program:&nbsp;</b>'.$prgm.'</span>' : '';
+                        //$data .= $anchor ? '<span><b>Anchor:&nbsp;</b>'.$anchor.'</span>' : '';
+                        //$data .= $prgm ? '<br><span><b>Program:&nbsp;</b>'.$prgm.'</span>' : '';
+                        $data .= $anchor;
                         return $data;
                 })
                 ->editColumn(
@@ -4471,7 +4527,7 @@ class DataRenderer implements DataProviderInterface
     public function getColenderAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action', 'status'])
+                ->rawColumns(['app_id','assoc_anchor', 'action', 'status'])
                 ->addColumn('app_id', function ($app) {
                         $link = route('colender_view_offer', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
                         return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . \Helpers::formatIdWithPrefix($app->app_id, 'APP')  . "</a> ";
@@ -4500,8 +4556,9 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                    $userInfo=User::getUserByAnchorId((int)$app->anchor_id);
-                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                        //$userInfo=User::getUserByAnchorId((int)$app->anchor_id);
+                        //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';                        
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     }else{
                       $achorName='';  
                     }                    
@@ -5651,7 +5708,7 @@ class DataRenderer implements DataProviderInterface
     public function getRenewalAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
+                ->rawColumns(['app_id','assignee', 'assigned_by','assoc_anchor', 'action','contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -5705,8 +5762,9 @@ class DataRenderer implements DataProviderInterface
                     /////return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
                     
                     if($app->anchor_id){
-                       $userInfo = User::getUserByAnchorId($app->anchor_id);
-                       $achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                       //$userInfo = User::getUserByAnchorId($app->anchor_id);
+                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     } else {
                        $achorName='';  
                     }                    
