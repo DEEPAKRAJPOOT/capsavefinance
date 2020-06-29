@@ -1031,11 +1031,21 @@ class Helper extends PaypalHelper
                 $userArr = self::getChildUsersWithParent($to_id);
                 $curStage = WfAppStage::getCurrentWfStage($app_id);
                 if ($curStage && $curStage->stage_code == 'approver') {
-                    $whereCond=[];
-                    $whereCond['to_id'] = $to_id;
-                    $whereCond['app_id'] = $app_id;
-                    $assignData = AppAssignment::getAppAssignmentData($whereCond);
-                    $isViewOnly = $assignData && isset($assignData->app_assign_id) ? 1 : 0;
+                    //$whereCond=[];
+                    //$whereCond['to_id'] = $to_id;
+                    //$whereCond['app_id'] = $app_id;
+                    //$assignData = AppAssignment::getAppAssignmentData($whereCond);
+                    //$isViewOnly = $assignData && isset($assignData->app_assign_id) ? 1 : 0;
+                    
+                      $appApprData = AppApprover::getAppApprovers($app_id);
+                      $apprUsers = [];
+                      if (isset($appApprData[0])) {
+                          foreach($appApprData as $appr) {
+                              $apprUsers[] = $appr->approver_user_id;
+                          }
+                      }
+                      $isViewOnly = count($apprUsers) > 0 && in_array($to_id, $apprUsers) ? 1 : 0;
+                    
                 } else {
                     $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
                 }
