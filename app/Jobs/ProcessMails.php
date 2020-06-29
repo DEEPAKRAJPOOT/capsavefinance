@@ -89,7 +89,8 @@ class ProcessMails implements ShouldQueue
                     foreach($to_users as $user) {
                         $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                         $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
-                        $emailData['receiver_email'] = $user->email;
+                        $emailData['receiver_email'] = 'akash.kumar@prolitus.com';
+                        // $emailData['receiver_email'] = $user->email;
                         //$event = ($user->roles[0]->id =='8')?'APPLICATION_APPROVER_MAIL':$event;
                         \Event::dispatch($event, serialize($emailData));
                     }
@@ -97,10 +98,12 @@ class ProcessMails implements ShouldQueue
                     $user = $userRepo->getfullUserDetail($assignmentData->to_id);
                     $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                     $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
-                    $emailData['receiver_email'] = $user->email;
+                    $emailData['receiver_email'] = 'akash.kumar@prolitus.com';
+                    // $emailData['receiver_email'] = $user->email;
                     //$event = ($user->roles[0]->id =='8')?'APPLICATION_APPROVER_MAIL':$event;
                     \Event::dispatch($event, serialize($emailData));
                 }
+                // die("here");
             }
         }
         catch(Exception $e) {
