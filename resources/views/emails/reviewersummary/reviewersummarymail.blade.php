@@ -138,6 +138,7 @@
     <tr>
         <td align="left">
            @forelse($supplyOfferData as $key=>$supplyOffer)
+           @if ($supplyOffer->status != 2)
                 <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
                     <thead>
                          <tr role="row">
@@ -315,7 +316,7 @@
                           @endif
                     </tbody>
                 </table>
-
+                @endif
                 @empty
                      <tr class="">
                         <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">No Offer Found</td>

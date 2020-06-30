@@ -234,6 +234,7 @@
                            </table>
                            <br />
                            @foreach($supplyChaindata['offerData'] as $key =>  $offerD)
+                           @if ($offerD->status != 2)
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">
                               <tbody>
                                  <tr>
@@ -316,6 +317,7 @@
                                  </tr>
                               </tbody>
                            </table>
+                           @endif
                            @endforeach
                            <br />
                            <table  class="table table-border"  cellpadding="0" cellspacing="0">

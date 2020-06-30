@@ -131,7 +131,7 @@ class AppProgramLimit extends BaseModel {
     }
 
     public function offer(){
-        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer','app_prgm_limit_id','app_prgm_limit_id')->where('is_active',1);
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer','app_prgm_limit_id','app_prgm_limit_id')->where('is_active',1)->orderBy('prgm_offer_id','DESC');
     }     
 
    public static function getAllAnchor()

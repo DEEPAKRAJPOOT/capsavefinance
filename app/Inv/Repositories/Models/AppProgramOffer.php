@@ -178,9 +178,9 @@ class AppProgramOffer extends BaseModel {
         // }
 
         if(is_null($product_id) || $product_id == ''){
-            $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();
+            $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->orderBy('prgm_offer_id', 'DESC')->get();
         }else{
-            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where(['app_id'=>$appId, 'is_active'=>1])->with('offerCharges.chargeName')->get();
+            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where(['app_id'=>$appId, 'is_active'=>1])->with('offerCharges.chargeName')->orderBy('prgm_offer_id', 'DESC')->get();
         }
         return $offers ? $offers : null;
     }
