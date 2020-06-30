@@ -44,7 +44,7 @@ Form::open(
                 <label for="txtCreditPeriod">Confirm Account Number
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::password('confim_acc_no',
+                {!! Form::password('confim_acc_no',isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
                 ['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number', 'maxlength' => "18"]) !!}
                 
             </div>
