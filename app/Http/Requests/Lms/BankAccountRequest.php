@@ -63,7 +63,6 @@ class BankAccountRequest extends FormRequest {
         $messages['ifsc_code.required'] = trans('error_messages.required', ['field' => 'IFSC Code']);
         $messages['branch_name.required'] = trans('error_messages.required', ['field' => 'Branch Name ']);
         $messages['is_active.required'] = trans('error_messages.required', ['field' => 'Status']);
-        $messages['acc_no.exists'] = 'This account number is already exists with entered IFSC Code.';
         return $messages;
     }
 
