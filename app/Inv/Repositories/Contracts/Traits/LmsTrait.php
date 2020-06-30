@@ -148,8 +148,7 @@ trait LmsTrait
         */
         $disbursalData = [];
         $disburseDate = $invoice['disburse_date'];
-        $str_to_time_date = strtotime($disburseDate);
-        dd($invoice['program_offer']);
+        $str_to_time_date = strtotime(\Carbon\Carbon::createFromFormat('d/m/Y', $disburseDate)->setTimezone(config('common.timezone'))->format('Y-m-d'));
         $bankId = $invoice['program_offer']['bank_id'];
         $oldIntRate = (float)$invoice['program_offer']['interest_rate'];
         $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
@@ -160,7 +159,6 @@ trait LmsTrait
         } else {
           $actIntRate = $interestRate;
         }
-        dd($actIntRate);
         $interest= 0;
         $margin= 0;
 
