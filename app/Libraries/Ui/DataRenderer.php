@@ -4903,7 +4903,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'action',
                         function ($dataRecords) {
-                        $btn = '<a class="btn btn-success btn-sm" href="'.route('export_txns').'?batch_no='.$dataRecords->batch_no.'">Download Report</a>';
+                        $btn = '<a class="btn btn-success btn-sm" href="'.route('export_txns', ['batch_no' => $dataRecords->batch_no]).'">Download Report</a>';
                         return $btn;
                     }) 
                     ->make(true);

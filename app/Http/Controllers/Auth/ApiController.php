@@ -486,7 +486,7 @@ class ApiController
          $mode_of_pay = 'e-Fund-Transfer';
          break;
       case '2':
-         $mode_of_pay = 'Cheque';
+         $mode_of_pay = 'Cheque No : ' . $rcpt->cheque_no;
          break;
       case '3':
          $mode_of_pay = 'Nach';
