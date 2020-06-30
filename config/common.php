@@ -303,6 +303,7 @@ return [
         '0' => 1,
         '1' => 9,
         '2' => 10
-    ]
+    ],    
+    'ck_upload_img_path' => env('CKEDITOR_UPLOAD_IMAGE_PATH', ''),
 ];
  
