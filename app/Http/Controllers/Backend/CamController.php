@@ -2107,7 +2107,7 @@ class CamController extends Controller
 
     public function viewCamReport(Request $request){
       try{
-        $viewData = $this->getCamReportData($request);
+        $viewData = $this->getCamReportData($request);        
         return view('backend.cam.viewCamReport')->with($viewData);
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -2118,8 +2118,9 @@ class CamController extends Controller
       try{
         $viewData = $this->getCamReportData($request);
         $bizId = $request->get('biz_id');
-        $appId = $request->get('app_id');
-        DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
+        $appId = $request->get('app_id');   
+        ob_start();
+        DPDF::setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled', true]);               
         $pdf = DPDF::loadView('backend.cam.downloadCamReport', $viewData,[],'UTF-8');
         self::generateCamPdf($appId, $bizId, $pdf->output());
         return $pdf->download('CamReport.pdf');          

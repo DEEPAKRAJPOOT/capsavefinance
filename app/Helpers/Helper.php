@@ -1717,4 +1717,16 @@ class Helper extends PaypalHelper
         
         return $anchorInfo;
     }    
+     
+     public static function replaceImagePath($variable)
+     {
+        $currentRoute = \Request::route()->getName();
+        if ($currentRoute == 'generate_cam_report') {
+            $backendUri = self::getServerProtocol() . env('BACKEND_URI');
+            $ckUploadImgPath = !empty(config('common.ck_upload_img_path')) ? config('common.ck_upload_img_path') : $_SERVER["DOCUMENT_ROOT"];            
+            return str_replace($backendUri, $ckUploadImgPath, $variable);
+        } else {
+            return $variable;
+        }
+     }
 }
