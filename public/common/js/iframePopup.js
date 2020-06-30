@@ -118,7 +118,9 @@ var iframe_ids = [
         'confirmEnhanceLimit',
         'confirmReduceLimit',
         'apprDisapprFrame',
-        'rejectOfferFrame'
+        'rejectOfferFrame',
+        'rejectApplication',
+        'viewApplicationStatus'
     ];
 
 iframe_ids.forEach(function(id) {
