@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use Auth;
+use Crypt;
+use Event;
+use DateTime;
 use Helpers;
 use Session;
 use Redirect;
 use Socialite;
 use Illuminate\Http\Request;
+use App\Libraries\Gupshup_lib;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -95,9 +99,15 @@ use AuthenticatesUsers;
             }
 
             // validate user OTP verified or not
-            if (!$this->isOtpVerify($userInfo)) {
-                Session::flash('messages', trans('error_messages.login_verify_otp'));
-                return redirect()->route('login_open');
+            if ($userInfo->anchor_id != null) {
+               if (!$this->isOtpVerify($userInfo)) {
+                    Session::flash('messages', trans('error_messages.login_verify_otp'));
+                    return redirect()->route('login_open');
+                }
+            } else {
+                $verifyLink = Crypt::encrypt($userInfo->email);
+                $this->verifyUser($verifyLink);
+                return redirect()->route('otp', ['token' => Crypt::encrypt($userInfo->email)]);
             }
             
             if (empty($userInfo->is_active) || $userInfo->is_active != 1) {
@@ -226,6 +236,77 @@ use AuthenticatesUsers;
         Session::forget('rId');
         Session::forget('go_on_right');
         return view('welcome');
+    }
+    
+    /**
+     * Verifying user email
+     * 
+     * @param string $token
+     * @return Response
+     */
+    public function verifyUser($token) {
+
+        try {
+            if (isset($token) && !empty($token)) {
+                $email = Crypt::decrypt($token);
+                $userCheckArr = $this->userRepo->getuserByEmail($email);
+                // echo "==>".count($userCheckArr); exit;
+                if ($userCheckArr != false) {
+                    /* if ($userCheckArr->status == config('inv_common.USER_STATUS.Active')) {
+                      return redirect(route('login_open'))->withErrors(trans('error_messages.email_already_verified'));
+                      } */
+
+                    $date = new DateTime;
+                    $currentDate = $date->format('Y-m-d H:i:s');
+                    $date->modify('+30 minutes');
+                    $formatted_date = $date->format('Y-m-d H:i:s');
+
+                    $userId = (int) $userCheckArr->user_id;
+                    $userArr = [];
+                    $userArr['is_email_verified'] = 1;
+                    $userArr['email_verified_updatetime'] = $currentDate;
+                    $this->userRepo->save($userArr, $userId);
+                    //save opt
+                    // echo "Current Date :->".$date;
+                    $userMailArr = [];
+                    $otpArr = [];
+                    $Otpstring = mt_rand(1000, 9999);
+                    ///$Otpstring = Helpers::randomOTP();
+                    $otpArr['otp_no'] = $Otpstring;
+                    $otpArr['activity_id'] = 1;
+                    $otpArr['user_id'] = $userId;
+                    $otpArr['is_otp_expired'] = 0;
+                    $otpArr['is_otp_resent'] = 0;
+                    $otpArr['otp_exp_time'] = $formatted_date;
+                    $otpArr['is_verified'] = 1;
+                    $otpArr['mobile_no'] = $userCheckArr->mobile_no;
+                    $this->userRepo->saveOtp($otpArr);
+                    $userMailArr['name'] = $name = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
+                    $userMailArr['email'] = $userCheckArr->email;
+                    $userMailArr['otp'] = $Otpstring;
+                    $gupshup = new Gupshup_lib();
+                    $mobile_no = $userCheckArr->mobile_no;
+                    $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on Capsave.\r\n Regards";
+                    // Send OTP mobile to User
+                    $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
+                    //if ($otp_resp['status'] != 'success') {
+                       // Send OTP mail to User
+                       Event::dispatch("user.sendotp", serialize($userMailArr));
+                    //}
+                    Session::flash('message_div', trans('success_messages.email_verified_please_login'));
+
+                    $alluserData = $this->userRepo->getUserDetail((int) $userId);
+                    //$verifyLink             = route('verify_email', ['token' => Crypt::encrypt($userArr['email'])]);
+                    return redirect()->route('otp', ['token' => Crypt::encrypt($userMailArr['email'])]);
+                } else {
+                    return redirect(route('login_open'))->withErrors(trans('error_messages.invalid_token'));
+                }
+            } else {
+                return redirect(route('login_open'))->withErrors(trans('error_messages.data_not_found'));
+            }
+        } catch (DecryptException $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
 
 }
