@@ -134,8 +134,8 @@ try {
     
     $.validator.addMethod("unique_acc", function (value, element) {
         var acc_no = value;
-        var ifsc = $('#ifsc_code').val();
-        console.log(acc_no);
+        var ifsc = $("input[name='ifsc_code']").val();
+        let status = false;
         $.ajax({
             url: messages.check_bank_acc_ifsc_exist,
             type: 'POST',
@@ -182,7 +182,6 @@ try {
 
                 'ifsc_code': {
                     required: true,
-
                 },
                 'branch_name': {
                     required: true,
@@ -197,7 +196,7 @@ try {
             },
             messages: {
                 acc_no: {
-                    unique_acc: 'This account number is already exists.'
+                    unique_acc: 'This account number is already exists with this IFSC Code.'
                 },
                 confim_acc_no:{
                     equalTo:'Confirm Account Number and Account number do not match.  '
