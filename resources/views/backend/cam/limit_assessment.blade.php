@@ -147,7 +147,13 @@
                                                 <td>{{$prgmOffer->margin}}%</td>
                                                 <td>{{$prgmOffer->grace_period}}</td>
                                                 <td>{{$prgmOffer->adhoc_interest_rate}}%</td>
-                                                <td><a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a></td>
+                                                <td>
+                                                    @if($prgmOffer->status == 2)
+                                                    <label class="badge badge-danger">Rejected</label>
+                                                    @else
+                                                    <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
+                                                    @endif
+                                                </td>
                                             </tr>
 					    @endif
                                             @endforeach
@@ -251,7 +257,13 @@
                                                 </td>
                                                 <td><b>Ruby Sheet</b>: {{$prgmOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$prgmOffer->cash_flow_xirr}}%</td>
                                                 <td>{{$prgmOffer->processing_fee}}%</td>
-                                                <td><a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a></td>
+                                                <td>
+                                                    @if($prgmOffer->status == 2)
+                                                    <label class="badge badge-success">Rejected</label>
+                                                    @else
+                                                    <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
+                                                    @endif
+                                                </td>
                                             </tr>
                                             @endforeach
                                             @else
@@ -364,7 +376,13 @@
                                                 @endif
                                                 </td>
                                                 <td>{{$prgmOffer->processing_fee}}%</td>
-                                                <td><a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a></td>
+                                                <td>
+                                                    @if($prgmOffer->status == 2)
+                                                    <label class="badge badge-success">Rejected</label>
+                                                    @else
+                                                    <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
+                                                    @endif
+                                                </td>
                                             </tr>
                                             @endforeach
                                             @else
@@ -403,8 +421,8 @@
 
 {!!Helpers::makeIframePopup('shareColenderFrame','Share with Co-Lender', 'modal-md')!!}
 {!!Helpers::makeIframePopup('viewSharedColenderFrame','View shared Co-Lender', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('limitOfferFrame','Add Offer', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('editLimitFrame','Edit Limit', 'modal-md')!!}
+{!!Helpers::makeIframePopup('limitOfferFrame','Add/Update Offer', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('editLimitFrame','Update Limit', 'modal-md')!!}
 
 @endsection
 @section('jscript')

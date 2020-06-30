@@ -120,7 +120,8 @@ var iframe_ids = [
     'apprDisapprFrame',
     'rejectOfferFrame',
     'rejectApplication',
-    'viewApplicationStatus'    
+    'viewApplicationStatus',
+    'acceptOfferFrame'
 ];
 
 iframe_ids.forEach(function (id) {

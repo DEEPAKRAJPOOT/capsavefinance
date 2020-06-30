@@ -6,7 +6,7 @@
           </tr>
        </table>
       @forelse($leaseOfferData as $key=>$leaseOffer)
-     
+      @if ($leaseOffer->status != 2) 
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
@@ -99,6 +99,7 @@
                </tr>
             </tbody>
          </table>
+      @endif
       @empty
          <div class="pl-4 pr-4 pb-4 pt-2">
              <p>No Offer Found</p>
@@ -118,6 +119,7 @@
   <!----supply chain  offer ---->
   
   @forelse($supplyOfferData as $key=>$supplyOffer)
+  @if ($supplyOffer->status != 2)
     <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
         <thead>
              <tr role="row">
@@ -337,7 +339,7 @@
               @endif
         </tbody>
     </table>
-
+    @endif
     @empty
          <div class="pl-4 pr-4 pb-4 pt-2">
              <p>No Offer Found</p>

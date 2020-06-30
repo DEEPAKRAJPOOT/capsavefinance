@@ -132,7 +132,7 @@ class AppProgramLimit extends BaseModel {
     }
 
     public function offer(){
-        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer','app_prgm_limit_id','app_prgm_limit_id')->where('is_active',1);
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer','app_prgm_limit_id','app_prgm_limit_id')->where('is_active',1)->orderBy('prgm_offer_id','DESC');
     }     
 
    public static function getAllAnchor()
@@ -247,7 +247,12 @@ class AppProgramLimit extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        return AppProgramOffer::where('prgm_id', $program_id)->sum('prgm_limit_amt');
+        return AppProgramOffer::where('prgm_id', $program_id)
+                        ->where('is_active',1)
+                        ->where(function($q) {
+                            $q->where('status', NULL)
+                                ->orWhere('status', 1);
+                        })->sum('prgm_limit_amt');
      }
 
     public function appLimit(){
