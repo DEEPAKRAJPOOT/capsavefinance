@@ -107,6 +107,11 @@ class FileHelper {
             if ($title != $lastkey) {
                 $objPHPExcel->createSheet();
             }
+            if (empty($data) || !isset($data[0])) {
+              $data[0] = [
+                '' => 'No Records Found for the exported report.',
+              ];
+            }
             $rec_count = count($data[0]);
             $header_cols = array_keys($data[0]);
             $sheetTitle = $title;
