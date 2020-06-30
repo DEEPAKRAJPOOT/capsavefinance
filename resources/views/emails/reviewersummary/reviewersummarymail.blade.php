@@ -35,6 +35,7 @@
         <td align="left">
             <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
             @forelse($leaseOfferData as $key=>$leaseOffer)
+            @if ($leaseOffer->status != 2)
                 <tr>
                     <th width="20%" style="background:#b7b7b7;color:#ffffff;text-align: left;padding: 10px;font-size: 14px;border-right: #ccc solid 1px;
         border-bottom: #ccc solid 1px;">Criteria</th>
@@ -119,6 +120,7 @@
                     {!! $add_sec_arr !!}   
                     </td>
                 </tr>
+                @endif
                 @empty
                     <tr class="">
                         <td>No Offer Found</td>

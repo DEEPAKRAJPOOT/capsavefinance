@@ -940,6 +940,7 @@
                                     </thead>
                                     <tbody>
                                        @forelse($leaseOfferData as $key=>$leaseOffer)
+                                       @if($leaseOffer->status != 2)
                                        <tr>
                                           <td>{{isset($leaseOffer->facility_type_id) ?  $facilityTypeList[$leaseOffer->facility_type_id]  : ''}}</td>
                                           <td>{{isset($leaseOffer->equipment_type_id) ?  (\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)['equipment_name']) : ''}}</td>
@@ -975,6 +976,7 @@
                                           </td>
                                           <td>{{isset($leaseOffer->processing_fee) ? $leaseOffer->processing_fee.' %': ''}}</td>
                                        </tr>
+                                       @endif
                                        @empty
                                        <tr>
                                           <p>No Offer Found</p>
