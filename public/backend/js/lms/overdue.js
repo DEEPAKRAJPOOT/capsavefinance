@@ -6,7 +6,6 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 50,
-            dom: 'lBrtip',
             bSort: false,
             responsive: true,
             searching: false,
@@ -25,6 +24,12 @@ try {
                     $("#lmsSoaList_processing").css("display", "none");
                 }
             },
+            "drawCallback": function( settings ) {
+                excelUrl = settings.json.excelUrl;
+                $('#dwnldEXCEL').attr('href', excelUrl)
+                pdfUrl = settings.json.pdfUrl;
+                $('#dwnldPDF').attr('href', pdfUrl)
+            },
             columns: [
                 {data: 'batch_no'},
                 {data: 'batch_date'},
@@ -35,16 +40,6 @@ try {
                 {data: 'invoice_appr_amount'},
                 {data: 'od'},
                 {data: 'balance'}
-            ],
-            buttons: [
-                
-                {
-                    text: 'PDF',
-                    action: function ( e, dt, node, config ) {
-                       download('pdf');
-                    }
-                }
-               
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
         });

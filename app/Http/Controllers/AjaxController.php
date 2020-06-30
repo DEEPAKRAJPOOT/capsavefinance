@@ -3948,10 +3948,23 @@ if ($err) {
    * @return json transaction data
    */
     public function getInvoiceDueList(DataProviderInterface $dataProvider) {
-
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('d/m/Y');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('d/m/Y');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'customer_id' => $this->request->get('search_keyword'),
+            'type' => 'excel',
+        ];
         $transactionList = $this->invRepo->getReportAllInvoice();
         $users = $dataProvider->getReportAllInvoice($this->request, $transactionList);
-        return $users;
+        $users     = $users->getData(true);
+        $users['excelUrl'] = route('pdf_invoice_due_url', $condArr);
+        $condArr['type']  = 'pdf';
+        $users['pdfUrl'] = route('pdf_invoice_due_url', $condArr);
+        return new JsonResponse($users);
     }
     
      /**
@@ -3960,16 +3973,43 @@ if ($err) {
    * @return json transaction data
    */
     public function getInvoiceOverDueList(DataProviderInterface $dataProvider) {
-
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('d/m/Y');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('d/m/Y');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'customer_id' => $this->request->get('search_keyword'),
+            'type' => 'excel',
+        ];
         $transactionList = $this->invRepo->getReportAllOverdueInvoice();
         $users = $dataProvider->getReportAllOverdueInvoice($this->request, $transactionList);
-        return $users;
+        $users     = $users->getData(true);
+        $users['excelUrl'] = route('pdf_invoice_over_due_url', $condArr);
+        $condArr['type']  = 'pdf';
+        $users['pdfUrl'] = route('pdf_invoice_over_due_url', $condArr);
+        return new JsonResponse($users);
     }
     
    public function getInvoiceRealisationList(DataProviderInterface $dataProvider) {
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('d/m/Y');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('d/m/Y');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'customer_id' => $this->request->get('search_keyword'),
+            'type' => 'excel',
+        ];
         $transactionList = $this->invRepo->getInvoiceRealisationList();
         $users = $dataProvider->getInvoiceRealisationList($this->request, $transactionList);
-        return $users;
+        $users     = $users->getData(true);
+        $users['excelUrl'] = route('pdf_invoice_realisation_url', $condArr);
+        $condArr['type']  = 'pdf';
+        $users['pdfUrl'] = route('pdf_invoice_realisation_url', $condArr);
+        return new JsonResponse($users);
     }  
         /**
      * Get all Equipment

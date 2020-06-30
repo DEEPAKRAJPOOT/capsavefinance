@@ -133,16 +133,31 @@ class ReportController extends Controller
     }
      public function realisationreport(Request $request) {
         try {
-            return view('reports.realisationreport  ');
+            return view('reports.realisationreport');
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
         
     } 
-    public function pdfInvoiceDue(Request $request)
-    {
+    public function pdfInvoiceDue(Request $request) {
         $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
         $getInvoice  =  $this->invRepo->pdfInvoiceDue($request);
+        foreach($getInvoice as $invoice) :
+        $duereport[] = [
+            'Batch No' => $invoice->disbursal->disbursal_batch->batch_id ?? NULL,
+            'Batch Date' => date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at)) ?? NULL,
+            'Bill No' => $invoice->invoice->invoice_no ?? NULL,
+            'Bill Date' => Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y') ?? NULL,
+            'Due Date' => Carbon::parse($invoice->payment_due_date)->format('d/m/Y') ?? NULL,
+            'Bill Amount' => number_format($invoice->invoice->invoice_amount ?? 0),
+            'Approve Amount' => number_format($invoice->invoice->invoice_approve_amount ?? 0),
+            'Balance' => number_format($invoice->invoice->invoice_approve_amount ?? 0),
+        ];
+        endforeach;
+        if (strtolower($request->type) == 'excel') {
+           $toExportData['Invoice Due'] = $duereport;
+           return $this->fileHelper->array_to_excel($toExportData);
+        }
         $pdfArr = ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
         $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadinvoicedue');
         return $pdf->download('InvoiceDueReport.pdf');  
