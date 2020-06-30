@@ -34,7 +34,7 @@ Form::open(
                 </label>
                 {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
                 ['class'=>'form-control form-control-sm' ,
-                'id'=>'acc_no','placeholder'=>'Enter Account Number']) !!}
+                'id'=>'acc_no','placeholder'=>'Enter Account Number', 'maxlength' => "18"]) !!}
                 {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -46,7 +46,7 @@ Form::open(
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::password('confim_acc_no',
-                ['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number']) !!}
+                ['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number', 'maxlength' => "18"]) !!}
                 
             </div>
         </div>
