@@ -5930,7 +5930,7 @@ class DataRenderer implements DataProviderInterface
                     if($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->outstanding == 0)
                     $flag = false;
                 }
-                if($trans->payment && $days == 1 && $flag){
+                if($trans->payment && $days == 1 && $flag && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
                     $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
                 }
                 return $result;
