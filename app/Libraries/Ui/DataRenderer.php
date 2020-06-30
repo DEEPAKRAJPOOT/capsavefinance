@@ -182,7 +182,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
+                ->rawColumns(['app_id','assignee', 'assigned_by', 'status', 'action','contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -316,13 +316,29 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($app) {
                     $app_status = config('common.app_status');                    
-                    return isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
+                    $status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
 
+                    $link = '<a title="View Application Status" href="#" data-toggle="modal" data-target="#viewApplicationStatus" data-url="' . route('view_app_status_list', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn">View Status</a>';
+
+                    if(Helpers::checkPermission('view_app_status_list') && $app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_REJECTED']){
+                        $status = 'Rejected'.$link;                        
+                    }
+                    if(Helpers::checkPermission('view_app_status_list') &&$app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_CANCEL']){
+                        $status = 'Cancelled'.$link;
+                    }
+                    if(Helpers::checkPermission('view_app_status_list') &&$app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_HOLD']){
+                        $status = 'On Hold'.$link;
+                    }
+                    if(Helpers::checkPermission('view_app_status_list') &&$app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_DATA_PENDING']){
+                        $status = 'Data Pending'.$link;
+                    }
+                    return $status;
                 })
                 ->addColumn(
                     'action',
                     function ($app) use ($request) {
                         $act = '';
+                        $lmsStatus = config('lms.LMS_STATUS');
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
                         if ($view_only && in_array($app->status, [0,1,2]) ) {
                            //if(Helpers::checkPermission('add_app_note')){
@@ -336,7 +352,7 @@ class DataRenderer implements DataProviderInterface
                                 $currentStage = Helpers::getCurrentWfStage($app->app_id);
                                 $roleData = Helpers::getUserRole();     
                                 $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
-                                if ($currentStage && $currentStage->order_no <= 16 ) {                                                                                                           
+                                if ($currentStage && ( (!$lmsStatus && $currentStage->order_no < 16) || ($lmsStatus && $currentStage->order_no <= 16) ) ) {                                                                                                           
                                     $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-reply" aria-hidden="true"></i></a> ';
                                     if ($currentStage->order_no == 16 && !$hasSupplyChainOffer ) {
                                         if ($app->curr_status_id != config('common.mst_status_id')['DISBURSED']) {
@@ -352,17 +368,26 @@ class DataRenderer implements DataProviderInterface
                                 }
                             }                                                        
                         }
-                        if ($app->renewal_status == 1) {
+                        
+                        
+                        if ($lmsStatus && $app->renewal_status == 1) {
                             $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 1]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></a> ';
                         }
                         $where=[];
                         $where['user_id'] = $app->user_id;
                         $where['status'] = [0,1];
                         $appData = Application::getApplicationsData($where);
-                        if ($app->status == 2 && !isset($appData[0])) { //Limit Enhancement
-                            $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></i></a> ';
-                            $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></i></a> ';
+                        if ($lmsStatus && $app->status == 2 && !isset($appData[0])) { //Limit Enhancement
+                            $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-plus" aria-hidden="true"></i></a> ';
+                            $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-times" aria-hidden="true"></i></a> ';
                         }
+                        
+                        //Route for Application Rejection
+                        // if (Helpers ::checkPermission('reject_app') && ($app->curr_status_id === null && $app->curr_status_id !== config('common.mst_status_id')['APP_REJECTED'])) {
+                       if (Helpers ::checkPermission('reject_app')) {
+                           $act = $act . '<a title="Modify Status" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></a>';
+                        }
+                        
                         return $act;
                                       
                     }
@@ -389,6 +414,14 @@ class DataRenderer implements DataProviderInterface
                                 $query->where('app.app_type', 2);
                             } else if ($status == 4) {
                                 $query->where('app.app_type', 3);
+                            }else if ($status == 5) {
+                                $query->where('app.curr_status_id', 43);
+                            }else if ($status == 6) {
+                                $query->where('app.curr_status_id', 44);
+                            }else if ($status == 7) {
+                                $query->where('app.curr_status_id', 45);
+                            }else if ($status == 8) {
+                                $query->where('app.curr_status_id', 46);
                             } else {
                                 
                                 //if ($status == 4) {
@@ -3476,6 +3509,11 @@ class DataRenderer implements DataProviderInterface
                     'level_name',
                     function ($doa) {
                 return $doa->level_name;
+            })
+             ->editColumn(
+                    'product_type',
+                    function ($doa) {
+                return ($doa->product) ? $doa->product->product_name : '';
             })
             ->editColumn(
                     'city',

@@ -65,7 +65,7 @@
                     @endphp
                    @else
                     @if ($nextStage && $nextStage->stage_code == 'disbursed_or_in_lms')
-                    Are you sure to move in <strong>LMS</strong>?<br>
+                    Are you sure want to Activate the limit..?<br>
                     @else
                     Are you sure to move the next stage <strong>({{ isset($roles[$next_role_id]) ? $roles[$next_role_id] : '' }})</strong>?<br>
                     @endif
@@ -85,6 +85,26 @@
                        </label>
                        <textarea type="text" name="sharing_comment" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
                     </div>
+                    @if($nextStage && $nextStage->stage_code=='approver')  
+                    @if(count($approvers) > 0)
+                      <div class="form-group">
+                       <label for="txtCreditPeriod">Approver List
+                       <span class="mandatory">*</span>
+                       </label>
+                    </div>
+                   
+                    @foreach($approvers as $row)  
+                   
+                        <div> <input type="checkbox" checked="checked" name="approver_list[]" class="approver_list" value="{{$row->user_id}}" id="approver_list">&nbsp; {{$row->f_name}}&nbsp;{{$row->l_name}}&nbsp; ({{$row->product_name}})</div>
+                       
+                      @endforeach
+                   
+                    @else
+                    
+                    <div class="error"> <i>Approver is not found...</i></div>
+                    @endif
+                    @endif
+                      </br>
                     {!! Form::hidden('app_id', $app_id) !!}
                     {!! Form::hidden('biz_id', $biz_id) !!}
                     {!! Form::hidden('user_id', $user_id) !!}
@@ -93,7 +113,7 @@
                     {!! Form::hidden('biz_id', $biz_id) !!}
                 <!-- <button type="submit" class="btn btn-success">{{ $confirmBtn }}</button>
                 <button id="close_btn" type="button" class="btn btn-secondary">{{ $closeBtn }}</button>               -->
-                <button type="submit" class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
+                <button type="submit" @php if($nextStage && $nextStage->stage_code=='approver') { @endphp id="submit" @php } @endphp class="btn btn-success btn-sm btn-move-next-stage">{{ $confirmBtn }}</button> &nbsp;
                 <button id="close_btn" type="button" class="btn btn-secondary btn-sm">{{ $closeBtn }}</button>   
             </div>
             </div>
@@ -120,7 +140,7 @@ var messages = {
                 
         $('.btn-move-next-stage').click(function() {            
             if ($('#frmMoveStage').valid()) {
-                parent.$('.isloader').show();
+               /// parent.$('.isloader').show();
             }
         });
         
@@ -150,10 +170,23 @@ var messages = {
             },
             messages: {
             }
+           
         });
+        
+        
             
     })
-    
+   
+   $(document).on("click","#submit",function(){
+        var len = $(".approver_list:checked").length;
+       if ( len === 0 )
+       {
+          parent.$('.isloader').hide();
+          alert('Please select at least one Approver.');
+          return false;
+       }  
+       return true;
+    })
     
     </script>
 @endsection

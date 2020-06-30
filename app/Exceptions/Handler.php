@@ -69,7 +69,7 @@ class Handler extends ExceptionHandler
         }
     
 
-        if (config('app.debug') && (config('app.env') == "stage" || config('app.env') == "production")) {                 
+        if (!config('app.debug')) {                 
             if ($maintenanceMode) {
                 return Response::view('errors.503', [], 503);
             } elseif ($exception instanceof TooManyRequestsHttpException) {
@@ -84,7 +84,7 @@ class Handler extends ExceptionHandler
             } elseif ($exception instanceof HttpException && $exception->getStatusCode() === 401) {
                  return redirect('/');                
             }
-            /*elseif ($exception instanceof MethodNotAllowedHttpException) {
+            elseif ($exception instanceof MethodNotAllowedHttpException) {
                 (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
                 //return redirect('/');
                 return Response::view('errors.400', [], 400);
@@ -92,7 +92,7 @@ class Handler extends ExceptionHandler
                 //dd($exception);
                 (!$maintenanceMode) && Helpers::shootDebugEmail($exception, true);
                 return Response::view('errors.custom', [], 500);                
-            }*/
+            }
         }
 
         return parent::render($request, $exception);

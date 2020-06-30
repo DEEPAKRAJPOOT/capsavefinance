@@ -143,9 +143,10 @@ class Application extends BaseModel
                 'users.email',
                 'users.mobile_no',                
                 'app_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role',
-                'app_assign.app_assign_id', 'app.parent_app_id')
+                'app_assign.app_assign_id', 'app.parent_app_id', 'note.note_data as reason', 'note.note_id')
                 ->join('users', 'users.user_id', '=', 'app.user_id')  
-                ->join('biz', 'app.biz_id', '=', 'biz.biz_id');
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
+                ->leftjoin('note','app.app_id', '=', 'note.app_id');
         if ($roleData[0]->id == 11) {            
         $query  = $query->leftJoin('app_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');                    
@@ -524,15 +525,22 @@ class Application extends BaseModel
     public static function getDoAUsersByAppId($appId)
     {
         
-        $doaUsers = self::select('users.user_id')
+        $doaUsers = self::select('users.user_id','users.f_name','users.l_name','mst_product.product_name','app_prgm_offer.prgm_limit_amt')
                 ->join('app_prgm_offer', 'app_prgm_offer.app_id', '=', 'app.app_id')
                 ->join('app_prgm_limit', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
                 //->join('prgm_doa_level', 'prgm_doa_level.prgm_id', '=', 'app_prgm_limit.prgm_id')                
+               
                 ->join('doa_level', function ($join) {
                     //$join->on('doa_level.doa_level_id', '=', 'prgm_doa_level.doa_level_id');
                     $join->on('app_prgm_offer.prgm_limit_amt', '>=', 'doa_level.min_amount');
                     $join->on('app_prgm_offer.prgm_limit_amt', '<=', 'doa_level.max_amount');
                 })
+                  ->join('mst_product', 'mst_product.id', '=', 'doa_level.product_id')
+                ->join('app_product', function ($join) {
+                    $join->on('app_product.product_id', '=', 'doa_level.product_id');
+                    $join->on('app_product.app_id', '=', 'app.app_id');
+                 }) 
+                 
                 ->join('doa_level_role', 'doa_level_role.doa_level_id', '=', 'doa_level.doa_level_id')
                 //->join('role_user', 'role_user.role_id', '=', 'doa_level_role.role_id')
                         

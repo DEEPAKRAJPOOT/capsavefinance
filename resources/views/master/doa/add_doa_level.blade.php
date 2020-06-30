@@ -22,9 +22,9 @@
     !!}
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group">
-                <label for="txtCreditPeriod">Level Code
+                <label for="txtCreditPeriod">DOA Level Code
                     <span class="mandatory">*</span>
                 </label>                                                
                 {!!
@@ -39,9 +39,9 @@
                 !!}                        
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group">
-                <label for="txtCreditPeriod"> Level Name
+                <label for="txtCreditPeriod">DOA Level Name
                     <span class="mandatory">*</span>
                 </label>                                                
                 {!!
@@ -55,8 +55,20 @@
                 !!}            
             </div>
         </div>
+         <div class="col-md-4">
+            <div class="form-group">
+                <label for="txtCreditPeriod"> Product Type
+                    <span class="mandatory">*</span>
+                </label>                                                
+                    <select class="form-control" id="product_type" name="product_type">
+                    <option value="">Please Select</option>
+                   @foreach($productType as $row) 
+                    <option value="{{$row->id}}" {{($row->id==$product_edit_type) ? 'selected=selected' : '' }}>{{$row->product_name}}</option>
+                   @endforeach
+                </select>     
+        </div>
     </div>
-
+    </div>
 
 
     @include('master.doa.doa_level_states' , ['data'=>$doaLevelStates])
@@ -388,13 +400,16 @@ $(document).ready(function () {
 
         let validationRules = {
             rules: {
-                level_code: {
-                    required: true
-                },
+                  
+                    level_code: {
+                        required: true
+                    },
                 level_name: {
                     required: true
                 },
-
+                product_type: {
+                        required: true
+                    },
                 min_amount: {
                     required: true
                 },
@@ -546,9 +561,11 @@ $(document).on('blur','.role_change', function (){
                    selector.val('');
                 }
                 selector.parents('.parent_role_div').find('.role_user').empty();
+
+               
                 $.each(optionList, function (index, data) {
                     let check = '';
-                    if (selected_value.indexOf(+index) != -1) {
+                    if (selected_value.indexOf(index) != -1) {
                         check = 'selected="selected"';
                     }
                     selector.parents('.parent_role_div').find('.role_user').append('<option  value="' + index + '"  ' + check + ' >' + data + '</option>');

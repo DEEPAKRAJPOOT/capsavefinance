@@ -829,7 +829,7 @@
         </tr>
       </table>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{!! isset($arrCamData->t_o_f_purpose) ? $arrCamData->t_o_f_purpose : '' !!}</p>
+         <p>{!! isset($arrCamData->t_o_f_purpose) ? \Helpers::replaceImagePath($arrCamData->t_o_f_purpose) : '' !!}</p>
       </div>
    </div>
 @endif
@@ -842,7 +842,7 @@
         </tr>
       </table>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{!! isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : '' !!} </p>
+         <p>{!! isset($arrCamData->t_o_f_profile_comp) ? \Helpers::replaceImagePath($arrCamData->t_o_f_profile_comp) : '' !!} </p>
       </div>
    </div>
 @endif
@@ -855,7 +855,7 @@
           </tr>
        </table>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{!! isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : '' !!}</p>
+         <p>{!! isset($arrCamData->promoter_cmnt) ? \Helpers::replaceImagePath($arrCamData->promoter_cmnt) : '' !!}</p>
       </div>
    </div>
 @endif
@@ -938,7 +938,7 @@
           </tr>
       </table>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p> {!! isset($arrCamData->rating_rational) ? $arrCamData->rating_rational : '' !!} </p>
+         <p> {!! isset($arrCamData->rating_rational) ? \Helpers::replaceImagePath($arrCamData->rating_rational) : '' !!} </p>
       </div>
    </div>
 @endif
@@ -1046,7 +1046,7 @@ $finFlag = false;
           </tr>
       </table>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{!! isset($finacialDetails->financial_risk_comments) ? $finacialDetails->financial_risk_comments : '' !!}</p>
+         <p>{!! isset($finacialDetails->financial_risk_comments) ? \Helpers::replaceImagePath($finacialDetails->financial_risk_comments) : '' !!}</p>
       </div>
    </div>
 @endif
@@ -1059,7 +1059,7 @@ $finFlag = false;
           </tr>
       </table>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p> {!! isset($arrBankDetails->debt_position_comments) ? $arrBankDetails->debt_position_comments: '' !!}</p>
+         <p> {!! isset($arrBankDetails->debt_position_comments) ? \Helpers::replaceImagePath($arrBankDetails->debt_position_comments) : '' !!}</p>
       </div>
    </div>
 @endif
@@ -1072,7 +1072,7 @@ $finFlag = false;
           </tr>
       </table>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{!! isset($arrCamData->contigent_observations) ? $arrCamData->contigent_observations: '' !!}</p>
+         <p>{!! isset($arrCamData->contigent_observations) ? \Helpers::replaceImagePath($arrCamData->contigent_observations) : '' !!}</p>
       </div>
    </div>
 @endif
@@ -1132,7 +1132,7 @@ $finFlag = false;
           </tr>
      </table>
       <div class="pl-4 pr-4 pb-4 pt-2">
-         <p>{!! isset($reviewerSummaryData->recommendation) ? $reviewerSummaryData->recommendation : '' !!} </p>
+         <p>{!! isset($reviewerSummaryData->recommendation) ? \Helpers::replaceImagePath($reviewerSummaryData->recommendation) : '' !!} </p>
       </div>
    </div>
 @endif

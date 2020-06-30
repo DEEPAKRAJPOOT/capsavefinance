@@ -112,7 +112,7 @@ class Business extends BaseModel
                 'status'=>1,
                 'parent_pan_gst_id'=>0,
                 'biz_pan_gst_api_id'=>$bpga->biz_pan_gst_api_id,
-                'cin'=>$attributes['biz_cin'],
+                'cin'=>(isset($attributes['biz_cin'])? $attributes['biz_cin']: ''),
                 'created_at' => \Carbon\Carbon::now(),
                 'created_by'=>Auth::user()->user_id
             ]);
@@ -147,6 +147,19 @@ class Business extends BaseModel
                 $data[$key]['biz_pan_gst_api_id']=0;
             }
             BizPanGst::insert($data);
+        }
+
+        if($attributes['cin_api_res']) {
+            $cin_api_res = explode(',', rtrim($attributes['cin_api_res'],','));
+            $dataCin = [];
+            foreach ($cin_api_res as $key=>$value) {
+                $dataCin[$key]['biz_id'] = $business->biz_id;
+                $dataCin[$key]['cin'] = $value;
+                $dataCin[$key]['is_active'] = 1;
+                $dataCin[$key]['created_by'] = Auth::user()->user_id;
+                $dataCin[$key]['created_at'] = \Carbon\Carbon::now();
+            }
+            BizEntityCin::insert($dataCin);
         }
         // insert into rta_app table
         $app = Application::create([
@@ -214,6 +227,9 @@ class Business extends BaseModel
     public function gsts(){
         return $this->hasMany('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>2, 'biz_owner_id'=>null])->where('parent_pan_gst_id','<>',0);
     }
+    public function cins(){
+        return $this->hasMany('App\Inv\Repositories\Models\BizEntityCin','biz_id','biz_id')->where('is_active',1);
+    }
 
     public function pan(){
         return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>1, 'biz_owner_id'=>null]);
@@ -221,6 +237,9 @@ class Business extends BaseModel
 
     public function gst(){
         return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>2, 'biz_owner_id'=>null, 'parent_pan_gst_id'=>0]);
+    }
+    public function cin(){
+        return $this->belongsTo('App\Inv\Repositories\Models\BizPanGst','biz_id','biz_id')->where(['type'=>1, 'biz_owner_id'=>null, 'parent_pan_gst_id'=>0]);
     }
 
     public static function getCompanyDataByBizId($biz_id)
@@ -285,7 +304,7 @@ class Business extends BaseModel
                     'status'=>1,
                     'parent_pan_gst_id'=>0,
                     'biz_pan_gst_api_id'=>$bpga->biz_pan_gst_api_id,
-                    'cin'=>$attributes['biz_cin'],
+                    'cin'=>(isset($attributes['biz_cin'])? $attributes['biz_cin']: ''),
                     'created_at' => \Carbon\Carbon::now(),
                     'created_by'=>Auth::user()->user_id
                 ]);
@@ -325,7 +344,7 @@ class Business extends BaseModel
                 'gstno_pan_gst_id'=>0,
                 'is_gst_verified'=>1,
                 ]);
-        }else if(empty($attributes['pan_api_res']) && !empty($attributes['biz_cin'])){
+        }else if(empty($attributes['pan_api_res'])){
             //update for parent GST
             BizPanGst::where(['type'=>2,'biz_id'=>$bizId, 'parent_pan_gst_id'=>0, 'biz_owner_id'=>null])->update([
                     'pan_gst_hash'=>$attributes['biz_gst_number'],
@@ -333,12 +352,13 @@ class Business extends BaseModel
                     'updated_by'=>Auth::user()->user_id
                 ]);
 
-            //update for CIN
-            BizPanGst::where(['type'=>1,'biz_id'=>$bizId, 'parent_pan_gst_id'=>0, 'biz_owner_id'=>null])->update([
-                    'cin'=>$attributes['biz_cin'],
-                    'updated_by'=>Auth::user()->user_id
-                ]);
         }
+
+        //update for CIN
+        BizPanGst::where(['type'=>1,'biz_id'=>$bizId, 'parent_pan_gst_id'=>0, 'biz_owner_id'=>null])->update([
+                'cin'=>(isset($attributes['biz_cin']))? $attributes['biz_cin']: NULL,
+                'updated_by'=>Auth::user()->user_id
+            ]);
 
         // update into rta_app table
         $app = Application::where('biz_id',$bizId)->first();

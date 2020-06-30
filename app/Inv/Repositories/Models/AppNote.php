@@ -56,5 +56,25 @@ class AppNote extends BaseModel {
         return $appNote;
     }
 
+    public static function getNoteDataById($noteId, $appId){
+        $result = self::where('app_id', $appId)
+                    ->latest()
+                    ->first();
+        return $result ?: false;
+    }
 
+    public static function findNoteDatabyNoteId($noteId){
+        $result = self::find((int)$noteId);
+        return $result ?: false;
+    }
+
+    public static function getAllCommentsByAppId($app_id){
+        $appNote = self::select('note.*', 'users.f_name', 'users.m_name', 'users.l_name', 'app_status_log.app_status_log_id', 'app_status_log.status_id')
+                ->join('users', 'users.user_id', '=', 'note.created_by')
+                ->join('app_status_log', 'app_status_log.note_id', '=', 'note.note_id')
+                ->where('note.app_id', $app_id)
+                ->orderBy('note_id', 'DESC')
+                ->get();      
+        return $appNote;
+    }
 }

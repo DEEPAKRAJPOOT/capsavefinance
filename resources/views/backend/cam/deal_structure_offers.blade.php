@@ -27,7 +27,7 @@
                <tr role="row" class="odd">
                   <td class=""><b>Limit Of The Equipment</b></td>
                   <td class=""> {!! isset($leaseOffer->prgm_limit_amt) ? ' INR '.number_format($leaseOffer->prgm_limit_amt)  : '0' !!} </td>
-                  <td class=""><b>Tenor (Days)</b></td>
+                  <td class=""><b>Tenor (Months)</b></td>
                   <td class="">{{isset($leaseOffer->tenor) ? $leaseOffer->tenor : ''}}</td>
                </tr>
                @if($leaseOffer->facility_type_id != 3)
@@ -195,8 +195,10 @@
                             @endif
                             ): </b></td>
                     <td>{{$offerCharge->chrg_value}}</td>
+                    @if(($supplyOffer->offerCharges->count() == $key+1) && ($supplyOffer->offerCharges->count() %2 != 0))
+                    <td colspan="2">&nbsp;</td>
+                    @endif
                     @if($key%2 != 0)
-                    <td></td>
                 </tr>
                 @endif
                 @endforeach

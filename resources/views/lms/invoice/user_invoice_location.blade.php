@@ -29,18 +29,19 @@
                         @csrf
                         <div class="row">
                             <div class="form-group col-md-6">
-                                 <label for="entity_type">Customer Primary Location   </label><br />
+                                 <label for="entity_type">Customer Location   </label><br />
                                  <select class="form-control" name="customer_pri_loc" id="customer_pri_loc">
+                                      <option disabled value="" selected>Select Customer Location</option>
                                       @foreach($user_addr as $u_addr)
-                                      <option value="{{$u_addr->biz_addr_id}}">{{$u_addr->addr_1}} {{$u_addr->addr_2}} {{$u_addr->city_name}} {{$u_addr->state_name}} {{$u_addr->pin_code}}</option>
+                                      <option state="{{$u_addr->state_id}}" value="{{$u_addr->biz_addr_id}}">{{$u_addr->addr_1}} {{$u_addr->addr_2}} {{$u_addr->city_name}} {{$u_addr->state_name}} {{$u_addr->pin_code}}</option>
                                       @endforeach
                                   </select>
-                                  <input type="hidden" name="user_state" id="user_state" value="{{$user_addr[0]->state_id}}">
+                                  <input type="hidden" name="user_state" id="user_state" value="">
                             </div>
                             <div class="form-group col-md-6">
-                                 <label for="entity_type">Select Capsave Location</label><br />
+                                 <label for="entity_type">Company Location</label><br />
                                  <select class="form-control" name="capsav_location" id="capsav_location">
-                                      <option disabled value="" selected>Select</option>
+                                      <option disabled value="" selected>Select Company Location</option>
                                       @foreach($capsave_addr as $c_addr)
                                       <option state="{{$c_addr->state_id}}" value="{{$c_addr->comp_addr_id}}">{{$c_addr->cmp_add}} {{$c_addr->city}}, {{$c_addr->state_name}} {{$c_addr->pincode}}</option>
                                       @endforeach
@@ -118,6 +119,11 @@ $(document).ready(function () {
   $(document).on('change', '#capsav_location', function () {
    let state_id =  $(this).find("option:selected").attr('state');
    $('#capsave_state').val(state_id);
+  })
+  
+  $(document).on('change', '#customer_pri_loc', function () {
+   let state_id =  $(this).find("option:selected").attr('state');
+   $('#user_state').val(state_id);
   })
 </script>
 <script type="text/javascript" src="{{ asset('backend/js/ajax-js/lms/cusCapLocation.js') }}"></script>

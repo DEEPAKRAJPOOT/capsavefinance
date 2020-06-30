@@ -60,5 +60,9 @@ class Product extends BaseModel {
         return $res ?: false;
     }
 
-    //    
+    public static function getProductType()
+    {
+        return  self::where('is_active', 1)->get();
+        
+    } 
 }

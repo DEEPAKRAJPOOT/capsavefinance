@@ -123,6 +123,9 @@ class BankAccountController extends Controller {
                 'branch_name' => $request->get('branch_name'),
                 'is_active' => $request->get('is_active')
             ];
+            if (!empty($_FILES['doc_file']['name']) && empty($_FILES['doc_file']['size'])) {
+                 return redirect()->back()->with('error','File not found. Try with another file.');
+            }
 
             $lastInsertId = $this->appRepo->saveBankAccount($prepareData, $acc_id);
             $this->uploadBankDoc($request, $lastInsertId);

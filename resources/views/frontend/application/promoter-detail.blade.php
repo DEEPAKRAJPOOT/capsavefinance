@@ -170,7 +170,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">PAN Number
-                                                <span class="mandatory">*</span>
+                                                <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span>
                                                 <span class="text-success" id="successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{ (isset($main[$j]['panVerifyNo']->requestId)) ? 'inline' : 'none' }}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
                                                 <span class="text-danger" id="failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                             
@@ -195,7 +195,8 @@
                                  -->
                                   <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtEmail">Designation
+
+                                            <label for="txtEmail">Designation    <span class="mandatory"></span>
 
                                             </label>
                                             <input type="text" name="designation[]" id="designation{{isset($row->first_name) ? $i : '1'}}" value="{{$row->designation}}" class="form-control designation"  placeholder="Enter Designation">
@@ -232,7 +233,7 @@
                                     </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label for="txtEmail">Mobile <span class="mandatory">*</span>  </label> 
+                                                <label for="txtEmail">Mobile <span class="mandatory">{{($is_lease==0) ? '*' : '' }}</span>  </label> 
                                              <input type="text" name="mobile_no[]"  {{isset($main[$j]['mobileNo']->mobile) ? 'readonly' : '' }} maxlength="10" id="mobile_no{{isset($row->first_name) ? $i : '1'}}" value="{{ isset($main[$j]['mobileNo']->mobile) ? $main[$j]['mobileNo']->mobile : $row->mobile }}" class="form-control mobileveri"  placeholder="Enter Mobile no">
                                               
                                              <span class="text-success float-left findMobileverify" id="v5successpanverify{{isset($row->first_name) ? $i : '1'}}"> <i class="fa fa-{{isset($main[$j]['mobileNo']->mobile) ? 'check-circle' : '' }}" aria-hidden="true"></i><i>{{isset($main[$j]['mobileNo']->mobile) ? 'Verified Successfully' : '' }}</i> </span>
@@ -622,7 +623,7 @@
         
         $('.submit').on('click', function (event) {
         var button = $(this).attr("data-type");
-     
+        var is_lease = '{{$is_lease}}';
         $('input.first_name').each(function () {
         $(this).rules("add",
         {
@@ -643,7 +644,8 @@
                 required: true
                 })
                 });
-
+              if(is_lease==0)
+              {
                 $('input.pan_no').each(function () {
                 $(this).rules("add",
                 {
@@ -657,6 +659,9 @@
                 // })
                 // });
 
+              }
+               if(is_lease==0)
+               {
                 $('input.mobileveri').each(function () {
                 $(this).rules("add",
                 {
@@ -664,7 +669,7 @@
                         number: true,
                 })
                 });
-
+               }
                 $('textarea.address').each(function () {
                 $(this).rules("add",
                 {
@@ -680,7 +685,8 @@
                 required: false
                 })
                 });
-
+              if(is_lease==0)
+              {
                 $('input.pan_no').each(function () {
                 $(this).rules("add",
                 {
@@ -695,7 +701,7 @@
                         number: false,
                 })
                 });
-
+              }
                 $('textarea.address').each(function () {
                 $(this).rules("add",
                 {
@@ -723,15 +729,18 @@
         var adVal = $("#aadhardown" + i).attr('href');
          var elVal = $("#electricitydown" + i).attr('href');
           var teVal = $("#telephonedown" + i).attr('href');
-         if (dlVal ==undefined && vtVal ==undefined && adVal ==undefined && elVal == undefined && teVal == undefined)
-        {
-        alert('Please upload atleast one ID Proof in ( Driving License / Voter ID / Aadhar Card / Electricity Bill  / Telephone Bill) in Management ' + i + '');
-        $("#verifydl" + i).focus();
-        return false;
+         if(is_lease==0)
+         {     
+            if (dlVal == "" && vtVal == "" && adVal == "" && elVal == "" && teVal == "")
+            {
+            alert('Please upload atleast one ID Proof in ( Driving License / Voter ID / Aadhar Card / Electricity Bill  / Telephone Bill) in Management ' + i + '');
+            $("#verifydl" + i).focus();
+            return false;
+            }
+         } 
         }
-
-        }
-
+       if(is_lease==0)
+       {  
         //// for pan verify///
         $(".pan_no").each(function (k, v) {
         panCount++;
@@ -762,7 +771,7 @@
         
         
         });
-      
+        }
                ///// validation for where is checked then shareholder is mandaterory/////
         $(".is_promoter").each(function (k, v) {
         promoCount++;

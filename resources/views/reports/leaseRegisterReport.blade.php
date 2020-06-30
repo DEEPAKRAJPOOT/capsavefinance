@@ -28,16 +28,15 @@
                 background-color:#808080 !important;
                 -webkit-print-color-adjust: exact;
                 border-right:#c5c5c5 solid 1px;
-                padding:5px 10px;
                 color:#ffffff;
             }
             table td{
                 border-right:#c5c5c5 solid 1px;
                 border-bottom:#c5c5c5 solid 1px;
-                padding:5px 10px;
             }
             td,th{
-                font-size: 8.5px !important;
+                font-size: 9px !important;
+                padding:5px;
             }
             .pagenum:before {
                 content: counter(page);

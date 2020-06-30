@@ -78,8 +78,11 @@
    <p style="font-family:Calibri;font-size: 9px;margin: 0px;">Please send your cheque/DD payable at per in Mumbai for <strong>Rs {{sprintf('%.2F', $total_sum_of_rental) }} </strong> to </p>
    <p style="font-family:Calibri;font-size: 9px;margin: 0px;"><strong>{{$company_data['name']}}</strong></p>
    <p style="font-family:Calibri;font-size: 9px;margin: 0px;"><strong>{{$company_data['address']}}</strong></p>
-   <p style="font-family:Calibri;font-size: 9px;margin: 0px 0px 8px 0px;"><strong>Beneficiary: {{$company_data['name']}}; {{$company_data['bank_name']}}, ESCROW A/C NO: {{$company_data['acc_no']}}; Branch Name: {{$company_data['branch_name']}}; IFSC Code: {{$company_data['ifsc_code']}}</strong></p>
-
+   @if(!bankDetailIsOfRegisteredCompanyInInvoice())
+   <p style="font-family:Calibri;font-size: 9px;margin: 0px 0px 8px 0px;"><strong>Beneficiary: {{$company_data['acc_name']}}; {{$company_data['bank_name']}}, ESCROW A/C NO: {{$company_data['acc_no']}}; Branch Name: {{$company_data['branch_name']}}; IFSC Code: {{$company_data['ifsc_code']}}</strong></p>
+   @else
+   <p style="font-family:Calibri;font-size: 9px;margin: 0px 0px 8px 0px;"><strong>Beneficiary: {{$registeredCompany['acc_name']}}; {{$registeredCompany['bank_name']}}, ESCROW A/C NO: {{$registeredCompany['acc_no']}}; Branch Name: {{$registeredCompany['branch_name']}}; IFSC Code: {{$registeredCompany['ifsc_code']}}</strong></p>
+   @endif
    <table style="width: 100%" align="center" border="1" cellspacing="0" cellpadding="1">
       <tbody>
          <tr>

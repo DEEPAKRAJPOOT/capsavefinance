@@ -48,7 +48,6 @@ class EodProcessController extends Controller {
                 $message = "Unable to process the checks, as system is not started or stopped yet.";
             }
             
-
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.TALLY_POSTING'), config('lms.EOD_PASS_STATUS'));        
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), config('lms.EOD_PASS_STATUS'));
             \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.REPAYMENT'), config('lms.EOD_PASS_STATUS'));
@@ -70,7 +69,8 @@ class EodProcessController extends Controller {
         $sys_curr_date = $today->format('Y-m-d H:i:s');
         
         $whereCond=[];
-        $whereCond['is_active'] = 0;
+        $eodCount = $this->lmsRepo->getEodDataCount();      
+        $whereCond['is_active'] = $eodCount == 1 ? 1 : 0;
         $latestEod = $this->lmsRepo->getLatestEodProcess($whereCond);
         //if ($request->has('sys_curr_date') && !empty($request->get('sys_curr_date'))) {
         //    $sys_curr_date = $request->get('sys_curr_date');            
@@ -92,9 +92,10 @@ class EodProcessController extends Controller {
         $whereCond=[];
         //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.RUNNING'), config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
         //$whereCond['sys_start_date_eq'] = $sys_start_date_eq;        
-        $whereCond['sys_start_date_tz_eq'] = $sys_start_date_eq;        
+        //$whereCond['sys_start_date_tz_eq'] = $sys_start_date_eq; 
+        $whereCond['is_active'] = 1;
         $eodProcess = $this->lmsRepo->getEodProcess($whereCond);             
-        $eod_process_id = $eodProcess ? $eodProcess->eod_process_id : '';
+        $eod_process_id = $eodProcess ? $eodProcess->eod_process_id : '';        
         $status = $eodProcess ? $eodProcess->status : '';
         $disp_status = $eodProcess ? config('lms.EOD_PROCESS_STATUS_LIST')[$eodProcess->status] : '';
         $sys_start_date = $eodProcess ? $eodProcess->sys_start_date : '';
@@ -262,5 +263,46 @@ class EodProcessController extends Controller {
         \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), $status);           
         return $result;
     }
+
+
+  public function checkTallyPosting() {
+    $debitCredits = [];
+    $debitAmt = 0;
+    $creditAmt = 0;
+    $txnRecords = $this->lmsRepo->postedTxnsInTally();
+    $tallyAmounts = $this->lmsRepo->getActualTallyAmount();
+    foreach ($txnRecords as $key => $txn) {
+      $txnInvoiceAmount = $txn->amount;
+      $waiveOffAmount = $txn->getWaiveOffAmount();
+      $invoiceTrans = $txn->userinvoicetrans;
+      if (!empty($invoiceTrans)) {
+        $txnInvoiceAmount = $invoiceTrans->base_amount + $invoiceTrans->sgst_amount + $invoiceTrans->cgst_amount + $invoiceTrans->igst_amount;
+      }
+      if ($txn->amount != $txnInvoiceAmount && !empty($waiveOffAmount)) {
+        $txn->amount = $txn->amount - $waiveOffAmount;
+      }
+      if ($txn->entry_type == 0) {
+        $debitAmt += $txn->amount;
+        // $debitCredits['debit'][] = $txn;
+      }
+      if ($txn->entry_type == 1) {
+        $creditAmt += $txn->amount;
+        // $debitCredits['credit'][] = $txn;
+      }
+    }
+    $debitCredits['debit'] = $debitAmt;
+    $debitCredits['credit'] = $creditAmt;
+    $tallyAmountsData = [
+        'debit' => 0,
+        'credit' => 0,
+    ];
+    foreach ($tallyAmounts as $tallyAmt) {
+      $tallyAmountsData[strtolower($tallyAmt->is_debit_credit)] = (float)$tallyAmt->amount; 
+    }
+
+    return [$debitCredits, $tallyAmountsData];
+    // return ($debitCredits['debit'] == $tallyAmountsData['debit'] && $debitCredits['credit'] == $tallyAmountsData['credit'])
+  }
+
 
 }
