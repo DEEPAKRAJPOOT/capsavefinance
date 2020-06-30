@@ -11,7 +11,6 @@ Form::open(
 ]
 )
 !!}
-
 {!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null ) !!}
 <input type="hidden" name="user_id" value="{{ request()->get('user_id') }}">
 <div class="modal-body text-left">
@@ -91,7 +90,7 @@ Form::open(
             <div class="form-group">
                 <label for="txtCreditPeriod">Upload</label>  <span class="mandatory">*</span><br>
                
-                 <input type="file" {{isset($bankAccount->bank_account_id) ?  null : 'required' }} class="form-control" id="customFile" name="doc_file">
+                 <input type="file" {{isset($bankAccount->bank_account_id) ?  null : '' }} class="form-control" id="customFile" name="doc_file">
             </div>
         </div>
     </div>
@@ -159,7 +158,7 @@ try {
 
     $(function () {
         
-        $("form[name='bank_account']").validate({
+        $("form[name='bank_account11111111112']").validate({
             rules: {
                 'acc_name': {
                     required: true,
@@ -196,7 +195,7 @@ try {
             },
             messages: {
                 acc_no: {
-                    unique_acc: 'This account number is already exists with this IFSC Code.'
+                    unique_acc: 'This account number is already exists with entered IFSC Code.'
                 },
                 confim_acc_no:{
                     equalTo:'Confirm Account Number and Account number do not match.  '

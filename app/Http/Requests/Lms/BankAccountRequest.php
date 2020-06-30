@@ -3,9 +3,14 @@
 namespace App\Http\Requests\Lms;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 
 class BankAccountRequest extends FormRequest {
 
+    public function __construct(InvAppRepoInterface $appRepo){
+        $this->appRepo = $appRepo;
+     }
+   
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -23,6 +28,7 @@ class BankAccountRequest extends FormRequest {
      */
     public function rules()
     {
+        
         return [
             'acc_name' => 'required|regex:/^[a-zA-Z ]+$/|max:50',
             'acc_no' => 'required|numeric|digits_between:9,18',
@@ -34,6 +40,21 @@ class BankAccountRequest extends FormRequest {
         ];
     }
 
+    public function withValidator($validator){
+        $formData = $validator->getData();
+
+        $validator->after(function ($validator) use ($formData) {
+            $acc_no = $formData['acc_no'];
+            $ifsc_code = $formData['ifsc_code'];
+
+            $status = $this->appRepo->getBankAccByCompany(['acc_no' => $acc_no, 'ifsc_code' => $ifsc_code]);
+            if($status){
+                $validator->errors()->add("acc_no", 'This account number is already exists with entered IFSC Code.');
+            }
+        });
+        
+    }
+
     public function messages()
     {
         $messages['acc_name.required'] = trans('error_messages.required', ['field' => 'Account Holder Name']);
@@ -42,6 +63,7 @@ class BankAccountRequest extends FormRequest {
         $messages['ifsc_code.required'] = trans('error_messages.required', ['field' => 'IFSC Code']);
         $messages['branch_name.required'] = trans('error_messages.required', ['field' => 'Branch Name ']);
         $messages['is_active.required'] = trans('error_messages.required', ['field' => 'Status']);
+        $messages['acc_no.exists'] = 'This account number is already exists with entered IFSC Code.';
         return $messages;
     }
 
