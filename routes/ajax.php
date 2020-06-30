@@ -1146,6 +1146,9 @@ Route::group(
         'uses' => 'AjaxController@leaseRegister'
         ]
     );
-
+    Route::post('check-bank-acc-ifsc-exist',[
+        'as' => 'check_bank_acc_ifsc_exist',
+        'uses' => 'AjaxController@checkBankAccWithIfscExist'
+    ]);
 
 });

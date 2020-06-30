@@ -66,7 +66,7 @@ Form::open(
                 <label for="txtCreditPeriod">IFSC Code
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter IFSC Code']) !!}
+                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm ifsc_code' ,'placeholder'=>'Enter IFSC Code', 'id' => 'ifsc_code']) !!}
                 {!! $errors->first('ifsc_code', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -123,9 +123,38 @@ try {
 }
 </script>
 @endif
-
+<script>
+    var messages = {
+        check_bank_acc_ifsc_exist: "{{ URL::route('check_bank_acc_ifsc_exist') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+    };
+</script>
 <script>
     
+    $.validator.addMethod("unique_acc", function (value, element) {
+        var acc_no = value;
+        var ifsc = $('#ifsc_code').val();
+        console.log(acc_no);
+        $.ajax({
+            url: messages.check_bank_acc_ifsc_exist,
+            type: 'POST',
+            async: false,
+            cache: false,
+            datatype: 'json',
+            data: {
+                'acc_no': acc_no,
+                'ifsc': ifsc,
+                '_token': messages.token
+            },
+            success: function (response) {
+                if (response['status'] === 'true') {
+                    status = true;
+                }
+            }
+        });
+        return this.optional(element) || (status === true);
+    });
    
 
     $(function () {
@@ -139,6 +168,7 @@ try {
                 'acc_no': {
                     required: true,
                     number: true,
+                    unique_acc: true
                 },
                 'confim_acc_no': {
                     required: true,
@@ -166,6 +196,9 @@ try {
                
             },
             messages: {
+                acc_no: {
+                    unique_acc: 'This account number is already exists.'
+                },
                 confim_acc_no:{
                     equalTo:'Confirm Account Number and Account number do not match.  '
                 }
