@@ -2105,9 +2105,6 @@ class CamController extends Controller
     public function viewCamReport(Request $request){
       try{
         $viewData = $this->getCamReportData($request);        
-        $backendUri = \Helpers::getServerProtocol() . env('BACKEND_URI');
-        $ckUploadImgPath = !empty(config('common.ck_upload_img_path')) ? config('common.ck_upload_img_path') : $_SERVER["DOCUMENT_ROOT"]; 
-        $viewData = $viewData+['backendUri' => $backendUri, 'ckUploadImgPath' => $ckUploadImgPath];        
         return view('backend.cam.viewCamReport')->with($viewData);
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -2119,10 +2116,7 @@ class CamController extends Controller
         $viewData = $this->getCamReportData($request);
         $bizId = $request->get('biz_id');
         $appId = $request->get('app_id');   
-        $backendUri = \Helpers::getServerProtocol() . env('BACKEND_URI');
-        $ckUploadImgPath = !empty(config('common.ck_upload_img_path')) ? config('common.ck_upload_img_path') : $_SERVER["DOCUMENT_ROOT"];            
         ob_start();
-        $viewData = $viewData+['backendUri' => $backendUri, 'ckUploadImgPath' => $ckUploadImgPath];        
         DPDF::setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled', true]);               
         $pdf = DPDF::loadView('backend.cam.downloadCamReport', $viewData,[],'UTF-8');
         self::generateCamPdf($appId, $bizId, $pdf->output());
