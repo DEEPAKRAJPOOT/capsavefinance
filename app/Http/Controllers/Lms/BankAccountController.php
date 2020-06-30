@@ -113,10 +113,6 @@ class BankAccountController extends Controller {
     {
        
         try {
-            
-            // if(!empty($request->get('acc_no')) && !empty($this->request->get('ifsc_code'))){
-            //     $this->appRepo->getBankAccByCompany(['acc_no' => $request->get('acc_no'), 'ifsc' => $request->get('ifsc_code')])
-            // }
 
             $acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
             $prepareData = [

@@ -158,7 +158,7 @@ try {
 
     $(function () {
         
-        $("form[name='bank_account11111111112']").validate({
+        $("form[name='bank_account']").validate({
             rules: {
                 'acc_name': {
                     required: true,
