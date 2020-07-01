@@ -402,7 +402,7 @@ cursor: pointer;
                 $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
             } else if (status == 2) {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>  <label for="repaid_amount" class="form-control-label"><span class="payment_text">Upload Cheque</span></label><span class="error_message_label">*</span><input type="file" class="form-control amountRepay" id="cheque" name="cheque" value=""><span id="utr_no_msg" class="error"></span>');
 
             } else if (status == 3) {
                 $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
@@ -449,9 +449,9 @@ cursor: pointer;
                     tds_certificate_no:{
                         required:false,
                     },
-                    tds_certificate_no:{
-                        required:false,
-                    }
+                    cheque:{
+                        required:true,
+                    },                    
                 },
                 messages: {
                 customer_id: {

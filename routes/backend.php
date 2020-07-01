@@ -19,6 +19,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'idfc',
                 'uses' => 'Backend\DashboardController@idfc'
             ]);
+            Route::get('/download-file', [
+                'as' => 'download_storage_file',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            ]);              
         });
 
         Route::group(['prefix' => 'reports'], function () {

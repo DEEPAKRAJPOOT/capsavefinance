@@ -137,6 +137,13 @@ class PaymentController extends Controller {
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
 			}
+                        
+			if(isset($arrFileData['cheque']) && !is_null($arrFileData['cheque'])) {
+				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
+                                $arrFileData['doc_file'] = $arrFileData['cheque'];
+			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
+				$userFile = $this->docRepo->saveFile($uploadData);
+			}                        
 
 			$paymentData = [
 				'user_id' => $request->user_id,
@@ -632,4 +639,14 @@ class PaymentController extends Controller {
 		return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 	}    
   }
+  
+    public function downloadCheque()
+    {
+        $paymentId = $request->get('payment_id');
+        try {
+
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }  
+    }
 }
