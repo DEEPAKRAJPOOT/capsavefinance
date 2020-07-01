@@ -449,9 +449,9 @@ cursor: pointer;
                     tds_certificate_no:{
                         required:false,
                     },
-                    tds_certificate_no:{
-                        required:false,
-                    }
+                    cheque:{
+                        required:true,
+                    },                    
                 },
                 messages: {
                 customer_id: {

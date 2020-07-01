@@ -639,4 +639,14 @@ class PaymentController extends Controller {
 		return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 	}    
   }
+  
+    public function downloadCheque()
+    {
+        $paymentId = $request->get('payment_id');
+        try {
+
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }  
+    }
 }
