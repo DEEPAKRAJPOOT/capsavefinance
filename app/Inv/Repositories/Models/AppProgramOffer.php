@@ -533,5 +533,10 @@ class AppProgramOffer extends BaseModel {
     
     public function chargeName(){
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Charges', 'charge_id', 'id');
+    }   
+    
+    //Anchor Name
+    public function anchorUser(){
+        return $this->hasOne('App\Inv\Repositories\Models\User', 'anchor_id', 'anchor_id')->where('user_type', 2);
     }    
 }

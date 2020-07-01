@@ -18,6 +18,7 @@
                             </tr>
                             <tr role="row">
                                 <th>Anchor Id</th>
+                                <th>Anchor</th>
                                 <th>Anchor Name </th>
                                 <th>Program </th>
                                 <th>Program Limit</th>
@@ -26,11 +27,12 @@
 
                         <tbody>
                             @if($anchors->count() >0)
-                            @foreach ($anchors AS $anchor)
+                            @foreach ($anchors AS $anchor)                            
                             @if(!empty($anchor->anchor) && ( ($userRole && $userRole->id == 11 && \Auth::user()->anchor_id == $anchor->anchor->anchor_id) || (!$userRole || ($userRole && $userRole->id != 11)) ))                            
                             <tr role="row" class="odd">
                                 <td class="sorting_1">{{ $anchor->anchor->anchor_id }}</td>
                                 <td>{{ $anchor->anchor->comp_name }}</td>
+                                <td>{{ $anchor->anchorUser->f_name . " " . $anchor->anchorUser->l_name  }}</td>
                                 <td>{{ $anchor->program->prgm_name }}</td>
                                 <td><i class="fa fa-inr"></i> {{ $anchor->program->anchor_limit }}</td>
 
