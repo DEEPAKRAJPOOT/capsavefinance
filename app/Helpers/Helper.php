@@ -1726,7 +1726,7 @@ class Helper extends PaypalHelper
      {
         $currentRoute = \Request::route()->getName();
         if ($currentRoute == 'generate_cam_report') {
-            $backendUri = self::getServerProtocol() . config('proin.backend_uri');            
+            $backendUri = self::getServerProtocol() . config('proin.backend_uri');             
             $ckUploadImgPath = !empty(config('common.ck_upload_img_path')) ? config('common.ck_upload_img_path') : $_SERVER["DOCUMENT_ROOT"];            
             return str_replace($backendUri, $ckUploadImgPath, $variable);
         } else {
