@@ -4499,9 +4499,6 @@ if ($err) {
                 $response['status'] = 'true';
         }else{
            $response['status'] = 'false';
-           if($acc_id != null){
-               $response['status'] = 'true';
-           }
         }
         
         return response()->json( $response );
