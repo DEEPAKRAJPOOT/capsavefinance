@@ -176,4 +176,23 @@ class DocumentController extends Controller
         }
     }
 
+    public function downloadStorageFile(Request $request)
+    {
+        try {
+            $fileId = $request->get('file_id');
+            $fileData = $this->docRepo->getFileByFileId($fileId);
+            if (!empty($fileData->file_path )) {
+                $file = Storage::disk('public')->exists($fileData->file_path);
+                if ($file) {
+                    return Storage::disk('public')->download($fileData->file_path, $fileData->file_name);
+                } else {
+                    return redirect()->back()->withErrors(trans('error_messages.documentNotFound'));
+                }
+            } else {
+                return redirect()->back()->withErrors(trans('error_messages.documentNotFound'));
+            }
+        } catch (Exception $ex) {                
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }    
 }
