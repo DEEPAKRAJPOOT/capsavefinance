@@ -156,6 +156,41 @@ class RenewalController extends Controller {
             $this->appRepo->updateAppDetails($appId, ['renewal_status' => 1]); //Ready for Renewal
             
             $userData = $this->userRepo->getfullUserDetail($userId);
+
+
+            // Get business name
+            $biz_entity_name = \DB::table('biz')
+            ->select('biz_id', 'biz_entity_name')
+            ->where('user_id',$userId)
+            ->get();
+
+            // get customer_id from lms_user
+            $customer_id = \DB::table('lms_users')
+            ->select('lms_user_id', 'customer_id')
+            ->where('user_id',$userId)
+            ->where('app_id',$appId)
+            ->get();
+
+            // Get company name and address
+            $companyDetails = \DB::table('mst_company')
+            ->select('comp_addr_id', 'cmp_name', 'cmp_add')
+            ->where('is_reg',1)
+            ->get();
+            
+            // Limit Sanctioned
+            $prgm_limit_amt = \DB::table('app_prgm_offer')
+            ->where('is_active',1)
+            ->where('status',1)
+            ->where('app_id',$appId)
+            ->sum('prgm_limit_amt');
+
+            // Limit Sanctioned end date
+            $app_limit = \DB::table('app_limit')
+            ->select('app_limit_id', 'end_date')
+            ->where('user_id',$userId)
+            ->where('app_id',$appId)
+            ->get();
+            
             /*
             if ($userData && !empty($userData->anchor_id)) {
                 $toUserId = $this->userRepo->getLeadSalesManager($userId);
@@ -177,11 +212,18 @@ class RenewalController extends Controller {
             //if ($diffInDays == 7) {
                 $emailData['app_id']  = \Helpers::formatIdWithPrefix($appId, 'APP');
                 $emailData['lead_id'] = \Helpers::formatIdWithPrefix($userId, 'LEADID');
-                $emailData['entity_name'] = '';
+                $emailData['entity_name'] = $biz_entity_name[0]->biz_entity_name ? $biz_entity_name[0]->biz_entity_name : '';
+                $emailData['entity_addr'] = '';
+                $emailData['customer_id'] = $customer_id[0]->customer_id ? $customer_id[0]->customer_id : '';
+                $emailData['biz_type'] = 'SCF';
                 $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                 $emailData['receiver_email'] = $user->email;
                 $emailData['sales_manager_name'] = $salesUser ? $salesUser->f_name .' '. $user->m_name .' '. $user->l_name : '';
                 $emailData['sales_manager_email'] = $salesUser ? $salesUser->email : '';
+                $emailData['prgm_limit_amt'] = $prgm_limit_amt ? $prgm_limit_amt : '';
+                $emailData['app_limit'] = $app_limit[0]->end_date ? $app_limit[0]->end_date : '';
+                $emailData['cmp_name'] = $companyDetails[0]->cmp_name ? $companyDetails[0]->cmp_name : '';
+                $emailData['cmp_add'] =$companyDetails[0]->cmp_add ? $companyDetails[0]->cmp_add : '';
 
                 \Event::dispatch("APPLICATION_RENEWAL_MAIL", serialize($emailData));
             //}
