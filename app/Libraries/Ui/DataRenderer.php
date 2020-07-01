@@ -153,7 +153,6 @@ class DataRenderer implements DataProviderInterface
                 ->filter(function ($query) use ($request) {
                     if ($request->get('by_email') != '') {
                         if ($request->has('by_email')) {
-                            
                             $query->where(function ($query) use ($request) {
                                 $by_nameOrEmail = trim($request->get('by_email'));
                                 $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
@@ -164,21 +163,13 @@ class DataRenderer implements DataProviderInterface
                     }
                     if ($request->get('is_assign') != '') {
                         if ($request->has('is_assign')) {
-                            // dd($request->get('is_assign'));
                             $query->where(function ($query) use ($request) {
                                 $by_status = (int) trim($request->get('is_assign'));
-                                
                                 $query->where('users.is_assigned', 'like',
                                         "%$by_status%");
                             });
                         }
                     }
-                    // if ($request->get('is_assign') != '') {
-                    //     $query->where(function ($query) use ($request) {
-                    //         $is_assigned = $request->get('is_assign');
-                    //         $query->where('users.status', $is_assigned);
-                    //     });
-                    // }
                 })
                 ->make(true);
     }
