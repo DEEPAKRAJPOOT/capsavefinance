@@ -1159,4 +1159,9 @@ Route::group(
         ]
     );  
 
+    Route::post('check-bank-acc-ifsc-exist',[
+        'as' => 'check_bank_acc_ifsc_exist',
+        'uses' => 'AjaxController@checkBankAccWithIfscExist'
+    ]);
+
 });

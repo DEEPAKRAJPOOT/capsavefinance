@@ -16,8 +16,7 @@ Form::open(
 ]
 )
 !!}
-
-{!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null ) !!}
+{!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null, ['id'=>'bank_account_id'] ) !!}
 <input type="hidden" name="user_id" value="{{ request()->get('user_id') }}">
 <div class="modal-body text-left">
     <div class="row">
@@ -38,8 +37,8 @@ Form::open(
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
-                ['class'=>'form-control form-control-sm' ,
-                'id'=>'acc_no','placeholder'=>'Enter Account Number']) !!}
+                ['class'=>'form-control form-control-sm number_format' ,
+                'id'=>'acc_no','placeholder'=>'Enter Account Number', 'maxlength' => "18"]) !!}
                 {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -50,8 +49,9 @@ Form::open(
                 <label for="txtCreditPeriod">Confirm Account Number
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::password('confim_acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
-                ['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number']) !!}
+
+                {!! Form::password('confim_acc_no',
+                ['class'=>'form-control form-control-sm number_format' ,'placeholder'=>'Enter Account Number', 'id' => 'confim_acc_no', 'maxlength' => "18"]) !!}
                 
             </div>
         </div>
@@ -73,7 +73,7 @@ Form::open(
                 <label for="txtCreditPeriod">IFSC Code
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter IFSC Code']) !!}
+                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm ifsc_code' ,'placeholder'=>'Enter IFSC Code', 'id' => 'ifsc_code']) !!}
                 {!! $errors->first('ifsc_code', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -98,7 +98,7 @@ Form::open(
             <div class="form-group">
                 <label for="txtCreditPeriod">Upload</label>  {{-- <span class="mandatory">*</span> --}}<br>
                
-                 <input type="file" {{isset($bankAccount->bank_account_id) ?  null : 'required' }} class="form-control" id="customFile" name="doc_file">
+                 <input type="file" {{isset($bankAccount->bank_account_id) ?  null : '' }} class="form-control" id="customFile" name="doc_file">
             </div>
         </div>
     </div>
@@ -130,10 +130,59 @@ try {
 }
 </script>
 @endif
-
+<script>
+    var messages = {
+        check_bank_acc_ifsc_exist: "{{ URL::route('check_bank_acc_ifsc_exist') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+    };
+</script>
 <script>
     
+    $.validator.addMethod("unique_acc", function (value, element) {
+        var acc_no = value;
+        var ifsc = $("input[name='ifsc_code']").val();
+        var acc_id = $('#bank_account_id').val();
+        let status = false;
+        $.ajax({
+            url: messages.check_bank_acc_ifsc_exist,
+            type: 'POST',
+            async: false,
+            cache: false,
+            datatype: 'json',
+            data: {
+                'acc_no': acc_no,
+                'ifsc': ifsc,
+                'acc_id': acc_id,
+                '_token': messages.token
+            },
+            success: function (response) {
+                if (response['status'] === 'true') {
+                    status = true;
+                }
+            }
+        });
+        return this.optional(element) || (status === true);
+    });
    
+    $('#confim_acc_no').on("cut copy paste",function(e) {
+      e.preventDefault();
+   });
+
+   $(document).on('input', '.number_format', function (event) {
+        // skip for arrow keys
+        if (event.which >= 37 && event.which <= 40)
+            return;
+
+        // format number
+        $(this).val(function (index, value) {
+            return value.replace(/\D/g, "");
+        });
+    });
+
+   $.validator.addMethod("alphanumericonly", function (value, element) {
+        return this.optional(element) || /^[A-Za-z0-9]*$/.test(value);
+    });
 
     $(function () {
         
@@ -146,6 +195,7 @@ try {
                 'acc_no': {
                     required: true,
                     number: true,
+                    unique_acc: true
                 },
                 'confim_acc_no': {
                     required: true,
@@ -159,7 +209,8 @@ try {
 
                 'ifsc_code': {
                     required: true,
-
+                    alphanumericonly: true,
+                    maxlength: 11
                 },
                 'branch_name': {
                     required: true,
@@ -173,8 +224,15 @@ try {
                
             },
             messages: {
+                acc_no: {
+                    unique_acc: 'This account number is already exists with entered IFSC Code.'
+                },
                 confim_acc_no:{
                     equalTo:'Confirm Account Number and Account number do not match.  '
+                },
+                ifsc_code: {
+                    alphanumericonly: 'please enter alphanumeric characters.',
+                    maxlength: 'IFSC code should be only 11 characters.'
                 }
 
             },

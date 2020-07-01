@@ -4588,4 +4588,24 @@ if ($err) {
         
         return response()->json($result);
     }    
+
+    public function checkBankAccWithIfscExist(Request $req){
+        
+        $response['status'] = false;
+        $acc_no = trim($req->get('acc_no'));
+        $ifsc_code = trim($req->get('ifsc'));
+        $acc_id = $req->get('acc_id');
+        $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'ifsc_code' => $ifsc_code]);
+       if($status == false){
+                $response['status'] = 'true';
+        }else{
+           $response['status'] = 'false';
+           if($acc_id != null){
+               $response['status'] = 'true';
+           }
+        }
+        
+        return response()->json( $response );
+   }
+
 }
