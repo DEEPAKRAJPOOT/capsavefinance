@@ -2290,4 +2290,22 @@ class CamController extends Controller
         $this->appRepo->addOfferCharges($chArr);
       }
     }
+    
+    /**
+     * Open Approve Limit Pop Up
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function approveLimitForm(Request $request)
+    {
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            return view('backend.cam.approve_limit')
+            ->with(['app_id' => $appId, 'biz_id' => $bizId]);
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
 }

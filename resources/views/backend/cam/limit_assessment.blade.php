@@ -148,7 +148,7 @@
                                                 <td>{{$prgmOffer->adhoc_interest_rate}}%</td>
                                                 <td>
                                                     @if($prgmOffer->status == 2)
-                                                    <label class="badge badge-danger">Rejected</label>
+                                                    <label class="badge badge-danger">Rejected</label><label class="fa fa-eye" title="{{$prgmOffer->comment != null ? $prgmOffer->comment : ''}}"></label>
                                                     @else
                                                     <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
                                                     @endif
@@ -257,7 +257,7 @@
                                                 <td>{{$prgmOffer->processing_fee}}%</td>
                                                 <td>
                                                     @if($prgmOffer->status == 2)
-                                                    <label class="badge badge-success">Rejected</label>
+                                                    <label class="badge badge-success">Rejected</label><label class="fa fa-eye" title="{{$prgmOffer->comment != null ? $prgmOffer->comment : ''}}"></label>
                                                     @else
                                                     <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
                                                     @endif
@@ -376,7 +376,7 @@
                                                 <td>{{$prgmOffer->processing_fee}}%</td>
                                                 <td>
                                                     @if($prgmOffer->status == 2)
-                                                    <label class="badge badge-success">Rejected</label>
+                                                    <label class="badge badge-success">Rejected</label><label class="fa fa-eye" title="{{$prgmOffer->comment != null ? $prgmOffer->comment : ''}}"></label>
                                                     @else
                                                     <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
                                                     @endif
