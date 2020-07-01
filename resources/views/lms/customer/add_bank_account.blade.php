@@ -32,7 +32,7 @@ Form::open(
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
-                ['class'=>'form-control form-control-sm' ,
+                ['class'=>'form-control form-control-sm number_format' ,
                 'id'=>'acc_no','placeholder'=>'Enter Account Number', 'maxlength' => "18"]) !!}
                 {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
             </div>
@@ -45,7 +45,7 @@ Form::open(
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::password('confim_acc_no',
-                ['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number', 'id' => 'confim_acc_no', 'maxlength' => "18"]) !!}
+                ['class'=>'form-control form-control-sm number_format' ,'placeholder'=>'Enter Account Number', 'id' => 'confim_acc_no', 'maxlength' => "18"]) !!}
                 
             </div>
         </div>
@@ -161,6 +161,21 @@ try {
       e.preventDefault();
    });
 
+   $(document).on('input', '.number_format', function (event) {
+        // skip for arrow keys
+        if (event.which >= 37 && event.which <= 40)
+            return;
+
+        // format number
+        $(this).val(function (index, value) {
+            return value.replace(/\D/g, "");
+        });
+    });
+
+   $.validator.addMethod("alphanumericonly", function (value, element) {
+        return this.optional(element) || /^[A-Za-z0-9]*$/.test(value);
+    });
+
     $(function () {
         
         $("form[name='bank_account']").validate({
@@ -186,6 +201,8 @@ try {
 
                 'ifsc_code': {
                     required: true,
+                    alphanumericonly: true,
+                    maxlength: 11
                 },
                 'branch_name': {
                     required: true,
@@ -204,6 +221,10 @@ try {
                 },
                 confim_acc_no:{
                     equalTo:'Confirm Account Number and Account number do not match.  '
+                },
+                ifsc_code: {
+                    alphanumericonly: 'please enter alphanumeric characters.',
+                    maxlength: 'IFSC code should be only 11 characters.'
                 }
 
             },
