@@ -1162,6 +1162,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                     });
                 })
                 ->with('anchor')
+                ->with('anchorUser')
                 ->with('program')
                 ->whereHas('programLimit.appLimit.app.acceptedOffer')
                 ->whereHas('programLimit', function ($query) use($curDate) {
