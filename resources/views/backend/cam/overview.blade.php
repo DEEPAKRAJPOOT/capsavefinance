@@ -120,11 +120,12 @@
                     <div class="col-md-12 mt-4 ">
                          <div class="row">
                             <div class="col-md-2">
-                                <label for="txtPassword"><b>Group Name</b></label>
+                                <label for="txtPassword"><b>Group Name</b></label> <span style="color: red; font-size: 20px"> * </span>
                             </div>
                             <div class="col-md-2">
                                 <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name" autocomplete="off"/ style="padding: -;position:absolute; right: 17px;" >
                             </div>
+                            <label class="error" for="group_company"></label>
                             <span  class="group_nameId" style="color:red;"></span>
                             
                         </div>
@@ -559,6 +560,23 @@ $(document).on('submit', '#camForm', function(e) {
        return false;
    }
    return true;
+});
+
+$(document).ready(function () {
+
+
+$('#camForm').validate({ // initialize the plugin
+    rules: {
+        'group_company' : {
+            required : true,
+        },
+    },
+    messages: {
+        'group_company': {
+            required: "Please enter Group Name",
+        },
+    }
+});
 });
 </script>
 @endsection

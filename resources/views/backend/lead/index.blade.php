@@ -37,7 +37,7 @@
 
                     {!!
                     Form::select('is_assign',
-                    [''=>'Status', '1'=>'Assigned','0'=> 'Pending'],
+                    [''=>'Select', '1'=>'Assigned','0'=> 'Pending'],
                     null,
                     array('id' => 'is_active',
                     'class'=>'form-control'))
