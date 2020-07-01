@@ -1598,19 +1598,32 @@ class CamController extends Controller
         }
     }
 
-    public function approveOffer(Request $request){
-        $appId = $request->get('app_id');
-        $appApprData = [
-            'app_id' => $appId,
-            'approver_user_id' => \Auth::user()->user_id,
-            'status' => 1
-          ];
-        $this->appRepo->saveAppApprovers($appApprData);
+    
+    /**
+     * Save Approve Limit offer
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function approveOffer(Request $request)
+    {
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $appApprData = [
+                'app_id' => $appId,
+                'approver_user_id' => \Auth::user()->user_id,
+                'status' => 1
+              ];
+            $this->appRepo->saveAppApprovers($appApprData);
 
-        //update approve status in offer table after all approver approve the offer.
-        $this->appRepo->changeOfferApprove((int)$appId);
-        Session::flash('message',trans('backend_messages.offer_approved'));
-        return redirect()->back();
+            //update approve status in offer table after all approver approve the offer.
+            $this->appRepo->changeOfferApprove((int)$appId);
+            Session::flash('message',trans('backend_messages.offer_approved'));
+            return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
+        }catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
     
     /**
