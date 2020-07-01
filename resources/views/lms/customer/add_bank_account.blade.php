@@ -45,7 +45,7 @@ Form::open(
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::password('confim_acc_no',
-                ['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number', 'maxlength' => "18"]) !!}
+                ['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Account Number', 'id' => 'confim_acc_no' 'maxlength' => "18"]) !!}
                 
             </div>
         </div>
@@ -155,6 +155,9 @@ try {
         return this.optional(element) || (status === true);
     });
    
+    $('#confim_acc_no').on("cut copy paste",function(e) {
+      e.preventDefault();
+   });
 
     $(function () {
         
