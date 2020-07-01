@@ -78,7 +78,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'email',
                     function ($user) {
-                    return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >".strip_tags($user->email)."</a> ";
+                    return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
 
                 })
                 ->editColumn(
