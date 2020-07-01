@@ -13,6 +13,7 @@ use Session;
 use Helpers;
 use Auth;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
