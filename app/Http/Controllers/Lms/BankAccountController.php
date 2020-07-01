@@ -113,7 +113,7 @@ class BankAccountController extends Controller {
     {
        
         try {
-
+            // dd($request->all());
             $acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
             $prepareData = [
                 'user_id' => $request->get('user_id'),

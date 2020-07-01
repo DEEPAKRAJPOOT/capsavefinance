@@ -11,7 +11,7 @@ Form::open(
 ]
 )
 !!}
-{!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null ) !!}
+{!! Form::hidden('bank_account_id', isset($bankAccount->bank_account_id) ? \Crypt::encrypt($bankAccount->bank_account_id)  : null, ['id'=>'bank_account_id'] ) !!}
 <input type="hidden" name="user_id" value="{{ request()->get('user_id') }}">
 <div class="modal-body text-left">
     <div class="row">
@@ -134,6 +134,7 @@ try {
     $.validator.addMethod("unique_acc", function (value, element) {
         var acc_no = value;
         var ifsc = $("input[name='ifsc_code']").val();
+        var acc_id = $('#bank_account_id').val();
         let status = false;
         $.ajax({
             url: messages.check_bank_acc_ifsc_exist,
@@ -144,6 +145,7 @@ try {
             data: {
                 'acc_no': acc_no,
                 'ifsc': ifsc,
+                'acc_id': acc_id,
                 '_token': messages.token
             },
             success: function (response) {

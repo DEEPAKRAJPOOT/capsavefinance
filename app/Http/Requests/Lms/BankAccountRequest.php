@@ -28,11 +28,11 @@ class BankAccountRequest extends FormRequest {
      */
     public function rules()
     {
-        
+        // dd($this->request);
         return [
             'acc_name' => 'required|regex:/^[a-zA-Z ]+$/|max:50',
             'acc_no' => 'required|numeric|digits_between:9,18',
-            'confim_acc_no' => 'required|numeric|digits_between:9,18|same:acc_no',
+            // 'confim_acc_no' => 'required|numeric|digits_between:9,18|same:acc_no',
             'bank_id' => 'required',
             'ifsc_code' => 'required|alpha_num|max:11',
             'branch_name' => 'required|regex:/^[a-zA-Z0-9 -]+$/|max:30',
@@ -42,7 +42,7 @@ class BankAccountRequest extends FormRequest {
 
     public function withValidator($validator){
         $formData = $validator->getData();
-
+        $bank_account_id = $formData['bank_account_id'];
         $validator->after(function ($validator) use ($formData) {
             $acc_no = $formData['acc_no'];
             $ifsc_code = $formData['ifsc_code'];
@@ -51,6 +51,7 @@ class BankAccountRequest extends FormRequest {
             if($status){
                 $validator->errors()->add("acc_no", 'This account number is already exists with entered IFSC Code.');
             }
+            
         });
         
     }
