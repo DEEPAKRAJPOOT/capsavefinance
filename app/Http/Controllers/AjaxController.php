@@ -4494,7 +4494,7 @@ if ($err) {
         $response['status'] = false;
         $acc_no = trim($req->get('acc_no'));
         $ifsc_code = trim($req->get('ifsc'));
-        $acc_id = $req->get('acc_no');
+        $acc_id = $req->get('acc_id');
         $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'ifsc_code' => $ifsc_code]);
        if($status == false){
                 $response['status'] = 'true';

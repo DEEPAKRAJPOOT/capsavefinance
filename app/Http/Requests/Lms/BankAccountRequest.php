@@ -42,15 +42,27 @@ class BankAccountRequest extends FormRequest {
 
     public function withValidator($validator){
         $formData = $validator->getData();
-        $bank_account_id = $formData['bank_account_id'];
+        
+        
         $validator->after(function ($validator) use ($formData) {
             $acc_no = $formData['acc_no'];
             $ifsc_code = $formData['ifsc_code'];
-
+            $bank_account_id = NULL;
+            if(!empty($formData['bank_account_id'])){
+                $bank_account_id = \Crypt::decrypt($formData['bank_account_id']);
+            }
+            
             $status = $this->appRepo->getBankAccByCompany(['acc_no' => $acc_no, 'ifsc_code' => $ifsc_code]);
-            if($status){
+
+            // dd($bank_account_id,$status);
+
+            if(!empty($status) && ((!empty($bank_account_id) && $status->bank_account_id != $bank_account_id) || $bank_account_id == NULL)){
                 $validator->errors()->add("acc_no", 'This account number is already exists with entered IFSC Code.');
             }
+ 
+            // if($status){
+            //     $validator->errors()->add("acc_no", 'This account number is already exists with entered IFSC Code.');
+            // }
             
         });
         
