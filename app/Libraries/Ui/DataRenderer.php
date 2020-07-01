@@ -193,7 +193,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','biz_entity_name','assignee', 'assigned_by', 'action','assoc_anchor', 'contact','name'])
+                ->rawColumns(['app_id','biz_entity_name','assignee', 'status', 'assigned_by', 'action','assoc_anchor', 'contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
