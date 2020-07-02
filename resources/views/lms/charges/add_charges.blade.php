@@ -106,7 +106,7 @@
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="chrg_name"> Date</label>
-                <input type="text" readonly="readonly"  class="form-control datepicker-dis-fdate" id="charge_date" name="charge_date" placeholder="Enter Date" value="{{Carbon\Carbon::today()->format('d/m/Y')}}" >
+                <input type="text" readonly="readonly"  class="form-control datepicker-charge_date" id="charge_date" name="charge_date" placeholder="Enter Date" value="{{ \Helpers::convertDateTimeFormat(\Helpers::getSysStartDate(), $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d/m/Y') }}" >
             </div>
         </div>
 
@@ -141,10 +141,19 @@
         get_payments: "{{URL::route('get_unsettled_payments',['user_id' => $customer->user_id])}}",
         get_calculation_amount: "{{ URL::route('get_calculation_amount') }}",
         charges: [ "{{config('lms.CHARGE_TYPE.CHEQUE_BOUNCE')}}", "{{config('lms.CHARGE_TYPE.NACH_BOUNCE')}}"],
-        token: "{{ csrf_token() }}",
+        token: "{{ csrf_token() }}",                
+        eod_sys_date : "{{ \Helpers::getSysStartDate() }}",
     };
-
-
+    
+    $(document).ready(function(){
+        $(".datepicker-charge_date").datetimepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            minView : 2,
+            endDate: messages.eod_sys_date
+        });
+    });
+    
 </script>
 
 @endsection
