@@ -90,8 +90,11 @@ function fillGSTinput(datas){
         if(active==0)
         {
             alert(datas[0].authStatus);
+            $('.mandatory-biz-cin').hide();
             return false;
          
+        } else {
+            $('.mandatory-biz-cin').show();
         }
 	$('select[name=biz_gst_number]').html(option_html);
 	$('input[name=pan_api_res]').val(res);
@@ -255,7 +258,7 @@ function checkValidation(){
 		flag = false;
 	}
 
-	if($('select[name=biz_cin]').length > 1 && (biz_cin == '' || biz_cin == null) && is_gst_manual!=1){
+	if($('select[name=biz_cin] option').length > 1 && (biz_cin == '' || biz_cin == null) && is_gst_manual!=1){
 		setError('select[name=biz_cin]', 'Please select CIN Number');
 		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
 		flag = false;

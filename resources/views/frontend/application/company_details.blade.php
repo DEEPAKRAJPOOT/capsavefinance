@@ -90,7 +90,7 @@
 									<div class="col-md-4">
 										<div class="form-group password-input" style="display: {{$business_info->is_gst_manual!=1 ? 'block' : 'none' }}">
 											<label for="txtPassword">Select CIN
-													<span class="mandatory">*</span>
+													<span class="mandatory mandatory-biz-cin" @if (isset($business_info->cins) && count($business_info->cins) == 0) style="display:none;"  @endif>*</span>
 											</label>
 
 											<select class="form-control" name="biz_cin" tabindex="2">

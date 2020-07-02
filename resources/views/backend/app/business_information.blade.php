@@ -88,7 +88,7 @@
 									<div class="col-md-4">
 										<div class="form-group password-input" >
 											<label for="txtPassword">Select CIN
-													<span class="mandatory">*</span>
+													<span class="mandatory mandatory-biz-cin">*</span>
 											</label>
 
 											<select class="form-control" name="biz_cin" tabindex="2">
@@ -98,7 +98,7 @@
 									<div class="col-md-4">
 										<div class="form-group password-input">
 											<label for="txtPassword">Segment
-												<span class="mandatory">*</span>
+												<span class="mandatory mandatory-biz-cin">*</span>
 											</label>
 											<!-- <select class="form-control" name="segment" tabindex="8" id="segmentId">
 												<option value=""> Select Segment</option>
