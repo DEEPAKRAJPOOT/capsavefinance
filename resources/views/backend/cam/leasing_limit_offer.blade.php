@@ -26,7 +26,7 @@
 
         <div class="col-md-6">
           <div class="form-group ">
-            <label for="txtPassword" ><b>Facility Type</b></label> 
+            <label for="txtPassword" ><b>Facility Type</b> <span style="color: red;"> *</span></label> 
             <select class="form-control" name="facility_type_id">
                 <option value="">Select Facility Type</option>
                 @foreach($facilityTypeList as $key => $facilityType)
@@ -38,7 +38,7 @@
 
         <div class="col-md-6">
           <div class="form-group INR">
-            <label for="txtPassword" ><b>Limit of the Equipment</b></label>
+            <label for="txtPassword" ><b>Limit of the Equipment</b> <span style="color: red;"> *</span></label>
             <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{(int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount}}</span>
             <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a> 
             <input type="text" name="sub_limit" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Limit of the Equipment" maxlength="15">
@@ -47,14 +47,14 @@
 
         <div class="col-md-6">
           <div class="form-group ">
-            <label for="txtPassword" ><b>Tenor (Months)</b></label> 
+            <label for="txtPassword" ><b>Tenor (Months)</b> <span style="color: red;"> *</span></label> 
             <input type="text" name="tenor" class="form-control" value="{{isset($offerData->tenor)? $offerData->tenor: ''}}" placeholder="Tenor" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
           </div>
         </div>
 
         <div class="col-md-6">
           <div class="form-group ">
-            <label for="txtPassword" ><b>Equipment Type</b></label> 
+            <label for="txtPassword" ><b>Equipment Type</b> <span style="color: red;"> *</span></label> 
             <select class="form-control" name="equipment_type_id">
                 <option value="">Select Equipment type</option>
                 @foreach($equips as $key => $equip)
@@ -105,7 +105,7 @@
 
         <div class="col-md-6">
           <div class="form-group">
-            <label for="txtPassword"><b>Rental Frequency</b></label> 
+            <label for="txtPassword"><b>Rental Frequency</b> <span style="color: red;"> *</span></label> 
                 <select name="rental_frequency" class="form-control">
                     <option value="">Select Rental Frequency</option>
                     <option value="4" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 4)? 'selected': ''):''}}>Monthly</option>
@@ -118,7 +118,7 @@
         
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtPassword" ><b>Frequency Type</b></label> 
+                <label for="txtPassword" ><b>Frequency Type</b> <span style="color: red;"> *</span></label> 
                 <select name="rental_frequency_type" class="form-control">
                     <option value="">Select Frequency Type</option>
                     <option value="1" {{isset($offerData->rental_frequency_type)? (($offerData->rental_frequency_type == 1)? 'selected': ''):''}}>Advance</option>
@@ -202,7 +202,7 @@
 
         <div class="col-md-6">
           <div class="form-group">
-            <label for="txtPassword"><b>Processing Fee (%)</b></label>
+            <label for="txtPassword"><b>Processing Fee (%)</b> <span style="color: red;"> *</span></label>
             <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
           </div>
         </div>
