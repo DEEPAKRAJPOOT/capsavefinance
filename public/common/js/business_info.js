@@ -254,7 +254,8 @@ function checkValidation(){
 		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
 		flag = false;
 	}
-	if((biz_cin == '' || biz_cin == null) && is_gst_manual!=1){
+
+	if($('select[name=biz_cin]').length > 1 && (biz_cin == '' || biz_cin == null) && is_gst_manual!=1){
 		setError('select[name=biz_cin]', 'Please select CIN Number');
 		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
 		flag = false;
