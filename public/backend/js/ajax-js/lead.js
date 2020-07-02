@@ -60,7 +60,8 @@ try {
             serverSide: true,
             pageLength: 25,
             searching: false,
-            bSort: true,
+            bSort: true,            
+            order: [[5, "desc"]],
             ajax: {
                "url": messages.get_anch_user_list, // json datasource
                 "method": 'POST',
@@ -101,6 +102,7 @@ try {
             pageLength: 25,
             searching: false,
             bSort: true,
+            order: [[0, "desc"]],
             ajax: {
                "url": messages.get_anch_lead_list, // json datasource
                 "method": 'POST',
