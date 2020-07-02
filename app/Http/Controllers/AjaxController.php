@@ -2695,13 +2695,13 @@ if ($err) {
     
     
     public function getAnchorLists(DataProviderInterface $dataProvider) { 
-     $anchUsersList = $this->userRepo->getAllAnchor();
+     $anchUsersList = $this->userRepo->getAllAnchor($orderBy='anchor_id', $datatable=true);
      $users = $dataProvider->getAnchorList($this->request, $anchUsersList);
      return $users;
     }
     
     public function getAnchorLeadLists(DataProviderInterface $dataProvider){
-      $anchLeadList = $this->userRepo->getAllAnchorUsers();
+      $anchLeadList = $this->userRepo->getAllAnchorUsers(true);
         $users = $dataProvider->getAnchorLeadList($this->request, $anchLeadList);
         return $users; 
     }

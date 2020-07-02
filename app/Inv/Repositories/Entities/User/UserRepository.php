@@ -917,9 +917,9 @@ class UserRepository extends BaseRepositories implements UserInterface
       * @return type
       */
      
-        public function getAllAnchorUsers()
+        public function getAllAnchorUsers($datatable=false)
         {
-          $result = AnchorUser::getAllAnchorUsers();
+          $result = AnchorUser::getAllAnchorUsers($datatable);
         
           return $result ?: false;
         }
@@ -993,9 +993,9 @@ class UserRepository extends BaseRepositories implements UserInterface
     * @return type
     */
      
-        public function getAllAnchor($orderBy='anchor_id')
+        public function getAllAnchor($orderBy='anchor_id', $datatable=false)
         {
-          $result = Anchor::getAllAnchor($orderBy);
+          $result = Anchor::getAllAnchor($orderBy, $datatable);
         
           return $result ?: false;
         }

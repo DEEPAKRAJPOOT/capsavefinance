@@ -45,7 +45,7 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by App Id, Name and Pan',
+                    'placeholder' => 'Search by App Id, Entity Name and Pan',
                     'id'=>'by_name'
                     ])
                     !!}
