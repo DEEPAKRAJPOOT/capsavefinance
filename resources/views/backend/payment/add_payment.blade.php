@@ -108,8 +108,10 @@
                                         <div class="col-md-4">
                                             <div class="form-group INR">
                                                 <label for="txtCreditPeriod">Transaction Amount <span class="error_message_label">*</span> </label>
-                                                <a href="javascript:void(0);" class="verify-owner-no" style="top:29px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                <div class="relative">
+                                                <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                 <input type="text" id="amount" name="amount" class="form-control">
+                                                </div>
                                             </div>
                                         </div>
                                       
@@ -169,10 +171,8 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-4 payment-methods" style="display: none;">
-                                            <div class="form-group">
-                                                <span id="appendInput"></span>
-                                            </div>
+                                        <div class="col-md-8 payment-methods" style="display: none;" >
+                                            <div class="row" id="appendInput"></div>
                                         </div>
                                         <div class="col-md-4 tds_certificate">
                                             <div class="form-group">
@@ -399,13 +399,14 @@ cursor: pointer;
             $('#appendInput').empty();
             var status = $(this).val();
             if (status == 1) {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+                $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
 
             } else if (status == 2) {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>  <label for="repaid_amount" class="form-control-label"><span class="payment_text">Upload Cheque</span></label><span class="error_message_label">*</span><input type="file" class="form-control amountRepay" id="cheque" name="cheque" value=""><span id="utr_no_msg" class="error"></span>');
+                //$('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>  <label for="repaid_amount" class="form-control-label"><span class="payment_text">Upload Cheque</span></label><span class="error_message_label">*</span><input type="file" class="form-control amountRepay" id="cheque" name="cheque" value=""><span id="utr_no_msg" class="error"></span>');
+                $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value="" /><span id="utr_no_msg" class="error"></span></div><div class="col-md-6 tds_certificate"><div class="custom-file upload-btn-cls mb-3 mt-4"><input type="file" class="custom-file-input getFileName doc_file" id="cheque" name="cheque" multiple="" /><label class="custom-file-label" for="cheque">Upload Cheque</label></div><span id="utr_no_msg" class="error"></span></div>');
 
             } else if (status == 3) {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+                $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
 
             }
         });
