@@ -158,10 +158,10 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('by_email') != '') {
                         if ($request->has('by_email')) {
                             $query->where(function ($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $by_nameOrEmail = trim($request->get('by_email'));   
                                 $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
                                 ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere(\DB::raw("CONCAT(rta_users.f_name,' ',rta_users.l_name)"), 'like', "%$by_nameOrEmail%")
                                 ->orWhere('users.email', 'like', "%$by_nameOrEmail%")
                                 ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
                             });
@@ -2176,11 +2176,11 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('by_email') != '') {
                         if ($request->has('by_email')) {
                             $query->where(function ($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                                $by_nameOrEmail = trim($request->get('by_email'));                                
+                                $query->where('u.f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('u.l_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere(\DB::raw("CONCAT(rta_u.f_name,' ',rta_u.l_name)"), 'like', "%$by_nameOrEmail%")
+                                ->orWhere('u.email', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
@@ -2279,7 +2279,8 @@ class DataRenderer implements DataProviderInterface
                             $query->where(function ($query) use ($request) {
                                 $by_nameOrEmail = trim($request->get('by_email'));
                                 $query->where('anchor_user.name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('anchor_user.l_name', 'like', "%$by_nameOrEmail%")                               
+                                ->orWhere('anchor_user.l_name', 'like', "%$by_nameOrEmail%")                                  
+                                ->orWhere(\DB::raw("CONCAT(rta_anchor_user.name,' ',rta_anchor_user.l_name)"), 'like', "%$by_nameOrEmail%")
                                 ->orWhere('anchor_user.email', 'like', "%$by_nameOrEmail%")
                                 ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
                             });

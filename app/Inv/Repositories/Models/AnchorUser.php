@@ -102,7 +102,7 @@ class AnchorUser extends BaseModel {
      * 
      * @return type
      */
-    public static function getAllAnchorUsers() {
+    public static function getAllAnchorUsers($datatable=false) {
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         
         $result = self::select('anchor_user.*');
@@ -112,7 +112,9 @@ class AnchorUser extends BaseModel {
              $result->where('anchor_user.anchor_id', \Auth::user()->anchor_id);
              //$result->where('anchor_user.created_by', \Auth::user()->user_id);
         }
-        $result =  $result->orderByRaw('anchor_user_id DESC');
+        if (!$datatable) {
+            $result =  $result->orderByRaw('anchor_user_id DESC');
+        }
                 //->where('user_type', 1);
         return ($result ? $result : '');
     }
