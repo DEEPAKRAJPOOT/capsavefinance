@@ -1,5 +1,5 @@
 try {
-    var oTable;
+    var oTable, oTable1;
     jQuery(document).ready(function ($) {
         
         //User Listing code

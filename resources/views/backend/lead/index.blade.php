@@ -37,7 +37,7 @@
 
                     {!!
                     Form::select('is_assign',
-                    [''=>'Status', '1'=>'Assigned','0'=> 'Pending'],
+                    [''=>'Select', '1'=>'Assigned','2'=> 'Pending'],
                     null,
                     array('id' => 'is_active',
                     'class'=>'form-control'))
@@ -81,7 +81,7 @@
                                     <table id="leadMaster" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-                                                <th>Sr.No.</th>
+                                                <th>App ID.</th>
                                                 <th>Name</th>
                                                 <th>Email</th>
                                                 <th>Mobile</th>
