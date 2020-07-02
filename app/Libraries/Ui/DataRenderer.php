@@ -2123,7 +2123,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'biz_name',
                     function ($user) {
-                    $comp_name = $user->comp_name; 
+                    $comp_name = ucwords(strtolower($user->comp_name)); 
                     return $comp_name;
 
                 })
@@ -2222,7 +2222,7 @@ class DataRenderer implements DataProviderInterface
                     'biz_name',
                     function ($user) {
                     //$panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ''; 
-                    $biz_name = $user->biz_name;
+                    $biz_name = ucwords(strtolower($user->biz_name));
                     return $biz_name;
 
                 })

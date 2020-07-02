@@ -86,7 +86,7 @@ try {
                     {data: 'created_at'},
                     {data: 'action'}
                 ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [1,3,4,6]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,6]}]
 
         });  
       
@@ -129,7 +129,7 @@ try {
                     {data: 'created_at'},
                     {data: 'status'}
                 ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [1,3,4,5,6]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [1,3,4,5,6,8]}]
 
         });
         
