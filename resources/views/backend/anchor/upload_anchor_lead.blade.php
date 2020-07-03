@@ -58,7 +58,7 @@
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
         is_accept: "{{ Session::get('is_accept') }}",
-        message : "{{ trans('backend_messages.anchor_registration_success') }}"
+        message : "{{ trans('backend_messages.anchor_registration_success') }}",
         error_msg : "{{ Session::get('error_msg') }}"
     };
 </script>
