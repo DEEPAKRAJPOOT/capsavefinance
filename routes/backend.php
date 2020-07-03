@@ -659,6 +659,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'reject_offer',
                     'uses' => 'Backend\CamController@rejectOffer'
                 ]);
+                Route::get('/approve-limit-form', [
+                    'as' => 'approve_limit_form',
+                    'uses' => 'Backend\CamController@approveLimitForm'
+                ]);
             }); //end of cam   
                         
             Route::get('copy-app-confirmBox', [
