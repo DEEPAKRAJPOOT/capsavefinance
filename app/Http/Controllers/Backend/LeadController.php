@@ -438,7 +438,7 @@ class LeadController extends Controller {
             }
 
             if ($error) {                
-                Session::flash('error_msg', 'Unable to upload csv due to incomplete file');
+                Session::flash('error_msg', 'Please fill the correct details.');
                 return redirect()->back();                  
             }
             
