@@ -171,7 +171,7 @@
               </tr>
               <tr>
                   <td><b>Overdue Interest Rate (%): </b></td>
-                  <td>{{$supplyOffer->overdue_interest_rate}} %</td>
+                  <td>{{($supplyOffer->overdue_interest_rate ?? 0) + ($supplyOffer->interest_rate ?? 0)}} %</td>
                   <td><b>Adhoc Interest Rate (%): </b></td>
                   <td>{{$supplyOffer->adhoc_interest_rate}} %</td>
               </tr>
