@@ -403,7 +403,7 @@ class ManualApportionmentHelper{
             $payFreq = $offerDetails->payment_frequency;
             
             $intAccrualStartDate = $invDisbDetail->int_accrual_start_dt;
-            $invDueDate =  $invDisbDetail->inv_due_date;
+            $invDueDate =  $this->addDays($intAccrualStartDate, $tDays);
             $payDueDate = $invDisbDetail->payment_due_date;
             $gStartDate = ($gPeriod>0)?$this->addDays($payDueDate,1):$payDueDate;
             $gEndDate = $this->addDays($payDueDate,$gPeriod);
