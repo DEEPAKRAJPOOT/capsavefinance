@@ -33,7 +33,7 @@
 
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Select Anchor</b></label> 
+        <label for="txtPassword"><b>Select Anchor</b> <span style="color: red;"> *</span></label> 
             <select name="anchor_id" id="anchor_id" class="form-control">
                 <option value="">Select Anchor</option>
                 @foreach($anchors as $key=>$anchor)
@@ -45,7 +45,7 @@
 
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Select Program</b></label> 
+        <label for="txtPassword"><b>Select Program</b> <span style="color: red;"> *</span></label> 
             <select name="prgm_id" id="program_id" class="form-control">
             </select>
         </div>
@@ -53,7 +53,7 @@
 
     <div class="col-md-6">
       <div class="form-group INR">
-        <label for="txtPassword"><b>Program Limit</b></label>
+        <label for="txtPassword"><b>Program Limit</b> <span style="color: red;"> *</span></label>
         <span class="text-success limit"></span>
         <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($limitBalance<0)? 0: $limitBalance}}</span>
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr"></i></a>
@@ -63,7 +63,7 @@
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Interest Rate (%)</b></label>
+        <label for="txtPassword"><b>Interest Rate (%)</b> <span style="color: red;"> *</span></label>
         <span class="float-right text-success limit"></span>
         <input type="text" name="interest_rate" class="form-control" value="{{isset($offerData->interest_rate)? $offerData->interest_rate: ''}}" placeholder="Interest Rate" maxlength="5">
       </div>
@@ -71,7 +71,7 @@
 
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Select Payment Frequency</b></label> 
+        <label for="txtPassword"><b>Select Payment Frequency</b> <span style="color: red;"> *</span></label> 
         <select name="payment_frequency" class="form-control">
             <option value="">Select Payment Frequency</option>
             <option value="1" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 1)? 'selected': ''}}>Up Front</option>
@@ -83,7 +83,7 @@
         
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Benchmark Date</b></label> 
+        <label for="txtPassword"><b>Benchmark Date</b> <span style="color: red;"> *</span> </label> 
         <select name="benchmark_date" class="form-control">
             <option value="">Select Benchmark Date</option>
             <option value="1" {{(isset($offerData->benchmark_date) && $offerData->benchmark_date == 1)? 'selected': ''}}>Invoice Date</option>
@@ -94,42 +94,42 @@
 
 <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Invoice Tenor (In Days)</b></label> 
+        <label for="txtPassword"><b>Invoice Tenor (In Days)</b> <span style="color: red;"> *</span></label> 
         <input type="text" name="tenor" class="form-control" value="{{isset($offerData->tenor)? $offerData->tenor: ''}}" placeholder="Invoice Tenor (In Days)" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Old Invoice Tenor (In Days)</b></label> 
+        <label for="txtPassword"><b>Old Invoice Tenor (In Days)</b> <span style="color: red;"> *</span></label> 
         <input type="text" name="tenor_old_invoice" class="form-control" value="{{isset($offerData->tenor_old_invoice)? $offerData->tenor_old_invoice: ''}}" placeholder="Old Invoice Tenor (In Days)" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Margin (%)</b></label> 
+        <label for="txtPassword"><b>Margin (%)</b> <span style="color: red;"> *</span></label> 
         <input type="text" name="margin" class="form-control" value="{{isset($offerData->margin)? $offerData->margin: ''}}" placeholder="Margin" maxlength="5">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Overdue Interest Rate (%)</b></label> 
+        <label for="txtPassword"><b>Overdue Interest Rate (%)</b> <span style="color: red;"> *</span></label> 
         <input type="text" name="overdue_interest_rate" class="form-control" value="{{isset($offerData->overdue_interest_rate)? $offerData->overdue_interest_rate: ''}}" placeholder="Overdue Interest Rate" maxlength="5">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Adhoc Interest Rate (%)</b></label> 
+        <label for="txtPassword"><b>Adhoc Interest Rate (%)</b> <span style="color: red;"> *</span></label> 
         <input type="text" name="adhoc_interest_rate" class="form-control" value="{{isset($offerData->adhoc_interest_rate)? $offerData->adhoc_interest_rate: ''}}" placeholder="Adhoc Interest Rate" maxlength="5">
       </div>
     </div>
     
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Grace Period (In Days)</b></label> 
+        <label for="txtPassword"><b>Grace Period (In Days)</b> <span style="color: red;"> *</span></label> 
         <input type="text" name="grace_period" class="form-control" value="{{isset($offerData->grace_period)? $offerData->grace_period: ''}}" placeholder="Grace Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
       </div>
     </div>
@@ -1044,6 +1044,8 @@
     unsetError('input[name=grace_period]');
     //unsetError('input[name=processing_fee]');
     //unsetError('input[name=document_fee]');
+    unsetError('select[name=benchmark_date]');
+    unsetError('select[name=payment_frequency]');
     unsetError('input[name*=charge_names]');
 
     let flag = true;
@@ -1057,6 +1059,8 @@
     let overdue_interest_rate = $('input[name=overdue_interest_rate]').val().trim();
     let adhoc_interest_rate = $('input[name=adhoc_interest_rate]').val().trim();
     let grace_period = $('input[name=grace_period]').val().trim();
+    let benchmark_date = $('select[name=benchmark_date]').val();
+    let payment_frequency = $('select[name=payment_frequency]').val();
     //let processing_fee = $('input[name=processing_fee]').val().trim();
     //let document_fee = $('input[name=document_fee]').val().trim();
 
@@ -1103,6 +1107,16 @@
         }
     } 
 
+    if(benchmark_date == ''){
+        setError('select[name=benchmark_date]', 'Please select benchmark date');
+        flag = false;
+    }
+
+    if(payment_frequency == ''){
+        setError('select[name=payment_frequency]', 'Please select payment frequency');
+        flag = false;
+    }
+
     if(tenor == ''){
         setError('input[name=tenor]', 'Please flll invoice tenor');
         flag = false;
@@ -1141,7 +1155,6 @@
         setError('input[name=grace_period]', 'Please fill grace period');
         flag = false;
     }
-
 
     $.each($('input[name*=charge_names]'), function(i, val){
         let data = $(this).val();
