@@ -369,6 +369,9 @@ class InvoiceController extends Controller {
                         'updated_at' => $curData
                     ], $value['invoice_disbursed_id']);
 
+            $Obj = new ManualApportionmentHelper($this->lmsRepo);
+            $Obj->intAccrual($value['invoice_disbursed_id']);
+
             $interest= 0;
             $margin= 0;
 
@@ -884,6 +887,7 @@ class InvoiceController extends Controller {
                 $disburseAmount = 0;
                 $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
                 $userData['disbursal_batch_id'] =$disbursalBatchId;
+                $userData['disburse_date'] = $disburseDate;
                 $disbursalRequest = $this->createDisbursalData($userData, $disburseAmount, $disburseType);
                 $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disbursalRequest);
                 $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);
