@@ -91,8 +91,9 @@
             });            
    
     if (messages.is_accept == 1){
-        alert('jjjjjjjjjjjj');
+        alert('yyyyyyyyyyyyyyyy');
         var parent =  window.parent;
+        window.parent.jQuery('#iframeMessage').show();
         window.parent.jQuery('#iframeMessage').html('<div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+messages.message+'</div>');
         parent.jQuery("#uploadAnchLead").modal('hide');
         parent.oTables2.draw();
@@ -100,6 +101,7 @@
     
     if (messages.error_msg != '') {
         alert('heeeeeeeeeeeeeeee');
+        window.jQuery('#iframeMessage').show();
         window.jQuery('#iframeMessage').html('<div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+messages.error_msg+'</div>');
     }
         
