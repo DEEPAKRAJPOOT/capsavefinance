@@ -66,7 +66,7 @@
     
         <div class="col-md-12" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
             <div class="form-group ">
-                <label for="txtPassword" ><b>Security Deposit</b></label> 
+                <label for="txtPassword" ><b>Security Deposit</b> <span style="color: red;"> *</span></label> 
                 <br/>
                 <div id="radio_block">
                     <label class="radio-inline"><input type="radio" name="security_deposit_type" value="1" {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'checked': '') : ''}}> Flat</label>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -77,7 +77,7 @@
 
         <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
             <div class="form-group INR">
-                <label for="txtPassword"><b>Deposit <span id="sdt">{{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></b></label>
+                <label for="txtPassword"><b>Deposit <span id="sdt">{{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></b> <span style="color: red;"> *</span></label>
                 <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa-change fa {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'fa-inr': 'fa-percent') : 'fa-inr'}}" aria-hidden="true"></i></a> 
                 <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? (($offerData->security_deposit_type == 1)? (int)$offerData->security_deposit: $offerData->security_deposit): ''}}" placeholder="Deposit {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}" maxlength="5">
             </div>
@@ -85,14 +85,14 @@
 
         <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id == 3)? 'block': 'none')}};">
           <div class="form-group">
-            <label for="txtPassword"><b>Discounting (%)</b></label>
+            <label for="txtPassword"><b>Discounting (%)</b> <span style="color: red;"> *</span></label>
             <input type="text" name="discounting" class="form-control" value="{{isset($offerData->discounting)? $offerData->discounting: ''}}" placeholder="Discounting" maxlength="6">
           </div>
         </div>
 
         <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
             <div class="form-group">
-                <label for="txtPassword"><b>Deposit Type</b></label> 
+                <label for="txtPassword"><b>Deposit Type</b> <span style="color: red;"> *</span></label> 
                 <select name="security_deposit_of" class="form-control">
                     <option value="">Select Deposit Type</option>
                     <option value="4" {{isset($offerData->security_deposit_of)? (($offerData->security_deposit_of == 4)? 'selected': ''):''}}>Sanction</option>
@@ -190,11 +190,11 @@
           <div class="form-group row">
             <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>XIRR (%)</b></label> 
             <div class="col-md-6">
-            <label for="txtPassword"><b>Ruby Sheet</b></label>
+            <label for="txtPassword"><b>Ruby Sheet</b> <span style="color: red;"> *</span></label>
             <input type="text" name="ruby_sheet_xirr" class="form-control" value="{{isset($offerData->ruby_sheet_xirr)? $offerData->ruby_sheet_xirr: ''}}" placeholder="Ruby Sheet" maxlength="5">
             </div>
             <div class="col-md-6">
-            <label for="txtPassword"><b>Cash Flow</b></label>
+            <label for="txtPassword"><b>Cash Flow</b> <span style="color: red;"> *</span></label>
             <input type="text" name="cash_flow_xirr" class="form-control" value="{{isset($offerData->cash_flow_xirr)? $offerData->cash_flow_xirr: ''}}" placeholder="Cash Flow" maxlength="5">
             </div>
           </div>
