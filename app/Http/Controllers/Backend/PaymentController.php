@@ -101,22 +101,26 @@ class PaymentController extends Controller {
 	public function  savePayment(Request $request)
 	{
 		try {
-                        if ($request->get('eod_process')) {
-                            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
-                            return back();
-                        }
-            
+			if ($request->get('eod_process')) {
+				Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+				return back();
+			}
+			$curdate = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
+			$curdateMesg = Carbon::parse(Helpers::getSysStartDate())->format('d/m/Y');
 			$arrFileData = $request->all();
 			$validatedData = $request->validate([
 				'payment_type' => Rule::requiredIf(function () use ($request) {
 					return ($request->action_type == 1)?true:false;
-					}),
+				}),
 				'trans_type' => 'required',
 				'customer_id' => 'required', 
 				'virtual_acc' => 'required',  
-				'date_of_payment' => 'required', 
+				'date_of_payment' => 'required|date|before_or_equal:'.$curdate,
 				'amount' => 'required', 
 				'description' => 'required'
+			],
+			[
+				'date_of_payment.before_or_equal' => 'The Transaction Date must be a date before or equal to '.$curdateMesg.'.',
 			]);
 			$user_id  = Auth::user()->user_id;
 			$mytime = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d h:i:s');
