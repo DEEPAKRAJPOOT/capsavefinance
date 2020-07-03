@@ -89,13 +89,10 @@ function fillGSTinput(datas){
 	})
         if(active==0)
         {
-            alert(datas[0].authStatus);
-            $('.mandatory-biz-cin').hide();
-            return false;
-         
-        } else {
-            $('.mandatory-biz-cin').show();
+            alert(datas[0].authStatus);            
+            return false;         
         }
+        
 	$('select[name=biz_gst_number]').html(option_html);
 	$('input[name=pan_api_res]').val(res);
 	//$('#business_information_form input[type=submit]').prop("disabled", false);
@@ -144,6 +141,8 @@ function getCIN(entityName){
 			res = res.response
 			if(res == null){
 				$('.isloader').hide();
+                                alert('MMMMMMMMMMMM');
+                                $('.mandatory-biz-cin').hide();
 			}else if(res['status-code'] == 101){
 				//$('input[name=biz_cin]').val(res.result[0].cin);
 				fillCINInput(res.result);
@@ -168,6 +167,12 @@ function fillCINInput(datas){
 	})
 	$('select[name=biz_cin]').html(option_html);
 	$('input[name=cin_api_res]').val(res);
+        
+        if ($('select[name=biz_cin] option').length > 1) {
+            $('.mandatory-biz-cin').show();
+        } else {
+            $('.mandatory-biz-cin').hide();
+        }
 }
 function checkValidation(){
 	unsetError('input[name=biz_pan_number]');
