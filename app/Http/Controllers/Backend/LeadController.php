@@ -426,12 +426,22 @@ class LeadController extends Controller {
             if ($uploadedFile->isValid()) {
                 $uploadedFile->move($destinationPath, $fileName);
             }
+            $error = false;
             $fileD = fopen($destinationPath . '/' . $fileName, "r");
             $column = fgetcsv($fileD);
             while (!feof($fileD)) {
-                $rowData[] = fgetcsv($fileD);
+                 $row = fgetcsv($fileD);
+                 if ( empty($row[0]) || empty($row[1]) || empty($row[2]) || empty($row[3]) || empty($row[4]) || empty($row[5]) ) {                     
+                     $error = true;
+                 }
+                 $rowData[] = $row;
             }
 
+            if ($error) {                
+                Session::flash('error_msg', 'Unable to upload csv due to incomplete file');
+                return redirect()->back();                  
+            }
+            
             $anchLeadMailArr = [];
             $arrAnchLeadData = [];
             $arrUpdateAnchor = [];
@@ -495,8 +505,10 @@ class LeadController extends Controller {
             }
             //chmod($destinationPath . '/' . $fileName, 0775, true);
             unlink($destinationPath . '/' . $fileName);
-            Session::flash('message', trans('backend_messages.anchor_registration_success'));
-           return redirect()->route('get_anchor_lead_list');
+            //Session::flash('message', trans('backend_messages.anchor_registration_success'));
+            //return redirect()->route('get_anchor_lead_list');
+            Session::flash('is_accept', 1);
+            return redirect()->back();            
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
