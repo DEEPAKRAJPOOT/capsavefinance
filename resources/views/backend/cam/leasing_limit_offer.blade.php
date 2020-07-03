@@ -165,15 +165,15 @@
                 @else
                 <div class="row">
                     <div class="col-md-3">
-                    <label for="txtPassword"><b>From Period</b></label>
+                    <label for="txtPassword"><b>From Period</b>  <span style="color: red;"> *</span></label>
                         <input type="text" name="ptpq_from[]" class="form-control" value="" placeholder="From Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-3">
-                    <label for="txtPassword"><b>To Period</b></label>
+                    <label for="txtPassword"><b>To Period</b>  <span style="color: red;"> *</span></label>
                         <input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-4 INR">
-                    <label for="txtPassword"><b>Rate</b></label>
+                    <label for="txtPassword"><b>Rate</b>  <span style="color: red;"> *</span></label>
                         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
                         <input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="Rate" maxlength="5">
                     </div>
