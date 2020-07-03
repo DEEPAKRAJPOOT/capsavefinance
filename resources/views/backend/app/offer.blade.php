@@ -100,7 +100,7 @@ tr.border_bottom td {
                                                 <tr>
                                                 <td></td>
                                                     <td><b>Investment Payment Frequency: </b></td>
-                                                    <td colspan="3">{{getBenchmarkType($supplyOffer->payment_frequency)}}</td>
+                                                    <td colspan="3">{{getInvestmentPaymentFrequency($supplyOffer->payment_frequency)}}</td>
                                                     <td></td>
                                                 </tr>
                                                 <tr>
