@@ -139,7 +139,7 @@
                                             @foreach($prgmLimit->offer as $k=>$prgmOffer)					    
 					    @if ( ($userRole && $userRole->id == 11 && \Auth::user()->anchor_id == $prgmOffer->anchor_id) || (!$userRole || ($userRole && $userRole->id != 11)) )
                                             </tr>
-                                                <td>{{$prgmOffer->overdue_interest_rate}}%</td>
+                                                <td>{{($prgmOffer->overdue_interest_rate ?? 0) + ($prgmOffer->interest_rate ?? 0)}}%</td>
                                                 <td>{{$prgmOffer->interest_rate}}%</td>
                                                 <td>&#8377; {{number_format($prgmOffer->prgm_limit_amt)}}</td>
                                                 <td>{{$prgmOffer->tenor}}</td>
