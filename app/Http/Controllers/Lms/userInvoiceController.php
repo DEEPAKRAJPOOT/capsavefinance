@@ -647,7 +647,9 @@ class userInvoiceController extends Controller
     public function userInvoiceLocation(Request $request) {
         try {
             $user_id = $request->get('user_id');
-            $userAddresswithbiz = $this->UserInvRepo->getAddressByUserId($user_id);
+            $latestApp = $this->UserInvRepo->getUsersLatestApp($user_id);
+            $latestBizId = $latestApp->biz_id ? $latestApp->biz_id : null;
+            $userAddresswithbiz = $this->UserInvRepo->getAddressByUserId($user_id, [$latestBizId]);
             $capsave_addr = $this->UserInvRepo->getCapsavAddr();
             /*if (empty($userAddresswithbiz) || $userAddresswithbiz->count() != 1) {
                return redirect()->back()->with(['user_id' => $user_id])->with('error', 'Multiple / No default addresses found.');
