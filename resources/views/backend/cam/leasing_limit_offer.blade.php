@@ -136,19 +136,19 @@
                 <div class="row {{($loop->first)? '': 'mt10'}}">
                     <div class="col-md-3">
                         @if($loop->first)
-                            <label for="txtPassword"><b>From Period</b></label>
+                            <label for="txtPassword"><b>From Period</b> <span style="color: red;"> *</span></label>
                         @endif
                         <input type="text" name="ptpq_from[]" class="form-control" value="{{(int)$ptpq->ptpq_from}}" placeholder="From Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-3">
                         @if($loop->first)
-                            <label for="txtPassword"><b>To Period</b></label>
+                            <label for="txtPassword"><b>To Period</b> <span style="color: red;"> *</span></label>
                         @endif
                         <input type="text" name="ptpq_to[]" class="form-control" value="{{(int)$ptpq->ptpq_to}}" placeholder="To Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-4 INR">
                         @if($loop->first)
-                            <label for="txtPassword"><b>Rate</b></label>
+                            <label for="txtPassword"><b>Rate</b> <span style="color: red;"> *</span></label>
                         @endif
                         <a href="javascript:void(0);" class="verify-owner-no" style="top: {{($loop->first)? '29px': 0}};"><i class="fa fa-inr" aria-hidden="true"></i></a>
                         <input type="text" name="ptpq_rate[]" class="form-control" value="{{$ptpq->ptpq_rate}}" placeholder="Rate" maxlength="6">
