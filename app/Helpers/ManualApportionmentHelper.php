@@ -399,6 +399,7 @@ class ManualApportionmentHelper{
             $odIntRate = $invDisbDetail->overdue_interest_rate;
             $gPeriod = $invDisbDetail->grace_period;
             $tDays = $invDisbDetail->tenor_days;
+            $tDays = $this->subDays($tDays,1);
             $payFreq = $offerDetails->payment_frequency;
             
             $intAccrualStartDate = $invDisbDetail->int_accrual_start_dt;
