@@ -34,7 +34,7 @@ class Kernel extends ConsoleKernel
         //$schedule->command('ScoutPayoutDetail:BatchDetail')->twiceDaily(2, 14);
         //$schedule->command('PaypalScoutRefund:ScoutRefund')->twiceDaily(3, 12);
         if(config('lms.LMS_STATUS')){
-            $schedule->command('lms:interestaccrual')->dailyAt(00.01);
+            $schedule->command('lms:interestaccrual')->timezone('Asia/Kolkata')->dailyAt(00.01);
         }
     }
 
