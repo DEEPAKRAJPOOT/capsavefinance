@@ -431,8 +431,8 @@ class LeadController extends Controller {
             $column = fgetcsv($fileD);
             while (!feof($fileD)) {
                  $row = fgetcsv($fileD);
-                 if (!$row && (empty($row[0]) || empty($row[1]) || empty($row[2]) || empty($row[3]) || empty($row[4]) || empty($row[5]) )) {
-                     $error = true;
+                 if ($row && (empty($row[0]) || empty($row[1]) || empty($row[2]) || empty($row[3]) || empty($row[4]) || empty($row[5]) )) {
+                     $error = true;                     
                  }
                  $rowData[] = $row;
             }
