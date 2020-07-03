@@ -357,11 +357,14 @@ class InvoiceController extends Controller {
         $invoiceDisbursed = $this->lmsRepo->getInvoiceDisbursed($disbursalIds)->toArray();
         $selectDate = (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $Obj = new ManualApportionmentHelper($this->lmsRepo);
         
         foreach ($invoiceDisbursed as $key => $value) {
             $tenor = $value['tenor_days'];
+            $banchMarkDateFlag = $value['invoice']['program_offer']['benchmark_date'];
+
             $updateInvoiceDisbursed = $this->lmsRepo->updateInvoiceDisbursed([
-                        'payment_due_date' => ($value['invoice']['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")) : $value['invoice']['invoice_due_date'],
+                        'payment_due_date' => ($banchMarkDateFlag == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")) : date('Y-m-d', strtotime($value['invoice']['invoice_date']. "+ $tenor Days")),
                         'status_id' => 12,
                         'int_accrual_start_dt' => $selectDate,
                         'updated_by' => Auth::user()->user_id,
@@ -398,6 +401,9 @@ class InvoiceController extends Controller {
                 $marginTrnsData = $this->createTransactionData($userId, ['amount' => $marginAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.MARGIN'), 0);
                 $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
             }
+            
+            $Obj->intAccrual($value['invoice_disbursed_id']);
+
         }
         return true;
     }
@@ -893,6 +899,7 @@ class InvoiceController extends Controller {
                 $disburseAmount = 0;
                 $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
                 $userData['disbursal_batch_id'] =$disbursalBatchId;
+                $userData['disburse_date'] = $disburseDate;
                 $disbursalRequest = $this->createDisbursalData($userData, $disburseAmount, $disburseType);
                 $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disbursalRequest);
                 $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);

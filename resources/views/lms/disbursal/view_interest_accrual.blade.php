@@ -25,6 +25,12 @@
                 <td>@if($disbursal->margin>0){{number_format($disbursal->margin, 2, '.', '')}}% @endif</td>
             </tr>
             <tr>
+                <td><b>Invoice Date:</b></td>
+                <td>{{($disbursal->disbursal)? Carbon\Carbon::parse($disbursal->invoice->invoice_date)->format('d-m-Y'): ''}}</td>
+                <td><b>Benchmark Date:</b></td>
+                <td>{{ ($disbursal->invoice->program_offer->benchmark_date == 1) ? 'Invoice Date' : 'Date of Discounting' }}</td>
+            </tr>
+            <tr>
                 <td><b>Funded Date:</b></td>
                 <td>{{($disbursal->disbursal)? Carbon\Carbon::parse($disbursal->disbursal->funded_date)->format('d-m-Y'): ''}}</td>
                 <td><b>Payment Due Date:</b></td>
