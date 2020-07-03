@@ -3,7 +3,7 @@
 @section('content')
 
        <div class="modal-body text-left">
-           <form id="anchorForm" name="anchorForm" method="POST" action="{{route('add_anchor_lead')}}"  target="_top" enctype="multipart/form-data">
+           <form id="anchorForm" name="anchorForm" method="POST" action="{{route('add_anchor_lead')}}" enctype="multipart/form-data">
 		@csrf
                         
 <!--                              <div class="form-group">
@@ -57,7 +57,9 @@
         //get_lead: "{{ URL::route('get_lead') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-
+        is_accept: "{{ Session::get('is_accept') }}",
+        message : "{{ trans('backend_messages.anchor_registration_success') }}",
+        error_msg : "{{ Session::get('error_msg') }}"
     };
 </script>
 <script type="text/javascript">
@@ -88,6 +90,19 @@
             }  
             });            
    
+    if (messages.is_accept == 1){
+        var parent =  window.parent;
+        window.parent.jQuery('#iframeMessage').show();
+        window.parent.jQuery('#iframeMessage').html('<div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+messages.message+'</div>');
+        parent.jQuery("#uploadAnchLead").modal('hide');
+        parent.oTables2.draw();
+    }
+    
+    if (messages.error_msg != '') {
+        window.jQuery('#iframeMessage').show();
+        window.jQuery('#iframeMessage').html('<div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+messages.error_msg+'</div>');
+    }
+        
  });
  
 $('#anchor_lead').click(function(){

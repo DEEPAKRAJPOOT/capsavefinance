@@ -426,19 +426,29 @@ class LeadController extends Controller {
             if ($uploadedFile->isValid()) {
                 $uploadedFile->move($destinationPath, $fileName);
             }
+            $error = false;
             $fileD = fopen($destinationPath . '/' . $fileName, "r");
             $column = fgetcsv($fileD);
             while (!feof($fileD)) {
-                $rowData[] = fgetcsv($fileD);
+                 $row = fgetcsv($fileD);
+                 if ($row && (empty($row[0]) || empty($row[1]) || empty($row[2]) || empty($row[3]) || empty($row[4]) || empty($row[5]) )) {
+                     $error = true;                     
+                 }
+                 $rowData[] = $row;
             }
 
+            if ($error) {                
+                Session::flash('error_msg', 'Please fill the correct details.');
+                return redirect()->back();                  
+            }
+            
             $anchLeadMailArr = [];
             $arrAnchLeadData = [];
             $arrUpdateAnchor = [];
             foreach ($rowData as $key => $value) {
                 
                 //$anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
-                //if(!empty($value) && !$anchUserInfo){
+                //if(!empty($value) && !$anchUserInfo){            
             if (!empty($request->post('assigned_anchor'))){
                 $anchorId = $request->post('assigned_anchor');
             } else {
@@ -451,7 +461,7 @@ class LeadController extends Controller {
             $whereCond[] = ['anchor_id', '>', '0'];
             //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
-            if (!isset($anchUserData[0])) {
+            if (!empty(trim($value[3])) && !isset($anchUserData[0])) {
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
                     if(trim($value[5])=='Buyer'){
@@ -495,8 +505,10 @@ class LeadController extends Controller {
             }
             //chmod($destinationPath . '/' . $fileName, 0775, true);
             unlink($destinationPath . '/' . $fileName);
-            Session::flash('message', trans('backend_messages.anchor_registration_success'));
-           return redirect()->route('get_anchor_lead_list');
+            //Session::flash('message', trans('backend_messages.anchor_registration_success'));
+            //return redirect()->route('get_anchor_lead_list');
+            Session::flash('is_accept', 1);
+            return redirect()->back();            
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
