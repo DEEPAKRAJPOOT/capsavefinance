@@ -258,7 +258,8 @@ cursor: pointer;
         get_remaining_charges_url : "{{route('get_remaining_charges')}}",
         get_customer: "{{ route('get_customer') }}",
         get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}",
-        get_interest_paid_amount:"{{ route('get_interest_paid_amount') }}"
+        get_interest_paid_amount:"{{ route('get_interest_paid_amount') }}",
+        sysDate:"{{ Carbon\Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d') }}"
     };
 
     var userData = '';
@@ -271,6 +272,7 @@ cursor: pointer;
                 format: 'dd/mm/yyyy',
                 autoclose: true,
                 minView : 2,
+                endDate: new Date(messages.sysDate),
             });
 
         var sample_data = new Bloodhound({
@@ -346,7 +348,7 @@ cursor: pointer;
                         $('#waiveoff_div').hide();
                         get_repayment_amount();
                     }if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -355,7 +357,7 @@ cursor: pointer;
                     break;
                 case "2":
                     if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -364,7 +366,7 @@ cursor: pointer;
                     break;
                 case "3":
                     if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -384,13 +386,13 @@ cursor: pointer;
             var max = parseFloat(chargeData['debit_amount']);
             if(chargeData){
                 //$('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
-                $('#date_of_payment').datetimepicker('setStartDate', new Date());
+                $('#date_of_payment').datetimepicker('setStartDate', new Date(messages.sysDate));
                 if(userData['action_type']!=3){
                     $('#amount').val(amt.toFixed(2)); 
                 }
                 $('#amount').attr('max',max.toFixed(2));
             }else{
-                $('#date_of_payment').datetimepicker('setStartDate', new Date());
+                $('#date_of_payment').datetimepicker('setStartDate', new Date(messages.sysDate));
                 $('#amount').val(0);
             }
         });
@@ -558,7 +560,7 @@ cursor: pointer;
             success: function (res) {
                 var amt = parseFloat(res.amount);
                 if (res.status == 'success') {
-                    $('#date_of_payment').datetimepicker('setStartDate',  new Date());
+                    $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                     $('#amount').val(amt.toFixed(2));
                     $('#amount').attr('max',amt.toFixed(2));
                 }else{
