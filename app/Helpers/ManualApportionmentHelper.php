@@ -386,7 +386,8 @@ class ManualApportionmentHelper{
 
     public function intAccrual(int $invDisbId, $startDate = null){
         try{
-            $curdate = Helpers::getSysStartDate();
+            $curdate =  Helpers::getSysStartDate();
+            $curdate = Carbon::parse($curdate)->format('Y-m-d');
             
             $invDisbDetail = InvoiceDisbursed::find($invDisbId);
             $offerDetails = $invDisbDetail->invoice->program_offer;
@@ -483,11 +484,13 @@ class ManualApportionmentHelper{
     }
     
     public function dailyIntAccrual(){
-        $curdate = Helpers::getSysStartDate();
-        $invoiceList = $this->lmsRepo->getUnsettledInvoices([]);
-        foreach ($invoiceList as $invId => $trans) {
-            $this->intAccrual($invId);
-        }
+        $this->intAccrual(63);
+
+        // $curdate = Helpers::getSysStartDate();
+        // $invoiceList = $this->lmsRepo->getUnsettledInvoices([]);
+        // foreach ($invoiceList as $invId => $trans) {
+        //     $this->intAccrual($invId);
+        // }
     }
     
     public function getBankBaseRates($bank_id, $date=null){
