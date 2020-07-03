@@ -71,7 +71,7 @@
 
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Select Payment Frequency</b></label> 
+        <label for="txtPassword"><b>Select Payment Frequency</b> <span style="color: red;"> *</span></label> 
         <select name="payment_frequency" class="form-control">
             <option value="">Select Payment Frequency</option>
             <option value="1" {{(isset($offerData->payment_frequency) && $offerData->payment_frequency == 1)? 'selected': ''}}>Up Front</option>
@@ -83,7 +83,7 @@
         
     <div class="col-md-6">
       <div class="form-group">
-        <label for="txtPassword"><b>Benchmark Date</b></label> 
+        <label for="txtPassword"><b>Benchmark Date</b> <span style="color: red;"> *</span> </label> 
         <select name="benchmark_date" class="form-control">
             <option value="">Select Benchmark Date</option>
             <option value="1" {{(isset($offerData->benchmark_date) && $offerData->benchmark_date == 1)? 'selected': ''}}>Invoice Date</option>
@@ -1044,6 +1044,8 @@
     unsetError('input[name=grace_period]');
     //unsetError('input[name=processing_fee]');
     //unsetError('input[name=document_fee]');
+    unsetError('select[name=benchmark_date]');
+    unsetError('select[name=payment_frequency]');
     unsetError('input[name*=charge_names]');
 
     let flag = true;
@@ -1057,6 +1059,8 @@
     let overdue_interest_rate = $('input[name=overdue_interest_rate]').val().trim();
     let adhoc_interest_rate = $('input[name=adhoc_interest_rate]').val().trim();
     let grace_period = $('input[name=grace_period]').val().trim();
+    let benchmark_date = $('select[name=benchmark_date]').val();
+    let payment_frequency = $('select[name=payment_frequency]').val();
     //let processing_fee = $('input[name=processing_fee]').val().trim();
     //let document_fee = $('input[name=document_fee]').val().trim();
 
@@ -1103,6 +1107,16 @@
         }
     } 
 
+    if(benchmark_date == ''){
+        setError('select[name=benchmark_date]', 'Please select benchmark date');
+        flag = false;
+    }
+
+    if(payment_frequency == ''){
+        setError('select[name=payment_frequency]', 'Please select payment frequency');
+        flag = false;
+    }
+
     if(tenor == ''){
         setError('input[name=tenor]', 'Please flll invoice tenor');
         flag = false;
@@ -1141,7 +1155,6 @@
         setError('input[name=grace_period]', 'Please fill grace period');
         flag = false;
     }
-
 
     $.each($('input[name*=charge_names]'), function(i, val){
         let data = $(this).val();
