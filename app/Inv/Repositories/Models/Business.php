@@ -251,11 +251,12 @@ class Business extends BaseModel
         return $arrData;
     }
 
-    public static function getAddressByUserId($user_id, array $where = []) {
+    public static function getAddressByUserId($user_id, array $biz_id_arr = [], array $where = []) {
         $arrData = self::select('biz.biz_id','biz.biz_entity_name', 'mst_state.name as state_name', 'biz_addr.*')
         ->join('biz_addr', 'biz_addr.biz_id', '=', 'biz.biz_id')
         ->join('mst_state', 'mst_state.id', '=', 'biz_addr.state_id')
         ->where(['biz.user_id' => $user_id, 'biz_addr.is_default' => 1, 'biz_addr.rcu_status' => 1, 'biz_addr.is_active' => 1])
+        ->whereIn('biz_addr.biz_id', $biz_id_arr)
         ->where($where)
         ->get();
         return $arrData;
