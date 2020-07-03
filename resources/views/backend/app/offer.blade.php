@@ -93,6 +93,18 @@ tr.border_bottom td {
                                                 @endforeach
                                                 <tr>
                                                 <td></td>
+                                                    <td><b>Bench Mark Date: </b></td>
+                                                    <td colspan="3">{{getBenchmarkType($supplyOffer->benchmark_date)}}</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                    <td><b>Investment Payment Frequency: </b></td>
+                                                    <td colspan="3">{{getBenchmarkType($supplyOffer->payment_frequency)}}</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
                                                     <td><b>Comment: </b></td>
                                                     <td colspan="3">{{$supplyOffer->comment}}</td>
                                                     <td></td>
