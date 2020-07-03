@@ -438,7 +438,7 @@ class LeadController extends Controller {
             foreach ($rowData as $key => $value) {
                 
                 //$anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
-                //if(!empty($value) && !$anchUserInfo){
+                //if(!empty($value) && !$anchUserInfo){            
             if (!empty($request->post('assigned_anchor'))){
                 $anchorId = $request->post('assigned_anchor');
             } else {
@@ -451,7 +451,7 @@ class LeadController extends Controller {
             $whereCond[] = ['anchor_id', '>', '0'];
             //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
-            if (!isset($anchUserData[0])) {
+            if (!empty(trim($value[3])) && !isset($anchUserData[0])) {
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
                     if(trim($value[5])=='Buyer'){
