@@ -357,6 +357,7 @@ class InvoiceController extends Controller {
         $invoiceDisbursed = $this->lmsRepo->getInvoiceDisbursed($disbursalIds)->toArray();
         $selectDate = (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $Obj = new ManualApportionmentHelper($this->lmsRepo);
         
         foreach ($invoiceDisbursed as $key => $value) {
             $tenor = $value['tenor_days'];
@@ -370,7 +371,6 @@ class InvoiceController extends Controller {
                         'updated_at' => $curData
                     ], $value['invoice_disbursed_id']);
 
-            $Obj = new ManualApportionmentHelper($this->lmsRepo);
             $Obj->intAccrual($value['invoice_disbursed_id']);
 
             $interest= 0;
