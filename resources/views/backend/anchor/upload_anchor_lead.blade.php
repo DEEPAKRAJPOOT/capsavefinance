@@ -91,6 +91,7 @@
             });            
    
     if (messages.is_accept == 1){
+        alert('jjjjjjjjjjjj');
         var parent =  window.parent;
         window.parent.jQuery('#iframeMessage').html('<div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+messages.message+'</div>');
         parent.jQuery("#uploadAnchLead").modal('hide');
