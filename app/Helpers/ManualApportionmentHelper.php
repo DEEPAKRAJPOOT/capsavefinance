@@ -187,8 +187,10 @@ class ManualApportionmentHelper{
 
     private function getpaymentSettled($transDate, $invDisbId, $payFreq){
         $intrest = 0;
+        $disbTransIds = null;
+        $intTransIds2 = null;
         if($payFreq == 2){
-            $disbTransIds = Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
+            $disbTransIds = Transactions::whereDate('trans_date','<=',$transDate) 
             ->where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
             ->whereNull('link_trans_id') 
@@ -196,7 +198,8 @@ class ManualApportionmentHelper{
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
             ->pluck('trans_id')->toArray();
         
-            $intTransIds2 = Transactions::whereRaw("Month(trans_date) <?",[date('m', strtotime($transDate))]) 
+            $intTransIds2 = Transactions::whereMonth('trans_date','<=',date('m', strtotime($transDate)))
+            ->whereYear('trans_date',date('Y', strtotime($transDate)))
             ->where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
             ->whereNull('link_trans_id') 
@@ -207,7 +210,7 @@ class ManualApportionmentHelper{
             $transIds = array_merge($disbTransIds,$intTransIds2);
         }
         else{
-            $transIds = Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
+            $transIds = Transactions::whereDate('trans_date','<=',$transDate) 
             ->where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
             ->whereNull('link_trans_id') 
@@ -216,7 +219,7 @@ class ManualApportionmentHelper{
             ->pluck('trans_id')->toArray();
         }
         
-        $Dr = Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
+        $Dr = Transactions::whereDate('trans_date','<=',$transDate)
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','0')
         ->where(function($query) use($transIds){
@@ -225,7 +228,7 @@ class ManualApportionmentHelper{
         })
         ->sum('amount');
 
-        $Cr =  Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
+        $Cr =  Transactions::whereDate('trans_date','<=',$transDate) 
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','1')
         ->where(function($query) use($transIds){
@@ -408,7 +411,7 @@ class ManualApportionmentHelper{
             
             $intType = 1;
             
-            $loopStratDate = $startDate ?? $intAccrualStartDate;
+            $loopStratDate = $startDate ?? $maxAccrualDate ?? $intAccrualStartDate;
              
             if (is_null($invDisbDetail->int_accrual_start_dt)) {
                 throw new InvalidArgumentException('Interest Accrual Start Date is missing for invoice Disbursed Id: ' . $invDisbId);
@@ -484,13 +487,11 @@ class ManualApportionmentHelper{
     }
     
     public function dailyIntAccrual(){
-        $this->intAccrual(63);
-
-        // $curdate = Helpers::getSysStartDate();
-        // $invoiceList = $this->lmsRepo->getUnsettledInvoices([]);
-        // foreach ($invoiceList as $invId => $trans) {
-        //     $this->intAccrual($invId);
-        // }
+        $curdate = Helpers::getSysStartDate();
+        $invoiceList = $this->lmsRepo->getUnsettledInvoices([]);
+        foreach ($invoiceList as $invId => $trans) {
+            $this->intAccrual($invId);
+        }
     }
     
     public function getBankBaseRates($bank_id, $date=null){
