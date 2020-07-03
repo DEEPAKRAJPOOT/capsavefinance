@@ -25,6 +25,7 @@ use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use App\Libraries\Idfc_lib;
+use App\Helpers\ManualApportionmentHelper;
 
 class InvoiceController extends Controller {
 
