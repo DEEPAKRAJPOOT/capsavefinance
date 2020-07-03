@@ -256,15 +256,18 @@
                         <td  style="border-right: 1px solid #cccccc;border-bottom: 1px solid #cccccc;vertical-align: top;font-size: 14px;text-align:left;padding:5px 10px;" width="66.66%">
 
                           <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
+                            @php
+                               $penelInterestRate = ($offerD['overdue_interest_rate'] ?? 0) + ($offerD['interest_rate'] ?? 0); 
+                            @endphp
                             @if(!empty($postData['penal_applicable'][$key][0]) && strtolower($postData['penal_applicable'][$key][0]) == 'applicable')
-                            <li>{{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} {{$postData['penal_on'][$key][0]}} entire principal / payable interest on delay in repayment of principal / Interest / charges.</li>
+                            <li>{{ $penelInterestRate . '%'}} {{$postData['penal_on'][$key][0]}} entire principal / payable interest on delay in repayment of principal / Interest / charges.</li>
                             @endif
                              @if(!empty($postData['penal_applicable'][$key][1]) && strtolower($postData['penal_applicable'][$key][1]) == 'applicable')
-                            <li>The rate of interest will be {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} higher than the rate stipulated under each of the facilities till the security is created.</li>
+                            <li>The rate of interest will be {{ $penelInterestRate . '%'}} higher than the rate stipulated under each of the facilities till the security is created.</li>
                             @endif
                              @if(!empty($postData['penal_applicable'][$key][2]) && strtolower($postData['penal_applicable'][$key][2]) == 'applicable')
                             <li>If security is not created within the stipulated time frame then a penal interest of 
-                            {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} p.a. {{$postData['penal_on'][$key][1]}} entire principle.</li>
+                            {{ $penelInterestRate . '%'}} p.a. {{$postData['penal_on'][$key][1]}} entire principle.</li>
                             @endif
                           </ul>
                         </td>

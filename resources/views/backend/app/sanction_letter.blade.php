@@ -289,7 +289,10 @@
                                     <td width="33.33%">Penal Interest</td>
                                     <td width="66.66%">
                                        <ul style="padding:0px 0px 0px 15px; margin:0px; line-height:23px;list-style-type:unset;">
-                                          <li>{{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}}
+                                          @php
+                                             $penelInterestRate = ($offerD['overdue_interest_rate'] ?? 0) + ($offerD['interest_rate'] ?? 0); 
+                                          @endphp
+                                          <li>{{$penelInterestRate .'%'}}
                                              <select class="select" name="penal_on[{{$key}}][]">
                                              <option {{!empty($supplyChainFormData['penal_on'][$key][0]) && $supplyChainFormData['penal_on'][$key][0] == 'On' ? 'selected' : '' }}>On</option>
                                              <option {{!empty($supplyChainFormData['penal_on'][$key][0]) && $supplyChainFormData['penal_on'][$key][0] == 'over and above the rate for the last draw down or Rollover of facility on' ? 'selected' : '' }}>over and above the rate for the last draw down  or Rollover of facility on</option>
@@ -298,14 +301,14 @@
                                              <option {{!empty($supplyChainFormData['penal_applicable'][$key][0]) && $supplyChainFormData['penal_applicable'][$key][0] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                              </select>
                                           </li>
-                                          <li>The rate of interest will be {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} higher than the rate stipulated under each of the facilities till the security is created
+                                          <li>The rate of interest will be {{$penelInterestRate .'%'}} higher than the rate stipulated under each of the facilities till the security is created
                                              <select class="select" name="penal_applicable[{{$key}}][]">
                                              <option {{ !empty($supplyChainFormData['penal_applicable'][$key][1]) &&  $supplyChainFormData['penal_applicable'][$key][1] == 'Applicable' ? 'selected' : '' }}>Applicable</option>
                                              <option {{ !empty($supplyChainFormData['penal_applicable'][$key][1]) &&  $supplyChainFormData['penal_applicable'][$key][1] == 'Not Applicable' ? 'selected' : '' }}>Not Applicable</option>
                                              </select>
                                           </li>
                                           <li>If security is not created within the stipulated timeframe then a penal interest of 
-                                             {{!empty($offerD['overdue_interest_rate']) ? $offerD['overdue_interest_rate'] .'%' : ''}} p.a.  
+                                             {{$penelInterestRate .'%'}} p.a.  
                                              <select class="select" name="penal_on[{{$key}}][]">
                                              <option {{!empty($supplyChainFormData['penal_on'][$key][1]) && $supplyChainFormData['penal_on'][$key][1] == 'On' ? 'selected' : '' }}>On</option>
                                              <option {{!empty($supplyChainFormData['penal_on'][$key][1]) && $supplyChainFormData['penal_on'][$key][1] == 'over and above the rate for the last draw down or Rollover of facility on' ? 'selected' : '' }}>over and above the rate for the last draw down  or Rollover of facility on</option>
