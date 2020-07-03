@@ -140,8 +140,7 @@ function getCIN(entityName){
 		success: function(res){
 			res = res.response
 			if(res == null){
-				$('.isloader').hide();
-                                alert('MMMMMMMMMMMM');
+				$('.isloader').hide();                                
                                 $('.mandatory-biz-cin').hide();
 			}else if(res['status-code'] == 101){
 				//$('input[name=biz_cin]').val(res.result[0].cin);
