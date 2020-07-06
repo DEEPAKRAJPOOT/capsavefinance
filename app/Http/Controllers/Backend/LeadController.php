@@ -6,6 +6,7 @@ use Auth;
 use Session;
 use Crypt;
 use Helpers;
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\Master\State;
@@ -419,6 +420,10 @@ class LeadController extends Controller {
             if ($uploadedFile->isValid()) {
                 $uploadedFile->move($destinationPath, $fileName);
             }
+            $fullFilePath  = $destinationPath . '/' . $fileName;
+            $fileHelper = new FileHelper();
+            $fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath);
+            dd($fileArrayData);
             $fileD = fopen($destinationPath . '/' . $fileName, "r");
             $column = fgetcsv($fileD);
             while (!feof($fileD)) {
