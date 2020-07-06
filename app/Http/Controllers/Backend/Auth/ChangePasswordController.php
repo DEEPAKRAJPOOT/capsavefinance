@@ -72,10 +72,22 @@ class ChangePasswordController extends Controller
             //Current password and new password are same
             return redirect()->back()->with("error","New Password cannot be same as your current password. Please choose a different password.");
         }
-        $validatedData = $request->validate([
+        $message = [
+            'new-password.required' => 'Please enter your New Password (minimum 8 characters)',
+            'new-password_confirmation.required' => 'Please confirm your Password (minimum 8 characters)',
+            'new-password.regex' => 'Passwords must include 1 uppercase, 1 lowercase, 1 number and 1 special character.',
+            'new-password_confirmation.same' => 'Please enter the same password as New Password.',
+        ];
+        $rules = [
             'current-password' => 'required',
-            'new-password' => 'required|string|min:8|confirmed',
-        ]);
+            'new-password' => 'required|min:8|regex:/^((?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,})$/',
+            'new-password_confirmation' => 'required|same:new-password|regex: /^(?!.*(.)\1\1)(.+)$/'
+            ];
+        $validator = Validator::make($request->all(), $rules, $message);
+        if ($validator->fails()) {
+            Session::flash('error', $validator->messages()->first());
+                return redirect()->back()->withInput();
+        }
         //Change Password
         $firstTime = '';
         $user = Auth::user();
