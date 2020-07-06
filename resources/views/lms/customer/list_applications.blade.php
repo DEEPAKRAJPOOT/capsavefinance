@@ -57,7 +57,7 @@
                                         </tr>
                                         <tr>
                                             <th class="text-left">Application Id.</th>
-                                            <th class="text-left">Biz Entity Name</th>
+                                            <th class="text-left">Business Name</th>
                                             <th class="text-left">Status</th>
                                             <th class="text-left">Action</th>
                                         </tr>
