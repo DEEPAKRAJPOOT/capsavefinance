@@ -264,5 +264,36 @@ class FileHelper {
             echo $str;
         }        
     }
+
+    public function excelNcsv_to_array($filePath = '', $header = []) {
+      $respArray = [
+        'status' => 'success',
+        'message' => 'success',
+        'data' => [],
+      ];
+      try{
+          $inputFileType  =   PHPExcel_IOFactory::identify($inputFileName);
+          $objReader      =   PHPExcel_IOFactory::createReader($inputFileType);
+          $objPHPExcel    =   $objReader->load($inputFileName);
+          $sheet = $objPHPExcel->getActiveSheet(); 
+          $highestRow = $sheet->getHighestRow(); 
+          $highestColumn = $sheet->getHighestDataColumn();
+          for ($row = 1; $row <= $highestRow; $row++){ 
+              $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row,  NULL,  TRUE, FALSE);
+              $rowRec = $rowData[0];
+              if ($row == 1) {
+                $header = (!empty($header) ? $header : $rowRec);
+                continue;
+              }
+              $record = array_combine($header, $rowRec);
+              $respArray['data'][] = $record;
+          }
+      }catch(\Exception $e){
+          $respArray['data'] = [];
+          $respArray['status'] = 'fail';
+          $respArray['message'] = str_replace($inputFileName, '', $e->getMessage());
+      }
+      return $respArray;
+    }
    
 }
