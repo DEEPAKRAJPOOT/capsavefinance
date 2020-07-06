@@ -265,7 +265,7 @@ class FileHelper {
         }        
     }
 
-    public function excelNcsv_to_array($filePath = '', $header = []) {
+    public function excelNcsv_to_array($inputFileName = '', $header = []) {
       $respArray = [
         'status' => 'success',
         'message' => 'success',
