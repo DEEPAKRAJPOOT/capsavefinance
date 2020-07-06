@@ -54,37 +54,37 @@ Route::any(
     Route::group(['prefix' => 'password'],
         function () {
         // Reset request email
-        $this->get('reset-password',
+        Route::get('reset-password',
             [
             'as' => 'password.do.reset',
             'uses' => 'Backend\Auth\ForgotPasswordController@showLinkRequestForm'
             ]
         );
-        $this->post('email',
+        Route::post('email',
             [
             'as' => 'password.email',
             'uses' => 'Backend\Auth\ForgotPasswordController@sendResetLinkEmail'
             ]
         );
-        $this->get('reset',
+        Route::get('reset',
             [
             'as' => 'password.reset',
             'uses' => 'Backend\Auth\ResetPasswordController@showResetForm'
             ]
         );
-        $this->post('reset',
+        Route::post('reset',
             [
             'as' => 'password.reset',
             'uses' => 'Backend\Auth\ResetPasswordController@reset'
             ]
         );
-        $this->get('change-password',
+        Route::get('change-password',
             [
             'as' => 'change_password',
             'uses' => 'Backend\Auth\ChangePasswordController@showChangePasswordForm'
             ]
         );
-        $this->post('save-change-password',
+        Route::post('save-change-password',
             [
             'as' => 'save_change_password',
             'uses' => 'Backend\Auth\ChangePasswordController@changePassword'
