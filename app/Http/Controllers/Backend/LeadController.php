@@ -409,12 +409,12 @@ class LeadController extends Controller {
         try {
             $uploadedFile = $request->file('anchor_lead');
             $destinationPath = storage_path() . '/uploads';
-            dd($uploadedFile);
-            $fileType = PHPExcel_IOFactory::identify($uploadedFile);
-            $objReader = PHPExcel_IOFactory::createReader($fileType);
-            $objReader->setReadDataOnly(true);
-            $objPHPExcel = $objReader->load($uploadedFile);
-            // dd($objPHPExcel);
+            // dd($uploadedFile);
+            // $fileType = PHPExcel_IOFactory::identify($uploadedFile);
+            // $objReader = PHPExcel_IOFactory::createReader($fileType);
+            // $objReader->setReadDataOnly(true);
+            // $objPHPExcel = $objReader->load($uploadedFile);
+            // // dd($objPHPExcel);
             $fileName = time() . '.csv';
             if ($uploadedFile->isValid()) {
                 $uploadedFile->move($destinationPath, $fileName);
