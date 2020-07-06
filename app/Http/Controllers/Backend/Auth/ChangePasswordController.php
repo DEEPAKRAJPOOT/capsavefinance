@@ -9,6 +9,7 @@ use Session;
 use Hash;
 use Auth;
 use Event;
+use Illuminate\Support\Facades\Validator;
 
 class ChangePasswordController extends Controller
 {

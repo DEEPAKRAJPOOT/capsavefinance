@@ -12,6 +12,7 @@ use Session;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
 use Event;
+use Illuminate\Support\Facades\Validator;
 
 class ResetPasswordController extends Controller
 {
