@@ -847,10 +847,10 @@ class ApplicationController extends Controller
 				} else if ($currStage->stage_code == 'sales_queue') {
 					$whereCondition = ['app_id' => $app_id, 'status' => null];
 					$offerData = $this->appRepo->getOfferData($whereCondition);
-					if (isset($offerData->status) && empty($offerData->status) ) {
+					if ($offerData && is_null($offerData->status) ) {                                            
 						Session::flash('error_code', 'no_offer_accepted');
 						return redirect()->back();
-					}
+					}  
 				} else if ($currStage->stage_code == 'upload_post_sanction_doc') {
 					
 					$requiredDocs = $this->getProgramDocs(['app_id'=> $app_id, 'stage_code' => 'upload_post_sanction_doc']);
