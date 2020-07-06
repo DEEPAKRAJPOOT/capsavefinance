@@ -104,7 +104,8 @@ use AuthenticatesUsers;
                     Session::flash('messages', trans('error_messages.login_verify_otp'));
                     return redirect()->route('login_open');
                 }
-            } else {
+            } else if($userInfo->is_otp_verified != 1) {
+                //dd('$userInfo->email--', $userInfo->email);
                 $verifyLink = Crypt::encrypt($userInfo->email);
                 $this->verifyUser($verifyLink);
                 return redirect()->route('otp', ['token' => Crypt::encrypt($userInfo->email)]);
@@ -250,12 +251,7 @@ use AuthenticatesUsers;
             if (isset($token) && !empty($token)) {
                 $email = Crypt::decrypt($token);
                 $userCheckArr = $this->userRepo->getuserByEmail($email);
-                // echo "==>".count($userCheckArr); exit;
                 if ($userCheckArr != false) {
-                    /* if ($userCheckArr->status == config('inv_common.USER_STATUS.Active')) {
-                      return redirect(route('login_open'))->withErrors(trans('error_messages.email_already_verified'));
-                      } */
-
                     $date = new DateTime;
                     $currentDate = $date->format('Y-m-d H:i:s');
                     $date->modify('+30 minutes');
@@ -267,11 +263,9 @@ use AuthenticatesUsers;
                     $userArr['email_verified_updatetime'] = $currentDate;
                     $this->userRepo->save($userArr, $userId);
                     //save opt
-                    // echo "Current Date :->".$date;
                     $userMailArr = [];
                     $otpArr = [];
                     $Otpstring = mt_rand(1000, 9999);
-                    ///$Otpstring = Helpers::randomOTP();
                     $otpArr['otp_no'] = $Otpstring;
                     $otpArr['activity_id'] = 1;
                     $otpArr['user_id'] = $userId;

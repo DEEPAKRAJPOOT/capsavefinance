@@ -78,6 +78,18 @@ Route::any(
             'uses' => 'Backend\Auth\ResetPasswordController@reset'
             ]
         );
+        $this->get('change-password',
+            [
+            'as' => 'change_password',
+            'uses' => 'Backend\Auth\ChangePasswordController@showChangePasswordForm'
+            ]
+        );
+        $this->post('save-change-password',
+            [
+            'as' => 'save_change_password',
+            'uses' => 'Backend\Auth\ChangePasswordController@changePassword'
+            ]
+        );
     });
 
 });

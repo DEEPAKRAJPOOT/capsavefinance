@@ -411,6 +411,7 @@ use RegistersUsers,
                     $userId = (int) $userCheckArr->user_id;
                     $userArr = [];
                     $userArr['is_email_verified'] = 1;
+                    $userArr['is_pwd_changed'] = 1;
                     $userArr['email_verified_updatetime'] = $currentDate;
                     $this->userRepo->save($userArr, $userId);
                     //save opt
@@ -495,7 +496,11 @@ use RegistersUsers,
                     $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
                     if(Auth::loginUsingId($userDetails->user_id)) {
-                        return redirect()->route('business_information_open');
+                        if ($userDetails->is_pwd_changed != 1) {
+                            return redirect()->route('changepassword');
+                        } else {
+                            return redirect()->route('business_information_open');
+                        }
                     }
                     //return redirect()->route('login_open');
                 } else {

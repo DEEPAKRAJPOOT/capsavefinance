@@ -81,19 +81,28 @@ use AuthenticatesUsers;
        
         $userEmail    = $request['email'];
         $userInfo = $this->userRepo->getUserByEmail($userEmail);
-                
+               // dd('dd--', $this->isFrontendUser($userInfo));
         if (!empty($userInfo)) {            
             // Checking User is frontend user            
-            if ($this->isFrontendUser($userInfo)) {                
+            if ($this->isFrontendUser($userInfo)) {
                 Session::flash('messages', trans('error_messages.creadential_not_valid'));                
                 return redirect()->route('get_backend_login_open');
             }
         }
+        
+        //if ($userInfo->is_pwd_changed != 1) {
+//            dd('$userInfo->is_pwd_changed--=====', $userInfo->is_pwd_changed);
+            //dd("redirect()->route('change_password')--", redirect()->route('change_password'));
+//            return redirect()->route('change_password');
+//        }
             
         if ($this->attemptLogin($request)) {
-            return $this->sendLoginResponse($request);
+            if ($userInfo->is_pwd_changed != 1) {
+                return redirect()->route('change_password');
+            } else {
+                return $this->sendLoginResponse($request);
+            }
         }
-
         // If the login attempt was unsuccessful we will increment the number of attempts
         // to login and redirect the user back to the login form. Of course, when this
         // user surpasses their maximum number of attempts they will get locked out.
