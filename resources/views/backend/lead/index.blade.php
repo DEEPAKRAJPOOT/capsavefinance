@@ -33,16 +33,16 @@
                     ])
                     !!}
                 </div>
-                <div class="col-md-4">
+                <!-- <div class="col-md-4">
 
                     {!!
                     Form::select('is_assign',
-                    [''=>'Select', '1'=>'Assigned','2'=> 'Pending'],
+                    [''=>'Select', '1'=>'Assigned','0'=> 'Pending'],
                     null,
                     array('id' => 'is_active',
                     'class'=>'form-control'))
                     !!}
-                </div>
+                </div> -->
                 <div class="col-md-2">
                     <button id="searchB" type="button" class="btn  btn-success btn-sm">Search</button>
                 </div>
