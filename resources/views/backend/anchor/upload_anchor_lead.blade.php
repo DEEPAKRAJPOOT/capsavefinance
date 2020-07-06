@@ -37,7 +37,7 @@
             </div>
                            
                 <br> <br>
-                <button type="submit" class="btn btn-success btn-sm float-right" id="saveAnch">Submit</button>  
+                <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>  
            </form>
          </div>
      
@@ -66,7 +66,7 @@
                 rules: {
                 anchor_lead: {
                 required: true,
-                extension: "csv"
+                // extension: "csv"
                 },
                  assigned_anchor: {
                 required: true,

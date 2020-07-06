@@ -410,46 +410,46 @@ class LeadController extends Controller {
         try {
             $uploadedFile = $request->file('anchor_lead');
             $destinationPath = storage_path() . '/uploads';
-            // dd($uploadedFile);
-            // $fileType = PHPExcel_IOFactory::identify($uploadedFile);
-            // $objReader = PHPExcel_IOFactory::createReader($fileType);
-            // $objReader->setReadDataOnly(true);
-            // $objPHPExcel = $objReader->load($uploadedFile);
-            // // dd($objPHPExcel);
-            $fileName = time() . '.csv';
+            
+            $fileName = time();
             if ($uploadedFile->isValid()) {
                 $uploadedFile->move($destinationPath, $fileName);
             }
             $fullFilePath  = $destinationPath . '/' . $fileName;
+            $header = [
+                'f_name','l_name','biz_name','email','phone','user_type'
+            ];
             $fileHelper = new FileHelper();
-            $fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath);
-            dd($fileArrayData);
-            $fileD = fopen($destinationPath . '/' . $fileName, "r");
-            $column = fgetcsv($fileD);
-            while (!feof($fileD)) {
-                $rowData[] = fgetcsv($fileD);
+            $fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
+
+            if($fileArrayData['status'] != 'success'){
+                // dd($fileArrayData['message']);
+                return redirect()->back()->withErrors($fileArrayData['message']);
+            
             }
+
+            $rowData = $fileArrayData['data'];
 
             $anchLeadMailArr = [];
             $arrAnchLeadData = [];
             $arrUpdateAnchor = [];
             foreach ($rowData as $key => $value) {
                 
-                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
+                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value['email']));  
                 if(!empty($value) && !$anchUserInfo){
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
-                    if(trim($value[5])=='Buyer'){
+                    if(trim($value['user_type'])=='Buyer'){
                         $userType=2;
                     }else{
                         $userType=1; 
                     }
                 $arrAnchLeadData = [
-                    'name' =>  trim($value[0]),
-                    'l_name'=>trim($value[1]),
-                    'biz_name' =>  trim($value[2]),
-                    'email'=>$value[3],
-                    'phone' => $value[4],
+                    'name' =>  trim($value['f_name']),
+                    'l_name'=>trim($value['l_name']),
+                    'biz_name' =>  trim($value['biz_name']),
+                    'email'=>$value['email'],
+                    'phone' => $value['phone'],
                     'user_type' => $userType,
                     'created_by' => Auth::user()->user_id,
                     'created_at' => \Carbon\Carbon::now(),
@@ -457,6 +457,7 @@ class LeadController extends Controller {
                     'registered_type'=>1,
                     'token' => $token,
                 ];
+
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
                 
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
