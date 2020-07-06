@@ -157,7 +157,6 @@ class DataRenderer implements DataProviderInterface
                                 $by_nameOrEmail = trim($request->get('by_email'));
                                 $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
                                 ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
                                 ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
                             });
                         }
@@ -166,7 +165,6 @@ class DataRenderer implements DataProviderInterface
                         if ($request->has('is_assign')) {
                             $query->where(function ($query) use ($request) {
                                 $by_status = (int) trim($request->get('is_assign'));
-                                
                                 $query->where('users.is_assigned', 'like',
                                         "%$by_status%");
                             });
