@@ -58,7 +58,7 @@ class DataRenderer implements DataProviderInterface
     public function getUsersList(Request $request, $user)
     {
         return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned'])
+                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned', 'active'])
                 ->addColumn(
                     'id',
                     function ($user) {
@@ -123,14 +123,26 @@ class DataRenderer implements DataProviderInterface
                     $full_name = $user->mobile_no; 
                     return $full_name;
                 })
+                // ->editColumn(
+                //         'assigned',
+                //         function ($user) {
+                //     if ($user->is_assign == 0) {
+                //         return "<label class=\"badge badge-warning current-status\">Pending</label>";
+                //     } else {
+                //         return "<span style='color:green'>Assigned</span>";
+                //     }
+                // })
                 ->editColumn(
-                        'assigned',
-                        function ($user) {
-                    if ($user->is_assign == 0) {
-                        return "<label class=\"badge badge-warning current-status\">Pending</label>";
-                    } else {
-                        return "<span style='color:green'>Assigned</span>";
-                    }
+                    'active',
+                    function ($role) {
+                    return ($role->is_active == '0')?'<div class="btn-group ">
+                                             <label class="badge badge-danger current-status">In Active</label>
+                                             
+                                          </div></b>':'<div class="btn-group ">
+                                             <label class="badge badge-success current-status">Active</label>
+                                             
+                                          </div></b>';
+
                 })
                 ->editColumn(
                     'biz_name',
