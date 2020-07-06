@@ -5,7 +5,7 @@
 		<div class="col-md-4 form-design">
 
 			<div id="reg-box">
-				<form class="form-horizontal" method="POST" action="{{ route('change') }}">
+				<form class="form-horizontal" method="POST" action="{{ url('password/change') }}">
 					{{ csrf_field() }}
 					<div class="section-header">
 						<h4 class="section-title"> Change Password</h4>

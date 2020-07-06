@@ -52,37 +52,37 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
    Route::group(['prefix' => 'password'],
         function () {
         
-        Route::get('email',
+        $this->get('email',
             [
             'as' => 'password.email',
             'uses' => 'Auth\ForgotPasswordController@showResetLinkEmail'
             ]
         );
-        Route::post('email',
+        $this->post('email',
             [
             'as' => 'password.email',
             'uses' => 'Auth\ForgotPasswordController@sendResetLinkEmail'
             ]
         );
-        Route::get('reset',
+        $this->get('reset',
             [
             'as' => 'password.reset',
             'uses' => 'Auth\ResetPasswordController@showResetForm'
             ]
         );
-        Route::post('reset',
+        $this->post('reset',
             [
             'as' => 'password.reset',
             'uses' => 'Auth\ResetPasswordController@reset'
             ]
         );
-        Route::get('change',
+        $this->get('change',
             [
             'as' => 'changepassword',
             'uses' => 'Auth\ChangePasswordController@showChangePasswordForm'
             ]
         );
-        Route::post('change',
+        $this->post('change',
             [
             'as' => 'changepassword',
             'uses' => 'Auth\ChangePasswordController@changePassword'
