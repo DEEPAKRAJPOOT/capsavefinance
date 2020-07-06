@@ -15,6 +15,8 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use Event;
+use PHPExcel;
+use PHPExcel_IOFactory;
 use App\Http\Requests\Backend\CreateLeadRequest;
 use App\Inv\Repositories\Models\UserAppDoc;
 use Illuminate\Support\Facades\Validator;
@@ -407,6 +409,12 @@ class LeadController extends Controller {
         try {
             $uploadedFile = $request->file('anchor_lead');
             $destinationPath = storage_path() . '/uploads';
+            dd($uploadedFile);
+            $fileType = PHPExcel_IOFactory::identify($uploadedFile);
+            $objReader = PHPExcel_IOFactory::createReader($fileType);
+            $objReader->setReadDataOnly(true);
+            $objPHPExcel = $objReader->load($uploadedFile);
+            // dd($objPHPExcel);
             $fileName = time() . '.csv';
             if ($uploadedFile->isValid()) {
                 $uploadedFile->move($destinationPath, $fileName);
