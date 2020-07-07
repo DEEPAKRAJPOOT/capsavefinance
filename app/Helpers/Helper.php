@@ -1640,12 +1640,28 @@ class Helper extends PaypalHelper
       */
      public static function getServerProtocol()
      {
-        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";         
+        if(config('app.env') == "production"){
+            $protocol = 'https://';
+        } else {
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";         
+        }
         return $protocol;
      }
      
       public static function getProductWiseDoAUsersByAppId($app_id)
      {
         return  Application::getDoAUsersByAppId($app_id);
+     }
+     
+     public static function replaceImagePath($variable)
+     {
+        $currentRoute = \Request::route()->getName();
+        if ($currentRoute == 'generate_cam_report') {
+            $backendUri = self::getServerProtocol() . config('proin.backend_uri');             
+            $ckUploadImgPath = !empty(config('common.ck_upload_img_path')) ? config('common.ck_upload_img_path') : $_SERVER["DOCUMENT_ROOT"];            
+            return str_replace($backendUri, $ckUploadImgPath, $variable);
+        } else {
+            return $variable;
+        }
      }
 }

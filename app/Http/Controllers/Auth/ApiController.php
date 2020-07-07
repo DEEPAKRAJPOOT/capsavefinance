@@ -731,7 +731,8 @@ class ApiController
     		$err_code = $postdata['errorCode'];
     		$err_msg = $postdata['errorMessage'];
     		if (strtolower($status) != 'completed') {
-    			$response['message'] =  $err_msg ?? "Some error occured.";
+          //$err_detail = $postdata['financialYearErrorDetails'] ?? $postdata['errorDetailsForFinancialYear'];
+    			$response['message'] =  $err_msg ?? "Some error occured. While Parsing errorMessage";
     			return print(json_encode($response));
     		}
     		$perfios_data = FinanceModel::getPerfiosData($perfiostransactionid);
@@ -896,7 +897,7 @@ class ApiController
 
     private function _getBankReport($perfiostransactionid, $prolitus_txn, $appId) {
         $biz_perfios_id = $perfiostransactionid;
-        $perfios = new Perfios_lib();
+        $bsa = new Bsa_lib();
         $apiVersion = '2.1';
         $vendorId = 'capsave';
         $nameArr = $this->getLatestFileName($appId, 'banking', 'xlsx');
@@ -917,6 +918,7 @@ class ApiController
             \File::put($this->getToUploadPath($appId, 'banking').'/'.$file_name, $final_res['result']);
           } 
         }
+        $file= url("storage/user/docs/$appId/banking/". $file_name);
         $req_arr['types'] = 'json';
         $final_res = $bsa->api_call(Bsa_lib::GET_REP, $req_arr);
         $final_res['api_type'] = Bsa_lib::GET_REP;
@@ -924,7 +926,6 @@ class ApiController
         $final_res['prolitusTransactionId'] = $prolitus_txn;
         $final_res['perfiosTransactionId'] = $perfiostransactionid;
         if ($final_res['status'] == 'success') {
-
           $final_res['result'] = base64_encode($final_res['result']);
           $nameArr = $this->getLatestFileName($appId, 'banking', 'json');
           $json_file_name = $nameArr['new_file'];

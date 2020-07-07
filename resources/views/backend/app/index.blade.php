@@ -64,7 +64,7 @@
 
                     {!!
                     Form::select('status',
-                    [''=>'Status', '1'=>'Ready for Renewal','2' => 'Renewed', '3' => 'Limit Enhanced', '4' => 'Limit Reduced'],
+                    [''=>'Status', '1'=>'Ready for Renewal','2' => 'Renewed', '3' => 'Limit Enhanced', '4' => 'Limit Reduced', '5' => 'Reject', '6' => 'Cancel', '7' => 'Hold', '8' => 'Data Pending'],
                     null,
                     array('id' => 'status',
                     'class'=>'form-control'))
@@ -124,6 +124,8 @@
 {!!Helpers::makeIframePopup('confirmCopyApp','Copy/Renew Application', 'modal-md')!!}
 {!!Helpers::makeIframePopup('confirmEnhanceLimit','Limit Enhancement', 'modal-md')!!}
 {!!Helpers::makeIframePopup('confirmReduceLimit','Reduce Limit', 'modal-md')!!}
+{!!Helpers::makeIframePopup('rejectApplication','Modify Application Status', 'modal-md')!!}
+{!!Helpers::makeIframePopup('viewApplicationStatus','View Application Status', 'modal-lg')!!}
 @endsection
 @section('additional_css')
 <style>

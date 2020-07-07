@@ -158,7 +158,7 @@ trait ApplicationTrait
 
      protected function getSanctionLetterData($appId, int $bizId, $offerId=null, $sanctionID=null){
         $offerWhereCond = [];
-        
+        $appId = (int)$appId;
         if ($offerId) {
             $offerWhereCond['prgm_offer_id'] = $offerId;
         } else {
