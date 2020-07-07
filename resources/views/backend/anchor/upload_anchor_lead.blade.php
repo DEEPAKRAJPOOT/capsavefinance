@@ -37,7 +37,7 @@
             </div>
                 
                 <div class="custom-file mb-3 mt-2">
-                    <a href="{{ route('download_sample_lead_csv') }}" title="Download Template"><i class="fa fa-file-csv-o">Download Template</i></a>
+                    <a href="{{ route('download_sample_lead_csv') }}" title="Download Template"><i style="color:green" class="fa fa-file-excel-o"> Download Template</i></a>
                 </div>
                            
                 <br> <br>
