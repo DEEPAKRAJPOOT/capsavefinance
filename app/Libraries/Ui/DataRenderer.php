@@ -58,7 +58,7 @@ class DataRenderer implements DataProviderInterface
     public function getUsersList(Request $request, $user)
     {
         return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned'])
+                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned', 'active'])
                 ->addColumn(
                     'id',
                     function ($user) {
@@ -123,14 +123,26 @@ class DataRenderer implements DataProviderInterface
                     $full_name = $user->mobile_no; 
                     return $full_name;
                 })
+                // ->editColumn(
+                //         'assigned',
+                //         function ($user) {
+                //     if ($user->is_assign == 0) {
+                //         return "<label class=\"badge badge-warning current-status\">Pending</label>";
+                //     } else {
+                //         return "<span style='color:green'>Assigned</span>";
+                //     }
+                // })
                 ->editColumn(
-                        'assigned',
-                        function ($user) {
-                    if ($user->is_assign == 0) {
-                        return "<label class=\"badge badge-warning current-status\">Pending</label>";
-                    } else {
-                        return "<span style='color:green'>Assigned</span>";
-                    }
+                    'active',
+                    function ($role) {
+                    return ($role->is_active == '0')?'<div class="btn-group ">
+                                             <label class="badge badge-danger current-status">In Active</label>
+                                             
+                                          </div></b>':'<div class="btn-group ">
+                                             <label class="badge badge-success current-status">Active</label>
+                                             
+                                          </div></b>';
+
                 })
                 ->editColumn(
                     'biz_name',
@@ -157,7 +169,6 @@ class DataRenderer implements DataProviderInterface
                                 $by_nameOrEmail = trim($request->get('by_email'));
                                 $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
                                 ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
                                 ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
                             });
                         }
@@ -166,7 +177,6 @@ class DataRenderer implements DataProviderInterface
                         if ($request->has('is_assign')) {
                             $query->where(function ($query) use ($request) {
                                 $by_status = (int) trim($request->get('is_assign'));
-                                
                                 $query->where('users.is_assigned', 'like',
                                         "%$by_status%");
                             });

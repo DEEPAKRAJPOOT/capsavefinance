@@ -37,7 +37,7 @@ try {
                     {data: 'anchor'},
                     {data: 'userType'},
                     {data: 'salesper'},
-                    {data: 'assigned'},
+                    {data: 'active'},
                     //{data: 'biz_name'},
                     {data: 'created_at'},
                     //{data: 'status'},
