@@ -40,7 +40,9 @@ class ProcessMails implements ShouldQueue
             $event = '';
             $to_users = [];
             $to_all = false;
-            
+            if (!is_null($assignmentData->to_id)) {
+                $userRoleData = $userRepo->getRoleDataById($assignmentData->to_id);
+            }
             if($assignmentData->count()){
                 switch ($assignmentData->assign_type) {
                     case '0': //New
@@ -53,7 +55,7 @@ class ProcessMails implements ShouldQueue
                         if(is_null($assignmentData->to_id) && $assignmentData->role_id){
                             $event = "APPLICATION_MOVE_NEXT_POOL";
                             $to_all = true;
-                        } else if ($assignmentData->to_id == $assignmentData->from_id) {
+                        } else if (($assignmentData->to_id == $assignmentData->from_id) && $userRoleData->role_id == 10){
                             $event = "APPLICATION_MOVE_LMS";
                         } else {
                             $event = "APPLICATION_MOVE_NEXT_USER";
@@ -74,7 +76,7 @@ class ProcessMails implements ShouldQueue
                 $application = $appRepo->getAppDataByAppId($assignmentData->app_id);
                 //$reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$application->business->biz_id)->where('app_id','=',$assignmentData->app_id)->first(); 
                 //$emailData['cover_note'] = $reviewerSummaryData->cover_note;
-                $emailData['lead_id'] = '000'.$application->user_id;
+                $emailData['lead_id'] = \Helpers::formatIdWithPrefix($application->user_id, 'LEADID');
                 $emailData['entity_name'] = (isset($application->business->biz_entity_name))?$application->business->biz_entity_name:'';
                 $emailData['app_id'] = \Helpers::formatIdWithPrefix($assignmentData->app_id, 'APP');
                 $emailData['comment'] = $assignmentData->sharing_comment;
@@ -118,5 +120,15 @@ class ProcessMails implements ShouldQueue
     public function failed($exception)
     {
         $exception->getMessage();
+    }
+
+    /**
+     * Determine the time at which the job should timeout.
+     *
+     * @return \DateTime
+     */
+    public function retryUntil()
+    {
+        return now()->addSeconds(5);
     }
 }
