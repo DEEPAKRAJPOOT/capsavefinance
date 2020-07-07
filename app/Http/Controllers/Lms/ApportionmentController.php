@@ -278,7 +278,7 @@ class ApportionmentController extends Controller
             }
             $transId = $request->get('trans_id');
             $paymentId = $request->get('payment_id');
-            $amount = $request->get('amount');
+            $amount = (float)$request->get('amount');
             $comment = $request->get('comment');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
             
@@ -290,7 +290,7 @@ class ApportionmentController extends Controller
             if ($amount > $outstandingAmount)  {
                 return redirect()->route('apport_settled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be reversed must be less than or equal to '. $outstandingAmount]);
             }
-            if ($amount < 1)  {
+            if ($amount <= 0)  {
                 return redirect()->route('apport_settled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be reversed must have some values ']);
             }
             
