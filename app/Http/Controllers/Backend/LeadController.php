@@ -432,9 +432,7 @@ class LeadController extends Controller {
             $fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
 
             if($fileArrayData['status'] != 'success'){
-                // dd($fileArrayData['message']);
                 Session::flash('message', 'Please select only csv and xlsx file format');
-                // return redirect()->back()->withErrors('Please select only csv and xlsx format');
                 return redirect()->back();
             
             }
