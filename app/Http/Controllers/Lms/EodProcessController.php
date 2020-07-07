@@ -263,7 +263,7 @@ class EodProcessController extends Controller {
                 $maxAccrualDate = $invDisbDetail->interests->max('interest_date');
                 $start = new \Carbon\Carbon(\Helpers::getSysStartDate());
                 $sys_start_date = $start->format('Y-m-d');
-                if(strtotime($maxAccrualDate) != strtotime($sys_start_date)){
+                if(strtotime($maxAccrualDate) != strtotime($sys_start_date. "- 1 days")){
                     $result = false;
                     break;
                 }
