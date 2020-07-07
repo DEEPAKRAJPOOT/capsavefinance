@@ -408,13 +408,12 @@ class LeadController extends Controller {
      */
     public function saveUploadAnchorlead(Request $request) {
         try {
-
             $validatedData = Validator::make($request->all(),[
-                'assigned_anchor' => 'required',
+                // 'assigned_anchor' => 'required',
                 'anchor_lead' => 'required'
             ],[
                 'anchor_lead.required' => 'This field is required.',
-                'assigned_anchor.required' => 'This field is required.'
+                // 'assigned_anchor.required' => 'This field is required.'
             ])->validate();
 
             $uploadedFile = $request->file('anchor_lead');
