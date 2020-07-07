@@ -224,6 +224,7 @@ class RenewalController extends Controller {
                 $emailData['app_limit'] = $app_limit[0]->end_date ? $app_limit[0]->end_date : '';
                 $emailData['cmp_name'] = $companyDetails[0]->cmp_name ? $companyDetails[0]->cmp_name : '';
                 $emailData['cmp_add'] =$companyDetails[0]->cmp_add ? $companyDetails[0]->cmp_add : '';
+                $emailData['year'] = 2020;
 
                 \Event::dispatch("APPLICATION_RENEWAL_MAIL", serialize($emailData));
             //}
