@@ -427,7 +427,7 @@ class LeadController extends Controller {
 
             $fullFilePath  = $destinationPath . '/' . $fileName;
             $header = [
-                'f_name','l_name','biz_name','email','phone','user_type'
+                0,1,2,3,4,5
             ];
 
             $fileHelper = new FileHelper();
@@ -442,7 +442,7 @@ class LeadController extends Controller {
             // dd($rowData);
 
             if (empty($rowData)) {
-                Session::flash('message', 'Please fill the correct details.');
+                Session::flash('message', 'File does not contain any record');
                 return redirect()->back();                     
             }
             // dd($rowData);
@@ -450,22 +450,25 @@ class LeadController extends Controller {
             $arrAnchLeadData = [];
             $arrUpdateAnchor = [];
             foreach ($rowData as $key => $value) {
-                // dd($value);
-                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value['email']));  
+                if ($value && (empty($value[0]) || empty($value[1]) || empty($value[2]) || empty($value[3]) || empty($value[4]) || empty($value[5]) )) {
+                    Session::flash('message', 'Please fill the correct details.');
+                    return redirect()->back();                     
+                }
+                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
                 if(!empty($value) && !$anchUserInfo){
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
-                    if(trim($value['user_type'])=='Buyer'){
+                    if(trim($value[5])=='Buyer'){
                         $userType=2;
                     }else{
                         $userType=1; 
                     }
                 $arrAnchLeadData = [
-                    'name' =>  trim($value['f_name']),
-                    'l_name'=>trim($value['l_name']),
-                    'biz_name' =>  trim($value['biz_name']),
-                    'email'=>$value['email'],
-                    'phone' => $value['phone'],
+                    'name' =>  trim($value[0]),
+                    'l_name'=>trim($value[1]),
+                    'biz_name' =>  trim($value[2]),
+                    'email'=>$value[3],
+                    'phone' => $value[4],
                     'user_type' => $userType,
                     'created_by' => Auth::user()->user_id,
                     'created_at' => \Carbon\Carbon::now(),
