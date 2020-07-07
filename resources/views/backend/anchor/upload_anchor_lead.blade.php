@@ -68,7 +68,7 @@
                 rules: {
                 anchor_lead: {
                 required: true,
-                // extension: "csv"
+                extension: "xls|xlsx|csv"
                 },
                  assigned_anchor: {
                 required: true,
@@ -77,7 +77,7 @@
                 messages: {
                 anchor_lead: {
                 required: "Please select file",
-                extension:"Please select only csv format",
+                extension:"Please select only csv and xlsx format",
                 }
                 }
                 });
