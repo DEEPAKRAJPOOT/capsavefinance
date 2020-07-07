@@ -408,6 +408,15 @@ class LeadController extends Controller {
      */
     public function saveUploadAnchorlead(Request $request) {
         try {
+
+            $validatedData = Validator::make($request->all(),[
+                'assigned_anchor' => 'required',
+                'anchor_lead' => 'required'
+            ],[
+                'anchor_lead.required' => 'This field is required.',
+                'assigned_anchor.required' => 'This field is required.'
+            ])->validate();
+
             $uploadedFile = $request->file('anchor_lead');
             $destinationPath = storage_path() . '/uploads';
             
@@ -424,7 +433,9 @@ class LeadController extends Controller {
 
             if($fileArrayData['status'] != 'success'){
                 // dd($fileArrayData['message']);
-                return redirect()->back()->withErrors($fileArrayData['message']);
+                Session::flash('message', 'Please select only csv and xlsx file format');
+                // return redirect()->back()->withErrors('Please select only csv and xlsx format');
+                return redirect()->back();
             
             }
 
