@@ -389,6 +389,7 @@ class KarzaController extends Controller
         try{
           $result =  $KarzaApi->checkBizGstToEntity($requestArr);
           $res = json_decode($result,1);
+          $pgapiId = '';
           if($res['statusCode'] == 101){
             $pgapiId = \DB::table('biz_pan_gst_api')->insertGetId([
                 'file_name' => $res['result']['pradr']['adr'],

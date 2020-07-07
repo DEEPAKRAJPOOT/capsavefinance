@@ -151,9 +151,8 @@
                           <tr>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Sub Limit: </b> </td>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->prgm_limit_amt}}</td>
-                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>{{ $fee['2']['chrg_name']}}{{ $fee['2']['chrg_type'] == 2 ? '(%)' : '(₹)'}}: </b></td>
-
-                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{ $fee['2']['chrg_value']}}</td>
+                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>{{ isset($fee['2']) ? $fee['2']['chrg_name'] : ''}}{{ isset($fee['2']) ? ($fee['2']['chrg_type'] == 2 ? '(%)' : '(₹)') : ''}}: </b></td>
+                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{ isset($fee['2']) ? $fee['2']['chrg_value'] : ''}}</td>
                           </tr>
                           
                           <tr>
@@ -177,9 +176,9 @@
                           <tr>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Grace Period (Days): </b></td>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{$supplyOffer->grace_period}}</td>
-                                <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>{{ $fee['1']['chrg_name']}}{{ $fee['1']['chrg_type'] == 2 ? '(%)' : '(₹)'}}: </b></td>
-                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{ $fee['1']['chrg_value']}}</td>
-                                                         </tr>
+                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>{{ isset($fee['1']) ? $fee['1']['chrg_name']: ''}} {{ isset($fee['1']) ? $fee['1']['chrg_type'] == 2 ? '(%):' : '(₹):':''}} </b></td>
+                              <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">{{ isset($fee['1']) ? $fee['1']['chrg_type'] == 2 ? '' : '(₹)':''}} {{ isset($fee['1']) ? $fee['1']['chrg_value']:''}} {{ isset($fee['1']) ? $fee['1']['chrg_type'] == 2 ? '(%)' : '':''}}</td>
+                          </tr>
                           <tr>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;"><b>Comment: </b></td>
                               <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;" colspan="3">{{$supplyOffer->comment}}</td>

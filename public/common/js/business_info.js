@@ -89,10 +89,10 @@ function fillGSTinput(datas){
 	})
         if(active==0)
         {
-            alert(datas[0].authStatus);
-            return false;
-         
+            alert(datas[0].authStatus);            
+            return false;         
         }
+        
 	$('select[name=biz_gst_number]').html(option_html);
 	$('input[name=pan_api_res]').val(res);
 	//$('#business_information_form input[type=submit]').prop("disabled", false);
@@ -140,7 +140,8 @@ function getCIN(entityName){
 		success: function(res){
 			res = res.response
 			if(res == null){
-				$('.isloader').hide();
+				$('.isloader').hide();                                
+                                $('.mandatory-biz-cin').hide();
 			}else if(res['status-code'] == 101){
 				//$('input[name=biz_cin]').val(res.result[0].cin);
 				fillCINInput(res.result);
@@ -165,6 +166,12 @@ function fillCINInput(datas){
 	})
 	$('select[name=biz_cin]').html(option_html);
 	$('input[name=cin_api_res]').val(res);
+        
+        if ($('select[name=biz_cin] option').length > 1) {
+            $('.mandatory-biz-cin').show();
+        } else {
+            $('.mandatory-biz-cin').hide();
+        }
 }
 function checkValidation(){
 	unsetError('input[name=biz_pan_number]');
@@ -254,7 +261,8 @@ function checkValidation(){
 		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
 		flag = false;
 	}
-	if((biz_cin == '' || biz_cin == null) && is_gst_manual!=1){
+
+	if($('select[name=biz_cin] option').length > 1 && (biz_cin == '' || biz_cin == null) && is_gst_manual!=1){
 		setError('select[name=biz_cin]', 'Please select CIN Number');
 		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
 		flag = false;
