@@ -191,7 +191,6 @@ class RenewalController extends Controller {
             ->where('app_id',$appId)
             ->get();
 
-            $app_limit = date('d-m-Y', strtotime($app_limit));
             
             /*
             if ($userData && !empty($userData->anchor_id)) {
@@ -223,7 +222,7 @@ class RenewalController extends Controller {
                 $emailData['sales_manager_name'] = $salesUser ? $salesUser->f_name .' '. $user->m_name .' '. $user->l_name : '';
                 $emailData['sales_manager_email'] = $salesUser ? $salesUser->email : '';
                 $emailData['prgm_limit_amt'] = number_format($prgm_limit_amt) ? number_format($prgm_limit_amt) : '';
-                $emailData['app_limit'] = $app_limit[0]->end_date ? $app_limit[0]->end_date : '';
+                $emailData['app_limit'] = $app_limit[0]->end_date ? date('d-m-Y', strtotime($app_limit[0]->end_date)) : '';
                 $emailData['cmp_name'] = $companyDetails[0]->cmp_name ? $companyDetails[0]->cmp_name : '';
                 $emailData['cmp_add'] =$companyDetails[0]->cmp_add ? $companyDetails[0]->cmp_add : '';
                 $emailData['year'] = 2020;
