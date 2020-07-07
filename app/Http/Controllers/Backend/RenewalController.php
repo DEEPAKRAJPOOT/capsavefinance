@@ -190,6 +190,8 @@ class RenewalController extends Controller {
             ->where('user_id',$userId)
             ->where('app_id',$appId)
             ->get();
+
+            $app_limit = date('d-m-Y', strtotime($app_limit));
             
             /*
             if ($userData && !empty($userData->anchor_id)) {
