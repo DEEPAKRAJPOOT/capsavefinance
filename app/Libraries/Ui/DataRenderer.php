@@ -1120,7 +1120,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.\Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })
                ->addColumn(
@@ -1219,7 +1219,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })
                 ->addColumn(
@@ -1416,7 +1416,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })      
                   ->addColumn(
@@ -1537,7 +1537,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })     
                    ->addColumn(
@@ -1630,7 +1630,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })  
                  ->filter(function ($query) use ($request) {
@@ -1654,7 +1654,7 @@ class DataRenderer implements DataProviderInterface
     { 
     
        return DataTables::of($invoice)
-               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
@@ -1714,6 +1714,14 @@ class DataRenderer implements DataProviderInterface
                  return $invoice->remark;
                       
                        
+                })
+                ->addColumn(            
+                    'updated_at',
+                    function ($invoice) {                        
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.strip_tags($invoice->Invoiceuser->f_name).'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.\Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
+                        return $inv_amount;
                 })
                  ->addColumn(
                     'action',
@@ -1826,7 +1834,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })     
                  ->addColumn(
@@ -2018,7 +2026,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'timestamp',
                     function ($invoice) {
-                       return $invoice->created_at->format('j F Y H:i:s'); 
+                        return \Helpers::convertDateTimeFormat($invoice->created_at, 'Y-m-d H:i:s','d-m-Y h:i A');
                 })
                  
                  
@@ -5599,7 +5607,9 @@ class DataRenderer implements DataProviderInterface
                     function ($disbursal) {   
                         return $disbursal->invoice_disbursed->count();
                 }) 
-                
+                ->editColumn('updated_at', function($disbursal){
+                    return \Helpers::convertDateTimeFormat($disbursal->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A');
+                })
                 ->addColumn(
                     'action',
                     function ($disbursal) {
