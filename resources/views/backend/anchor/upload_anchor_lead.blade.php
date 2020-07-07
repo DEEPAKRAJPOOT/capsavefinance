@@ -68,7 +68,7 @@
                 rules: {
                 anchor_lead: {
                 required: true,
-                extension: "xls|xlsx|csv"
+                // extension: "xls|xlsx|csv"
                 },
                  assigned_anchor: {
                 required: true,

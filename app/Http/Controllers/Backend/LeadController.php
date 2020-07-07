@@ -424,26 +424,33 @@ class LeadController extends Controller {
             if ($uploadedFile->isValid()) {
                 $uploadedFile->move($destinationPath, $fileName);
             }
+
             $fullFilePath  = $destinationPath . '/' . $fileName;
             $header = [
                 'f_name','l_name','biz_name','email','phone','user_type'
             ];
+
             $fileHelper = new FileHelper();
             $fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
-
+            
             if($fileArrayData['status'] != 'success'){
                 Session::flash('message', 'Please select only csv and xlsx file format');
                 return redirect()->back();
-            
             }
 
             $rowData = $fileArrayData['data'];
+            // dd($rowData);
 
+            if (empty($rowData)) {
+                Session::flash('message', 'Please fill the correct details.');
+                return redirect()->back();                     
+            }
+            // dd($rowData);
             $anchLeadMailArr = [];
             $arrAnchLeadData = [];
             $arrUpdateAnchor = [];
             foreach ($rowData as $key => $value) {
-                
+                // dd($rowData);
                 $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value['email']));  
                 if(!empty($value) && !$anchUserInfo){
                 $hashval = time() . 'ANCHORLEAD' . $key;
