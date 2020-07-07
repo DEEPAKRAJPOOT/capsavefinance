@@ -450,7 +450,7 @@ class LeadController extends Controller {
             $arrAnchLeadData = [];
             $arrUpdateAnchor = [];
             foreach ($rowData as $key => $value) {
-                // dd($rowData);
+                // dd($value);
                 $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value['email']));  
                 if(!empty($value) && !$anchUserInfo){
                 $hashval = time() . 'ANCHORLEAD' . $key;
