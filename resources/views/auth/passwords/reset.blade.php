@@ -16,7 +16,7 @@
  <div class="row justify-content-center align-items-center m-0">
     <div class="col-md-4 form-design">
         <div class="sign-up-box">
-            <form class="form-horizontal" method="POST" id="resetForgotFm" action="{{ route('reset') }}">
+            <form class="form-horizontal" method="POST" id="resetForgotFm" action="{{ url('password/reset') }}">
                 <div class="section-header" style="background: #2a8b6a;">
                     <h4 class="section-title"> {{trans('master.resetForm.heading')}}</h4>
                </div>
