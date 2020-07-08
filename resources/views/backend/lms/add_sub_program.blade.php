@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin-layout')
 @section('content')
 @php
-$dis_element = $reason_type ? ['disabled' => true] : [];
+$dis_element = $copied_prgm_id ? ['disabled' => true] : [];
 $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
 @endphp
 <div class="content-wrapper">
@@ -66,6 +66,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                             {!! Form::hidden('anchor_limit_re',isset($remaningAmount) ?  number_format($remaningAmount)  : null,['id'=>'anchor_limit'])   !!}
                                             {!! Form::hidden('anchor_id',$anchor_id) !!}
                                             {!! Form::hidden('anchor_user_id',isset($programData->anchor_user_id) ?$programData->anchor_user_id  : null ) !!}
+                                            {!! Form::hidden('copied_prgm_id', $copied_prgm_id) !!}
                                             <div class="sub-form renew-form " id="subform">
                                                 <div class="row">
                                                     <div class="col-md-12">

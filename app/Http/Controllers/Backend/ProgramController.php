@@ -178,6 +178,7 @@ class ProgramController extends Controller {
             $anchor_id = (int) $request->get('anchor_id');
             $program_id = (int) $request->get('program_id');
             $reason_type = $request->has('reason_type') ? $request->get('reason_type') : null;
+            $copied_prgm_id = $request->has('copied_prgm_id') ? $request->get('copied_prgm_id') : null;
             
             if ($request->has('parent_program_id')) {  //Edit Sub Program
                 $parent_program_id = (int) $request->get('parent_program_id');
@@ -188,7 +189,9 @@ class ProgramController extends Controller {
             }
             $action = $request->get('action');
             $subProgramData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
-//            dd($subProgramData);
+            //dd($subProgramData);
+            $copied_prgm_id = $subProgramData ? $subProgramData->copied_prgm_id : null;
+            
             $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->first();
 //          dd($program_id);
             $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'], ['programDoc', 'programCharges'])->first();
@@ -200,10 +203,17 @@ class ProgramController extends Controller {
             $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $parent_program_id, 'status' => 1]+$whereCond, ['anchor_sub_limit'])->sum('anchor_sub_limit');            
             $baserate_list =$this->master->getBaseRateDropDown();
 //            dd($baserate_list);
+            //$prgmIds = [];
+            $subPrgms = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $parent_program_id]+$whereCond, ['prgm_id'])->pluck('prgm_id');
+            $prgmIds = $subPrgms ? $subPrgms->toArray() : [];
+            //foreach($subPrgms as $prgm) {
+                //$prgmIds[] = $prgm->prgm_id;
+            //}
             
+            $utilizedLimit = $this->appRepo->getProgramBalanceLimit($prgmIds);            
             $remaningAmount = null;
             if (isset($programData->anchor_limit)) {
-                $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal;
+                $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal - $utilizedLimit;
             }
 
             /**
@@ -263,7 +273,8 @@ class ProgramController extends Controller {
                             'invoiceDataCount',
                             'baserate_list',
                             'reason_type',
-                            'action'
+                            'action',
+                            'copied_prgm_id'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
@@ -440,6 +451,16 @@ class ProgramController extends Controller {
              */
             $this->saveDoaLevel($request, $lastInsertId);
 
+            if ($request->has('copied_prgm_id') && !empty($request->get('copied_prgm_id'))) {
+                //Update status of existing program id
+                $updatePrgmData = [];
+                $updatePrgmData['status'] = 2;         
+
+                $whereUpdatePrgmData = [];
+                $whereUpdatePrgmData['prgm_id'] = $request->get('copied_prgm_id');
+                $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+            }
+            
             \Session::flash('message', trans('success_messages.sub_program_save_successfully'));
             $program_list_id = (\Session::has('list_program_id')) ? \Session::get('list_program_id') : $request->get('parent_prgm_id');
             return redirect()->route('manage_sub_program', ['anchor_id' => $request->get('anchor_id'), 'program_id' => $program_list_id]);
@@ -492,13 +513,13 @@ class ProgramController extends Controller {
                 $prgm = $prgms[0];
                 $insPrgmData = $prgm ? $this->arrayExcept($prgm->toArray(), array_merge($excludeKeys, ['prgm_id'])) : [];
                 $insPrgmData['copied_prgm_id'] = $prgmId;
-                $insPrgmData['status'] = 1;                   
+                $insPrgmData['status'] = 0;                   
                 $newPrgmId = $this->appRepo->saveProgram($insPrgmData);
                 
                 if ($newPrgmId) {                    
                     //Update status of existing program id
                     $updatePrgmData = [];
-                    $updatePrgmData['status'] = 2;
+                    //$updatePrgmData['status'] = 2;
                     $updatePrgmData['modify_reason_type'] = $addlData['reason'];
                     $updatePrgmData['modify_reason'] = $addlData['comment'];            
 
@@ -617,10 +638,10 @@ class ProgramController extends Controller {
                 return redirect()->back();
             }
             
-            $program_id = $result['new_prgm_id'];
+            $new_prgm_id = $result['new_prgm_id'];
             
             Session::flash('is_accept', 1);
-            Session::put('route_url', route('add_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $program_id, 'parent_program_id' => $parent_program_id, 'action' => $action, 'reason_type' => $reason_type]));
+            Session::put('route_url', route('add_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $new_prgm_id, 'parent_program_id' => $parent_program_id, 'action' => $action, 'reason_type' => $reason_type, 'copied_prgm_id' => $program_id]));
             return redirect()->back();
 
         } catch (Exception $ex) {
