@@ -63,7 +63,7 @@ var messages = {
 };
 
 $(document).ready(function() {
-    var targetModel = 'assignCaseFrame';
+    var targetModel = 'modifyProgramLimit';
     var parent =  window.parent;
 
     $('#frmConfirmEndProgram').submit(function() {

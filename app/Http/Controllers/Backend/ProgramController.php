@@ -564,14 +564,19 @@ class ProgramController extends Controller {
      */
     public function confirmEndProgram(Request $request)
     {
-        $anchor_id = (int) $request->get('anchor_id');
+        $anchor_id  = (int) $request->get('anchor_id');
         $program_id = (int) $request->get('program_id');
+        $parent_program_id = $request->get('parent_program_id');
+        $action            = $request->get('action');               
+                
         $reasonList = config('common.program_modify_reasons');
         
         return view('backend.lms.confirm_end_program')
             ->with('reasonList', $reasonList)
+            ->with('anchor_id', $anchor_id)
             ->with('program_id', $program_id)
-            ->with('program_id', $program_id);
+            ->with('parent_program_id', $parent_program_id)
+            ->with('action', $action);
     }
     
     /**
