@@ -488,50 +488,51 @@ class ProgramController extends Controller {
                 $prgm = $prgms[0];
                 $insPrgmData = $prgm ? $this->arrayExcept($prgm->toArray(), array_merge($excludeKeys, ['prgm_id'])) : [];
                 $insPrgmData['copied_prgm_id'] = $prgmId;
-                $insPrgmData['status'] = 1;   //
-                $newPrgmData = $this->appRepo->saveProgram($insPrgmData);
-                $newPrgmId = $newPrgmData->prgm_id;
-                
-                //Update status of existing program id
-                $updatePrgmData = [];
-                $updatePrgmData['status'] = 2;
-                $updatePrgmData['modify_reason_type'] = $addlData['reason'];
-                $updatePrgmData['modify_reason'] = $addlData['comment'];            
-                        
-                $whereUpdatePrgmData = [];
-                $whereUpdatePrgmData['prgm_id'] = $prgmId;             
-                $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
-                
-                
-                //Get and save Program Charge Data
-                $whereCond=[];
-                $whereCond['prgm_id'] = $prgmId;
-                $prgmCharges = $this->appRepo->getPrgmChargeData($whereCond);
-                foreach($prgmCharges as $prgmCharge) {  
-                    $insPrgmChargeData = $prgmCharge ? $this->arrayExcept($prgmCharge->toArray(), array_merge($excludeKeys, ['id'])) : [];
-                    $insPrgmChargeData['prgm_id'] =  $newPrgmId;                    
-                    $insPrgmChargeData['created_by'] =  \Auth::user()->user_id;
-                    $insPrgmChargeData['created_at'] =  \Carbon\Carbon::now();
-                    $insPrgmChargeData['updated_by'] =  \Auth::user()->user_id;
-                    $insPrgmChargeData['updated_at'] =  \Carbon\Carbon::now();
-                
-                    $this->appRepo->saveProgramChrgData($insPrgmChargeData);                    
-                }
-                
-                
-                //Get and save Progam Docs
-                $whereCond=[];
-                $whereCond['prgm_id'] = $prgmId;
-                $prgmDocs = $this->appRepo->getPrgmDocs($whereCond);
-                foreach($prgmDocs as $prgmDoc) {
-                    $insPrgmDocsData = $prgmDoc ? $this->arrayExcept($prgmDoc->toArray(), array_merge($excludeKeys, ['prgm_doc_id'])) : [];
-                    $insPrgmDocsData['prgm_id'] =  $newPrgmId;
-                    $insPrgmDocsData['created_by'] =  \Auth::user()->user_id;
-                    $insPrgmDocsData['created_at'] =  \Carbon\Carbon::now();
-                    $insPrgmDocsData['updated_by'] =  \Auth::user()->user_id;
-                    $insPrgmDocsData['updated_at'] =  \Carbon\Carbon::now();
-                    
-                    $this->appRepo->saveProgramDoc($insPrgmDocsData);
+                $insPrgmData['status'] = 1;                   
+                $newPrgmId = $this->appRepo->saveProgram($insPrgmData);
+                dd($newPrgmId);     
+                if ($newPrgmId) {                    
+                    //Update status of existing program id
+                    $updatePrgmData = [];
+                    $updatePrgmData['status'] = 2;
+                    $updatePrgmData['modify_reason_type'] = $addlData['reason'];
+                    $updatePrgmData['modify_reason'] = $addlData['comment'];            
+
+                    $whereUpdatePrgmData = [];
+                    $whereUpdatePrgmData['prgm_id'] = $prgmId;             
+                    $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+
+
+                    //Get and save Program Charge Data
+                    $whereCond=[];
+                    $whereCond['prgm_id'] = $prgmId;
+                    $prgmCharges = $this->appRepo->getPrgmChargeData($whereCond);
+                    foreach($prgmCharges as $prgmCharge) {  
+                        $insPrgmChargeData = $prgmCharge ? $this->arrayExcept($prgmCharge->toArray(), array_merge($excludeKeys, ['id'])) : [];
+                        $insPrgmChargeData['prgm_id'] =  $newPrgmId;                    
+                        $insPrgmChargeData['created_by'] =  \Auth::user()->user_id;
+                        $insPrgmChargeData['created_at'] =  \Carbon\Carbon::now();
+                        //$insPrgmChargeData['updated_by'] =  \Auth::user()->user_id;
+                        //$insPrgmChargeData['updated_at'] =  \Carbon\Carbon::now();
+
+                        $this->appRepo->saveProgramChrgData($insPrgmChargeData);                    
+                    }
+
+
+                    //Get and save Progam Docs
+                    $whereCond=[];
+                    $whereCond['prgm_id'] = $prgmId;
+                    $prgmDocs = $this->appRepo->getPrgmDocs($whereCond);
+                    foreach($prgmDocs as $prgmDoc) {
+                        $insPrgmDocsData = $prgmDoc ? $this->arrayExcept($prgmDoc->toArray(), array_merge($excludeKeys, ['prgm_doc_id'])) : [];
+                        $insPrgmDocsData['prgm_id'] =  $newPrgmId;
+                        $insPrgmDocsData['created_by'] =  \Auth::user()->user_id;
+                        $insPrgmDocsData['created_at'] =  \Carbon\Carbon::now();
+                        $insPrgmDocsData['updated_by'] =  \Auth::user()->user_id;
+                        $insPrgmDocsData['updated_at'] =  \Carbon\Carbon::now();
+
+                        $this->appRepo->saveProgramDoc($insPrgmDocsData);
+                    }
                 }
             }
                    
