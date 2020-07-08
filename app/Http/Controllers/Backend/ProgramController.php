@@ -495,8 +495,8 @@ class ProgramController extends Controller {
                 //Update status of existing program id
                 $updatePrgmData = [];
                 $updatePrgmData['status'] = 2;
-                $updatePrgmData['modify_reason'] = $addlData['reason'];
-                $updatePrgmData['reason_comment'] = $addlData['comment'];            
+                $updatePrgmData['modify_reason_type'] = $addlData['reason'];
+                $updatePrgmData['modify_reason'] = $addlData['comment'];            
                         
                 $whereUpdatePrgmData = [];
                 $whereUpdatePrgmData['prgm_id'] = $prgmId;             
@@ -590,8 +590,15 @@ class ProgramController extends Controller {
         try {            
             $anchor_id = (int) $request->get('anchor_id');
             $program_id = (int) $request->get('program_id');
+            $parent_program_id = $request->get('parent_program_id');
+            $action            = $request->get('action');            
+            $reason_type = $request->get('reason');
+            $comment = $request->get('comment');
             
-            $result = $this->copyProgram($program_id);
+            $addlData = [];
+            $addlData['reason'] = $reason_type;
+            $addlData['comment'] = $comment;
+            $result = $this->copyProgram($program_id, $addlData);
             if (!empty($result['new_prgm_id'])) {
                 Session::flash('error_code', 'error_prgm_limit');
                 return redirect()->back();
@@ -600,7 +607,7 @@ class ProgramController extends Controller {
             $program_id = $result['new_prgm_id'];
             
             Session::flash('is_accept', 1);
-            Session::flash('route_url', route('add_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $program_id]));
+            Session::flash('route_url', route('add_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $program_id, 'parent_program_id' => $parent_program_id, 'action' => $action]));
             return redirect()->back();
 
         } catch (Exception $ex) {

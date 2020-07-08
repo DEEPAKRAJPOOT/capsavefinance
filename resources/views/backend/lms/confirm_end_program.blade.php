@@ -17,11 +17,11 @@
                <div class="col-12">
                     
                    @if (Session::has('error_code') && Session::get('error_code') == 'error_prgm_limit')
-                   <label class='error'>Unable to edit program limit</label><br>
+                   <label class='error'>Unable to modify program limit</label><br>
                    @endif
                           
                                       
-                    Are you sure to edit the Program Limit?<br>
+                    Are you sure to modify the Program Limit?<br><br>
                     <label for="txtCreditPeriod">Please select reason <span class="mandatory">*</span> </label>
                     <br>
 
@@ -45,6 +45,12 @@
                 <button type="button" id="close_btn" class="btn btn-secondary btn-sm">No</button>   
             </div>
             </div>
+             
+                {!! Form::hidden('anchor_id', $anchor_id) !!}
+                {!! Form::hidden('program_id', $program_id) !!}
+                {!! Form::hidden('parent_program_id', $parent_program_id) !!}
+                {!! Form::hidden('action', $action) !!}
+                    
                 {!!
                 Form::close()
                 !!}                      
@@ -83,7 +89,7 @@ $(document).ready(function() {
 
     $('#frmConfirmEndProgram').validate({
         rules: {
-            sel_reason: {
+            reason: {
                 required: true
             },
             comment: {
