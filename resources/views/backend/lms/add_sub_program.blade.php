@@ -712,9 +712,11 @@ $dis_element = $reason_type ? ['disabled' => true] : [];
                                     </div>
                                     <div class="col-md-12">
                                         <div class="text-right mt-3">
-
+                                            
                                             <a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>
+                                            @if ()
                                             <button type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program"> Save</button>
+                                            @endif
                                         </div>
                                     </div>
 

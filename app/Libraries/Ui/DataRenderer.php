@@ -3201,6 +3201,7 @@ class DataRenderer implements DataProviderInterface
                                 $act = "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'edit'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\"></a>";
                             }
                             }
+                            $act .= "<a  href='". route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-eye\"></a>";
                             return $act;
                         }
                         )->make(true);

@@ -831,6 +831,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('save-end-program', [
             'as' => 'save_end_program',
             'uses' => 'Backend\ProgramController@saveEndProgram'
+           ]); 
+            
+            Route::get('view-sub-program', [
+            'as' => 'view_sub_program',
+            'uses' => 'Backend\ProgramController@addSubProgram'
            ]);            
         });
             // All master routes
