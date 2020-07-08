@@ -1291,7 +1291,7 @@ class Helper extends PaypalHelper
         $formatedId = null;
         
         if ($type == 'APP') {            
-            $formatedId = $prefix . sprintf('%08d', $idValue);
+            $formatedId = $prefix . $idValue; /* sprintf('%08d', $idValue); */
         } else if ($type == 'VA') {
             $prefix = config('common.idprefix.'.$type);
             $formatedId = $prefix . sprintf('%08d', $idValue);            
