@@ -73,7 +73,7 @@ class ChangePasswordController extends Controller
         }
         if(strcmp($request->get('current-password'), $request->get('new-password')) == 0){
             //Current password and new password are same
-            return redirect()->back()->with("error","New Password cannot be same as your current password. Please choose a different password.");
+            return redirect()->back()->with("error","New Password cannot be same as your old password. Please choose a different password.");
         }
         $message = [
             'new-password.required' => 'Please enter your New Password (minimum 8 characters)',
