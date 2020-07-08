@@ -151,8 +151,8 @@ class ProgramController extends Controller {
     {
         try {
             $anchor_id = (int) $request->get('anchor_id');
-            $program_id = (int) $request->get('program_id');
-
+            $program_id = (int) $request->get('program_id');            
+            
             $programData = $this->appRepo->getProgram($program_id);
             $programStatus = ($programData)? $programData->status : 0;
             // dd($programStatus);
@@ -179,7 +179,7 @@ class ProgramController extends Controller {
             
             if ($request->has('parent_program_id')) {  //Edit Sub Program
                 $parent_program_id = (int) $request->get('parent_program_id');
-                $whereCond = ['sub_program_id_nte' => $program_id];
+                $whereCond = ['sub_program_id_nte' => $program_id];                                                
             } else {
                 $parent_program_id = $program_id;
                 $whereCond = [];
@@ -471,4 +471,89 @@ class ProgramController extends Controller {
         }
     }
 
+    protected function copyProgram($prgmId)
+    {
+        \DB::beginTransaction();
+
+        try {
+            
+            $excludeKeys = ['created_at', 'created_by','updated_at', 'updated_by'];
+            $newPrgmId = null;
+            
+            //Get and save Program Data
+            $whereCond=[];
+            $whereCond['prgm_id'] = $prgmId;
+            $prgms = $this->appRepo->getSelectedProgramData($whereCond);
+            if (isset($prgms[0])) {
+                $prgm = $prgms[0];
+                $insPrgmData = $prgm ? $this->arrayExcept($prgm->toArray(), array_merge($excludeKeys, ['prgm_id'])) : [];
+                $insPrgmData['copied_prgm_id'] = $prgmId;
+                $insPrgmData['status'] = 2;   //
+                $newPrgmData = $this->appRepo->saveProgram($insPrgmData);
+                $newPrgmId = $newPrgmData->prgm_id;
+                
+                
+                //Get and save Program Charge Data
+                $whereCond=[];
+                $whereCond['prgm_id'] = $prgmId;
+                $prgmCharges = $this->appRepo->getPrgmChargeData($whereCond);
+                foreach($prgmCharges as $prgmCharge) {  
+                    $insPrgmChargeData = $prgmCharge ? $this->arrayExcept($prgmCharge->toArray(), array_merge($excludeKeys, ['id'])) : [];
+                    $insPrgmChargeData['prgm_id'] =  $newPrgmId;
+                    
+                    $this->appRepo->saveProgramChrgData($insPrgmChargeData);                    
+                }
+                
+                
+                //Get and save Progam Docs
+                $whereCond=[];
+                $whereCond['prgm_id'] = $prgmId;
+                $prgmDocs = $this->appRepo->getPrgmDocs($whereCond);
+                foreach($prgmDocs as $prgmDoc) {
+                    $insPrgmDocsData = $prgmDoc ? $this->arrayExcept($prgmDoc->toArray(), array_merge($excludeKeys, ['prgm_doc_id'])) : [];
+                    $insPrgmDocsData['prgm_id'] =  $newPrgmId;
+                    
+                    $this->appRepo->saveProgramDoc($insPrgmDocsData);
+                }
+            }
+                   
+            \DB::commit();
+            
+            $result = [];
+            $result['new_prgm_id'] = $newPrgmId;
+            
+            return $result;
+            // all good
+        } catch (\Exception $e) {
+            \DB::rollback();
+            // something went wrong
+            //dd($e->getFile(), $e->getLine(), $e->getMessage());       
+            return [];
+        }
+    }
+
+    protected function arrayExcept($array, $keys)
+    {
+
+        foreach($keys as $key){
+            if (isset($array[$key])) {
+              unset($array[$key]);
+            }
+        }
+
+        return $array;
+
+    } 
+
+    
+    /**
+     * Confirm End Program
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function confirmEndProgram(Request $request)
+    {
+        return;
+    }
 }

@@ -2342,6 +2342,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return AppNote::getAllCommentsByAppId($appId);
     }
 
+    public function getPrgmChargeData($where)
+    {
+        return ProgramCharges::getPrgmChargeData($where);
+    }    
+    
+    public function getPrgmDocs($where)
+    {
+        return ProgramDoc::getPrgmDocs($where);
+    }    
 }
 
 

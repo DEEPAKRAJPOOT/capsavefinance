@@ -81,6 +81,7 @@ class Program extends BaseModel {
         'processing_fee',
         'check_bounce_fee',
         'status',
+        'copied_prgm_id',
         'created_by',
         'created_at',
         'updated_by',
