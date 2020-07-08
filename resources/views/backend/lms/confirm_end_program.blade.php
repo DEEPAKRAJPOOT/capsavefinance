@@ -63,9 +63,9 @@
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script>   
 var messages = {
-    is_accept: "{{ Session::get('is_accept') }}",    
+    is_accept: "{{ Session::get('is_accept') }}",
     error_code : "{{ Session::has('error_code') }}",
-    route_url : "{{ Session::has('route_url') }}",
+    route_url : "{{ Session::pull('route_url') }}",
 };
 
 $(document).ready(function() {
@@ -78,8 +78,8 @@ $(document).ready(function() {
         }
     });
 
-    if (messages.is_accept == 1) {
-       parent.jQuery("#"+targetModel).modal('hide');
+    if (messages.is_accept == 1) {      
+       parent.jQuery("#"+targetModel).modal('hide');       
        parent.window.location = messages.route_url;
     }
 

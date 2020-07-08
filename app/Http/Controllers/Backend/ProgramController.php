@@ -11,6 +11,7 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use Session;
 
 class ProgramController extends Controller {
 
@@ -490,7 +491,7 @@ class ProgramController extends Controller {
                 $insPrgmData['copied_prgm_id'] = $prgmId;
                 $insPrgmData['status'] = 1;                   
                 $newPrgmId = $this->appRepo->saveProgram($insPrgmData);
-                dd($newPrgmId);     
+                
                 if ($newPrgmId) {                    
                     //Update status of existing program id
                     $updatePrgmData = [];
@@ -608,7 +609,7 @@ class ProgramController extends Controller {
             $addlData['reason'] = $reason_type;
             $addlData['comment'] = $comment;
             $result = $this->copyProgram($program_id, $addlData);
-            if (!empty($result['new_prgm_id'])) {
+            if (empty($result['new_prgm_id'])) {
                 Session::flash('error_code', 'error_prgm_limit');
                 return redirect()->back();
             }
@@ -616,7 +617,7 @@ class ProgramController extends Controller {
             $program_id = $result['new_prgm_id'];
             
             Session::flash('is_accept', 1);
-            Session::flash('route_url', route('add_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $program_id, 'parent_program_id' => $parent_program_id, 'action' => $action]));
+            Session::put('route_url', route('add_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $program_id, 'parent_program_id' => $parent_program_id, 'action' => $action]));
             return redirect()->back();
 
         } catch (Exception $ex) {
