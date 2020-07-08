@@ -471,7 +471,7 @@ class ProgramController extends Controller {
         }
     }
 
-    protected function copyProgram($prgmId)
+    protected function copyProgram($prgmId, $addlData=[])
     {
         \DB::beginTransaction();
 
@@ -488,9 +488,19 @@ class ProgramController extends Controller {
                 $prgm = $prgms[0];
                 $insPrgmData = $prgm ? $this->arrayExcept($prgm->toArray(), array_merge($excludeKeys, ['prgm_id'])) : [];
                 $insPrgmData['copied_prgm_id'] = $prgmId;
-                $insPrgmData['status'] = 2;   //
+                $insPrgmData['status'] = 1;   //
                 $newPrgmData = $this->appRepo->saveProgram($insPrgmData);
                 $newPrgmId = $newPrgmData->prgm_id;
+                
+                //Update status of existing program id
+                $updatePrgmData = [];
+                $updatePrgmData['status'] = 2;
+                $updatePrgmData['modify_reason'] = $addlData['reason'];
+                $updatePrgmData['reason_comment'] = $addlData['comment'];            
+                        
+                $whereUpdatePrgmData = [];
+                $whereUpdatePrgmData['prgm_id'] = $prgmId;             
+                $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
                 
                 
                 //Get and save Program Charge Data
@@ -554,6 +564,42 @@ class ProgramController extends Controller {
      */
     public function confirmEndProgram(Request $request)
     {
-        return;
+        $anchor_id = (int) $request->get('anchor_id');
+        $program_id = (int) $request->get('program_id');
+        $reasonList = config('common.program_modify_reasons');
+        
+        return view('backend.lms.confirm_end_program')
+            ->with('reasonList', $reasonList)
+            ->with('program_id', $program_id)
+            ->with('program_id', $program_id);
+    }
+    
+    /**
+     * Save End Program
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function saveEndProgram(Request $request)
+    {
+        try {            
+            $anchor_id = (int) $request->get('anchor_id');
+            $program_id = (int) $request->get('program_id');
+            
+            $result = $this->copyProgram($program_id);
+            if (!empty($result['new_prgm_id'])) {
+                Session::flash('error_code', 'error_prgm_limit');
+                return redirect()->back();
+            }
+            
+            $program_id = $result['new_prgm_id'];
+            
+            Session::flash('is_accept', 1);
+            Session::flash('route_url', route('add_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $program_id]));
+            return redirect()->back();
+
+        } catch (Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
     }
 }

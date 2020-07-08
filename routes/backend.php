@@ -826,7 +826,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('confirm-end-program', [
             'as' => 'confirm_end_program',
             'uses' => 'Backend\ProgramController@confirmEndProgram'
-           ]);             
+           ]); 
+            
+            Route::post('save-end-program', [
+            'as' => 'save_end_program',
+            'uses' => 'Backend\ProgramController@saveEndProgram'
+           ]);            
         });
             // All master routes
         Route::group(['prefix' => 'manage'], function () {

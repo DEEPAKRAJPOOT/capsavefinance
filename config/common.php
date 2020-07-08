@@ -305,5 +305,9 @@ return [
         '2' => 10
     ],    
     'ck_upload_img_path' => env('CKEDITOR_UPLOAD_IMAGE_PATH', ''),
+    'program_modify_reasons' => [
+        1 => 'Limit Enhancement',
+        2 => 'Reduce Limit'
+    ]
 ];
  
