@@ -12,7 +12,7 @@
                                     <th>Trans Type</th>		
                                     <th>Total Refundable Amt</th>
                                     <th>Remaining Amt</th>
-                                    <th></th>
+                                    <th>Adjustment Amt</th>
                                     <th><input type="checkbox" id="checkAll" onchange="apport.selectAllRefundCheck(this.id)"></th>
                                 </tr>
                             </thead>

@@ -6,6 +6,7 @@ use Auth;
 use Session;
 use Crypt;
 use Helpers;
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\Master\State;
@@ -15,6 +16,8 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use Event;
+use PHPExcel;
+use PHPExcel_IOFactory;
 use App\Http\Requests\Backend\CreateLeadRequest;
 use App\Inv\Repositories\Models\UserAppDoc;
 use Illuminate\Support\Facades\Validator;
@@ -420,28 +423,43 @@ class LeadController extends Controller {
      */
     public function saveUploadAnchorlead(Request $request) {
         try {
+            $validatedData = Validator::make($request->all(),[
+                // 'assigned_anchor' => 'required',
+                'anchor_lead' => 'required'
+            ],[
+                'anchor_lead.required' => 'This field is required.',
+                // 'assigned_anchor.required' => 'This field is required.'
+            ])->validate();
+
             $uploadedFile = $request->file('anchor_lead');
             $destinationPath = storage_path() . '/uploads';
-            $fileName = time() . '.csv';
+            
+            $fileName = time();
             if ($uploadedFile->isValid()) {
                 $uploadedFile->move($destinationPath, $fileName);
             }
-            $error = false;
-            $fileD = fopen($destinationPath . '/' . $fileName, "r");
-            $column = fgetcsv($fileD);
-            while (!feof($fileD)) {
-                 $row = fgetcsv($fileD);
-                 if ($row && (empty($row[0]) || empty($row[1]) || empty($row[2]) || empty($row[3]) || empty($row[4]) || empty($row[5]) )) {
-                     $error = true;                     
-                 }
-                 $rowData[] = $row;
+
+            $fullFilePath  = $destinationPath . '/' . $fileName;
+            $header = [
+                0,1,2,3,4,5
+            ];
+
+            $fileHelper = new FileHelper();
+            $fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
+            
+            if($fileArrayData['status'] != 'success'){
+                Session::flash('message', 'Please select only csv and xlsx file format');
+                return redirect()->back();
             }
 
-            if ($error) {                
-                Session::flash('error_msg', 'Please fill the correct details.');
-                return redirect()->back();                  
+            $rowData = $fileArrayData['data'];
+            // dd($rowData);
+
+            if (empty($rowData)) {
+                Session::flash('message', 'File does not contain any record');
+                return redirect()->back();                     
             }
-            
+
             $anchLeadMailArr = [];
             $arrAnchLeadData = [];
             $arrUpdateAnchor = [];
@@ -462,6 +480,11 @@ class LeadController extends Controller {
             //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
             if (!empty(trim($value[3])) && !isset($anchUserData[0])) {
+                if ($value && (empty($value[0]) || empty($value[1]) || empty($value[2]) || empty($value[3]) || empty($value[4]) || empty($value[5]) )) {
+                    Session::flash('message', 'Please fill the correct details.');
+                    return redirect()->back();                     
+                }
+
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
                     if(trim($value[5])=='Buyer'){
@@ -483,6 +506,7 @@ class LeadController extends Controller {
                     'token' => $token,
                     'anchor_id' => $anchorId
                 ];
+
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
                 /*
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);

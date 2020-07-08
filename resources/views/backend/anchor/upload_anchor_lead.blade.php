@@ -26,6 +26,7 @@
                              <option value="{{$value->anchor_id}}"> {{$value->comp_name}} </option>
                              @endforeach
                          </select>
+                         {!! $errors->first('assigned_anchor', '<span class="error">:message</span>') !!}
                                   
                 </div>
                 @endif
@@ -34,10 +35,11 @@
                <label for="email">Upload Document</label>
                <input type="file" class="custom-file-input" id="anchor_lead" name="anchor_lead">
                <label class="custom-file-label val_print" for="anchor_lead">Choose file</label>
+               {!! $errors->first('anchor_lead', '<span class="error">:message</span>') !!}
             </div>
                            
                 <br> <br>
-                <button type="submit" class="btn btn-success btn-sm float-right" id="saveAnch">Submit</button>  
+                <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>  
            </form>
          </div>
      
@@ -68,7 +70,7 @@
                 rules: {
                 anchor_lead: {
                 required: true,
-                extension: "csv"
+                // extension: "xls|xlsx|csv"
                 },
                  assigned_anchor: {
                 required: true,
@@ -77,7 +79,7 @@
                 messages: {
                 anchor_lead: {
                 required: "Please select file",
-                extension:"Please select only csv format",
+                extension:"Please select only csv and xlsx format",
                 }
                 }
                 });
