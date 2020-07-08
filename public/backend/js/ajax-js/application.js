@@ -30,7 +30,7 @@ try {
                 }
             },
            columns: [
-                {data: 'app_id'},
+                {data: 'app_code'},
                 {data: 'biz_entity_name'},
                 {data: 'name'},
                 {data: 'contact'},

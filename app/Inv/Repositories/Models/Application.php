@@ -70,6 +70,7 @@ class Application extends BaseModel
         'curr_status_id',
         'app_type',
         'renewal_status',
+        'app_code',
         'created_by',
         'created_at',
         'updated_at',
@@ -134,7 +135,7 @@ class Application extends BaseModel
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         $curUserId = \Auth::user()->user_id;
         $userArr = Helpers::getChildUsersWithParent($curUserId);
-        $query = self::select('app.user_id','app.app_id','app.curr_status_id', 'biz.biz_entity_name', 'biz.biz_id', 
+        $query = self::select('app.user_id','app.app_id', 'app.app_code' ,'app.curr_status_id', 'biz.biz_entity_name', 'biz.biz_id', 
                 'app.status','app_assign.to_id', 'users.anchor_id', 'users.is_buyer as user_type', 'app.renewal_status',
                 DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
                 DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
