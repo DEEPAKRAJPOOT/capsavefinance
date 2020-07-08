@@ -116,7 +116,10 @@ class LeadController extends Controller {
                 $attributes['biz_name'] = $request->get('biz_name'); 
                 $userInfo = $this->userRepo->updateUser($attributes, $userId);
                 Session::flash('operation_status', 1); 
-                return view('backend.lead.index');
+                //return view('backend.lead.index');
+                Session::flash('message', 'Lead is updated successfully.'); 
+                Session::flash('is_accept', 1);
+                return redirect()->back();                      
         } catch (Exception $ex) {
             dd($ex);
         }
@@ -803,6 +806,15 @@ class LeadController extends Controller {
             ->where("state_id",$request->state_id)
             ->pluck("name","id");
             return response()->json($cities);
+    }
+    
+    public function downloadSample(Request $request)
+    {
+        $filePath = public_path() . '/anchoruserlist.csv';
+        header('Content-type: text/csv');
+        header('Content-Disposition: attachment; filename="anchoruserlist.csv"');
+        readfile($filePath);
+        exit;
     }
     
 }

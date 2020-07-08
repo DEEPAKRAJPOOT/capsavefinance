@@ -37,6 +37,10 @@
                <label class="custom-file-label val_print" for="anchor_lead">Choose file</label>
                {!! $errors->first('anchor_lead', '<span class="error">:message</span>') !!}
             </div>
+                
+                <div class="custom-file mb-3 mt-2">
+                    <a href="{{ route('download_sample_lead_csv') }}" title="Download Template"><i style="color:green" class="fa fa-file-excel-o"> Download Template</i></a>
+                </div>
                            
                 <br> <br>
                 <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>  
@@ -84,13 +88,11 @@
                 }
                 });
 
-            $('form#anchorForm').validate();
-            
-            $("#saveAnch").click(function(){
-            if($('form#anchorForm').valid()){                
-            $("#saveAnch").attr("disabled","disabled");
-            }  
-            });            
+            $("#anchorForm").submit(function(){
+                if($(this).valid()){
+                    $("#saveAnch").attr("disabled","disabled");
+                }
+            });
    
     if (messages.is_accept == 1){
         var parent =  window.parent;
