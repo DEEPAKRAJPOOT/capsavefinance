@@ -85,7 +85,7 @@
                                     <table id="supplier-listing" class="table table-striped cell-border  overview-table mb-0" cellspacing="0" width="100%">
                                         <thead>
                                             <tr role="row">
-                                            <th width="6%">Sr. No.</th>
+                                            <th width="6%">Offer No. {{($key+1)}}</th>
                                             <th width="15%">Product Type</th>
                                             <th width="15%">Product Limit</th>
                                             <th width="20%">Consumed Product Limit</th>
@@ -102,7 +102,7 @@
                                             <table cellspacing="0" cellpadding="0" width="100%" class="pdl-15">
                                                 <tbody>
                                                     <tr role="row" class="odd">
-                                                       <td width="6%">{{($key+1)}}</td>
+                                                       <!-- <td width="6%">{{($key+1)}}</td> -->
                                                        <td width="15%">{{$prgmLimit->product->product_name}}</td>
                                                        <td width="15%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="20%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
@@ -174,7 +174,7 @@
                                     <table id="supplier-listing" class="table table-striped cell-border overview-table mb-0" cellspacing="0" width="100%">
                                         <thead>
                                             <tr role="row">
-                                            <th width="5%">Sr. No.</th>
+                                            <th width="5%">Offer No. {{($key+1)}}</th>
                                             <th width="16%">Product Type</th>
                                             <th width="18%">Product Limit</th>
                                             <th width="18%">Consumed Product Limit</th>
@@ -191,7 +191,7 @@
                                             <table cellspacing="0" cellpadding="0" width="100%" class="pdl-15">
                                                 <tbody>
                                                     <tr role="row" class="odd">
-                                                       <td width="5%">{{($key+1)}}</td>
+                                                       <!-- <td width="5%">{{($key+1)}}</td> -->
                                                        <td width="16%">{{$prgmLimit->product->product_name}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
@@ -277,7 +277,7 @@
                                     <table id="supplier-listing" class="table table-striped cell-border overview-table mb-0" cellspacing="0" width="100%">
                                         <thead>
                                             <tr role="row">
-                                            <th width="5%">Sr. No.</th>
+                                            <th width="5%">Offer No. {{($key+1)}}</th>
                                             <th width="16%">Product Type</th>
                                             <th width="18%">Product Limit</th>
                                             <th width="18%">Cosumed Product Limit</th>
@@ -294,7 +294,7 @@
                                             <table cellspacing="0" cellpadding="0" width="100%" class="pdl-15">
                                                 <tbody>
                                                     <tr role="row" class="odd">
-                                                       <td width="5%">{{($key+1)}}</td>
+                                                       <!-- <td width="5%">{{($key+1)}}</td> -->
                                                        <td width="16%">{{$prgmLimit->product->product_name}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
