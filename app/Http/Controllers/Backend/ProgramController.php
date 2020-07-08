@@ -197,7 +197,7 @@ class ProgramController extends Controller {
             $postSanction = $this->appRepo->getDocumentList(['doc_type_id' => 3, 'is_active' => 1])->toArray();
             $charges = $this->appRepo->getChargesList()->toArray();
 
-            $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $parent_program_id]+$whereCond, ['anchor_sub_limit'])->sum('anchor_sub_limit');            
+            $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $parent_program_id, 'status' => 1]+$whereCond, ['anchor_sub_limit'])->sum('anchor_sub_limit');            
             $baserate_list =$this->master->getBaseRateDropDown();
 //            dd($baserate_list);
             

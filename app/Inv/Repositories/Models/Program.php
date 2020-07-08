@@ -277,6 +277,10 @@ class Program extends BaseModel {
             $res = $res->where('prgm_id', '!=', $where['sub_program_id_nte']);
         }
         
+        if (isset($where['status']) && !empty($where['status'])) {
+            $res = $res->where('status', $where['status']);
+        }        
+        
         if (!empty($relations)) {
             $res = $res->with($relations);
         }
