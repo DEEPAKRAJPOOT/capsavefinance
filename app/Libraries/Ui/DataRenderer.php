@@ -3133,11 +3133,16 @@ class DataRenderer implements DataProviderInterface
     function getSubProgramList($request, $program)
     {
         return DataTables::of($program)
-                        ->rawColumns(['user_id', 'status', 'action' ,'anchor_sub_limit' ,'anchor_limit' ,'loan_size'])
+                        ->rawColumns(['prgm_id','user_id', 'status', 'action' ,'anchor_sub_limit' ,'anchor_limit' ,'loan_size','utilized_limit'])
                         ->editColumn(
                                 'prgm_id',
-                                function ($program) {
-                            return $program->prgm_id;
+                                function ($program) {                                                      
+                            $ret = $program->prgm_id;
+                            if ($program->copied_prgm_id) {
+                            $link = route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->copied_prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] );  
+                            $ret .= '<br><small>Parent: </small><a href="' . $link . '">' . $program->copied_prgm_id . '</a>';
+                            }
+                            return $ret;
                         })
                         ->editColumn(
                                 'product_name',
@@ -3158,7 +3163,13 @@ class DataRenderer implements DataProviderInterface
                                 'anchor_limit',
                                 function ($program) {
                             return  \Helpers::formatCurreny($program->anchor_limit);
-                        })
+                        })                        
+                        ->addColumn(
+                                'utilized_limit',
+                                function ($program) {
+                             return  \Helpers::formatCurreny(\Helpers::getPrgmBalLimit($program->prgm_id));
+                           
+                        })                        
                         ->addColumn(
                                 'loan_size',
                                 function ($program) {

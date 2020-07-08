@@ -525,4 +525,21 @@ class AppProgramOffer extends BaseModel {
     public function chargeName(){
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Charges', 'charge_id', 'id');
     }    
+    
+    public static function getPrgmBalLimit($program_id)
+    {
+        if(empty($program_id)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+        $whereCond = [];
+        $whereCond[] = ['is_active', '=', 1];
+        $whereCond[] = ['status', '!=', 2];
+        if (is_array($program_id)) {
+            $query = self::whereIn('prgm_id', $program_id);
+        } else {
+            $query = self::where('prgm_id', $program_id);
+        }
+        $query->where($whereCond);
+        return $query->sum('prgm_limit_amt');
+    }    
 }

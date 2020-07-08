@@ -40,7 +40,8 @@ return [
         'add_sub_program'=>'Add Sub Program',
         'manage_sub_program'=>'Manage Sub Program',
         'program_sub_list' => 'Sub Program List',
-        'add_sub_program'=>'Add Sub Program'
+        'add_sub_program'=>'Add Sub Program',
+        'utilized_limit' => 'Utilized Limit'
     ],
     'add_program' => [
         'add_program' => ' Add Master Program',

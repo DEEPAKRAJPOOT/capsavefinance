@@ -210,7 +210,7 @@ class ProgramController extends Controller {
                 //$prgmIds[] = $prgm->prgm_id;
             //}
             
-            $utilizedLimit = $this->appRepo->getProgramBalanceLimit($prgmIds);            
+            $utilizedLimit = $this->appRepo->getPrgmBalLimit($prgmIds);            
             $remaningAmount = null;
             if (isset($programData->anchor_limit)) {
                 $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal - $utilizedLimit;

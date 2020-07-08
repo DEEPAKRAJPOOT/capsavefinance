@@ -54,6 +54,7 @@
                                     <th>{{ trans('backend.mange_program.program_type') }}</th>
                                     <th>{{ trans('backend.mange_program.total_anchor_limit') }}</th>
                                     <th>{{ trans('backend.mange_program.sub_anchor_limit') }}</th>
+                                    <th>{{ trans('backend.mange_program.utilized_limit') }}</th>
                                     <th>{{ trans('backend.mange_program.loan_size') }}</th>
                                     <th>{{ trans('backend.mange_program.status') }}</th>
                                     <th>{{ trans('backend.mange_program.action') }}</th>

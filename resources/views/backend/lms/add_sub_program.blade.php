@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin-layout')
 @section('content')
 @php
-$dis_element = $copied_prgm_id ? ['disabled' => true] : [];
+$dis_element = $copied_prgm_id ? ['readonly' => true] : [];
 $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
 @endphp
 <div class="content-wrapper">

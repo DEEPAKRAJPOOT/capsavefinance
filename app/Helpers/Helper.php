@@ -1691,4 +1691,11 @@ class Helper extends PaypalHelper
         
         return $res;
      }
+     
+     public static function getPrgmBalLimit($prgmId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');        
+        $utilizedLimit = $appRepo->getPrgmBalLimit($prgmId);
+        return $utilizedLimit;
+     }
 }

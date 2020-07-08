@@ -431,6 +431,9 @@ try {
                     data: 'anchor_sub_limit'
                 },
                 {
+                    data: 'utilized_limit'
+                },                
+                {
                     data: 'loan_size'
                 },
                 {

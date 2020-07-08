@@ -236,12 +236,11 @@ class AppProgramLimit extends BaseModel {
         if(empty($program_id)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
-        if (is_array($program_id)) {
-            $query = AppProgramOffer::whereIn('prgm_id', $program_id);
-        } else {
-            $query = AppProgramOffer::where('prgm_id', $program_id);
+        if(!is_int($program_id)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
-        return $query->sum('prgm_limit_amt');
+
+        return AppProgramOffer::where('prgm_id', $program_id)->sum('prgm_limit_amt');
      }
 
     public function appLimit(){
