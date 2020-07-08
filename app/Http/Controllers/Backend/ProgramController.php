@@ -262,7 +262,8 @@ class ProgramController extends Controller {
                             'doaResult',
                             'invoiceDataCount',
                             'baserate_list',
-                            'reason_type'
+                            'reason_type',
+                            'action'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);

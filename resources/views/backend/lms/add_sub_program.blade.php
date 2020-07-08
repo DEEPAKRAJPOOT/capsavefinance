@@ -2,6 +2,7 @@
 @section('content')
 @php
 $dis_element = $reason_type ? ['disabled' => true] : [];
+$actionUrl = $action != 'view' ? route('save_sub_program') : '#';
 @endphp
 <div class="content-wrapper">
     <section class="content-header">
@@ -56,8 +57,8 @@ $dis_element = $reason_type ? ['disabled' => true] : [];
                                             </div>
                                             </br>
 
-
-                                            {{ Form::open(['url'=>route('save_sub_program'),'id'=>'add_sub_program']) }}
+                                            
+                                            {{ Form::open(['url'=>$actionUrl,'id'=>'add_sub_program']) }}
                                             {!! Form::hidden('parent_prgm_id',$program_id) !!}
                                             {!! Form::hidden('program_id',isset($subProgramData->prgm_id) ? $subProgramData->prgm_id : null) !!}
                                             {!! Form::hidden('anchor_limit',isset($programData) ? $programData->anchor_limit : null) !!}
@@ -714,7 +715,7 @@ $dis_element = $reason_type ? ['disabled' => true] : [];
                                         <div class="text-right mt-3">
                                             
                                             <a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>
-                                            @if ()
+                                            @if (\Helpers::checkPermission('save_sub_program') && $action != 'view')
                                             <button type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program"> Save</button>
                                             @endif
                                         </div>

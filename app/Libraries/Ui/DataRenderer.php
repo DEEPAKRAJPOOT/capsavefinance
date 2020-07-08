@@ -3192,16 +3192,16 @@ class DataRenderer implements DataProviderInterface
                                 'action',
                                 function ($program) {
                             $act = '';
-                            
+                            $act = "<a  href='". route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-eye\" aria-hidden=\"true\"></i></a>";
                             //if(Helpers::checkPermission('edit_anchor_reg')){
                             if ($program->status != 2) {
                             if (Helpers::checkApprPrgm($program->prgm_id)) {
-                                $act = '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';
+                                $act .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';
                             } else {                                
-                                $act = "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'edit'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\"></a>";
+                                $act .= "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'edit'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\" aria-hidden=\"true\"></i></a>";
                             }
                             }
-                            $act .= "<a  href='". route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-eye\"></a>";
+                            
                             return $act;
                         }
                         )->make(true);
