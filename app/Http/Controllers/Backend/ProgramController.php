@@ -509,8 +509,12 @@ class ProgramController extends Controller {
                 $prgmCharges = $this->appRepo->getPrgmChargeData($whereCond);
                 foreach($prgmCharges as $prgmCharge) {  
                     $insPrgmChargeData = $prgmCharge ? $this->arrayExcept($prgmCharge->toArray(), array_merge($excludeKeys, ['id'])) : [];
-                    $insPrgmChargeData['prgm_id'] =  $newPrgmId;
-                    
+                    $insPrgmChargeData['prgm_id'] =  $newPrgmId;                    
+                    $insPrgmChargeData['created_by'] =  \Auth::user()->user_id;
+                    $insPrgmChargeData['created_at'] =  \Carbon\Carbon::now();
+                    $insPrgmChargeData['updated_by'] =  \Auth::user()->user_id;
+                    $insPrgmChargeData['updated_at'] =  \Carbon\Carbon::now();
+                
                     $this->appRepo->saveProgramChrgData($insPrgmChargeData);                    
                 }
                 
@@ -522,6 +526,10 @@ class ProgramController extends Controller {
                 foreach($prgmDocs as $prgmDoc) {
                     $insPrgmDocsData = $prgmDoc ? $this->arrayExcept($prgmDoc->toArray(), array_merge($excludeKeys, ['prgm_doc_id'])) : [];
                     $insPrgmDocsData['prgm_id'] =  $newPrgmId;
+                    $insPrgmDocsData['created_by'] =  \Auth::user()->user_id;
+                    $insPrgmDocsData['created_at'] =  \Carbon\Carbon::now();
+                    $insPrgmDocsData['updated_by'] =  \Auth::user()->user_id;
+                    $insPrgmDocsData['updated_at'] =  \Carbon\Carbon::now();
                     
                     $this->appRepo->saveProgramDoc($insPrgmDocsData);
                 }
@@ -537,7 +545,7 @@ class ProgramController extends Controller {
         } catch (\Exception $e) {
             \DB::rollback();
             // something went wrong
-            //dd($e->getFile(), $e->getLine(), $e->getMessage());       
+            dd($e->getFile(), $e->getLine(), $e->getMessage());       
             return [];
         }
     }

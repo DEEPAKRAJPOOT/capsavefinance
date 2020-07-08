@@ -1664,4 +1664,31 @@ class Helper extends PaypalHelper
             return $variable;
         }
      }
+     
+     public static function checkApprPrgm($prgmId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
+        $offerCond=[];
+        $offerCond['prgm_id'] = $prgmId;
+        $offerCond['is_active'] = 1;
+        $offerCond['status'] = 1;
+        $appPrgmOffer = $appRepo->getOfferData($offerCond);
+        $res = false;
+        if ($appPrgmOffer && $appPrgmOffer->prgm_offer_id) {
+            
+            //Update status of existing program id
+            /*
+            $updatePrgmData = [];
+            $updatePrgmData['status'] = 2;         
+
+            $whereUpdatePrgmData = [];
+            $whereUpdatePrgmData['prgm_id'] = $prgmId;             
+            $appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+             * 
+             */
+            $res = true;
+        }
+        
+        return $res;
+     }
 }
