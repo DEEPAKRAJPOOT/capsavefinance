@@ -240,7 +240,9 @@ class AppProgramLimit extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        return AppProgramOffer::where('prgm_id', $program_id)->where('is_active', '1')->sum('prgm_limit_amt');
+                return AppProgramOffer::where(['prgm_id' => $program_id, 'is_active' => '1'])>where(function($q) {
+                            $q->where('status', NULL)->orWhere('status', 1);
+                        })->sum('prgm_limit_amt');
      }
 
     public function appLimit(){
