@@ -1,5 +1,8 @@
 @extends('layouts.backend.admin-layout')
 @section('content')
+@php
+$dis_element = $reason_type ? ['disabled' => true] : [];
+@endphp
 <div class="content-wrapper">
     <section class="content-header">
         <div class="header-icon">
@@ -75,7 +78,7 @@
                                                                     <div class="block-div clearfix ">
                                                                         <div class="form-check-inline float-left">
                                                                             <label class="form-check-label fnt" for="prgm_type">
-                                                                                {!! Form::radio('prgm_type','1',($programData->prgm_type=="1")? "checked" : "", ['class'=>'form-check-input']) !!}
+                                                                                {!! Form::radio('prgm_type','1',($programData->prgm_type=="1")? "checked" : "", ['class'=>'form-check-input'] + $dis_element) !!}
                                                                                 <strong>
                                                                                     {{ trans('backend.add_program.vendor_finance') }}   
                                                                                 </strong>
@@ -83,7 +86,7 @@
                                                                         </div>
                                                                         <div class="form-check-inline float-left">
                                                                             <label class="form-check-label fnt" for="prgm_type">
-                                                                                {!! Form::radio('prgm_type','2',($programData->prgm_type=="2")? "checked" : "", ['class'=>'form-check-input']) !!}
+                                                                                {!! Form::radio('prgm_type','2',($programData->prgm_type=="2")? "checked" : "", ['class'=>'form-check-input']+$dis_element) !!}
                                                                                 <strong>
                                                                                     {{ trans('backend.add_program.channel_finance') }}    
                                                                                 </strong>
@@ -107,7 +110,7 @@
                                                                     <label for="txtCreditPeriod">Product line<span class="error_message_label">*</span> </label>
                                                                     {!! Form::text('product_name',
                                                                     isset($subProgramData->product_name) ? $subProgramData->product_name : null,
-                                                                    ['class'=>'form-control'])   !!}
+                                                                    ['class'=>'form-control']+$dis_element)   !!}
 
                                                                 </div>
                                                                 <div class="col-md-6">

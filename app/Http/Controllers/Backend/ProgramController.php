@@ -177,6 +177,7 @@ class ProgramController extends Controller {
         try {
             $anchor_id = (int) $request->get('anchor_id');
             $program_id = (int) $request->get('program_id');
+            $reason_type = $request->has('reason_type') ? $request->get('reason_type') : null;
             
             if ($request->has('parent_program_id')) {  //Edit Sub Program
                 $parent_program_id = (int) $request->get('parent_program_id');
@@ -260,7 +261,8 @@ class ProgramController extends Controller {
                             'action',
                             'doaResult',
                             'invoiceDataCount',
-                            'baserate_list'
+                            'baserate_list',
+                            'reason_type'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
@@ -617,7 +619,7 @@ class ProgramController extends Controller {
             $program_id = $result['new_prgm_id'];
             
             Session::flash('is_accept', 1);
-            Session::put('route_url', route('add_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $program_id, 'parent_program_id' => $parent_program_id, 'action' => $action]));
+            Session::put('route_url', route('add_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $program_id, 'parent_program_id' => $parent_program_id, 'action' => $action, 'reason_type' => $reason_type]));
             return redirect()->back();
 
         } catch (Exception $ex) {
