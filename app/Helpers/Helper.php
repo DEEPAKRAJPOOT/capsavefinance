@@ -1674,18 +1674,8 @@ class Helper extends PaypalHelper
         $offerCond['status'] = 1;
         $appPrgmOffer = $appRepo->getOfferData($offerCond);
         $res = false;
-        if ($appPrgmOffer && $appPrgmOffer->prgm_offer_id) {
-            
-            //Update status of existing program id
-            /*
-            $updatePrgmData = [];
-            $updatePrgmData['status'] = 2;         
-
-            $whereUpdatePrgmData = [];
-            $whereUpdatePrgmData['prgm_id'] = $prgmId;             
-            $appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
-             * 
-             */
+        
+        if ($appPrgmOffer && $appPrgmOffer->prgm_offer_id) {            
             $res = true;
         }
         

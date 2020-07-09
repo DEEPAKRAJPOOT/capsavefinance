@@ -511,7 +511,7 @@ class ProgramController extends Controller {
             $prgms = $this->appRepo->getSelectedProgramData($whereCond);
             if (isset($prgms[0])) {
                 $prgm = $prgms[0];
-                $insPrgmData = $prgm ? $this->arrayExcept($prgm->toArray(), array_merge($excludeKeys, ['prgm_id'])) : [];
+                $insPrgmData = $prgm ? $this->arrayExcept($prgm->toArray(), array_merge($excludeKeys, ['prgm_id', 'is_edit_allow'])) : [];
                 $insPrgmData['copied_prgm_id'] = $prgmId;
                 $insPrgmData['status'] = 0;     
                 $insPrgmData['modify_reason_type'] = $addlData['reason'];
@@ -573,7 +573,7 @@ class ProgramController extends Controller {
         } catch (\Exception $e) {
             \DB::rollback();
             // something went wrong
-            dd($e->getFile(), $e->getLine(), $e->getMessage());       
+            //dd($e->getFile(), $e->getLine(), $e->getMessage());       
             return [];
         }
     }
@@ -641,6 +641,13 @@ class ProgramController extends Controller {
             }
             
             $new_prgm_id = $result['new_prgm_id'];
+            
+            $updatePrgmData = [];
+            $updatePrgmData['is_edit_allow'] = 1;
+
+            $whereUpdatePrgmData = [];
+            $whereUpdatePrgmData['prgm_id'] = $program_id;
+            $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
             
             Session::flash('is_accept', 1);
             Session::put('route_url', route('add_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $new_prgm_id, 'parent_program_id' => $parent_program_id, 'action' => $action, 'reason_type' => $reason_type, 'copied_prgm_id' => $program_id]));

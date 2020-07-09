@@ -1786,7 +1786,16 @@ class CamController extends Controller
           $this->appRepo->addOfferPTPQ($ptpqArr);
         }
 
-        if($offerData){
+        if (\Helpers::checkApprPrgm($request->prgm_id)) {
+            $updatePrgmData = [];
+            $updatePrgmData['is_edit_allow'] = 1;
+
+            $whereUpdatePrgmData = [];
+            $whereUpdatePrgmData['prgm_id'] = $request->prgm_id;
+            $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+        }
+        
+        if($offerData){                           
           Session::flash('message',trans('backend_messages.limit_offer_success'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }else{

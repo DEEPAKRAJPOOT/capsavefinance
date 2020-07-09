@@ -84,6 +84,7 @@ class Program extends BaseModel {
         'copied_prgm_id',
         'modify_reason_type',
         'modify_reason',
+        'is_edit_allow',
         'created_by',
         'created_at',
         'updated_by',
