@@ -117,7 +117,11 @@ use AuthenticatesUsers;
             }
 
             if ($this->attemptLogin($request)) {
-                return $this->sendLoginResponse($request);
+                if ($userInfo->is_pwd_changed != 1) {
+                    return redirect()->route('changepassword');
+                } else {
+                    return $this->sendLoginResponse($request);
+                }
             }
             
             // If the login attempt was unsuccessful we will increment the number of attempts
