@@ -220,7 +220,7 @@
            setDate : new Date(),
            format: 'dd/mm/yyyy',
            autoclose: true,
-           startDate:  new Date(),
+           startDate:  new Date("{{$eodStartDate}}"),
            minView : 2,
        });
    });
