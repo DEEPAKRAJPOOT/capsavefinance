@@ -482,10 +482,10 @@ cursor: pointer;
 
     function get_remaining_charges() {
         $.ajax({
-            type: 'GET',
+            type: 'POST',
             async: false,
             url: messages.get_remaining_charges_url,
-            data: {"user_id":$("#user_id").val(), trans_type:$("#trans_type").val(), token: messages.token},
+            data: {"user_id":$("#user_id").val(), trans_type:$("#trans_type").val(), _token: messages.token},
             beforeSend: function( xhr ) {
                 $('.isloader').show();
             },
@@ -510,10 +510,10 @@ cursor: pointer;
 
     function get_all_unsettled_trans_type(data) {
         $.ajax({
-            type: 'GET',
+            type: 'POST',
             async: false,
             url: messages.get_all_unsettled_trans_type,
-            data: {"user_id":data.user_id, action_type:data.action_type, token: messages.token},
+            data: {"user_id":data.user_id, action_type:data.action_type, _token: messages.token},
             beforeSend: function( xhr ) {
                 $('.isloader').show();
             },
