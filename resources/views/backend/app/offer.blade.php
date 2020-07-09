@@ -451,7 +451,7 @@ tr.border_bottom td {
                         </div>
                     </div>
                     @endif
-                    @if(1 || $offerStatus != 0 && $isSalesManager == 1)
+                    @if($offerStatus != 0 && $isSalesManager == 1)
                     <form method="POST" action="{{route('accept_offer')}}">
                         <div class="row">
                         @csrf
