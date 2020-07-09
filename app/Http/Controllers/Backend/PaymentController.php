@@ -113,6 +113,7 @@ class PaymentController extends Controller {
 				'payment_type' => Rule::requiredIf(function () use ($request) {
 					return ($request->action_type == 1)?true:false;
 				}),
+				'utr_no' => 'required',
 				'trans_type' => 'required',
 				'customer_id' => 'required', 
 				'virtual_acc' => 'required',  
@@ -134,6 +135,8 @@ class PaymentController extends Controller {
 			} else  if($request['payment_type']==2) {
 				$check = $request['utr_no'];
 			} else  if($request['payment_type']==3) {
+				$unr =  $request['utr_no'];
+			} else  if($request['payment_type']==4) {
 				$unr =  $request['utr_no'];
 			}
 			if(isset($arrFileData['doc_file']) && !is_null($arrFileData['doc_file'])) {

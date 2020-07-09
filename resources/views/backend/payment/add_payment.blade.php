@@ -9,7 +9,7 @@
         </div>
         <div class="header-title">
             <h3>Add Repayment & Waived Off TDS</h3>
-            <!-- <small>Application List</small> -->
+            <small>&nbsp;</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li style="color:#374767;">Payment</li>
@@ -410,6 +410,9 @@ cursor: pointer;
             } else if (status == 3) {
                 $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
 
+            } else if (status == 4) {
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Transaction No</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+
             }
         });
         
@@ -438,6 +441,9 @@ cursor: pointer;
                         required:true,
                     },
                     payment_type:{
+                        required:true,
+                    },
+                    utr_no:{
                         required:true,
                     },
                     description:{
@@ -479,10 +485,10 @@ cursor: pointer;
 
     function get_remaining_charges() {
         $.ajax({
-            type: 'GET',
+            type: 'POST',
             async: false,
             url: messages.get_remaining_charges_url,
-            data: {"user_id":$("#user_id").val(), trans_type:$("#trans_type").val(), token: messages.token},
+            data: {"user_id":$("#user_id").val(), trans_type:$("#trans_type").val(), _token: messages.token},
             beforeSend: function( xhr ) {
                 $('.isloader').show();
             },
@@ -507,10 +513,10 @@ cursor: pointer;
 
     function get_all_unsettled_trans_type(data) {
         $.ajax({
-            type: 'GET',
+            type: 'POST',
             async: false,
             url: messages.get_all_unsettled_trans_type,
-            data: {"user_id":data.user_id, action_type:data.action_type, token: messages.token},
+            data: {"user_id":data.user_id, action_type:data.action_type, _token: messages.token},
             beforeSend: function( xhr ) {
                 $('.isloader').show();
             },
