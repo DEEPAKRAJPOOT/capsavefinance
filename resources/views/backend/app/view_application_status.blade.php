@@ -24,14 +24,17 @@
                                             44 => 'Cancelled',
                                             45 => 'On Hold',
                                             46 => 'Data Pending'
-                                        ]
+                                        ];
                                     @endphp
                                     @foreach($allCommentsData as $rowData)
+                                    @php
+                                    $date = Helpers::convertDateTimeFormat($rowData->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s');
+                                    @endphp
                                     <tr>
                                         <td>{{ $statusIdArr[$rowData->status_id] }}</td>
                                         <td>{{ $rowData->note_data }}</td>
                                         <td>{{$rowData->f_name.' '.$rowData->m_name}}</td>
-                                        <td>{{ $rowData->created_at }}</td>
+                                        <td>{{ $date }}</td>
                                     </tr>
                                     @endforeach
                                     @else
