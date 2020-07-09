@@ -661,7 +661,7 @@ class ProgramController extends Controller {
     {
         $prgmId = (int) $request->get('program_id');
         
-        $reason = '';
+        $reason  = '';
         $comment = '';
         
         $reasonList = config('common.program_modify_reasons');
