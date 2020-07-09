@@ -1181,7 +1181,7 @@ class ApplicationController extends Controller
 									
 				//Update workflow stage
 				Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true, $addl_data);                
-				
+                                				
 			} else if($request->has('btn_reject_offer')) {
 				$addl_data = [];
 				$addl_data['sharing_comment'] = 'Reject comment goes here';
@@ -1209,7 +1209,22 @@ class ApplicationController extends Controller
 			$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
 			
 			// $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
-			$savedOfferData = $this->appRepo->updateActiveOfferByAppId($appId, $offerData);
+			$savedOfferData = $this->appRepo->updateActiveOfferByAppId($appId, $offerData); 
+                                                
+                        $appPrgmOffers = $this->appRepo->getAllOffers($appId);
+                        foreach($appPrgmOffers as $appPrgmOffer) {
+                            if (!empty($appPrgmOffer->prgm_id) && $appPrgmOffer->status == 1) {
+                                $prgmId = $appPrgmOffer->prgm_id;
+
+                                $updatePrgmData = [];
+                                $updatePrgmData['is_edit_allow'] = 1;
+
+                                $whereUpdatePrgmData = [];
+                                $whereUpdatePrgmData['prgm_id'] = $prgmId;                                        
+                                $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+                            }
+                        }
+
 			if ($savedOfferData) {
 				Session::flash('message', $message);
 				//return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]);

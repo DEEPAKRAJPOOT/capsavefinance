@@ -642,12 +642,14 @@ class ProgramController extends Controller {
             
             $new_prgm_id = $result['new_prgm_id'];
             
+            /*
             $updatePrgmData = [];
             $updatePrgmData['is_edit_allow'] = 1;
 
             $whereUpdatePrgmData = [];
             $whereUpdatePrgmData['prgm_id'] = $program_id;
             $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+            */
             
             Session::flash('is_accept', 1);
             Session::put('route_url', route('add_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $new_prgm_id, 'parent_program_id' => $parent_program_id, 'action' => $action, 'reason_type' => $reason_type, 'copied_prgm_id' => $program_id]));

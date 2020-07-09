@@ -1786,6 +1786,7 @@ class CamController extends Controller
           $this->appRepo->addOfferPTPQ($ptpqArr);
         }
 
+        /*
         if (\Helpers::checkApprPrgm($request->prgm_id)) {
             $updatePrgmData = [];
             $updatePrgmData['is_edit_allow'] = 1;
@@ -1794,6 +1795,7 @@ class CamController extends Controller
             $whereUpdatePrgmData['prgm_id'] = $request->prgm_id;
             $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
         }
+        */
         
         if($offerData){                           
           Session::flash('message',trans('backend_messages.limit_offer_success'));
