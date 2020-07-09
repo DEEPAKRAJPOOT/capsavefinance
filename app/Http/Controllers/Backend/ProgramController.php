@@ -204,7 +204,7 @@ class ProgramController extends Controller {
             $baserate_list =$this->master->getBaseRateDropDown();
 //            dd($baserate_list);
             //$prgmIds = [];
-            $subPrgms = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $parent_program_id, 'status' => 1], ['prgm_id'])->pluck('prgm_id');
+            $subPrgms = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $parent_program_id], ['prgm_id'])->pluck('prgm_id');
             $prgmIds = $subPrgms ? $subPrgms->toArray() : [];
             //foreach($subPrgms as $prgm) {
                 //$prgmIds[] = $prgm->prgm_id;
@@ -521,13 +521,13 @@ class ProgramController extends Controller {
                 if ($newPrgmId) {                    
                     //Update status of existing program id
                     $updatePrgmData = [];
-                    //$updatePrgmData['status'] = 2;
+                    $updatePrgmData['status'] = 2;
                     //$updatePrgmData['modify_reason_type'] = $addlData['reason'];
                     //$updatePrgmData['modify_reason'] = $addlData['comment'];            
 
-                    //$whereUpdatePrgmData = [];
-                    //$whereUpdatePrgmData['prgm_id'] = $prgmId;             
-                    //$this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+                    $whereUpdatePrgmData = [];
+                    $whereUpdatePrgmData['prgm_id'] = $prgmId;             
+                    $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
 
 
                     //Get and save Program Charge Data
