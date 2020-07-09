@@ -169,6 +169,11 @@ class BizOwner extends BaseModel
           //insert into rta_app_doc
           $userData  =  User::getUserByAppId($attributes['app_id']);
           $uid =  $userData->user_id;
+
+          $app = Application::where('app_id', $attributes['app_id'])->update([
+            'app_code'=>\Helpers::formatIdWithPrefix(''.$attributes['app_id'], 'APP'),
+          ]);
+          
           if($attributes['ownerid'][0]==null)
             {
                  $getRes =  self::saveOwnerPanApiRes($attributes, $attributes['biz_id']); 
