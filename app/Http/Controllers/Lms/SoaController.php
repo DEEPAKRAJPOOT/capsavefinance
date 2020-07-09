@@ -53,6 +53,10 @@ class SoaController extends Controller
 		$userData = [];
 		if($request->has('user_id')){
             $result = $this->getUserLimitDetais($request->user_id);
+            if(isset($result['userInfo'])){
+                $result['userInfo']->outstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($request->user_id)->sum('amount'),2);
+                $result['userInfo']->unsettledPaymentAmt = number_format($this->lmsRepo->getUnsettledPayments($request->user_id)->sum('amount'),2);
+            }
             $user = $this->userRepo->lmsGetCustomer($request->user_id);
             $maxInterestDPD = $this->lmsRepo->getMaxDpdTransaction($request->user_id , config('lms.TRANS_TYPE.INTEREST'));
             $maxPrincipalDPD = $this->lmsRepo->getMaxDpdTransaction($request->user_id , config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
