@@ -342,7 +342,7 @@ class InvoiceController extends Controller {
                     $this->invRepo->saveInvoiceStatusLog($value, 12);
                 }
             }
-            $updateTransaction = $this->updateTransactionInvoiceDisbursed($disbursalIds, $userId,$fundedDate);
+            $updateTransaction = $this->updateTransactionInvoiceDisbursed($disbursalIds, $fundedDate);
 
             Session::flash('message',trans('backend_messages.disburseMarked'));
             return redirect()->route('backend_get_sent_to_bank');
@@ -352,7 +352,7 @@ class InvoiceController extends Controller {
         }
     }
     
-    public function updateTransactionInvoiceDisbursed($disbursalIds, $userId, $fundedDate) {
+    public function updateTransactionInvoiceDisbursed($disbursalIds, $fundedDate) {
         $invoiceDisbursed = $this->lmsRepo->getInvoiceDisbursed($disbursalIds)->toArray();
         $selectDate = (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
@@ -379,22 +379,22 @@ class InvoiceController extends Controller {
                 $interest = $tInterest;
             }
 
-            $transactionData = $this->createTransactionData($userId, ['amount' => $value['disburse_amt'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
+            $transactionData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $value['disburse_amt'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
             $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
 
             $intrstAmt = round($interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
             if ($intrstAmt > 0.00) {
-                $intrstDbtTrnsData = $this->createTransactionData($userId, ['amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'));
+                $intrstDbtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'));
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                $intrstCdtTrnsData = $this->createTransactionData($userId, ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'), 1);
+                $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'), 1);
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
             }
 
             // Margin transaction $tranType = 10 
             $marginAmt = round($margin, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
             if ($marginAmt > 0.00) {
-                $marginTrnsData = $this->createTransactionData($userId, ['amount' => $marginAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.MARGIN'), 0);
+                $marginTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $marginAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.MARGIN'), 0);
                 $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
             }
         }
@@ -642,7 +642,7 @@ class InvoiceController extends Controller {
                     }
                 }
                 if($disburseType == 1) {
-
+                    $modePay = ($disburseAmount < 200000) ? 'NEFT' : 'RTGS' ;
                     $exportData[$userid]['RefNo'] = $refNo;
                     $exportData[$userid]['Amount'] = $disburseAmount;
                     $exportData[$userid]['Debit_Acct_No'] = '21480259346';
@@ -656,7 +656,7 @@ class InvoiceController extends Controller {
                     $exportData[$userid]['Ben_BankName'] = $disbursalData['invoice']['supplier_bank_detail']['bank']['bank_name'];
                     $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
                     $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
-                    $exportData[$userid]['Mode_of_Pay'] = 'NEFT';
+                    $exportData[$userid]['Mode_of_Pay'] = $modePay;
                     $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
                     $exportData[$userid]['Remarks'] = 'test remarks';
 
@@ -1454,7 +1454,34 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $params);
-                dd($result);
+                    dd($result);
+                if ($result['status'] == 'success') {
+                    $fundedDate = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                    $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
+                    $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
+                    
+                    if ($disbursalIds) {
+                        $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
+                                'tran_id' => $result,
+                                'status_id' => 12,
+                                'funded_date' => (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s')
+                            ], $disbursalIds);
+                        foreach ($disbursalIds as $key => $value) {
+                            $this->lmsRepo->createDisbursalStatusLog($value, 12, $remarks, $createdBy);
+                        }
+                    }            
+                    if ($invoiceIds) {
+                        $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, 12);
+                        foreach ($invoiceIds as $key => $value) {
+                            $this->invRepo->saveInvoiceStatusLog($value, 12);
+                        }
+                    }
+                    $updateTransaction = $this->updateTransactionInvoiceDisbursed($disbursalIds, $fundedDate);
+                } else {
+                    Session::flash('message',trans('backend_messages.disbursed_error'));
+                    return redirect()->back()->withErrors('message',trans('backend_messages.disbursed_error'));
+                }
+                 
             }
                     
             Session::flash('message',trans('backend_messages.disbursed'));
