@@ -1052,7 +1052,7 @@ Route::group(
         'uses' => 'AjaxController@getRepaymentAmount'
     ]); 
 
-    Route::get('get_remaining_charges', [
+    Route::post('get_remaining_charges', [
         'as' => 'get_remaining_charges',
         'uses' => 'AjaxController@getRemainingCharges'
     ]);  
