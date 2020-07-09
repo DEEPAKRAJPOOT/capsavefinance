@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Lms;
 
 use App\Http\Controllers\Controller;
 use Auth;
+use App\Helpers\Helper;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
@@ -63,6 +64,7 @@ class userInvoiceController extends Controller
      **/
        public function createUserInvoice(Request $request) {
         try {
+            $eodStartDate = Helper::getSysStartDate();
             $user_id = $request->get('user_id');
             $userCompanyRelation  = $this->UserInvRepo->getUserCompanyRelation($user_id);
             if (empty($userCompanyRelation)) {
@@ -95,7 +97,7 @@ class userInvoiceController extends Controller
             $allApplications  = $this->UserInvRepo->getUserAllApplicationsDetail($user_id);
             $encData = _encrypt("$user_id|$company_id|$biz_addr_id|$user_invoice_rel_id");
             $origin_of_recipient = $origin_of_recipient['data'];
-            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData, 'allApplications' => $allApplications]);
+            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData, 'allApplications' => $allApplications, 'eodStartDate' => $eodStartDate]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
