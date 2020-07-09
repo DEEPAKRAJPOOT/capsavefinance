@@ -3133,7 +3133,7 @@ class DataRenderer implements DataProviderInterface
     function getSubProgramList($request, $program)
     {
         return DataTables::of($program)
-                        ->rawColumns(['prgm_id','user_id', 'status', 'action' ,'anchor_sub_limit' ,'anchor_limit' ,'loan_size','utilized_limit'])
+                        ->rawColumns(['prgm_id','user_id', 'status', 'action' ,'anchor_sub_limit' ,'anchor_limit' ,'loan_size','utilized_limit','reason'])
                         ->editColumn(
                                 'prgm_id',
                                 function ($program) {                                                      
@@ -3176,6 +3176,18 @@ class DataRenderer implements DataProviderInterface
                              return  \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size);
                            
                         })
+                        ->addColumn(
+                                'reason',
+                                function ($program) {
+                            $res = '';
+                            if ($program->copied_prgm_id) {
+                                $reasonList = config('common.program_modify_reasons');
+                                $link = route('view_end_program_reason', ['program_id'=> $program->prgm_id] );                                
+                                $res .= '<small><a href="#" title="View Reason" data-toggle="modal" data-target="#showEndProgramReason" data-url="'. $link . '" data-height="200px" data-width="100%" data-placement="top">' .$reasonList[$program->modify_reason_type]  . '</a></small>';
+                            }
+                             return  $res;
+                           
+                        })                        
                         ->editColumn(
                                 'status',
                                 function ($program) {
@@ -3203,8 +3215,9 @@ class DataRenderer implements DataProviderInterface
                                 'action',
                                 function ($program) {
                             $act = '';
-                            $act = "<a  href='". route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-eye\" aria-hidden=\"true\"></i></a>";
-                            //if(Helpers::checkPermission('edit_anchor_reg')){
+                            //if (Helpers::checkPermission('view_sub_program')){
+                                $act = "<a  href='". route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] )."' class=\"btn btn-action-btn btn-sm\" title=\"View Sub-Program\"><i class=\"fa fa-eye\" aria-hidden=\"true\"></i></a>";
+                            //}
                             if ($program->status != 2) {
                             if (Helpers::checkApprPrgm($program->prgm_id)) {
                                 $act .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';

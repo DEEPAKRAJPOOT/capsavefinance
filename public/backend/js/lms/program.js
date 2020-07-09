@@ -437,6 +437,9 @@ try {
                     data: 'loan_size'
                 },
                 {
+                    data: 'reason'
+                },                
+                {
                     data: 'status'
                 },
                 {

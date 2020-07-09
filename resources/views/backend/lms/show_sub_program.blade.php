@@ -56,6 +56,7 @@
                                     <th>{{ trans('backend.mange_program.sub_anchor_limit') }}</th>
                                     <th>{{ trans('backend.mange_program.utilized_limit') }}</th>
                                     <th>{{ trans('backend.mange_program.loan_size') }}</th>
+                                    <th>{{ trans('backend.mange_program.reason') }}</th>
                                     <th>{{ trans('backend.mange_program.status') }}</th>
                                     <th>{{ trans('backend.mange_program.action') }}</th>
 
@@ -79,6 +80,7 @@
 </div>
 </div>
 {!!Helpers::makeIframePopup('modifyProgramLimit','Modify Program Limit', 'modal-md')!!}
+{!!Helpers::makeIframePopup('showEndProgramReason','View Reason', 'modal-md')!!}
 @endsection
 
 @section('jscript')

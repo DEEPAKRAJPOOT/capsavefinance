@@ -513,19 +513,21 @@ class ProgramController extends Controller {
                 $prgm = $prgms[0];
                 $insPrgmData = $prgm ? $this->arrayExcept($prgm->toArray(), array_merge($excludeKeys, ['prgm_id'])) : [];
                 $insPrgmData['copied_prgm_id'] = $prgmId;
-                $insPrgmData['status'] = 0;                   
+                $insPrgmData['status'] = 0;     
+                $insPrgmData['modify_reason_type'] = $addlData['reason'];
+                $insPrgmData['modify_reason'] = $addlData['comment'];                     
                 $newPrgmId = $this->appRepo->saveProgram($insPrgmData);
                 
                 if ($newPrgmId) {                    
                     //Update status of existing program id
                     $updatePrgmData = [];
                     //$updatePrgmData['status'] = 2;
-                    $updatePrgmData['modify_reason_type'] = $addlData['reason'];
-                    $updatePrgmData['modify_reason'] = $addlData['comment'];            
+                    //$updatePrgmData['modify_reason_type'] = $addlData['reason'];
+                    //$updatePrgmData['modify_reason'] = $addlData['comment'];            
 
-                    $whereUpdatePrgmData = [];
-                    $whereUpdatePrgmData['prgm_id'] = $prgmId;             
-                    $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+                    //$whereUpdatePrgmData = [];
+                    //$whereUpdatePrgmData['prgm_id'] = $prgmId;             
+                    //$this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
 
 
                     //Get and save Program Charge Data
@@ -647,5 +649,34 @@ class ProgramController extends Controller {
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
+    }
+    
+    /**
+     * View End Program Reason
+     * 
+     * @param Request $request
+     * @return response
+     */
+    public function viewEndPrgmReason(Request $request)
+    {
+        $prgmId = (int) $request->get('program_id');
+        
+        $reason = '';
+        $comment = '';
+        
+        $reasonList = config('common.program_modify_reasons');
+        
+        $whereCond=[];
+        $whereCond['prgm_id'] = $prgmId;
+        $prgms = $this->appRepo->getSelectedProgramData($whereCond);
+        if (isset($prgms[0])) {
+            $prgm = $prgms[0];
+            $reason  = $reasonList[$prgm->modify_reason_type];
+            $comment = $prgm->modify_reason;
+        }
+                        
+        return view('backend.lms.view_end_program_reason')
+            ->with('reason', $reason)
+            ->with('comment', $comment);
     }
 }

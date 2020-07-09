@@ -122,6 +122,7 @@ var iframe_ids = [
         'rejectApplication',
         'viewApplicationStatus',
         'modifyProgramLimit',
+        'showEndProgramReason'
     ];
 
 iframe_ids.forEach(function(id) {
