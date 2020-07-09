@@ -115,7 +115,7 @@ class PaymentController extends Controller {
 				'trans_type' => 'required',
 				'customer_id' => 'required', 
 				'virtual_acc' => 'required',  
-				'date_of_payment' => 'required|before_or_equal:'.$curdate,
+				'date_of_payment' => 'required|date_format:d/m/Y|before_or_equal:'.$curdate,
 				'amount' => 'required', 
 				'description' => 'required'
 			],
