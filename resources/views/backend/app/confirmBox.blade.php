@@ -51,8 +51,5 @@ var messages = {
     }
         
     });
-    $("#pickupBtn").click(function(){
-      $("#pickupBtn").attr("disabled","disabled");
-    });
     </script>
 @endsection
