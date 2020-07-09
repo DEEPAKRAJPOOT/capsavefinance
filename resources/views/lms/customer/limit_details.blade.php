@@ -34,12 +34,20 @@
             <td>@if($maxInterestDPD){{$maxInterestDPD->dpd}} @if($maxInterestDPD->dpd>1) Days @else Day @endif @else 0 Day @endif </td>
         </tr>
         @endif
-        @if($userInfo->outstandingAmt)
+        @if($userInfo->outstandingAmt || $userInfo->unsettledPaymentAmt)
         <tr>
-            <td class="text-left" width="30%"><b>Outstanding Amt</b></td>
-            <td>{{ $userInfo->outstandingAmt }}</td>
-            <td></td>
-            <td></td>
+            <td class="text-left" width="30%"><b>@if($userInfo->outstandingAmt) Outstanding Amt @endif</b></td>
+            <td>
+                @if($userInfo->outstandingAmt)
+                <a href="{{route('apport_unsettled_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">{{ $userInfo->outstandingAmt }}</a>
+                @endif
+            </td>
+            <td class="text-left" width="30%"><b> @if($userInfo->unsettledPaymentAmt) Unallocated Payment Amt @endif</b></td>
+            <td>
+                @if($userInfo->unsettledPaymentAmt)
+                <a href="{{route('unsettled_payments', ['user_id' => request()->get('user_id')])}}">{{ $userInfo->unsettledPaymentAmt }}</a>
+                @endif
+            </td>
         </tr>
         @endif
     </tbody>

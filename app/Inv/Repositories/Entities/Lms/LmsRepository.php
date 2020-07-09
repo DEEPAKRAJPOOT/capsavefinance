@@ -1395,4 +1395,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
        return TallyEntry::getActualPostedAmount();
     }    
 
+	public function getUnsettledPayments($userId){
+		return Payment::where('user_id','=',$userId)
+		->where('is_settled','=','0')
+		->get();
+	}
 }

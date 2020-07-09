@@ -84,8 +84,16 @@ class PaymentController extends Controller {
 	   return  $d = \DateTime::createFromFormat($format, $date);
 	 }
 
-	public function unsettledPayment() {
-		return view('backend.payment.unsettled_payment');
+	public function unsettledPayment(Request $request) {
+		$customer = [];
+		if($request->has('user_id')){
+			$lmsUser = $this->userRepo->lmsGetCustomer($request->get('user_id'));
+			if($lmsUser){
+				$customer['user_id'] = $lmsUser->user_id; 
+				$customer['customer_id'] = $lmsUser->customer_id;
+			}
+		}
+		return view('backend.payment.unsettled_payment')->with(['customer'=>$customer]);
 	}
 
 	public function settledPayment() {
