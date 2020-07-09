@@ -153,7 +153,7 @@ class UserEventsListener extends BaseEvent
         $user = unserialize($user);
         $email_content = EmailTemplate::getEmailTemplate("USER_REGISTERED");
         if ($email_content) {
-            $link = \Helpers::getServerProtocol() . env('FRONTEND_URI');
+            $link = \Helpers::getServerProtocol() . config('proin.frontend_uri');
             $mail_body = str_replace(
                 ['%name', '%email','%password','%link'],
                 [ucwords($user['name']),$user['email'],$user['password'], $link],
