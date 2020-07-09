@@ -9,7 +9,7 @@
         </div>
         <div class="header-title">
             <h3>Add Repayment & Waived Off TDS</h3>
-            <!-- <small>Application List</small> -->
+            <small>&nbsp;</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li style="color:#374767;">Payment</li>
@@ -407,6 +407,9 @@ cursor: pointer;
             } else if (status == 3) {
                 $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
+            } else if (status == 4) {
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Transaction No</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+
             }
         });
         
@@ -435,6 +438,9 @@ cursor: pointer;
                         required:true,
                     },
                     payment_type:{
+                        required:true,
+                    },
+                    utr_no:{
                         required:true,
                     },
                     description:{

@@ -492,7 +492,7 @@ class ApiController
          $mode_of_pay = 'Nach';
          break; 
       case '4':
-         $mode_of_pay = 'Cash';
+         $mode_of_pay = 'Other : ' . $rcpt->unr_no;
          break; 
       default:
          $mode_of_pay = 'e-Fund-Transfer';
