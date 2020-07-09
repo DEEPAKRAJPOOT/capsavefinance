@@ -204,18 +204,18 @@ class ProgramController extends Controller {
             $baserate_list =$this->master->getBaseRateDropDown();
 //            dd($baserate_list);
             //$prgmIds = [];
-            $subPrgms = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $parent_program_id]+$whereCond, ['prgm_id'])->pluck('prgm_id');
+            $subPrgms = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $parent_program_id], ['prgm_id'])->pluck('prgm_id');
             $prgmIds = $subPrgms ? $subPrgms->toArray() : [];
             //foreach($subPrgms as $prgm) {
                 //$prgmIds[] = $prgm->prgm_id;
             //}
             
-            $utilizedLimit = $this->appRepo->getPrgmBalLimit($prgmIds);            
-            $remaningAmount = null;
+            $utilizedLimit = count($prgmIds) > 0 ? $this->appRepo->getPrgmBalLimit($prgmIds) : 0;            
+            $remaningAmount = 0;
             if (isset($programData->anchor_limit)) {
                 $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal - $utilizedLimit;
             }
-
+                        
             /**
              * get DOA list 
              */
