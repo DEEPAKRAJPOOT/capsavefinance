@@ -86,8 +86,8 @@ class ChangePasswordController extends Controller
             ];
         $validator = Validator::make($request->all(), $rules, $message);
         if ($validator->fails()) {
-            Session::flash('error', $validator->messages()->first());
-                return redirect()->back()->withInput();
+//            Session::flash('error', $validator->messages()->first());
+                return redirect()->back()->with('error', $validator->messages()->first());
         }
         //Change Password
         $firstTime = '';
