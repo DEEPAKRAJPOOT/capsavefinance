@@ -42,7 +42,7 @@
                 <a href="{{route('apport_unsettled_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">{{ $userInfo->outstandingAmt }}</a>
                 @endif
             </td>
-            <td class="text-left" width="30%"><b> @if($userInfo->unsettledPaymentAmt) Unsettled Payment Amt @endif</b></td>
+            <td class="text-left" width="30%"><b> @if($userInfo->unsettledPaymentAmt) Unallocated Payment Amt @endif</b></td>
             <td>
                 @if($userInfo->unsettledPaymentAmt)
                 <a href="{{route('unsettled_payments', ['user_id' => request()->get('user_id')])}}">{{ $userInfo->unsettledPaymentAmt }}</a>
