@@ -1084,7 +1084,7 @@ Route::group(
         'uses' => 'AjaxController@getSoaClientDetails'
     ]);
 
-    Route::get('get_all_unsettled_trans_type',[
+    Route::post('get_all_unsettled_trans_type',[
         'as' => 'get_all_unsettled_trans_type',
         'uses' => 'AjaxController@getAllUnsettledTransType'
     ]);
