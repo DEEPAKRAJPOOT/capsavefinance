@@ -77,6 +77,9 @@
                         </form>
 
                         <!-- To show suply chain data -->
+                        <!-- @php
+                            $offer_no = 1;
+                        @endphp -->
                         @foreach($supplyPrgmLimitData as $key=>$prgmLimit)
                         @if($loop->first)
                         <div class="row">
