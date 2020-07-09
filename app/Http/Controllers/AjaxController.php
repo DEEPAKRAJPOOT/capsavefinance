@@ -4409,6 +4409,8 @@ if ($err) {
         $this->dataRecords = [];
         if (!empty($user_id)) {
             $this->dataRecords = Payment::getPayments(['is_settled' => 0, 'user_id' => $user_id]);
+        } else {
+            $this->dataRecords = Payment::getPayments(['is_settled' => 0]);
         }
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
