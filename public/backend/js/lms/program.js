@@ -398,7 +398,7 @@ try {
             serverSide: true,
             pageLength: 10,
             searching: false,
-            bSort: true,
+            bSort: false,
             ajax: {
                 url: messages.get_sub_program_list,
                 method: 'POST',
@@ -434,10 +434,7 @@ try {
                     data: 'action'
                 }
             ],
-            aoColumnDefs: [{
-                    'bSortable': false,
-                    'aTargets': []
-                }]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6]}]
 
         });
 
