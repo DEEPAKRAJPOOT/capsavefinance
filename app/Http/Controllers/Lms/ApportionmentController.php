@@ -343,8 +343,6 @@ class ApportionmentController extends Controller
                 'description' => $paymentDetails->description,
                 'is_settled' => 0,
                 'is_manual' => $paymentDetails->is_manual,
-                'created_at' => $paymentDetails->created_at,
-                'created_by' => $paymentDetails->created_by,
                 'generated_by' => 1,
                 'is_refundable' => 1
             ];
@@ -487,7 +485,6 @@ class ApportionmentController extends Controller
                 'transactionno'=> $payment->transactionno,
                 'payment_amt' => $payment->amount,
                 'is_settled' => $payment->is_settled,
-                'created_at' => $payment->created_at,
             ];
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
