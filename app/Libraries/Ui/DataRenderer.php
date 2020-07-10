@@ -4927,7 +4927,8 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'business_name',
                         function ($dataRecords) {
-                        return $dataRecords->getUserName->biz_name;
+                        if($dataRecords->biz_id)
+                        return $dataRecords->getBusinessName->biz_entity_name;
                     })
                     ->editColumn(
                         'virtual_account',
