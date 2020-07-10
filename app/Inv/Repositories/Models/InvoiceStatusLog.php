@@ -65,7 +65,7 @@ class InvoiceStatusLog extends BaseModel {
        }
       public static function getAllActivityInvoiceLog($inv)
        {
-           return self::with('status','user')->where(['invoice_id' => $inv])->orderBy('invoice_log_id', 'desc')->get();
+           return self::with('status','user', 'invoice')->where(['invoice_id' => $inv])->orderBy('invoice_log_id', 'desc')->get();
        }
          /* invoice  status log  */
       public static function  saveInvoiceLog($invoice_id,$status_id,$amount,$comment)
@@ -90,5 +90,9 @@ class InvoiceStatusLog extends BaseModel {
       function user()
      {
        return $this->belongsTo('App\Inv\Repositories\Models\User','created_by','user_id');
+     }
+      function invoice()
+     {
+       return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice','invoice_id','invoice_id');
      }
 }
