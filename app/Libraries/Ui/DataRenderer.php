@@ -2619,7 +2619,7 @@ class DataRenderer implements DataProviderInterface
                       }
                     
                     //add_sub_program
-                      if(Helpers::checkPermission('edit_program')){                          
+                      if(Helpers::checkPermission('edit_program') && \Helpers::isProgamEditAllowed($program->prgm_id)){                          
                           $action .= '<a title="Edit Program" data-toggle="modal"  data-height="420px" data-width="100%" data-target="#editProgram" data-url="' . route('edit_program', ['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Program"><i class="fa fa-edit"></i></a>';
                       }
                       
@@ -3135,6 +3135,7 @@ class DataRenderer implements DataProviderInterface
      */
     function getSubProgramList($request, $program)
     {
+        $this->anchor_utilized_balance = \Helpers::getAnchorUtilizedLimit(request()->get('program_id'));
         return DataTables::of($program)
                         ->rawColumns(['prgm_id','f_name','updated_by','user_id', 'status', 'action' ,'anchor_sub_limit' ,'anchor_limit' ,'loan_size','utilized_limit','reason'])
                         ->editColumn(
@@ -3154,7 +3155,7 @@ class DataRenderer implements DataProviderInterface
                                 function ($program) {
                             $ret = '<strong>Name:</strong> '. $program->f_name . '<br>';
                             $ret .= '<strong>Total Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit) . '<br>';
-                            $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - \Helpers::getAnchorUtilizedLimit(request()->get('program_id')) );
+                            $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - $this->anchor_utilized_balance );
                             return $ret;
                         })                        
                         ->editColumn(

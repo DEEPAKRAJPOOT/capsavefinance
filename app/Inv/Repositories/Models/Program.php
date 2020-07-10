@@ -226,9 +226,11 @@ class Program extends BaseModel {
         }
 
         $res = self::select('prgm.*', 'u.f_name','mp.product_name as mp_product_name')
-                ->join('users as u', 'prgm.anchor_id', '=', 'u.anchor_id')
-                ->join('mst_product as mp', 'prgm.product_id', '=', 'mp.id')
-                ->where(['u.user_type' => 2])
+                ->join('users as u', function($query){
+                    $query->on('prgm.anchor_id', '=', 'u.anchor_id');
+                    $query->where('u.user_type', 2);
+                })
+                ->join('mst_product as mp', 'prgm.product_id', '=', 'mp.id')                
                 ->where('prgm.parent_prgm_id', '0')
                 ->orderBy('prgm.prgm_id', 'desc');
         if (!empty($id)) {

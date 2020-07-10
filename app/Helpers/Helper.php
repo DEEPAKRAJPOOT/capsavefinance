@@ -1699,4 +1699,18 @@ class Helper extends PaypalHelper
         $totalUtilizedAmount = $anchorSubLimitTotal + $utilizedLimit;
         return $totalUtilizedAmount;
      }
+     
+     public static function isProgamEditAllowed($anchorPrgmId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
+        $subPrgms = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId], ['is_edit_allow']);
+        $isProgamEditAllowed = false;
+        foreach($subPrgms as $prgm) {            
+            if ($prgm->is_edit_allow)  {
+                $isProgamEditAllowed = true;
+                break;
+            }
+        }
+        return $isProgamEditAllowed;
+     }
 }

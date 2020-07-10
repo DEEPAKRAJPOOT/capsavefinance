@@ -141,7 +141,7 @@ class ProgramController extends Controller {
             $program_id = $request->get('program_id');
             if (empty($program_id)) {
                 $programInfo = $this->appRepo->getProgramByProgramName($prgm_name);
-                if (count($programInfo) <= 0 ) {
+                if (count($programInfo) > 0 ) {
                      \Session::flash('error', trans('success_messages.program_already_exist'));
                      return redirect()->back()->withInput();
                 }                
