@@ -741,4 +741,35 @@ class User extends Authenticatable
     {
         return $this->hasOne('App\Inv\Repositories\Models\UserDetail', 'user_id', 'user_id');
     }
+
+    /*
+    * Get User Details base of user Id
+    *
+    * @param  integer $user_id
+    * @return array
+    * @throws BlankDataExceptions
+    * @throws InvalidDataTypeExceptions
+    * Since 0.1
+    */
+   public static function getfullSalesUserDetail($user_id)
+   {
+       //dd($user_id);
+       //Check id is not blank
+
+       if (empty($user_id)) {
+           throw new BlankDataExceptions(trans('error_message.no_data_found'));
+       }
+       //Check id is not an integer
+
+       if (!is_int($user_id)) {
+           throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+       }
+
+       $arrUser = self::select('users.*')
+           ->where('users.user_id', (int) $user_id)
+           ->where('users.user_type', 2)
+           ->first();
+
+       return ($arrUser ?: false);
+   }
 }

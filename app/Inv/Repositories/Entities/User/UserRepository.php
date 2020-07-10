@@ -1682,4 +1682,23 @@ class UserRepository extends BaseRepositories implements UserInterface
         }
      
     }     
+
+
+    /**
+     * Get a sales user model by id
+     *
+     * @param integer $userId
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getfullSalesUserDetail($userId)
+    {
+        $result = UserModel::getfullSalesUserDetail((int) $userId);
+
+        return $result ?: false;
+    }
+
+
 }

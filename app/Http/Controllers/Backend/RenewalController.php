@@ -203,7 +203,7 @@ class RenewalController extends Controller {
             $toUserId = isset($roles[0]) ? $roles[0]->user_id : null;
             
             $user = $this->userRepo->getfullUserDetail($userId);
-            $salesUser = $this->userRepo->getfullUserDetail($toUserId);
+            $salesUser = $this->userRepo->getfullSalesUserDetail($toUserId);
             
             $endDate = $app->end_date;
             $date = \Carbon\Carbon::parse($endDate);
