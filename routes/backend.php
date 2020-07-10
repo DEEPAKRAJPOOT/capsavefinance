@@ -840,7 +840,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('view-end-program-reason', [
             'as' => 'view_end_program_reason',
             'uses' => 'Backend\ProgramController@viewEndPrgmReason'
-           ]);             
+           ]); 
+
+             Route::get('edit-program', [
+                'as' => 'edit_program',
+                'uses' => 'Backend\ProgramController@addProgram'
+            ]);
+             
         });
             // All master routes
         Route::group(['prefix' => 'manage'], function () {

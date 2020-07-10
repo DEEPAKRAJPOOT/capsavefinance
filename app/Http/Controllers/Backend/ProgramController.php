@@ -69,19 +69,24 @@ class ProgramController extends Controller {
     {
         try {
             $anchor_id = (int) $request->get('anchor_id');
+            $program_id = $request->has('program_id') ? (int) $request->get('program_id') : null;
+            
             if ($anchor_id) {
                 $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->toArray();
             } else {
                 $anchorData = $this->userRepo->getAllAnchor('comp_name')->toArray();
             }
-
-            $anchorList = array_reduce($anchorData, function ($output, $element) {
-                $output[$element['anchor_id']] = $element['f_name'];
+            
+            $anchors = $this->appRepo->getProgramAnchors();            
+            
+            $anchorList = array_reduce($anchorData, function ($output, $element) use ($anchors) {
+                $output[$element['anchor_id']]['name'] = $element['f_name'];                      
+                $output[$element['anchor_id']]['used'] = in_array($element['anchor_id'], $anchors) ? 1 : 0;
                 return $output;
             }, []);
 
             if (\Session::has('is_mange_program')) {
-                $anchorList = ['' => 'Please Select'] + $anchorList;
+                //$anchorList = ['' => 'Please Select'] + $anchorList;
             }
 
             $productItem = $this->master->getProductDataList()->toArray();
@@ -93,8 +98,29 @@ class ProgramController extends Controller {
 //            $productList = ['' => 'Please Select'] + $product;
             $productList = $product;
             $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
-            $industryList = $this->appRepo->getIndustryDropDown()->toArray();
-            return view('backend.lms.add_program', compact('anchorList', 'industryList', 'anchor_id', 'redirectUrl', 'productList'));
+            $industryList = $this->appRepo->getIndustryDropDown()->toArray(); 
+            
+
+            $programData = null;
+            $subIndustryList = null;
+            if (!empty($program_id)) {
+                $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'])->first();
+                $subIndustryList = $this->appRepo->getSubIndustryByWhere(['industry_id' => $programData->industry_id])->pluck('name','id')->toArray();                 
+                $view = 'backend.lms.edit_program';
+            } else {
+                $view = 'backend.lms.add_program';
+            }    
+            
+            
+            
+            return view($view)            
+            ->with('industryList', $industryList)
+            ->with('subIndustryList', $subIndustryList)
+            ->with('anchor_id', $anchor_id)
+            ->with('redirectUrl', $redirectUrl)
+            ->with('productList', $productList)
+            ->with('anchorList', $anchorList)
+            ->with('program', $programData);
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
@@ -112,9 +138,18 @@ class ProgramController extends Controller {
 //            dd($request->all());
             $anchor_id = $request->get('anchor_id');
             $prgm_name = $request->get('prgm_name');
-            $programInfo = $this->appRepo->getProgramByProgramName($prgm_name);
+            $program_id = $request->get('program_id');
+            if (empty($program_id)) {
+                $programInfo = $this->appRepo->getProgramByProgramName($prgm_name);
+                if (count($programInfo) <= 0 ) {
+                     \Session::flash('error', trans('success_messages.program_already_exist'));
+                     return redirect()->back()->withInput();
+                }                
+            } else {
+                $programInfo = [];
+            }
 //            dd(count($programInfo));
-            if(count($programInfo)<=0){
+            
                 $prepareDate = [
                     'anchor_id' => $anchor_id,
                     //   'anchor_user_id' => $request->get('anchor_user_id'),
@@ -126,17 +161,20 @@ class ProgramController extends Controller {
                     'product_id'=>$request->get('product_id'),
                     'status' => 1
                 ];
-                $this->appRepo->saveProgram($prepareDate);
+                if (!empty($program_id)) {
+                    $this->appRepo->updateProgramData($prepareDate, ['prgm_id' => $program_id]);
+                    Session::flash('is_accept', 1);
+                    return redirect()->back();
+                } else {
+                    $this->appRepo->saveProgram($prepareDate);
+                }
                 \Session::flash('message', trans('success_messages.program_save_successfully'));
                 $redirect = redirect()->route('manage_program', ['anchor_id' => $anchor_id]);
                 if (\Session::has('is_mange_program')) {
                     $redirect = redirect()->route('manage_program');
                 }
                 return $redirect;
-            }else{
-                 \Session::flash('error', trans('success_messages.program_already_exist'));
-                 return redirect()->back()->withInput();
-            }
+            
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }

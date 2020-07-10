@@ -79,7 +79,7 @@
 </div>
 </div>
 </div>
-
+{!!Helpers::makeIframePopup('editProgram','Modify Program', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

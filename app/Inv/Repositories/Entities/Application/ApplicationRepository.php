@@ -2356,6 +2356,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return AppProgramOffer::getPrgmBalLimit($program_id);
     }    
+    
+    public function getProgramAnchors() 
+    {
+        return Program::getProgramAnchors();
+    }    
 }
 
 

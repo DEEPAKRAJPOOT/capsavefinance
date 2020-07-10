@@ -432,5 +432,9 @@ class Program extends BaseModel {
     public function updatedByUser()
     {
         return $this->hasOne('App\Inv\Repositories\Models\User', 'user_id', 'updated_by');
-    }    
+    } 
+    
+    public static function getProgramAnchors() {
+        return self::groupBy('anchor_id')->pluck('anchor_id')->toArray();
+    }
 }

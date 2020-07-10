@@ -2619,7 +2619,10 @@ class DataRenderer implements DataProviderInterface
                       }
                     
                     //add_sub_program
-                    
+                      if(Helpers::checkPermission('edit_program')){                          
+                          $action .= '<a title="Edit Program" data-toggle="modal"  data-height="420px" data-width="100%" data-target="#editProgram" data-url="' . route('edit_program', ['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Program"><i class="fa fa-edit"></i></a>';
+                      }
+                      
                       if($program->status){
                            return $action.'<a title="In Active" href="'.route('change_program_status', [ 'program_id'=> $program->prgm_id , 'status'=>0 ]).'"  class="btn btn-action-btn btn-sm program_status "><i class="fa fa-eye" aria-hidden="true"></i></a>';
                       }else{
