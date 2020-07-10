@@ -27,6 +27,7 @@
 
     <body class="sidebar-icon-only"> 
         <div class=" row-offcanvas row-offcanvas-right">
+            <div id="iframeMessage" class="content-wrapper-msg" style="background:none;display:none;"></div>
             <!-- partial -->
             @if(Session::has('message'))
             <div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>

@@ -139,6 +139,7 @@
         please_select: "{{ trans('backend.please_select') }}",        
         is_accept: "{{ Session::get('is_accept') }}",    
         error_code : "{{ Session::has('error_code') }}",
+        msg : "{{ Session::pull('msg') }}",
     };
     $(document).on('input', '.format_with_decimal', function(event) {
         if(event.which >= 37 && event.which <= 40) return;
@@ -159,6 +160,9 @@
     
     $(document).ready(function(){    
         if(messages.is_accept == 1){
+            
+            parent.jQuery("#iframeMessage").html('<div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+messages.msg+'</div>');
+            
            parent.jQuery("#editProgram").modal('hide');  
            parent.oTable.draw();
            parent.$('.isloader').hide();           

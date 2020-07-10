@@ -164,6 +164,7 @@ class ProgramController extends Controller {
                 if (!empty($program_id)) {
                     $this->appRepo->updateProgramData($prepareDate, ['prgm_id' => $program_id]);
                     Session::flash('is_accept', 1);
+                    Session::flash('msg', trans('success_messages.program_save_successfully'));
                     return redirect()->back();
                 } else {
                     $this->appRepo->saveProgram($prepareDate);
