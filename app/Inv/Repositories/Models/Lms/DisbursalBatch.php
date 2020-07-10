@@ -78,7 +78,7 @@ class DisbursalBatch extends BaseModel {
 	
 	public static function lmsGetDisbursalBatchRequest()
     {
-        return self::with('disbursal')->orderBy('disbursal_batch_id', 'DESC');
+        return self::with('disbursal')->where('batch_status', 1)->orderBy('disbursal_batch_id', 'DESC');
     }
 
 }

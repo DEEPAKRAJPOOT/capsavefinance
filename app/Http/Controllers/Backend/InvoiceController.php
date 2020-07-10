@@ -1432,7 +1432,9 @@ class InvoiceController extends Controller {
             date_default_timezone_set("Asia/Kolkata");
             $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId)->toArray();
             $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
-            
+            $transId = $reqData['txn_id'];
+            $createdBy = Auth::user()->user_id;
+
             if(!empty($reqData)) {
             
                 $http_header = [
@@ -1454,20 +1456,46 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $params);
-                    dd($result);
+                // dd($result);
                 if ($result['status'] == 'success') {
+                    $fileDirPath = getPathByTxnId($transId);
+                    $time = date('y-m-d H:i:s');
+                    
+                    $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
+                    $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
+                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
+                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
+                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
+                    
+                    $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
+                    if(is_array($createOrUpdatefile)) {
+                        $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
+                    } else {
+                        $userFileSaved = $createOrUpdatefile;
+                    }
+                    
+                    $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
+                    $otherData['enq_txn_id'] = $transId;
+                    $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result['result'], $otherData);
+                    $createDisbusalApiLog = $this->lmsRepo->saveUpdateDisbursalApiLog($disbusalApiLogData);
+                    if ($createDisbusalApiLog) {
+                        $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
+                    }
+
                     $fundedDate = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
                     $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
                     $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
                     
                     if ($disbursalIds) {
+                        $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById([
+                                'batch_status' => 2], $disbursalBatchId);
+
                         $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
-                                'tran_id' => $result,
                                 'status_id' => 12,
                                 'funded_date' => (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s')
                             ], $disbursalIds);
                         foreach ($disbursalIds as $key => $value) {
-                            $this->lmsRepo->createDisbursalStatusLog($value, 12, $remarks, $createdBy);
+                            $this->lmsRepo->createDisbursalStatusLog($value, 12, 'online disbursed', $createdBy);
                         }
                     }            
                     if ($invoiceIds) {

@@ -383,9 +383,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		}
 	}
 	 /**
-	 * Get Repayments
+	 * update disbursaal
 	 *      
-	 * @param array $whereCondition | optional
+	 * @param array $whereCondition | required
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
 	 */
@@ -1446,5 +1446,24 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return DisbursalBatch::with('disbursal_api_log')
 				->where('disbursal_batch_id', $disbursalBatchId)
 				->first();
+	}
+
+	/**
+	 * update disbursal batch
+	 *      
+	 * @param array $whereCondition | required
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function updateDisbursalBatchById($data, $updatingId = [])
+	{
+		if (is_array($updatingId)) {
+			$response =  DisbursalBatch::whereIn('disbursal_batch_id', $updatingId)
+				->update($data);
+		} else {
+			$response =  DisbursalBatch::where('disbursal_batch_id', $updatingId)
+				->update($data);
+		}
+		return $response ?? false;
 	}
 }
