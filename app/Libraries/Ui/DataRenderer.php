@@ -3133,47 +3133,40 @@ class DataRenderer implements DataProviderInterface
     function getSubProgramList($request, $program)
     {
         return DataTables::of($program)
-                        ->rawColumns(['prgm_id','user_id', 'status', 'action' ,'anchor_sub_limit' ,'anchor_limit' ,'loan_size','utilized_limit','reason'])
+                        ->rawColumns(['prgm_id','f_name','updated_by','user_id', 'status', 'action' ,'anchor_sub_limit' ,'anchor_limit' ,'loan_size','utilized_limit','reason'])
                         ->editColumn(
                                 'prgm_id',
                                 function ($program) {                                                      
-                            $ret = $program->prgm_id;
+                            $ret = '<strong>ID:</strong> '. $program->prgm_id . '<br>';
+                            $ret .= '<strong>Name:</strong> ' . $program->product_name . '<br>';
+                            $ret .= '<strong>Type:</strong> ' . ($program->prgm_type == 1 ? 'Vendor Finance' : 'Channel Finance');
                             if ($program->copied_prgm_id) {
                             $link = route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->copied_prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] );  
-                            $ret .= '<br><small>Parent: </small><a href="' . $link . '">' . $program->copied_prgm_id . '</a>';
+                            $ret .= '<br><strong>Parent: </strong><a href="' . $link . '">' . $program->copied_prgm_id . '</a>';
                             }
                             return $ret;
-                        })
+                        })                        
                         ->editColumn(
-                                'product_name',
+                                'f_name',
                                 function ($program) {
-                            return $program->product_name;
-                        })
-                        ->editColumn(
-                               'prgm_type',
-                               function ($program) {
-                           return ($program->prgm_type == 1) ?'Vendor Finance': 'Channel Finance';
-                        })
+                            $ret = '<strong>Name:</strong> '. $program->f_name . '<br>';
+                            $ret .= '<strong>Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit);
+                            return $ret;
+                        })                        
                         ->editColumn(
                                 'anchor_sub_limit',
                                 function ($program) {
-                            return  \Helpers::formatCurreny($program->anchor_sub_limit);
-                        })
-                        ->editColumn(
-                                'anchor_limit',
-                                function ($program) {
-                            return  \Helpers::formatCurreny($program->anchor_limit);
-                        })                        
+                            $ret = '<strong>Limit:</strong> '. \Helpers::formatCurreny($program->anchor_sub_limit) . '<br>';
+                            $ret .= '<strong>Utilized Limit:</strong> '. \Helpers::formatCurreny(\Helpers::getPrgmBalLimit($program->prgm_id)) . '<br>';
+                            $ret .= '<strong>Loan Size:</strong> '. \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size);
+                            return  $ret;
+                        })                       
                         ->addColumn(
-                                'utilized_limit',
-                                function ($program) {
-                             return  \Helpers::formatCurreny(\Helpers::getPrgmBalLimit($program->prgm_id));
-                           
-                        })                        
-                        ->addColumn(
-                                'loan_size',
-                                function ($program) {
-                             return  \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size);
+                                'updated_by',
+                                function ($program) {                            
+                            $ret = '<strong>By:</strong> '. (isset($program->updatedByUser) ? $program->updatedByUser->f_name . ' ' . $program->updatedByUser->l_name : '') . '<br>';
+                            $ret .= '<strong>Date:</strong> '. \Helpers::convertDateTimeFormat($program->updated_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d/m/Y') ;
+                             return  $ret;
                            
                         })
                         ->addColumn(

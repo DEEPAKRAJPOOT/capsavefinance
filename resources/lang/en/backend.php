@@ -25,7 +25,7 @@ return [
         'home' => 'Home',
         'add_program' => 'Add Program',
         'program_id'=>'Program ID',
-        'sub_program_id'=>'Sub-Program ID',
+        'sub_program_id'=>'Sub-Program Detail',
         'sub_program_name'=>'Sub-Program Page',
         'anchor_name'=>'Anchor Name',
         'program_mame'=>'Program Name',
@@ -42,7 +42,10 @@ return [
         'program_sub_list' => 'Sub Program List',
         'add_sub_program'=>'Add Sub Program',
         'utilized_limit' => 'Utilized Limit',
-        'reason' => 'Modify Reason'
+        'reason' => 'Modify Reason',
+        'updated_by' => 'Updated By',
+        'anchor_detail'=>'Anchor Detail',
+        'sub_program_limit' => 'Sub-Program Limit'
     ],
     'add_program' => [
         'add_program' => ' Add Master Program',

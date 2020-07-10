@@ -419,23 +419,11 @@ try {
                 {data: 'prgm_id'},
                 {data: 'f_name'},
                 {
-                    data: 'product_name'
-                },
-                {
-                    data: 'prgm_type'
-                },
-                {
-                    data: 'anchor_limit'
-                },
-                {
                     data: 'anchor_sub_limit'
                 },
                 {
-                    data: 'utilized_limit'
+                    data: 'updated_by'
                 },                
-                {
-                    data: 'loan_size'
-                },
                 {
                     data: 'reason'
                 },                

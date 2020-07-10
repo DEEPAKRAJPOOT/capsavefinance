@@ -429,4 +429,8 @@ class Program extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Program', 'parent_prgm_id', 'prgm_id');
     }
 
+    public function updatedByUser()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\User', 'user_id', 'updated_by');
+    }    
 }
