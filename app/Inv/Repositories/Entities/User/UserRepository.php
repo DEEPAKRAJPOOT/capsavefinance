@@ -1680,7 +1680,7 @@ class UserRepository extends BaseRepositories implements UserInterface
            return $ex;
         }     
     }     
-    
+
     public function getAnchorsByUserId($userId) {
         return AnchorUser::getAnchorsByUserId($userId);
     }
@@ -1698,5 +1698,22 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getAnchorUserData($whereCond) {
         return AnchorUser::getAnchorUserData($whereCond);
     }    
+
+    /**
+     * Get a sales user model by id
+     *
+     * @param integer $userId
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getfullSalesUserDetail($userId)
+    {
+        $result = UserModel::getfullSalesUserDetail((int) $userId);
+
+        return $result ?: false;
+    }
+
 }
 

@@ -729,8 +729,8 @@ class UserEventsListener extends BaseEvent
         $email_content = EmailTemplate::getEmailTemplate("APPLICATION_RENEWAL_MAIL");
         if ($email_content) {
             $mail_body = str_replace(
-                ['%receiver_user_name', '%lead_id' ,'%app_id','%entity_name'],
-                [$user['receiver_user_name'],$user['lead_id'],$user['app_id'],$user['entity_name']],
+                ['%receiver_user_name', '%lead_id' ,'%app_id','%entity_name', '%entity_addr' ,'%customer_id', '%biz_type', '%sales_manager_name', '%prgm_limit_amt', '%app_limit', '%sales_manager_email', '%cmp_name', '%cmp_add', '%year'],
+                [$user['receiver_user_name'],$user['lead_id'],$user['app_id'],$user['entity_name'],$user['entity_addr'],$user['customer_id'],$user['biz_type'],$user['sales_manager_name'],$user['prgm_limit_amt'],$user['app_limit'],$user['sales_manager_email'],$user['cmp_name'],$user['cmp_add'],$user['year']],
                 $email_content->message
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
