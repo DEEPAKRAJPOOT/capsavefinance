@@ -4948,8 +4948,7 @@ class DataRenderer implements DataProviderInterface
                         'updated_by',
                         function ($dataRecords) {
                         $createdByName = $dataRecords->getCreatedByName->f_name .' '.$dataRecords->getCreatedByName->m_name . ' '. $dataRecords->getCreatedByName->l_name;
-                        // $dateofPay = date('d/m/Y H:i:s', strtotime($dataRecords->date_of_payment));
-                        $dateofPay = date('d/m/Y H:i:s', strtotime($dataRecords->created_at));
+                        $dateofPay = \Helpers::convertDateTimeFormat($dataRecords->sys_created_at ?? $dataRecords->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y H:i a');
                         $updated_by = "$createdByName<br />$dateofPay";
                         return $updated_by;
                     }) 
