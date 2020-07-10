@@ -1894,9 +1894,9 @@ class DataRenderer implements DataProviderInterface
                     function ($trans) {
                         $created_by = '';
                         $created_by .= $trans->creator ? '<span><b>Name:&nbsp;</b>'.$trans->creator->f_name.'&nbsp;'.$trans->creator->l_name.'</span>' : '';
-                        $created_by .= $trans->created_at ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($trans->created_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $created_by .= '<br><span><b>Date & Time:&nbsp;</b>'.\Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A').'</span>';
+
                         return $created_by;                        
-                        // return ($trans->created_at) ? Carbon::parse($trans->created_at)->format('d-m-Y H:i:s') : '';
                 })
                 ->addColumn(
                     'action',
@@ -4948,7 +4948,7 @@ class DataRenderer implements DataProviderInterface
                         'updated_by',
                         function ($dataRecords) {
                         $createdByName = $dataRecords->getCreatedByName->f_name .' '.$dataRecords->getCreatedByName->m_name . ' '. $dataRecords->getCreatedByName->l_name;
-                        $dateofPay = \Helpers::convertDateTimeFormat($dataRecords->sys_created_at ?? $dataRecords->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y H:i a');
+                        $dateofPay = \Helpers::convertDateTimeFormat($dataRecords->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
                         $updated_by = "$createdByName<br />$dateofPay";
                         return $updated_by;
                     }) 
