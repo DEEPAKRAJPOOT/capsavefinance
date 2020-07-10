@@ -409,7 +409,9 @@ class ManualApportionmentHelper{
             $gEndDate = $this->addDays($payDueDate,$gPeriod);
             $odStartDate = $this->addDays($gEndDate,1);
             $maxAccrualDate = $invDisbDetail->interests->max('interest_date');
-            
+            if($maxAccrualDate){
+                $maxAccrualDate = $this->addDays($maxAccrualDate,1);
+            } 
             $intType = 1;
             
             $loopStratDate = $startDate ?? $maxAccrualDate ?? $intAccrualStartDate;
