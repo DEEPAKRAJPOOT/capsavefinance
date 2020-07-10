@@ -533,7 +533,7 @@ class AppProgramOffer extends BaseModel {
         }
         $whereCond = [];
         $whereCond[] = ['is_active', '=', 1];
-        $whereCond[] = ['status', '!=', 2];
+        $whereCond[] = ['status', '=', 1];
         if (is_array($program_id)) {
             $query = self::whereIn('prgm_id', $program_id);
         } else {

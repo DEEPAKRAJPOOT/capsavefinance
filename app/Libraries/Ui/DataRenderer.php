@@ -3150,14 +3150,15 @@ class DataRenderer implements DataProviderInterface
                                 'f_name',
                                 function ($program) {
                             $ret = '<strong>Name:</strong> '. $program->f_name . '<br>';
-                            $ret .= '<strong>Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit);
+                            $ret .= '<strong>Total Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit) . '<br>';
+                            $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - \Helpers::getAnchorUtilizedLimit(request()->get('program_id')) );
                             return $ret;
                         })                        
                         ->editColumn(
                                 'anchor_sub_limit',
                                 function ($program) {
                             $ret = '<strong>Limit:</strong> '. \Helpers::formatCurreny($program->anchor_sub_limit) . '<br>';
-                            $ret .= '<strong>Utilized Limit:</strong> '. \Helpers::formatCurreny(\Helpers::getPrgmBalLimit($program->prgm_id)) . '<br>';
+                            $ret .= '<strong>Utilized Limit in Offer:</strong> '. \Helpers::formatCurreny(\Helpers::getPrgmBalLimit($program->prgm_id)) . '<br>';
                             $ret .= '<strong>Loan Size:</strong> '. \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size);
                             return  $ret;
                         })                       

@@ -1688,4 +1688,15 @@ class Helper extends PaypalHelper
         $utilizedLimit = $appRepo->getPrgmBalLimit($prgmId);
         return $utilizedLimit;
      }
+     
+     public static function getAnchorUtilizedLimit($anchorPrgmId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
+        $anchorSubLimitTotal = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId, 'status' => 1], ['anchor_sub_limit'])->sum('anchor_sub_limit');
+        $subPrgms = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId], ['prgm_id'])->pluck('prgm_id');
+        $prgmIds = $subPrgms ? $subPrgms->toArray() : [];
+        $utilizedLimit = count($prgmIds) > 0 ? $appRepo->getPrgmBalLimit($prgmIds) : 0;        
+        $totalUtilizedAmount = $anchorSubLimitTotal + $utilizedLimit;
+        return $totalUtilizedAmount;
+     }
 }
