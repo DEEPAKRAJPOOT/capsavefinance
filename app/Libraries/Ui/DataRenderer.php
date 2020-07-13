@@ -828,7 +828,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1043,7 +1043,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1142,7 +1142,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1257,7 +1257,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1339,7 +1339,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1459,7 +1459,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1553,7 +1553,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1633,7 +1633,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1749,7 +1749,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
