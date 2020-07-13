@@ -691,7 +691,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getRequestList($request)
    {
-		return RefundReq::where('status','=',$request->status)->get();
+		return RefundReq::where('status','=',$request->status);
    }
 
    public function createBatch()
