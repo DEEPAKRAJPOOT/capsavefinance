@@ -225,16 +225,18 @@ class ManualApportionmentHelper{
             $query->OrwhereIn('parent_trans_id',$disbTransIds);
         })
         ->sum('amount');
-       
-        $Dr += Transactions::whereDate('trans_date','<',$odStartDate)
-        ->where('invoice_disbursed_id','=',$invDisbId)
-        ->where('entry_type','=','0')
-        ->where(function($query) use($intTransIds){
-            $query->whereIn('trans_id',$intTransIds);
-            $query->OrwhereIn('parent_trans_id',$intTransIds);
-        })
-        ->sum('amount');
 
+       if($intTransIds){
+           $Dr += Transactions::whereDate('trans_date','<',$odStartDate)
+           ->where('invoice_disbursed_id','=',$invDisbId)
+           ->where('entry_type','=','0')
+           ->where(function($query) use($intTransIds){
+               $query->whereIn('trans_id',$intTransIds);
+               $query->OrwhereIn('parent_trans_id',$intTransIds);
+            })
+            ->sum('amount');
+        }
+            
         $Cr =  Transactions::whereDate('trans_date','<=',$transDate) 
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','1')
@@ -243,15 +245,16 @@ class ManualApportionmentHelper{
             $query->OrwhereIn('parent_trans_id',$disbTransIds);
         })
         ->sum('amount');
-
-        $Cr +=  Transactions::whereDate('trans_date','<',$odStartDate) 
-        ->where('invoice_disbursed_id','=',$invDisbId)
-        ->where('entry_type','=','1')
-        ->where(function($query) use($intTransIds){
-            $query->whereIn('trans_id',$intTransIds);
-            $query->OrwhereIn('parent_trans_id',$intTransIds);
-        })
-        ->sum('amount');
+        if($intTransIds){
+            $Cr +=  Transactions::whereDate('trans_date','<',$odStartDate) 
+            ->where('invoice_disbursed_id','=',$invDisbId)
+            ->where('entry_type','=','1')
+            ->where(function($query) use($intTransIds){
+                $query->whereIn('trans_id',$intTransIds);
+                $query->OrwhereIn('parent_trans_id',$intTransIds);
+            })
+            ->sum('amount');
+        }
 
         return $Dr-$Cr;
     }
