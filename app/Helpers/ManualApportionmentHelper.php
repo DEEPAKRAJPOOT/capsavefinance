@@ -376,8 +376,9 @@ class ManualApportionmentHelper{
     }
     
     private function updateGracePeriodInt($invDisbId, $gStartDate, $gEndDate, $odIntRate, $payFreq, $userId){
+        $odStartDate = $gStartDate;
         while(strtotime($gEndDate) >= strtotime($gStartDate)){
-            $balancePrincipal = $this->getpaymentSettled($gStartDate, $invDisbId, $payFreq);
+            $balancePrincipal = $this->getpaymentSettled($gStartDate, $invDisbId, $payFreq, $odStartDate);
             $interestAmt = round($this->calInterest($balancePrincipal, $odIntRate, 1),config('lms.DECIMAL_TYPE.AMOUNT'));
             
             $interest_accrual_id = InterestAccrual::whereDate('interest_date',$gStartDate)
@@ -451,7 +452,7 @@ class ManualApportionmentHelper{
                     $currentIntRate = $intRate;
                 }
                 
-                $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq);
+                $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq, $odStartDate);
                 if($balancePrincipal > 0){
                     if(strtotime($loopStratDate) >= strtotime($odStartDate)){
                         $currentIntRate = $odIntRate;
