@@ -1557,7 +1557,8 @@ class Helper extends PaypalHelper
             $parentAppId = $appData->parent_app_id;
             
             $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 1]);
-            
+            $result['tot_limit_amt'] = isset($appLimitData[0]) ? $appLimitData[0]->tot_limit_amt : 0;
+                    
             $pTotalCunsumeLimit = 0;
             $pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
             foreach ($pAppPrgmLimit as $value) {
