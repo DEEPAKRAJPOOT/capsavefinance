@@ -50,7 +50,7 @@
                 {!! Form::hidden('program_id', $program_id) !!}
                 {!! Form::hidden('parent_program_id', $parent_program_id) !!}
                 {!! Form::hidden('action', $action) !!}
-                    
+                {!! Form::hidden('type', $action_type) !!}    
                 {!!
                 Form::close()
                 !!}                      
@@ -64,8 +64,9 @@
 <script>   
 var messages = {
     is_accept: "{{ Session::get('is_accept') }}",
-    error_code : "{{ Session::has('error_code') }}",
+    error_code : "{{ Session::get('error_code') }}",
     route_url : "{{ Session::pull('route_url') }}",
+    is_accept_redirect: "{{ Session::get('is_accept_redirect') }}",
 };
 
 $(document).ready(function() {
@@ -82,7 +83,12 @@ $(document).ready(function() {
        parent.jQuery("#"+targetModel).modal('hide');       
        parent.window.location = messages.route_url;
     }
-
+    
+    
+    if (messages.is_accept_redirect == 1) {       
+       window.location = messages.route_url;
+    }
+    
     $('#close_btn').click(function() {            
         parent.$('#'+targetModel).modal('hide');
     });

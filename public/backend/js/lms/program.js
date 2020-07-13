@@ -41,6 +41,15 @@ try {
             return i <= j;
         }, "Max loan size should not be greater than Limit");
 
+        $.validator.addMethod('notLessThan', function (value, element, param) {
+            var min = value.replace(/,/g, "");
+            var max = $(param).val().replace(/,/g, "");
+
+            var i = parseInt(min);
+            var j = parseInt(max);
+            return i >= j;
+        }, "Limit amount should not be less than utilized amount");
+        
         /**
          * handle Industry Change evnet
          * 
@@ -111,6 +120,7 @@ try {
                     },
                     anchor_limit: {
                         required: true,
+                        notLessThan : "#utilized_amount"
                     },
                     is_fldg_applicable: {
                         required: true
@@ -118,7 +128,9 @@ try {
                     anchor_id: {
                         required: true
                     },
-
+                    status: {
+                        required: true
+                    },
                 },
                 messages: {
 
@@ -161,18 +173,17 @@ try {
                 {
                     data: 'anchor_limit'
                 },
-
+                {
+                    data: 'reason'
+                },
                 {
                     data: 'status'
-                },
+                },                
                 {
                     data: 'action'
                 }
             ],
-            aoColumnDefs: [{
-                    'bSortable': false,
-                    'aTargets': []
-                }]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
 
         });
 
@@ -469,6 +480,7 @@ try {
                     anchor_sub_limit: {
                         required: true,
                         lessThan: "#anchor_limit",
+                        notLessThan : "#utilized_amount"
                         // min: 1,
                         // number: true
                     },

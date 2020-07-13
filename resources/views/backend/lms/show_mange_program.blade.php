@@ -58,7 +58,8 @@
                                     <th>{{ trans('backend.mange_program.program_mame') }}</th>
                                     <th>{{ trans('backend.mange_program.anchor_name') }}</th>
                                     <th>{{ trans('backend.mange_program.anchor_limit') }}</th>
-                                    <th>{{ trans('backend.mange_program.status') }}</th>
+                                    <th>{{ trans('backend.mange_program.reason') }}</th>                                    
+                                    <th>{{ trans('backend.mange_program.status') }}</th>                                    
                                     <th>{{ trans('backend.mange_program.action') }}</th>
                                 </tr>
                             </thead>
@@ -79,7 +80,9 @@
 </div>
 </div>
 </div>
-{!!Helpers::makeIframePopup('editProgram','Modify Program', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('editProgram','Edit Anchor Program', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('modifyProgramLimit','Modify Program Limit', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('showEndProgramReason','View Reason', 'modal-md')!!}
 @endsection
 
 @section('jscript')

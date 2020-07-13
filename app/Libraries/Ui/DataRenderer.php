@@ -2562,7 +2562,7 @@ class DataRenderer implements DataProviderInterface
     function getPromgramList($request , $program)
     {
          return DataTables::of($program)
-                ->rawColumns([ 'action', 'active','status' ,'anchor_limit'])                
+                ->rawColumns([ 'action', 'active','status','reason' ,'anchor_limit'])                
                 ->editColumn(
                     'prgm_id',
                     function ($program) {                   
@@ -2610,6 +2610,18 @@ class DataRenderer implements DataProviderInterface
                                              
                                           </div></b>';
                         })
+                ->editColumn(
+                        'reason',
+                        function ($program) {
+                    $res = '';
+                    if ($program->modify_reason_type) {
+                        $reasonList = config('common.program_modify_reasons');
+                        $link = route('view_end_program_reason', ['program_id'=> $program->prgm_id] );                                
+                        $res .= '<small><a href="#" title="View Reason" data-toggle="modal" data-target="#showEndProgramReason" data-url="'. $link . '" data-height="200px" data-width="100%" data-placement="top">' .$reasonList[$program->modify_reason_type]  . '</a></small>';
+                        }
+                         return  $res;
+
+                    })                        
                         ->addColumn(
                     'action',
                     function ($program) {
@@ -2617,9 +2629,12 @@ class DataRenderer implements DataProviderInterface
                       if(Helpers::checkPermission('manage_sub_program')){
                           $action .='<a title="View Sub-Program" href="'.route('manage_sub_program',['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]).'" class="btn btn-action-btn btn-sm "><i class="fa fa-cog" aria-hidden="true"></i></a>';
                       }
-                    
+                   
+                      $editType = \Helpers::isProgamEditAllowed($program->prgm_id);
                     //add_sub_program
-                      if(Helpers::checkPermission('edit_program') && \Helpers::isProgamEditAllowed($program->prgm_id)){                          
+                      if (Helpers::checkPermission('edit_program') && $editType == 2){  
+                          $action .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit', 'type' => 'anchor_program']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';                          
+                      } else if (Helpers::checkPermission('edit_program') && $editType == 1) {
                           $action .= '<a title="Edit Program" data-toggle="modal"  data-height="420px" data-width="100%" data-target="#editProgram" data-url="' . route('edit_program', ['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Program"><i class="fa fa-edit"></i></a>';
                       }
                       
@@ -3162,7 +3177,7 @@ class DataRenderer implements DataProviderInterface
                                 'anchor_sub_limit',
                                 function ($program) {
                             $ret = '<strong>Limit:</strong> '. \Helpers::formatCurreny($program->anchor_sub_limit) . '<br>';
-                            $ret .= '<strong>Utilized Limit in Offer:</strong> '. \Helpers::formatCurreny(\Helpers::getPrgmBalLimit($program->prgm_id)) . '<br>';
+                            $ret .= '<strong>Utilized Limit in Offer:</strong> '. \Helpers::formatCurreny(\Helpers::getPrgmBalLimit([$program->copied_prgm_id,$program->prgm_id])) . '<br>';
                             $ret .= '<strong>Loan Size:</strong> '. \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size);
                             return  $ret;
                         })                       
@@ -3216,8 +3231,7 @@ class DataRenderer implements DataProviderInterface
                             //if (Helpers::checkPermission('view_sub_program')){
                                 $act = "<a  href='". route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] )."' class=\"btn btn-action-btn btn-sm\" title=\"View Sub-Program\"><i class=\"fa fa-eye\" aria-hidden=\"true\"></i></a>";
                             //}
-                            if ($program->status != 2) {                            
-                            //if ($program->is_edit_allow == 1 || Helpers::checkApprPrgm($program->prgm_id)) {    
+                            if ($program->status != 2 && !Helpers::checkApprPrgm($program->prgm_id, $isOfferAcceptedOrRejected=false)) { 
                             if ($program->is_edit_allow == 1) {    
                                 $act .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';
                             } else {                                

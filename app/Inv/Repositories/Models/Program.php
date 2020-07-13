@@ -155,6 +155,7 @@ class Program extends BaseModel {
                         'prgm.processing_fee',
                         'prgm.check_bounce_fee',
                         'prgm.status',
+                        'prgm.copied_prgm_id',
                         'mst_industry.name as industry_name',
                         'mst_sub_industry.name as sub_industry_name',
                         DB::raw("CASE

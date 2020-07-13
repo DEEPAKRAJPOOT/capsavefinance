@@ -1213,7 +1213,7 @@ class ApplicationController extends Controller
                                                 
                         $appPrgmOffers = $this->appRepo->getAllOffers($appId);
                         foreach($appPrgmOffers as $appPrgmOffer) {
-                            if (!empty($appPrgmOffer->prgm_id) && $appPrgmOffer->status == 1) {
+                            if (!empty($appPrgmOffer->prgm_id) && ($appPrgmOffer->status == 1 || $appPrgmOffer->status == 2)) {
                                 $prgmId = $appPrgmOffer->prgm_id;
 
                                 $updatePrgmData = [];

@@ -3490,9 +3490,13 @@ if ($err) {
     public function getProgramBalanceLimit(Request $request)
     {
         $program_id = (int)$request->program_id;
-        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);
+        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
         $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
-        return json_encode(['prgm_limit' => $prgm_limit, 'prgm_data' => $prgm_data]);
+        $utilizedLimit = 0;
+        if ($prgm_data && $prgm_data->copied_prgm_id) {     
+            $utilizedLimit = $this->application->getPrgmBalLimit($prgm_data->copied_prgm_id);
+        }
+        return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
     }
     
      public function getProgramSingleList(Request $request)

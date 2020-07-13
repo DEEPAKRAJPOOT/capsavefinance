@@ -111,5 +111,5 @@ return [
     'apport_invalid_user_id' => "Invalid User",
     'apport_invalid_repayment_id' => 'Invalid Re-Payment',
     'apport_invalid_unapplied_amt' => 'Total requested amout to settle is greater than the repayment amt',
-
+    'program_anchor_limit' => 'You can\'t enter limit amount less than utilized amount.'
     ];

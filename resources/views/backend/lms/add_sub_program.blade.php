@@ -47,7 +47,13 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                             <b>Remaining Anchor Limit : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i>
                                                             {{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }} 
+                                                            <br>
+                                                            <b>Utilized Limit in Offer : </b>
+                                                            <i class="fa fa-inr" aria-hidden="true"></i>
+                                                            {{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}                                                             
                                                         </p>
+                                                        
+                                                   
                                                     </div>
                                                     <!--                                                    <div class="col-sm-3 text-right">
                                                        <a class="edit-btn" href="{{route('add_program',['program_id'=> $program_id ,'anchor_id'=>$anchor_id ])}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
@@ -66,7 +72,8 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                             {!! Form::hidden('anchor_limit_re',isset($remaningAmount) ?  number_format($remaningAmount)  : null,['id'=>'anchor_limit'])   !!}
                                             {!! Form::hidden('anchor_id',$anchor_id) !!}
                                             {!! Form::hidden('anchor_user_id',isset($programData->anchor_user_id) ?$programData->anchor_user_id  : null ) !!}
-                                            {!! Form::hidden('copied_prgm_id', $copied_prgm_id) !!}
+                                            {!! Form::hidden('copied_prgm_id', $copied_prgm_id) !!}                                            
+                                            {!! Form::hidden('utilized_amount', $utilizedLimit, ['id'=>'utilized_amount']) !!}
                                             <div class="sub-form renew-form " id="subform">
                                                 <div class="row">
                                                     <div class="col-md-12">

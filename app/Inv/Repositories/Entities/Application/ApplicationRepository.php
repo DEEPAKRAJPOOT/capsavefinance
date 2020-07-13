@@ -2361,6 +2361,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return Program::getProgramAnchors();
     }    
+    
+    public function checkProgramOffers($program_id)
+    {
+        return AppProgramOffer::checkProgramOffers($program_id);
+    }    
 }
 
 

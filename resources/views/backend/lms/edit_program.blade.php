@@ -4,13 +4,29 @@
     
 
 <div class="modal-body text-left">
-
+                            <div class="sub-progrem">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        
+                                        <p class="float-left mr-3 mb-0">
+                                            <b>Remaining Anchor Limit : </b>
+                                            <i class="fa fa-inr" aria-hidden="true"></i>
+                                            {{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }} 
+                                        </p>
+                                                                               
+                                        
+                                        <p class="float-right mb-0">                                            
+                                            <b>Utilized Limit in Offer : </b>
+                                            <i class="fa fa-inr" aria-hidden="true"></i>
+                                            {{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}                                             
+                                        </p>                                        
+                                    </div>                                    
+                                </div>
+                            </div>
+                            </br>
                             {{ Form::open(array('url' => route('save_program') ,'id'=>'addProgram')) }}
 
-                            
-                                
-
-
+                                                            
                                     <div class="clearfix"></div>
                                     <div class="row">
                                         <div class="col-md-6">
@@ -59,7 +75,7 @@
                                                     {{ trans('backend.add_program.anchor_limit') }}
                                                     <span class="error_message_label">*</span> </label>
                                                 <div class="relative">
-                                                <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a> {!! Form::text('anchor_limit',$program->anchor_limit, ['class'=>'form-control number_format','placeholder'=>trans('backend.add_program.enter_anchor_limit')])!!}
+                                                <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a> {!! Form::text('anchor_limit', number_format($program->anchor_limit), ['class'=>'form-control number_format','placeholder'=>trans('backend.add_program.enter_anchor_limit')])!!}
                                                 </div>
                                             </div>
                                         </div>
@@ -105,6 +121,19 @@
                                                 <label id="is_fldg_applicable-error" class="error" for="is_fldg_applicable"></label>
                                             </div>
                                         </div>
+                                        @if ($action_type != 'anchor_program')
+                                        <div class="col-md-6">
+                                            <div class="form-group password-input">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <label for="txtCreditPeriod">Status <span class="error_message_label">*</span> </label>
+                                                        {!! Form::select('status', [''=>trans('backend.please_select') ,1=>'Active',0 =>'In Active'],
+                                                        isset($program->status) ? $program->status : null, ['class'=>'form-control required']) !!}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
                                     </div>
                                 
                                 <div class="ima"></div>
@@ -121,6 +150,9 @@
                                 </div>                            
                             {!! Form::hidden('anchor_id', $anchor_id) !!}
                             {!! Form::hidden('program_id', $program->prgm_id) !!}
+                            {!! Form::hidden('utilized_amount', $utilizedLimit, ['id'=>'utilized_amount']) !!}
+                            {!! Form::hidden('type', $action_type) !!}
+                             
                             {{ Form::close() }}
 
                         </div>
@@ -138,8 +170,9 @@
         token: "{{ csrf_token() }}",
         please_select: "{{ trans('backend.please_select') }}",        
         is_accept: "{{ Session::get('is_accept') }}",    
-        error_code : "{{ Session::has('error_code') }}",
+        error_code : "{{ Session::get('error_code') }}",
         msg : "{{ Session::pull('msg') }}",
+        route_url : "{{ Session::pull('route_url') }}",
     };
     $(document).on('input', '.format_with_decimal', function(event) {
         if(event.which >= 37 && event.which <= 40) return;
@@ -159,13 +192,18 @@
     })
     
     $(document).ready(function(){    
-        if(messages.is_accept == 1){
-            
-            parent.jQuery("#iframeMessage").html('<div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+messages.msg+'</div>');
-            
-           parent.jQuery("#editProgram").modal('hide');  
-           parent.oTable.draw();
-           parent.$('.isloader').hide();           
+        if(messages.is_accept == 1){         
+           parent.jQuery("#iframeMessage").html('<div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+messages.msg+'</div>');
+           //parent.oTable.draw(); 
+           parent.jQuery("#editProgram").modal('hide');
+           parent.jQuery("#modifyProgramLimit").modal('hide');
+           parent.$('.isloader').hide();        
+           parent.window.location = messages.route_url;
+        }
+        
+        if(messages.error_code != ''){
+            jQuery("#iframeMessage").show();
+            jQuery("#iframeMessage").html('<div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+messages.msg+'</div>');
         }
         
         $('#close_btn').click(function() {            

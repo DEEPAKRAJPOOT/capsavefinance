@@ -113,9 +113,23 @@ class AppProgramOffer extends BaseModel {
         
         $whereCondition['is_active'] = isset($whereCondition['is_active']) ? $whereCondition['is_active'] : 1;
         
-        $offerData = self::select('app_prgm_offer.*')
-                ->where($whereCondition)
-                ->first();      
+        $offerWhereCond = [];
+        if (isset($whereCondition['status_is_not_null'])) {
+            $offerWhereCond['status_is_not_null'] = $whereCondition['status_is_not_null'];
+            unset($whereCondition['status_is_not_null']);
+        } else if (isset($whereCondition['status_is_null'])) {
+            $offerWhereCond['status_is_null'] = $whereCondition['status_is_null'];
+            unset($whereCondition['status_is_null']);
+        }
+                                
+        $query = self::select('app_prgm_offer.*')
+                ->where($whereCondition);
+        if (isset($offerWhereCond['status_is_not_null'])) {
+            $query->whereNotNull('status');
+        } else if (isset($offerWhereCond['status_is_null'])) {
+            $query->whereNull('status');
+        }
+        $offerData = $query->first();      
         return $offerData ? $offerData : null;
     }
 
@@ -541,5 +555,18 @@ class AppProgramOffer extends BaseModel {
         }
         $query->where($whereCond);
         return $query->sum('prgm_limit_amt');
+    }
+
+    public static function checkProgramOffers($program_id)
+    {
+        $whereCond = [];
+        $whereCond[] = ['is_active', '=', 1];
+        if (is_array($program_id)) {
+            $query = self::whereIn('prgm_id', $program_id);
+        } else {
+            $query = self::where('prgm_id', $program_id);
+        }
+        $query->where($whereCond);
+        return $query->count();
     }    
 }

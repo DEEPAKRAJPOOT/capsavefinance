@@ -1665,13 +1665,17 @@ class Helper extends PaypalHelper
         }
      }
      
-     public static function checkApprPrgm($prgmId)
+     public static function checkApprPrgm($prgmId, $isOfferAcceptedOrRejected=true)
      {
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
         $offerCond=[];
-        $offerCond['prgm_id'] = $prgmId;
+        $offerCond['prgm_id'] = $prgmId;        
         $offerCond['is_active'] = 1;
-        $offerCond['status'] = 1;
+        if ($isOfferAcceptedOrRejected) {
+            $offerCond['status_is_not_null'] = 1;
+        } else {
+            $offerCond['status_is_null'] = 1;
+        }
         $appPrgmOffer = $appRepo->getOfferData($offerCond);
         $res = false;
         
@@ -1693,9 +1697,10 @@ class Helper extends PaypalHelper
      {
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
         $anchorSubLimitTotal = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId, 'status' => 1], ['anchor_sub_limit'])->sum('anchor_sub_limit');
-        $subPrgms = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId], ['prgm_id'])->pluck('prgm_id');
-        $prgmIds = $subPrgms ? $subPrgms->toArray() : [];
-        $utilizedLimit = count($prgmIds) > 0 ? $appRepo->getPrgmBalLimit($prgmIds) : 0;        
+        //$subPrgms = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId], ['prgm_id'])->pluck('prgm_id');
+        //$prgmIds = $subPrgms ? $subPrgms->toArray() : [];
+        //$utilizedLimit = count($prgmIds) > 0 ? $appRepo->getPrgmBalLimit($prgmIds) : 0; 
+        $utilizedLimit = 0;
         $totalUtilizedAmount = $anchorSubLimitTotal + $utilizedLimit;
         return $totalUtilizedAmount;
      }
@@ -1703,13 +1708,21 @@ class Helper extends PaypalHelper
      public static function isProgamEditAllowed($anchorPrgmId)
      {
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
-        $subPrgms = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId], ['is_edit_allow']);
-        $isProgamEditAllowed = false;
-        foreach($subPrgms as $prgm) {            
-            if ($prgm->is_edit_allow)  {
-                $isProgamEditAllowed = true;
-                break;
-            }
+        $subPrgms = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId], ['parent_prgm_id','is_edit_allow', 'prgm_id']);
+        $isProgamEditAllowed = 0;
+        
+        $prgmIds =   $subPrgms  ? $subPrgms->pluck('prgm_id')->toArray() : [];
+        $appPrgmOffer = $appRepo->checkProgramOffers($prgmIds);        
+                     
+        if (count($subPrgms) == 0 || $appPrgmOffer == 0) {
+            $isProgamEditAllowed = 1;
+        } else {            
+            foreach($subPrgms as $prgm) {   
+                if ($prgm->is_edit_allow && !self::checkApprPrgm($prgm->prgm_id, $isOfferAcceptedOrRejected=false) )  {
+                    $isProgamEditAllowed = 2;               
+                    break;
+                }
+            }       
         }
         return $isProgamEditAllowed;
      }
