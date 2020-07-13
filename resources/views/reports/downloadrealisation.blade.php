@@ -158,7 +158,7 @@
                             <span style="font-size: small;"><strong>Cheque </strong></span>
                         </td>
                           <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                            <span style="font-size: small;"><strong>Business </strong></span>
+                            <span style="font-size: small;"><strong>Business Name</strong></span>
                         </td>
                     </tr>
                     @php

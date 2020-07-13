@@ -44,7 +44,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                         <div class="form-group">
-                                <label for="txtCreditPeriod">Anchor Name  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
+                                <label for="txtCreditPeriod">Anchor Business Name  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
                                             <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" name="anchor_name">
 
 

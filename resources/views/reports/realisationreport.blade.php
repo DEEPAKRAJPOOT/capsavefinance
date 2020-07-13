@@ -77,7 +77,7 @@
                                                      <th>Realisation  Amount.</th>
                                                      <th>OD/OP Days  </th>
                                                      <th>Cheque</th>
-                                                      <th>Business</th>
+                                                      <th>Business Name</th>
                                                    </tr>
 	                                        </thead>
 	                                        <tbody>
