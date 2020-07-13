@@ -111,7 +111,7 @@
                             }
                             ?>
                             <div class="col-md-12">
-                                <h5 class="card-title form-head">Management Details ({{isset($row->first_name) ? $i : '1'}}) </h5>
+                                <h5 class="card-title form-head">Management Information ({{isset($row->first_name) ? $i : '1'}}) </h5>
 
                                 <div class="row">
                                     <div class="col-md-4">
