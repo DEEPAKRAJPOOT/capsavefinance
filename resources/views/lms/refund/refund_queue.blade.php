@@ -33,6 +33,9 @@
                             <input type="hidden" value="" name="transaction_ids" id="transaction_ids">
                         </div>
                     </div>
+                    <div class="row pull-left">
+                    @include('lms.refund.common.search')
+                    </div>
                 </div>
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
