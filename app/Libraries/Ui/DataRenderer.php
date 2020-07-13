@@ -5331,6 +5331,16 @@ class DataRenderer implements DataProviderInterface
                 return config('lms.REQUEST_STATUS_DISP.'. $data->status . '.SYSTEM');
             }
         )
+        ->filter(function ($query) use ($request) {
+            if ($request->get('search_keyword') != '') {
+                $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('search_keyword'));
+                    $query->where('ref_code', 'like',"%$search_keyword%");
+                    // ->orWhere('chrg_calculation_amt', 'like', "%$search_keyword%")
+                    // ->orWhere('chrg_name', 'like', "%$search_keyword%");
+                });
+            }
+        })
         ->make(true);
     }
 

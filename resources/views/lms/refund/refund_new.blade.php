@@ -27,6 +27,9 @@
                             <button type="button" class="btn btn-success btn-sm ml-2" id="pendingBtn">Submit</button>
                         </div>
                     </div>
+                    <div class="row pull-left">
+                    @include('lms.refund.common.search')
+                    </div>
                 </div>
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
