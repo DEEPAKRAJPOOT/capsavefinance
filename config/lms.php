@@ -8,6 +8,7 @@
 */
 
 return [
+    'EOD_FAILURE_MAIL' => explode(',',env('EOD_FAILURE_MAIL','')),
     'LMS_STATUS' => env('LMS_STATUS', 0),
     'NPA_DAYS' => env('NPA_DAYS', 90),
     'TRANS_TYPE' => [    
@@ -147,6 +148,7 @@ return [
         'CHARGE_POST' => 'charge_post_status',
         'OVERDUE_INT_ACCRUAL' => 'overdue_int_accrual_status',
         'DISBURSAL_BLOCK' => 'disbursal_block_status',
+        'is_running_trans_settled' => 'is_running_trans_settled',
     ],    
     'DECIMAL_TYPE' => [
         'PERCENTAGE' => '2',

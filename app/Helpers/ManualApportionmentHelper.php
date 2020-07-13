@@ -185,12 +185,12 @@ class ManualApportionmentHelper{
         ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
     }
 
-    private function getpaymentSettled($transDate, $invDisbId, $payFreq){
+    private function getpaymentSettled($transDate, $invDisbId, $payFreq, $odStartDate){
         $intrest = 0;
         $disbTransIds = null;
-        $intTransIds2 = null;
+        $intTransIds = null;
         if($payFreq == 2){
-            $disbTransIds = Transactions::whereDate('trans_date','<=',$transDate) 
+            $disbTransIds = Transactions::whereDate('trans_date','<=',$odStartDate) 
             ->where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
             ->whereNull('link_trans_id') 
@@ -198,19 +198,17 @@ class ManualApportionmentHelper{
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
             ->pluck('trans_id')->toArray();
         
-            $intTransIds2 = Transactions::whereMonth('trans_date','<=',date('m', strtotime($transDate)))
-            ->whereYear('trans_date',date('Y', strtotime($transDate)))
+            $intTransIds = Transactions::whereMonth('trans_date','<=',date('m', strtotime($odStartDate)))
+            ->whereYear('trans_date',date('Y', strtotime($odStartDate)))
             ->where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
             ->whereNull('link_trans_id') 
             ->whereNull('parent_trans_id')
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST')]) 
             ->pluck('trans_id')->toArray();
-
-            $transIds = array_merge($disbTransIds,$intTransIds2);
         }
         else{
-            $transIds = Transactions::whereDate('trans_date','<=',$transDate) 
+            $disbTransIds = Transactions::whereDate('trans_date','<=',$odStartDate) 
             ->where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
             ->whereNull('link_trans_id') 
@@ -222,18 +220,36 @@ class ManualApportionmentHelper{
         $Dr = Transactions::whereDate('trans_date','<=',$transDate)
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','0')
-        ->where(function($query) use($transIds){
-            $query->whereIn('trans_id',$transIds);
-            $query->OrwhereIn('parent_trans_id',$transIds);
+        ->where(function($query) use($disbTransIds){
+            $query->whereIn('trans_id',$disbTransIds);
+            $query->OrwhereIn('parent_trans_id',$disbTransIds);
+        })
+        ->sum('amount');
+       
+        $Dr += Transactions::whereDate('trans_date','<',$odStartDate)
+        ->where('invoice_disbursed_id','=',$invDisbId)
+        ->where('entry_type','=','0')
+        ->where(function($query) use($intTransIds){
+            $query->whereIn('trans_id',$intTransIds);
+            $query->OrwhereIn('parent_trans_id',$intTransIds);
         })
         ->sum('amount');
 
         $Cr =  Transactions::whereDate('trans_date','<=',$transDate) 
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','1')
-        ->where(function($query) use($transIds){
-            $query->whereIn('trans_id',$transIds);
-            $query->OrwhereIn('parent_trans_id',$transIds);
+        ->where(function($query) use($disbTransIds){
+            $query->whereIn('trans_id',$disbTransIds);
+            $query->OrwhereIn('parent_trans_id',$disbTransIds);
+        })
+        ->sum('amount');
+
+        $Cr +=  Transactions::whereDate('trans_date','<',$odStartDate) 
+        ->where('invoice_disbursed_id','=',$invDisbId)
+        ->where('entry_type','=','1')
+        ->where(function($query) use($intTransIds){
+            $query->whereIn('trans_id',$intTransIds);
+            $query->OrwhereIn('parent_trans_id',$intTransIds);
         })
         ->sum('amount');
 
@@ -490,10 +506,16 @@ class ManualApportionmentHelper{
     }
     
     public function dailyIntAccrual(){
+        $cLogDetails = Helper::cronLogBegin(1);
+
         $curdate = Helpers::getSysStartDate();
-        $invoiceList = $this->lmsRepo->getUnsettledInvoices([]);
+        $invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true]);
         foreach ($invoiceList as $invId => $trans) {
             $this->intAccrual($invId);
+        }
+        
+        if($cLogDetails){
+            Helper::cronLogEnd('1',$cLogDetails->cron_log_id);
         }
     }
     

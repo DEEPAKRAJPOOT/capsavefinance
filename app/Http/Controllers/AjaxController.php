@@ -4453,13 +4453,22 @@ if ($err) {
     }
 
     public function updateEodProcessStatus(Request $request)
-    {
-        $waitTime = 10;
-        sleep($waitTime);
-        
-        \App::make('App\Http\Controllers\Lms\EodProcessController')->process();
-         
-        return response()->json(['status' => 1]);
+    { 
+        $eod_process_id = $request->eod_process_id;
+
+        if(!\Helpers::getInterestAccrualCronStatus()){
+            return response()->json(['status' => 3 , 'message'=>'Interest Accrual has not been calculated till date.']);
+        }
+        if(\Helpers::getEodProcessCronStatus()){
+            return response()->json(['status' => 4 , 'message'=>'EOD is already run today.']);
+        }
+        if($eod_process_id){
+            if(\App::make('App\Http\Controllers\Lms\EodProcessController')->process($eod_process_id)){
+                return response()->json(['status' => 1, 'message'=>'Eod completed successfully!']);
+            }
+            return response()->json(['status' => 2, 'message'=>'Eod process failed!']);
+        }
+        return response()->json(['status' => 0, 'message'=>'Eod detail missing! Please try again!']);
     }    
 
 
@@ -4487,6 +4496,28 @@ if ($err) {
         $condArr['type']  = 'pdf';
         $leaseRegisters['pdfUrl'] = route('download_reports', $condArr);
         return new JsonResponse($leaseRegisters);
+    }
+
+    public function getEodList(DataProviderInterface $dataProvider){
+        $eodList = $this->lmsRepo->getEodList();
+        $eod = $dataProvider->getEodList($this->request, $eodList);
+        return $eod;
+    }
+
+    public function getEodProcessList(Request $request){
+        $eod_process_id = $request->eod_process_id;
+        $eodLog = $this->lmsRepo->getEodProcessLog(['eod_process_id'=>$eod_process_id]);
+        if($eodLog){
+            $icon0 = '';
+            $icon1 = '<i class="fa fa-check" title="Pass" style="color:green" aria-hidden="true"></i>';
+            $icon2 = '<i class="fa fa-times" title="Fail" style="color:red" aria-hidden="true"></i>';
+
+            $html = '<table class="table  table-td-right"> <tbody> <tr> <td class="text-left" width="30%"><b>Tally Posting Status</b></td> <td>'.${'icon'.$eodLog->tally_status}.'</td> <td class="text-left" width="30%"><b>Interest Accrual Status</b></td> <td>'.${'icon'.$eodLog->int_accrual_status}.'</td> </tr> <tr> <td class="text-left" width="30%"><b>Repayment Status</b></td> <td>'.${'icon'.$eodLog->repayment_status}.'</td> <td class="text-left" width="30%"><b>Disbursal Status</b></td> <td>'.${'icon'.$eodLog->disbursal_status}.'</td> </tr> <tr> <td class="text-left" width="30%"><b>Charge Posting Status</b></td> <td>'.${'icon'.$eodLog->charge_post_status}.'</td> <td class="text-left" width="30%"><b>Overdue Interest Accrual Status</b></td> <td>'.${'icon'.$eodLog->overdue_int_accrual_status}.'</td> </tr> <tr> <td class="text-left" width="30%"><b>Disbursal Block Status</b></td> <td>'.${'icon'.$eodLog->disbursal_block_status}.'</td> <td class="text-left" width="30%"><b>Manually Posted Running Transaction Status</b></td> <td>'.${'icon'.$eodLog->is_running_trans_settled}.'</td> </tr> </tbody> </table>';
+        }else{
+            $html = "EOD report not Found.";
+        }
+
+        return new JsonResponse(['html'=>$html]);
     }
 
 }

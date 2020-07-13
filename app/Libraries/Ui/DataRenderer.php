@@ -1,23 +1,26 @@
 <?php
 namespace App\Libraries\Ui;
-use DataTables;
+use DB;
+use Auth;
 use Config;
 use Helpers;
-use DB;
 use Session;
-use Auth;
+use DateTime;
+use DataTables;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
-use App\Inv\Repositories\Models\BizInvoice;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
-use App\Inv\Repositories\Models\AppAssignment;
-use App\Inv\Repositories\Models\Application;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
-use App\Inv\Repositories\Models\Master\DoaLevelRole;
-use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Models\Master\DoaLevelRole;
+use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -6417,4 +6420,94 @@ class DataRenderer implements DataProviderInterface
                  })
               ->make(true);
     }   
+
+    public function getEodList(Request $request,$eod)
+    {  
+        return DataTables::of($eod)
+            ->rawColumns(['status'])
+           
+            ->addColumn( 'current_sys_date', function ($eod) {
+                if($eod->created_at) 
+                return \Helpers::convertDateTimeFormat($eod->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
+            })
+
+            ->addColumn( 'sys_started_at', function ($eod) {
+                if($eod->sys_start_date) 
+                return \Helpers::convertDateTimeFormat($eod->sys_start_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
+            })
+
+            ->addColumn( 'sys_stopped_at', function ($eod) {
+                if($eod->sys_end_date)
+                return \Helpers::convertDateTimeFormat($eod->sys_end_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A'); 
+            })
+
+            ->addColumn( 'eod_process_mode', function ($eod) {
+                $processedBy = null;
+                switch ($eod->eod_process_mode) {
+                    case '1':
+                        $processedBy = 'Automatically';
+                        break;
+                    case '2':
+                        $processedBy = 'Manually';
+                        break;
+                    default:
+                        $processedBy = ''; 
+                        break;
+                }
+                return $processedBy;
+            })
+
+            ->addColumn( 'eod_process_started_at', function ($eod) {
+                if($eod->eod_process_start) 
+                return \Helpers::convertDateTimeFormat($eod->eod_process_start, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s A');
+            })
+
+            ->addColumn( 'eod_process_stopped_at', function ($eod) {
+                if($eod->eod_process_end)
+                return \Helpers::convertDateTimeFormat($eod->eod_process_end, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s A'); 
+            })
+
+            ->addColumn( 'total_sec', function ($eod) { 
+                if($eod->total_sec){
+                    $dt1 = new DateTime("@0");
+                    $dt2 = new DateTime("@$eod->total_sec");
+                    $days = $dt1->diff($dt2)->format('%a');
+                    $hours = $dt1->diff($dt2)->format('%h');
+                    $minutes = $dt1->diff($dt2)->format('%i');
+                    $seconds =  $dt1->diff($dt2)->format('%s');
+                    $result = '';
+                     
+                    $result .= $days? $days. ' days, ':''; 
+                    $result .= $hours? $hours. ' hours, ':''; 
+                    $result .= $minutes? $minutes. ' minutes, ':''; 
+                    $result .= $seconds? $seconds. ' seconds ':'';   
+                    return $result;              
+                }
+            })
+
+            ->addColumn( 'status', function ($eod) { 
+                $status = null;
+                switch ($eod->status) {
+                    case '0':
+                        $status = '<i class="fa fa-circle-o-notch fa-spin  fa-fw margin-bottom"></i>'; 
+                        break;
+                    case '1':
+                        $status = '<i class="fa fa-check" title="Passed" style="color:green" aria-hidden="true"></i>'; 
+                        break;
+                    case '2':
+                        $status = '<i class="fa fa-ban" title="Stopped" style="color:black" aria-hidden="true"></i>'; 
+                        break;
+                    case '3':
+                        $status = '<i class="fa fa-times" title="Failed" style="color:red" aria-hidden="true"></i>'; 
+                        break;
+                    default:
+                        $status = ''; 
+                        break;
+                }
+                return $status;
+            })
+            // ->filter(function ($query) use ($request) {
+            // })
+            ->make(true);
+    } 
 }

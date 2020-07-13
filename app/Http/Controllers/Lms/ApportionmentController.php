@@ -246,6 +246,7 @@ class ApportionmentController extends Controller
                     'amount' => $amount,
                     'entry_type' => 1,
                     'trans_type' => config('lms.TRANS_TYPE.WAVED_OFF'),
+                    'trans_mode' => 2,
                     'gl_flag' => 0,
                     'soa_flag' => 1,
                     'pay_from' => 1,
@@ -314,6 +315,7 @@ class ApportionmentController extends Controller
                     'amount' => $amount,
                     'entry_type' => 0,
                     'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
+                    'trans_mode' => 2,
                     'gl_flag' => 0,
                     'soa_flag' => 1,
                     'pay_from' => 1,
@@ -680,7 +682,8 @@ class ApportionmentController extends Controller
                     'amount' => 0,
                     'entry_type' => 1,
                     'soa_flag' => 1,
-                    'trans_type' => config('lms.TRANS_TYPE.REPAYMENT')
+                    'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'),
+                    'trans_mode' => 2,
                 ];
 
                 foreach ($transactions as $trans){  
@@ -701,7 +704,8 @@ class ApportionmentController extends Controller
                         'amount' => $payments[$trans->trans_id],
                         'entry_type' => 1,
                         'soa_flag' => 1,
-                        'trans_type' => $trans->trans_type
+                        'trans_type' => $trans->trans_type,
+                        'trans_mode' => 2,
                     ];
                     $amtToSettle += $payments[$trans->trans_id];
                 }
@@ -739,7 +743,8 @@ class ApportionmentController extends Controller
                             'amount' => $refundAmt,
                             'soa_flag' => 1,
                             'entry_type' => 1,
-                            'trans_type' => config('lms.TRANS_TYPE.REFUND')
+                            'trans_type' => config('lms.TRANS_TYPE.REFUND'),
+                            'trans_mode' => 2,
                         ];
                     }
                 }
@@ -755,7 +760,8 @@ class ApportionmentController extends Controller
                         'amount' => $unAppliedAmt,
                         'entry_type' => 1,
                         'soa_flag' => 1,
-                        'trans_type' => config('lms.TRANS_TYPE.NON_FACTORED_AMT')
+                        'trans_type' => config('lms.TRANS_TYPE.NON_FACTORED_AMT'),
+                        'trans_mode' => 2,
                     ];
                 }
                 if(!empty($transactionList)){
@@ -830,6 +836,7 @@ class ApportionmentController extends Controller
                     'entry_type' => $trans->entry_type,
                     'soa_flag' => 1,
                     'trans_type' => $trans->trans_type,
+                    'trans_mode' => 2,
                 ];
             }
             if(!empty($transactionList)){
@@ -1132,7 +1139,8 @@ class ApportionmentController extends Controller
                         'amount' => $trans->outstanding,
                         'entry_type' => 1,
                         'soa_flag' => 1,
-                        'trans_type' => config('lms.TRANS_TYPE.WRITE_OFF')
+                        'trans_type' => config('lms.TRANS_TYPE.WRITE_OFF'),
+                        'trans_mode' => 2,
                     ];
                     $woAmount += $trans->outstanding;
                 }
@@ -1278,7 +1286,8 @@ class ApportionmentController extends Controller
                         'amount' => $refunds[$trans->trans_id],
                         'entry_type' => 0,
                         'soa_flag' => 1,
-                        'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT')
+                        'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT'),
+                        'trans_mode' => 2,
                     ];
                     if(!isset($payments[$trans->trans_date]['amount'])){
                         $payments[$trans->trans_date]['amount'] = 0;
