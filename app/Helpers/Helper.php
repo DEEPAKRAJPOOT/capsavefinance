@@ -1547,15 +1547,17 @@ class Helper extends PaypalHelper
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
         
         //Validate Enchancement Limit                        
-        $appData = $appRepo->getAppData($appId);
+        $appData = $appRepo->getAppData($appId);        
         $result = [
             'status' => false,
             'app_type' => $appData ? $appData->app_type : 0,
-            'message' => '',
+            'message' => '',            
         ];
         if ($productId == 1 && $appData && in_array($appData->app_type, [2,3]) ) {
             $parentAppId = $appData->parent_app_id;
-
+            
+            $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 1]);
+            
             $pTotalCunsumeLimit = 0;
             $pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
             foreach ($pAppPrgmLimit as $value) {
@@ -1580,10 +1582,12 @@ class Helper extends PaypalHelper
             
             if ($appData->app_type == 2) {
                 $result['status'] = $totalCunsumeLimit <= $pTotalCunsumeLimit;    
-                $result['message'] = trans('backend_messages.validate_limit_enhance_amt'); 
+                $result['message'] = trans('backend_messages.validate_limit_enhance_amt');
+                $result['parent_consumed_limit'] = $pTotalCunsumeLimit; 
             } else if ($appData->app_type == 3) {
                 $result['status'] = $totalCunsumeLimit < $pTotalCunsumeLimit;    
                 $result['message'] = trans('backend_messages.validate_reduce_limit_amt');
+                $result['parent_consumed_limit'] = $pTotalCunsumeLimit; 
             }
         }
         

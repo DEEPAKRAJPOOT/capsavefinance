@@ -1555,6 +1555,14 @@ class CamController extends Controller
             if ($result['status']) {
                 Session::flash('error', $result['message']);
                 return redirect()->back()->withInput();
+            } else if ($result['app_type'] == 2 && isset($result['parent_consumed_limit']) 
+                    && $result['parent_consumed_limit'] < $request->get('tot_limit_amt')) {
+                Session::flash('error', $result['message']);
+                return redirect()->back()->withInput();                
+            } else if ($result['app_type'] == 3 && isset($result['parent_consumed_limit']) 
+                    && $result['parent_consumed_limit'] < $request->get('tot_limit_amt')) {
+                Session::flash('error', $result['message']);
+                return redirect()->back()->withInput();                
             }
 
             
