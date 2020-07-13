@@ -1502,6 +1502,7 @@ class CamController extends Controller
         $limitData = $this->appRepo->getAppLimit($appId);
         $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
         $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
+        $product_types = $this->mstRepo->getProductDataList();
 
         //$offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
         $offerStatus = $this->appRepo->getAppData($appId)->status;//to check offer is sanctioned or not
@@ -1522,7 +1523,8 @@ class CamController extends Controller
                 ->with('leasingPrgmLimitData', $leasingPrgmLimitData)
                 ->with('currStageCode', $currStageCode)
                 ->with('offerStatus', $offerStatus)
-                ->with('userRole', $userRole);
+                ->with('userRole', $userRole)
+                ->with('product_types', $product_types);
     }
     
     /**

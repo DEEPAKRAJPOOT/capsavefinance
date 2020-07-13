@@ -234,9 +234,15 @@
 											<label for="txtSupplierName">Product Type <span class="mandatory">*</span>
 											</label><br/>
 											<div id="check_block">
+												@if(array_key_exists(1, $product_types->toArray()))
 												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="1" name="product_id[1][checkbox]" {{ (array_key_exists(1, $product_ids) || (old('product_id.1.checkbox') == '1'))? 'checked': ''}} > Supply Chain</label>
+												@endif
+												@if(array_key_exists(2, $product_types->toArray()))
 												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="2" name="product_id[2][checkbox]" {{ (array_key_exists(2, $product_ids) || (old('product_id.2.checkbox') == '2'))? 'checked': ''}} > Term Loan</label>
+												@endif
+												@if(array_key_exists(3, $product_types->toArray()))
 												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="3" name="product_id[3][checkbox]" {{ (array_key_exists(3, $product_ids) || (old('product_id.3.checkbox') == '3'))? 'checked': ''}} > Leasing</label>
+												@endif
 											</div>
 											@error('product_id')
 												<span class="text-danger error">{{ $message }}</span>
