@@ -48,6 +48,12 @@
                 <td><b>Penal Amount:</b></td>
                 <td>{{number_format((float)$disbursal->accruedInterest->sum('accrued_interest'), 2, '.', '')  }}</td>
             </tr>
+            <tr>
+                <td><b>Payment Frequency:</b></td>
+                <td>{{$paymentFrequency }}</td>
+                <td></td>
+                <td></td>
+            </tr>
            {{--<tr>
                 <td><b>Outstanding Amount:</b></td>
            

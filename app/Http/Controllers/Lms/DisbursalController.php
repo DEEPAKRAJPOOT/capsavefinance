@@ -373,7 +373,9 @@ class DisbursalController extends Controller
 			// dd($disbursalData);
 			$intAccrualData = $this->lmsRepo->getAccruedInterestData($whereCond);    
             //dd('rrrrrr', $intAccrualData);
-            return view('lms.disbursal.view_interest_accrual')->with(['data'=> $intAccrualData,'disbursal'=>$disbursalData, 'currentIntRate'=> $curr_int_rate]);
+                        $prgm_data = AppProgramOffer::find($disbursalData->invoice->prgm_offer_id);
+                        $paymentFrequency = $prgm_data ? $prgm_data->payment_frequency : '';
+            return view('lms.disbursal.view_interest_accrual')->with(['data'=> $intAccrualData,'disbursal'=>$disbursalData, 'currentIntRate'=> $curr_int_rate, 'paymentFrequency' => $paymentFrequency]);
         }
 
         public function getCurrentInterestRate($intRate, $prgmOfferId){
