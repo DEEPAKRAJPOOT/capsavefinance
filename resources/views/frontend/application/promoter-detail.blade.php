@@ -26,7 +26,7 @@
         @endcan 
         @can('promoter_details')
         <li>
-            <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Management Details</a>
+            <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Management Information</a>
         </li>
         @endcan 
         @can('documents')
