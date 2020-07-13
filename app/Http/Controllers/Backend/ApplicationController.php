@@ -964,8 +964,10 @@ class ApplicationController extends Controller
 							  $fData['amount'] += $totalGst;
 							}
 						  }
-						  $fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
-						  $fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
+						  	if ($fData['amount'] > 0.00) {
+							  	$fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
+							  	$fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
+							}
 						}
 					  }
 					//}
