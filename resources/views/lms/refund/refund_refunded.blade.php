@@ -41,7 +41,6 @@
                                                     <th>Bank Detail</th>
                                                     <th>Amount</th>
                                                     <th>Updated At</th>
-                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -72,6 +71,19 @@
         token: "{{ csrf_token() }}",
         status:"8",
     };
+
+//     $('#approvedList tr th').each(function(i) {
+//    //select all td in this column
+//     var tds = $(this).parents('table')
+//           .find('tr td:nth-child(' + (i + 1) + ')');
+//     //check if all the cells in this column are empty
+//     if(tds.length == tds.filter(':empty').length) { 
+//         //hide header
+//         $(this).hide();
+//         //hide cells
+//         tds.hide();
+//     } 
+//     });
 </script>
 <script src="{{ asset('backend/js/lms/request.js') }}" type="text/javascript"></script>
 @endsection
