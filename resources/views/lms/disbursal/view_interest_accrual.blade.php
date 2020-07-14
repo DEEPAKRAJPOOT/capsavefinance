@@ -50,7 +50,7 @@
             </tr>
             <tr>
                 <td><b>Payment Frequency:</b></td>
-                <td>{{$paymentFrequency }}</td>
+                <td>{{$paymentFrequency == 1 ? 'Up Front' : ($paymentFrequency == 2 ? 'Monthly' : 'Rear Ended') }}</td>
                 <td></td>
                 <td></td>
             </tr>
