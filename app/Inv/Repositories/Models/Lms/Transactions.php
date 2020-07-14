@@ -53,6 +53,7 @@ class Transactions extends BaseModel {
         'user_id',
         'trans_date',
         'trans_type',
+        'trans_mode',
         'amount',
         'entry_type',
         'gst',
@@ -386,6 +387,14 @@ class Transactions extends BaseModel {
 
         if(isset($data['user_id'])){
             $query->where('user_id','=',$data['user_id']);
+        }
+
+        if(isset($data['intAccrualStartDateLteSysDate'])){
+            $query->wherehas('invoiceDisbursed',function($q){
+                $start = new \Carbon\Carbon(\Helpers::getSysStartDate());
+                $sysStartDate = $start->format('Y-m-d');
+                $q->whereDate('int_accrual_start_dt','<=',$sysStartDate);
+            });
         }
 
         $transactions = $query->get();
@@ -808,5 +817,15 @@ class Transactions extends BaseModel {
         $result = $query->get();
         
         return $result;
-    }    
+    }  
+    
+    public static function checkRunningTrans($transStartDate, $transEndDate){
+        return self::whereBetween('trans_date', [$transStartDate, $transEndDate])
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+        ->whereNotNull('trans_running_id')
+        ->get()
+        ->filter(function($item) {
+            return $item->outstanding > 0;
+        });
+    }  
 }

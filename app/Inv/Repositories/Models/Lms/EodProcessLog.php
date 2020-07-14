@@ -53,6 +53,7 @@ class EodProcessLog extends BaseModel
         'charge_post_status',
         'overdue_int_accrual_status',
         'disbursal_block_status',
+        'is_running_trans_settled',
         'created_at',
         'created_by',
         'updated_at',
