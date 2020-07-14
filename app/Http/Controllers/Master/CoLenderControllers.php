@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Master;
 use Auth;
 use Session;
 use Illuminate\Http\Request;
+use App\Http\Requests\Master\CoLenderRequest;
 use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
@@ -54,7 +55,7 @@ class CoLenderControllers extends Controller {
                         ->with(['states' => $states, 'coLenderData' => $coLenderData]);
     }
 
-    public function saveCoLender(Request $request)
+    public function saveCoLender(CoLenderRequest $request)
     {
         try {
             $string = time();
