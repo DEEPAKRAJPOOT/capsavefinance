@@ -58,6 +58,12 @@
                 <td><b>Total accured interest till date:</b></td>
                 <td colspan="3">{{number_format((float)$disbursal->accruedInterest->sum('accrued_interest'), 2, '.', '')  }}</td>
             </tr>
+            <tr>
+                <td><b>Payment Frequency:</b></td>
+                <td>{{$paymentFrequency == 1 ? 'Up Front' : ($paymentFrequency == 2 ? 'Monthly' : 'Rear Ended') }}</td>
+                <td></td>
+                <td></td>
+            </tr>
            {{--<tr>
                 <td><b>Outstanding Amount:</b></td>
            
