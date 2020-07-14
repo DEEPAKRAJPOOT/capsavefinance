@@ -65,9 +65,21 @@ try {
                     {data: 'banck_detail'},
                     {data: 'amount'},
                     {data: 'updated_at'},
-                    {data: 'action'}
+                    {data: 'action',
+                    render : function (data, type, row) {
+                        data.status = messages.status
+                        return data.stat == 7 ? true : false;
+                     }
+                    }
                 ],
-                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}],
+                columnDefs : [
+                    { targets : [8],
+                      render : function (data, type, row) {
+                         return data == '1' ? 'free' : 'paid'
+                      }
+                    }
+               ]
             });
         }
 
