@@ -89,7 +89,8 @@ try {
 $(document).on('click','#pendingBtn', function(){
     var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
     if(countCheckedCheckboxes <= 0){
-        return alert('Please select at least one record!');
+        replaceAlert('Please select at least one record!', 'error');
+        return false;
     }else{
         $(this).addClass('btn-disabled');
         if (confirm('Are you sure? You want to Submit it.')){
@@ -102,7 +103,8 @@ $(document).on('click','#pendingBtn', function(){
 $(document).on('click','#approveBtn', function(){
     var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
     if(countCheckedCheckboxes <= 0){
-        return alert('Please select at least one record!');
+        replaceAlert('Please select at least one record!', 'error');
+        return false;
     }else{
         $(this).addClass('btn-disabled');
         if (confirm('Are you sure? You want to approve it.')){
@@ -115,7 +117,8 @@ $(document).on('click','#approveBtn', function(){
 $(document).on('click','#refundQueueBtn', function(){
     var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
     if(countCheckedCheckboxes <= 0){
-        return alert('Please select at least one record!');
+        replaceAlert('Please select at least one record!', 'error');
+        return false;
     }else{
         $(this).addClass('btn-disabled');
         if (confirm('Are you sure? You want to Disbursed it.')){
@@ -128,7 +131,8 @@ $(document).on('click','#refundQueueBtn', function(){
 $(document).on('click','#sentToBankBtn', function(){
     var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
     if(countCheckedCheckboxes <= 0){
-        return alert('Please select at least one record!');
+        replaceAlert('Please select at least one record!');
+        return false;
     }else{
         $(this).addClass('btn-disabled');
         if (confirm('Are you sure? You want to Sent To Bank it.')){
@@ -157,7 +161,7 @@ $(document).on('click','#sentToBankBtn', function(){
             }
             if(allInvIds.length != 0){
                 allInvIds.push(current_id);
-                allInvIds.join();
+                //allInvIds.join();
                 $('#transaction_ids').val(allInvIds.join());
             }else{
                 $('#transaction_ids').val(current_id);

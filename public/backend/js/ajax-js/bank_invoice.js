@@ -14,7 +14,7 @@ try {
 
             if(!from_date && !to_date) {
                 if ((Date.parse(from_date) >= Date.parse(to_date))) {
-                    alert("Please select date first.");
+                    replaceAlert("Please select date first.", 'error');
                     return false;
                 }
             }
@@ -32,12 +32,12 @@ try {
                 Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
 
                 if (fromtimestamp > totimestamp) {
-                    alert("To date should be greater than From date");
+                    replaceAlert("To date should be greater than From date", 'error');
                     return false;
                 }
 
                 if (Difference_In_Days > 30) {
-                    alert("No. of days should not be greater than 30");
+                    replaceAlert("No. of days should not be greater than 30", 'error');
                     return false;
                 }
             }
@@ -74,7 +74,7 @@ try {
                         aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
                     });
                 } else {
-                    alert('Please select date.');
+                    replaceAlert('Please select date.', 'error');
                 }
             } else {
                 oTable.draw();
