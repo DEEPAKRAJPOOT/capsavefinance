@@ -80,8 +80,13 @@ class EodProcessController extends Controller {
                 $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id]);
                 if($eodDetails && $eodDetails->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')){
                     $start = new \Carbon\Carbon(\Helpers::getSysStartDate());
-                    $sys_start_date = $start->addDays(1)->format('Y-m-d 00:00:00');
-                     
+                    $sys_start_date = $start->addDays(1)->format('Y-m-d 00:00:01');
+
+                    $sys_start_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $sys_start_date, config('common.timezone'))
+                    ->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s');
+
+                    $tt = \Helpers::convertDateTimeFormat($sys_start_date, 'Y-m-d H:i:s', 'Y-m-d H:i:s');
+
                     $this->lmsRepo->updateEodProcess(['is_active' => 0], ['eod_process_id'=>$eod_process_id]);                
                     $data=[];
                     $data['status'] = config('lms.EOD_PROCESS_STATUS.RUNNING');

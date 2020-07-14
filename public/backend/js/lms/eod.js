@@ -88,7 +88,7 @@ try {
         if(messages.status == 0){
             var realStartDate = new Date(messages.real_sys_start_date);
             var sysStartDate = new Date(messages.sys_start_date);
-            var diff = realStartDate - sysStartDate;
+            var diff = sysStartDate - realStartDate;
             var curDate = new Date();
             var today = new Date(curDate.setSeconds(diff/1000));      
         }else{
