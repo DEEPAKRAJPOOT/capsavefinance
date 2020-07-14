@@ -173,4 +173,5 @@ return [
     'BANK_TYPE' => [
         'IDFC' => '1'
     ],
+    'DISBURSAL_TIME_VALIDATE' => '17',
 ];

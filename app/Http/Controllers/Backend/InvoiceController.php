@@ -569,17 +569,21 @@ class InvoiceController extends Controller {
     public function disburseOnline(Request $request)
     {
         try {
-
+            date_default_timezone_set("Asia/Kolkata");
+            $currentTimeHour = \Carbon\Carbon::now()->format('H');
+            $validateTimeHour = config('lms.DISBURSAL_TIME_VALIDATE');
             if ($request->get('eod_process')) {
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
-            
+            if (date('H') >= $validateTimeHour) { 
+                Session::flash('error', 'Disbursment can not be done after '. Carbon::createFromFormat('H', $validateTimeHour)->format('g:i A'));
+                return redirect()->route('backend_get_disbursed_invoice');
+            }
             $invoiceIds = $request->get('invoice_ids');
             $disburseDate =  \Helpers::getSysStartDate();
             $disburseType = config('lms.DISBURSE_TYPE')['ONLINE'];
             $creatorId = Auth::user()->user_id;
-            date_default_timezone_set("Asia/Kolkata");
             if(empty($invoiceIds)){
                 return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
             }
@@ -1434,6 +1438,7 @@ class InvoiceController extends Controller {
             $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
             $transId = $reqData['txn_id'];
             $createdBy = Auth::user()->user_id;
+            $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
 
             if(!empty($reqData)) {
             
@@ -1482,7 +1487,6 @@ class InvoiceController extends Controller {
                         $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
                     }
 
-                    $fundedDate = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
                     $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
                     $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
                     
