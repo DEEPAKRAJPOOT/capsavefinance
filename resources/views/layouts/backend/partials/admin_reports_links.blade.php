@@ -24,4 +24,9 @@
         <a class=" {{( $active=='consolidatedSoa') ? 'active': null }} " href="{{route('soa_consolidated_view')}}">SOA  </a>
     </li>
     @endcan
-</ul>  
+    @can('cibil_report')
+    <li>
+        <a class=" {{( $active=='cibil_report') ? 'active': null }} " href="{{route('cibil_report')}}">Cibil UserData </a>
+    </li>
+    @endcan
+</ul>

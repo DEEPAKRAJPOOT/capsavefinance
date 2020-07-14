@@ -51,7 +51,7 @@ class Idfc_lib{
 		list($payload, $http_header, $txn_id) = $request;
      	$response = $this->_curlCall($url, $payload, $http_header);
      	if ($getApiResponse) {
-     		return [$txn_id, $payload, $http_header, $response['result']];
+     		return [$url, $txn_id, $payload, $http_header, $response['result']];
      	}
      	logFile($url, 'D', '', '', $txn_id);
 		logFile($payload, 'D', '', '', $txn_id);
@@ -162,6 +162,7 @@ class Idfc_lib{
     	$signature = $this->_genSignature($sign_string);
     	$corpId = SELF::CORP_ID;
     	$resp_data = array(
+    		"Content-Type: application/json",
     		"Corp_ID: $corpId",
     		"Sign: $signature",
     		"TimeStamp: $timestamp",
