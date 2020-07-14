@@ -13,6 +13,7 @@ use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\InvoiceInterface;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Helpers\Helper;
+use App\Helpers\ManualApportionmentHelper;
 
 class EodProcessController extends Controller {
 
@@ -78,11 +79,13 @@ class EodProcessController extends Controller {
             
                 $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id'=>$eod_process_id]);
                 if($eodDetails && $eodDetails->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')){
-                    $current_datetime = \Carbon\Carbon::now()->toDateTimeString();
+                    $start = new \Carbon\Carbon(\Helpers::getSysStartDate());
+                    $sys_start_date = $start->addDays(1)->format('Y-m-d 00:00:00');
+                     
                     $this->lmsRepo->updateEodProcess(['is_active' => 0], ['eod_process_id'=>$eod_process_id]);                
                     $data=[];
                     $data['status'] = config('lms.EOD_PROCESS_STATUS.RUNNING');
-                    $data['sys_start_date'] = $current_datetime;
+                    $data['sys_start_date'] = $sys_start_date;
                     $data['is_active'] = 1;
                     $eodProcess = $this->lmsRepo->saveEodProcess($data);
                     if ($eodProcess) {
@@ -90,6 +93,10 @@ class EodProcessController extends Controller {
                         $logData=[];
                         $logData['eod_process_id'] = $eod_process_id;
                         $this->lmsRepo->saveEodProcessLog($logData);                    
+                        
+                        // Calculate interest for new date
+                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                        $Obj->dailyIntAccrual();
                     }
                     $response = true;
                 }else{
