@@ -201,7 +201,7 @@ class EodProcessController extends Controller {
         
         //dd($disbursedAmt, $disbursedTransAmt, $disbursalIds, $totInvApprAmt, $totalTransAmt);
         
-        $result = $disbursedTransAmt == $disbursedAmt && $totInvApprAmt == $totalTransAmt;
+        $result = /*$disbursedTransAmt == $disbursedAmt &&*/ $totInvApprAmt == $totalTransAmt;
         
         if ($result) {                  
             $status = config('lms.EOD_PASS_STATUS'); 
@@ -263,7 +263,7 @@ class EodProcessController extends Controller {
                 $maxAccrualDate = $invDisbDetail->interests->max('interest_date');
                 $start = new \Carbon\Carbon(\Helpers::getSysStartDate());
                 $sys_start_date = $start->format('Y-m-d');
-                if(strtotime($maxAccrualDate) != strtotime($sys_start_date. "- 1 days")){
+                if((strtotime($maxAccrualDate) != strtotime($sys_start_date. "- 1 days")) && ( strtotime($invDisbDetail->int_accrual_start_dt) > strtotime($sys_start_date) )){
                     $result = false;
                     break;
                 }
