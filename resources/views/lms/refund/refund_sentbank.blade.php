@@ -26,6 +26,9 @@
                             <a href="{{ route('download_sentbank') }}" class="btn btn-success btn-sm ml-2" >Download Excel</a>
                         </div>
                     </div>
+                    <div class="row pull-left">
+                    @include('lms.refund.common.search')
+                    </div>
                 </div>
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -39,7 +42,7 @@
                                                     <th>Ref No</th>
                                                     <th>Batch Id</th>
                                                     <th>Customer ID</th>
-                                                    <th>Entity Name</th>     
+                                                    <th>Bussiness Entity Name</th>     
                                                     <th>Bank Detail</th>
                                                     <th>Amount</th>
                                                     <th>Updated At</th>

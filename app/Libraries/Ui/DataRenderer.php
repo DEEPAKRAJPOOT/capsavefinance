@@ -5289,7 +5289,8 @@ class DataRenderer implements DataProviderInterface
         ->addColumn(
             'biz_entity_name',
             function ($data) {
-                return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
+                // return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
+                return $data->payment->getUserName->biz->biz_entity_name;
             }
         )            
         ->editColumn(
@@ -5346,6 +5347,17 @@ class DataRenderer implements DataProviderInterface
                 return $result;
             }
         )  
+        ->filter(function ($query) use ($request) {
+            if ($request->get('search_keyword') != '') {
+                $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('search_keyword'));
+                    $query->where('ref_code', 'like',"%$search_keyword%")
+                    ->orwhereHas('payment.biz', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     });
+                });
+            }
+        })
         ->make(true);
 
     }
@@ -5380,7 +5392,8 @@ class DataRenderer implements DataProviderInterface
         ->addColumn(
             'biz_entity_name',
             function ($data) {
-                return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
+                // return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
+                return $data->payment->getUserName->biz->biz_entity_name;
             }
         )            
         ->editColumn(
@@ -5421,6 +5434,17 @@ class DataRenderer implements DataProviderInterface
                 return config('lms.REQUEST_STATUS_DISP.'. $data->status . '.SYSTEM');
             }
         )
+        ->filter(function ($query) use ($request) {
+            if ($request->get('search_keyword') != '') {
+                $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('search_keyword'));
+                    $query->where('ref_code', 'like',"%$search_keyword%")
+                    ->orwhereHas('payment.biz', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     });
+                });
+            }
+        })
         ->make(true);
     }
 

@@ -1,7 +1,7 @@
 try {
     var oTable;
     var reqIds = [];
-    
+
     jQuery(document).ready(function ($) {
         //User Listing code
         if($('#requestList').length){
@@ -16,6 +16,7 @@ try {
                     "method": 'POST',
                     data: function (d) {
                         d.status = messages.status
+                        d.search_keyword = $('input[name=search_keyword]').val();
                         d._token = messages.token;
                     },
                     "error": function () {  // error handling
@@ -48,6 +49,7 @@ try {
                     "method": 'POST',
                     data: function (d) {
                         d.status = messages.status
+                        d.search_keyword = $('input[name=search_keyword]').val();
                         d._token = messages.token;
                     },
                     "error": function () {  // error handling
@@ -67,7 +69,16 @@ try {
                 ],
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });
+
+            if(messages.status == 8){
+                oTable.columns([7]).visible(false);
+            }
         }
+
+        $('#searchbtn').on('click', function (e) {
+            oTable.draw();
+        });
+
     });
 } catch (e) {
     if (typeof console !== 'undefined') {
