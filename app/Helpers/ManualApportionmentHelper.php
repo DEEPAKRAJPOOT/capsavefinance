@@ -113,7 +113,8 @@ class ManualApportionmentHelper{
             ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
             ->where('entry_type','=',0)
             ->whereNotNull('trans_running_id')
-            ->whereBetween('trans_date',[$graceStartDate,$graceEndDate])
+            ->whereDate('trans_date','>',$graceStartDate)
+            ->whereDate('trans_date','<=',$graceEndDate)
             ->get();
             foreach ($interestList as $trans) {
                 $canceledAmt = Transactions::where('parent_trans_id','=',$trans->trans_id)
@@ -228,7 +229,7 @@ class ManualApportionmentHelper{
         ->sum('amount');
 
        if($intTransIds){
-           $Dr += Transactions::whereDate('trans_date','<',$odStartDate)
+           $Dr += Transactions::whereDate('trans_date','<=',$odStartDate)
            ->where('invoice_disbursed_id','=',$invDisbId)
            ->where('entry_type','=','0')
            ->where(function($query) use($intTransIds){
@@ -248,7 +249,7 @@ class ManualApportionmentHelper{
         ->sum('amount');
 
         if($intTransIds){
-            $Cr +=  Transactions::whereDate('trans_date','<',$odStartDate) 
+            $Cr +=  Transactions::whereDate('trans_date','<=',$odStartDate) 
             ->where('invoice_disbursed_id','=',$invDisbId)
             ->where('entry_type','=','1')
             ->where(function($query) use($intTransIds){
@@ -456,7 +457,12 @@ class ManualApportionmentHelper{
                     $currentIntRate = $intRate;
                 }
                 
-                $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq, $odStartDate);
+                if(strtotime($loopStratDate) < strtotime($odStartDate)){
+                    $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq, $odStartDate);
+                }else{
+                    $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq, $gStartDate);
+                }
+
                 if($balancePrincipal > 0){
                     if(strtotime($loopStratDate) >= strtotime($odStartDate)){
                         $currentIntRate = $odIntRate;
