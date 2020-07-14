@@ -66,7 +66,7 @@ try {
             serverSide: true,
             pageLength: 25,
             searching: false,
-            bSort: true,
+            bSort: false,
             ajax: {
                 "url": messages.get_to_settle_payments,
                 "method": 'POST',
@@ -88,7 +88,7 @@ try {
                     {data: 'updated_by'},
                     {data: 'action'}
                 ],
-            aoColumnDefs: [{'aTargets': [0,1], 'bSortable': true}]
+            aoColumnDefs: [{'aTargets': [0,1], 'bSortable': false}]
         });
         //Search
         $(document).on('click','#searchbtn', function (e) {
