@@ -40,7 +40,7 @@
                                                     <th><input type="checkbox" id="chkAll"></th>
                                                     <th>Ref No</th>
                                                     <th>Customer ID</th>
-                                                    <th>Entity Name</th>                                                    
+                                                    <th>Business Name</th>                                                    
 													<th>Amount</th>
                                                     <th>Date</th>
                                                     {{-- <th>Assignee</th>	

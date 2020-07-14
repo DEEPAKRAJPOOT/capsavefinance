@@ -122,7 +122,7 @@ $(document).on('click','#refundQueueBtn', function(){
         return alert('Please select at least one record!');
     }else{
         $(this).addClass('btn-disabled');
-        if (confirm('Are you sure? You want to Refund Queue it.')){
+        if (confirm('Are you sure? You want to Refund it.')){
             $("#refundReqForm").submit();
         }else{
             $(this).removeClass('btn-disabled');

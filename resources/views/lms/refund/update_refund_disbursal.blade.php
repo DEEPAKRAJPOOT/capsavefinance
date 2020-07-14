@@ -11,7 +11,7 @@
 						<input type="text" name="trans_no" class="form-control" value="" placeholder="Transaction Id">
 					</div>
 					<div class="col-6">
-						<label><b>Disbursed Date</b></label>
+						<label><b>Refund Date</b></label>
 						<input type="text" id="disburse_date" name="disburse_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
 					</div>
 					<div class="col-12">

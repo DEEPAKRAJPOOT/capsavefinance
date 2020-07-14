@@ -26,7 +26,7 @@ $finalDisburseAmt = 0;
 		</div>
 		<div class="col-4">
 			<div class="form-group">
-				<label for="nonFactoredAmount"># Amount Disburse</label>
+				<label for="nonFactoredAmount"># Amount Refund</label>
 				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ $finalDisburseAmt }}">
 			</div>
 		</div>
@@ -40,7 +40,7 @@ $finalDisburseAmt = 0;
 			@csrf
 			<div class="col-6">
 				<div class="form-group">
-					<label for="txtCreditPeriod">Disburse Date <span class="error_message_label">*</span> </label>
+					<label for="txtCreditPeriod">Refund Date <span class="error_message_label">*</span> </label>
 					<input type="text" id="disburse_date" name="disburse_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
 					 @if(Session::has('error'))
 					 <div class="error">{{ Session::get('error') }}</div>
