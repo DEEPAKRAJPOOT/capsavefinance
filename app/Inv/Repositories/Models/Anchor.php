@@ -108,7 +108,7 @@ public static function saveAnchor($arrAnchor = [])
      * 
      * @return type
      */
-    public static function getAllAnchor($orderBy='anchor_id') {
+    public static function getAllAnchor($orderBy='anchor_id', $datatable=false) {
         $result = self::select('anchor.*', 'u.user_id', 'u.f_name','f.file_path','bank.bank_account_id')
                 ->join('users as u', 'anchor.anchor_id', '=', 'u.anchor_id')
                 ->leftjoin('user_bank_account as bank', 'anchor.anchor_id', '=', 'bank.anchor_id')
@@ -121,13 +121,15 @@ public static function saveAnchor($arrAnchor = [])
                 ->where('u.user_type', 2)
         ->where('anchor.is_active', 1);
      
-        if ($orderBy == 'anchor_id') {
-            $result->orderBy('anchor.anchor_id', 'DESC');
-        } else {
-            $result->orderBy('anchor.comp_name');
+        if (!$datatable) {
+            if ($orderBy == 'anchor_id') {
+                $result->orderBy('anchor.anchor_id', 'DESC');
+            } else {
+                $result->orderBy('anchor.comp_name');
+            }
+            $result = $result->get();
         }
-           
-        $result = $result->get();
+        
         return ($result ? $result : false);
     }
     

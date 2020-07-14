@@ -57,6 +57,7 @@ class AppStatusLog extends BaseModel
    protected $fillable = [
        'user_id',
        'app_id',
+       'note_id',
        'status_id',
        'note_id',
        'created_by',

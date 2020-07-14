@@ -121,27 +121,24 @@ class BusinessAddress extends BaseModel
      */
     public static function addressGetCustomer($user_id, $biz_id, $address_type)
     {
-
-
         $result =  self::select(
             'biz_addr.addr_1 as Address',
-            'c.user_id as Customer_id',
+            'biz.user_id as Customer_id',
             'biz_addr.city_name as City',
-            'biz_addr.rcu_status',
-            'biz_addr.is_active',
             'biz_addr.biz_addr_id',
-            'b.name as State',
+            'mst_state.name as State',
             'biz_addr.pin_code as Pincode',
-            'biz_addr.is_default'
+            'biz_addr.is_default',
+            'biz_addr.rcu_status',
+            'biz_addr.is_active'
         )
-            ->leftjoin('mst_state as b', 'biz_addr.state_id', '=', 'b.id')
-            ->leftjoin('biz as c', 'biz_addr.biz_id', '=', 'c.biz_id')
-            //->where('c.user_id', '=', $user_id)
-            ->where('biz_addr.biz_id', $biz_id)
+            ->join('mst_state', 'mst_state.id', '=', 'biz_addr.state_id')
+            ->join('biz', 'biz.biz_id', '=', 'biz_addr.biz_id')
+            ->where('biz.user_id', '=', $user_id)
+            ->where('biz.biz_id', $biz_id)
             ->whereNotNull('addr_1')
             ->whereNotNull('city_name')
             ->whereNotNull('pin_code')
-            ->groupBy('user_id', 'Address', 'City', 'State', 'Pincode')
             ->orderBy('biz_addr_id', 'DESC');
             if($address_type != null){
                 $result->whereIn('biz_addr.address_type', $address_type);

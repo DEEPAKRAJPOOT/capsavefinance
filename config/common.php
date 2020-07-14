@@ -26,7 +26,7 @@ return [
         0 => 'Incomplete',
         1 => 'Completed',
         2 => 'Sanctioned',
-        3 => 'Closed',        
+        3 => 'Closed',
     ],
     //Roles Ids
     'anchor_role' => 11,

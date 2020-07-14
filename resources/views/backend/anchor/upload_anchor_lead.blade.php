@@ -3,7 +3,7 @@
 @section('content')
 
        <div class="modal-body text-left">
-           <form id="anchorForm" name="anchorForm" method="POST" action="{{route('add_anchor_lead')}}"  target="_top" enctype="multipart/form-data">
+           <form id="anchorForm" name="anchorForm" method="POST" action="{{route('add_anchor_lead')}}" enctype="multipart/form-data">
 		@csrf
                         
 <!--                              <div class="form-group">
@@ -26,6 +26,7 @@
                              <option value="{{$value->anchor_id}}"> {{$value->comp_name}} </option>
                              @endforeach
                          </select>
+                         {!! $errors->first('assigned_anchor', '<span class="error">:message</span>') !!}
                                   
                 </div>
                 @endif
@@ -34,10 +35,15 @@
                <label for="email">Upload Document</label>
                <input type="file" class="custom-file-input" id="anchor_lead" name="anchor_lead">
                <label class="custom-file-label val_print" for="anchor_lead">Choose file</label>
+               {!! $errors->first('anchor_lead', '<span class="error">:message</span>') !!}
             </div>
+                
+                <div class="custom-file mb-3 mt-2">
+                    <a href="{{ route('download_sample_lead_csv') }}" title="Download Template"><i style="color:green" class="fa fa-file-excel-o"> Download Template</i></a>
+                </div>
                            
                 <br> <br>
-                <button type="submit" class="btn btn-success btn-sm float-right" id="saveAnch">Submit</button>  
+                <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>  
            </form>
          </div>
      
@@ -57,7 +63,9 @@
         //get_lead: "{{ URL::route('get_lead') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
-
+        is_accept: "{{ Session::get('is_accept') }}",
+        message : "{{ trans('backend_messages.anchor_registration_success') }}",
+        error_msg : "{{ Session::get('error_msg') }}"
     };
 </script>
 <script type="text/javascript">
@@ -66,7 +74,7 @@
                 rules: {
                 anchor_lead: {
                 required: true,
-                extension: "csv"
+                // extension: "xls|xlsx|csv"
                 },
                  assigned_anchor: {
                 required: true,
@@ -75,19 +83,30 @@
                 messages: {
                 anchor_lead: {
                 required: "Please select file",
-                extension:"Please select only csv format",
+                extension:"Please select only csv and xlsx format",
                 }
                 }
                 });
 
-            $('form#anchorForm').validate();
-            
-            $("#saveAnch").click(function(){
-            if($('form#anchorForm').valid()){                
-            $("#saveAnch").attr("disabled","disabled");
-            }  
-            });            
+            $("#anchorForm").submit(function(){
+                if($(this).valid()){
+                    $("#saveAnch").attr("disabled","disabled");
+                }
+            });
    
+    if (messages.is_accept == 1){
+        var parent =  window.parent;
+        window.parent.jQuery('#iframeMessage').show();
+        window.parent.jQuery('#iframeMessage').html('<div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+messages.message+'</div>');
+        parent.jQuery("#uploadAnchLead").modal('hide');
+        parent.oTables2.draw();
+    }
+    
+    if (messages.error_msg != '') {
+        window.jQuery('#iframeMessage').show();
+        window.jQuery('#iframeMessage').html('<div class=" alert-danger alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+messages.error_msg+'</div>');
+    }
+        
  });
  
 $('#anchor_lead').click(function(){

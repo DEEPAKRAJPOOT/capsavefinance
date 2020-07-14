@@ -21,6 +21,8 @@ use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
 use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
+use App\Inv\Repositories\Models\AnchorUser;
+use App\Inv\Repositories\Models\Anchor;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -61,7 +63,7 @@ class DataRenderer implements DataProviderInterface
     public function getUsersList(Request $request, $user)
     {
         return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned'])
+                ->rawColumns(['id','name', 'checkbox', 'anchor', 'action', 'email','assigned', 'active'])
                 ->addColumn(
                     'id',
                     function ($user) {
@@ -74,7 +76,8 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                         'name',
                         function ($user) {
-                    $full_name = $user->f_name.' '.$user->l_name;
+                    $panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ''; 
+                    $full_name = $user->f_name.' '.$user->l_name . $panInfo;
                     return $full_name;
                     
                 })
@@ -88,8 +91,9 @@ class DataRenderer implements DataProviderInterface
                     'anchor',
                     function ($user) {                    
                     if($user->UserAnchorId){
-                      $userInfo=User::getUserByAnchorId((int) $user->UserAnchorId);
-                       $achorId= $userInfo->f_name.' '.$userInfo->l_name;
+                       //$userInfo=User::getUserByAnchorId((int) $user->UserAnchorId);
+                       //$achorId= $userInfo->f_name.' '.$userInfo->l_name;
+                        $achorId = Helpers::getAnchorsByUserId($user->user_id);
                     }else{
                       $achorId='N/A';  
                     }
@@ -126,14 +130,26 @@ class DataRenderer implements DataProviderInterface
                     $full_name = $user->mobile_no; 
                     return $full_name;
                 })
+                // ->editColumn(
+                //         'assigned',
+                //         function ($user) {
+                //     if ($user->is_assign == 0) {
+                //         return "<label class=\"badge badge-warning current-status\">Pending</label>";
+                //     } else {
+                //         return "<span style='color:green'>Assigned</span>";
+                //     }
+                // })
                 ->editColumn(
-                        'assigned',
-                        function ($user) {
-                    if ($user->is_assign == 0) {
-                        return "<label class=\"badge badge-warning current-status\">Pending</label>";
-                    } else {
-                        return "<span style='color:green'>Assigned</span>";
-                    }
+                    'active',
+                    function ($role) {
+                    return ($role->is_active == '0')?'<div class="btn-group ">
+                                             <label class="badge badge-danger current-status">In Active</label>
+                                             
+                                          </div></b>':'<div class="btn-group ">
+                                             <label class="badge badge-success current-status">Active</label>
+                                             
+                                          </div></b>';
+
                 })
                 ->editColumn(
                     'biz_name',
@@ -157,11 +173,12 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('by_email') != '') {
                         if ($request->has('by_email')) {
                             $query->where(function ($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $by_nameOrEmail = trim($request->get('by_email'));   
                                 $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
                                 ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                                ->orWhere(\DB::raw("CONCAT(rta_users.f_name,' ',rta_users.l_name)"), 'like', "%$by_nameOrEmail%")
+                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
@@ -169,12 +186,17 @@ class DataRenderer implements DataProviderInterface
                         if ($request->has('is_assign')) {
                             $query->where(function ($query) use ($request) {
                                 $by_status = (int) trim($request->get('is_assign'));
-                                
                                 $query->where('users.is_assigned', 'like',
                                         "%$by_status%");
                             });
                         }
                     }
+                    if ($request->get('pan') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $pan = $request->get('pan');
+                            $query->where('anchor_user.pan_no', $pan);
+                        });
+                    }                    
                 })
                 ->make(true);
     }
@@ -185,28 +207,34 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'status', 'action','contact','name'])
+                ->rawColumns(['app_id','biz_entity_name','assignee', 'status', 'assigned_by', 'action','assoc_anchor', 'contact','name', 'app_code'])
                 ->addColumn(
-                    'app_id',
+                    'app_code',
                     function ($app) {
                         $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
                         $app_id = $app->app_id;
+                        $app_code = $app->app_code;
                         $parent_app_id = $app->parent_app_id;
                         $ret = '';
-                        if(Helpers::checkPermission('company_details')){
+                        $permission = Helpers::checkPermission('company_details');
+                        if($permission){
                            if($user_role == config('common.user_role.APPROVER'))
                                 $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                            else
                                 $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
-                           $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                           $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $app_code . "</a>";
                                                      
                         } else {
-                            $ret = "<a id='app-id-$app_id' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                            $ret = "<a id='app-id-$app_id' rel='tooltip'>" . $app_code . "</a>";
                         }
                         
                         if (!empty($parent_app_id)) {
                             $aData = Application::getAppData((int)$parent_app_id);
-                            $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                            if ($permission) {
+                                $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                            } else {
+                                $ret .= "<br><small>Parent:</small><br><a rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                            }
                         } 
                            
                         return $ret;
@@ -215,7 +243,8 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'biz_entity_name',
                     function ($app) {                        
-                        return $app->biz_entity_name ? $app->biz_entity_name : '';
+                        $panInfo = $app->pan_no && !empty($app->pan_no) ? '<br><strong>PAN:</strong> ' . $app->pan_no : ''; 
+                        return $app->biz_entity_name ? $app->biz_entity_name . $panInfo : '';
                 })
                 ->addColumn(
                     'name',
@@ -255,8 +284,9 @@ class DataRenderer implements DataProviderInterface
                     /////return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
                     
                     if($app->anchor_id){
-                       $userInfo = User::getUserByAnchorId((int) $app->anchor_id);
-                       $achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                       //$userInfo = User::getUserByAnchorId((int) $app->anchor_id);
+                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     } else {
                        $achorName='';  
                     }                    
@@ -343,7 +373,7 @@ class DataRenderer implements DataProviderInterface
                         $act = '';
                         $lmsStatus = config('lms.LMS_STATUS');
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
-                        if ($view_only && in_array($app->status, [0,1,2]) ) {
+                        if ($view_only && in_array($app->status, [0,1,2])) {
                            //if(Helpers::checkPermission('add_app_note')){
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
                             //}                            
@@ -376,11 +406,13 @@ class DataRenderer implements DataProviderInterface
                         if ($lmsStatus && $app->renewal_status == 1) {
                             $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 1]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></a> ';
                         }
-                        $where=[];
-                        $where['user_id'] = $app->user_id;
-                        $where['status'] = [0,1];
-                        $appData = Application::getApplicationsData($where);
-                        if ($lmsStatus && $app->status == 2 && !isset($appData[0])) { //Limit Enhancement
+
+                        //$where=[];
+                        //$where['user_id'] = $app->user_id;
+                        //$where['status'] = [0,1];
+                        //$appData = Application::getApplicationsData($where);
+                        $appData = Application::checkAppByPan($app->user_id);
+                        if ($lmsStatus && $app->status == 2 && !$appData) { //Limit Enhancement
                             $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-plus" aria-hidden="true"></i></a> ';
                             $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-times" aria-hidden="true"></i></a> ';
                         }
@@ -400,8 +432,9 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('search_keyword') != '') {                        
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('app.app_id', 'like',"%$search_keyword%")
-                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                            $query->where('app.app_code', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
+                            ->orWhere('anchor_user.pan_no', 'like', "%$search_keyword%");
                         });                        
                     }
                     if ($request->get('is_assign') != '') {
@@ -436,8 +469,14 @@ class DataRenderer implements DataProviderInterface
                                 $query->where('app.renewal_status', $status);
                             }
                         });
-                    }                    
+                    }  
                     
+                    if ($request->get('pan') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $pan = $request->get('pan');
+                            $query->where('anchor_user.pan_no', $pan);
+                        });
+                    }                    
                 })
                 ->make(true);
     }
@@ -448,7 +487,7 @@ class DataRenderer implements DataProviderInterface
     public function getFiRcuAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action', 'status'])
+                ->rawColumns(['app_id', 'action','assoc_anchor', 'status'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -480,8 +519,9 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                       $userInfo=User::getUserByAnchorId((int)$app->anchor_id);
-                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                       //$userInfo=User::getUserByAnchorId((int)$app->anchor_id);
+                       //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id); 
                     }else{
                       $achorName='';  
                     }                    
@@ -540,7 +580,7 @@ class DataRenderer implements DataProviderInterface
     {
       
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action', 'status'])
+                ->rawColumns(['app_id', 'action', 'assoc_anchor', 'status'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -573,8 +613,9 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                    $userInfo=User::getUserByAnchorId((int) $app->anchor_id);
-                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                       //$userInfo=User::getUserByAnchorId((int) $app->anchor_id);
+                         //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     }else{
                       $achorName='';  
                     }                    
@@ -831,7 +872,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -841,7 +882,7 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><b>Business Name :</b>'.$invoice->business->biz_entity_name.'</span></br>' : '';
                         $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
@@ -1046,7 +1087,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1056,7 +1097,7 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><b>Business Name :</b>'.$invoice->business->biz_entity_name.'</span></br>' : '';
                         $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
@@ -1083,7 +1124,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.\Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })
                ->addColumn(
@@ -1145,7 +1186,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1155,8 +1196,8 @@ class DataRenderer implements DataProviderInterface
                        $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                         $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><b>Business Name :</b>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
@@ -1182,7 +1223,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })
                 ->addColumn(
@@ -1260,7 +1301,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1342,7 +1383,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1352,7 +1393,7 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><b>Business Name :</b>'.$invoice->business->biz_entity_name.'</span></br>' : '';
                         $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
@@ -1379,7 +1420,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })      
                   ->addColumn(
@@ -1462,7 +1503,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1472,7 +1513,7 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><b>Business Name :</b>'.$invoice->business->biz_entity_name.'</span></br>' : '';
                         $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
@@ -1500,7 +1541,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })     
                    ->addColumn(
@@ -1556,7 +1597,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1566,7 +1607,7 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><b>Business Name :</b>'.$invoice->business->biz_entity_name.'</span></br>' : '';
                         $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
@@ -1593,7 +1634,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })  
                  ->filter(function ($query) use ($request) {
@@ -1617,7 +1658,7 @@ class DataRenderer implements DataProviderInterface
     { 
     
        return DataTables::of($invoice)
-               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
@@ -1636,7 +1677,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1646,7 +1687,7 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><b>Business Name :</b>'.$invoice->business->biz_entity_name.'</span></br>' : '';
                         $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
@@ -1677,6 +1718,14 @@ class DataRenderer implements DataProviderInterface
                  return $invoice->remark;
                       
                        
+                })
+                ->addColumn(            
+                    'updated_at',
+                    function ($invoice) {                        
+                        $inv_amount = '';
+                        $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.strip_tags($invoice->Invoiceuser->f_name).'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.\Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
+                        return $inv_amount;
                 })
                  ->addColumn(
                     'action',
@@ -1752,7 +1801,7 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
                         $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
@@ -1762,7 +1811,7 @@ class DataRenderer implements DataProviderInterface
                         $custo_name = '';
                         $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br>'.$invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->business->biz_entity_name ? '<br><b>Business Name :</b>'.$invoice->business->biz_entity_name.'</span></br>' : '';
                         $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
@@ -1789,7 +1838,7 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($invoice->updated_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })     
                  ->addColumn(
@@ -1908,6 +1957,10 @@ class DataRenderer implements DataProviderInterface
                         if ($trans->action_type == 3) {
                             $act .= "<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
                         }
+                        if ($trans->action_type == 1 && isset($trans->userFile->file_path)) {                            
+                            //$act .= '<a title="Download Cheque" href="'. \Storage::url($trans->userFile->file_path) .'" download="'. $trans->userFile->file_name . '"><i class="fa fa-download"></i></a>';
+                            $act .= '<a title="Download Cheque" href="'. route('download_storage_file', ['file_id' => $trans->userFile->file_id ]) .'" ><i class="fa fa-download"></i></a>';
+                        }                        
                     return $act;
                    
                 })
@@ -1949,13 +2002,13 @@ class DataRenderer implements DataProviderInterface
                ->addColumn(
                     'amount',
                     function ($invoice) {
-                      
-                       return ($invoice->invoice_amt) ? number_format($invoice->invoice_amt) : ''; 
+                    //   dd($invoice->invoice->invoice_amount);
+                       return ($invoice->invoice_id) ? number_format($invoice->invoice->invoice_amount) : 'N/A'; 
              })
                 ->addColumn(
                     'comment',
                     function ($invoice) { 
-                     return ($invoice->comm_txt) ? $invoice->comm_txt : ''; 
+                     return ($invoice->comm_txt) ? $invoice->comm_txt : 'N/A'; 
                 })
                ->addColumn(
                     'status',
@@ -1977,7 +2030,7 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'timestamp',
                     function ($invoice) {
-                       return $invoice->created_at->format('j F Y H:i:s'); 
+                        return \Helpers::convertDateTimeFormat($invoice->created_at, 'Y-m-d H:i:s','d-m-Y h:i A');
                 })
                  
                  
@@ -1993,7 +2046,7 @@ class DataRenderer implements DataProviderInterface
     public function getAppLicationPool(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'contact','action','name'])
+                ->rawColumns(['app_id', 'contact','assoc_anchor','action','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -2029,8 +2082,9 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {
                     if($app->anchor_id){
-                       $userInfo = User::getUserByAnchorId($app->anchor_id);
-                       $achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                       //$userInfo = User::getUserByAnchorId($app->anchor_id);
+                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     } else {
                        $achorName='';  
                     }                    
@@ -2132,7 +2186,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'biz_name',
                     function ($user) {
-                    $comp_name = $user->comp_name; 
+                    $comp_name = ucwords(strtolower($user->comp_name)); 
                     return $comp_name;
 
                 })
@@ -2185,11 +2239,11 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('by_email') != '') {
                         if ($request->has('by_email')) {
                             $query->where(function ($query) use ($request) {
-                                $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                                $by_nameOrEmail = trim($request->get('by_email'));                                
+                                $query->where('u.f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('u.l_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere(\DB::raw("CONCAT(rta_u.f_name,' ',rta_u.l_name)"), 'like', "%$by_nameOrEmail%")
+                                ->orWhere('u.email', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
@@ -2211,7 +2265,7 @@ class DataRenderer implements DataProviderInterface
     {
         
         return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'action', 'email','assigned', 'status'])
+                ->rawColumns(['id', 'checkbox', 'action', 'assoc_anchor', 'email','assigned', 'status'])
                 ->addColumn(
                     'id',
                     function ($user) {
@@ -2230,9 +2284,16 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'biz_name',
                     function ($user) {
-                    $biz_name = $user->biz_name;
+                    //$panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ''; 
+                    $biz_name = ucwords(strtolower($user->biz_name));
                     return $biz_name;
 
+                })
+                ->editColumn(
+                    'pan_no',
+                    function ($user) {
+                    $pan_no = ($user->pan_no) ? $user->pan_no : '';
+                    return $pan_no;
                 })
                 ->editColumn(
                     'email',
@@ -2246,6 +2307,19 @@ class DataRenderer implements DataProviderInterface
                     $achorId = $user->phone; 
                     return $achorId;
                 })
+                ->addColumn(
+                    'assoc_anchor',
+                    function ($user) {
+                    if($user->anchor_id){
+                       //$userInfo = User::getUserByAnchorId($app->anchor_id);
+                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                        $achorName = Helpers::getAnchorById($user->anchor_id);                        
+                    } else {
+                       $achorName='';  
+                    }                    
+                    return $achorName;
+                    
+                })                
                 ->editColumn(
                     'created_at',
                     function ($user) {
@@ -2267,10 +2341,11 @@ class DataRenderer implements DataProviderInterface
                         if ($request->has('by_email')) {
                             $query->where(function ($query) use ($request) {
                                 $by_nameOrEmail = trim($request->get('by_email'));
-                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
-                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
-                                //->orWhere('users.full_name', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%");
+                                $query->where('anchor_user.name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('anchor_user.l_name', 'like', "%$by_nameOrEmail%")                                  
+                                ->orWhere(\DB::raw("CONCAT(rta_anchor_user.name,' ',rta_anchor_user.l_name)"), 'like', "%$by_nameOrEmail%")
+                                ->orWhere('anchor_user.email', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
@@ -2284,6 +2359,15 @@ class DataRenderer implements DataProviderInterface
                             });
                         }
                     }
+                    if ($request->has('pan')) {
+                        if ($request->get('pan') != '') {
+                            $query->where(function ($query) use ($request) {
+                                $pan = $request->get('pan');                                
+                                $query->where('anchor_user.pan_no',$pan);
+                                //$query->where('anchor_user.pan_no', 'like',"%$pan%");
+                            });
+                        }
+                    }                    
                 })
                 ->make(true);
     }
@@ -3280,11 +3364,13 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'anchor',
                     function ($customer) {
-                        $anchor = ($customer->user->anchor->comp_name) ?: '--';
+                        //$anchor = ($customer->user->anchor->comp_name) ?: '--';
+                        $anchor = Helpers::getAnchorsByUserId($customer->user_id);
                         $prgm =  ($customer->user->is_buyer == 1) ? 'Vender Finance' : 'Channel Finance';
                         $data = '';
-                        $data .= $anchor ? '<span><b>Anchor:&nbsp;</b>'.$anchor.'</span>' : '';
-                        $data .= $prgm ? '<br><span><b>Program:&nbsp;</b>'.$prgm.'</span>' : '';
+                        //$data .= $anchor ? '<span><b>Anchor:&nbsp;</b>'.$anchor.'</span>' : '';
+                        //$data .= $prgm ? '<br><span><b>Program:&nbsp;</b>'.$prgm.'</span>' : '';
+                        $data .= $anchor;
                         return $data;
                 })
                 ->editColumn(
@@ -4055,7 +4141,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'currency',
                 function ($trans) {
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                         return '';
                     }else{
                         return 'INR';
@@ -4072,28 +4158,30 @@ class DataRenderer implements DataProviderInterface
             )->editColumn(
                 'debit',
                 function ($trans) {
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                    /*if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                         return '';
                     }
-                    elseif($trans->entry_type=='0'){
+                    else*/
+                    if($trans->entry_type=='0' && $trans->amount > '0'){
                         $this->soa_balance += $trans->amount;
                         return number_format($trans->amount,2);
                     }else{
-                        return '0.00';
+                        return '';
                     }
                 }
             )
             ->editColumn(
                 'credit',
                 function ($trans) {
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                    /*if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                         return '';
                     }
-                    elseif($trans->entry_type=='1'){
+                    else*/
+                    if($trans->entry_type=='1' && $trans->amount > '0'){
                         $this->soa_balance -= $trans->amount;
                         return '('.number_format($trans->amount,2).')';
                     }else{
-                        return '(0.00)';
+                        return '';
                     }
                 }
             )
@@ -4108,10 +4196,11 @@ class DataRenderer implements DataProviderInterface
                 function ($trans) {
 
                     $data = '';
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+                    /*if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                         $data = '';
                     }
-                    elseif($this->soa_balance<0){
+                    else*/
+                    if($this->soa_balance<0){
                         $data = '<span style="color:red">'.number_format(abs($this->soa_balance), 2).'</span>';
                     }else{
                         $data = '<span style="color:green">'.number_format(abs($this->soa_balance), 2).'</span>';
@@ -4191,7 +4280,7 @@ class DataRenderer implements DataProviderInterface
             return $trans->transname;
         })
         ->editColumn('currency', function ($trans) {
-            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                 return '';
             }else{
                 return 'INR';
@@ -4204,7 +4293,7 @@ class DataRenderer implements DataProviderInterface
             }
         })
         ->editColumn('debit', function ($trans) {
-            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                 return '';
             }elseif($trans->entry_type=='0'){
                 $this->colender_debit = ($trans->amount*$this->colender_share);
@@ -4214,7 +4303,7 @@ class DataRenderer implements DataProviderInterface
             }
         })
         ->editColumn('credit',  function ($trans) {
-            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                 return '';
             }elseif($trans->entry_type=='1'){
                 $this->colender_credit = ($trans->amount*$this->colender_share);
@@ -4232,7 +4321,7 @@ class DataRenderer implements DataProviderInterface
         ->editColumn('balance', function ($trans) {
             $data = '';
             $this->colender_balance = ($this->colender_balance + $this->colender_debit - $this->colender_credit);
-            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
+            if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
                 $data = '';
             }
             elseif($this->colender_balance<0){
@@ -4466,7 +4555,7 @@ class DataRenderer implements DataProviderInterface
     public function getColenderAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action', 'status'])
+                ->rawColumns(['app_id','assoc_anchor', 'action', 'status'])
                 ->addColumn('app_id', function ($app) {
                         $link = route('colender_view_offer', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
                         return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . \Helpers::formatIdWithPrefix($app->app_id, 'APP')  . "</a> ";
@@ -4495,8 +4584,9 @@ class DataRenderer implements DataProviderInterface
                     'assoc_anchor',
                     function ($app) {                        
                      if($app->anchor_id){
-                    $userInfo=User::getUserByAnchorId((int)$app->anchor_id);
-                       $achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';
+                        //$userInfo=User::getUserByAnchorId((int)$app->anchor_id);
+                        //$achorName= ($userInfo)? ucwords($userInfo->f_name.' '.$userInfo->l_name): 'NA';                        
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     }else{
                       $achorName='';  
                     }                    
@@ -4906,7 +4996,7 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'action',
                         function ($dataRecords) {
-                        $btn = '<a class="btn btn-success btn-sm" href="'.route('export_txns').'?batch_no='.$dataRecords->batch_no.'">Download Report</a>';
+                        $btn = '<a class="btn btn-success btn-sm" href="'.route('export_txns', ['batch_no' => $dataRecords->batch_no]).'">Download Report</a>';
                         return $btn;
                     }) 
                     ->make(true);
@@ -5202,7 +5292,8 @@ class DataRenderer implements DataProviderInterface
         ->addColumn(
             'biz_entity_name',
             function ($data) {
-                return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
+                // return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
+                return $data->payment->getUserName->biz->biz_entity_name;
             }
         )            
         ->editColumn(
@@ -5259,6 +5350,17 @@ class DataRenderer implements DataProviderInterface
                 return $result;
             }
         )  
+        ->filter(function ($query) use ($request) {
+            if ($request->get('search_keyword') != '') {
+                $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('search_keyword'));
+                    $query->where('ref_code', 'like',"%$search_keyword%")
+                    ->orwhereHas('payment.biz', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     });
+                });
+            }
+        })
         ->make(true);
 
     }
@@ -5293,7 +5395,8 @@ class DataRenderer implements DataProviderInterface
         ->addColumn(
             'biz_entity_name',
             function ($data) {
-                return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
+                // return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
+                return $data->payment->getUserName->biz->biz_entity_name;
             }
         )            
         ->editColumn(
@@ -5334,6 +5437,17 @@ class DataRenderer implements DataProviderInterface
                 return config('lms.REQUEST_STATUS_DISP.'. $data->status . '.SYSTEM');
             }
         )
+        ->filter(function ($query) use ($request) {
+            if ($request->get('search_keyword') != '') {
+                $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('search_keyword'));
+                    $query->where('ref_code', 'like',"%$search_keyword%")
+                    ->orwhereHas('payment.biz', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     });
+                });
+            }
+        })
         ->make(true);
     }
 
@@ -5521,7 +5635,9 @@ class DataRenderer implements DataProviderInterface
                     function ($disbursal) {   
                         return $disbursal->invoice_disbursed->count();
                 }) 
-                
+                ->editColumn('updated_at', function($disbursal){
+                    return \Helpers::convertDateTimeFormat($disbursal->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A');
+                })
                 ->addColumn(
                     'action',
                     function ($disbursal) {
@@ -5532,7 +5648,7 @@ class DataRenderer implements DataProviderInterface
                         $act = '<a  data-toggle="modal" data-target="#viewBatchSendToBankInvoice" data-url ="' . route('view_batch_user_invoice', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
                         if( $chkUser->id!=11)
                         {  
-                           $act .= '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('invoice_udpate_disbursal', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-plus-square"></i></a>';
+                           $act .= '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('invoice_udpate_disbursal', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Update Transaction"><i class="fa fa-plus-square"></i></a>';
                         }
                         return $act;
                 })
@@ -5646,7 +5762,7 @@ class DataRenderer implements DataProviderInterface
     public function getRenewalAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','assignee', 'assigned_by', 'action','contact','name'])
+                ->rawColumns(['app_id','assignee', 'assigned_by','assoc_anchor', 'action','contact','name'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
@@ -5700,8 +5816,9 @@ class DataRenderer implements DataProviderInterface
                     /////return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
                     
                     if($app->anchor_id){
-                       $userInfo = User::getUserByAnchorId($app->anchor_id);
-                       $achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                       //$userInfo = User::getUserByAnchorId($app->anchor_id);
+                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
                     } else {
                        $achorName='';  
                     }                    
@@ -5926,14 +6043,15 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('select', function($trans){
                 $result = '';
                 $to = Carbon::createFromFormat('Y-m-d H:i:s', Helpers::getSysStartDate());
-                $from = Carbon::createFromFormat('Y-m-d H:i:s', $trans->sys_created_at);
+                $from = Carbon::createFromFormat('Y-m-d H:i:s', $trans->sys_created_at??$trans->created_at);
                 $days = $to->diffInDays($from);
                 $flag = true;
                 if($trans->invoice_disbursed_id ){
                     if($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->outstanding == 0)
                     $flag = false;
                 }
-                if($trans->payment && $days == 1 && $flag){
+                
+                if($trans->payment && $days <= 1 && $flag && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
                     $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
                 }
                 return $result;

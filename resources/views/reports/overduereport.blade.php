@@ -25,7 +25,8 @@
                     'class' => 'form-control',
                     'required' => 'required',
                     'placeholder' => 'From Date',
-                    'id'=>'from_date'
+                    'id'=>'from_date',
+                    'autocomplete'=>'off'
                     ])
                     !!} 
                 </div>
@@ -37,12 +38,13 @@
                     'class' => 'form-control',
                     'required' => 'required',
                     'placeholder' => 'To Date',
-                    'id'=>'to_date'
+                    'id'=>'to_date',
+                    'autocomplete'=>'off'
                     ])
                     !!} 
                 </div>
                
-                <div class="col-md-5" id="prefetch">
+                <div class="col-md-3" id="prefetch">
                     {!!
                     Form::text('search_keyword',
                     null,
@@ -57,7 +59,7 @@
                 </div>
              
                 <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
-               
+                 &nbsp; &nbsp; <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldPDF">Pdf</a> &nbsp; &nbsp; <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldEXCEL">Excel</a>
             </div>
                   <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -110,7 +112,6 @@
  var messages = {
         get_customer: "{{ route('get_customer') }}",
         lms_get_invoice_over_due_list: "{{ URL::route('lms_get_invoice_over_due_list') }}",
-        pdf_invoice_over_due_url:"{{ URL::route('pdf_invoice_over_due_url') }}",
         token: "{{ csrf_token() }}",
     };    
 $('#from_date').datetimepicker({

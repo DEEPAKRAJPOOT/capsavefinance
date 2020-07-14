@@ -5,14 +5,18 @@
         <!-- <li class="nav-item nav-category">
             <span class="nav-link">Main</span>
         </li> -->
+	@can('backend_dashboard')
         <li class="nav-item active">
             <a class="nav-link" href="{{ route('backend_dashboard') }}">
                 <i class="fa fa fa-home"></i>
                 <span class="menu-title">Dashboard</span>
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
-      </li>    
+      </li>
+	@endcan
+    
         @if(config('lms.LMS_STATUS'))
+	@can('lease_register')
         <li class="nav-item">
             <a class="nav-link"  href="{{ route('lease_register') }}">
                 <i class="fa fa-files-o"></i>
@@ -21,6 +25,7 @@
             </a>
 
         </li>
+        @endcan
         @endif
 
 
@@ -191,7 +196,7 @@
         @endif
 
         @if(config('lms.LMS_STATUS'))
-        @canany(['request_list'])
+        @canany(['lms_refund_new'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu2" aria-expanded="false"
                 aria-controls="collapseExample">
@@ -201,7 +206,7 @@
             </a>
             <div class="collapse" id="layoutsSubmenu2">
                 <ul class="nav flex-column sub-menu">
-                    @can('request_list')
+                    @can('lms_refund_new')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('lms_refund_new') }}">Manage Refund</a>
                     </li>
@@ -215,7 +220,7 @@
         @endif
 
         @if(config('lms.LMS_STATUS'))
-        @canany(['backend_upload_all_invoice','backend_get_invoice'])
+        @canany(['backend_upload_all_invoice','backend_get_invoice','backend_get_bank_invoice'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu7" aria-expanded="false"
                 aria-controls="collapseExample">
@@ -234,7 +239,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('backend_get_invoice')}}">Manage Invoice</a>
                     </li>
-                    @endcan
+		    @endcan
                 </ul>
             </div>
         </li>
@@ -304,7 +309,7 @@
     </li> --}}
 
     @if(config('lms.LMS_STATUS'))
-    @canany(['payment_list','payment_advice'])
+    @canany(['payment_list','unsettled_payments','settled_payments'])
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu8" aria-expanded="false"
             aria-controls="collapseExample">
@@ -386,7 +391,11 @@
     </li>
     @endif
 
-    @if($roleData[0]->is_superadmin == 1)
+    @canany(['manage_doa', 'manage_program', 'get_charges_list', 
+        'get_documents_list', 'get_industries_list', 'get_vouchers_list',
+        'get_segment_list', 'get_entity_list', 'get_constitutions_list',
+        'get_gst_list', 'get_equipment_list', 'get_baserate_list',
+        ])
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu11" aria-expanded="false"
             aria-controls="collapseExample">
@@ -406,45 +415,41 @@
                     <a class="nav-link" href="{{ route('manage_program') }} ">Manage Program</a>
                 </li>
                 @endcan
+		@can('get_charges_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_charges_list') }}">Manage Charges</a>
                 </li>
+		@endcan
+		@can('get_documents_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_documents_list') }}">Manage Document</a>
                 </li>
+                @endcan
+                @can('get_industries_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_industries_list') }}">Manage Industry</a>
                 </li>
+                @endcan
+		@can('get_vouchers_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_vouchers_list') }}">Manage Voucher</a>
                 </li>
-
-                <!-- 
-                 <li class="nav-item">
-                    <a class="nav-link" href="#">Manage State</a>
-                 </li>
-                 <li class="nav-item">
-                    <a class="nav-link" href="#">Risk Category </a>
-                 </li> -->
+		@endcan
                 @can('get_segment_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_segment_list') }}">Business Segment</a>
                 </li>
                 @endcan
+		@can('get_entity_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_entity_list') }}">Business Entity</a>
                 </li>
+	        @endcan
                 @can('get_constitutions_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_constitutions_list') }}">Business Constitution</a>
                 </li>
                 @endcan
-                <!--  <li class="nav-item">
-                    <a class="nav-link" href="#">Bank Master</a>
-                 </li>
-                 <li class="nav-item">
-                    <a class="nav-link" href="#">Industry Master</a>
-                 </li> -->
                 @can('get_gst_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_gst_list') }}">Manage GST</a>
@@ -456,18 +461,7 @@
                     <a class="nav-link" href="{{ route('get_equipment_list') }}">Manage Equipment</a>
                 </li>
                 @endcan
-                <!-- <li class="nav-item">
-                    <a class="nav-link" href="#">FI agency Master</a>
-                 </li>
-                 <li class="nav-item">
-                    <a class="nav-link" href="#">Holiday Master</a>
-                 </li>
-                 <li class="nav-item">
-                    <a class="nav-link" href="#">Email Master</a>
-                 </li>
-                 <li class="nav-item">
-                    <a class="nav-link" href="#">SMS Master</a>
-                 </li>-->
+                
                 @can('get_baserate_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_baserate_list') }}">Manage Base Rate</a>
@@ -476,9 +470,9 @@
             </ul>
         </div>
     </li>
-    @endif
+    @endcan
 
-    @if($roleData[0]->is_superadmin == 1)
+    @canany(['get_companies_list'])
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu" aria-expanded="false"
             aria-controls="collapseExample">
@@ -494,10 +488,10 @@
             </ul>
         </div>
     </li>
-    @endif
+    @endcan
 
     @if(config('lms.LMS_STATUS'))
-    @if($roleData[0]->is_superadmin == 1)
+    @canany(['get_tally_batches','get_fin_transactions'])
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenuFinance" aria-expanded="false"
             aria-controls="collapseExample">
@@ -507,12 +501,17 @@
         </a>
         <div class="collapse" id="layoutsSubmenuFinance">
             <ul class="nav flex-column sub-menu">
+		@can('get_tally_batches')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_tally_batches') }}">Tally Batch</a>
                 </li>
+		@endcan
+		@can('get_fin_transactions')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_fin_transactions') }}">Transactions</a>
                 </li>
+		@endcan
+		<!--
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('create_je_config') }}">JE Config</a>
                 </li>
@@ -528,11 +527,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_fin_account') }}">Accounts List</a>
                 </li>
-
+		-->
             </ul>
         </div>
     </li>
-    @endif
+    @endcan
     @endif
 
     </ul>

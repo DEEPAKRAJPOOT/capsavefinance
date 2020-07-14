@@ -73,7 +73,7 @@ function fillAddress(gstinId){
             res = res.response;
             if(res == null){
                 parent.$('.isloader').hide();
-                alert('No Address associated with the entered GST.');
+                replaceAlert('No Address associated with the entered GST.', 'error');
             }else if(res['statusCode'] == 101){
                 fillRegisteredAddress(res.result.pradr.adr);
                 $('input[name=biz_pan_gst_api_id]').val(temp.pgapiId);
@@ -81,7 +81,7 @@ function fillAddress(gstinId){
                 parent.$('.isloader').hide();
             }else{
                 parent.$('.isloader').hide();
-                alert('No Address associated with the entered GST.');
+                replaceAlert('No Address associated with the entered GST.', 'error');
             }
         }
     });

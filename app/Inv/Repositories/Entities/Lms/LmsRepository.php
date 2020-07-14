@@ -692,7 +692,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getRequestList($request)
    {
-		return RefundReq::where('status','=',$request->status)->get();
+		return RefundReq::where('status','=',$request->status);
    }
 
    public function createBatch()
@@ -1418,5 +1418,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	public function updateCronLog($data,$cronLogId){
 		return CronLog::updateCronLog($data,$cronLogId);
+	}
+	
+	public function getUnsettledPayments($userId){
+		return Payment::where('user_id','=',$userId)
+		->where('is_settled','=','0')
+		->get();
 	}
 }

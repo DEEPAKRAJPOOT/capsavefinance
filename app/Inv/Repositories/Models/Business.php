@@ -251,11 +251,12 @@ class Business extends BaseModel
         return $arrData;
     }
 
-    public static function getAddressByUserId($user_id, array $where = []) {
+    public static function getAddressByUserId($user_id, array $biz_id_arr = [], array $where = []) {
         $arrData = self::select('biz.biz_id','biz.biz_entity_name', 'mst_state.name as state_name', 'biz_addr.*')
         ->join('biz_addr', 'biz_addr.biz_id', '=', 'biz.biz_id')
         ->join('mst_state', 'mst_state.id', '=', 'biz_addr.state_id')
         ->where(['biz.user_id' => $user_id, 'biz_addr.is_default' => 1, 'biz_addr.rcu_status' => 1, 'biz_addr.is_active' => 1])
+        ->whereIn('biz_addr.biz_id', $biz_id_arr)
         ->where($where)
         ->get();
         return $arrData;
@@ -433,6 +434,17 @@ class Business extends BaseModel
     public static function searchBusiness($search)
     {
       return  self::with('LmsUser')->where("biz_entity_name","LIKE","{$search}%")->groupBy('user_id')->get();
+    }
+    
+    public static function getBizDataByPan($pan, $userId=null) {
+        $query = self::select('biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash','biz.cibil_score','biz_pan_gst.cin', 'biz.is_cibil_pulled')
+        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')                
+        ->where('biz_pan_gst.pan_gst_hash', $pan);
+        if (!is_null($userId)) {
+            $query->where('biz.user_id', $userId);
+        }         
+        $arrData = $query->get();
+        return $arrData;
     }
 
 }

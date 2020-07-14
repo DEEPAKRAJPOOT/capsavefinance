@@ -61,8 +61,20 @@ class ApplicationController extends Controller
 	 */
 	public function index()
 	{  
-	
-	   return view('backend.app.index');              
+            
+            $whereCond=[];
+            $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
+           
+            if ($roleData && $roleData->id == 11) {
+                $whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];                
+            }
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+            $panList = [];
+            foreach($anchUserData as $anchUser) {
+                $panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->biz_name . ")";
+                //$panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->name . " " . $anchUser->l_name . ")";
+            }
+	   return view('backend.app.index')->with('panList', $panList);              
 	}
 	
 	public function addAppCopy(Request $request)
@@ -104,7 +116,7 @@ class ApplicationController extends Controller
 			//dd($business_info->gst->pan_gst_hash);
 			$industryList = $this->appRepo->getIndustryDropDown()->toArray();
 			$constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
-			$segmentList = $this->appRepo->getSegmentDropDown()->toArray();
+			$segmentList = $this->appRepo->getSegmentDropDown()->toArray();                        
 			if ($business_info) {
 				return view('backend.app.company_details')
 						->with(['business_info'=>$business_info, 'states'=>$states, 'product_ids'=> $product_ids])
@@ -141,6 +153,13 @@ class ApplicationController extends Controller
 			$business_info = $this->appRepo->updateCompanyDetail($arrFileData, $bizId, Auth::user()->user_id);
 
 			if ($business_info) {
+                                //Update Anchor Pan and Biz Id
+                                $appData = $this->appRepo->getAppData($appId);
+                                $arrAnchUser=[];
+                                //$arrAnchUser['pan_no'] = $arrFileData['biz_pan_number'];
+                                $arrAnchUser['biz_id'] = $bizId;                                     
+                                $this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => $appData->user_id]); 
+
 				Session::flash('message',trans('success_messages.update_company_detail_successfully'));
 				return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId]);
 			} else {
@@ -165,7 +184,6 @@ class ApplicationController extends Controller
 		$attribute['app_id'] = $appId;
 		$getCin = $this->userRepo->getCinByUserId($bizId);
                 $getProductType  =  $this->userRepo->checkLeasingProduct($appId);
-                
 		if(!empty($getCin))
 		{
 			$cin =    $getCin->cin; 
@@ -180,9 +198,9 @@ class ApplicationController extends Controller
 			'cin_no' => $cin,
 			'appId' => $appId, 
 			'bizId' => $bizId,
-			'edit' => $editFlag,
-                        'is_lease' => $getProductType
-			]);
+			 'edit' => $editFlag,
+                         'is_lease' => $getProductType
+                        ]);
 			 
 		} catch (Exception $ex) {
 				return false;
@@ -297,6 +315,7 @@ class ApplicationController extends Controller
 			$docId = $request->get('doc_id'); //  fetch document id
 			$appId = $request->get('app_id'); //  fetch document id
 			$ownerId = $request->get('owner_id'); //  fetch document id
+
 //            $uploadData = Helpers::uploadAwsBucket($arrFileData, $appId);
 			$uploadData = Helpers::uploadAppFile($arrFileData, $appId);
 			$userFile = $this->docRepo->saveFile($uploadData);
@@ -810,7 +829,7 @@ class ApplicationController extends Controller
                                
 				//Validate the stage
 				if ($currStage->stage_code == 'credit_mgr') {
-					$whereCondition = ['app_id' => $app_id];
+					$whereCondition = ['app_id' => $app_id, 'status' => null];                                        
 					$offerData = $this->appRepo->getOfferData($whereCondition);
 					if (!$offerData) {
 						Session::flash('error_code', 'no_offer_found');
@@ -828,7 +847,7 @@ class ApplicationController extends Controller
                                             }                                            
                                         }
 				} else if ($currStage->stage_code == 'approver') {
-					$whereCondition = ['app_id' => $app_id];
+					$whereCondition = ['app_id' => $app_id, 'status' => null];
 					$offerData = $this->appRepo->getOfferData($whereCondition);
 					if (!$offerData) {
 						Session::flash('error_code', 'no_offer_found');
@@ -845,12 +864,12 @@ class ApplicationController extends Controller
 						}
 					}
 				} else if ($currStage->stage_code == 'sales_queue') {
-					$whereCondition = ['app_id' => $app_id];
+					$whereCondition = ['app_id' => $app_id, 'status' => null];
 					$offerData = $this->appRepo->getOfferData($whereCondition);
-					if (isset($offerData->is_approve) && $offerData->is_approve != 1) {
+					if ($offerData && is_null($offerData->status) ) {                                            
 						Session::flash('error_code', 'no_offer_accepted');
 						return redirect()->back();
-					}
+					}  
 				} else if ($currStage->stage_code == 'upload_post_sanction_doc') {
 					
 					$requiredDocs = $this->getProgramDocs(['app_id'=> $app_id, 'stage_code' => 'upload_post_sanction_doc']);
@@ -964,8 +983,10 @@ class ApplicationController extends Controller
 							  $fData['amount'] += $totalGst;
 							}
 						  }
-						  $fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
-						  $fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
+						  	if ($fData['amount'] > 0.00) {
+							  	$fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
+							  	$fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
+							}
 						}
 					  }
 					//}
@@ -1042,16 +1063,17 @@ class ApplicationController extends Controller
 	public function showBusinessInformation()
 	{            
             $userId = request()->get('user_id');
-            $where=[];
-            $where['user_id'] = $userId;
-            $where['status'] = [0,1];
-            $appData = $this->appRepo->getApplicationsData($where);
-            
+            //$where=[];
+            //$where['user_id'] = $userId;
+            //$where['status'] = [0,1];
+            //$appData = $this->appRepo->getApplicationsData($where);
+            $appData = $this->appRepo->checkAppByPan($userId);            
             $userData = $this->userRepo->getfullUserDetail($userId);           
             $isAnchorLead = $userData && !empty($userData->anchor_id);
             
-            if (isset($appData[0])) {
-                Session::flash('message', 'You can\'t create a new application before sanctions.');
+            //if (isset($appData[0])) {
+            if ($appData) {                
+                Session::flash('message', trans('error_messages.active_app_check'));   
                 return redirect()->back();
             }
             
@@ -1061,7 +1083,10 @@ class ApplicationController extends Controller
 		$constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
 		$segmentList = $this->appRepo->getSegmentDropDown()->toArray();
 
-		return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList', 'segmentList']));
+                $anchUserData = $this->userRepo->getAnchorUserData(['user_id' => $userId]);        
+                $pan = isset($anchUserData[0]) ? $anchUserData[0]->pan_no : '';
+        
+		return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList', 'segmentList', 'pan']));
 	}
 
 	/**
@@ -1074,6 +1099,15 @@ class ApplicationController extends Controller
 
 			$arrFileData = $request->all();
 
+                        $whereCond=[];
+                        //$whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];      
+                        $whereCond[] = ['user_id', '=', $request->user_id];            
+                        $anchUserData = $this->userRepo->getAnchorUserData($whereCond);            
+                        if (isset($anchUserData[0]) && $anchUserData[0]->pan_no != $arrFileData['biz_pan_number']) {                
+                            Session::flash('message', 'You can\'t changed the registered pan number.');
+                            return redirect()->back();
+                        }
+      
 			if(request()->is_gst_manual == 1){
 				$arrFileData['biz_gst_number'] = request()->get('biz_gst_number_text');
 			}
@@ -1121,6 +1155,7 @@ class ApplicationController extends Controller
 		$termOfferData = $this->appRepo->getAllOffers($appId, 2);//for term loan
 		$leaseOfferData = $this->appRepo->getAllOffers($appId, 3);//for lease loan
 		$offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>NULL]);//to check the offer status
+		$is_shown = $this->appRepo->getOfferStatus([['app_id', $appId], ['is_approve', 1], ['is_active', 1]]);
 		$currentStage = Helpers::getCurrentWfStage($appId);   
 		$roleData = Helpers::getUserRole();        
 		$viewGenSancLettertBtn = ($currentStage && $currentStage->role_id == $roleData[0]->id) ? 1 : 0;
@@ -1149,6 +1184,7 @@ class ApplicationController extends Controller
 				->with('termOfferData', $termOfferData)
 				->with('leaseOfferData', $leaseOfferData)
 				->with('offerStatus', $offerStatus)
+				->with('is_shown', $is_shown)
 				->with('isSalesManager', $isSalesManager)
 				->with('currentStage', $currentStage)
 				->with('viewGenSancLettertBtn', $viewGenSancLettertBtn);      
@@ -1164,6 +1200,7 @@ class ApplicationController extends Controller
 		$appId = $request->get('app_id');        
 		$offerId = $request->get('offer_id');
 		$bizId = $request->get('biz_id');        
+        $cmntText = $request->get('comment_txt');
 		
 		try {
 			$offerData = [];
@@ -1172,6 +1209,7 @@ class ApplicationController extends Controller
 				$message = trans('backend_messages.accept_offer_success');
 				
 				$addl_data = [];
+				$addl_data['sharing_comment'] = $cmntText;
 				$currStage = Helpers::getCurrentWfStage($appId);
 				$wf_order_no = $currStage->order_no;
 				$nextStage = Helpers::getNextWfStage($wf_order_no);
@@ -1180,33 +1218,50 @@ class ApplicationController extends Controller
 				$addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
 									
 				//Update workflow stage
-				Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true, $addl_data);                
-				
-			} else if($request->has('btn_reject_offer')) {
-				$addl_data = [];
+				Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true, $addl_data);
+				//Insert Pre Sanctions Documents
+				$prgmDocsWhere = [];
+				$prgmDocsWhere['stage_code'] = 'upload_pre_sanction_doc';
+				$appData = $this->appRepo->getAppDataByAppId($appId);
+				$userId = $appData ? $appData->user_id : null;
+				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
+			} else if($request->has('btn_reject_offer')) {				
+				$offerData['status'] = 2;
+				$message = trans('backend_messages.offer_rejected');
+	            $appApprData = [
+	                'app_id' => $appId,
+	                'approver_user_id' => \Auth::user()->user_id,
+	                'status' => 2
+	              ];
+	            //$this->appRepo->saveAppApprovers($appApprData);
+	            AppApprover::updateAppApprActiveFlag($appId);
+	            $addl_data = [];
+	            $addl_data['sharing_comment'] = $cmntText;
+	            $selRoleId = 6;
+	            $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
+	            $selUserId = $roles[0]->user_id;
+	            $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
+	            $currStage = Helpers::getCurrentWfStage($appId);
+	            Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
+	            Session::flash('operation_status', 1);
+	 
+				/*$addl_data = [];
 				$addl_data['sharing_comment'] = 'Reject comment goes here';
-				$offerData['status'] = 2; 
-				$message = trans('backend_messages.reject_offer_success');
+				$message = trans('backend_messages.reject_offer_success');*/
 				
 				//Update workflow stage
 				//Helpers::updateWfStage('approver', $appId, $wf_status = 2);
 				//Helpers::updateWfStage('sales_queue', $appId, $wf_status = 2);
 				//Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 2);
 				//Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 2);
-				$selRoleId = 6;
+
+				/*$selRoleId = 6;
 				$roles = $this->appRepo->getBackStageUsers($app_id, [$selRoleId]);
 				$selUserId = $roles[0]->user_id;
 				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
 				$currStage = Helpers::getCurrentWfStage($appId);
-				Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
+				Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);*/
 			}
-			
-			//Insert Pre Sanctions Documents
-			$prgmDocsWhere = [];
-			$prgmDocsWhere['stage_code'] = 'upload_pre_sanction_doc';
-			$appData = $this->appRepo->getAppDataByAppId($appId);
-			$userId = $appData ? $appData->user_id : null;
-			$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
 			
 			// $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
 			$savedOfferData = $this->appRepo->updateActiveOfferByAppId($appId, $offerData);
@@ -1918,7 +1973,7 @@ class ApplicationController extends Controller
 	 */    
 	public function saveAppRejection(Request $request) {
             try {
-            //    dd($request->all());
+
                 $app_id = $request->get('app_id');
                 $biz_id = $request->get('biz_id');
                 $user_id = $request->get('user_id');
@@ -1994,5 +2049,16 @@ class ApplicationController extends Controller
 					->with('allCommentsData',$allCommentsData);
 
 	}
+        
+	public function acceptOfferForm(Request $request){
+		try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            return view('backend.cam.accept_offer')
+            ->with(['app_id' => $appId, 'biz_id' => $bizId]);
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+	}   
     
 }

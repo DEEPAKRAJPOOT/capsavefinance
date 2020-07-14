@@ -106,7 +106,7 @@ class ReportController extends Controller
        }
        if (strtolower($request->type) == 'excel') {
            $toExportData['Lease Register'] = $leaseArr;
-           return $this->fileHelper->array_to_excel($toExportData);
+           return $this->fileHelper->array_to_excel($toExportData, 'leaseRegisterReport.xlsx');
        }
        $pdfArr = ['pdfArr' => $leaseArr];
        $pdf = $this->fileHelper->array_to_pdf($pdfArr);
@@ -133,25 +133,58 @@ class ReportController extends Controller
     }
      public function realisationreport(Request $request) {
         try {
-            return view('reports.realisationreport  ');
+            return view('reports.realisationreport');
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
         
     } 
-    public function pdfInvoiceDue(Request $request)
-    {
+    public function pdfInvoiceDue(Request $request) {
         $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
         $getInvoice  =  $this->invRepo->pdfInvoiceDue($request);
+        $duereport = [];
+        foreach($getInvoice as $invoice) :
+        $duereport[] = [
+            'Batch No' => $invoice->disbursal->disbursal_batch->batch_id ?? NULL,
+            'Batch Date' => date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at)) ?? NULL,
+            'Bill No' => $invoice->invoice->invoice_no ?? NULL,
+            'Bill Date' => Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y') ?? NULL,
+            'Due Date' => Carbon::parse($invoice->payment_due_date)->format('d/m/Y') ?? NULL,
+            'Bill Amount' => number_format($invoice->invoice->invoice_amount ?? 0),
+            'Approve Amount' => number_format($invoice->invoice->invoice_approve_amount ?? 0),
+            'Balance' => number_format($invoice->invoice->invoice_approve_amount ?? 0),
+        ];
+        endforeach;
+        if (strtolower($request->type) == 'excel') {
+           $toExportData['Invoice Due'] = $duereport;
+           return $this->fileHelper->array_to_excel($toExportData, 'InvoiceDueReport.xlsx');
+        }
         $pdfArr = ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
         $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadinvoicedue');
         return $pdf->download('InvoiceDueReport.pdf');  
     }
     
-     public function pdfInvoiceOverDue(Request $request)
-    {
+     public function pdfInvoiceOverDue(Request $request) {
         $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
         $getInvoice  =  $this->invRepo->pdfInvoiceOverDue($request);
+        $overduereport = [];
+        foreach($getInvoice as $invoice) :
+        $overduereport[] = [
+            'Batch No' => $invoice->disbursal->disbursal_batch->batch_id ?? NULL,
+            'Batch Date' => date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at)) ?? NULL,
+            'Bill No' => $invoice->invoice->invoice_no ?? NULL,
+            'Bill Date' => Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y') ?? NULL,
+            'Due Date' => Carbon::parse($invoice->payment_due_date)->format('d/m/Y') ?? NULL,
+            'Bill Amount' => number_format($invoice->invoice->invoice_amount ?? 0),
+            'Approve Amount' => number_format($invoice->invoice->invoice_approve_amount ?? 0),
+            'Balance' => number_format($invoice->invoice->invoice_approve_amount ?? 0),
+            'Days OD' => $invoice->InterestAccrual->count() ?? 0,
+        ];
+        endforeach;
+        if (strtolower($request->type) == 'excel') {
+           $toExportData['Invoice OverDue'] = $overduereport;
+           return $this->fileHelper->array_to_excel($toExportData, 'InvoiceOverDueReport.xlsx');
+        }
         $pdfArr = ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
         $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadinvoiceoverdue');
         return $pdf->download('InvoiceOverDueReport.pdf');  
@@ -161,6 +194,38 @@ class ReportController extends Controller
    {
         $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
         $getInvoice  =  $this->invRepo->pdfInvoiceRealisation($request);
+        $realisationreport = [];
+        foreach($getInvoice as $invoice) :
+        $payment  = [];                   
+        $chk  = [];                   
+        foreach($invoice->transaction as $row) {
+           if( $row->payment->date_of_payment) {
+             $payment[] = Carbon::parse($row->payment->date_of_payment)->format('d/m/Y');
+           }
+           if (($chk_no = $row->payment->utr_no) || ($chk_no = $row->payment->unr_no) || ($chk_no = $row->payment->cheque_no)) {
+              $chk[] =  $chk_no;
+           }  
+        }
+        $realisationOnDate = implode(', ', $payment);
+        $cheque = implode(', ', $chk);
+        $realisationreport[] = [
+            'Debtor Name' => $invoice->invoice->anchor->comp_name ?? NULL,
+            'Debtor Invoice Acc. No.' => $invoice->Invoice->anchor->anchorAccount->acc_no ?? NULL,
+            'Invoice Date' => Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y') ?? NULL,
+            'Invoice Due Amount' => number_format($invoice->invoice->invoice_approve_amount ?? 0),
+            'Invoice Due Amount Date' => Carbon::parse($invoice->payment_due_date)->format('d/m/Y') ?? NULL,
+            'Grace Period' => $invoice->grace_period ?? NULL,
+            'Realisation on Date' => $realisationOnDate,
+            'Realisation Amount' => number_format($invoice->invoice->invoice_approve_amount ?? 0),
+            'OD/OP Days' => $invoice->InterestAccrual->count() ?? 0,
+            'Cheque' => $cheque,
+            'Business' => $invoice->invoice->business->biz_entity_name ?? NULL,
+        ];
+        endforeach;
+        if (strtolower($request->type) == 'excel') {
+           $toExportData['Invoice Realisation'] = $realisationreport;
+           return $this->fileHelper->array_to_excel($toExportData, 'InvoiceRealisation.xlsx');
+        }
         $pdfArr = ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
         $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadrealisation');
         return $pdf->download('InvoiceRealisation.pdf');    

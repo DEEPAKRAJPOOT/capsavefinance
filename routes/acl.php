@@ -101,5 +101,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
         
     });
 
+    Route::get('access-denied', function () {
+        return response()->view('errors.403', [], 403);
+    });
 });
 

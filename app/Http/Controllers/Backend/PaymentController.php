@@ -40,6 +40,7 @@ class PaymentController extends Controller {
 		$this->appRepo = $appRepo;
 		$this->middleware('auth');
         $this->middleware('checkEodProcess');
+        $this->middleware('checkBackendLeadAccess');
 
 	}
 
@@ -83,8 +84,16 @@ class PaymentController extends Controller {
 	   return  $d = \DateTime::createFromFormat($format, $date);
 	 }
 
-	public function unsettledPayment() {
-		return view('backend.payment.unsettled_payment');
+	public function unsettledPayment(Request $request) {
+		$customer = [];
+		if($request->has('user_id')){
+			$lmsUser = $this->userRepo->lmsGetCustomer($request->get('user_id'));
+			if($lmsUser){
+				$customer['user_id'] = $lmsUser->user_id; 
+				$customer['customer_id'] = $lmsUser->customer_id;
+			}
+		}
+		return view('backend.payment.unsettled_payment')->with(['customer'=>$customer]);
 	}
 
 	public function settledPayment() {
@@ -101,22 +110,27 @@ class PaymentController extends Controller {
 	public function  savePayment(Request $request)
 	{
 		try {
-                        if ($request->get('eod_process')) {
-                            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
-                            return back();
-                        }
-            
+			if ($request->get('eod_process')) {
+				Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+				return back();
+			}
+			$curdate = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
+			$curdateMesg = Carbon::parse(Helpers::getSysStartDate())->format('d/m/Y');
 			$arrFileData = $request->all();
 			$validatedData = $request->validate([
 				'payment_type' => Rule::requiredIf(function () use ($request) {
 					return ($request->action_type == 1)?true:false;
-					}),
+				}),
+				'utr_no' => 'required',
 				'trans_type' => 'required',
 				'customer_id' => 'required', 
 				'virtual_acc' => 'required',  
-				'date_of_payment' => 'required', 
+				'date_of_payment' => 'required|date_format:d/m/Y|before_or_equal:'.$curdate,
 				'amount' => 'required', 
 				'description' => 'required'
+			],
+			[
+				'date_of_payment.before_or_equal' => 'The Transaction Date must be a date before or equal to '.$curdateMesg.'.',
 			]);
 			$user_id  = Auth::user()->user_id;
 			$mytime = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d h:i:s');
@@ -130,12 +144,21 @@ class PaymentController extends Controller {
 				$check = $request['utr_no'];
 			} else  if($request['payment_type']==3) {
 				$unr =  $request['utr_no'];
+			} else  if($request['payment_type']==4) {
+				$unr =  $request['utr_no'];
 			}
 			if(isset($arrFileData['doc_file']) && !is_null($arrFileData['doc_file'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
 			}
+                        
+			if(isset($arrFileData['cheque']) && !is_null($arrFileData['cheque'])) {
+				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
+                                $arrFileData['doc_file'] = $arrFileData['cheque'];
+			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
+				$userFile = $this->docRepo->saveFile($uploadData);
+			}                        
 
 			$paymentData = [
 				'user_id' => $request->user_id,
@@ -217,7 +240,7 @@ class PaymentController extends Controller {
 					'parent_trans_id' =>$request->charges,
 					'user_id' => $request['user_id'],
 					'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
-					'trans_type' => (in_array($request->action_type, [3])) ? 7 : $request['trans_type'],
+					'trans_type' => (in_array($request->action_type, [3])) ? config('lms.TRANS_TYPE.TDS') : $request['trans_type'],
 					'amount' => str_replace(',', '', $request['amount']),
 					'entry_type' => 1,
 					'gst'=> $request['incl_gst'],
@@ -228,7 +251,6 @@ class PaymentController extends Controller {
 					'pay_from' => ($udata)?$udata->is_buyer:'',
 					'is_settled' => 1,
 					'is_posted_in_taaly' => 0,
-					'sys_date'=>\Helpers::getSysStartDate(),
 					'created_at' =>  $mytime,
                     'created_by' =>  $user_id,
                   ];
@@ -632,4 +654,14 @@ class PaymentController extends Controller {
 		return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 	}    
   }
+  
+    public function downloadCheque()
+    {
+        $paymentId = $request->get('payment_id');
+        try {
+
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }  
+    }
 }

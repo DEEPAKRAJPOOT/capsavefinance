@@ -25,6 +25,12 @@
                 <td>@if($disbursal->margin>0){{number_format($disbursal->margin, 2, '.', '')}}% @endif</td>
             </tr>
             <tr>
+                <td><b>Invoice Date:</b></td>
+                <td>{{($disbursal->disbursal)? Carbon\Carbon::parse($disbursal->invoice->invoice_date)->format('d-m-Y'): ''}}</td>
+                <td><b>Benchmark Date:</b></td>
+                <td>{{ ($disbursal->invoice->program_offer->benchmark_date == 1) ? 'Invoice Date' : 'Date of Discounting' }}</td>
+            </tr>
+            <tr>
                 <td><b>Funded Date:</b></td>
                 <td>{{($disbursal->disbursal)? Carbon\Carbon::parse($disbursal->disbursal->funded_date)->format('d-m-Y'): ''}}</td>
                 <td><b>Payment Due Date:</b></td>
@@ -46,7 +52,17 @@
                 <td><b>Penal days:</b></td>
                 <td>{{$disbursal->accruedInterestNotNull->count() }}</td>
                 <td><b>Penal Amount:</b></td>
-                <td>{{number_format((float)$disbursal->accruedInterest->sum('accrued_interest'), 2, '.', '')  }}</td>
+                <td>{{number_format((float)$disbursal->accruedInterest->whereNotNull('overdue_interest_rate')->sum('accrued_interest'), 2, '.', '')  }}</td>
+            </tr>
+            <tr>
+                <td><b>Total accured interest till date:</b></td>
+                <td colspan="3">{{number_format((float)$disbursal->accruedInterest->sum('accrued_interest'), 2, '.', '')  }}</td>
+            </tr>
+            <tr>
+                <td><b>Payment Frequency:</b></td>
+                <td>{{$paymentFrequency == 1 ? 'Up Front' : ($paymentFrequency == 2 ? 'Monthly' : 'Rear Ended') }}</td>
+                <td></td>
+                <td></td>
             </tr>
            {{--<tr>
                 <td><b>Outstanding Amount:</b></td>

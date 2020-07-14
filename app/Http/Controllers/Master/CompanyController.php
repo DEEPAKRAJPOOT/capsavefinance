@@ -7,7 +7,7 @@ use Session;
 use Helpers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Lms\BankAccountRequest;
+use App\Http\Requests\Master\BankAccountRequest;
 use App\Http\Requests\Master\CompanyRegRequest;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;

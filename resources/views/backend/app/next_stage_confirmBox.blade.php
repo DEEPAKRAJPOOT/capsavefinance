@@ -25,7 +25,7 @@
                    @endif
                                      
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_offer_accepted')
-                   <label class='error'>Still, offer is not accepted by sales queue to move the next stage.</label><br>                   
+                   <label class='error'>You cannot move this application to the next stage as the offer is not accepted.</label><br>                   
                    @endif
                    
                    @if (Session::has('error_code') && Session::get('error_code') == 'no_docs_found')
@@ -140,7 +140,7 @@ var messages = {
                 
         $('.btn-move-next-stage').click(function() {            
             if ($('#frmMoveStage').valid()) {
-               /// parent.$('.isloader').show();
+                parent.$('.isloader').show();
             }
         });
         
@@ -149,8 +149,8 @@ var messages = {
         }
         
         if(messages.is_accept == 1){
-           parent.jQuery("#"+targetModel).modal('hide');  
            parent.oTable.draw();
+           parent.jQuery("#"+targetModel).modal('hide');  
            parent.$('.isloader').hide();           
         }
 

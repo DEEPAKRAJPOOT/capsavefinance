@@ -34,7 +34,7 @@
             @endif
             <div class="row" id="client_details"></div> 
             
-            <form action="{{ route('soa_consolidated_view') }}" method="post" >
+            <form action="{{ route('soa_consolidated_view') }}" method="post" onsubmit="return validate()">
                 @csrf
             <div class="row mt-4">
             	

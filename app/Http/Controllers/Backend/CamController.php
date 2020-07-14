@@ -1508,7 +1508,8 @@ class CamController extends Controller
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
-        $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';                    
+        $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';   
+        $userRole = $this->userRepo->getBackendUser(Auth::user()->user_id);
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
@@ -1520,7 +1521,8 @@ class CamController extends Controller
                 ->with('termPrgmLimitData', $termPrgmLimitData)
                 ->with('leasingPrgmLimitData', $leasingPrgmLimitData)
                 ->with('currStageCode', $currStageCode)
-                ->with('offerStatus', $offerStatus);
+                ->with('offerStatus', $offerStatus)
+                ->with('userRole', $userRole);
     }
     
     /**
@@ -1602,19 +1604,32 @@ class CamController extends Controller
         }
     }
 
-    public function approveOffer(Request $request){
-        $appId = $request->get('app_id');
-        $appApprData = [
-            'app_id' => $appId,
-            'approver_user_id' => \Auth::user()->user_id,
-            'status' => 1
-          ];
-        $this->appRepo->saveAppApprovers($appApprData);
+    
+    /**
+     * Save Approve Limit offer
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function approveOffer(Request $request)
+    {
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $appApprData = [
+                'app_id' => $appId,
+                'approver_user_id' => \Auth::user()->user_id,
+                'status' => 1
+              ];
+            $this->appRepo->saveAppApprovers($appApprData);
 
-        //update approve status in offer table after all approver approve the offer.
-        $this->appRepo->changeOfferApprove((int)$appId);
-        Session::flash('message',trans('backend_messages.offer_approved'));
-        return redirect()->back();
+            //update approve status in offer table after all approver approve the offer.
+            $this->appRepo->changeOfferApprove((int)$appId);
+            Session::flash('message',trans('backend_messages.offer_approved'));
+            return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
+        }catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
     
     /**
@@ -1695,11 +1710,12 @@ class CamController extends Controller
         $appType = $appData->app_type;
         $user = $appData->user;
         $user_type = $user->is_buyer;
-        $anchors = $user->anchors;
+        //$anchors = $user->anchors;               
+        $anchors = $this->userRepo->getAnchorsByUserId($user->user_id);
         $anchorArr=[];
         foreach($anchors as $anchor){
           array_push($anchorArr, $anchor->anchor_id);
-        }
+        }                        
         $anchorPrgms = $this->appRepo->getPrgmsByAnchor($anchorArr, $user_type);
       } else {
         $appType = '';
@@ -2294,5 +2310,23 @@ class CamController extends Controller
         }
         $this->appRepo->addOfferCharges($chArr);
       }
+    }
+    
+    /**
+     * Open Approve Limit Pop Up
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function approveLimitForm(Request $request)
+    {
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            return view('backend.cam.approve_limit')
+            ->with(['app_id' => $appId, 'biz_id' => $bizId]);
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
     }
 }

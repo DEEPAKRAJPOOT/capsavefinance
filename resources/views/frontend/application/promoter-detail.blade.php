@@ -26,7 +26,7 @@
         @endcan 
         @can('promoter_details')
         <li>
-            <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Management Details</a>
+            <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Management Information</a>
         </li>
         @endcan 
         @can('documents')
@@ -111,7 +111,7 @@
                             }
                             ?>
                             <div class="col-md-12">
-                                <h5 class="card-title form-head">Management Details ({{isset($row->first_name) ? $i : '1'}}) </h5>
+                                <h5 class="card-title form-head">Management Information ({{isset($row->first_name) ? $i : '1'}}) </h5>
 
                                 <div class="row">
                                     <div class="col-md-4">
@@ -197,6 +197,7 @@
                                         <div class="form-group">
 
                                             <label for="txtEmail">Designation    <span class="mandatory"></span>
+
 
                                             </label>
                                             <input type="text" name="designation[]" id="designation{{isset($row->first_name) ? $i : '1'}}" value="{{$row->designation}}" class="form-control designation"  placeholder="Enter Designation">
@@ -652,6 +653,7 @@
                 required: true
                 })
                 });
+
                 //  $('input.designation').each(function () {
                 // $(this).rules("add",
                 // {
@@ -660,6 +662,7 @@
                 // });
 
               }
+
                if(is_lease==0)
                {
                 $('input.mobileveri').each(function () {
@@ -727,8 +730,9 @@
         var dlVal = $("#dldown" + i).attr('href');
         var vtVal = $("#voterdown" + i).attr('href');
         var adVal = $("#aadhardown" + i).attr('href');
-         var elVal = $("#electricitydown" + i).attr('href');
-          var teVal = $("#telephonedown" + i).attr('href');
+        var elVal = $("#electricitydown" + i).attr('href');
+         var teVal = $("#telephonedown" + i).attr('href');
+        
          if(is_lease==0)
          {     
             if (dlVal == "" && vtVal == "" && adVal == "" && elVal == "" && teVal == "")

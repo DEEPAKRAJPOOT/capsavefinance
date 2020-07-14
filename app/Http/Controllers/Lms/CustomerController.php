@@ -80,12 +80,13 @@ public function listAppliction(Request $request) {
 		$userInfo->total_limit = number_format($totalLimit);
 		$userInfo->consume_limit = number_format($totalCunsumeLimit);
 		$userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
-
+                $userRole = $this->userRepo->getBackendUser(Auth::user()->user_id);
 		return view('lms.customer.list_applications')
 			->with([
 				'userInfo' => $userInfo,
 				'application' => $application,
-				'anchors' => $anchors
+				'anchors' => $anchors,
+                                'userRole' => $userRole,
 		]);
 	} catch (Exception $ex) {
 		dd($ex);

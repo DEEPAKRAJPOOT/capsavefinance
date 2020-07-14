@@ -14,6 +14,7 @@ use App\Inv\Repositories\Models\OfferCollateralSecurity;
 use App\Inv\Repositories\Models\OfferPersonalGuarantee;
 use App\Inv\Repositories\Models\OfferCorporateGuarantee;
 use App\Inv\Repositories\Models\OfferEscrowMechanism;
+use App\Inv\Repositories\Models\User;
 
 class AppProgramOffer extends BaseModel {
     /* The database table used by the model.
@@ -113,9 +114,16 @@ class AppProgramOffer extends BaseModel {
         
         $whereCondition['is_active'] = isset($whereCondition['is_active']) ? $whereCondition['is_active'] : 1;
         
-        $offerData = self::select('app_prgm_offer.*')
-                ->where($whereCondition)
-                ->first();      
+        $query = self::select('app_prgm_offer.*');
+        if (isset($whereCondition['status']) && is_null(isset($whereCondition['status']))) {
+            unset($whereCondition['status']);
+            $query->whereNull('status');
+            $query->where($whereCondition);
+        } else {
+            $query->where($whereCondition);
+        }               
+        
+        $offerData = $query->first();      
         return $offerData ? $offerData : null;
     }
 
@@ -169,11 +177,19 @@ class AppProgramOffer extends BaseModel {
         // if (!is_int($appId)) {
         //     throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         // }
-
-        if(is_null($product_id) || $product_id == ''){
-            $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();
+        
+        $roleData = User::getBackendUser(\Auth::user()->user_id);            
+        $whereCond = [];
+        if (isset($roleData[0]) && $roleData[0]->id == 11) {   
+            $whereCond = ['anchor_id' => \Auth::user()->anchor_id, 'app_id' => $appId, 'is_active' => 1];
+        } else {
+            $whereCond = ['app_id' => $appId, 'is_active' => 1];
+        }
+        
+        if(is_null($product_id) || $product_id == ''){            
+            $offers = self::where($whereCond)->orderBy('prgm_offer_id', 'DESC')->get();
         }else{
-            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where(['app_id'=>$appId, 'is_active'=>1])->with('offerCharges.chargeName')->get();
+            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where($whereCond)->with('offerCharges.chargeName')->orderBy('prgm_offer_id', 'DESC')->get();
         }
         return $offers ? $offers : null;
     }
@@ -262,7 +278,12 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
         }
 
-        $rowUpdate = self::where(['app_id'=>(int) $app_id, 'is_active'=>1])->update($arr);
+        $rowUpdate = self::where(['app_id'=>(int) $app_id, 'is_active'=>1])
+                        ->where(function($q) {
+                            $q->where('status', NULL)
+                                ->orWhere('status', 1);
+                        })
+                        ->update($arr);
 
         return ($rowUpdate ? $rowUpdate : false);
     }
@@ -524,5 +545,10 @@ class AppProgramOffer extends BaseModel {
     
     public function chargeName(){
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Charges', 'charge_id', 'id');
+    }   
+    
+    //Anchor Name
+    public function anchorUser(){
+        return $this->hasOne('App\Inv\Repositories\Models\User', 'anchor_id', 'anchor_id')->where('user_type', 2);
     }    
 }

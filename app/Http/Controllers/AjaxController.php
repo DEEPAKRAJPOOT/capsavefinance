@@ -43,6 +43,7 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Crypt;
 
 class AjaxController extends Controller {
 
@@ -72,9 +73,10 @@ class AjaxController extends Controller {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->finRepo = $finRepo;
-        $this->UserInvRepo = $UserInvRepo;
-        $this->middleware('checkEodProcess');
+        $this->UserInvRepo = $UserInvRepo;        
         $this->reportsRepo = $reportsRepo;
+        $this->middleware('checkEodProcess');
+        $this->middleware('checkBackendLeadAccess');
     }
 
     /**
@@ -2693,13 +2695,13 @@ if ($err) {
     
     
     public function getAnchorLists(DataProviderInterface $dataProvider) { 
-     $anchUsersList = $this->userRepo->getAllAnchor();
+     $anchUsersList = $this->userRepo->getAllAnchor($orderBy='anchor_id', $datatable=true);
      $users = $dataProvider->getAnchorList($this->request, $anchUsersList);
      return $users;
     }
     
     public function getAnchorLeadLists(DataProviderInterface $dataProvider){
-      $anchLeadList = $this->userRepo->getAllAnchorUsers();
+      $anchLeadList = $this->userRepo->getAllAnchorUsers(true);
         $users = $dataProvider->getAnchorLeadList($this->request, $anchLeadList);
         return $users; 
     }
@@ -3946,10 +3948,23 @@ if ($err) {
    * @return json transaction data
    */
     public function getInvoiceDueList(DataProviderInterface $dataProvider) {
-
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('d/m/Y');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('d/m/Y');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'customer_id' => $this->request->get('search_keyword'),
+            'type' => 'excel',
+        ];
         $transactionList = $this->invRepo->getReportAllInvoice();
         $users = $dataProvider->getReportAllInvoice($this->request, $transactionList);
-        return $users;
+        $users     = $users->getData(true);
+        $users['excelUrl'] = route('pdf_invoice_due_url', $condArr);
+        $condArr['type']  = 'pdf';
+        $users['pdfUrl'] = route('pdf_invoice_due_url', $condArr);
+        return new JsonResponse($users);
     }
     
      /**
@@ -3958,16 +3973,43 @@ if ($err) {
    * @return json transaction data
    */
     public function getInvoiceOverDueList(DataProviderInterface $dataProvider) {
-
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('d/m/Y');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('d/m/Y');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'customer_id' => $this->request->get('search_keyword'),
+            'type' => 'excel',
+        ];
         $transactionList = $this->invRepo->getReportAllOverdueInvoice();
         $users = $dataProvider->getReportAllOverdueInvoice($this->request, $transactionList);
-        return $users;
+        $users     = $users->getData(true);
+        $users['excelUrl'] = route('pdf_invoice_over_due_url', $condArr);
+        $condArr['type']  = 'pdf';
+        $users['pdfUrl'] = route('pdf_invoice_over_due_url', $condArr);
+        return new JsonResponse($users);
     }
     
    public function getInvoiceRealisationList(DataProviderInterface $dataProvider) {
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('d/m/Y');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('d/m/Y');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'customer_id' => $this->request->get('search_keyword'),
+            'type' => 'excel',
+        ];
         $transactionList = $this->invRepo->getInvoiceRealisationList();
         $users = $dataProvider->getInvoiceRealisationList($this->request, $transactionList);
-        return $users;
+        $users     = $users->getData(true);
+        $users['excelUrl'] = route('pdf_invoice_realisation_url', $condArr);
+        $condArr['type']  = 'pdf';
+        $users['pdfUrl'] = route('pdf_invoice_realisation_url', $condArr);
+        return new JsonResponse($users);
     }  
         /**
      * Get all Equipment
@@ -4367,6 +4409,8 @@ if ($err) {
         $this->dataRecords = [];
         if (!empty($user_id)) {
             $this->dataRecords = Payment::getPayments(['is_settled' => 0, 'user_id' => $user_id]);
+        } else {
+            $this->dataRecords = Payment::getPayments(['is_settled' => 0]);
         }
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
@@ -4377,6 +4421,8 @@ if ($err) {
         $this->dataRecords = [];
         if (!empty($user_id)) {
             $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id]);
+        } else {
+            $this->dataRecords = Payment::getPayments(['is_settled' => 1]);
         }
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
@@ -4496,6 +4542,31 @@ if ($err) {
         $condArr['type']  = 'pdf';
         $leaseRegisters['pdfUrl'] = route('download_reports', $condArr);
         return new JsonResponse($leaseRegisters);
+    }    
+
+    public function unsettledPayments(Request $request){
+        $userId = $request->user_id;
+        $chrgId = $request->chrg_id;
+        $paymentType = config('lms.CHARGE_PAYMENT_TYPE_MAP.'.$chrgId);
+        $dataRecords = [];
+        if ($userId) {
+            $payments = Payment::getPayments(['is_settled' => 0, 'user_id' => $userId, 'payment_type' => $paymentType]);
+            foreach ($payments as $payment) {
+                $dataRecords[] =[
+                    'id'=>Crypt::encryptString($payment->payment_id),
+                    'amount'=>number_format($payment->amount),
+                    'paymentmode'=>$payment->paymentmode,
+                    'transactionno'=>$payment->transactionno,
+                    'date_of_payment'=>Carbon::parse($payment->date_of_payment)->format('d-m-Y')
+                ];
+            }
+        }
+        if(!empty($dataRecords)){
+            return response()->json(['status' => 1,'res' => $dataRecords]);
+        }else{
+            return response()->json(['status' => 0,'res' => $dataRecords]);
+        }
+        
     }
 
     public function getEodList(DataProviderInterface $dataProvider){
@@ -4519,5 +4590,56 @@ if ($err) {
 
         return new JsonResponse(['html'=>$html]);
     }
+    public function checkExistAnchorLead(Request $request)
+    {
+        $email = $request->get('email');        
+        $assocAnchId = $request->get('anchor_id');
+      
+        $result = [];
+        $result['message'] = '';
+        $result['status'] = true;        
+        
+        //$getAnchorId = $this->userRepo->getUserDetail(Auth::user()->user_id);
+        //if ($getAnchorId && $getAnchorId->anchor_id!=''){
+        if (!empty($assocAnchId)) {
+            $anchorId = $assocAnchId;
+        } else {
+            $anchorId = Auth::user()->anchor_id;
+        }
+        
+        if (!empty($anchorId)) {
+            $whereCond=[];
+            $whereCond[] = ['email', '=', trim($email)];
+            $whereCond[] = ['anchor_id', '=', $anchorId];
+            //$whereCond[] = ['is_registered', '!=', '1'];
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+
+            if (isset($anchUserData[0])) {
+                $result['status'] = false;
+                $result['message'] = trans('success_messages.existing_email');
+            }
+        }
+        
+        return response()->json($result);
+    }    
+
+    public function checkBankAccWithIfscExist(Request $req){
+        
+        $response['status'] = false;
+        $acc_no = trim($req->get('acc_no'));
+        $ifsc_code = trim($req->get('ifsc'));
+        $acc_id = $req->get('acc_id');
+        $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'ifsc_code' => $ifsc_code]);
+       if($status == false){
+                $response['status'] = 'true';
+        }else{
+           $response['status'] = 'false';
+           if($acc_id != null){
+               $response['status'] = 'true';
+           }
+        }
+        
+        return response()->json( $response );
+   }
 
 }

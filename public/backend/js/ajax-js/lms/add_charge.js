@@ -129,6 +129,7 @@
              $("#amount").empty();
               return false;
       }
+      getpayments(chrg_name);
       var postData =  ({'app_id':$("#app_id").val(),'id':chrg_name,'prog_id':$("#program_id").val(),'user_id':$("#user_id").val(),'_token':messages.token});
        jQuery.ajax({
         url: messages.get_chrg_amount,
@@ -206,7 +207,7 @@
                       else
                       {
                          $("#chrg_name").val('');
-                         alert('Something went wrong, Please try again');
+                         replaceAlert('Something went wrong, Please try again', 'error');
                       }
                 }
         }); 
@@ -223,7 +224,7 @@
                 alert(errorThrown);
                 },
                 success: function (res) {
-                      alert(res)
+                      //alert(res)
                 }
         }); 
     });      
@@ -277,13 +278,13 @@
             if(chrg_calculation_type==1)
             {
               
-                alert('Please Enter Amount');
+                replaceAlert('Please Enter Amount', 'error');
                 
             }
             else
             {
               
-                 alert('Please Enter Percentage');
+                 replaceAlert('Please Enter Percentage', 'error');
             }
             return false;
           }
@@ -291,7 +292,7 @@
           {
               if(chrg_calculation_type==2)
               {    
-               alert('Percentage should not  greater than 100%');
+               replaceAlert('Percentage should not  greater than 100%', 'error');
                return false;
               }
           }
@@ -303,3 +304,27 @@
      
     });   
     });
+
+function getpayments(chrgId) {
+  if($.inArray(chrgId, messages.charges) >=0){
+    $(".unsettledPayment").show();
+    $("#payment").html('<option value="" disabled selected>Choose Paymeny</option>');
+    $.ajax({
+      type: "get",
+      url: messages.get_payments,
+      data: { chrg_id: chrgId },
+      dataType: 'json',
+      success: function (data) {
+        if(data.status == 1){
+          $(data.res).each(function (i, v) {
+            $("#payment").append('<option value="' + v.id + '">Date:-'+v.date_of_payment+' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Amount:- ₹ ' + v.amount +'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Transaction No:-'+v.transactionno+'</option>');
+          });
+        }else{
+          $("#payment").html('<option value="" disabled selected>No Payment found</option>');
+        }
+      }
+    });
+  }else{
+    $(".unsettledPayment").hide();
+  }
+}

@@ -1052,7 +1052,7 @@ Route::group(
         'uses' => 'AjaxController@getRepaymentAmount'
     ]); 
 
-    Route::get('get_remaining_charges', [
+    Route::post('get_remaining_charges', [
         'as' => 'get_remaining_charges',
         'uses' => 'AjaxController@getRemainingCharges'
     ]);  
@@ -1084,7 +1084,7 @@ Route::group(
         'uses' => 'AjaxController@getSoaClientDetails'
     ]);
 
-    Route::get('get_all_unsettled_trans_type',[
+    Route::post('get_all_unsettled_trans_type',[
         'as' => 'get_all_unsettled_trans_type',
         'uses' => 'AjaxController@getAllUnsettledTransType'
     ]);
@@ -1157,5 +1157,21 @@ Route::group(
         ]
     );
 
+    Route::get('get_unsettled_payments',[
+        'as' => 'get_unsettled_payments',
+        'uses' => 'AjaxController@unsettledPayments'
+        ]
+    );
+
+    Route::post('check-exist-anchor-lead',[
+        'as' => 'check_exist_anchor_lead',
+        'uses' => 'AjaxController@checkExistAnchorLead'
+        ]
+    );  
+
+    Route::post('check-bank-acc-ifsc-exist',[
+        'as' => 'check_bank_acc_ifsc_exist',
+        'uses' => 'AjaxController@checkBankAccWithIfscExist'
+    ]);
 
 });

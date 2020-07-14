@@ -6,6 +6,7 @@ use Auth;
 use Session;
 use Crypt;
 use Helpers;
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\Master\State;
@@ -15,6 +16,8 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use Event;
+use PHPExcel;
+use PHPExcel_IOFactory;
 use App\Http\Requests\Backend\CreateLeadRequest;
 use App\Inv\Repositories\Models\UserAppDoc;
 use Illuminate\Support\Facades\Validator;
@@ -47,7 +50,20 @@ class LeadController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return view('backend.lead.index');
+        
+        $whereCond=[];
+        $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
+
+        if ($roleData && $roleData->id == 11) {
+            $whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];                
+        }
+        $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+        $panList = [];
+        foreach($anchUserData as $anchUser) {
+            $panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->biz_name . ")";
+            //$panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->name . " " . $anchUser->l_name . ")";
+        }        
+        return view('backend.lead.index')->with('panList', $panList);
     }
 
     /**
@@ -100,7 +116,10 @@ class LeadController extends Controller {
                 $attributes['biz_name'] = $request->get('biz_name'); 
                 $userInfo = $this->userRepo->updateUser($attributes, $userId);
                 Session::flash('operation_status', 1); 
-                return view('backend.lead.index');
+                //return view('backend.lead.index');
+                Session::flash('message', 'Lead is updated successfully.'); 
+                Session::flash('is_accept', 1);
+                return redirect()->back();                      
         } catch (Exception $ex) {
             dd($ex);
         }
@@ -173,7 +192,9 @@ class LeadController extends Controller {
         try {
             $user_id = $request->get('user_id');
             $userInfo = $this->userRepo->getUserDetail($user_id); //dd($userInfo);
-            $application = $this->appRepo->getApplicationsDetail($user_id)->toArray();
+            //$application = $this->appRepo->getApplicationsDetail($user_id)->toArray();
+            $application = $this->appRepo->getApplicationsByPan($user_id)->toArray();
+            
             return view('backend.lead.lead_details')
                             ->with('userInfo', $userInfo)
                             ->with('application', $application);
@@ -405,16 +426,41 @@ class LeadController extends Controller {
      */
     public function saveUploadAnchorlead(Request $request) {
         try {
+            $validatedData = Validator::make($request->all(),[
+                // 'assigned_anchor' => 'required',
+                'anchor_lead' => 'required'
+            ],[
+                'anchor_lead.required' => 'This field is required.',
+                // 'assigned_anchor.required' => 'This field is required.'
+            ])->validate();
+
             $uploadedFile = $request->file('anchor_lead');
             $destinationPath = storage_path() . '/uploads';
-            $fileName = time() . '.csv';
+            
+            $fileName = time();
             if ($uploadedFile->isValid()) {
                 $uploadedFile->move($destinationPath, $fileName);
             }
-            $fileD = fopen($destinationPath . '/' . $fileName, "r");
-            $column = fgetcsv($fileD);
-            while (!feof($fileD)) {
-                $rowData[] = fgetcsv($fileD);
+
+            $fullFilePath  = $destinationPath . '/' . $fileName;
+            $header = [
+                0,1,2,3,4,5
+            ];
+
+            $fileHelper = new FileHelper();
+            $fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
+            
+            if($fileArrayData['status'] != 'success'){
+                Session::flash('message', 'Please select only csv and xlsx file format');
+                return redirect()->back();
+            }
+
+            $rowData = $fileArrayData['data'];
+            // dd($rowData);
+
+            if (empty($rowData)) {
+                Session::flash('message', 'File does not contain any record');
+                return redirect()->back();                     
             }
 
             $anchLeadMailArr = [];
@@ -422,8 +468,26 @@ class LeadController extends Controller {
             $arrUpdateAnchor = [];
             foreach ($rowData as $key => $value) {
                 
-                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
-                if(!empty($value) && !$anchUserInfo){
+                //$anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
+                //if(!empty($value) && !$anchUserInfo){            
+            if (!empty($request->post('assigned_anchor'))){
+                $anchorId = $request->post('assigned_anchor');
+            } else {
+                $anchorId = Auth::user()->anchor_id;
+            }
+            
+            $whereCond=[];
+            $whereCond[] = ['email', '=', trim($value[3])];     
+            $whereCond[] = ['anchor_id', '=', $anchorId];
+            $whereCond[] = ['anchor_id', '>', '0'];
+            //$whereCond[] = ['is_registered', '!=', '1'];
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+            if (!empty(trim($value[3])) && !isset($anchUserData[0])) {
+                if ($value && (empty($value[0]) || empty($value[1]) || empty($value[2]) || empty($value[3]) || empty($value[4]) || empty($value[5]) )) {
+                    Session::flash('message', 'Please fill the correct details.');
+                    return redirect()->back();                     
+                }
+
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
                     if(trim($value[5])=='Buyer'){
@@ -443,9 +507,11 @@ class LeadController extends Controller {
                     'is_registered'=>0,
                     'registered_type'=>1,
                     'token' => $token,
+                    'anchor_id' => $anchorId
                 ];
+
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
-                
+                /*
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
                 if($getAnchorId && $getAnchorId->anchor_id!=''){
                 $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
@@ -453,6 +519,7 @@ class LeadController extends Controller {
                  $arrUpdateAnchor ['anchor_id'] =$request->post('assigned_anchor');
                 }
                $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
+                */
                 
                 if ($anchor_lead) {
                     $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
@@ -465,8 +532,10 @@ class LeadController extends Controller {
             }
             //chmod($destinationPath . '/' . $fileName, 0775, true);
             unlink($destinationPath . '/' . $fileName);
-            Session::flash('message', trans('backend_messages.anchor_registration_success'));
-           return redirect()->route('get_anchor_lead_list');
+            //Session::flash('message', trans('backend_messages.anchor_registration_success'));
+            //return redirect()->route('get_anchor_lead_list');
+            Session::flash('is_accept', 1);
+            return redirect()->back();            
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -616,8 +685,21 @@ class LeadController extends Controller {
     * 
     * @return type
     */
-     public function getAnchorLeadList() {        
-        return view('backend.anchor.anchor_lead_list');
+     public function getAnchorLeadList() {
+         
+        $whereCond=[];
+        $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
+
+        if ($roleData && $roleData->id == 11) {
+            $whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];                
+        }
+        $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+        $panList = [];
+        foreach($anchUserData as $anchUser) {
+            $panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->biz_name . ")";
+            //$panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->name . " " . $anchUser->l_name . ")";
+        }         
+        return view('backend.anchor.anchor_lead_list')->with('panList', $panList);
     }
     
      public function addManualAnchorLead() {
@@ -639,16 +721,32 @@ class LeadController extends Controller {
      */
     public function saveManualAnchorLead(Request $request){
        try {
-            $arrAnchorVal = $request->all();            
-            $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
+            $arrAnchorVal = $request->all();    
+//            dd($arrAnchorVal);            
+                            
+            if (!empty($arrAnchorVal['assigned_anchor'])){
+                $anchorId = $arrAnchorVal['assigned_anchor'];
+            } else {
+                $anchorId = Auth::user()->anchor_id;
+            }
+            
+            //$anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));                        
             $arrUpdateAnchor =[];
-            if(!$anchUserInfo){
+            //if(!$anchUserInfo){
+            $whereCond=[];
+            $whereCond[] = ['email', '=', trim($arrAnchorVal['email'])];
+            $whereCond[] = ['anchor_id', '=', $anchorId];
+            $whereCond[] = ['anchor_id', '>', '0'];
+            //$whereCond[] = ['is_registered', '!=', '1'];
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+            if (!isset($anchUserData[0])) {  
                 $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
                 $token = md5($hashval);
                 $arrAnchorData = [
                     'name' => trim($arrAnchorVal['f_name']),
                     'l_name' => trim($arrAnchorVal['l_name']),
                     'biz_name' => $arrAnchorVal['comp_name'],
+//                    'pan_no' => $arrAnchorVal['pan_no'],
                     'email' => trim($arrAnchorVal['email']),
                     'phone' => $arrAnchorVal['phone'],
                     'user_type' => $arrAnchorVal['anchor_user_type'],
@@ -657,9 +755,11 @@ class LeadController extends Controller {
                     'created_by' => Auth::user()->user_id,
                     'created_at' => \Carbon\Carbon::now(),
                     'token' => $token,
+                    'anchor_id' => $anchorId
                 ];
             
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
+                /*
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
             
                 if($getAnchorId && $getAnchorId->anchor_id!=''){
@@ -670,6 +770,8 @@ class LeadController extends Controller {
             
             
                 $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
+                 * 
+                 */
                 if($anchor_lead) {
                     $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
                     $anchLeadMailArr['name'] = trim($arrAnchorData['name']);
@@ -704,6 +806,15 @@ class LeadController extends Controller {
             ->where("state_id",$request->state_id)
             ->pluck("name","id");
             return response()->json($cities);
+    }
+    
+    public function downloadSample(Request $request)
+    {
+        $filePath = public_path() . '/anchoruserlist.csv';
+        header('Content-type: text/csv');
+        header('Content-Disposition: attachment; filename="anchoruserlist.csv"');
+        readfile($filePath);
+        exit;
     }
     
 }

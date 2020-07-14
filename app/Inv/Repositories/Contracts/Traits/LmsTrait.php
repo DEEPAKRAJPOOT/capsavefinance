@@ -148,19 +148,17 @@ trait LmsTrait
         */
         $disbursalData = [];
         $disburseDate = $invoice['disburse_date'];
-        $str_to_time_date = strtotime($disburseDate);
+        $str_to_time_date = strtotime(\Carbon\Carbon::createFromFormat('d/m/Y', $disburseDate)->setTimezone(config('common.timezone'))->format('Y-m-d'));
         $bankId = $invoice['program_offer']['bank_id'];
-        $oldIntRate = (float)$invoice['program_offer']['interest_rate'];
+        $oldIntRate = $invoice['program_offer']['interest_rate'] - $invoice['program_offer']['base_rate'];
         $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
         $Obj = new ManualApportionmentHelper($this->lmsRepo);
         $bankRatesArr = $Obj->getBankBaseRates($bankId);
-
         if ($bankRatesArr && $invoice['is_adhoc'] != 1) {
           $actIntRate = $Obj->getIntRate($oldIntRate, $bankRatesArr, $str_to_time_date);
         } else {
           $actIntRate = $interestRate;
         }
-
         $interest= 0;
         $margin= 0;
 
@@ -190,7 +188,7 @@ trait LmsTrait
         
         $disbursalData['int_accrual_start_dt'] = ($disburseType == 1 && !empty($invoice['disburse_date'])) ?  date("Y-m-d", strtotime(str_replace('/','-',$invoice['disburse_date']))) : null;
         $disbursalData['grace_period'] = $invoice['program_offer']['grace_period'] ?? null;
-        $disbursalData['overdue_interest_rate'] = $invoice['program_offer']['overdue_interest_rate'] ?? null;
+        $disbursalData['overdue_interest_rate'] = $invoice['program_offer']['overdue_interest_rate'] ? $invoice['program_offer']['overdue_interest_rate'] + $interestRate : 0;
         $disbursalData['is_adhoc'] = $invoice['is_adhoc'] ?? 0;
         
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');

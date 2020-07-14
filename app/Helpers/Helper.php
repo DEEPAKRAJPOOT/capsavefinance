@@ -33,6 +33,8 @@ use Illuminate\Http\File;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
 use Illuminate\Contracts\Support\Renderable;
 use ZanySoft\Zip\Zip;
+use App\Inv\Repositories\Models\AnchorUser;
+use App\Inv\Repositories\Models\Anchor;
 
 class Helper extends PaypalHelper
 {
@@ -1028,7 +1030,26 @@ class Helper extends PaypalHelper
                 $isViewOnly = 1;
             } else {
                 $userArr = self::getChildUsersWithParent($to_id);
-                $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr);
+                $curStage = WfAppStage::getCurrentWfStage($app_id);
+                if ($curStage && $curStage->stage_code == 'approver') {
+                    //$whereCond=[];
+                    //$whereCond['to_id'] = $to_id;
+                    //$whereCond['app_id'] = $app_id;
+                    //$assignData = AppAssignment::getAppAssignmentData($whereCond);
+                    //$isViewOnly = $assignData && isset($assignData->app_assign_id) ? 1 : 0;
+                    
+                      $appApprData = AppApprover::getAppApprovers($app_id);
+                      $apprUsers = [];
+                      if (isset($appApprData[0])) {
+                          foreach($appApprData as $appr) {
+                              $apprUsers[] = $appr->approver_user_id;
+                          }
+                      }
+                      $isViewOnly = count($apprUsers) > 0 && in_array($to_id, $apprUsers) ? 1 : 0;
+                    
+                } else {
+                    $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
+                }
             }
             return $isViewOnly ? 1 : 0;
         } catch (Exception $e) {
@@ -1292,7 +1313,7 @@ class Helper extends PaypalHelper
         $formatedId = null;
         
         if ($type == 'APP') {            
-            $formatedId = $prefix . sprintf('%08d', $idValue);
+            $formatedId = $prefix . $idValue; /* sprintf('%08d', $idValue); */
         } else if ($type == 'VA') {
             $prefix = config('common.idprefix.'.$type);
             $formatedId = $prefix . sprintf('%08d', $idValue);            
@@ -1697,6 +1718,54 @@ class Helper extends PaypalHelper
         return CronLog::updateCronLog($cLog,$cronLogId);
     }
 
+    
+    /**
+     * Get Associated Anchors By User Id
+     * 
+     * @param int $userId
+     * @return string
+     */
+    public static function getAnchorsByUserId($userId) 
+    {
+        $anchors = AnchorUser::getAnchorsByUserId($userId);        
+        $anchorsInfo = '';
+        if (count($anchors) == 1) {            
+            foreach($anchors as $anchor) {                
+                $anchorsInfo = ucwords($anchor->comp_name);                
+            }
+        } else if (count($anchors) > 1) {
+            $anchorsInfo .= '<ul class="anchor-list" style="list-style-type: disc;padding: 10px;">';
+            foreach($anchors as $anchor) {
+                $anchorsInfo .= '<li>';
+                $anchorsInfo .= ucwords($anchor->comp_name);
+                $anchorsInfo .= '</li>';
+            }
+            $anchorsInfo .= '</ul>';
+        } else {
+            $anchorsInfo = 'NA';
+        }
+        
+        return $anchorsInfo;
+    }
+    
+    /**
+     * Get Anchor Detail By Anchor Id
+     * 
+     * @param int $anchorId
+     * @return string
+     */
+    public static function getAnchorById($anchorId) 
+    {
+        $anchor = Anchor::getAnchorById($anchorId);
+        $anchorInfo = '';
+        if ($anchor) {
+            $anchorInfo = ucwords($anchor->comp_name);
+        } else {
+            $anchorInfo = 'NA';
+        }
+        
+        return $anchorInfo;
+    }    
      
      public static function replaceImagePath($variable)
      {

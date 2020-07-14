@@ -38,6 +38,6 @@ return [
     'validate_reduce_limit_amt' => 'Reduce Limit can\'t be less than previous utilized limit.',
     'lms_eod_batch_process_msg' => 'System is stopped, you can\'t do any transactions.',
     'offer_rejected' => 'Offer rejected successfully.',
-    'reject_app' => 'Application Status Changed Successfully',
+    'reject_app' => 'Application Status Changed Successfully'
 ];
 

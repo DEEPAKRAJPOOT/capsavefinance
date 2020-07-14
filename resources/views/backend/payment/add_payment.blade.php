@@ -9,7 +9,7 @@
         </div>
         <div class="header-title">
             <h3>Add Repayment & Waived Off TDS</h3>
-            <!-- <small>Application List</small> -->
+            <small>&nbsp;</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li style="color:#374767;">Payment</li>
@@ -108,8 +108,10 @@
                                         <div class="col-md-4">
                                             <div class="form-group INR">
                                                 <label for="txtCreditPeriod">Transaction Amount <span class="error_message_label">*</span> </label>
-                                                <a href="javascript:void(0);" class="verify-owner-no" style="top:29px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                <div class="relative">
+                                                <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                 <input type="text" id="amount" name="amount" class="form-control">
+                                                </div>
                                             </div>
                                         </div>
                                       
@@ -169,10 +171,8 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-4 payment-methods" style="display: none;">
-                                            <div class="form-group">
-                                                <span id="appendInput"></span>
-                                            </div>
+                                        <div class="col-md-8 payment-methods" style="display: none;" >
+                                            <div class="row" id="appendInput"></div>
                                         </div>
                                         <div class="col-md-4 tds_certificate">
                                             <div class="form-group">
@@ -258,7 +258,8 @@ cursor: pointer;
         get_remaining_charges_url : "{{route('get_remaining_charges')}}",
         get_customer: "{{ route('get_customer') }}",
         get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}",
-        get_interest_paid_amount:"{{ route('get_interest_paid_amount') }}"
+        get_interest_paid_amount:"{{ route('get_interest_paid_amount') }}",
+        sysDate:"{{ Carbon\Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d') }}"
     };
 
     var userData = '';
@@ -271,6 +272,7 @@ cursor: pointer;
                 format: 'dd/mm/yyyy',
                 autoclose: true,
                 minView : 2,
+                endDate: new Date(messages.sysDate),
             });
 
         var sample_data = new Bloodhound({
@@ -346,7 +348,7 @@ cursor: pointer;
                         $('#waiveoff_div').hide();
                         get_repayment_amount();
                     }if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -355,7 +357,7 @@ cursor: pointer;
                     break;
                 case "2":
                     if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -364,7 +366,7 @@ cursor: pointer;
                     break;
                 case "3":
                     if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate',  new Date());
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -384,13 +386,13 @@ cursor: pointer;
             var max = parseFloat(chargeData['debit_amount']);
             if(chargeData){
                 //$('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
-                $('#date_of_payment').datetimepicker('setStartDate', new Date());
+                $('#date_of_payment').datetimepicker('setStartDate', new Date(messages.sysDate));
                 if(userData['action_type']!=3){
                     $('#amount').val(amt.toFixed(2)); 
                 }
                 $('#amount').attr('max',max.toFixed(2));
             }else{
-                $('#date_of_payment').datetimepicker('setStartDate', new Date());
+                $('#date_of_payment').datetimepicker('setStartDate', new Date(messages.sysDate));
                 $('#amount').val(0);
             }
         });
@@ -399,13 +401,17 @@ cursor: pointer;
             $('#appendInput').empty();
             var status = $(this).val();
             if (status == 1) {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+                $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Online RTGS/NEFT</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
 
             } else if (status == 2) {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+                //$('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>  <label for="repaid_amount" class="form-control-label"><span class="payment_text">Upload Cheque</span></label><span class="error_message_label">*</span><input type="file" class="form-control amountRepay" id="cheque" name="cheque" value=""><span id="utr_no_msg" class="error"></span>');
+                $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value="" /><span id="utr_no_msg" class="error"></span></div><div class="col-md-6 tds_certificate"><div class="custom-file upload-btn-cls mb-3 mt-4"><input type="file" class="custom-file-input getFileName doc_file" id="cheque" name="cheque" multiple="" /><label class="custom-file-label" for="cheque">Upload Cheque</label></div><span id="utr_no_msg" class="error"></span></div>');
 
             } else if (status == 3) {
-                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
+                $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
+
+            } else if (status == 4) {
+                $('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Transaction No</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>');
 
             }
         });
@@ -437,6 +443,9 @@ cursor: pointer;
                     payment_type:{
                         required:true,
                     },
+                    utr_no:{
+                        required:true,
+                    },
                     description:{
                         required:true,
                     },
@@ -449,9 +458,9 @@ cursor: pointer;
                     tds_certificate_no:{
                         required:false,
                     },
-                    tds_certificate_no:{
-                        required:false,
-                    }
+                    cheque:{
+                        required:true,
+                    },                    
                 },
                 messages: {
                 customer_id: {
@@ -476,10 +485,10 @@ cursor: pointer;
 
     function get_remaining_charges() {
         $.ajax({
-            type: 'GET',
+            type: 'POST',
             async: false,
             url: messages.get_remaining_charges_url,
-            data: {"user_id":$("#user_id").val(), trans_type:$("#trans_type").val(), token: messages.token},
+            data: {"user_id":$("#user_id").val(), trans_type:$("#trans_type").val(), _token: messages.token},
             beforeSend: function( xhr ) {
                 $('.isloader').show();
             },
@@ -504,10 +513,10 @@ cursor: pointer;
 
     function get_all_unsettled_trans_type(data) {
         $.ajax({
-            type: 'GET',
+            type: 'POST',
             async: false,
             url: messages.get_all_unsettled_trans_type,
-            data: {"user_id":data.user_id, action_type:data.action_type, token: messages.token},
+            data: {"user_id":data.user_id, action_type:data.action_type, _token: messages.token},
             beforeSend: function( xhr ) {
                 $('.isloader').show();
             },
@@ -557,7 +566,7 @@ cursor: pointer;
             success: function (res) {
                 var amt = parseFloat(res.amount);
                 if (res.status == 'success') {
-                    $('#date_of_payment').datetimepicker('setStartDate',  new Date());
+                    $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                     $('#amount').val(amt.toFixed(2));
                     $('#amount').attr('max',amt.toFixed(2));
                 }else{

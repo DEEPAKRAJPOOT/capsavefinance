@@ -256,6 +256,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'create_payment_refund',
                         'uses' => 'Backend\PaymentController@createPaymentRefund',
                     ]);
+                                        
+                    Route::post('download-cheque', [
+                        'as' => 'download_cheque',
+                        'uses' => 'Backend\PaymentController@downloadCheque',
+                    ]);                    
                 }
             });
 

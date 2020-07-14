@@ -1162,6 +1162,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                     });
                 })
                 ->with('anchor')
+                ->with('anchorUser')
                 ->with('program')
                 ->whereHas('programLimit.appLimit.app.acceptedOffer')
                 ->whereHas('programLimit', function ($query) use($curDate) {
@@ -2340,8 +2341,21 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function getAllCommentsByAppId($appId){
         return AppNote::getAllCommentsByAppId($appId);
-    }
+    }   
+    
+    public function getBizDataByPan($pan, $userId=null) {
+        return Business::getBizDataByPan($pan, $userId);
+    }    
 
+     public function checkAppByPan($userId)
+     {
+         return Application::checkAppByPan($userId);
+     }
+     
+    public function getApplicationsByPan($userId)
+    {
+        return Application::getApplicationsByPan($userId);
+    }
 }
 
 

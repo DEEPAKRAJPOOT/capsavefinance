@@ -6,7 +6,7 @@
           </tr>
        </table>
       @forelse($leaseOfferData as $key=>$leaseOffer)
-     
+      @if ($leaseOffer->status != 2) 
          <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
             <thead>
                <tr role="row">
@@ -99,6 +99,7 @@
                </tr>
             </tbody>
          </table>
+      @endif
       @empty
          <div class="pl-4 pr-4 pb-4 pt-2">
              <p>No Offer Found</p>
@@ -118,6 +119,7 @@
   <!----supply chain  offer ---->
   
   @forelse($supplyOfferData as $key=>$supplyOffer)
+  @if ($supplyOffer->status != 2)
     <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
         <thead>
              <tr role="row">
@@ -171,7 +173,7 @@
               </tr>
               <tr>
                   <td><b>Overdue Interest Rate (%): </b></td>
-                  <td>{{$supplyOffer->overdue_interest_rate}} %</td>
+                  <td>{{($supplyOffer->overdue_interest_rate ?? 0) + ($supplyOffer->interest_rate ?? 0)}} %</td>
                   <td><b>Adhoc Interest Rate (%): </b></td>
                   <td>{{$supplyOffer->adhoc_interest_rate}} %</td>
               </tr>
@@ -202,6 +204,14 @@
                 </tr>
                 @endif
                 @endforeach
+              <tr>
+                  <td><b>Bench Mark Date: </b></td>
+                  <td colspan="3">{{getBenchmarkType($supplyOffer->benchmark_date)}}</td>
+              </tr>
+              <tr>
+                  <td><b>Investment Payment Frequency: </b></td>
+                  <td colspan="3">{{getInvestmentPaymentFrequency($supplyOffer->payment_frequency)}}</td>
+              </tr>
               <tr>
                   <td><b>Comment: </b></td>
                   <td colspan="3">{{$supplyOffer->comment}}</td>
@@ -337,7 +347,7 @@
               @endif
         </tbody>
     </table>
-
+    @endif
     @empty
          <div class="pl-4 pr-4 pb-4 pt-2">
              <p>No Offer Found</p>

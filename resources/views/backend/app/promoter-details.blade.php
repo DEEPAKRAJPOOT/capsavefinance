@@ -226,8 +226,8 @@
                                  -->
                                   <div class="col-md-4">
                                         <div class="form-group">
+                           <label for="txtEmail">Designation    <span class="mandatory"></span>
 
-                                            <label for="txtEmail">Designation    <span class="mandatory"></span>
 
                                             </label>
                                             <input type="text" name="designation[]" id="designation{{isset($row->first_name) ? $i : '1'}}" value="{{$row->designation}}" class="form-control designation"  placeholder="Enter Designation">
@@ -761,13 +761,16 @@
                 required: true
                 })
                 });
+
                 //   $('input.designation').each(function () {
                 // $(this).rules("add",
                 // {
                 // required: true
                 // })
                 // });
+
                }
+  
                if(is_lease==0)
                {  
                 $('input.mobileveri').each(function () {
@@ -830,12 +833,11 @@
            
         ///// for upload one in three id proff..............
         for (i = 1; i <= DlLength; i++)
-        {        
-
-        var dlVal = $("#dldown" + i).attr('href');
-        var vtVal = $("#voterdown" + i).attr('href');
-        var adVal = $("#aadhardown" + i).attr('href');
-         var elVal = $("#electricitydown" + i).attr('href');
+        {
+          var dlVal = $("#dldown" + i).attr('href');
+          var vtVal = $("#voterdown" + i).attr('href');
+          var adVal = $("#aadhardown" + i).attr('href');
+          var elVal = $("#electricitydown" + i).attr('href');
           var teVal = $("#telephonedown" + i).attr('href');
           if(is_lease==0)
           {    

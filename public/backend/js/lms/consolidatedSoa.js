@@ -107,6 +107,25 @@ try {
         window.open(url, '_blank');
     }
 
+    function validate(){
+        var res = true;
+        var searchKeyword = $("#search_keyword").val();
+        var userId = $("#user_id").val();
+
+        if(searchKeyword){
+            if(!userId){
+                $('#search_keyword').focus();
+                alert('Please select record from list!');
+                res = false;
+            }
+        }else{
+            $('#search_keyword').focus();
+            alert('Client Id required');
+            res = false;
+        }
+
+        return res;
+    }
 
 } catch (e) {
     if (typeof console !== 'undefined') {

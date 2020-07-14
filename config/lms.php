@@ -19,6 +19,7 @@ return [
        'MARGIN'=>'10',
        'PAYMENT_DISBURSED' =>'16',
        'REPAYMENT'=> '17',
+       'FAILED'=>'18',
        'INTEREST_OVERDUE'=>'33',
        'ADJUSTMENT'=>'31',
        'REFUND'=>'32',
@@ -170,5 +171,13 @@ return [
         'TRANSACTION_SETTLED' => '39',
         'COMPLETED' => '40',
         'REVERT_BACK'=> '42'
+    ],
+    'CHARGE_TYPE'=>[
+        'CHEQUE_BOUNCE' => '3',
+        'NACH_BOUNCE' => '4',
+    ],
+    'CHARGE_PAYMENT_TYPE_MAP'=>[
+        '3'=>'2',  // CHEQUE BOUNCE 3
+        '4'=>'3'  // NACH 4
     ],
 ];

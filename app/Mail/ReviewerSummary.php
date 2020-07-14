@@ -115,7 +115,7 @@ class ReviewerSummary extends Mailable
             $fee[$chrg_id1]['chrg_type'] = isset($offerCharges[1]) ? $offerCharges[1]->chrg_type : '';
             $fee[$chrg_id1]['chrg_name'] = isset($offerCharges[1]) ? $offerCharges[1]->chargeName->chrg_name : '';
             $fee[$chrg_id1]['chrg_value'] = isset($offerCharges[1]) ? $offerCharges[1]->chrg_value : '';
-        }        
+        }
         $email = $this->view('emails.reviewersummary.reviewersummarymail', [
             'limitOfferData'=> $limitOfferData,
             'reviewerSummaryData'=> $reviewerSummaryData,

@@ -52,8 +52,12 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 	protected function update(array $attributes, $id) {        
 	}
 
-	public function getAddressByUserId(int $userId, array $where = []) {
-		$address = Business::getAddressByUserId($userId, $where);
+	public function getUsersLatestApp(int $userId) {
+		return Application::getUpdatedApp($userId);
+	}
+
+	public function getAddressByUserId(int $userId, array $bizId = [] , array $where = []) {
+		$address = Business::getAddressByUserId($userId, $bizId, $where);
 		return $address->isEmpty() ? [] : $address;
 	}
 

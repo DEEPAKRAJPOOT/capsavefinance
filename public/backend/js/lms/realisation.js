@@ -6,7 +6,6 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 50,
-            dom: 'lBrtip',
             bSort: false,
             responsive: true,
             searching: false,
@@ -25,6 +24,12 @@ try {
                     $("#lmsSoaList_processing").css("display", "none");
                 }
             },
+            "drawCallback": function( settings ) {
+                excelUrl = settings.json.excelUrl;
+                $('#dwnldEXCEL').attr('href', excelUrl)
+                pdfUrl = settings.json.pdfUrl;
+                $('#dwnldPDF').attr('href', pdfUrl)
+            },
             columns: [
                 {data: 'debtor_name'},
                 {data: 'debtor_acc_no'},
@@ -37,16 +42,6 @@ try {
                 {data: 'cheque'},
                 {data: 'business'}
             ],
-            buttons: [
-                
-                {
-                    text: 'PDF',
-                    action: function ( e, dt, node, config ) {
-                       download('pdf');
-                    }
-                }
-               
-            ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
         });
 
@@ -56,34 +51,6 @@ try {
         });
 
     });
-
-    function download(action){
-        url = '';
-        from_date = $('input[name="from_date"]').val().trim();
-        to_date = $('input[name="to_date"]').val().trim();
-        customer_id = $('input[name=search_keyword]').val().trim();
-        if(action.trim() == 'pdf'){
-          
-            url = messages.pdf_invoice_realisation_url;
-        }
-
-
-        if(from_date){
-            url += '?from_date='+from_date;
-        }
-
-        if(to_date){
-            url += '&to_date='+to_date;
-        }
-        if(from_date!='' && to_date!=''){
-            url += '&customer_id='+customer_id;
-        }
-        else
-        {
-          url += '?customer_id='+customer_id;  
-        }
-         window.open(url, '_blank');
-    }
 
     function showClientDetails(data){
         $.ajax({

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Master\Permission;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -40,10 +41,14 @@ class AuthServiceProvider extends ServiceProvider
      
         // Dynamically register permissions with Laravel's Gate.
         foreach ($this->getPermissions() as $permission) {
-            $gate->define($permission->name, function ($user) use ($permission) {
-                return $user->hasRole($permission->roles);
-            });
+            if (isset($permission->roles[0])) {
+                $gate->define($permission->name, function ($user) use ($permission) {                    
+                    //return $user->hasRole($permission->roles);
+                    return $this->checkRolePermission($permission->name, $user->user_id);
+                });
+            }
         }
+        
     }
     
     /**
@@ -54,5 +59,20 @@ class AuthServiceProvider extends ServiceProvider
     protected function getPermissions()
     {
         return Permission::with('roles')->get();
+    }
+    
+    /**
+     * Check Role Permission
+     *
+     * @param $route_name
+     * @param $role_id
+     * 
+     * @return boolean
+     */    
+    protected function checkRolePermission($route_name, $user_id)
+    {
+        $roleData = User::getBackendUser($user_id);
+        $role_id = isset($roleData[0]) ? $roleData[0]->id : null;
+        return Permission::checkRolePermission($route_name, $role_id);
     }
 }

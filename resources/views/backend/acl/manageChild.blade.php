@@ -1,5 +1,5 @@
 
-
+    <ul>
     @foreach($childs as $key1 => $childData)
     @php $childDatas = Helpers::getByParent($childData['id'],'1')->toArray() @endphp
     @php $checked1 = '' @endphp
@@ -10,7 +10,7 @@
     @php $checked1 = 'checked' @endphp
     @endif
     @endif
-    <ul>
+    
     <li >
             <input class="c-chk-{{$ParentData['id']}} rere" {{$checked1}} type="checkbox" name="child[{{$childData['id']}}]" id="permission_id[{{$ParentData['id']}}][{{$childData['id']}}]" value="{{$childData['id']}}">{{$childData['display_name']}}
         
@@ -21,6 +21,6 @@
     
     @endif
     </li>
-    </ul>
+    
     @endforeach
-
+    </ul>

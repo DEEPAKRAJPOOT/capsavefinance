@@ -19,6 +19,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'idfc',
                 'uses' => 'Backend\DashboardController@idfc'
             ]);
+            Route::get('/download-file', [
+                'as' => 'download_storage_file',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            ]);              
         });
 
         Route::group(['prefix' => 'reports'], function () {
@@ -269,18 +273,22 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_app_note',
                 'uses' => 'Backend\ApplicationController@saveAppNote'
             ]); 
+
             Route::get('reject-app', [
                 'as' => 'reject_app',
                 'uses' => 'Backend\ApplicationController@rejectApp'
             ]);
+
             Route::post('save-app-rejection', [
                 'as' => 'save_app_rejection',
                 'uses' => 'Backend\ApplicationController@saveAppRejection'
             ]);
+
             Route::get('view-app-status-list', [
                 'as' => 'view_app_status_list',
                 'uses' => 'Backend\ApplicationController@getAppStatusList'
             ]);
+
             Route::get('send-case-confirmBox', [
                 'as' => 'send_case_confirmBox',
                 'uses' => 'Backend\ApplicationController@sendCaseConfirmbox'
@@ -329,6 +337,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('view-offer', [
                 'as' => 'view_offer',
                 'uses' => 'Backend\ApplicationController@showOffer'
+            ]);
+
+            Route::get('accept-offer', [
+                'as' => 'accept_offer_form',
+                'uses' => 'Backend\ApplicationController@acceptOfferForm'
             ]);
             
             Route::post('accept-offer', [
@@ -646,6 +659,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'reject_offer',
                     'uses' => 'Backend\CamController@rejectOffer'
                 ]);
+                Route::get('/approve-limit-form', [
+                    'as' => 'approve_limit_form',
+                    'uses' => 'Backend\CamController@approveLimitForm'
+                ]);
             }); //end of cam   
                         
             Route::get('copy-app-confirmBox', [
@@ -697,7 +714,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('update-backend-lead', [
                 'as' => 'update_backend_lead',
                 'uses' => 'Backend\LeadController@updateBackendLead'
-            ]);   
+            ]);  
+                        
+            Route::get('download-sample-lead-csv', [
+                'as' => 'download_sample_lead_csv',
+                'uses' => 'Backend\LeadController@downloadSample'
+            ]);
         });
         
         Route::group(['prefix' => 'fircu'], function () {
