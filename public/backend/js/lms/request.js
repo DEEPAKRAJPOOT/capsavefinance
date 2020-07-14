@@ -1,20 +1,6 @@
 try {
     var oTable;
     var reqIds = [];
-    var columns = [
-        {data: 'ref_code'},
-        {data: 'batch_no'},
-        {data: 'customer_id'},
-        {data: 'biz_entity_name'},                    
-        {data: 'banck_detail'},
-        {data: 'amount'},
-        {data: 'updated_at'},
-        {data: 'action'}
-    ];
-
-    // if(message.status == 7){
-    //     columns.push({data: 'action'});
-    //  }
 
     jQuery(document).ready(function ($) {
         //User Listing code
@@ -71,18 +57,22 @@ try {
                         $("#approvedList_processing").css("display", "none");
                     }
                 },
-                columns: columns,
-                columnDefs : [
-                    { targets : [-1],
-                    //   render : function (d, type, row) {
-                    //     d.status = messages.status;
-                    //      return d.status == 7 ? columns.push({data: 'action'}) : columns;
-                    //   }
-                        visible: false
-                    }
-               ],
+                columns: [
+                    {data: 'ref_code'},
+                    {data: 'batch_no'},
+                    {data: 'customer_id'},
+                    {data: 'biz_entity_name'},                    
+                    {data: 'banck_detail'},
+                    {data: 'amount'},
+                    {data: 'updated_at'},
+                    {data: 'action'}
+                ],
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });
+
+            if(messages.status == 8){
+                oTable.columns([7]).visible(false);
+            }
         }
 
         $('#searchbtn').on('click', function (e) {
