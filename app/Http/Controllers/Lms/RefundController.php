@@ -150,7 +150,7 @@ class RefundController extends Controller
                     break;
                 case '6': //Refund Queue
                 $redirectRoute = 'request_list';
-                $message = "Successfully Disbursed your Request!";
+                $message = "Successfully Refund queue your Request!";
                     break;
                 case '7': //Sent to Bank
                 $redirectRoute = 'lms_refund_sentbank';

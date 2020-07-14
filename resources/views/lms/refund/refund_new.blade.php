@@ -24,7 +24,7 @@
                 <div class="card-body">
                     <div class="row pull-right">
                         <div class="col-md-2" id="buttonDiv">
-                            <button type="button" class="btn btn-success btn-sm ml-2" id="pendingBtn">Submit</button>
+                            <button type="button" class="btn btn-success btn-sm ml-2" id="pendingBtn">Generate Refund Request</button>
                         </div>
                     </div>
                 </div>

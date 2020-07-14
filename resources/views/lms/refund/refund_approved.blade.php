@@ -26,7 +26,7 @@
                 <div class="card-body">
                     <div class="row pull-right">
                         <div class="col-md-2" id="buttonDiv">
-                            <button type="button" class="btn btn-success btn-sm ml-2" id="refundQueueBtn">Disbursed Queue</button>
+                            <button type="button" class="btn btn-success btn-sm ml-2" id="refundQueueBtn">Refund Queue</button>
                         </div>
                     </div>
                 </div>

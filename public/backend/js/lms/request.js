@@ -67,6 +67,10 @@ try {
                 ],
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });
+
+            if(messages.status == 8){
+                oTable.columns([7]).visible(false);
+            }
         }
     });
 } catch (e) {
@@ -118,7 +122,7 @@ $(document).on('click','#refundQueueBtn', function(){
         return alert('Please select at least one record!');
     }else{
         $(this).addClass('btn-disabled');
-        if (confirm('Are you sure? You want to Disbursed it.')){
+        if (confirm('Are you sure? You want to Refund Queue it.')){
             $("#refundReqForm").submit();
         }else{
             $(this).removeClass('btn-disabled');
