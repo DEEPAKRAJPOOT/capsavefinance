@@ -149,7 +149,7 @@
                                     </div>
                                 </div>                            
                             {!! Form::hidden('anchor_id', $anchor_id) !!}
-                            {!! Form::hidden('program_id', $program->prgm_id) !!}
+                            {!! Form::hidden('program_id', $program->prgm_id, ['id' => 'program_id']) !!}
                             {!! Form::hidden('utilized_amount', $utilizedLimit, ['id'=>'utilized_amount']) !!}
                             {!! Form::hidden('type', $action_type) !!}
                              

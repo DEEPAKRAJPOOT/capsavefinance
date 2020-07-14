@@ -136,7 +136,7 @@
                                     </div>
                                 </div>
                             </div>
-
+                            {!! Form::hidden('program_id', '', ['id' => 'program_id']) !!}
                             {{ Form::close() }}
 
                         </div>

@@ -42,12 +42,16 @@ try {
         }, "Max loan size should not be greater than Limit");
 
         $.validator.addMethod('notLessThan', function (value, element, param) {
-            var min = value.replace(/,/g, "");
-            var max = $(param).val().replace(/,/g, "");
+            if ($("#program_id").val() != "" ) {
+                var min = value.replace(/,/g, "");
+                var max = $(param).val().replace(/,/g, "");
 
-            var i = parseInt(min);
-            var j = parseInt(max);
-            return i >= j;
+                var i = parseInt(min);
+                var j = parseInt(max);
+                return i >= j;
+            } else {
+                return true;
+            }
         }, "Limit amount should not be less than utilized amount");
         
         /**

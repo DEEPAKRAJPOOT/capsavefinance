@@ -233,7 +233,8 @@ class Program extends BaseModel {
                 })
                 ->join('mst_product as mp', 'prgm.product_id', '=', 'mp.id')                
                 ->where('prgm.parent_prgm_id', '0')
-                ->orderBy('prgm.prgm_id', 'desc');
+                ->orderBy('prgm.prgm_id', 'desc')
+                ->groupBy('prgm.anchor_id');
         if (!empty($id)) {
             $res = $res->where('prgm.anchor_id', $id);
         }
