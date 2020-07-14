@@ -1,7 +1,21 @@
 try {
     var oTable;
     var reqIds = [];
-    
+    var columns = [
+        {data: 'ref_code'},
+        {data: 'batch_no'},
+        {data: 'customer_id'},
+        {data: 'biz_entity_name'},                    
+        {data: 'banck_detail'},
+        {data: 'amount'},
+        {data: 'updated_at'},
+        {data: 'action'}
+    ];
+
+    // if(message.status == 7){
+    //     columns.push({data: 'action'});
+    //  }
+
     jQuery(document).ready(function ($) {
         //User Listing code
         if($('#requestList').length){
@@ -57,29 +71,17 @@ try {
                         $("#approvedList_processing").css("display", "none");
                     }
                 },
-                columns: [
-                    {data: 'ref_code'},
-                    {data: 'batch_no'},
-                    {data: 'customer_id'},
-                    {data: 'biz_entity_name'},                    
-                    {data: 'banck_detail'},
-                    {data: 'amount'},
-                    {data: 'updated_at'},
-                    {data: 'action',
-                    render : function (data, type, row) {
-                        data.status = messages.status
-                        return data.stat == 7 ? true : false;
-                     }
-                    }
-                ],
-                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}],
+                columns: columns,
                 columnDefs : [
-                    { targets : [8],
-                      render : function (data, type, row) {
-                         return data == '1' ? 'free' : 'paid'
-                      }
+                    { targets : [-1],
+                    //   render : function (d, type, row) {
+                    //     d.status = messages.status;
+                    //      return d.status == 7 ? columns.push({data: 'action'}) : columns;
+                    //   }
+                        visible: false
                     }
-               ]
+               ],
+                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });
         }
 

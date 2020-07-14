@@ -42,7 +42,7 @@
                                                     <th>Ref No</th>
                                                     <th>Batch Id</th>
                                                     <th>Customer ID</th>
-                                                    <th>Entity Name</th>     
+                                                    <th>Bussiness Entity Name</th>     
                                                     <th>Bank Detail</th>
                                                     <th>Amount</th>
                                                     <th>Updated At</th>
