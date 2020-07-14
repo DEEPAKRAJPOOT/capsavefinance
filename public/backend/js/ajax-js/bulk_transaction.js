@@ -7,7 +7,7 @@ try {
             serverSide: true,
             pageLength: 10,
             searching: false,
-            bSort: true,
+            bSort: false,
             ajax: {
                 "url": messages.backend_get_bulk_transaction, // json datasource
                 "method": 'POST',
