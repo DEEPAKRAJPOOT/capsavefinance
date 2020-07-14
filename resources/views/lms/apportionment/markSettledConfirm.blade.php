@@ -44,7 +44,7 @@
                                             <thead>
                                                 <tr role="row">                                                   
                                                     {{-- <th>Trans Date</th> --}}
-                                                    <th>Vlaue Date</th>       
+                                                    <th>Value Date</th>       
                                                     <th>Invoice No</th>       
                                                     <th>Trans Type</th>		
                                                     <th>Total Repay Amt</th>
