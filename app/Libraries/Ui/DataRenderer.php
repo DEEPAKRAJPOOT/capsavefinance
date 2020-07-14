@@ -1999,13 +1999,13 @@ class DataRenderer implements DataProviderInterface
                ->addColumn(
                     'amount',
                     function ($invoice) {
-                      
-                       return ($invoice->invoice_amt) ? number_format($invoice->invoice_amt) : ''; 
+                    //   dd($invoice->invoice->invoice_amount);
+                       return ($invoice->invoice_id) ? number_format($invoice->invoice->invoice_amount) : 'N/A'; 
              })
                 ->addColumn(
                     'comment',
                     function ($invoice) { 
-                     return ($invoice->comm_txt) ? $invoice->comm_txt : ''; 
+                     return ($invoice->comm_txt) ? $invoice->comm_txt : 'N/A'; 
                 })
                ->addColumn(
                     'status',
