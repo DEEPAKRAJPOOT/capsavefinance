@@ -144,7 +144,7 @@
             <div class="form-group">
                 <label for="txtCreditPeriod">Status
                  <span class="mandatory">*</span></label><br>
-                {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],isset($coLenderData->is_active) ? $coLenderData->is_active : old('is_active'),['class'=>'form-control form-control-sm']) !!}
+                {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],isset($coLenderData->is_active) ? $coLenderData->is_active : old('is_active'),['class'=>'form-control form-control-sm required']) !!}
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -194,7 +194,7 @@ $error = session()->get('error', false);
 @endif
 <script type="text/javascript">
   $(document).ready(function () {
-	$('#saveAnch123456').on('click', function (event) {
+	$('#saveAnch').on('click', function (event) {
 		$('input.employee').each(function () {
 			$(this).rules("add", {
 				required: true
