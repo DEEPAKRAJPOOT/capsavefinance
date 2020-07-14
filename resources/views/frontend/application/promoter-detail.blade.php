@@ -26,7 +26,7 @@
         @endcan 
         @can('promoter_details')
         <li>
-            <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Management Details</a>
+            <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Management Information</a>
         </li>
         @endcan 
         @can('documents')
@@ -111,7 +111,7 @@
                             }
                             ?>
                             <div class="col-md-12">
-                                <h5 class="card-title form-head">Management Details ({{isset($row->first_name) ? $i : '1'}}) </h5>
+                                <h5 class="card-title form-head">Management Information ({{isset($row->first_name) ? $i : '1'}}) </h5>
 
                                 <div class="row">
                                     <div class="col-md-4">
