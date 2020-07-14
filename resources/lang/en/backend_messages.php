@@ -39,5 +39,6 @@ return [
     'lms_eod_batch_process_msg' => 'System is stopped, you can\'t do any transactions.',
     'offer_rejected' => 'Offer rejected successfully.',
     'disbursed_error' => 'Some error occured, Please try again.',
+    'reject_app' => 'Application Status Changed Successfully',
 ];
 

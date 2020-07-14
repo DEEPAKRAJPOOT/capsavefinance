@@ -285,8 +285,8 @@ class ProgramController extends Controller {
             'interest_rate' => $request->get('interest_rate'),
             'anchor_sub_limit' => ($request->get('anchor_sub_limit')) ? str_replace(',', '', $request->get('anchor_sub_limit')) : null,
             'anchor_limit' => $request->get('anchor_limit'),
-            'min_loan_size' => ($request->get('min_loan_size')) ? str_replace(',', '', $request->get('min_loan_size')) : null,
-            'max_loan_size' => ($request->get('max_loan_size')) ? str_replace(',', '', $request->get('max_loan_size')) : null,
+            'min_loan_size' => ($request->has('min_loan_size')) ? str_replace(',', '', $request->get('min_loan_size')) : null,
+            'max_loan_size' => ($request->has('max_loan_size')) ? str_replace(',', '', $request->get('max_loan_size')) : null,
             'base_rate_id' => $request->get('interest_linkage'),
             'interest_borne_by' => $request->get('interest_borne_by'),
             'margin' => $request->get('margin'),
@@ -368,7 +368,10 @@ class ProgramController extends Controller {
             $dataForProgram = $this->prepareSubProgramData($request);
             $pkeys = $request->get('program_id');
 
-
+            if($request->get('interest_rate') == 1) {
+                $dataForProgram['base_rate_id'] = '';
+            }
+            
             /**
              * save program data
              */
