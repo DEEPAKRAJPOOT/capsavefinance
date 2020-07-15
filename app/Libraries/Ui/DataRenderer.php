@@ -6511,7 +6511,7 @@ class DataRenderer implements DataProviderInterface
                     'od',
                     function ($invoice) {
                        
-                           return '<b>'.$invoice->InterestAccrual->count().'</b>';
+                           return '<b>'.($invoice->InterestAccrual) ? $invoice->InterestAccrual->count() : ''.'</b>';
                        
                     }) 
                     ->addColumn(
