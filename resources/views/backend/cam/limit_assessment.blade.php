@@ -126,15 +126,15 @@
                                             <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                             <thead>
                                             <tr class="sub-heading">
-                                                <td width="20%" ><b>Overdue Interest Rate (%)</b></td>
-                                                <td width="10%" ><b>Interest Rate (%)</b></td>
-                                                <td width="10%" ><b>Program Limit</b></td>
-                                                <td width="10%" ><b>Tenor (In Days)</b></td>
-                                                <td width="10%" ><b>Payment Frequency</b></td>
-                                                <td width="10%" ><b>Margin (%)</b></td>
-                                                <td width="18%" ><b>Grace Period (In Days)</b></td>
-                                                <td width="12%" ><b>Adhoc Interest Rate (%)</b></td>
-                                                <td width="5%" ><b>Action</b></td>
+                                                <td width="20%" >Overdue Interest Rate (%)</td>
+                                                <td width="10%" >Interest Rate (%)</td>
+                                                <td width="10%" >Program Limit</td>
+                                                <td width="10%" >Tenor (In Days)</td>
+                                                <td width="10%" >Payment Frequency</td>
+                                                <td width="10%" >Margin (%)</td>
+                                                <td width="18%" >Grace Period (In Days)</td>
+                                                <td width="12%" >Adhoc Interest Rate (%)</td>
+                                                <td width="5%" >Action</td>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -218,14 +218,14 @@
                                             <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                             <thead>
                                             <tr class="sub-heading">
-                                                <td width="10%" ><b>Facility Type</b></td>
-                                                <td width="20%" ><b>Equipment Type</b></td>
-                                                <td width="10%" ><b>Limit of the Equipment</b></td>
-                                                <td width="10%" ><b>Tenor (Months)</b></td>
-                                                <td width="20%" ><b>PTP Frequency</b></td>
-                                                <td width="10%" ><b>XIRR (%)</b></td>
-                                                <td width="10%" ><b>Processing Fee (%)</b></td>
-                                                <td width="5%" ><b>Action</b></td>
+                                                <td width="10%" >Facility Type</td>
+                                                <td width="20%" >Equipment Type</td>
+                                                <td width="10%" >Limit of the Equipment</td>
+                                                <td width="10%" >Tenor (Months)</td>
+                                                <td width="20%" >PTP Frequency</td>
+                                                <td width="10%" >XIRR (%)</td>
+                                                <td width="10%" >Processing Fee (%)</td>
+                                                <td width="5%" >Action</td>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -327,14 +327,14 @@
                                             <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                             <thead>
                                             <tr class="sub-heading">
-                                                <td width="10%" ><b>Facility Type</b></td>
-                                                <td width="20%" ><b>Equipment Type</b></td>
-                                                <td width="10%" ><b>Limit of the Equipment</b></td>
-                                                <td width="10%" ><b>Tenor (Months)</b></td>
-                                                <td width="20%" ><b>PTP Frequency</b></td>
-                                                <td width="10%" ><b>XIRR/Discounting (%)</b></td>
-                                                <td width="10%" ><b>Processing Fee (%)</b></td>
-                                                <td width="5%" ><b>Action</b></td>
+                                                <td width="10%" >Facility Type</td>
+                                                <td width="20%" >Equipment Type</td>
+                                                <td width="10%" >Limit of the Equipment</td>
+                                                <td width="10%" >Tenor (Months)</td>
+                                                <td width="20%" >PTP Frequency</td>
+                                                <td width="10%" >XIRR/Discounting (%)</td>
+                                                <td width="10%" >Processing Fee (%)</td>
+                                                <td width="5%" >Action</td>
                                             </tr>
                                             </thead>
                                             <tbody>
