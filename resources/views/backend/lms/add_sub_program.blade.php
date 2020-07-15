@@ -71,41 +71,23 @@
                                                                         <span class="error_message_label">*</span>
                                                                     </label>
                                                                     <div class="" style="color:black;">
-                                                                                <div class="form-check-inline">
-                                                                                    <label class="form-check-label fnt" for="prgm_type">
-                                                                                        {!! Form::radio('prgm_type','1',($programData->prgm_type=="1")? "checked" : "", ['class'=>'form-check-input']) !!}
-                                                                                        <strong>
-                                                                                            {{ trans('backend.add_program.vendor_finance') }}   
-                                                                                        </strong>
-                                                                                    </label>
-                                                                                </div>
-                                                                                <div class="form-check-inline">
-                                                                                    <label class="form-check-label fnt" for="prgm_type">
-                                                                                        {!! Form::radio('prgm_type','2',($programData->prgm_type=="2")? "checked" : "", ['class'=>'form-check-input']) !!}
-                                                                                        <strong>
-                                                                                            {{ trans('backend.add_program.channel_finance') }}    
-                                                                                        </strong>
-                                                                                    </label>
-                                                                                </div>
+                                                                            <div class="form-check-inline">
+                                                                                <label class="form-check-label fnt" for="prgm_type">
+                                                                                    {!! Form::radio('prgm_type','1',($programData->prgm_type=="1")? "checked" : "", ['class'=>'form-check-input']) !!}
+                                                                                    <strong>
+                                                                                        {{ trans('backend.add_program.vendor_finance') }}   
+                                                                                    </strong>
+                                                                                </label>
                                                                             </div>
-                                                                    <div class="block-div clearfix ">
-                                                                        <div class="form-check-inline float-left">
-                                                                            <label class="form-check-label fnt" for="prgm_type">
-                                                                                {!! Form::radio('prgm_type','1',($programData->prgm_type=="1")? "checked" : "", ['class'=>'form-check-input']) !!}
-                                                                                <strong>
-                                                                                    {{ trans('backend.add_program.vendor_finance') }}   
-                                                                                </strong>
-                                                                            </label>
+                                                                            <div class="form-check-inline">
+                                                                                <label class="form-check-label fnt" for="prgm_type">
+                                                                                    {!! Form::radio('prgm_type','2',($programData->prgm_type=="2")? "checked" : "", ['class'=>'form-check-input']) !!}
+                                                                                    <strong>
+                                                                                        {{ trans('backend.add_program.channel_finance') }}    
+                                                                                    </strong>
+                                                                                </label>
+                                                                            </div>
                                                                         </div>
-                                                                        <div class="form-check-inline float-left">
-                                                                            <label class="form-check-label fnt" for="prgm_type">
-                                                                                {!! Form::radio('prgm_type','2',($programData->prgm_type=="2")? "checked" : "", ['class'=>'form-check-input']) !!}
-                                                                                <strong>
-                                                                                    {{ trans('backend.add_program.channel_finance') }}    
-                                                                                </strong>
-                                                                            </label>
-                                                                        </div>
-                                                                    </div>
                                                                     <label id="prgm_type-error" class="error mb-0" for="prgm_type"></label>
                                                                 </div>
                                                             </div>
