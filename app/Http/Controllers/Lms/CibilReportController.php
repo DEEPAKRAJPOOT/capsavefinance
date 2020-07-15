@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Lms;
 use Auth;
 use Session;
+use Helpers;
 use App\Helpers\Helper;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
@@ -45,35 +46,30 @@ class CibilReportController extends Controller
        }
        if(!empty($request->get('search_keyword'))){
             $search_keyword = $request->get('search_keyword');
-            $cond[] = " search_keyword like '%$search_keyword%' ";
+            $cond[] = " ac_no like '%$search_keyword%' ";
+       }
+       if(!empty($request->get('batch_no'))){
+            $batch_no = $request->get('batch_no');
+            $cond[] = " ac_no = '$batch_no' ";
        }
        if (!empty($cond)) {
            $whereRaw = implode(' AND ', $cond);
        }
-       $cibilReports = $this->lmsRepo->getCibilReports([], $whereRaw);
-       $cibilRecords = $cibilReports->get();
        $cibilArr = [];
-       $cibilStatus = ['Pending', 'Fail', 'Success'];
-       foreach ($cibilRecords as $cibil) {
-         $cibilArr[] = [
-            'Customer Name' => $cibil->username, 
-            'Business Name' => $cibil->biz_name, 
-            'Pull Date' =>  (Carbon::createFromFormat('Y-m-d', $cibil->pull_date)->format('d/m/Y')), 
-            'Pull Status' => $cibilStatus[$cibil->pull_status] ?? 'No Status', 
-            'Pull By' => ($cibil->users->f_name . ' '. $cibil->users->m_name), 
-         ];
-       }
+       $cibilUserData = $this->lmsRepo->getCibilUserData([], $whereRaw);
+       foreach ($cibilUserData as $key => $cibilData) {
+          $ac_no = $cibilData->ac_no;
+          $segment_identifier = strtoupper($cibilData->segment_identifier);
+          $segment_data = json_decode($cibilData->segment_data, true);
+          $merge_segment = array_merge(['ac_no' => $ac_no], $segment_data);
+          $cibilArr[$segment_identifier][]  = array_merge($merge_segment, ['Final Formula' => implode('|', $merge_segment)]);
+        }
        if (strtolower($request->type) == 'excel') {
-           $this->getCibilData();
-           /*$toExportData['Cibil Report'] = $cibilArr;
-           return $this->fileHelper->array_to_excel($toExportData);*/
+           return $this->fileHelper->array_to_excel($cibilArr, 'CibilReport.xlsx');
        }
        if (strtolower($request->type) == 'insert') {
           $InsertedData = $this->saveCibilData();
-          dd($InsertedData);
-       }
-       if (empty($cibilArr)) {
-          $cibilArr[][''] = 'No record found'; 
+          return $InsertedData;
        }
        $pdfArr = ['pdfArr' => $cibilArr];
        $pdf = $this->fileHelper->array_to_pdf($pdfArr);
@@ -98,7 +94,7 @@ class CibilReportController extends Controller
         'status' => 'failure',
         'message' => 'Request method not allowed to execute the script.',
       );
-      $whereCond = ['status' => 2, 'is_posted_in_cibil' => 0];
+      $whereCond = ['app_id' => 156, 'status' => 2, 'is_posted_in_cibil' => 0];
       $businessData = $this->lmsRepo->getAllBusinessData($whereCond);
       $batch_no = _getRand(15);
       $cibilReportData['hd'] = $this->_getHDData();
@@ -113,15 +109,19 @@ class CibilReportController extends Controller
           $cibilReportData['gs'] = $this->_getGSData($appBusiness);
           $cibilReportData['ss'] = $this->_getSSData($appBusiness);
           $cibilReportData['cd'] = $this->_getCDData($appBusiness);
-          dd($cibilReportData);
           foreach ($cibilReportData as $segment => $segmentData) {
-            $finalCibilData[] = [
-              'ac_no' => $batch_no,
-              'segment_identifier' => $segment,
-              'segment_data' => json_encode($segmentData),
-              'created_at' => Carbon::now(),
-              'created_by' => Auth::user()->user_id,
-            ];
+            if (empty($segmentData)) {
+                continue;
+            }
+            foreach ($segmentData as $key => $segData) {
+              $finalCibilData[] = [
+                'ac_no' => $batch_no,
+                'segment_identifier' => $segment,
+                'segment_data' => json_encode($segData),
+                'created_at' => Carbon::now(),
+                'created_by' => Auth::user()->user_id,
+              ];
+            }
           }
           $cibilReportData = [];
       }
@@ -147,10 +147,11 @@ class CibilReportController extends Controller
           $response['status'] = 'success';
           $batchData = [
             'batch_no' => $batch_no,
+            'app_cnt' => count($this->selectedAppData),
             'record_cnt' => $recordsTobeInserted,
             'created_at' => date('Y-m-d H:i:s'),
           ];
-          $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
+          $cibil_inst_data = FinanceModel::dataLogger($batchData, 'cibil_report');
           $response['message'] =  ($recordsTobeInserted > 1 ? $recordsTobeInserted .' Records inserted successfully' : '1 Record inserted.');
         }
     }else{
@@ -161,7 +162,7 @@ class CibilReportController extends Controller
     }
 
     private function _getHDData() {
-      $data = [
+      $data[] = [
         'Segment Identifier' => 'HD',
         'Member ID' => config('common.cibil_report.MEMBER_ID'),
         'Previous Member ID' => config('common.cibil_report.PREV_MEMBER_ID'),
@@ -174,7 +175,7 @@ class CibilReportController extends Controller
     }
 
     private function _getBSData($appBusiness) {
-          $data = [
+          $data[] = [
             'Segment Identifier' => 'BS',
             'Member Branch Code' => config('common.cibil_report.MEMBER_BRANCH_CODE'),
             'Previous Member Branch Code' => config('common.cibil_report.PREV_MEMBER_BRANCH_CODE'),
@@ -222,7 +223,7 @@ class CibilReportController extends Controller
         if (isset($addr_data->addr_1)) {
           $fullAddress = $addr_data->addr_1 . ' ' . $addr_data->addr_2. ' ' . $addr_data->city_name. ' ' .($addr_data->state->name ?? NULL) . ' ' . $addr_data->pin_code;
         }
-        $data = [
+        $data[] = [
           'Segment Identifier' => 'AS',
           'Borrower Office Location Type' => $addressType[$addr_data->address_type ?? 0] ?? NULL,
           'Borrower Office DUNS Number' => '999999999',
@@ -251,7 +252,7 @@ class CibilReportController extends Controller
         if (isset($addr_data->addr_1)) {
            $fullAddress = $addr_data->addr_1 . ' ' . $addr_data->addr_2. ' ' . $addr_data->city_name. ' ' .($addr_data->state->name ?? NULL) . ' ' . $addr_data->pin_code;
         }
-        $data = [
+        $data[] = [
           'Segment Identifier' => 'RS',
           'Relationship DUNS Number' => '999999999',
           'Related Type' => NULL,
@@ -298,7 +299,7 @@ class CibilReportController extends Controller
 
     private function _getCRData($appBusiness) {
         $user = $appBusiness->users;
-        $data = [
+        $data[] = [
             'Segment Identifier' => 'CR',
             'Account Number' => Helper::formatIdWithPrefix($user->user_id, 'CUSTID'),
             'Previous Account Number' => NULL,
@@ -356,7 +357,7 @@ class CibilReportController extends Controller
            $fullAddress = $addr_data->addr_1 . ' ' . $addr_data->addr_2. ' ' . $addr_data->city_name. ' ' .($addr_data->state->name ?? NULL) . ' ' . $addr_data->pin_code;
         }
 
-        $data =  [
+        $data[] =  [
             'Segment Identifier' => 'GS',
             'Guarantor DUNS Number' => '999999999',
             'Guarantor Type' => 'Calculate',
@@ -399,20 +400,25 @@ class CibilReportController extends Controller
     }
 
      private function _getSSData($appBusiness) {
-      $primarySecurity = $appBusiness->app->appPrgmOffer->offerPs;   
-      $data = [
-          'Segment Identifier' => 'SS',
-          'Value of Security' => 'Calculate',
-          'Currency Type' => 'INR',
-          'Type of Security' => NULL,
-          'Security Classification' => NULL,
-          'Date of Valuation' => NULL,
-          'Filler' => NULL,
-      ];
+      $primarySecurity = $appBusiness->app->appPrgmOffer->offerPs;
+      $data = [];
+      if (!empty($primarySecurity)) {
+          foreach ($primarySecurity as $key => $ps) {
+            $data[] = [
+              'Segment Identifier' => 'SS',
+              'Value of Security' => $ps->ps_desc_of_security,
+              'Currency Type' => 'INR',
+              'Type of Security' => config('common.ps_security_id')[$ps->ps_security_id],
+              'Security Classification' => config('common.ps_type_of_security_id')[$ps->ps_type_of_security_id],
+              'Date of Valuation' => NULL,
+              'Filler' => NULL,
+            ];
+          } 
+       } 
       return $data;
     }
     private function _getCDData($appBusiness) {
-      $data = [
+      $data[] = [
           'Segment Identifier' => 'CD',
           'Date of Dishonour' => NULL,
           'Amount' => NULL,
@@ -425,7 +431,7 @@ class CibilReportController extends Controller
       return $data;
     }
     private function _getTSData() {
-      $data = [
+      $data[] = [
           'Segment Identifier' => 'TS',
           'Number of Borrower Segments' => NULL,
           'Number of Credit Facility Segments' => NULL,

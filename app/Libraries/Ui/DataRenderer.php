@@ -6514,18 +6514,9 @@ class DataRenderer implements DataProviderInterface
 
     public function getCibilReportLms(Request $request, $data) {
        return DataTables::of($data)
-        ->rawColumns(['pull_status'])
-           ->editColumn('pull_date',  function ($user) {
-               return (Carbon::createFromFormat('Y-m-d', $user->pull_date)->format('d/m/Y'));
-           })   
-           ->editColumn('pull_by',  function ($user) {
-               return ($user->users->f_name . ' '. $user->users->m_name);
-           })  
+           ->rawColumns(['pull_status'])
            ->addColumn('pull_status',  function ($user) {
-                   $ps = $user->pull_status;
-                   $status = ['Pending', 'Fail', 'Success'];
-                   $badge = ['warning', 'danger', 'success'];
-                   $pull_status = '<div class="btn-group"><label class="badge badge-'.$badge[$ps].' current-status">'.$status[$ps].'</label> </div></b>';
+                   $pull_status = '<a href="'.route('download_lms_cibil_reports', ['type'=>'excel', 'batch_no' => $user->batch_no]).'" class="btn btn-success btn-sm">Download Report</a>';
                    return $pull_status;
            })
            ->filter(function ($query) use ($request) {
@@ -6533,14 +6524,13 @@ class DataRenderer implements DataProviderInterface
                     $query->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('pull_date', [$from_date, $to_date]);
+                        $query->WhereBetween('created_at', [$from_date, $to_date]);
                     });
                 }
                 if($request->get('search_keyword')!= ''){
                     $query->where(function ($query) use ($request) {
                         $search_keyword = trim($request->get('search_keyword'));
-                        $query->where('username', 'like',"%$search_keyword%");
-                        $query->orWhere('biz_name', 'like',"%$search_keyword%");
+                        $query->where('batch_no', 'like',"%$search_keyword%");
                     });
                 }
               

@@ -42,12 +42,9 @@ class CibilReports extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'username',
-        'file_id',
-        'file_name',
-        'biz_name',
-        'pull_date',
-        'pull_status',
+        'batch_no',
+        'app_cnt',
+        'record_cnt',
         'created_at',
         'created_by'
     ];

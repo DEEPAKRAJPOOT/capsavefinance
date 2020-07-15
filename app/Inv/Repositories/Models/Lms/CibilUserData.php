@@ -49,12 +49,12 @@ class CibilUserData extends BaseModel {
         'created_by'
     ];
 
-    public static function getCibilUserDataList(array $where = []) {
+    public static function getCibilUserDataList(array $where = [], $whereRawCondition = NULL) {
         if (!is_array($where)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
 
-        $res = self::where($where)->get();
+        $res = self::where($where)->whereRaw($whereRawCondition)->get();
         return $res ?: false;
     }
 

@@ -30,15 +30,15 @@ try {
                 $('#dwnldPDF').attr('href', pdfUrl)
             },
             columns: [
-                {data: 'username'},
-                {data: 'biz_name'},
-                {data: 'pull_date'},
+                {data: 'batch_no'},
+                {data: 'app_cnt'},
+                {data: 'record_cnt'},
+                {data: 'created_at'},
                 {data: 'pull_status'},
-                {data: 'pull_by'}
             ],
             aoColumnDefs: [{
                     'bSortable': false,
-                    'aTargets': [0, 3, 4]
+                    'aTargets': [0,1]
                 }]
 
         });

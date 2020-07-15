@@ -50,14 +50,14 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by User Name/ Business Name',
+                    'placeholder' => 'Search by Batch No / Ac No',
                     'id'=>'search_keyword',
                     'autocomplete'=>'off'
                     ])
                     !!}
                 </div>
                 <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
-                &nbsp; &nbsp; <!-- <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldPDF">Pdf</a>  -->&nbsp; &nbsp; <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldEXCEL">Excel</a> &nbsp; &nbsp; <a href="{{route('download_lms_cibil_reports', ['type' => 'INSERT'])}}" class="btn  btn-success btn-sm float-right">Insert</a>
+                &nbsp; &nbsp; <!-- <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldPDF">Pdf</a>  -->&nbsp; &nbsp; <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldEXCEL">Excel</a> &nbsp; &nbsp; <a href="{{route('download_lms_cibil_reports', ['type' => 'INSERT'])}}" class="btn  btn-success btn-sm float-right">Pull</a>
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -67,11 +67,11 @@
 	                              		<table id="cibilReports" class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="cibilReports-listing_info" style="width: 100%;">
 	                                        <thead>
 	                                        	<tr role="row">                                                   
-                                                    <th>User Name</th>       
-                                                    <th>Business Name</th>       
-		                                     		<th>Pull Date</th>		
-		                                     		<th>Pull Status</th>
-													<th>Pull By</th>
+                                                    <th>Batch No</th>       
+                                                    <th>Application in Batch</th>       
+		                                     		<th>Records in Batch</th>		
+		                                     		<th>Date</th>
+													<th>Action</th>
 												</tr>
 	                                        </thead>
 	                                        <tbody>
