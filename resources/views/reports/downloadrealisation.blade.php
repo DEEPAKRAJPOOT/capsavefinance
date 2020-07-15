@@ -106,19 +106,20 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                         <td width="40%">
+                            @php if($fromdate && $todate) { @endphp
                             <span style="font-size: small;"><strong>Invoice Realisation Between</strong></span>
                             &nbsp;
-                            
-                            {{($fromdate)? $fromdate : '0000-00-00' }} &nbsp; To &nbsp; {{($todate)? $todate : '0000-00-00'}}
+                            {{($fromdate)? $fromdate : '' }} &nbsp; To &nbsp; {{($todate)? $todate : ''}}
+                            @php  } @endphp
                         </td>
-                         <td>
+                          <td width="25%">
                             <span style="font-size: small;"><strong>Invoice Realisation Report</strong></span>
                            </td>
-                           <td>
+                            <td width="15%">
                             <span style="font-size: small;"><strong></strong></span>
                            </td>
-                            <td>
+                             <td width="15%">
                             <span style="font-size: small;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Run Date: &nbsp;{{ $date->isoFormat('MMMM D, Y')}}</strong></span>
                            </td>
                     </tr>
@@ -136,19 +137,19 @@
                             <span style="font-size: small;"><strong>Invoice Date</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                            <span style="font-size: small;"><strong>Invoice Due Amount .</strong></span>
+                            <span style="font-size: small;"><strong>Invoice Due Amount </strong></span>
                         </td>
                          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                            <span style="font-size: small;"><strong>Invoice Due Amount Date.</strong></span>
+                            <span style="font-size: small;"><strong>Invoice Due Amount Date</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Grace Period</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                            <span style="font-size: small;"><strong>Realisation on Date.</strong></span>
+                            <span style="font-size: small;"><strong>Realisation on Date</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                            <span style="font-size: small;"><strong>Realisation Amount.</strong></span>
+                            <span style="font-size: small;"><strong>Realisation Amount</strong></span>
                         </td>
                        
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
