@@ -26,8 +26,10 @@
     <div class="col-md-6">
       <div class="form-group INR">
         <label for="txtPassword" ><b>Proposed Product Limit</b></label> 
-        <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
-        <input type="text" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit" maxlength="15" readonly>
+        <div class="relative">
+            <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
+            <input type="text" class="form-control number_format" value="{{isset($limitData->limit_amt)? number_format($limitData->limit_amt): ''}}" placeholder="Limit" maxlength="15" readonly>
+        </div>
       </div>
     </div>
 
@@ -54,8 +56,8 @@
     <div class="col-md-6">
       <div class="form-group INR">
         <label for="txtPassword"><b>Program Limit</b> <span style="color: red;"> *</span></label>
-        <span class="text-success limit"></span>
-        <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{($limitBalance<0)? 0: $limitBalance}}</span>
+        <small><span class="text-success limit"></span></small>
+        <span class="float-right text-success"><small>Balance: <i class="fa fa-inr"></i>{{($limitBalance<0)? 0: $limitBalance}}</small></span>
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr"></i></a>
         <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Program Limit" maxlength="15">
       </div>
@@ -64,7 +66,7 @@
     <div class="col-md-6">
       <div class="form-group">
         <label for="txtPassword"><b>Interest Rate (%)</b> <span style="color: red;"> *</span></label>
-        <span class="float-right text-success limit"></span>
+        <small><span class="float-right text-success limit"></span></small>
         <input type="text" name="interest_rate" class="form-control" value="{{isset($offerData->interest_rate)? $offerData->interest_rate: ''}}" placeholder="Interest Rate" maxlength="5">
       </div>
     </div>
@@ -177,7 +179,7 @@
                 <div class="row mt10">
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Security</b></label>
+                        <label for="txtPassword" style="margin-bottom: 25px;"><b>Security</b></label>
                         @endif
                         <select name="ps[ps_security_id][]" class="form-control">
                             <option value="">Select Security</option>
@@ -199,7 +201,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Type of Security</b></label>
+                        <label for="txtPassword" ><b>Type of <br>Security</b></label>
                         @endif
                         <select name="ps[ps_type_of_security_id][]" class="form-control">
                             <option value="">Select type of Security</option>
@@ -214,7 +216,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword"><b>Status of Security</b></label>
+                        <label for="txtPassword"><b>Status of<br> Security</b></label>
                         @endif
                         <select name="ps[ps_status_of_security_id][]" class="form-control">
                             <option value="">Select status of Security</option>
@@ -227,7 +229,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        <label for="txtPassword" ><b>Time for<br> security</b></label>
                         @endif
                         <select name="ps[ps_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
@@ -242,7 +244,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc of Security</b></label>
+                        <label for="txtPassword" ><b>Desc of<br> Security</b></label>
                         @endif
                         <input name="ps[ps_desc_of_security][]" class="form-control" value="{{$ps->ps_desc_of_security}}">
                     </div>
@@ -258,7 +260,7 @@
                 @else
                 <div class="row mt10">
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Security</b></label>
+                        <label for="txtPassword" style="margin-bottom: 25px;"><b>Security</b></label>
                         <select name="ps[ps_security_id][]" class="form-control">
                             <option value="">Select Security</option>
                             <option value="1">Current assets</option>
@@ -278,7 +280,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Type of Security</b></label>
+                        <label for="txtPassword" ><b>Type of<br> Security</b></label>
                         <select name="ps[ps_type_of_security_id][]" class="form-control">
                             <option value="">Select type of Security</option>
                             <option value="1">Registered Mortgage</option>
@@ -291,7 +293,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword"><b>Status of Security</b></label>
+                        <label for="txtPassword"><b>Status of<br> Security</b></label>
                         <select name="ps[ps_status_of_security_id][]" class="form-control">
                             <option value="">Select status of Security</option>
                             <option value="1">First Pari-pasu</option>
@@ -302,7 +304,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        <label for="txtPassword" ><b>Time for<br> security</b></label>
                         <select name="ps[ps_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
                             <option value="1">Before Disbusrement</option>
@@ -315,7 +317,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Description of Security</b></label>
+                        <label for="txtPassword" ><b>Description of<br> Security</b></label>
                         <input name="ps[ps_desc_of_security][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">
@@ -345,7 +347,7 @@
                 <div class="row mt10">
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Description Security</b></label>
+                        <label for="txtPassword" ><b>Description<br> Security</b></label>
                         @endif
                         <select name="cs[cs_desc_security_id][]" class="form-control">
                             <option value="">Select Security</option>
@@ -367,7 +369,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Type of Security</b></label>
+                        <label for="txtPassword" ><b>Type of<br> Security</b></label>
                         @endif
                         <select name="cs[cs_type_of_security_id][]" class="form-control">
                             <option value="">Select type of Security</option>
@@ -382,7 +384,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword"><b>Status of Security</b></label>
+                        <label for="txtPassword"><b>Status of<br> Security</b></label>
                         @endif
                         <select name="cs[cs_status_of_security_id][]" class="form-control">
                             <option value="">Select status of Security</option>
@@ -395,7 +397,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        <label for="txtPassword" ><b>Time for<br> security</b></label>
                         @endif
                         <select name="cs[cs_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
@@ -410,7 +412,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Description of Security</b></label>
+                        <label for="txtPassword" ><b>Description of<br> Security</b></label>
                         @endif
                         <input name="cs[cs_desc_of_security][]" class="form-control" value="{{$cs->cs_desc_of_security}}">
                     </div>
@@ -426,7 +428,7 @@
                 @else
                 <div class="row mt10">
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Description Security</b></label>
+                        <label for="txtPassword" ><b>Description<br> Security</b></label>
                         <select name="cs[cs_desc_security_id][]" class="form-control">
                             <option value="">Select Security</option>
                             <option value="1">Current assets</option>
@@ -446,7 +448,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Type of Security</b></label>
+                        <label for="txtPassword" ><b>Type of<br> Security</b></label>
                         <select name="cs[cs_type_of_security_id][]" class="form-control">
                             <option value="">Select type of Security</option>
                             <option value="1">Registered Mortgage</option>
@@ -459,7 +461,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword"><b>Status of Security</b></label>
+                        <label for="txtPassword"><b>Status of<br> Security</b></label>
                         <select name="cs[cs_status_of_security_id][]" class="form-control">
                             <option value="">Select status of Security</option>
                             <option value="1">First Pari-pasu</option>
@@ -470,7 +472,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        <label for="txtPassword" ><b>Time for<br> security</b></label>
                         <select name="cs[cs_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
                             <option value="1">Before Disbusrement</option>
@@ -483,7 +485,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Desc of Security</b></label>
+                        <label for="txtPassword" ><b>Desc of<br> Security</b></label>
                         <input name="cs[cs_desc_of_security][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">
@@ -513,7 +515,7 @@
                 <div class="row mt10">
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
+                        <label for="txtPassword" ><b>Select<br> Guarantor</b></label>
                         @endif
                         <select name="pg[pg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
@@ -524,7 +526,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        <label for="txtPassword" ><b>Time for<br> security</b></label>
                         @endif
                         <select name="pg[pg_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
@@ -539,19 +541,19 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword"><b>Residential Address </b></label>
+                        <label for="txtPassword"><b>Residential<br> Address </b></label>
                         @endif
                         <input name="pg[pg_residential_address][]" class="form-control" value="{{$pg->pg_residential_address}}">
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword"><b>Net worth as per ITR/CA Cert</b></label>
+                        <label for="txtPassword"><b>Net worth as<br> per ITR/CA Cert</b></label>
                         @endif
                         <input name="pg[pg_net_worth][]" class="form-control" value="{{$pg->pg_net_worth}}">
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments if any</b></label>
+                        <label for="txtPassword" ><b>Comments if<br> any</b></label>
                         @endif
                         <input name="pg[pg_comments][]" class="form-control" value="{{$pg->pg_comments}}">
                     </div>
@@ -567,7 +569,7 @@
                 @else
                 <div class="row mt10">
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
+                        <label for="txtPassword" ><b>Select<br> Guarantor</b></label>
                         <select name="pg[pg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
                             @foreach($bizOwners as $key=>$bizOwner)
@@ -576,7 +578,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        <label for="txtPassword" ><b>Time for<br> security</b></label>
                         <select name="pg[pg_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
                             <option value="1">Before Disbusrement</option>
@@ -589,15 +591,15 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword"><b>Residential Address </b></label>
+                        <label for="txtPassword"><b>Residential<br>  Address </b></label>
                         <input name="pg[pg_residential_address][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword"><b>Net worth as ITR/CA Cert</b></label>
+                        <label for="txtPassword"><b>Net worth as<br> ITR/CA Cert</b></label>
                         <input name="pg[pg_net_worth][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments if any</b></label>
+                        <label for="txtPassword" ><b>Comments if<br>  any</b></label>
                         <input name="pg[pg_comments][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">
@@ -627,7 +629,7 @@
                 <div class="row mt10">
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Type</b></label>
+                        <label for="txtPassword" style="margin-bottom: 25px;"><b>Type</b></label>
                         @endif
                         <select name="cg[cg_type_id][]" class="form-control">
                             <option value="">Select type</option>
@@ -641,7 +643,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
+                        <label for="txtPassword" ><b>Select<br> Guarantor</b></label>
                         @endif
                         <select name="cg[cg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
@@ -652,7 +654,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        <label for="txtPassword" ><b>Time for<br> security</b></label>
                         @endif
                         <select name="cg[cg_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
@@ -667,13 +669,13 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword"><b>Residential Address</b></label>
+                        <label for="txtPassword"><b>Residential<br> Address</b></label>
                         @endif
                         <input name="cg[cg_residential_address][]" class="form-control" value="{{$cg->cg_residential_address}}">
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments if any</b></label>
+                        <label for="txtPassword" ><b>Comments if<br> any</b></label>
                         @endif
                         <input name="cg[cg_comments][]" class="form-control" value="{{$cg->cg_comments}}">
                     </div>
@@ -689,7 +691,7 @@
                 @else
                 <div class="row mt10">
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Type</b></label>
+                        <label for="txtPassword" style="margin-bottom: 25px;"><b>Type</b></label>
                         <select name="cg[cg_type_id][]" class="form-control">
                             <option value="">Select type</option>
                             <option value="1">Corporate Guarante with BR</option>
@@ -701,7 +703,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Select Guarantor</b></label>
+                        <label for="txtPassword" ><b>Select<br> Guarantor</b></label>
                         <select name="cg[cg_name_of_guarantor_id][]" class="form-control">
                             <option value="">Select Guarantor</option>
                             @foreach($bizOwners as $key=>$bizOwner)
@@ -710,7 +712,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        <label for="txtPassword" ><b>Time for<br> security</b></label>
                         <select name="cg[cg_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
                             <option value="1">Before Disbusrement</option>
@@ -723,11 +725,11 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword"><b>Residential Address</b></label>
+                        <label for="txtPassword"><b>Residential<br> Address</b></label>
                         <input name="cg[cg_residential_address][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments if any</b></label>
+                        <label for="txtPassword" ><b>Comments if<br> any</b></label>
                         <input name="cg[cg_comments][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">
@@ -757,7 +759,7 @@
                 <div class="row mt10">
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Name of Debtor</b></label>
+                        <label for="txtPassword" ><b>Name of<br> Debtor</b></label>
                         @endif
                         <select name="em[em_debtor_id][]" class="form-control">
                             <option value="">Select Debtor</option>
@@ -768,13 +770,13 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword"><b>Expected cash flow per month</b></label>
+                        <label for="txtPassword"><b>Expected cash<br> flow per month</b></label>
                         @endif
                         <input name="em[em_expected_cash_flow][]" class="form-control" value="{{$em->em_expected_cash_flow}}">
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        <label for="txtPassword" ><b>Time for<br> security</b></label>
                         @endif
                         <select name="em[em_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
@@ -789,7 +791,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Mechanism</b></label>
+                        <label for="txtPassword" style="margin-bottom: 25px;"><b>Mechanism</b></label>
                         @endif
                         <select name="em[em_mechanism_id][]" class="form-control">
                             <option value="">Select Mechanism</option>
@@ -801,7 +803,7 @@
                     </div>
                     <div class="col-md-2">
                         @if($loop->first)
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments if any</b></label>
+                        <label for="txtPassword" ><b>Comments if<br> any</b></label>
                         @endif
                         <input name="em[em_comments][]" class="form-control" value="{{$em->em_comments}}">
                     </div>
@@ -817,7 +819,7 @@
                 @else
                 <div class="row mt10">
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Name of Debtor</b></label>
+                        <label for="txtPassword" ><b>Name of<br> Debtor</b></label>
                         <select name="em[em_debtor_id][]" class="form-control">
                             <option value="">Select Debtor</option>
                             @foreach($anchors as $key=>$anchor)
@@ -826,11 +828,11 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword"><b>Expected cash flow per month</b></label>
+                        <label for="txtPassword"><b>Expected cash<br> flow per month</b></label>
                         <input name="em[em_expected_cash_flow][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Time for security</b></label>
+                        <label for="txtPassword" ><b>Time for<br> security</b></label>
                         <select name="em[em_time_for_perfecting_security_id][]" class="form-control">
                             <option value="">Select time for perfecting security</option>
                             <option value="1">Before Disbusrement</option>
@@ -843,7 +845,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Mechanism</b></label>
+                        <label for="txtPassword" style="margin-bottom: 25px;"><b>Mechanism</b></label>
                         <select name="em[em_mechanism_id][]" class="form-control">
                             <option value="">Select Mechanism</option>
                             <option value="1">With direct Payment confirmation</option>
@@ -853,7 +855,7 @@
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label for="txtPassword" style="margin-bottom: 30px;"><b>Comments if any</b></label>
+                        <label for="txtPassword" ><b>Comments if<br> any</b></label>
                         <input name="em[em_comments][]" class="form-control" value="">
                     </div>
                     <div class="col-md-2 center">

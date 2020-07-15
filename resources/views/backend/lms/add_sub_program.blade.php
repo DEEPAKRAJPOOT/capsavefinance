@@ -29,17 +29,15 @@
                                         <div class=" ">
                                             <div class="sub-progrem">
                                                 <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <h4 class="gc"><label>Program Name: </label> {{ isset($programData) ? $programData->prgm_name : null }} <span class="float-right mb-0"> <label>Anchor Name: </label> {{ isset($anchorData) ? $anchorData->f_name : null }}</span> </h4>
-
-                                                        <p class="float-left mr-3 mb-0">
+                                                    <div class="col-sm-12 d-flex">
+                                                        <div>
+                                                            <h6 class="gc"><label>Anchor Name: </label> {{ isset($anchorData) ? $anchorData->f_name : null }} </h6>
+                                                            <h6 class="gc"><label>Program Name: </label> {{ isset($programData) ? $programData->prgm_name : null }} </h6>
+                                                        </div>
+                                                        <p class="ml-auto">
                                                             <b>Total Anchor Limit : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i> 
-                                                            {!! isset($programData->anchor_limit) ?  number_format($programData->anchor_limit )   : null !!}
-                                                        </p>
-
-
-                                                        <p class="float-right mb-0">
+                                                            {!! isset($programData->anchor_limit) ?  number_format($programData->anchor_limit )   : null !!}<br>
                                                             <b>Remaining Anchor Limit : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i>
                                                             {{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }} 
@@ -72,6 +70,24 @@
                                                                         {{ trans('backend.add_program.sub_program_detail') }}
                                                                         <span class="error_message_label">*</span>
                                                                     </label>
+                                                                    <div class="" style="color:black;">
+                                                                                <div class="form-check-inline">
+                                                                                    <label class="form-check-label fnt" for="prgm_type">
+                                                                                        {!! Form::radio('prgm_type','1',($programData->prgm_type=="1")? "checked" : "", ['class'=>'form-check-input']) !!}
+                                                                                        <strong>
+                                                                                            {{ trans('backend.add_program.vendor_finance') }}   
+                                                                                        </strong>
+                                                                                    </label>
+                                                                                </div>
+                                                                                <div class="form-check-inline">
+                                                                                    <label class="form-check-label fnt" for="prgm_type">
+                                                                                        {!! Form::radio('prgm_type','2',($programData->prgm_type=="2")? "checked" : "", ['class'=>'form-check-input']) !!}
+                                                                                        <strong>
+                                                                                            {{ trans('backend.add_program.channel_finance') }}    
+                                                                                        </strong>
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
                                                                     <div class="block-div clearfix ">
                                                                         <div class="form-check-inline float-left">
                                                                             <label class="form-check-label fnt" for="prgm_type">
@@ -96,8 +112,8 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-12" style="margin-top: -40px;">
-                                                        <h5 class="card-title">Terms</h5>
+                                                    <div class="col-md-12">
+                                                        <h5 class="card-title mt-0">Terms</h5>
                                                     </div>
 
                                                     <div class="col-md-12">
@@ -177,7 +193,7 @@
 
                                                                         <div class="col-md-6 floating" style="display:none; margin-top: -30px;">
                                                                             <label for="interest_linkage" >Base Rate(%)
-                                                                                <span class="error_message_label"></span>
+                                                                                <span class="error_message_label hide"></span>
                                                                             </label>
                                                                             <select id="interest_linkage" class="form-control" name="interest_linkage" tabindex="9">
                                                                                 <option value="">Select Base Rate</option>
@@ -216,7 +232,7 @@
                                                             <label id="prgm_type-error" class="error mb-0" for="interest_rate"></label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-12" style="margin-top: -25px;">
+                                                    <div class="col-md-12">
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
