@@ -952,13 +952,18 @@ class DataRenderer implements DataProviderInterface
                 })
                    ->filter(function ($query) use ($request) {
                   
-                   if ($request->get('biz_id') != '') {                        
-                        $query->whereHas('business',function ($query) use ($request) {
-                            $search_keyword = trim($request->get('biz_id'));
-                            $query->where('invoice_no', 'like',"%$search_keyword%")
-                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
-                    }
+                    if ($request->get('biz_id') != '') {                        
+                       $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('biz_id'));
+                    $query->where('invoice_no', 'like',"%$search_keyword%")
+                    ->orwhereHas('business', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                        $q->where('comp_name', 'like', "%$search_keyword%");
+                     });
+                });
+                        }
                     
                 })
               ->make(true);
@@ -1141,12 +1146,17 @@ class DataRenderer implements DataProviderInterface
                  ->filter(function ($query) use ($request) {
                   
                    if ($request->get('biz_id') != '') {                        
-                        $query->whereHas('business',function ($query) use ($request) {
-                            $search_keyword = trim($request->get('biz_id'));
-                            $query->where('invoice_no', 'like',"%$search_keyword%")
-                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
-                    }
+                       $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('biz_id'));
+                    $query->where('invoice_no', 'like',"%$search_keyword%")
+                    ->orwhereHas('business', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                        $q->where('comp_name', 'like', "%$search_keyword%");
+                     });
+                });
+                        }
                     
                 })
               ->make(true);
@@ -1259,14 +1269,18 @@ class DataRenderer implements DataProviderInterface
                 })
                  ->filter(function ($query) use ($request) {
                   
-                   if ($request->get('biz_id') != '') {                        
-                        $query->whereHas('business',function ($query) use ($request) {
-                            $search_keyword = trim($request->get('biz_id'));
-                            $query->where('invoice_no', 'like',"%$search_keyword%")
-                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
-                    }
-                    
+                    if ($request->get('biz_id') != '') {                        
+                       $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('biz_id'));
+                    $query->where('invoice_no', 'like',"%$search_keyword%")
+                    ->orwhereHas('business', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                        $q->where('comp_name', 'like', "%$search_keyword%");
+                     });
+                });
+                        }
                 })
               ->make(true);
     }  
@@ -1459,12 +1473,17 @@ class DataRenderer implements DataProviderInterface
                  ->filter(function ($query) use ($request) {
                   
                    if ($request->get('biz_id') != '') {                        
-                        $query->whereHas('business',function ($query) use ($request) {
-                            $search_keyword = trim($request->get('biz_id'));
-                            $query->where('invoice_no', 'like',"%$search_keyword%")
-                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
-                    }
+                       $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('biz_id'));
+                    $query->where('invoice_no', 'like',"%$search_keyword%")
+                    ->orwhereHas('business', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                        $q->where('comp_name', 'like', "%$search_keyword%");
+                     });
+                });
+                        }
                     
                 })
               ->make(true);
@@ -1557,12 +1576,17 @@ class DataRenderer implements DataProviderInterface
                   ->filter(function ($query) use ($request) {
                   
                    if ($request->get('biz_id') != '') {                        
-                        $query->whereHas('business',function ($query) use ($request) {
-                            $search_keyword = trim($request->get('biz_id'));
-                            $query->where('invoice_no', 'like',"%$search_keyword%")
-                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
-                    }
+                       $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('biz_id'));
+                    $query->where('invoice_no', 'like',"%$search_keyword%")
+                    ->orwhereHas('business', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                        $q->where('comp_name', 'like', "%$search_keyword%");
+                     });
+                });
+                        }
                     
                 })
               ->make(true);
@@ -1636,13 +1660,18 @@ class DataRenderer implements DataProviderInterface
                 })  
                  ->filter(function ($query) use ($request) {
                   
-                   if ($request->get('biz_id') != '') {                        
-                        $query->whereHas('business',function ($query) use ($request) {
-                            $search_keyword = trim($request->get('biz_id'));
-                            $query->where('invoice_no', 'like',"%$search_keyword%")
-                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
-                    }
+                    if ($request->get('biz_id') != '') {                        
+                       $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('biz_id'));
+                    $query->where('invoice_no', 'like',"%$search_keyword%")
+                    ->orwhereHas('business', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                        $q->where('comp_name', 'like', "%$search_keyword%");
+                     });
+                });
+                        }
                     
                 })
               ->make(true);
@@ -1759,13 +1788,18 @@ class DataRenderer implements DataProviderInterface
                 })
                  ->filter(function ($query) use ($request) {
                   
-                   if ($request->get('biz_id') != '') {                        
-                        $query->whereHas('business',function ($query) use ($request) {
-                            $search_keyword = trim($request->get('biz_id'));
-                            $query->where('invoice_no', 'like',"%$search_keyword%")
-                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
-                    }
+                    if ($request->get('biz_id') != '') {                        
+                       $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('biz_id'));
+                    $query->where('invoice_no', 'like',"%$search_keyword%")
+                    ->orwhereHas('business', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                        $q->where('comp_name', 'like', "%$search_keyword%");
+                     });
+                });
+                        }
                     
                 })
               ->make(true);
@@ -1878,13 +1912,18 @@ class DataRenderer implements DataProviderInterface
                 })
                  ->filter(function ($query) use ($request) {
                   
-                   if ($request->get('biz_id') != '') {                        
-                        $query->whereHas('business',function ($query) use ($request) {
-                            $search_keyword = trim($request->get('biz_id'));
-                            $query->where('invoice_no', 'like',"%$search_keyword%")
-                              ->orWhere('biz_entity_name', 'like', "%$search_keyword%");
-                        });                        
-                    }
+                    if ($request->get('biz_id') != '') {                        
+                       $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('biz_id'));
+                    $query->where('invoice_no', 'like',"%$search_keyword%")
+                    ->orwhereHas('business', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                        $q->where('comp_name', 'like', "%$search_keyword%");
+                     });
+                });
+                        }
                     
                 }) 
                  
