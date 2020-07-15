@@ -2666,7 +2666,7 @@ if ($err) {
      * @return json user data
      */
     public function getCasePools(DataProviderInterface $dataProvider) {
-        $appList = $this->application->getApplicationPoolData()->get();
+        $appList = $this->application->getApplicationPoolData();
         $apppool = $dataProvider->getAppLicationPool($this->request, $appList);
         return $apppool;
     }

@@ -2152,8 +2152,9 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('search_keyword') != '') {                        
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('app.app_id', 'like',"%$search_keyword%")
-                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
+                            $query->where('app_code', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
+                            ->orWhere('users.email', 'like',"%$search_keyword%");
                         });                        
                     }
                     if ($request->get('is_assign') != '') {                                 
