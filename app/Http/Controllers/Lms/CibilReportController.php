@@ -2,7 +2,6 @@
 namespace App\Http\Controllers\Lms;
 use Auth;
 use Session;
-use Helpers;
 use App\Helpers\Helper;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
@@ -94,7 +93,7 @@ class CibilReportController extends Controller
         'status' => 'failure',
         'message' => 'Request method not allowed to execute the script.',
       );
-      $whereCond = ['app_id' => 156, 'status' => 2, 'is_posted_in_cibil' => 0];
+      $whereCond = ['status' => 2, 'is_posted_in_cibil' => 0];
       $businessData = $this->lmsRepo->getAllBusinessData($whereCond);
       $batch_no = _getRand(15);
       $cibilReportData['hd'] = $this->_getHDData();

@@ -53,8 +53,11 @@ class CibilUserData extends BaseModel {
         if (!is_array($where)) {
             throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
         }
-
-        $res = self::where($where)->whereRaw($whereRawCondition)->get();
+        $res = self::where($where);
+        if (!empty($whereRawCondition)) {
+            $res->whereRaw($whereRawCondition);
+        }
+        $res->get();
         return $res ?: false;
     }
 
