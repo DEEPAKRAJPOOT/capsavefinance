@@ -128,7 +128,7 @@ class AppProgramLimit extends BaseModel {
     }
 
     public function program(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
+        return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id')->where('status',1);
     }
 
     public function offer(){
