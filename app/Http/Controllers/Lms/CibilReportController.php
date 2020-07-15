@@ -188,7 +188,7 @@ class CibilReportController extends Controller
             'Service Tax #' => NULL,
             'Other ID' => NULL,
             'Borrower’s Legal Constitution' => $appBusiness->constitution->name,
-            'Business Category' => config('common.MSMETYPE')[$appBusiness->msme_type],
+            'Business Category' => config('common.MSMETYPE')[$appBusiness->msme_type] ?? NULL,
             'Business/ Industry Type' => $appBusiness->industryType->name,
             'Class of Activity 1' => NULL,
             'Class of Activity 2' => NULL,
