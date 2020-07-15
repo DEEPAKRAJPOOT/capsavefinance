@@ -106,19 +106,20 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                         <td width="40%">
+                           @php if($fromdate && $todate) { @endphp   
                             <span style="font-size: small;"><strong>Invoice Due From</strong></span>
                             &nbsp;
-                            
-                            {{($fromdate)? $fromdate : '0000-00-00' }} &nbsp; To &nbsp; {{($todate)? $todate : '0000-00-00'}}
+                            {{($fromdate)? $fromdate : '' }} &nbsp; To &nbsp; {{($todate)? $todate : ''}}
+                          @php } @endphp
                         </td>
-                         <td>
+                          <td width="25%">
                             <span style="font-size: small;"><strong>Invoice Due Report</strong></span>
                            </td>
-                           <td>
+                           <td width="15%">
                             <span style="font-size: small;"><strong></strong></span>
                            </td>
-                            <td>
+                              <td width="15%">
                             <span style="font-size: small;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $date->isoFormat('MMMM D, Y')}}</strong></span>
                            </td>
                     </tr>

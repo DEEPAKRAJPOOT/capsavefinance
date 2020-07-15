@@ -34,6 +34,7 @@ try {
                 {data: 'debtor_name'},
                 {data: 'debtor_acc_no'},
                 {data: 'invoice_date'},
+                {data: 'invoice_due_amount'},
                 {data: 'invoice_due_amount_date'},
                 {data: 'grace_period'},
                 {data: 'relisation_date'},

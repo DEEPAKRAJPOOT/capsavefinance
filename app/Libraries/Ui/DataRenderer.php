@@ -6450,6 +6450,11 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {  
                         return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
                    })
+                     ->addColumn(
+                    'invoice_due_amount',
+                    function ($invoice) {  
+                        return  number_format($invoice->invoice->invoice_approve_amount);
+                   })
                 ->addColumn(
                     'invoice_due_amount_date',
                     function ($invoice) { 
@@ -6509,7 +6514,7 @@ class DataRenderer implements DataProviderInterface
                     'od',
                     function ($invoice) {
                        
-                           return '<b>'.$invoice->InterestAccrual->count().'</b>';
+                           return '<b>'.($invoice->InterestAccrual) ? $invoice->InterestAccrual->count() : ''.'</b>';
                        
                     }) 
                     ->addColumn(
