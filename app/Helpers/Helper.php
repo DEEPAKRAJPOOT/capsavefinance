@@ -1779,4 +1779,35 @@ class Helper extends PaypalHelper
             return $variable;
         }
      }
+     
+     /**
+     * Get System Current Date
+     * 
+     * @return timestamp
+     */
+    public static function getSysCurrentDate()
+    {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        $today = \Carbon\Carbon::now();
+        $sys_curr_date = $today->format('Y-m-d H:i:s');
+        $whereCond=[];  
+        $eodCount = $lmsRepo->getEodDataCount(); 
+        $whereCond['is_active'] = $eodCount == 1 ? 1 : 0;
+        $latestEod = $lmsRepo->getLatestEodProcess($whereCond);
+        if ($latestEod) {
+            $start = new \Carbon\Carbon($latestEod->sys_start_date);
+            $start = $start->addDays(1);
+            $sys_curr_date = $start->format('Y-m-d') . " " . date('H:i:s');
+        }
+        $whCond=[];
+        $whCond['is_active'] = 1;
+        $eodProcess = $lmsRepo->getEodProcess($whCond);
+        if ($eodProcess && $eodProcess->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')) {
+            $start = new \Carbon\Carbon($eodProcess->sys_start_date);
+            $start = $start->addDays(1);
+            $sys_curr_date = $start->format('Y-m-d') . " " . date('H:i:s');
+        }
+        $current_date = self::convertDateTimeFormat($sys_curr_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s');
+        return $current_date;
+    }
 }
