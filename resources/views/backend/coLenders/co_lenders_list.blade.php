@@ -18,6 +18,12 @@
     <div class="card">
         <div class="card-body">
             <div class="row">
+                <div class="col-md-4">
+                    <input class="form-control" placeholder="Search by Name or Bussiness Name or Email" id="by_name" name="search_keyword" type="text">
+                </div>
+                <div class="col-md-1">
+                    <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
+                </div>
                 <div class="col-sm-12">
                     <div class="head-sec">
                         <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
@@ -88,6 +94,7 @@
             url: messages.get_co_lender_list,
             method: 'POST',
             data: function (d) {
+                d.search_keyword = $('input[name=search_keyword]').val();
                 d._token = messages.token;
             },
             error: function () { // error handling
@@ -107,6 +114,10 @@
             {data: 'action'}
         ],
         aoColumnDefs: [{'bSortable': false,'aTargets': [6,7]}]
+    });
+
+    $('#searchbtn').on('click', function (e) {
+        oTables.draw();
     });
         
     window.refresh = function(){

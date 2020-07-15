@@ -12,7 +12,8 @@
                 <label for="txtCreditPeriod">Full Name
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" name="employee" id="employee" value="{{ isset($coLenderData->f_name) ? $coLenderData->f_name  : null }}" class="form-control employee" tabindex="1" placeholder="Full Name" maxlength="30">
+                <input type="text" name="employee" id="employee" value="{{ isset($coLenderData->f_name) ? $coLenderData->f_name  : old('employee') }}" class="form-control employee" tabindex="1" placeholder="Full Name" maxlength="30">
+                {!! $errors->first('employee', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="col-6">
@@ -20,7 +21,8 @@
                 <label for="txtSupplierName">Business Name
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" name="comp_name" id="comp_name"  value="{{ isset($coLenderData->biz_name) ? $coLenderData->biz_name  : null }}" class="form-control comp_name" tabindex="2" placeholder="Business Name" maxlength="50">
+                <input type="text" name="comp_name" id="comp_name"  value="{{ isset($coLenderData->biz_name) ? $coLenderData->biz_name  : old('comp_name') }}" class="form-control comp_name" tabindex="2" placeholder="Business Name" maxlength="50">
+                {!! $errors->first('comp_name', '<span class="error">:message</span>') !!}
             </div>
         </div>
     </div>
@@ -31,7 +33,8 @@
                 <label for="txtMobile">GST Number
                     <span class="mandatory">*</span>
                 </label>
-                <input class="form-control gst" value="{{ isset($coLenderData->gst) ? $coLenderData->gst : null }}"  name="gst" id="gst" type="text" placeholder="GST Number" maxlength="15">
+                <input class="form-control gst" value="{{ isset($coLenderData->gst) ? $coLenderData->gst : old('gst') }}"  name="gst" id="gst" type="text" placeholder="GST Number" maxlength="15">
+                {!! $errors->first('gst', '<span class="error">:message</span>') !!}
             </div>
         </div>
 
@@ -40,7 +43,8 @@
                 <label for="txtMobile">PAN Number
                     <span class="mandatory">*</span>
                 </label>
-                <input class="form-control pan-validate pan_no" value="{{ isset($coLenderData->pan_no) ? $coLenderData->pan_no : null }}"  name="pan_no" id="pan"  type="text"  placeholder="PAN Number" maxlength="10">
+                <input class="form-control pan-validate pan_no" value="{{ isset($coLenderData->pan_no) ? $coLenderData->pan_no : old('pan_no') }}"  name="pan_no" id="pan"  type="text"  placeholder="PAN Number" maxlength="10">
+                {!! $errors->first('pan_no', '<span class="error">:message</span>') !!}
             </div>
         </div>
     </div>
@@ -50,7 +54,8 @@
                 <label for="txtEmail">Email
                     <span class="mandatory">*</span>
                 </label>
-                <input type="email" name="email" id="email"  value="{{ isset($coLenderData->comp_email) ? $coLenderData->comp_email  : null }}" class="form-control email" tabindex="3" placeholder="Email" maxlength="50" {{ isset($coLenderData->co_lender_id) ? "disabled"  : null }}>
+                <input type="email" name="email" id="email"  value="{{ isset($coLenderData->comp_email) ? $coLenderData->comp_email  : old('email') }}" class="form-control email" tabindex="3" placeholder="Email" maxlength="50" {{ isset($coLenderData->co_lender_id) ? "readonly"  : null }}>
+                {!! $errors->first('email', '<span class="error">:message</span>') !!}
             </div>
         </div>
 
@@ -59,12 +64,13 @@
                 <label for="txtMobile">Mobile
                     <span class="mandatory">*</span>
                 </label>
-                <input class="form-control numbercls phone"  value="{{ isset($coLenderData->comp_phone) ? $coLenderData->comp_phone  : null }}" name="phone" id="phone" tabindex="4" type="text" maxlength="10" placeholder="Mobile">
+                <input class="form-control numbercls phone"  value="{{ isset($coLenderData->comp_phone) ? $coLenderData->comp_phone  : old('phone') }}" name="phone" id="phone" tabindex="4" type="text" maxlength="10" placeholder="Mobile">
                 <div class="failed">
                     <div style="color:#FF0000">
                         <small class="erro-sms" id="erro-sms"></small>
                     </div>
                 </div>
+                {!! $errors->first('phone', '<span class="error">:message</span>') !!}
             </div>
         </div>
     </div>
@@ -76,12 +82,13 @@
                 <label for="txtMobile">Address
                     <span class="mandatory">*</span>
                 </label>
-                <input class="form-control comp_addr" value="{{ isset($coLenderData->comp_addr) ? $coLenderData->comp_addr  : null }}" name="comp_addr" id="comp_addr" tabindex="5" type="text"  placeholder="Address" maxlength="100">
+                <input class="form-control comp_addr" value="{{ isset($coLenderData->comp_addr) ? $coLenderData->comp_addr  : old('comp_addr') }}" name="comp_addr" id="comp_addr" tabindex="5" type="text"  placeholder="Address" maxlength="100">
                 <div class="failed">
                     <div style="color:#FF0000">
                         <small class="erro-sms" id="erro-sms"></small>
                     </div>
                 </div>
+                {!! $errors->first('comp_addr', '<span class="error">:message</span>') !!}
             </div>
         </div>
 
@@ -93,9 +100,10 @@
                 <select class="form-control state" name="state" id="state" tabindex="6">
                     <option value=""> Select State</option>
                     @foreach($states as $key => $state)
-                    <option {{ isset($coLenderData->comp_state) && ($coLenderData->comp_state == $state->id ) ?  "selected='selected'"   : null }}  value="{{$state->id}}"> {{$state->name}} </option>
+                    <option {{ isset($coLenderData->comp_state) && ($coLenderData->comp_state == $state->id ) ?  "selected='selected'"   : old('state') }}  value="{{$state->id}}"> {{$state->name}} </option>
                     @endforeach
                 </select>
+                {!! $errors->first('state', '<span class="error">:message</span>') !!}
             </div>
         </div>
     </div>
@@ -106,12 +114,13 @@
                 <label for="txtMobile">City
                     <span class="mandatory">*</span>
                 </label>
-                <input class="form-control city" name="city" id="city"  value="{{ isset($coLenderData->comp_city) ? $coLenderData->comp_city  : null }}"  tabindex="7" type="text" maxlength="10" placeholder="City">
+                <input class="form-control city" name="city" id="city"  value="{{ isset($coLenderData->comp_city) ? $coLenderData->comp_city  : old('city') }}"  tabindex="7" type="text" maxlength="10" placeholder="City">
                 <div class="failed">
                     <div style="color:#FF0000">
                         <small class="erro-sms" id="erro-sms"></small>
                     </div>
                 </div>
+                {!! $errors->first('city', '<span class="error">:message</span>') !!}
             </div>
         </div>
         <div class="col-6">
@@ -119,12 +128,13 @@
                 <label for="txtMobile">Pin Code
                     <span class="mandatory">*</span>
                 </label>
-                <input class="form-control numbercls pin_code" name="pin_code" value="{{ isset($coLenderData->comp_zip) ? $coLenderData->comp_zip  : null }}"  id="pin_code" tabindex="8" type="text" maxlength="6" placeholder="Pin Code">
+                <input class="form-control numbercls pin_code" name="pin_code" value="{{ isset($coLenderData->comp_zip) ? $coLenderData->comp_zip  : old('pin_code') }}"  id="pin_code" tabindex="8" type="text" maxlength="6" placeholder="Pin Code">
                 <div class="failed">
                     <div style="color:#FF0000">
                         <small class="erro-sms" id="erro-sms"></small>
                     </div>
                 </div>
+                {!! $errors->first('pin_code', '<span class="error">:message</span>') !!}
             </div>
         </div>
     </div>
@@ -134,7 +144,7 @@
             <div class="form-group">
                 <label for="txtCreditPeriod">Status
                  <span class="mandatory">*</span></label><br>
-                {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],isset($coLenderData->is_active) ? $coLenderData->is_active : null,['class'=>'form-control form-control-sm required']) !!}
+                {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],isset($coLenderData->is_active) ? $coLenderData->is_active : old('is_active'),['class'=>'form-control form-control-sm required']) !!}
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
             </div>
         </div>
