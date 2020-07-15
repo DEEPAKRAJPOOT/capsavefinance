@@ -532,6 +532,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'uses' => 'Lms\RefundController@refundListQueue',
                     ]);
 
+                    Route::get('/refund-request', [
+                        'as' => 'refund_request',
+                        'uses' => 'Lms\RefundController@refundRequest',
+                    ]);
+
                     Route::get('/sentbank', [
                         'as' => 'lms_refund_sentbank',
                         'uses' => 'Lms\RefundController@refundListSentBank',

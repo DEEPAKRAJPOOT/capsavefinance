@@ -326,6 +326,31 @@ class RefundController extends Controller
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
                 if ($result['status'] == 'success') {
+
+                    $fileDirPath = getPathByTxnId($transId);
+                    $time = date('y-m-d H:i:s');
+                    
+                    $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
+                    $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
+                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
+                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
+                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
+                    
+                    $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
+                    if(is_array($createOrUpdatefile)) {
+                        $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
+                    } else {
+                        $userFileSaved = $createOrUpdatefile;
+                    }
+                    
+                    $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
+                    $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result['result'], $otherData);
+                    $createDisbusalApiLog = $this->lmsRepo->saveUpdateDisbursalApiLog($disbusalApiLogData);
+                    if ($createDisbusalApiLog) {
+                        $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
+                    }
+
+
                     $this->refundUpdation($allrecords, $supplierIds, $allAprvls, $disburseDate);
                 } else {
                     Session::flash('message',trans('backend_messages.disbursed_error'));
@@ -854,5 +879,19 @@ class RefundController extends Controller
             }            
         }
 
+    public function refundRequest(Request $request)
+    {
+        try {
 
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            $batchData = $this->lmsRepo->getallBatch();
+
+            return view('lms.refund.refund_request')->with(['batchData' => $batchData]);
+            } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 }

@@ -30,21 +30,17 @@
 
                     <div class="card">
                         <div class="card-body">       
-                            <form id="manualDisburse" method="POST" action="{{ Route('download_batch_data') }}">
-                                @csrf
-                                <div class="row">
-                                    
-                                    <div class="col-md-3">
-                                        <select class="form-control" id="batch_id" name="batch_id">
-                                            <option value="" selected="">All</option>
-                                            @foreach($batchData as $batch)
-                                            <option value="{{ $batch->batch_id }}">{{ $batch->batch_id }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <select class="form-control" id="batch_id" name="batch_id">
+                                        <option value="" selected="">All</option>
+                                        @foreach($batchData as $batch)
+                                        <option value="{{ $batch->batch_id }}">{{ $batch->batch_id }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                            </form>
+                                <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
+                            </div>
 
                             <div class="col-12 dataTables_wrapper mt-4">
                                 <div class="overflow">

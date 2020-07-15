@@ -4493,4 +4493,10 @@ if ($err) {
         $data = $dataProvider->lmsGetDisbursalBatchRequest($this->request, $disbursalBatchRequest);
         return $data;
     } 
+    
+    public function getBackendRefundBatchRequest(DataProviderInterface $dataProvider) {
+        $disbursalBatchRequest = $this->lmsRepo->lmsGetDisbursalBatchRequest();
+        $data = $dataProvider->lmsGetDisbursalBatchRequest($this->request, $disbursalBatchRequest);
+        return $data;
+    } 
 }
