@@ -175,9 +175,31 @@
 							            @enderror
 								</div>
 							</div>
-							
+							<div class="col-md-4">
+								<div class="form-group">
+									<label for="txtEmail">MSME TYPE
+										<span class="mandatory">*</span>
+									</label>
+										{!! Form::select('msme_type', [''=>trans('backend.please_select')] + config('common.MSMETYPE'), $business_info->msme_type, ['class'=>'form-control', 'tabindex'=>'7']) !!}
+										@error('msme_type')
+							                <span class="text-danger error">{{ $message }}</span>
+							            @enderror
+								</div>
+							</div>
 
-
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								<div class="form-group">
+									<label for="txtEmail">MSME NUMBER
+										<span class="mandatory">*</span>
+									</label>
+										<input type="text" name="msme_no" value="{{old('msme_no', $business_info->msme_no)}}" class="form-control" tabindex="3" placeholder="Enter MSME Number" maxlength="30" >
+										@error('msme_no')
+							                <span class="text-danger error">{{ $message }}</span>
+							            @enderror
+								</div>
+							</div>
 							<div class="col-md-4">
 								<div class="form-group password-input">
 									<label for="txtPassword">Date of Incorporation
@@ -189,15 +211,6 @@
 						            @enderror
 								</div>
 							</div>	
-
-
-
-
-							
-
-						</div>
-						<div class="row">
-
 							<div class="col-md-4">
 								<div class="form-group password-input INR">
 									<label for="txtPassword">Business Turnover

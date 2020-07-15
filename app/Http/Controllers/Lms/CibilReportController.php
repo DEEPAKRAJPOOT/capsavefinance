@@ -2,15 +2,18 @@
 namespace App\Http\Controllers\Lms;
 use Auth;
 use Session;
-use Helpers;
+use App\Helpers\Helper;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
+use App\Inv\Repositories\Models\FinanceModel;
 use Illuminate\Http\Request;
 use App\Helpers\FileHelper;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 
 class CibilReportController extends Controller
-{
+{   
+    protected $selectedAppData = [];
+
 	  public function __construct(FileHelper $file_helper, InvLmsRepoInterface $lms_repo){
 		 $this->fileHelper = $file_helper;
 		 $this->lmsRepo = $lms_repo;
@@ -91,59 +94,102 @@ class CibilReportController extends Controller
     }
 
     public function saveCibilData() {
-      $businessData = $this->lmsRepo->getAllBusinessData();
-      $hd = $this->_getHDData($businessData);
-      $bs = $this->_getBSData($businessData);
-      $as = $this->_getASData($businessData);
-      $rs = $this->_getRSData($businessData);
-      $cr = $this->_getCRData($businessData);
-      $gs = $this->_getGSData($businessData);
-      $ss = $this->_getSSData($businessData);
-      $cd = $this->_getCDData($businessData);
-      $ts = $this->_getTSData($businessData);
-      $insertArr = array_merge($hd,$bs,$as,$rs,$cr,$gs,$ss,$cd,$ts);
-      $isInserted = $this->lmsRepo->insertCibilUserData($insertArr);
-      return $insertArr;
+      $response = array(
+        'status' => 'failure',
+        'message' => 'Request method not allowed to execute the script.',
+      );
+      $whereCond = ['status' => 2, 'is_posted_in_cibil' => 0];
+      $businessData = $this->lmsRepo->getAllBusinessData($whereCond);
+      $batch_no = _getRand(15);
+      $cibilReportData['hd'] = $this->_getHDData();
+      $cibilReportData['ts'] = $this->_getTSData();
+      foreach ($businessData as $key => $appBusiness) {
+          $appId = $appBusiness->app->app_id;
+          $this->selectedAppData[] = $appId;
+          $cibilReportData['bs'] = $this->_getBSData($appBusiness);
+          $cibilReportData['as'] = $this->_getASData($appBusiness);
+          $cibilReportData['rs'] = $this->_getRSData($appBusiness);
+          $cibilReportData['cr'] = $this->_getCRData($appBusiness);
+          $cibilReportData['gs'] = $this->_getGSData($appBusiness);
+          $cibilReportData['ss'] = $this->_getSSData($appBusiness);
+          $cibilReportData['cd'] = $this->_getCDData($appBusiness);
+          dd($cibilReportData);
+          foreach ($cibilReportData as $segment => $segmentData) {
+            $finalCibilData[] = [
+              'ac_no' => $batch_no,
+              'segment_identifier' => $segment,
+              'segment_data' => json_encode($segmentData),
+              'created_at' => Carbon::now(),
+              'created_by' => Auth::user()->user_id,
+            ];
+          }
+          $cibilReportData = [];
+      }
+      try {
+        if (empty($finalCibilData)) {
+           $response['message'] =  'No Records are selected to Post in tally.';
+           return $response;
+        }
+        $res = $this->lmsRepo->insertCibilUserData($finalCibilData);
+      } catch (\Exception $e) {
+            $errorInfo  = $e->errorInfo;
+            $res = $errorInfo;
+      }
+      if ($res === true) {
+        $totalAppRecords = 0;
+        if (!empty($this->selectedAppData)) {
+          $totalAppRecords = \DB::update('update rta_app set is_posted_in_cibil = 1 where app_id in(' . implode(', ', $this->selectedAppData) . ')');
+        }
+        $recordsTobeInserted = count($finalCibilData);
+        if (empty($totalAppRecords)) {
+          $response['message'] =  'Some error occured. No Record can be posted in Cibil.';
+        }else{
+          $response['status'] = 'success';
+          $batchData = [
+            'batch_no' => $batch_no,
+            'record_cnt' => $recordsTobeInserted,
+            'created_at' => date('Y-m-d H:i:s'),
+          ];
+          $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
+          $response['message'] =  ($recordsTobeInserted > 1 ? $recordsTobeInserted .' Records inserted successfully' : '1 Record inserted.');
+        }
+    }else{
+      $response['message'] =  ($res[2] ?? 'DB error occured.').' No Record can be posted in Cibil.';
     }
 
-    private function _getHDData($businessData) {
+      return $response;
+    }
+
+    private function _getHDData() {
       $data = [
         'Segment Identifier' => 'HD',
-        'Member ID' => NULL,
-        'Previous Member ID' => NULL,
-        'Date of Creation & Certification of Input File' => NULL,
-        'Reporting / Cycle Date' => NULL,
+        'Member ID' => config('common.cibil_report.MEMBER_ID'),
+        'Previous Member ID' => config('common.cibil_report.PREV_MEMBER_ID'),
+        'Date of Creation & Certification of Input File' => Carbon::now()->format('dmY'),
+        'Reporting / Cycle Date' => Carbon::now()->format('dmY'),
         'Information Type' => '01',
         'Filler' => NULL,
       ];
-      $hd[] = [
-        'ac_no' => '',
-        'segment_identifier' => $data['Segment Identifier'],
-        'segment_data' => json_encode($data),
-        'created_at' => Carbon::now(),
-        'created_by' => Auth::user()->user_id,
-      ];
-      return $hd;
+      return $data;
     }
 
-    private function _getBSData($businessData) {
-      foreach ($businessData as $bs_val) {
+    private function _getBSData($appBusiness) {
           $data = [
             'Segment Identifier' => 'BS',
-            'Member Branch Code' => NULL,
-            'Previous Member Branch Code' => NULL,
-            'Borrower’s Name' => $bs_val->biz_entity_name,
-            'Borrower Short Name' => explode(' ', $bs_val->biz_entity_name)[0] ?? NULL,
+            'Member Branch Code' => config('common.cibil_report.MEMBER_BRANCH_CODE'),
+            'Previous Member Branch Code' => config('common.cibil_report.PREV_MEMBER_BRANCH_CODE'),
+            'Borrower’s Name' => $appBusiness->biz_entity_name,
+            'Borrower Short Name' => explode(' ', $appBusiness->biz_entity_name)[0] ?? NULL,
             'Company Registration Number' => NULL,
-            'Date of Incorporation' => $bs_val->date_of_in_corp,
-            'PAN' => $bs_val->pan->pan_gst_hash ?? NULL,
-            'CIN' => $bs_val->cin->cin ?? NULL,
+            'Date of Incorporation' => $appBusiness->date_of_in_corp,
+            'PAN' => $appBusiness->pan->pan_gst_hash ?? NULL,
+            'CIN' => $appBusiness->cin->cin ?? NULL,
             'TIN' => NULL,
             'Service Tax #' => NULL,
             'Other ID' => NULL,
-            'Borrower’s Legal Constitution' => $bs_val->constitution->name,
-            'Business Category' => NULL,
-            'Business/ Industry Type' => $bs_val->industryType->name,
+            'Borrower’s Legal Constitution' => $appBusiness->constitution->name,
+            'Business Category' => config('common.MSMETYPE')[$appBusiness->msme_type],
+            'Business/ Industry Type' => $appBusiness->industryType->name,
             'Class of Activity 1' => NULL,
             'Class of Activity 2' => NULL,
             'Class of Activity 3' => NULL,
@@ -157,18 +203,10 @@ class CibilReportController extends Controller
             'Credit Rating Expiry Date' => NULL,
             'Filler' => NULL,
         ];
-        $bs[] = [
-          'ac_no' => '',
-          'segment_identifier' => $data['Segment Identifier'],
-          'segment_data' => json_encode($data),
-          'created_at' => Carbon::now(),
-          'created_by' => Auth::user()->user_id,
-        ];
-      }
-      return $bs;
+        return $data;
     }
 
-    private function _getASData($businessData) {
+    private function _getASData($appBusiness) {
         $addressType = [
               '0' =>'GST Address',
               '1' =>'Communication',
@@ -178,47 +216,37 @@ class CibilReportController extends Controller
               '5' =>'Mgmt Address',
               '6' =>'Additional Address',
         ];
-        foreach ($businessData as $as_val) {
-            $addr_data = $as_val->registeredAddress;
-            $users = $as_val->users;
-            $fullAddress = NULL;
-            if (isset($addr_data->addr_1)) {
-              $fullAddress = $addr_data->addr_1 . ' ' . $addr_data->addr_2. ' ' . $addr_data->city_name. ' ' .($addr_data->state->name ?? NULL) . ' ' . $addr_data->pin_code;
-            }
-            $data = [
-              'Segment Identifier' => 'AS',
-              'Borrower Office Location Type' => $addressType[$addr_data->address_type ?? 0] ?? NULL,
-              'Borrower Office DUNS Number' => '999999999',
-              'Address Line 1' => $fullAddress,
-              'Address Line 2' => NULL,
-              'Address Line 3' => NULL,
-              'City/Town' => $addr_data->city_name ?? NULL,
-              'District' => NULL,
-              'State/Union Territory' => $addr_data->state->name ?? NULL,
-              'Pin Code' => $addr_data->pin_code ?? NULL,
-              'Country' => NULL,
-              'Mobile Number(s)' => $users->mobile_no ?? NULL,
-              'Telephone Area Code' => NULL,
-              'Telephone Number(s)' => NULL,
-              'Fax Area Code' => NULL,
-              'Fax Number(s)' => NULL,
-              'Filler' => NULL,
-          ];
-          $as[] = [
-            'ac_no' => '',
-            'segment_identifier' => $data['Segment Identifier'],
-            'segment_data' => json_encode($data),
-            'created_at' => Carbon::now(),
-            'created_by' => Auth::user()->user_id,
-          ];
+        $addr_data = $appBusiness->registeredAddress;
+        $users = $appBusiness->users;
+        $fullAddress = NULL;
+        if (isset($addr_data->addr_1)) {
+          $fullAddress = $addr_data->addr_1 . ' ' . $addr_data->addr_2. ' ' . $addr_data->city_name. ' ' .($addr_data->state->name ?? NULL) . ' ' . $addr_data->pin_code;
         }
-        return $as;
+        $data = [
+          'Segment Identifier' => 'AS',
+          'Borrower Office Location Type' => $addressType[$addr_data->address_type ?? 0] ?? NULL,
+          'Borrower Office DUNS Number' => '999999999',
+          'Address Line 1' => $fullAddress,
+          'Address Line 2' => NULL,
+          'Address Line 3' => NULL,
+          'City/Town' => $addr_data->city_name ?? NULL,
+          'District' => NULL,
+          'State/Union Territory' => $addr_data->state->name ?? NULL,
+          'Pin Code' => $addr_data->pin_code ?? NULL,
+          'Country' => NULL,
+          'Mobile Number(s)' => $users->mobile_no ?? NULL,
+          'Telephone Area Code' => NULL,
+          'Telephone Number(s)' => NULL,
+          'Fax Area Code' => NULL,
+          'Fax Number(s)' => NULL,
+          'Filler' => NULL,
+      ];
+      return $data;
     }
 
-    private function _getRSData($businessData) {
-      foreach ($businessData as $rs_val) {
-        $users = $rs_val->users;
-        $addr_data = $rs_val->registeredAddress;
+    private function _getRSData($appBusiness) {
+        $users = $appBusiness->users;
+        $addr_data = $appBusiness->registeredAddress;
         $fullAddress = NULL;
         if (isset($addr_data->addr_1)) {
            $fullAddress = $addr_data->addr_1 . ' ' . $addr_data->addr_2. ' ' . $addr_data->city_name. ' ' .($addr_data->state->name ?? NULL) . ' ' . $addr_data->pin_code;
@@ -227,23 +255,23 @@ class CibilReportController extends Controller
           'Segment Identifier' => 'RS',
           'Relationship DUNS Number' => '999999999',
           'Related Type' => NULL,
-          'Relationship' => NULL,
-          'Business Entity Name' => $rs_val->biz_entity_name,
-          'Business Category' => NULL,
-          'Business / Industry Type' => $rs_val->industryType->name,
+          'Relationship' => $appBusiness->constitution->name,
+          'Business Entity Name' => $appBusiness->biz_entity_name,
+          'Business Category' => $appBusiness->msme_type,//config('common.MSMETYPE')[$appBusiness->msme_type],
+          'Business / Industry Type' => $appBusiness->industryType->name,
           'Individual Name Prefix' => NULL,
           'Full Name' => $users->f_name . ' '. $users->m_name . ' ' . $users->l_name,
           'Gender' => NULL,
           'Company Registration Number' => NULL,
-          'Date of Incorporation' => $rs_val->date_of_in_corp,
+          'Date of Incorporation' => $appBusiness->date_of_in_corp,
           'Date of Birth' => NULL,
-          'PAN' => $rs_val->pan->pan_gst_hash ?? NULL,
+          'PAN' => $appBusiness->pan->pan_gst_hash ?? NULL,
           'Voter ID' => NULL,
           'Passport Number' => NULL,
           'Driving Licence ID' => NULL,
           'UID' => NULL,
           'Ration Card No' => NULL,
-          'CIN' => $rs_val->cin->cin ?? NULL,
+          'CIN' => $appBusiness->cin->cin ?? NULL,
           'DIN' => NULL,
           'TIN' => NULL,
           'Service Tax #' => NULL,
@@ -264,36 +292,28 @@ class CibilReportController extends Controller
           'Fax Area Code' => NULL,
           'Filler' => NULL,
         ];
-        $rs[] = [
-          'ac_no' => '',
-          'segment_identifier' => $data['Segment Identifier'],
-          'segment_data' => json_encode($data),
-          'created_at' => Carbon::now(),
-          'created_by' => Auth::user()->user_id,
-        ];
-      }
-      return $rs;
+        return $data;
     }
 
 
-    private function _getCRData($businessData) {
-      foreach ($businessData as $cr_val) { 
+    private function _getCRData($appBusiness) {
+        $user = $appBusiness->users;
         $data = [
             'Segment Identifier' => 'CR',
-            'Account Number' => NULL,
+            'Account Number' => Helper::formatIdWithPrefix($user->user_id, 'CUSTID'),
             'Previous Account Number' => NULL,
             'Facility / Loan Activation / Sanction Date' => NULL,
             'Sanctioned Amount/ Notional Amount of Contract' => NULL,
             'Currency Code' => 'INR',
-            'Credit Type' => NULL,
+            'Credit Type' => '0100',
             'Tenure / Weighted Average maturity period of Contracts' => NULL,
-            'Repayment Frequency' => NULL,
+            'Repayment Frequency' => '08',
             'Drawing Power' => NULL,
             'Current   Balance / Limit Utilized /Mark to Market' => NULL,
             'Notional Amount of Out-standing Restructured Contracts' => NULL,
             'Loan Expiry / Maturity Date' => NULL,
             'Loan Renewal Date' => NULL,
-            'Asset Classification/Days Past Due (DPD)' => NULL,
+            'Asset Classification/Days Past Due (DPD)' => 'Calculate',
             'Asset Classification Date' => NULL,
             'Amount Overdue / Limit Overdue' => NULL,
             'Overdue Bucket 01 ( 1 – 30 days)' => NULL,
@@ -313,7 +333,7 @@ class CibilReportController extends Controller
             'Asset based Security coverage' => NULL,
             'Guarantee Coverage' => NULL,
             'Bank Remark Code' => NULL,
-            'Wilful Default Status' => NULL,
+            'Wilful Default Status' => 'Calculate',
             'Date Classified as Wilful Default' => NULL,
             'Suit Filed Status' => NULL,
             'Suit Reference Number' => NULL,
@@ -325,89 +345,73 @@ class CibilReportController extends Controller
             'UFCE (Amount)' => NULL,
             'UFCE Date' => NULL,
         ];
-        $cr[] = [
-          'ac_no' => '',
-          'segment_identifier' => $data['Segment Identifier'],
-          'segment_data' => json_encode($data),
-          'created_at' => Carbon::now(),
-          'created_by' => Auth::user()->user_id,
-        ];
-      }
-      return $cr;
+        return $data;
     }
 
-    private function _getGSData($businessData) {
-      foreach ($businessData as $gs_val) {
+    private function _getGSData($appBusiness) {
+        $users = $appBusiness->users;
+        $addr_data = $appBusiness->registeredAddress;
+        $fullAddress = NULL;
+        if (isset($addr_data->addr_1)) {
+           $fullAddress = $addr_data->addr_1 . ' ' . $addr_data->addr_2. ' ' . $addr_data->city_name. ' ' .($addr_data->state->name ?? NULL) . ' ' . $addr_data->pin_code;
+        }
+
         $data =  [
             'Segment Identifier' => 'GS',
             'Guarantor DUNS Number' => '999999999',
-            'Guarantor Type' => NULL,
-            'Business Category' => NULL,
-            'Business / Industry Type' => NULL,
-            'Guarantor Entity Name' => NULL,
+            'Guarantor Type' => 'Calculate',
+            'Business Category' => $appBusiness->msme_type,
+            'Business / Industry Type' => $appBusiness->industryType->name,
+            'Guarantor Entity Name' => $appBusiness->biz_entity_name,
             'Individual Name Prefix' => NULL,
-            'Full Name' => NULL,
+            'Full Name' => $users->f_name . ' '. $users->m_name . ' ' . $users->l_name,
             'Gender' => NULL,
             'Company Registration Number' => NULL,
-            'Date of Incorporation' => NULL,
+            'Date of Incorporation' => $appBusiness->date_of_in_corp,
             'Date of Birth' => NULL,
-            'PAN' => NULL,
+            'PAN' => $appBusiness->pan->pan_gst_hash ?? NULL,
             'Voter ID' => NULL,
             'Passport Number' => NULL,
             'Driving Licence ID' => NULL,
             'UID' => NULL,
             'Ration Card No' => NULL,
-            'CIN' => NULL,
+            'CIN' => $appBusiness->cin->cin ?? NULL,
             'DIN' => NULL,
             'TIN' => NULL,
             'Service Tax #' => NULL,
             'Other ID' => NULL,
-            'Address Line 1' => NULL,
+            'Address Line 1' => $fullAddress,
             'Address Line 2' => NULL,
             'Address Line 3' => NULL,
-            'City/Town' => NULL,
+            'City/Town' => $addr_data->city_name ?? NULL,
             'District' => NULL,
-            'State/Union Territory' => NULL,
-            'Pin Code' => NULL,
+            'State/Union Territory' => $addr_data->state->name ?? NULL,
+            'Pin Code' => $addr_data->pin_code ?? NULL,
             'Country' => NULL,
-            'Mobile Number(s)' => NULL,
+            'Mobile Number(s)' => $users->mobile_no ?? NULL,
             'Telephone Area Code' => NULL,
             'Telephone Number(s)' => NULL,
             'Fax Area Code' => NULL,
             'Fax Number(s)' => NULL,
             'Filler' => NULL,
         ];
-        $gs[] = [
-          'ac_no' => '',
-          'segment_identifier' => $data['Segment Identifier'],
-          'segment_data' => json_encode($data),
-          'created_at' => Carbon::now(),
-          'created_by' => Auth::user()->user_id,
-        ];
-      }
-      return $gs;
+        return $data;
     }
 
-     private function _getSSData($businessData) {    
+     private function _getSSData($appBusiness) {
+      $primarySecurity = $appBusiness->app->appPrgmOffer->offerPs;   
       $data = [
           'Segment Identifier' => 'SS',
-          'Value of Security' => NULL,
+          'Value of Security' => 'Calculate',
           'Currency Type' => 'INR',
           'Type of Security' => NULL,
           'Security Classification' => NULL,
           'Date of Valuation' => NULL,
           'Filler' => NULL,
       ];
-      $ss[] = [
-        'ac_no' => '',
-        'segment_identifier' => $data['Segment Identifier'],
-        'segment_data' => json_encode($data),
-        'created_at' => Carbon::now(),
-        'created_by' => Auth::user()->user_id,
-      ];
-      return $ss;
+      return $data;
     }
-    private function _getCDData($businessData) {
+    private function _getCDData($appBusiness) {
       $data = [
           'Segment Identifier' => 'CD',
           'Date of Dishonour' => NULL,
@@ -418,30 +422,16 @@ class CibilReportController extends Controller
           'Reason for Dishonour' => NULL,
           'Filler' => NULL,
       ];
-      $cd[] = [
-        'ac_no' => '',
-        'segment_identifier' => $data['Segment Identifier'],
-        'segment_data' => json_encode($data),
-        'created_at' => Carbon::now(),
-        'created_by' => Auth::user()->user_id,
-      ];
-      return $cd;
+      return $data;
     }
-    private function _getTSData($businessData) {
+    private function _getTSData() {
       $data = [
           'Segment Identifier' => 'TS',
           'Number of Borrower Segments' => NULL,
           'Number of Credit Facility Segments' => NULL,
           'Filler' => NULL,
       ];
-      $ts[] = [
-        'ac_no' => '',
-        'segment_identifier' => $data['Segment Identifier'],
-        'segment_data' => json_encode($data),
-        'created_at' => Carbon::now(),
-        'created_by' => Auth::user()->user_id,
-      ];
-      return $ts;
+      return $data;
     }
 
 }
