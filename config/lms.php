@@ -97,13 +97,15 @@ return [
         'RUNNING' => 0,
         'COMPLETED' => 1,
         'STOPPED' => 2,
-        'FAILED' => 3
+        'FAILED' => 3,
+        'WATING' => 4,
     ],
     'EOD_PROCESS_STATUS_LIST' => [
         0 => 'Running',
         1 => 'Completed',
         2 => 'Stopped',
         3 => 'Failed',
+        4 => 'WATING',
     ],
     'EOD_PROCESS_ROUTES' => [
         'update_bulk_invoice',

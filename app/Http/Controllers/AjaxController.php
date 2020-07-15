@@ -4517,6 +4517,17 @@ if ($err) {
         return response()->json(['status' => 0, 'message'=>'Eod detail missing! Please try again!']);
     }    
 
+    public function startEodSystem(Request $request){
+        $eod_process_id = $request->eod_process_id;
+
+        if($eod_process_id){
+            if(\App::make('App\Http\Controllers\Lms\EodProcessController')->startSystem($eod_process_id)){
+                return response()->json(['status' => 1, 'message'=>'System Start successfully!']);
+            }
+            return response()->json(['status' => 2, 'message'=>'System Start process failed!']);
+        }
+        return response()->json(['status' => 0, 'message'=>'Eod detail missing! Please try again!']);
+    }
 
     public function getAllCustomers(DataProviderInterface $dataProvider) {
         $usersList = $this->userRepo->getAllUsers();

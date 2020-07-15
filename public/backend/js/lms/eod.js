@@ -117,7 +117,7 @@ try {
 
         dateTime =  sDay + "-" + sMonth + "-" + sYear + " " + sHour + ":" + sMinute + " " + sAMPM;
         document.getElementById('current-date').innerHTML = dateTime;
-        display_c();
+       // display_c();
     }
     
     function padValue(value) {
@@ -134,7 +134,7 @@ try {
      
     function updateEodStatus() {
         if (messages.enable_process_start) {
-            parent.$('.isloader').show();
+            $('.isloader').show();
             $.ajax({
                 type: "POST",
                 url: messages.update_eod_batch_process_url,
@@ -147,17 +147,47 @@ try {
                     alert(res.message);
                     if(res.status == 1){
                         location.reload();
+                    }else{
+                        table.draw();
                     }
-                    table.draw();
-                    parent.$('.isloader').hide();
+                    $('.isloader').hide();
                 },
                 error: function (error) {
                     console.log(error);
-                    parent.$('.isloader').hide();
+                    $('.isloader').hide();
                 }
             }); 
         }
     }
+
+    function startSystem(){
+        if (!messages.enable_process_start) {
+            $('.isloader').show();
+            $.ajax({
+                type: "POST",
+                url: messages.start_system_url,
+                data: {'_token': messages.token},
+                cache: false,
+                async:false,
+                beforeSend: function( xhr ) {
+                },    
+                success: function (res) {  
+                    alert(res.message);
+                    if(res.status == 1){
+                        location.reload();
+                    }else{
+                        table.draw();
+                    }
+                    $('.isloader').hide();
+                },
+                error: function (error) {
+                    console.log(error);
+                    $('.isloader').hide();
+                }
+            }); 
+        }
+    }
+
     display_c();
 } catch (e) {
     if (typeof console !== 'undefined') {

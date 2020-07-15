@@ -32,7 +32,11 @@
                                     </div>
                                     <div class="col-6">
                                         <div class="form-group">
-                                            <input type="button" name="btn_process"  class="pull-right btn btn-primary ml-2 btn-sm" {{ $enable_process_start ? '' : 'disabled' }} value="{{ ($status == 3) ? 'Re-':'' }} Run Eod Process" {{ $enable_process_start ? 'onclick=updateEodStatus()' : '' }}>
+                                            @if($status == 4)
+                                                <input type="button" name="btn_process"  class="pull-right btn btn-primary ml-2 btn-sm"  value="Start System" onclick=startSystem()>
+                                            @else
+                                                <input type="button" name="btn_process"  class="pull-right btn btn-primary ml-2 btn-sm" {{ $enable_process_start ? '' : 'disabled' }} value="{{ ($status == 3) ? 'Re-':'' }} Run Eod Process" {{ $enable_process_start ? 'onclick=updateEodStatus()' : '' }}>
+                                            @endif
                                         </div>
                                     </div>                                    
                                 </div>
@@ -81,13 +85,14 @@
 var messages = {
     token : "{{ csrf_token() }}",
     sys_start_date: "{{ $sys_start_date }}",
-    sys_end_date:"{{ $sys_end_date }}",
+    sys_end_date:"{{ $sys_end_date ?? $sys_start_date }}",
     eod_list_url: "{{ route('get_eod_list') }}",
     eod_process_list_url: "{{ route('get_eod_process_list') }}",
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     enable_process_start:"{{ $enable_process_start }}",
     real_sys_start_date: "{{ $created_at }}",
     status:"{{ $status }}",
+    start_system_url : "{{ route('start_eod_system',['eod_process_id'=>$eod_process_id]) }}",
     update_eod_batch_process_url : "{{ route('update_eod_batch_process',['eod_process_id'=>$eod_process_id]) }}",
 };    
 </script>

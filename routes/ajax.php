@@ -1118,6 +1118,11 @@ Route::group(
         'as' => 'get_eod_process_list',
         'uses' => 'AjaxController@getEodProcessList'
     ]);
+    
+    Route::post('start_system',[
+        'as' => 'start_eod_system',
+        'uses' => 'AjaxController@startEodSystem',
+    ]);
 
     Route::post('check-bank-acc-exist',[
         'as' => 'check_bank_acc_exist',
