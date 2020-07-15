@@ -1,18 +1,14 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 @php 
-$finalDisburseAmt = 0;
-@endphp
-@foreach($data as $customer)
-
-	@php 
-		$finalDisburseAmt += round($customer->refund_amount, 2);
-		$cust[$customer->payment->user_id] = 1;
-	@endphp
-
-
-@endforeach
-@php
+	$finalDisburseAmt = 0;
+	$cust = [];
+	if(isset($data)){
+		foreach($data as $customer){
+			$finalDisburseAmt += round($customer->refund_amount, 2);
+			$cust[$customer->payment->user_id] = 1;
+		}
+	}
 	$totalCustomer = count($cust);
 @endphp
 <div class="row">
@@ -36,7 +32,7 @@ $finalDisburseAmt = 0;
 <div class="row">
 	<div class="col-6">
 		<form id="manualDisburse" method="POST" action="{{ Route('refund_offline') }}" target="_top">
-			<input type="hidden" value="{{ $transIds }}" name="transaction_ids" id="transaction_ids">
+			<input type="hidden" value="{{ $transIds ?? '' }}" name="transaction_ids" id="transaction_ids">
 			@csrf
 			<div class="col-6">
 				<div class="form-group">

@@ -178,9 +178,9 @@ class RefundController extends Controller
             $reqIds = $request->get('transaction_ids');
             $record = array_filter(explode(",",$reqIds));
             if(empty($record))  {
-                Session::flash('message', trans('backend_messages.noSelectedCustomer'));
+                Session::flash('error', trans('backend_messages.noSelectedCustomer'));
                 Session::flash('operation_status', 1);
-                return view('lms.common.refund_request');
+                return view('lms.refund.refund_confirm');
             }
             $allrecords = array_unique($record);
             $allrecords = array_map('intval', $allrecords);
@@ -467,7 +467,7 @@ class RefundController extends Controller
             $this->lmsRepo->updateAprvlRqst($apiLogData,$refund_req_id);
             $this->finalRefundTransactions($refund_req_id, $actual_refund_date);
     
-            Session::flash('message',trans('backend_messages.disburseMarked'));
+            Session::flash('message',trans('backend_messages.refundedMarked'));
             return redirect()->route('lms_refund_refunded');
         }catch(Exception $exception){
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
