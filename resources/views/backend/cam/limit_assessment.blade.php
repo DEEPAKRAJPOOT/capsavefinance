@@ -44,9 +44,9 @@
                                     <label class="mb-21">Select Product Type</label>
                                     <select class="form-control" name="product_id" id="product_id">
                                         <option value="">Select Product</option>
-                                        <option value="1" {{(old('product_id') == 1)?'selected': ''}}>Supply Chain</option>
-                                        <option value="2" {{(old('product_id') == 2)?'selected': ''}}>Term Loan</option>
-                                        <option value="3" {{(old('product_id') == 3)?'selected': ''}}>Leasing</option>
+                                        @foreach($product_types as $key => $product_type)
+                                        <option value="{{$key}}" {{(old('product_id') == $key)?'selected': ''}}>{{$product_type}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
