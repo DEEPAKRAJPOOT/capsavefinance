@@ -441,4 +441,10 @@ class Program extends BaseModel {
     public static function getProgramAnchors() {
         return self::groupBy('anchor_id')->pluck('anchor_id')->toArray();
     }
+    
+    public static function getProgramByWhereCond($where)
+    {
+        $result = self::where($where)->get(); 
+        return isset($result[0]) ? $result : [];
+    }    
 }

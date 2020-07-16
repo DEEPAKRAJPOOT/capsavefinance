@@ -2371,6 +2371,25 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getInvoiceUtilizedAmount($attr)
     {
         return BizInvoice::getInvoiceUtilizedAmount($attr);
+    }
+
+    public function getParentsPrograms($program_id, &$prgmIds=[])
+    {
+        $where=[];
+        $where['prgm_id'] = $program_id;
+        $result =  Program::getProgramByWhereCond($where); 
+        $children = array();
+        $i = 0;
+        if (count($result) > 0) {
+            foreach($result as $row) {
+                $children[$i] = array();
+                $children[$i]['prgm_id'] = $row->prgm_id;
+                $prgmIds[] = $row->prgm_id;                
+                $children[$i]['children'] = $this->getParentsPrograms($row->copied_prgm_id, $prgmIds);
+                $i++;            
+            }
+        }
+        return $prgmIds;        
     }    
 }
 

@@ -1705,10 +1705,15 @@ class Helper extends PaypalHelper
         return $res;
      }
      
-     public static function getPrgmBalLimit($prgmId)
+     public static function getPrgmBalLimit($programId)
      {
-        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');        
-        $utilizedLimit = $appRepo->getPrgmBalLimit($prgmId);
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');  
+        
+        $programs = $appRepo->getParentsPrograms($programId);        
+        $utilizedLimit = 0;
+        foreach($programs as $prgmId) {
+            $utilizedLimit += $appRepo->getPrgmBalLimit($prgmId);
+        }
         return $utilizedLimit;
      }
      
@@ -1744,5 +1749,12 @@ class Helper extends PaypalHelper
             }       
         }
         return $isProgamEditAllowed;
+     }
+     
+     public static function getParentsPrograms($prgmId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');        
+        $programs = $appRepo->getParentsPrograms($prgmId);
+        return $programs;
      }
 }
