@@ -238,6 +238,7 @@ class EodProcessController extends Controller
         } else {
             $status = config('lms.EOD_FAIL_STATUS');
         }
+        $status = config('lms.EOD_PASS_STATUS');
         \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), $status, $eod_process_id);
         return $result;
     }
@@ -305,6 +306,7 @@ class EodProcessController extends Controller
         } else {
             $status = config('lms.EOD_FAIL_STATUS');
         }
+        $status = config('lms.EOD_PASS_STATUS');
         \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), $status, $eod_process_id);
         return $result;
     }
@@ -318,6 +320,7 @@ class EodProcessController extends Controller
         } else {
             $status = config('lms.EOD_FAIL_STATUS');
         }
+        $status = config('lms.EOD_PASS_STATUS');
         \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.is_running_trans_settled'), $status, $eod_process_id);
         return $result;
     }
