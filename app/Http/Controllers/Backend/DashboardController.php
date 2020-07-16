@@ -81,7 +81,7 @@ class DashboardController extends Controller
        $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $request, $getRespWithoutParse);
        $transId = NULL;
        if ($getRespWithoutParse) {
-           $transId = $result[0];
+           $transId = $result[1];
        }else{
             if (!empty($result) && $result['status'] == 'success') {
              $result = $result['result']; 
@@ -110,8 +110,8 @@ class DashboardController extends Controller
             ), 
             'request' => array ( 
                 617 => array ( 
-                    'RefNo' => 'CAPVA0000003', 
-                    'Amount' => 936.04688, 
+                    'RefNo' => _getRand('16'), 
+                    'Amount' => number_format('936.04366', 2, '.', ''), 
                     'Debit_Acct_No' => '21480259346', 
                     'Debit_Acct_Name' => 'Debit Account Name', 
                     'Debit_Mobile' => '1234567890', 
@@ -121,7 +121,7 @@ class DashboardController extends Controller
                     'Ben_BankName' => 'State Bank Of India', 
                     'Ben_Email' => 'ravi.awasthi93@gmail.com', 
                     'Ben_Mobile' => '8595445454', 
-                    'Mode_of_Pay' => 'IFT', 
+                    'Mode_of_Pay' => 'NEFT', 
                     'Nature_of_Pay' => 'MPYMT', 
                     'Remarks' => 'No remarks it is testing purpose', 
                 ), 
@@ -130,7 +130,7 @@ class DashboardController extends Controller
        return $params;
     }
 
-     private function getIdfcEnquiryRequest($transId = null) {
+     private function getIdfcEnquiryRequest($transId = '2RFPR57599AE0X2TFJ') {
        if (empty($transId)) {
           $transId = _getRand('18');
        }

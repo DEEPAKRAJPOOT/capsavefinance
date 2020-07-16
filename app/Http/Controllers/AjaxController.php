@@ -4653,4 +4653,24 @@ if ($err) {
         return response()->json( $response );
    }
 
+    public function getCibilReportLms(DataProviderInterface $dataProvider) {
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('Y-m-d 00:00:00');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d 23:59:59');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'search_keyword' => $this->request->get('search_keyword'),
+            'type' => 'excel',
+        ];
+        $cibilReports = $this->lmsRepo->getCibilReports();
+        $reportsList = $dataProvider->getCibilReportLms($this->request, $cibilReports);
+        $reportsList     = $reportsList->getData(true);
+        $reportsList['excelUrl'] = route('download_lms_cibil_reports', $condArr);
+        $condArr['type']  = 'pdf';
+        $reportsList['pdfUrl'] = route('download_lms_cibil_reports', $condArr);
+        return new JsonResponse($reportsList);
+    }
+
 }

@@ -6681,4 +6681,30 @@ class DataRenderer implements DataProviderInterface
             // })
             ->make(true);
     } 
+
+    public function getCibilReportLms(Request $request, $data) {
+       return DataTables::of($data)
+           ->rawColumns(['pull_status'])
+           ->addColumn('pull_status',  function ($user) {
+                   $pull_status = '<a href="'.route('download_lms_cibil_reports', ['type'=>'excel', 'batch_no' => $user->batch_no]).'" class="btn btn-success btn-sm">Download Report</a>';
+                   return $pull_status;
+           })
+           ->filter(function ($query) use ($request) {
+                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                    $query->where(function ($query) use ($request) {
+                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                        $query->WhereBetween('created_at', [$from_date, $to_date]);
+                    });
+                }
+                if($request->get('search_keyword')!= ''){
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('batch_no', 'like',"%$search_keyword%");
+                    });
+                }
+              
+            })
+           ->make(true);
+   }   
 }

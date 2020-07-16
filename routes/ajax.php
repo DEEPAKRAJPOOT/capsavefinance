@@ -1179,4 +1179,9 @@ Route::group(
         'uses' => 'AjaxController@checkBankAccWithIfscExist'
     ]);
 
+    Route::post('/get_cibil_report_lms', [
+        'as' => 'get_cibil_report_lms',
+        'uses' => 'AjaxController@getCibilReportLms',
+    ]);
+
 });
