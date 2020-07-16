@@ -3493,8 +3493,8 @@ if ($err) {
         $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
         $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
         $utilizedLimit = 0;
-        if ($prgm_data && $prgm_data->copied_prgm_id) {     
-            $utilizedLimit = $this->application->getPrgmBalLimit($prgm_data->copied_prgm_id);
+        if ($prgm_data && $prgm_data->copied_prgm_id) {            
+            $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
         }
         return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
     }
