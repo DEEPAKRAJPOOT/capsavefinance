@@ -68,7 +68,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="form-group">
+                                            <div class="form-group INR">
                                                 <label for="txtCreditPeriod">
                                                     {{ trans('backend.add_program.anchor_limit') }}
                                                     <span class="error_message_label">*</span> </label>
@@ -89,7 +89,7 @@
                                             <div class="form-group">
                                                 <label for="sub_industry_id">
                                                     {{ trans('backend.add_program.sub_industry') }}
-                                                    <span class="error_message_label"></span> </label>
+                                                    <span class="error_message_label hide"></span> </label>
                                                 {!! Form::select('sub_industry_id', [''=>trans('backend.please_select')], '', ['class'=>'form-control sub_industry']) !!}
                                                 {!! $errors->first('sub_industry_id', '<span class="error">:message</span>') !!}
                                             </div>

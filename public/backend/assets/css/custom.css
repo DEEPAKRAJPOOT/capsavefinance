@@ -4,6 +4,7 @@ body {
 
 label {
 	font-weight: bold;
+        font-size: 13px;
 }
 
 label.fnt {
@@ -164,7 +165,9 @@ table.remove-tr-bg tbody tr {
 	background: #fff;
 	border-radius: 5px;
 	padding: 0.5rem 1.5rem;
-}
+	display: flex;
+	align-items: center;
+	}
 
 .content-header hr {
 	border-top: 1px solid #ddd;
@@ -336,7 +339,7 @@ table.remove-tr-bg tbody tr {
     color: #ffffff !important;
     font-size: 14px;
 }
-
+.verify-owner-no i{line-height: 26px;}
 .INR .verify-owner-no {
 	left: 0;
 	right: auto;
@@ -823,7 +826,7 @@ ul.form-row-inline .li-row {
 
 select.form-control {
 	color: #495057;
-	font-size: 15px;
+	font-size: 13px;
 	letter-spacing: 1px;
 }
 
@@ -839,11 +842,12 @@ select.form-control {
 }
 
 .table.overview-table .btn {
-	padding: 0.1rem .5rem;
-	vertical-align: top;
-	line-height: 20px;
-	font-size: 13px;
-        margin: 0 3px;
+    padding: .4rem .4rem;
+    vertical-align: top;
+    line-height: 20px;
+    font-size: 13px;
+    margin: 0 2px;
+    min-width: 30px;
 }
 
 .btn-success {
@@ -1250,10 +1254,11 @@ span.multiselect-native-select select {
 }
 
 .form-control {
-	background: #fff;
-	box-shadow: 0 1px 1px 2px #f5f5f5;
-	border-radius: 7px;
-	border: none;
+    background: #fff;
+    box-shadow: 0 1px 1px 2px #f5f5f5;
+    border-radius: 7px;
+    border: none;
+    font-size: 13px !important;
 }
 
 .align-middle {
@@ -1303,7 +1308,7 @@ span.multiselect-native-select select {
 
 /* Custom css add */
 
-table tr td{position:relative;}
+table tr td{position:relative; padding: .5rem !important;}
 .sub-heading{background:#19c38f;}
 .sub-heading td{color:#fff}
 .add-more{position:absolute;right:-21px;top:12px;font-size:19px;cursor:pointer;}
@@ -1430,6 +1435,17 @@ ul.custom-tab li a:hover {color: #ffffff !important;border-color: 0 !important;b
 ul.custom-tab li a:focus {color: #fff !important;border-color: 0 !important;}
 ul.custom-tab li a.active {color: #ffffff !important;border-color:0 !important;background: #138864 !important;}
 
+.table tr td:last-child {
+   white-space: nowrap;
+}
+
+.modal-body {
+    font-size: 13px;
+}
+
 ul.custom-check-label{display:flex;justify-content:space-between;padding:0;}
 ul.custom-check-label li{list-style:none;}
 ul.custom-check-label li label{padding:0;font-weight: 400;}
+
+/*15/07/2020 Add Css*/
+a.btn.btn-success.btn-sm {color: #fff; cursor: pointer;} 

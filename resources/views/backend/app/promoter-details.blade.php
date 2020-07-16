@@ -276,7 +276,7 @@
                                              
                                             </div>
                                         </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="form-group" >
                                             <label class="d-block">&nbsp;</label> 
                                             <a data-toggle="modal" id="pMobileVeriView{{isset($row->first_name) ? $i : '1'}}" data-target="#modalPromoter7" data-height="400px" data-width="100%" accesskey="" data-url ="{{ route('mobile_verify',['type' => 7,'ownerid' => $row->biz_owner_id]) }}" style="display:{{isset($main[$j]['mobileNo']->mobile) ? 'inline' : 'none'}}"> <button class="btn-upload btn-sm" type="button" title="View Details (Verify without OTP)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="7"> <i class="fa fa-eye"></i></button></a>
@@ -300,7 +300,7 @@
                                                 
                                             </div>
                                       </div>  
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                          <div class="form-group" id="pOtpVeriView{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['mobileOtpNo']->request_id) ? 'inline' : 'none'}}">
                                              <label class="d-block" >Verified  OTP</label> 
                                              <a data-toggle="modal"  data-target="#modalPromoter8" data-height="400px" data-width="100%" accesskey=""data-url ="{{route('mobile_otp_view',['type'=> 8,'ownerid' => $row->biz_owner_id ])}}"> <button class="btn-upload btn-sm" type="button" title="View Detail (Verify with OTP)" data-id="{{isset($row->first_name) ? $i : '1'}}" data-type="8"> <i class="fa fa-eye"></i></button></a>
