@@ -722,7 +722,7 @@ class LeadController extends Controller {
     public function saveManualAnchorLead(Request $request){
        try {
             $arrAnchorVal = $request->all();    
-//            dd($arrAnchorVal);            
+        //    dd($arrAnchorVal);            
                             
             if (!empty($arrAnchorVal['assigned_anchor'])){
                 $anchorId = $arrAnchorVal['assigned_anchor'];
@@ -739,6 +739,7 @@ class LeadController extends Controller {
             $whereCond[] = ['anchor_id', '>', '0'];
             //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+            // dd($anchUserData);
             if (!isset($anchUserData[0])) {  
                 $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
                 $token = md5($hashval);
@@ -749,7 +750,7 @@ class LeadController extends Controller {
 //                    'pan_no' => $arrAnchorVal['pan_no'],
                     'email' => trim($arrAnchorVal['email']),
                     'phone' => $arrAnchorVal['phone'],
-                    'user_type' => $arrAnchorVal['anchor_user_type'],
+                    'user_type' => isset($arrAnchorVal['anchor_user_type']) ? $arrAnchorVal['anchor_user_type'] : null,
                     'is_registered'=>0,
                     'registered_type'=>0,
                     'created_by' => Auth::user()->user_id,
