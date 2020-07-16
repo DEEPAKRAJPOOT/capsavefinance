@@ -292,7 +292,7 @@ class ProgramController extends Controller {
             //$subPrgms = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $parent_program_id], ['prgm_id'])->pluck('prgm_id');
             //$prgmIds = $subPrgms ? $subPrgms->toArray() : [];            
             //$utilizedLimit = $this->appRepo->getPrgmBalLimit([$copied_prgm_id,$program_id]); 
-            //$utilizedLimit = \Helpers::getPrgmBalLimit($program_id);
+            $utilizedLimit = \Helpers::getPrgmBalLimit($program_id);
             $remaningAmount = 0;
             if (isset($programData->anchor_limit)) {
                 $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal; //- $utilizedLimit;
