@@ -258,7 +258,7 @@ class LeadController extends Controller {
             $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
             
              $dataArr = []; 
-             $dataArr['from_id'] = $fromUserId;     //Auth::user()->user_id;
+             $dataArr['from_id'] = $fromUserId ? $fromUserId : "";     //Auth::user()->user_id;
              $dataArr['to_id'] = Auth::user()->user_id;
              $dataArr['role_id'] = null;  //$roleData->id;
              $dataArr['assigned_user_id'] = $user_id;
@@ -467,26 +467,12 @@ class LeadController extends Controller {
             $arrAnchLeadData = [];
             $arrUpdateAnchor = [];
             foreach ($rowData as $key => $value) {
-                
-                //$anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
-                //if(!empty($value) && !$anchUserInfo){            
-            if (!empty($request->post('assigned_anchor'))){
-                $anchorId = $request->post('assigned_anchor');
-            } else {
-                $anchorId = Auth::user()->anchor_id;
-            }
-            
-            $whereCond=[];
-            $whereCond[] = ['email', '=', trim($value[3])];     
-            $whereCond[] = ['anchor_id', '=', $anchorId];
-            $whereCond[] = ['anchor_id', '>', '0'];
-            //$whereCond[] = ['is_registered', '!=', '1'];
-            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
-            if (!empty(trim($value[3])) && !isset($anchUserData[0])) {
                 if ($value && (empty($value[0]) || empty($value[1]) || empty($value[2]) || empty($value[3]) || empty($value[4]) || empty($value[5]) )) {
                     Session::flash('message', 'Please fill the correct details.');
                     return redirect()->back();                     
                 }
+                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
+                if(!empty($value) && !$anchUserInfo){
 
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
@@ -507,7 +493,7 @@ class LeadController extends Controller {
                     'is_registered'=>0,
                     'registered_type'=>1,
                     'token' => $token,
-                    'anchor_id' => $anchorId
+                    // 'anchor_id' => $anchorId
                 ];
 
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
@@ -648,7 +634,6 @@ class LeadController extends Controller {
             $anchId=(int)$anchId;
             $arrAnchorData = [
                 'comp_name' => $arrAnchorVal['comp_name'],
-                'comp_email' => $arrAnchorVal['email'],
                 'sales_user_id' => $arrAnchorVal['assigned_sale_mgr'],
                 'comp_phone' => $arrAnchorVal['phone'],
                 'comp_addr' => $arrAnchorVal['comp_addr'],
@@ -661,7 +646,6 @@ class LeadController extends Controller {
             $arrAnchorUserData = [
                 'f_name' => $arrAnchorVal['employee'],
                 'biz_name' => $arrAnchorData['comp_name'],
-                'email' => $arrAnchorData['comp_email'],
                 'mobile_no' => $arrAnchorData['comp_phone'],
             ];
             $Updateanchorinfo = $this->userRepo->updateUser($arrAnchorUserData, (int) $anchorInfo->user_id);
@@ -722,7 +706,7 @@ class LeadController extends Controller {
     public function saveManualAnchorLead(Request $request){
        try {
             $arrAnchorVal = $request->all();    
-        //    dd($arrAnchorVal);            
+//            dd($arrAnchorVal);            
                             
             if (!empty($arrAnchorVal['assigned_anchor'])){
                 $anchorId = $arrAnchorVal['assigned_anchor'];
@@ -739,7 +723,6 @@ class LeadController extends Controller {
             $whereCond[] = ['anchor_id', '>', '0'];
             //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
-            // dd($anchUserData);
             if (!isset($anchUserData[0])) {  
                 $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
                 $token = md5($hashval);
@@ -750,7 +733,7 @@ class LeadController extends Controller {
 //                    'pan_no' => $arrAnchorVal['pan_no'],
                     'email' => trim($arrAnchorVal['email']),
                     'phone' => $arrAnchorVal['phone'],
-                    'user_type' => isset($arrAnchorVal['anchor_user_type']) ? $arrAnchorVal['anchor_user_type'] : null,
+                    'user_type' => $arrAnchorVal['anchor_user_type'],
                     'is_registered'=>0,
                     'registered_type'=>0,
                     'created_by' => Auth::user()->user_id,
