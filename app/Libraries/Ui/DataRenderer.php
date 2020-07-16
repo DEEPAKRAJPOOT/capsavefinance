@@ -6543,15 +6543,15 @@ class DataRenderer implements DataProviderInterface
                       {
                            if( $row->payment->utr_no)
                            {
-                             $chk.= $row->payment->utr_no.'</br>';
+                             $chk.$row->payment->utr_no.",";
                            }
                             if( $row->payment->unr_no)
                            {
-                             $chk.= $row->payment->unr_no.'</br>';
+                             $chk.= $row->payment->unr_no.",";
                            }
                             if( $row->payment->cheque_no)
                            {
-                             $chk.= $row->payment->cheque_no.'</br>';
+                             $chk.= $row->payment->cheque_no.",";
                            }
                       }
                     return substr($chk,0,-1);
