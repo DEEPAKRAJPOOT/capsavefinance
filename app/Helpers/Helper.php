@@ -1571,7 +1571,7 @@ class Helper extends PaypalHelper
                 $attr['app_id'] = $parentAppId;
                 $attr['anchor_id'] = $value->anchor_id;
                 $attr['prgm_id'] = $value->prgm_id;                     
-                $invUtilizedAmt += $this->appRepo->getInvoiceUtilizedAmount($attr);                
+                $invUtilizedAmt += $appRepo->getInvoiceUtilizedAmount($attr);                
             }
 
             $result['parent_inv_utilized_amt'] = $invUtilizedAmt;
