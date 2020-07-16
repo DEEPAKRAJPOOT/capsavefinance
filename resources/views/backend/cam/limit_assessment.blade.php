@@ -125,16 +125,16 @@
                                         <div id="scollapse{{$key+1}}" class="card-body bdr collapse" style="padding: 0; border: 1px solid #e9ecef;">
                                             <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                             <thead>
-                                            <tr>
-                                                <td width="20%" style="background: #e9ecef;"><b>Overdue Interest Rate (%)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Interest Rate (%)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Program Limit</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (In Days)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Payment Frequency</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Margin (%)</b></td>
-                                                <td width="18%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Grace Period (In Days)</b></td>
-                                                <td width="12%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Adhoc Interest Rate (%)</b></td>
-                                                <td width="5%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Action</b></td>
+                                            <tr class="sub-heading">
+                                                <td width="20%" >Overdue Interest Rate (%)</td>
+                                                <td width="10%" >Interest Rate (%)</td>
+                                                <td width="10%" >Program Limit</td>
+                                                <td width="10%" >Tenor (In Days)</td>
+                                                <td width="10%" >Payment Frequency</td>
+                                                <td width="10%" >Margin (%)</td>
+                                                <td width="18%" >Grace Period (In Days)</td>
+                                                <td width="12%" >Adhoc Interest Rate (%)</td>
+                                                <td width="5%" >Action</td>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -217,15 +217,15 @@
                                         <div id="tcollapse{{$key+1}}" class="card-body bdr collapse" style="padding: 0; border: 1px solid #e9ecef;">
                                             <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                             <thead>
-                                            <tr>
-                                                <td width="10%" style="background: #e9ecef;"><b>Facility Type</b></td>
-                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Equipment Type</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Limit of the Equipment</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (Months)</b></td>
-                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>PTP Frequency</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>XIRR (%)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
-                                                <td width="5%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Action</b></td>
+                                            <tr class="sub-heading">
+                                                <td width="10%" >Facility Type</td>
+                                                <td width="20%" >Equipment Type</td>
+                                                <td width="10%" >Limit of the Equipment</td>
+                                                <td width="10%" >Tenor (Months)</td>
+                                                <td width="20%" >PTP Frequency</td>
+                                                <td width="10%" >XIRR (%)</td>
+                                                <td width="10%" >Processing Fee (%)</td>
+                                                <td width="5%" >Action</td>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -326,15 +326,15 @@
                                         <div id="lcollapse{{$key+1}}" class="card-body bdr collapse" style="padding: 0; border: 1px solid #e9ecef;">
                                             <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                             <thead>
-                                            <tr>
-                                                <td width="10%" style="background: #e9ecef;"><b>Facility Type</b></td>
-                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Equipment Type</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Limit of the Equipment</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (Months)</b></td>
-                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>PTP Frequency</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>XIRR/Discounting (%)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
-                                                <td width="5%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Action</b></td>
+                                            <tr class="sub-heading">
+                                                <td width="10%" >Facility Type</td>
+                                                <td width="20%" >Equipment Type</td>
+                                                <td width="10%" >Limit of the Equipment</td>
+                                                <td width="10%" >Tenor (Months)</td>
+                                                <td width="20%" >PTP Frequency</td>
+                                                <td width="10%" >XIRR/Discounting (%)</td>
+                                                <td width="10%" >Processing Fee (%)</td>
+                                                <td width="5%" >Action</td>
                                             </tr>
                                             </thead>
                                             <tbody>
