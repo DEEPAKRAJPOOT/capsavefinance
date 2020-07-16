@@ -1555,16 +1555,27 @@ class Helper extends PaypalHelper
         ];
         if ($productId == 1 && $appData && in_array($appData->app_type, [2,3]) ) {
             $parentAppId = $appData->parent_app_id;
+            $parentUserId = $appData->user_id;
             
             $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 1]);
             $result['tot_limit_amt'] = isset($appLimitData[0]) ? $appLimitData[0]->tot_limit_amt : 0;
                     
             $pTotalCunsumeLimit = 0;
+            $invUtilizedAmt = 0;        
             $pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
             foreach ($pAppPrgmLimit as $value) {
                 $pTotalCunsumeLimit += $value->utilize_limit;
+                
+                $attr=[];
+                $attr['user_id'] = $parentUserId;
+                $attr['app_id'] = $parentAppId;
+                $attr['anchor_id'] = $value->anchor_id;
+                $attr['prgm_id'] = $value->prgm_id;                     
+                $invUtilizedAmt += $this->appRepo->getInvoiceUtilizedAmount($attr);                
             }
 
+            $result['parent_inv_utilized_amt'] = $invUtilizedAmt;
+            
             $totalCunsumeLimit = $inputLimitAmt > 0 ? str_replace(',', '', $inputLimitAmt) : 0;
             $appPrgmLimit = $appRepo->getUtilizeLimit($appId, 1, $checkApprLimit=false);
             foreach ($appPrgmLimit as $value) {
@@ -1578,7 +1589,7 @@ class Helper extends PaypalHelper
                     }
                 } else {
                     $totalCunsumeLimit += $value->utilize_limit;
-                }
+                }                                
             }
             
             if ($appData->app_type == 2) {

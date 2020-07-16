@@ -342,7 +342,8 @@ class AppProgramLimit extends BaseModel {
     public static function getUtilizeLimit($appId, $productId, $checkApprLimit=true) 
     {
         $curDate = \Carbon\Carbon::now()->format('Y-m-d'); 
-        $query = self::select('app_prgm_limit.app_prgm_limit_id', 'app_prgm_offer.prgm_offer_id', 'app_prgm_offer.prgm_limit_amt as utilize_limit')   
+        $query = self::select('app_prgm_limit.app_prgm_limit_id', 'app_prgm_offer.prgm_offer_id',
+                'app_prgm_offer.anchor_id','app_prgm_offer.prgm_id','app_prgm_offer.prgm_limit_amt as utilize_limit')   
                 ->join('app_prgm_offer', 'app_prgm_offer.app_prgm_limit_id', '=', 'app_prgm_limit.app_prgm_limit_id')
                 ->where('app_prgm_limit.app_id',$appId)
                 ->where('app_prgm_limit.product_id', $productId)        

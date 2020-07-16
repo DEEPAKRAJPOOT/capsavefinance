@@ -73,6 +73,7 @@ use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\BizEntityCin;
+use App\Inv\Repositories\Models\BizInvoice;
 
 /**
  * Application repository class
@@ -2365,6 +2366,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function checkProgramOffers($program_id)
     {
         return AppProgramOffer::checkProgramOffers($program_id);
+    }
+
+    public function getInvoiceUtilizedAmount($attr)
+    {
+        return BizInvoice::getInvoiceUtilizedAmount($attr);
     }    
 }
 
