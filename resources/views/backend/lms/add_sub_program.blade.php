@@ -66,8 +66,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                             
                                             {{ Form::open(['url'=>$actionUrl,'id'=>'add_sub_program']) }}
                                             {!! Form::hidden('parent_prgm_id',$program_id) !!}
-                                            {!! Form::hidden('program_id',isset($subProgramData->prgm_id) ? $subProgramData->prgm_id : null) !!}
-                                            {!! Form::hidden('anchor_limit',isset($programData) ? $programData->anchor_limit : null) !!}
+                                            {!! Form::hidden('program_id',isset($subProgramData->prgm_id) ? $subProgramData->prgm_id : null) !!}                                            
                                             {!! Form::hidden('product_id',isset($programData) ? $programData->product_id : null) !!}
                                             {!! Form::hidden('anchor_limit_re',isset($remaningAmount) ?  number_format($remaningAmount)  : null,['id'=>'anchor_limit'])   !!}
                                             {!! Form::hidden('anchor_id',$anchor_id) !!}
@@ -78,6 +77,21 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group INR">
+                                                                    <div class="row">                                                                        
+                                                                        <div class="col-md-6">
+                                                                            <label for="txtCreditPeriod">Total Anchor Limit <span class="error_message_label">*</span> </label>
+                                                                            <div class="relative">
+                                                                            <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                                            {!! Form::text('anchor_limit',
+                                                                            isset($subProgramData->anchor_limit) ? number_format($subProgramData->anchor_limit) : null,
+                                                                            ['class'=>'form-control number_format '])   !!}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>                                                            
                                                             <div class="col-md-12">
                                                                 <div class="form-group">
                                                                     <label for="txtCreditPeriod">
