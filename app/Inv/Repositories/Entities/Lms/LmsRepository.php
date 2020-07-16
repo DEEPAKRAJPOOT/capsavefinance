@@ -1424,7 +1424,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getAllBusinessData(array $where = []) {
         return Business::with('app')->whereHas('app', function ($q) use ($where){
         	$q->where($where);
-        })->limit(5)->get();
+        })->get();
     }
 
     public function getAllBusinessAddrData(array $whereCond = []) {
