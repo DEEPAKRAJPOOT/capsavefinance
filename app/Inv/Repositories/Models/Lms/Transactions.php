@@ -53,6 +53,7 @@ class Transactions extends BaseModel {
         'user_id',
         'trans_date',
         'trans_type',
+        'trans_mode',
         'amount',
         'entry_type',
         'gst',
@@ -304,7 +305,7 @@ class Transactions extends BaseModel {
     public static function getSettledTrans($userId){
         return self::where('entry_type','1')
                 //->whereNotNull('parent_trans_id')
-                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
+                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT'),config('lms.TRANS_TYPE.CANCEL')])
                 ->where('user_id','=',$userId)->get()
                 ->filter(function($item){
                     return $item->refundoutstanding > 0;
@@ -389,6 +390,14 @@ class Transactions extends BaseModel {
 
         if(isset($data['user_id'])){
             $query->where('user_id','=',$data['user_id']);
+        }
+
+        if(isset($data['intAccrualStartDateLteSysDate'])){
+            $query->wherehas('invoiceDisbursed',function($q){
+                $start = new \Carbon\Carbon(\Helpers::getSysStartDate());
+                $sysStartDate = $start->format('Y-m-d');
+                $q->whereDate('int_accrual_start_dt','<=',$sysStartDate);
+            });
         }
 
         $transactions = $query->get();
@@ -815,9 +824,19 @@ class Transactions extends BaseModel {
         $result = $query->get();
         
         return $result;
+    }  
+    
+    public static function checkRunningTrans($transStartDate, $transEndDate){
+        return self::whereBetween('trans_date', [$transStartDate, $transEndDate])
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+        ->whereNotNull('trans_running_id')
+        ->get()
+        ->filter(function($item) {
+            return $item->outstanding > 0;
+        });
     }
 
     public static function getDishonouredTxn($user_id) {
-        return self::where(['user_id' => $user_id, 'trans_type' => 54/*config('lms.CHARGE_TYPE.CHEQUE_BOUNCE')*/])->get();
+        return self::where(['user_id' => $user_id, 'trans_type' => config('lms.CHARGE_TYPE.CHEQUE_BOUNCE')])->get();
     }    
 }
