@@ -477,49 +477,49 @@ class LeadController extends Controller {
                     return redirect()->back();                     
                 }
                 $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
-                if(!empty($value) && !empty($anchUserInfo)){
+                if(!empty($value) && !$anchUserInfo){
 
-                $hashval = time() . 'ANCHORLEAD' . $key;
-                $token = md5($hashval);
-                    if(trim($value[5])=='Buyer'){
-                        $userType=2;
+                    $hashval = time() . 'ANCHORLEAD' . $key;
+                    $token = md5($hashval);
+                        if(trim($value[5])=='Buyer'){
+                            $userType=2;
+                        }else{
+                            $userType=1; 
+                        }
+                    $arrAnchLeadData = [
+                        'name' =>  trim($value[0]),
+                        'l_name'=>trim($value[1]),
+                        'biz_name' =>  trim($value[2]),
+                        'email'=>$value[3],
+                        'phone' => $value[4],
+                        'user_type' => $userType,
+                        'created_by' => Auth::user()->user_id,
+                        'created_at' => \Carbon\Carbon::now(),
+                        'is_registered'=>0,
+                        'registered_type'=>1,
+                        'token' => $token,
+                        'anchor_id' => $anchorId
+                    ];
+
+                    $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
+                    /*
+                    $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
+                    if($getAnchorId && $getAnchorId->anchor_id!=''){
+                    $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
                     }else{
-                        $userType=1; 
+                    $arrUpdateAnchor ['anchor_id'] =$request->post('assigned_anchor');
                     }
-                $arrAnchLeadData = [
-                    'name' =>  trim($value[0]),
-                    'l_name'=>trim($value[1]),
-                    'biz_name' =>  trim($value[2]),
-                    'email'=>$value[3],
-                    'phone' => $value[4],
-                    'user_type' => $userType,
-                    'created_by' => Auth::user()->user_id,
-                    'created_at' => \Carbon\Carbon::now(),
-                    'is_registered'=>0,
-                    'registered_type'=>1,
-                    'token' => $token,
-                    'anchor_id' => $anchorId
-                ];
-
-                $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
-                /*
-                $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
-                if($getAnchorId && $getAnchorId->anchor_id!=''){
-                $arrUpdateAnchor ['anchor_id'] = $getAnchorId->anchor_id;
-                }else{
-                 $arrUpdateAnchor ['anchor_id'] =$request->post('assigned_anchor');
+                $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
+                    */
+                    
+                    if ($anchor_lead) {
+                        $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
+                        $anchLeadMailArr['name'] = $arrAnchLeadData['name'];
+                        $anchLeadMailArr['email'] =  trim($arrAnchLeadData['email']);
+                        $anchLeadMailArr['url'] = $mailUrl;
+                        Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
+                    }
                 }
-               $getAnchorId =$this->userRepo->updateAnchorUser($anchor_lead,$arrUpdateAnchor);
-                */
-                
-                if ($anchor_lead) {
-                    $mailUrl = config('proin.frontend_uri') . '/sign-up?token=' . $token;
-                    $anchLeadMailArr['name'] = $arrAnchLeadData['name'];
-                    $anchLeadMailArr['email'] =  trim($arrAnchLeadData['email']);
-                    $anchLeadMailArr['url'] = $mailUrl;
-                    Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
-                }
-          }
             }
             //chmod($destinationPath . '/' . $fileName, 0775, true);
             unlink($destinationPath . '/' . $fileName);
