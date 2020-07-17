@@ -18,6 +18,14 @@
     </section>
     <div class="card">
         <div class="card-body">
+            <div class="row" style="margin-bottom: 25px;">
+                <div class="col-md-4">
+                    <input class="form-control" placeholder="Search by App ID or Entity Name or Email" id="by_name" name="search_keyword" type="text">
+                </div>
+                <div class="col-md-1">
+                    <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12 dataTables_wrapper">
                     <div class="overflow">
