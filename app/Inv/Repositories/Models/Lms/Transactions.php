@@ -815,5 +815,9 @@ class Transactions extends BaseModel {
         $result = $query->get();
         
         return $result;
+    }
+
+    public static function getDishonouredTxn($user_id) {
+        return self::where(['user_id' => $user_id, 'trans_type' => 54/*config('lms.CHARGE_TYPE.CHEQUE_BOUNCE')*/])->get();
     }    
 }
