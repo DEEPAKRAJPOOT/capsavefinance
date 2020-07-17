@@ -330,7 +330,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
 
                                                                                 {!! Form::text('adhoc_interest_rate',
                                                                                 isset($subProgramData->adhoc_interest_rate) ? $subProgramData->adhoc_interest_rate : null,
-                                                                                ['class'=>'form-control valid_perc percentage','placeholder'=>'Max interset rate',
+                                                                                ['class'=>'form-control  percentage','placeholder'=>'Max interset rate',
                                                                                 'id'=>'employee'])   
                                                                                 !!}
 
@@ -386,7 +386,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
 
                                                                             {!! Form::text('grace_period',
                                                                             isset($subProgramData->grace_period) ? $subProgramData->grace_period : null,
-                                                                            ['class'=>'form-control numberOnly','placeholder'=>'Max interset rate',
+                                                                            ['class'=>'form-control numberOnly','placeholder'=>'Grace Period (In Days)',
                                                                             'id'=>'grace_period'])   
                                                                             !!}
                                                                         </div>
