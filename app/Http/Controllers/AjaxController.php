@@ -3203,6 +3203,7 @@ if ($err) {
 
 
     public function getIndustryLists(DataProviderInterface $dataProvider) { 
+        // dd($this->request->all());
      $industriesList = $this->masterRepo->getAllIndustries();
      $industries = $dataProvider->getIndustriesList($this->request, $industriesList);
      return $industries;
