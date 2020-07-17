@@ -3686,7 +3686,9 @@ class DataRenderer implements DataProviderInterface
                 if ($request->get('search_keyword') != '') {
                     $query->where(function ($query) use ($request) {
                         $search_keyword = trim($request->get('search_keyword'));
-                        $query->where('doa_level.level_name', 'like',"%$search_keyword%");                                    
+                        $query->where('doa_level.level_name', 'like',"%$search_keyword%")
+                        ->orWhere('doa_level.level_code', 'like',"%$search_keyword%")
+                        ;                                    
                     });
                 }
             })
