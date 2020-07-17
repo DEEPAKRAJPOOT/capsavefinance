@@ -834,5 +834,50 @@ class Transactions extends BaseModel {
         ->filter(function($item) {
             return $item->outstanding > 0;
         });
-    }  
+    } 
+    
+    public static function getUserLimitOutstanding($attr)
+      {
+        $userId = $attr->user_id;
+        $disbursedList = self::whereNull('parent_trans_id')
+        ->whereNull('payment_id')
+        ->where('entry_type','0')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
+        ->where('user_id',$userId)
+        ->get()
+        ->filter(function($item) {
+            return $item->outstanding > 0;
+        });
+
+        $interestList = self::whereNull('parent_trans_id')
+        ->whereNull('payment_id')
+        ->where('entry_type','0')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST')])
+        ->where('user_id',$userId)
+        ->get()
+        ->filter(function($item) {
+            return $item->outstanding > 0;
+        });
+
+        $outstandingAmt = 0;
+        $outstandingPrincipalAmt = 0;
+
+        foreach($disbursedList as $tran){
+            $outstandingAmt += $tran->outstanding;
+            $outstandingPrincipalAmt += $tran->outstanding - $tran->invoiceDisbursed->total_interest;
+        }
+
+        foreach($interestList as $tran){
+            $outstandingAmt += $tran->outstanding;
+        }
+        if($attr->chrg_applicable_id==2)
+	{    
+            return round($outstandingAmt,2);
+        }
+        if($attr->chrg_applicable_id==3)
+	{
+           return round($outstandingPrincipalAmt,2); 
+        }
+    }
+    
 }
