@@ -54,6 +54,30 @@ try {
             }
         }, "Limit amount should not be less than utilized amount");
         
+                
+        $.validator.addMethod('validateReason', function (value, element, param) {
+            if ($("#program_id").val() != "" && $("#reason_type").val() != "") {
+                var min = value.replace(/,/g, "");
+                var max = $(param).val().replace(/,/g, "");
+
+                var i = parseInt(min);
+                var j = parseInt(max);
+                if ($("#reason_type").val() == 1) {                    
+                    return i > j;
+                } else {                    
+                    return i < j;
+                }
+            } else {
+                return true;
+            }
+        }, function(params, element){
+            if ($("#reason_type").val() == 1) {                    
+                return "Enhanced limit can't be less than or equal to previous limit";
+            } else {
+                return "Reduced limit can't be more than to previous limit";
+            }
+      });        
+        
         /**
          * handle Industry Change evnet
          * 
@@ -483,12 +507,14 @@ try {
                     },
                     anchor_limit: {
                         required: true,
-                        notLessThan : "#utilized_amount"
+                        notLessThan : "#utilized_amount",
+                        //validateReason : "#old_anchor_limit"
                     },                    
                     anchor_sub_limit: {
                         required: true,
-                        lessThan: "#anchor_limit",
-                        notLessThan : "#utilized_amount"
+                        lessThan: "#anchor_limit_re",
+                        notLessThan : "#utilized_amount",
+                        validateReason : "#old_anchor_sub_limit"
                         // min: 1,
                         // number: true
                     },
@@ -718,8 +744,8 @@ try {
         
         $(document).on('input', '#anchor_limit', function(e) {            
             var anchor_limit = parseInt($(this).val().replace(/,/g, "")) || 0; 
-            var anchor_sub_limit = parseInt($("#anchor_sub_limit").val().replace(/,/g, "")) || 0; 
-            var remaining_bal = anchor_limit - anchor_sub_limit;
+            var total_anchor_sub_limit = parseInt($("#total_anchor_sub_limit").val().replace(/,/g, "")) || 0; 
+            var remaining_bal = anchor_limit - total_anchor_sub_limit;
             $("#total-anchor-limit").html(anchor_limit.toString().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
             var prefix = remaining_bal < 0 ? '-' : '';
             $("#remaining-anchor-limit").html(prefix + remaining_bal.toString().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));             

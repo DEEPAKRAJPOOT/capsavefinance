@@ -297,7 +297,16 @@ class ProgramController extends Controller {
             if (isset($programData->anchor_limit)) {
                 $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal; //- $utilizedLimit;
             }
-                                    
+            
+            $pAnchorLimit = 0;
+            $pAnchorSubLimit = 0;
+            if (!empty($copied_prgm_id)) {
+                $copiedPrgm = $this->appRepo->getSelectedProgramData(['prgm_id' => $copied_prgm_id], ['anchor_limit', 'anchor_sub_limit']);
+                if (isset($copiedPrgm[0])) {
+                    $pAnchorLimit    = $copiedPrgm[0]->anchor_limit;
+                    $pAnchorSubLimit = $copiedPrgm[0]->anchor_sub_limit;                    
+                }
+            }
             /**
              * get DOA list 
              */
@@ -358,7 +367,9 @@ class ProgramController extends Controller {
                             'action',
                             'copied_prgm_id',
                             'utilizedLimit',
-                            'anchorSubLimitTotal'
+                            'anchorSubLimitTotal',
+                            'pAnchorLimit',
+                            'pAnchorSubLimit'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);

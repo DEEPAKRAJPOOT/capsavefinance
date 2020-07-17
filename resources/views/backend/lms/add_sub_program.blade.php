@@ -73,8 +73,11 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                             {!! Form::hidden('anchor_user_id',isset($programData->anchor_user_id) ?$programData->anchor_user_id  : null ) !!}
                                             {!! Form::hidden('copied_prgm_id', $copied_prgm_id) !!}                                            
                                             {!! Form::hidden('utilized_amount', $utilizedLimit, ['id'=>'utilized_amount']) !!}
-                                            {!! Form::hidden('anchor_sub_limit', $anchorSubLimitTotal, ['id'=>'anchor_sub_limit']) !!}
+                                            {!! Form::hidden('total_anchor_sub_limit', $anchorSubLimitTotal, ['id'=>'total_anchor_sub_limit']) !!}
+                                            {!! Form::hidden('old_anchor_limit', $pAnchorLimit, ['id'=>'old_anchor_limit']) !!}
+                                            {!! Form::hidden('old_anchor_sub_limit', $pAnchorSubLimit, ['id'=>'old_anchor_sub_limit']) !!}
                                             {!! Form::hidden('is_reject', 0, ['id'=>'is_reject']) !!}
+                                            {!! Form::hidden('reason_type', $reason_type, ['id'=>'reason_type']) !!}
                                             
                                             
                                             <div class="sub-form renew-form " id="subform">
