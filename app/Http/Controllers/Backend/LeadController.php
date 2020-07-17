@@ -434,6 +434,12 @@ class LeadController extends Controller {
                 // 'assigned_anchor.required' => 'This field is required.'
             ])->validate();
 
+            if ($request->has('assigned_anchor')){
+                $anchorId = $request->get('assigned_anchor');
+            } else {
+                $anchorId = Auth::user()->anchor_id;
+            }
+
             $uploadedFile = $request->file('anchor_lead');
             $destinationPath = storage_path() . '/uploads';
             
@@ -456,7 +462,6 @@ class LeadController extends Controller {
             }
 
             $rowData = $fileArrayData['data'];
-            // dd($rowData);
 
             if (empty($rowData)) {
                 Session::flash('message', 'File does not contain any record');
@@ -472,7 +477,7 @@ class LeadController extends Controller {
                     return redirect()->back();                     
                 }
                 $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
-                if(!empty($value) && !$anchUserInfo){
+                if(!empty($value) && !empty($anchUserInfo)){
 
                 $hashval = time() . 'ANCHORLEAD' . $key;
                 $token = md5($hashval);
@@ -493,7 +498,7 @@ class LeadController extends Controller {
                     'is_registered'=>0,
                     'registered_type'=>1,
                     'token' => $token,
-                    // 'anchor_id' => $anchorId
+                    'anchor_id' => $anchorId
                 ];
 
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
