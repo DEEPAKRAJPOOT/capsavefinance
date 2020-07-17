@@ -744,7 +744,12 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                         <div class="text-right mt-3">
                                             
                                             <!--<a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>-->
+                                            @if ($reason_type != '' && isset($subProgramData->status) && $subProgramData->status == '0') 
                                             <input type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program" name="reject_btn" id="reject_btn" value="Reject">
+                                            @else
+                                            <a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>
+                                            @endif
+                                            
                                             @if (\Helpers::checkPermission('save_sub_program') && $action != 'view')
                                             <button type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program"> Save</button>
                                             @endif
