@@ -481,6 +481,10 @@ try {
                         required: true,
                         lettersonly: true
                     },
+                    anchor_limit: {
+                        required: true,
+                        notLessThan : "#utilized_amount"
+                    },                    
                     anchor_sub_limit: {
                         required: true,
                         lessThan: "#anchor_limit",
@@ -717,15 +721,14 @@ try {
             var anchor_sub_limit = parseInt($("#anchor_sub_limit").val().replace(/,/g, "")) || 0; 
             var remaining_bal = anchor_limit - anchor_sub_limit;
             $("#total-anchor-limit").html(anchor_limit.toString().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-            $("#remaining-anchor-limit").html(remaining_bal.toString().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")); 
+            var prefix = remaining_bal < 0 ? '-' : '';
+            $("#remaining-anchor-limit").html(prefix + remaining_bal.toString().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));             
             $("#anchor_limit_re").val(remaining_bal);
         })
         
         
-        $("#add_sub_program").on('submit', function(){
-            if () {
-                
-            }
+        $("#reject_btn").on('click', function(){            
+            $("#is_reject").val("1");
         });
     });
 } catch (e) {

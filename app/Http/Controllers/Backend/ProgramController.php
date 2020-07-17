@@ -466,13 +466,13 @@ class ProgramController extends Controller {
             $user_id = \Auth::user()->user_id;
             $dataForProgram = $this->prepareSubProgramData($request);
             $pkeys = $request->get('program_id');
-
-            dd($request->all(),$request->get('reject_btn'));
-            if ($request->has('reject_btn') && $request->get('reject_btn') == 'Reject') {
+            
+            $program_list_id = (\Session::has('list_program_id')) ? \Session::get('list_program_id') : $request->get('parent_prgm_id');
+            if ($request->has('is_reject') && $request->get('is_reject') == '1') {
                 $copied_prgm_id = $request->get('copied_prgm_id');
                 $this->appRepo->updateProgramData(['status' => 3], ['prgm_id' => $pkeys]); //Rejected
-                $this->appRepo->updateProgramData(['status' => 1], ['prgm_id' => $copied_prgm_id]);
-                return redirect()->back();
+                $this->appRepo->updateProgramData(['status' => 1], ['prgm_id' => $copied_prgm_id]);                
+                return redirect()->route('manage_sub_program', ['anchor_id' => $request->get('anchor_id'), 'program_id' => $program_list_id]);                
             }
             
             if($request->get('interest_rate') == 1) {
@@ -493,7 +493,7 @@ class ProgramController extends Controller {
                 // dd($dataForProgram);
                 $program = [];
                 $program['anchor_limit'] = str_replace(',', '', $request->get('anchor_limit'));
-                $this->appRepo->updateProgramData($program, ['parent_prgm_id' => $request->get('parent_prgm_id') ,'status' => 1]);
+                $this->appRepo->updateProgramData($program, ['parent_prgm_id' => $program_list_id ,'status' => 1]);
                 
                 $this->appRepo->updateProgramData($dataForProgram, ['prgm_id' => $pkeys]);
                 $lastInsertId = $pkeys;
