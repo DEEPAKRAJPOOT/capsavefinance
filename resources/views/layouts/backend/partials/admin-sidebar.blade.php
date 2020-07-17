@@ -84,7 +84,7 @@
         </li>
     @endcan
 
-    @canany(['application_pool','application_list'])
+    @canany(['application_pool','application_list', 'colender_application_list', 'applicaiton_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu2" aria-expanded="false"
                 aria-controls="collapseExample">
@@ -104,28 +104,16 @@
                         <a class="nav-link" href="{{ route('application_list') }}">My Application</a>
                     </li>
                     @endcan
-                    @can('application_list')
+                    @can('applicaiton_list')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('applicaiton_list') }}">FI/RCU Applications</a>
                     </li>
                     @endcan
-                </ul>
-            </div>
-        </li>
-    @endcan
-    @can('colender_application_list')
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false"
-                aria-controls="collapseExample">
-                <i class="fa fa-address-book-o" aria-hidden="true"></i>
-                <span class="menu-title">Manage Co-lender Apps</span>
-                <i class="fa fa-angle-right" aria-hidden="true"></i>
-            </a>
-            <div class="collapse" id="layoutsSubmenu12">
-                <ul class="nav flex-column sub-menu">
+                    @can('colender_application_list')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('colender_application_list') }}">Co-lender Applications</a>
                     </li>
+                    @endcan
                 </ul>
             </div>
         </li>
@@ -320,11 +308,16 @@
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu11" aria-expanded="false"
             aria-controls="collapseExample">
             <i class="fa fa-tasks" aria-hidden="true"></i>
-            <span class="menu-title">manage Master</span>
+            <span class="menu-title">Manage Master</span>
             <i class="fa fa-angle-right" aria-hidden="true"></i>
         </a>
         <div class="collapse" id="layoutsSubmenu11">
             <ul class="nav flex-column sub-menu">
+                @can('get_companies_list')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_companies_list') }}">Manage Companies</a>
+                </li>
+                @endcan
                 @can('manage_doa')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('manage_doa') }} ">Manage DOA Level</a>
@@ -385,11 +378,6 @@
                 @can('get_baserate_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_baserate_list') }}">Manage Base Rate</a>
-                </li>
-                @endcan
-                @can('get_companies_list')
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('get_companies_list') }}">Manage Companies</a>
                 </li>
                 @endcan
             </ul>
