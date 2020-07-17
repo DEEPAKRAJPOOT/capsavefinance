@@ -511,7 +511,8 @@ class ProgramController extends Controller {
             $program = [];
             $program['anchor_limit'] = str_replace(',', '', $request->get('anchor_limit'));
             $this->appRepo->updateProgramData($program, ['parent_prgm_id' => $program_list_id ,'status' => 1]);
-
+            $this->appRepo->updateProgramData($program, ['prgm_id' => $program_list_id]);
+            
             /**
              * Save program charges data 
              */
