@@ -121,7 +121,9 @@ class PaymentController extends Controller {
 				'payment_type' => Rule::requiredIf(function () use ($request) {
 					return ($request->action_type == 1)?true:false;
 				}),
-				'utr_no' => 'required',
+				'utr_no' => Rule::requiredIf(function () use ($request) {
+					return ($request->action_type == 1)?true:false;
+				}),
 				'trans_type' => 'required',
 				'customer_id' => 'required', 
 				'virtual_acc' => 'required',  
