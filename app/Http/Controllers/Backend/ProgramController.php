@@ -501,18 +501,16 @@ class ProgramController extends Controller {
              */
             if (!empty($pkeys)) {
                 unset($dataForProgram['parent_prgm_id']);
-                // dd($dataForProgram);
-                $program = [];
-                $program['anchor_limit'] = str_replace(',', '', $request->get('anchor_limit'));
-                $this->appRepo->updateProgramData($program, ['parent_prgm_id' => $program_list_id ,'status' => 1]);
-                
+                // dd($dataForProgram);                
                 $this->appRepo->updateProgramData($dataForProgram, ['prgm_id' => $pkeys]);
                 $lastInsertId = $pkeys;
             } else {
                 $lastInsertId = $this->appRepo->saveProgram($dataForProgram);
             }
 
-
+            $program = [];
+            $program['anchor_limit'] = str_replace(',', '', $request->get('anchor_limit'));
+            $this->appRepo->updateProgramData($program, ['parent_prgm_id' => $program_list_id ,'status' => 1]);
 
             /**
              * Save program charges data 

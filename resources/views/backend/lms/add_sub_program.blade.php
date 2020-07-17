@@ -92,7 +92,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                             <div class="relative">
                                                                             <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                             {!! Form::text('anchor_limit',
-                                                                            isset($subProgramData->anchor_limit) ? number_format($subProgramData->anchor_limit) : null,
+                                                                            isset($programData->anchor_limit) ?  number_format($programData->anchor_limit )   : null,
                                                                             ['class'=>'form-control number_format ', 'id' => 'anchor_limit'])   !!}
                                                                             </div>
                                                                         </div>
