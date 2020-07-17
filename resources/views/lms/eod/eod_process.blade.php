@@ -25,12 +25,7 @@
                         <div class="active" id="details">
                             <div class="form-sections">
                                 <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <label for="">Current System Date: <span id="current-date"></span></label>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
+                                    <div class="col-12">
                                         <div class="form-group">
                                             @if($status == 4)
                                                 <input type="button" name="btn_process"  class="pull-right btn btn-primary ml-2 btn-sm"  value="Start System" onclick=startSystem()>

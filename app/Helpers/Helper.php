@@ -1640,7 +1640,7 @@ class Helper extends PaypalHelper
      */
     public static function getSysStartDate()
     {
-        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        /*$lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         $eodDetails = $lmsRepo->getEodProcess(['is_active'=>1]);
         if($eodDetails){
             if($eodDetails->status == config('lms.EOD_PROCESS_STATUS.RUNNING')){
@@ -1659,8 +1659,9 @@ class Helper extends PaypalHelper
             }
         }else{
             $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
-        }
+        }*/
 
+        $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
         return $sys_start_date;
     }     
 
@@ -1699,7 +1700,7 @@ class Helper extends PaypalHelper
         $cronLogDetails = CronLog::where('cron_id','2')->whereDate('exec_start_at',$currentTimestamp)
         ->orderBy('cron_log_id','DESC')->first();
 
-        if($cronLogDetails && !self::checkEodProcess()){
+        if($cronLogDetails){
             return true;
         } 
         return false;
@@ -1780,34 +1781,4 @@ class Helper extends PaypalHelper
         }
      }
      
-     /**
-     * Get System Current Date
-     * 
-     * @return timestamp
-     */
-    public static function getSysCurrentDate()
-    {
-        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
-        $today = \Carbon\Carbon::now();
-        $sys_curr_date = $today->format('Y-m-d H:i:s');
-        $whereCond=[];  
-        $eodCount = $lmsRepo->getEodDataCount(); 
-        $whereCond['is_active'] = $eodCount == 1 ? 1 : 0;
-        $latestEod = $lmsRepo->getLatestEodProcess($whereCond);
-        if ($latestEod) {
-            $start = new \Carbon\Carbon($latestEod->sys_start_date);
-            $start = $start->addDays(1);
-            $sys_curr_date = $start->format('Y-m-d') . " " . date('H:i:s');
-        }
-        $whCond=[];
-        $whCond['is_active'] = 1;
-        $eodProcess = $lmsRepo->getEodProcess($whCond);
-        if ($eodProcess && $eodProcess->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')) {
-            $start = new \Carbon\Carbon($eodProcess->sys_start_date);
-            $start = $start->addDays(1);
-            $sys_curr_date = $start->format('Y-m-d') . " " . date('H:i:s');
-        }
-        $current_date = self::convertDateTimeFormat($sys_curr_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s');
-        return $current_date;
-    }
 }

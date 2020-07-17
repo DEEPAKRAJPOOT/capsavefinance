@@ -155,7 +155,7 @@ class EodProcessController extends Controller
 
         if ($eodDetails) {
             $eod_process_id = $eodDetails->eod_process_id;
-            if ($eodDetails->status == config('lms.EOD_PROCESS_STATUS.WATING')) {
+            if ($eodDetails->status == config('lms.EOD_PROCESS_STATUS.WATING') && strtotime($eodDetails->sys_start_date) < strtotime(Helper::getSysStartDate())) {
                 $data = [];
                     $data['status'] = config('lms.EOD_PROCESS_STATUS.RUNNING');
                     $data['is_active'] = 1;

@@ -82,56 +82,7 @@ try {
         });
 
     });
-
-
-    function currentDateTime() {
-        if(messages.status == 0){
-            var realStartDate = new Date(messages.real_sys_start_date);
-            var sysStartDate = new Date(messages.sys_start_date);
-            var diff = sysStartDate - realStartDate;
-            var curDate = new Date();
-            var today = new Date(curDate.setSeconds(diff/1000));      
-        }else{
-            var today = new Date(messages.sys_end_date);
-        }
-        
-             
-        var sMonth = padValue(today.getMonth() + 1);
-        var sDay = padValue(today.getDate());
-        var sYear = today.getFullYear();
-        var sHour = today.getHours();
-        var sMinute = padValue(today.getMinutes());
-        var sAMPM = "AM";
-
-        var iHourCheck = parseInt(sHour);
-
-        if (iHourCheck > 12) {
-            sAMPM = "PM";
-            sHour = iHourCheck - 12;
-        }
-        else if (iHourCheck === 0) {
-            sHour = "12";
-        }
-
-        sHour = padValue(sHour);
-
-        dateTime =  sDay + "-" + sMonth + "-" + sYear + " " + sHour + ":" + sMinute + " " + sAMPM;
-        document.getElementById('current-date').innerHTML = dateTime;
-       // display_c();
-    }
-    
-    function padValue(value) {
-        return (value < 10) ? "0" + value : value;
-    }
-    
-    function display_c(){
-        if(messages.status == 0){
-            setTimeout('currentDateTime()',1000);
-        }else{
-            currentDateTime();
-        }
-    }
-     
+   
     function updateEodStatus() {
         if (messages.enable_process_start) {
             $('.isloader').show();
@@ -188,7 +139,6 @@ try {
         }
     }
 
-    display_c();
 } catch (e) {
     if (typeof console !== 'undefined') {
         console.log(e);

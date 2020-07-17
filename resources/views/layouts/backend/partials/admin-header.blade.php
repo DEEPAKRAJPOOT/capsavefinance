@@ -13,7 +13,7 @@
         </form>-->
         <ul class="navbar-nav ml-lg-auto relative">
             <li class="nav-item nav-profile">
-                <span style="color: #328964; position: absolute; right: 28px; min-width: 350px; top: 3px;"><b>Current System Time:</b> {{Helpers::getSysCurrentDate()}}</span>
+                <span style="color: #328964; position: absolute; right: 28px; min-width: 350px; top: 3px;"><b>Current System Time:</b><b id="_current_sys_date"> {{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}</b></span>
                 <a class="nav-link" href="#" style="margin-top: 15px;">
                     <span style="color: #328964;">{{ucwords(Auth::user()->f_name.' '.Auth::user()->l_name)}}</span>
                     <img src="{{url('backend/assets/images/faces/face9.jpg')}}" />

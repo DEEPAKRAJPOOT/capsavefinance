@@ -196,6 +196,38 @@
             $(ele).parent('div').find('.limit').html(msg);
         }
 
+        function currentDateTime() {
+            var today = new Date();        
+            var sMonth = padValue(today.getMonth() + 1);
+            var sDay = padValue(today.getDate());
+            var sYear = today.getFullYear();
+            var sHour = today.getHours();
+            var sMinute = padValue(today.getMinutes());
+            var sAMPM = "AM";
+
+            var iHourCheck = parseInt(sHour);
+
+            if (iHourCheck > 12) {
+                sAMPM = "PM";
+                sHour = iHourCheck - 12;
+            }
+            else if (iHourCheck === 0) {
+                sHour = "12";
+            }
+
+            sHour = padValue(sHour);
+
+            dateTime =  sDay + "-" + sMonth + "-" + sYear + " " + sHour + ":" + sMinute + " " + sAMPM;
+            document.getElementById('_current_sys_date').innerHTML = dateTime;
+        }
+        
+        function padValue(value) {
+            return (value < 10) ? "0" + value : value;
+        }
+
+            setInterval('currentDateTime()',1000);
+
+
         function replaceAlert(msg, type){
             let alert_class;
             switch(type){
