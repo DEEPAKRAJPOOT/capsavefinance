@@ -305,7 +305,7 @@ class Transactions extends BaseModel {
     public static function getSettledTrans($userId){
         return self::where('entry_type','1')
                 //->whereNotNull('parent_trans_id')
-                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
+                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT'),config('lms.TRANS_TYPE.CANCEL')])
                 ->where('user_id','=',$userId)->get()
                 ->filter(function($item){
                     return $item->refundoutstanding > 0;
@@ -834,5 +834,9 @@ class Transactions extends BaseModel {
         ->filter(function($item) {
             return $item->outstanding > 0;
         });
-    }  
+    }
+
+    public static function getDishonouredTxn($user_id) {
+        return self::where(['user_id' => $user_id, 'trans_type' => config('lms.CHARGE_TYPE.CHEQUE_BOUNCE')])->get();
+    }    
 }
