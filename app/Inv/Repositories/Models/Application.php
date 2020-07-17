@@ -455,13 +455,25 @@ class Application extends BaseModel
 
     protected static function getAgencyApplications() 
     {  
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
         $appData = self::distinct()->whereHas('address.activeFiAddress')->orWhereHas('rcuDocument')->select('app.user_id','app.app_id','app.loan_amt', 'users.agency_id', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->join('users', 'app.user_id', '=', 'users.user_id');
                 //->where('users.agency_id', \Auth::user()->agency_id);
         //$appData->groupBy('app.app_id');
-        $appData = $appData->orderBy('app.app_id', 'DESC');
-        return $appData;
+        $appDataAdmin = self::distinct()->select('app.user_id','app.app_id','app.loan_amt', 'users.agency_id', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at')
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
+                ->join('users', 'app.user_id', '=', 'users.user_id');
+                //->where('users.agency_id', \Auth::user()->agency_id);
+        //$appData->groupBy('app.app_id');
+
+        if ($roleData[0]->is_superadmin != 1) {
+            return $appData->orderBy('app.app_id', 'DESC');
+        } else {
+            return $appDataAdmin->orderBy('app.app_id', 'DESC');;
+        }
+        // $appDa = $appData->orderBy('app.app_id', 'DESC');
+        // return $appDa;
     }
 
     public function address(){
