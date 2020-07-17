@@ -72,7 +72,7 @@ class AuthServiceProvider extends ServiceProvider
     protected function checkRolePermission($route_name, $user_id)
     {
         $roleData = User::getBackendUser($user_id);
-        $role_id = isset($roleData[0]) ? $roleData[0]->id : null;
+        $role_id = isset($roleData[0]) ? $roleData[0]->id : null;        
         return Permission::checkRolePermission($route_name, $role_id);
     }
 }
