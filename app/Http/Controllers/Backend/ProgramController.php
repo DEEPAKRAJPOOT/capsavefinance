@@ -357,7 +357,8 @@ class ProgramController extends Controller {
                             'reason_type',
                             'action',
                             'copied_prgm_id',
-                            'utilizedLimit'
+                            'utilizedLimit',
+                            'anchorSubLimitTotal'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
@@ -382,7 +383,7 @@ class ProgramController extends Controller {
             'prgm_type' => $request->get('prgm_type'),
             'interest_rate' => $request->get('interest_rate'),
             'anchor_sub_limit' => ($request->get('anchor_sub_limit')) ? str_replace(',', '', $request->get('anchor_sub_limit')) : 0,
-            'anchor_limit' => $request->get('anchor_limit'),
+            'anchor_limit' => str_replace(',', '', $request->get('anchor_limit')),
             'min_loan_size' => ($request->get('min_loan_size')) ? str_replace(',', '', $request->get('min_loan_size')) : 0,
             'max_loan_size' => ($request->get('max_loan_size')) ? str_replace(',', '', $request->get('max_loan_size')) : 0,
             'base_rate_id' => $request->get('interest_linkage'),
@@ -466,6 +467,14 @@ class ProgramController extends Controller {
             $dataForProgram = $this->prepareSubProgramData($request);
             $pkeys = $request->get('program_id');
 
+            dd($request->all(),$request->get('reject_btn'));
+            if ($request->has('reject_btn') && $request->get('reject_btn') == 'Reject') {
+                $copied_prgm_id = $request->get('copied_prgm_id');
+                $this->appRepo->updateProgramData(['status' => 3], ['prgm_id' => $pkeys]); //Rejected
+                $this->appRepo->updateProgramData(['status' => 1], ['prgm_id' => $copied_prgm_id]);
+                return redirect()->back();
+            }
+            
             if($request->get('interest_rate') == 1) {
                 $dataForProgram['base_rate_id'] = '';
             }
@@ -482,6 +491,10 @@ class ProgramController extends Controller {
             if (!empty($pkeys)) {
                 unset($dataForProgram['parent_prgm_id']);
                 // dd($dataForProgram);
+                $program = [];
+                $program['anchor_limit'] = str_replace(',', '', $request->get('anchor_limit'));
+                $this->appRepo->updateProgramData($program, ['parent_prgm_id' => $request->get('parent_prgm_id') ,'status' => 1]);
+                
                 $this->appRepo->updateProgramData($dataForProgram, ['prgm_id' => $pkeys]);
                 $lastInsertId = $pkeys;
             } else {

@@ -39,14 +39,14 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                         <p class="float-left mr-3 mb-0">
                                                             <b>Total Anchor Limit : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i> 
-                                                            {!! isset($programData->anchor_limit) ?  number_format($programData->anchor_limit )   : null !!}
+                                                            <span id="total-anchor-limit" class="number_format">{!! isset($programData->anchor_limit) ?  number_format($programData->anchor_limit )   : null !!}</span>
                                                         </p>
 
 
                                                         <p class="float-right mb-0">
                                                             <b>Remaining Anchor Limit : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i>
-                                                            {{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }} 
+                                                            <span id="remaining-anchor-limit" class="number_format">{{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }}</span>
                                                             <br>
                                                             <b>Utilized Limit in Offer : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i>
@@ -68,11 +68,15 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                             {!! Form::hidden('parent_prgm_id',$program_id) !!}
                                             {!! Form::hidden('program_id',isset($subProgramData->prgm_id) ? $subProgramData->prgm_id : null) !!}                                            
                                             {!! Form::hidden('product_id',isset($programData) ? $programData->product_id : null) !!}
-                                            {!! Form::hidden('anchor_limit_re',isset($remaningAmount) ?  number_format($remaningAmount)  : null,['id'=>'anchor_limit'])   !!}
+                                            {!! Form::hidden('anchor_limit_re',isset($remaningAmount) ?  number_format($remaningAmount)  : null,['id'=>'anchor_limit_re'])   !!}
                                             {!! Form::hidden('anchor_id',$anchor_id) !!}
                                             {!! Form::hidden('anchor_user_id',isset($programData->anchor_user_id) ?$programData->anchor_user_id  : null ) !!}
                                             {!! Form::hidden('copied_prgm_id', $copied_prgm_id) !!}                                            
                                             {!! Form::hidden('utilized_amount', $utilizedLimit, ['id'=>'utilized_amount']) !!}
+                                            {!! Form::hidden('anchor_sub_limit', $anchorSubLimitTotal, ['id'=>'anchor_sub_limit']) !!}
+                                            {!! Form::hidden('is_reject', 0, ['id'=>'is_reject']) !!}
+                                            
+                                            
                                             <div class="sub-form renew-form " id="subform">
                                                 <div class="row">
                                                     <div class="col-md-12">
@@ -86,7 +90,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                             <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                             {!! Form::text('anchor_limit',
                                                                             isset($subProgramData->anchor_limit) ? number_format($subProgramData->anchor_limit) : null,
-                                                                            ['class'=>'form-control number_format '])   !!}
+                                                                            ['class'=>'form-control number_format ', 'id' => 'anchor_limit'])   !!}
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -736,7 +740,8 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                     <div class="col-md-12">
                                         <div class="text-right mt-3">
                                             
-                                            <a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>
+                                            <!--<a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>-->
+                                            <input type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program" name="reject_btn" id="reject_btn" value="Reject">
                                             @if (\Helpers::checkPermission('save_sub_program') && $action != 'view')
                                             <button type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program"> Save</button>
                                             @endif

@@ -2610,6 +2610,7 @@ class DataRenderer implements DataProviderInterface
                                              
                                           </div></b>';
                         })
+                /*
                 ->editColumn(
                         'reason',
                         function ($program) {
@@ -2621,7 +2622,7 @@ class DataRenderer implements DataProviderInterface
                         }
                          return  $res;
 
-                    })                        
+                    })*/                        
                         ->addColumn(
                     'action',
                     function ($program) {
@@ -3220,6 +3221,11 @@ class DataRenderer implements DataProviderInterface
                             } else if ($program->status == '2') {
                                 $res = '<div class="btn-group ">
                                              <label class="badge badge-secondary current-status">End</label>
+                                             
+                                          </div></b>';
+                            } else if ($program->status == '3') {
+                                $res = '<div class="btn-group ">
+                                             <label class="badge badge-danger current-status">Reject</label>
                                              
                                           </div></b>';
                             }

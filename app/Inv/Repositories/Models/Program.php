@@ -446,5 +446,10 @@ class Program extends BaseModel {
     {
         $result = self::where($where)->get(); 
         return isset($result[0]) ? $result : [];
-    }    
+    }
+    
+    public static function deleteProgram($prgmId)
+    {
+        return self::where('prgm_id', $prgmId)->delete();        
+    }     
 }

@@ -2391,6 +2391,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         }
         return $prgmIds;        
     }    
+    
+    public function deleteProgram($prgmId)
+    {
+        return Program::deleteProgram($prgmId);
+    }    
 }
 
 

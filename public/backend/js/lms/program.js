@@ -177,9 +177,9 @@ try {
                 {
                     data: 'anchor_limit'
                 },
-                {
-                    data: 'reason'
-                },
+                //{
+                //    data: 'reason'
+                //},
                 {
                     data: 'status'
                 },                
@@ -187,7 +187,7 @@ try {
                     data: 'action'
                 }
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6]}]
 
         });
 
@@ -709,7 +709,24 @@ try {
         
         $('#searchbtn').on('click', function (e) {
             oTables.draw();
-        }); 
+        });
+        
+        
+        $(document).on('input', '#anchor_limit', function(e) {            
+            var anchor_limit = parseInt($(this).val().replace(/,/g, "")) || 0; 
+            var anchor_sub_limit = parseInt($("#anchor_sub_limit").val().replace(/,/g, "")) || 0; 
+            var remaining_bal = anchor_limit - anchor_sub_limit;
+            $("#total-anchor-limit").html(anchor_limit.toString().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+            $("#remaining-anchor-limit").html(remaining_bal.toString().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")); 
+            $("#anchor_limit_re").val(remaining_bal);
+        })
+        
+        
+        $("#add_sub_program").on('submit', function(){
+            if () {
+                
+            }
+        });
     });
 } catch (e) {
     if (typeof console !== 'undefined') {
