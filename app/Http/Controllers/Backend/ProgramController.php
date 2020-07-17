@@ -401,7 +401,7 @@ class ProgramController extends Controller {
             'interest_borne_by' => $request->get('interest_borne_by'),
             'margin' => $request->get('margin'),
             'is_adhoc_facility' => $request->get('is_adhoc_facility'),
-            'adhoc_interest_rate' => $request->get('adhoc_interest_rate'),
+            'adhoc_interest_rate' => $request->get('is_adhoc_facility') ? $request->get('adhoc_interest_rate') : null,
             'max_interest_rate' => $request->get('max_interest_rate'),
             'min_interest_rate' => $request->get('min_interest_rate'),
             'overdue_interest_rate' => $request->get('overdue_interest_rate'),
