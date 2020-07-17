@@ -608,7 +608,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 	   try
 	   {
-		  return Disbursal::getOutstandingAmount($attr); 
+		  return Transactions::getUserLimitOutstanding($attr);
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
