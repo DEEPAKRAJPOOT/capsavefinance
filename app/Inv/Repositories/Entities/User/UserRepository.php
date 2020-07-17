@@ -1359,7 +1359,7 @@ class UserRepository extends BaseRepositories implements UserInterface
     }
 
     public function getAgencyUserLists(){
-        $result = UserModel::orderBy('user_id', 'DESC')->with('agency')->where('agency_id','<>', null);
+        $result = UserModel::orderBy('user_id', 'DESC')->with('agency')->where('agency_id','<>', null)->where('users.agency_id', \Auth::user()->agency_id);
         return $result ?: false;
 
     }

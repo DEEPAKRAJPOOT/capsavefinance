@@ -74,9 +74,9 @@
                                                 <th>{{ trans('frontend.app_list_head.user_email') }}</th>
                                                 <th>{{ trans('frontend.app_list_head.user_phone') }}</th>
                                                 <th>{{ trans('frontend.app_list_head.anchor') }}</th>
-                                                <th>{{ trans('frontend.app_list_head.applied_loan_amount') }}</th>
+                                                <!-- <th>{{ trans('frontend.app_list_head.applied_loan_amount') }}</th> -->
                                                 <th>{{ trans('frontend.app_list_head.created_date') }}</th>
-                                                <th>{{ trans('frontend.app_list_head.status') }}</th>
+                                                <th>{{ trans('frontend.app_list_head.fircu_status') }}</th>
                                                 <!-- <th>{{ trans('frontend.app_list_head.action') }}</th> -->
                                             </tr>
                                         </thead>
