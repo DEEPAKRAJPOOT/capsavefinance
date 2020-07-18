@@ -44,7 +44,7 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by Client ID/Name',
+                    'placeholder' => 'Search by Customer ID/Name',
                     'id'=>'search_keyword',
                     'autocomplete'=>'off'
                     ])
@@ -72,9 +72,10 @@
                                             <tr role="row">
                                                     <th>State</th>
                                                     <th>GSTN</th>
-                                                    <th>Customer Name</th>
-                                                    <th>Customer Address</th>
-                                                    <th>Customer GSTN</th>
+                                                    <th>Cust. Id</th>
+                                                    <th>Cust. Name</th>
+                                                    <th>Cust. Addr</th>
+                                                    <th>Cust. GSTN</th>
                                                     <th>SAC Code</th>
                                                     <th>Contract No</th>
                                                     <th>Invoice No</th>

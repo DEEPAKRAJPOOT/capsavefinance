@@ -35,14 +35,14 @@
                 border-bottom:#c5c5c5 solid 1px;
             }
             td,th{
-                font-size: <?php echo count($pdfArr[0]) > 8 ? '10px' : '15px'; ?> !important;
+                font-size: <?php echo count($pdfArr[0]) > 8 ? '8px' : '10px'; ?> !important;
                 padding:5px;
                 text-align: center;
             }
             .pagenum:before {
                 content: counter(page);
             }
-            div.breakNow { page-break-inside:avoid; page-break-after:always; }
+            /*div.breakNow { page-break-inside:avoid; page-break-after:always; }*/
         </style>
 
     </head>
