@@ -23,7 +23,8 @@
                     [
                     'class' => 'form-control',
                     'placeholder' => 'From Date',
-                    'id'=>'from_date'
+                    'id'=>'from_date',
+                    'autocomplete'=>'off'
                     ])
                     !!} 
                 </div>
@@ -34,7 +35,8 @@
                     [
                     'class' => 'form-control',
                     'placeholder' => 'To Date',
-                    'id'=>'to_date'
+                    'id'=>'to_date',
+                    'autocomplete'=>'off'
                     ])
                     !!} 
                 </div>

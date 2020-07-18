@@ -57,7 +57,7 @@ class CibilUserData extends BaseModel {
         if (!empty($whereRawCondition)) {
             $res->whereRaw($whereRawCondition);
         }
-        $res->get();
+        $res = $res->get();
         return $res ?: false;
     }
 

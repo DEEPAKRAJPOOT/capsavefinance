@@ -73,6 +73,12 @@ class ReportController extends Controller
            $whereRaw = implode(' AND ', $cond);
        }
        $leaseRegistersList = $this->reportsRepo->leaseRegisters([], $whereRaw);
+
+       $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'user_id' => $request->get('user_id'),
+        ];
        $leaseRecords = $leaseRegistersList->get();
        $leaseArr = [];
        foreach ($leaseRecords as $lease) {
@@ -109,8 +115,8 @@ class ReportController extends Controller
            $toExportData['Lease Register'] = $leaseArr;
            return $this->fileHelper->array_to_excel($toExportData, 'leaseRegisterReport.xlsx');
        }
-       $pdfArr = ['pdfArr' => $leaseArr];
-       $pdf = $this->fileHelper->array_to_pdf($pdfArr);
+       $pdfArr = ['pdfArr' => $leaseArr, 'filter' => $condArr];
+       $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.leaseRegisterReport');
        return $pdf->download('leaseRegisterReport.pdf');        
     }
     
