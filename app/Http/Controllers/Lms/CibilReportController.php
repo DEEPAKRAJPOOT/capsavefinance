@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Models\FinanceModel;
+use App\Inv\Repositories\Models\Lms\Transactions;
 use Illuminate\Http\Request;
 use App\Helpers\FileHelper;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
@@ -298,6 +299,7 @@ class CibilReportController extends Controller
 
     private function _getCRData($appBusiness) {
         $user = $appBusiness->users;
+        $outstanding = Transactions::getUserOutstanding($user->user_id);
         $data[] = [
             'Segment Identifier' => 'CR',
             'Account Number' => Helper::formatIdWithPrefix($user->user_id, 'CUSTID'),
@@ -333,7 +335,7 @@ class CibilReportController extends Controller
             'Asset based Security coverage' => NULL,
             'Guarantee Coverage' => NULL,
             'Bank Remark Code' => NULL,
-            'Wilful Default Status' => 'Calculate',
+            'Wilful Default Status' => (!empty($outstanding) ? '1' : '0'),
             'Date Classified as Wilful Default' => NULL,
             'Suit Filed Status' => NULL,
             'Suit Reference Number' => NULL,
@@ -355,11 +357,12 @@ class CibilReportController extends Controller
         if (isset($addr_data->addr_1)) {
            $fullAddress = $addr_data->addr_1 . ' ' . $addr_data->addr_2. ' ' . $addr_data->city_name. ' ' .($addr_data->state->name ?? NULL) . ' ' . $addr_data->pin_code;
         }
+        $constitution = $appBusiness->constitution->name;
 
         $data[] =  [
             'Segment Identifier' => 'GS',
             'Guarantor DUNS Number' => '999999999',
-            'Guarantor Type' => 'Calculate',
+            'Guarantor Type' => (strpos(strtolower($constitution), 'private') !== false) ? '1' : '2' ,
             'Business Category' => $appBusiness->msme_type,
             'Business / Industry Type' => $appBusiness->industryType->name,
             'Guarantor Entity Name' => $appBusiness->biz_entity_name,
@@ -399,9 +402,9 @@ class CibilReportController extends Controller
     }
 
      private function _getSSData($appBusiness) {
-      $primarySecurity = $appBusiness->app->appPrgmOffer->offerPs;
+      $primarySecurity = $appBusiness->app->appPrgmOffer->offerPs ?? NULL;
       $data = [];
-      if (!empty($primarySecurity)) {
+      if (!empty($primarySecurity) && !$primarySecurity->isEmpty()) {
           foreach ($primarySecurity as $key => $ps) {
             $data[] = [
               'Segment Identifier' => 'SS',
@@ -417,15 +420,27 @@ class CibilReportController extends Controller
       return $data;
     }
     private function _getCDData($appBusiness) {
+      $users = $appBusiness->users;
+      $dishonouredData = Transactions::getDishonouredTxn($users->user_id);
+      $countOfCheckBounce = $dishonouredData->count();
+      if (!empty($dishonouredData) && !$dishonouredData->isEmpty()) {
+        $checkbounceData = $dishonouredData[0];
+        $rec = [
+          'date_of_dishonour' => date('Ymd', strtotime($checkbounceData->sys_created_at)),
+          'amount' => $checkbounceData->amount,
+          'check_no' => '',
+          'issue_date' => '',
+        ];
+      }
       $data[] = [
-          'Segment Identifier' => 'CD',
-          'Date of Dishonour' => NULL,
-          'Amount' => NULL,
-          'Instrument / Cheque Number' => NULL,
-          'Number of times dishonoured' => NULL,
-          'Cheque Issue Date' => NULL,
-          'Reason for Dishonour' => NULL,
-          'Filler' => NULL,
+            'Segment Identifier' => 'CD',
+            'Date of Dishonour' => $rec['date_of_dishonour'] ?? NULL,
+            'Amount' => $rec['amount'] ?? NULL,
+            'Instrument / Cheque Number' => $rec['check_no'] ?? NULL,
+            'Number of times dishonoured' => $countOfCheckBounce,
+            'Cheque Issue Date' => NULL,
+            'Reason for Dishonour' => ($countOfCheckBounce > 0 ? 'Insufficient Funds' : NULL),
+            'Filler' => NULL,
       ];
       return $data;
     }

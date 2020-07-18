@@ -31,6 +31,7 @@ try {
             columns: [
                 {data: 'state'},
                 {data: 'gstn'},
+                {data: 'user_id'},
                 {data: 'customer_name'},
                 {data: 'customer_address', width:'200px'},
                 {data: 'customer_gstn'},

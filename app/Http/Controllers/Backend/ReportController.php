@@ -85,9 +85,10 @@ class ReportController extends Controller
          $leaseArr[] = [
             'State' => $lease->name, 
             'GSTN' => ($inv_comp_data['gst_no'] ?? $lease->biz_gst_no), 
-            'Customer Name' => $lease->biz_entity_name, 
-            'Customer Address' => $lease->gst_addr, 
-            'Customer GSTN' => $lease->biz_gst_no, 
+            'Cust. Id' =>  \Helpers::formatIdWithPrefix($lease->user_id, 'LEADID'), 
+            'Cust. Name' => $lease->biz_entity_name, 
+            'Cust. Addr' => $lease->gst_addr, 
+            'Cust. GSTN' => $lease->biz_gst_no, 
             'SAC Code' => $sac_code, 
             'Contract No' => $contract_no, 
             'Invoice No' => $lease->invoice_no, 

@@ -53,7 +53,7 @@
                                 <button class="btn  btn-success btn-sm" type="button"> <span class="btn-label">
                                         <i class="fa fa-plus"></i>
                                     </span>
-                                    Upload Anchor User
+                                    Upload Anchor Lead
                             </a>
                         @endcan
                         </button>
