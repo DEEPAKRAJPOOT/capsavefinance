@@ -65,7 +65,7 @@
     </div>
 </div>
 {!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Trasaction Id', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Transaction Id', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

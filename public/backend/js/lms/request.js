@@ -104,7 +104,7 @@ $(document).on('click','#pendingBtn', function(){
         return false;
     }else{
         $(this).addClass('btn-disabled');
-        if (confirm('Are you sure? You want to Submit it.')){
+        if (confirm('Are you sure you want to generate the refund request?.')){
             $("#refundReqForm").submit();
         }else{
             $(this).removeClass('btn-disabled');
@@ -118,7 +118,7 @@ $(document).on('click','#approveBtn', function(){
         return false;
     }else{
         $(this).addClass('btn-disabled');
-        if (confirm('Are you sure? You want to approve it.')){
+        if (confirm('Are you sure you want to approve the refund request?')){
             $("#refundReqForm").submit();
         }else{
             $(this).removeClass('btn-disabled');
@@ -132,7 +132,7 @@ $(document).on('click','#refundQueueBtn', function(){
         return false;
     }else{
         $(this).addClass('btn-disabled');
-        if (confirm('Are you sure? You want to Refund it.')){
+        if (confirm('Are you sure you want to move the request to refund queue?')){
             $("#refundReqForm").submit();
         }else{
             $(this).removeClass('btn-disabled');

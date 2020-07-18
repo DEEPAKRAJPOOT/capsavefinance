@@ -22,7 +22,7 @@
 			</div>
 		</div>
 	</div>
-	<input type="submit" id="submitManualDisburse" value="Mark Disburse" class="btn btn-success btn-sm ml-2">
+	<input type="submit" id="submitManualDisburse" value="Mark Refunded" class="btn btn-success btn-sm ml-2">
 </form>
  
 @endsection

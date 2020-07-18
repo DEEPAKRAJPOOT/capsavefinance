@@ -49,7 +49,7 @@ $finalDisburseAmt = 0;
 				</div>
 			</div>
 			<div class="col-6">
-				<input type="submit" id="submitManualDisburse" value="Disburse Offline" class="btn btn-success btn-sm ml-2">
+				<input type="submit" id="submitManualDisburse" value="Refund Offline" class="btn btn-success btn-sm ml-2">
 			</div>
 		</form>
 	</div>
@@ -75,7 +75,7 @@ $finalDisburseAmt = 0;
             },
             messages: {
                 'disburse_date': {
-                    required: "Disburse date is required.",
+                    required: "Refund date is required.",
                 }
             }
         });
