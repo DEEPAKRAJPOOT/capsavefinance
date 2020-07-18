@@ -136,9 +136,9 @@ use AuthenticatesUsers;
          $domain = $request->route()->domain();
           if (\Auth::check()) {
                $user_type = \Auth::user()->user_type;
-            if (config('proin.frontend_uri') === $domain && $user_type==1) {
+            if (config('proin.frontend_uri') === $domain && $user_type==1 && $user->is_active == "1") {
                 return redirect('front_dashboard');
-            } elseif (config('proin.backend_uri') === $domain && $user_type==2) {
+            } elseif (config('proin.backend_uri') === $domain && $user_type==2 && $user->is_active == "1") {
                 $user = $this->userRepo->getBackendUser(\Auth::user()->user_id);
                 if (isset($user->redirect_path) && $user->redirect_path != '') {
                     return redirect($user->redirect_path);
@@ -153,6 +153,8 @@ use AuthenticatesUsers;
                 }
 
                 return redirect(route('backend_dashboard'));
+            }else{
+                return redirect()->back()->with('messages','This user is not active');
             }
         }
    
