@@ -815,18 +815,7 @@ class ApplicationController extends Controller
 					if (!$offerData) {
 						Session::flash('error_code', 'no_offer_found');
 						return redirect()->back();
-					} else {
-                                            //Validate Enchancement Limit
-                                            $result = \Helpers::checkLimitAmount($app_id, 1);
-                                            if ($result['status']) {
-                                                if ($result['app_type'] == 2) {
-                                                    Session::flash('error_code', 'validate_limit_enhance_amt');
-                                                } else {
-                                                    Session::flash('error_code', 'validate_reduce_limit_amt');
-                                                }
-                                                return redirect()->back()->withInput();
-                                            }                                            
-                                        }
+					}
 				} else if ($currStage->stage_code == 'approver') {
 					$whereCondition = ['app_id' => $app_id];
 					$offerData = $this->appRepo->getOfferData($whereCondition);
