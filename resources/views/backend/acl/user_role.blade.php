@@ -93,6 +93,7 @@
                                        <th>Reporting Manager</th>
                                        <th>Active</th>
                                        <th>Created On</th>
+                                       <!-- <th>Updated By</th> -->
                                        <th>Action</th>
                                     </tr>
                                  </thead>

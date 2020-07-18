@@ -39,6 +39,7 @@ try {
                     {data: 'reporting_mgr'},
                     {data: 'active'},
                     {data: 'created_at'},
+                    // {data: 'updated_by'},
                     {data: 'action'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7,8]}]
