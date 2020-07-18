@@ -277,7 +277,7 @@ class Transactions extends BaseModel {
         if($this->payment_id){
             if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
             $color = '#f3c714';
-            else
+            elseif(!in_array($this->trans_type, [config('lms.TRANS_TYPE.TDS')]))
             $color = '#ffe787';
         }
         return $color;

@@ -4267,12 +4267,11 @@ class DataRenderer implements DataProviderInterface
                     });
                 }
 
-                if($request->get('customer_id')!= ''){
-                    $query->whereHas('lmsUser',function ($query) use ($request) {
-                        $customer_id = trim($request->get('customer_id'));
-                        $query->where('customer_id', '=', "$customer_id");
-                    });
-                }
+                $query->whereHas('lmsUser',function ($query) use ($request) {
+                    $customer_id = trim($request->get('customer_id')) ?? null ;
+                    $query->where('customer_id', '=', "$customer_id");
+                });
+                
               
             })
             ->make(true);
