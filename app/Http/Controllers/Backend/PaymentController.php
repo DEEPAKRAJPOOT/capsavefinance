@@ -126,10 +126,13 @@ class PaymentController extends Controller {
 				'customer_id' => 'required', 
 				'virtual_acc' => 'required',  
 				'date_of_payment' => 'required|date_format:d/m/Y|before_or_equal:'.$curdate,
-				'amount' => 'required', 
+				'amount' => 'required|numeric|gt:0', 
 				'description' => 'required'
 			],
 			[
+				'amount.required' => 'Transaction amount is required',
+				'amount.numeric' => 'Transaction amount must be number',
+				'amount.gt' => 'Transaction amount must be greater than zero',
 				'date_of_payment.before_or_equal' => 'The Transaction Date must be a date before or equal to '.$curdateMesg.'.',
 			]);
 			$user_id  = Auth::user()->user_id;

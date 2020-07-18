@@ -1966,7 +1966,7 @@ class DataRenderer implements DataProviderInterface
                     function ($trans) { 
                         $payment = '';
                         $payment .= $trans->created_at ? '<span><b>Trans. Date:&nbsp;</b>'.Carbon::parse($trans->date_of_payment)->format('d-m-Y').'</span>' : '';
-                        $payment .= $trans->amount ? '<br><span><b>Trans. Amount:&nbsp;</b> ₹ '.number_format($trans->amount).'</span>' : '';
+                        $payment .= $trans->amount ? '<br><span><b>Trans. Amount:&nbsp;</b> ₹ '.number_format($trans->amount,2).'</span>' : '';
                         return $payment;
                 })
                
