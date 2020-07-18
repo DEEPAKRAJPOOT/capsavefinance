@@ -2552,30 +2552,21 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'active',
                     function ($role) {
-                    //$disc = ($role->is_active == 1)?'Active':'Not Active'; 
-                    return ($role->is_active == 1)?'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>  
+                    return ($role->u_active == 1)?'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>  
                                           </div></b>':'<div class="btn-group "> <label class="badge badge-danger current-status">In Active</label> </div></b>';
                 })
-//                 ->editColumn(
-//                    'active',
-//                    function ($role) {
-//                    return ($role->is_active == '0')?'<div class="btn-group ">
-//                                             <label class="badge badge-warning current-status">In Active</label>
-//                                             
-//                                          </div></b>':'<div class="btn-group ">
-//                                             <label class="badge badge-warning current-status">Active</label>
-//                                             
-//                                          </div></b>';
-//
-//                })
-                
                 ->editColumn(
                     'created_at',
                     function ($role) {
-                    return ($role->created_at)? date('d-M-Y',strtotime($role->created_at)) : '---';
+                    return ($role->created_on)? \Helpers::convertDateTimeFormat($role->created_on, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s') : '---';
 
                 })
-                
+                ->editColumn(
+                    'updated_by',
+                    function ($role) {
+                    return ($role->updated)? $role->updated : '---';
+
+                })
                 ->addColumn(
                     'action',
                     function ($role) {

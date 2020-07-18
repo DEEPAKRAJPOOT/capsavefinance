@@ -16,6 +16,7 @@ return [
     'failed' => 'Please check your credentials.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
-    'oops_something_went_wrong'=>'oops! Something went wrong,Please try later.'
+    'oops_something_went_wrong'=>'oops! Something went wrong,Please try later.',
+    'active_user' => 'This user is not active.',
 
 ];
