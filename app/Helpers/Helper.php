@@ -28,6 +28,7 @@ use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\Lms\CronLog;
 use Illuminate\Http\File;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
 use Illuminate\Contracts\Support\Renderable;
@@ -1312,7 +1313,7 @@ class Helper extends PaypalHelper
         $formatedId = null;
         
         if ($type == 'APP') {            
-            $formatedId = $prefix . sprintf('%08d', $idValue);
+            $formatedId = $prefix . $idValue; /* sprintf('%08d', $idValue); */
         } else if ($type == 'VA') {
             $prefix = config('common.idprefix.'.$type);
             $formatedId = $prefix . sprintf('%08d', $idValue);            
@@ -1457,20 +1458,21 @@ class Helper extends PaypalHelper
     {
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         $whereCond=[];
-        $whereCond['status'] =  [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
+        $whereCond['status'] =  [config('lms.EOD_PROCESS_STATUS.RUNNING')];
         //$whereCond['eod_process_start_date_eq'] = \Carbon\Carbon::now()->toDateString();
         //$whereCond['eod_process_start_date_tz_eq'] = \Carbon\Carbon::now()->toDateString();
+        $whereCond['sys_start_date_lte'] = \Carbon\Carbon::now()->toDateTimeString();
         $whereCond['is_active'] = 1;
         $eodProcess = $lmsRepo->getEodProcess($whereCond);
         if ($eodProcess) {            
-            return true;
-        } else {
             return false;
+        } else {
+            return true;
         }
     }
     
 
-    public static function updateEodProcess($eodProcessCheckType, $status)
+    public static function updateEodProcess($eodProcessCheckType, $status, $eod_process_id)
     {
         $eodProcessCheckTypeList = config('lms.EOD_PROCESS_CHECK_TYPE');
        
@@ -1483,10 +1485,7 @@ class Helper extends PaypalHelper
         $sys_start_date_eq = $today->format('Y-m-d');
         
         $whereCond=[];
-        //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
-        //$whereCond['eod_process_start_date_eq'] = $sys_start_date_eq;
-        //$whereCond['eod_process_start_date_tz_eq'] = $sys_start_date_eq;
-        $whereCond['is_active'] = 1;
+        $whereCond['eod_process_id'] = $eod_process_id;
         $eodProcess = $lmsRepo->getEodProcess($whereCond);
         if ($eodProcess) {
             $eod_process_id = $eodProcess->eod_process_id;
@@ -1509,16 +1508,15 @@ class Helper extends PaypalHelper
                     $statusArr[] = $eodLog->charge_post_status;
                     $statusArr[] = $eodLog->overdue_int_accrual_status;
                     $statusArr[] = $eodLog->disbursal_block_status;
+                    $statusArr[] = $eodLog->is_running_trans_settled;
                     $eod_status = in_array(2, $statusArr) ? config('lms.EOD_PROCESS_STATUS.FAILED') : (in_array(0, $statusArr) ? '' : config('lms.EOD_PROCESS_STATUS.COMPLETED'));
                 }
             }
             
-            
             if ($eod_status) {
                 $eodData = [];
                 $eodData['status'] = $eod_status;
-                //$eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
-                $eodData['eod_process_end'] = date('Y-m-d', strtotime($sys_start_date)) . " " . date('H:i:s');
+                $eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
                 $lmsRepo->saveEodProcess($eodData, $eod_process_id);
             }
            
@@ -1642,15 +1640,28 @@ class Helper extends PaypalHelper
      */
     public static function getSysStartDate()
     {
-        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
-        $sys_start_date = $lmsRepo->getSysStartDate();
-        if (is_null($sys_start_date)) {
+        /*$lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        $eodDetails = $lmsRepo->getEodProcess(['is_active'=>1]);
+        if($eodDetails){
+            if($eodDetails->status == config('lms.EOD_PROCESS_STATUS.RUNNING')){
+                $startTime = Carbon::parse($eodDetails->sys_start_date);
+                $finishTime = Carbon::parse($eodDetails->created_at);
+                $totalDuration = strtotime($startTime) - strtotime($finishTime);
+                if($totalDuration < 0){
+                    $sys_start_date = Carbon::now()->subSeconds(abs($totalDuration))->format('Y-m-d H:i:s');
+                }elseif($totalDuration == 0){
+                    $sys_start_date = Carbon::now()->format('Y-m-d H:i:s');
+                }elseif($totalDuration > 0){
+                    $sys_start_date = Carbon::now()->addSeconds($totalDuration)->format('Y-m-d H:i:s');
+                }
+            }else{
+                $sys_start_date = Carbon::parse($eodDetails->sys_end_date)->format('Y-m-d H:i:s');
+            }
+        }else{
             $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
-        }
-        else{
-            $start = new \Carbon\Carbon($sys_start_date);
-            $sys_start_date = $start->format('Y-m-d') . " " . date('H:i:s');
-        }
+        }*/
+
+        $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
         return $sys_start_date;
     }     
 
@@ -1673,6 +1684,42 @@ class Helper extends PaypalHelper
      {
         return  Application::getDoAUsersByAppId($app_id);
      }
+
+    public static function getInterestAccrualCronStatus(){
+        $currentTimestamp = Carbon::now()->format('Y-m-d');
+        $cronLogDetails = CronLog::where('cron_id','1')->whereDate('exec_start_at',$currentTimestamp)
+        ->orderBy('cron_log_id','DESC')->first();
+        if($cronLogDetails){
+            return true;
+        } 
+        return false;
+    }
+
+    public static function getEodProcessCronStatus(){
+        $currentTimestamp = Carbon::now()->format('Y-m-d');
+        $cronLogDetails = CronLog::where('cron_id','2')->whereDate('exec_start_at',$currentTimestamp)
+        ->orderBy('cron_log_id','DESC')->first();
+
+        if($cronLogDetails){
+            return true;
+        } 
+        return false;
+    }
+
+    public static function cronLogBegin(int $cronId){
+        $cLog = [];
+        $cLog['cron_id'] = $cronId;
+        $cLog['exec_start_at'] = \Carbon\Carbon::now()->toDateTimeString();
+        return CronLog::createCronLog($cLog);
+    }
+
+    public static function cronLogEnd(int $status, int $cronLogId){
+        $cLog = [];
+        $cLog['exec_end_at'] = \Carbon\Carbon::now()->toDateTimeString();
+        $cLog['status'] = $status;
+        return CronLog::updateCronLog($cLog,$cronLogId);
+    }
+
     
     /**
      * Get Associated Anchors By User Id
@@ -1733,4 +1780,5 @@ class Helper extends PaypalHelper
             return $variable;
         }
      }
+     
 }

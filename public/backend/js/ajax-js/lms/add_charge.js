@@ -207,7 +207,7 @@
                       else
                       {
                          $("#chrg_name").val('');
-                         alert('Something went wrong, Please try again');
+                         replaceAlert('Something went wrong, Please try again', 'error');
                       }
                 }
         }); 
@@ -224,7 +224,7 @@
                 alert(errorThrown);
                 },
                 success: function (res) {
-                      alert(res)
+                      //alert(res)
                 }
         }); 
     });      
@@ -278,13 +278,13 @@
             if(chrg_calculation_type==1)
             {
               
-                alert('Please Enter Amount');
+                replaceAlert('Please Enter Amount', 'error');
                 
             }
             else
             {
               
-                 alert('Please Enter Percentage');
+                 replaceAlert('Please Enter Percentage', 'error');
             }
             return false;
           }
@@ -292,7 +292,7 @@
           {
               if(chrg_calculation_type==2)
               {    
-               alert('Percentage should not  greater than 100%');
+               replaceAlert('Percentage should not  greater than 100%', 'error');
                return false;
               }
           }

@@ -49,7 +49,7 @@ class EodProcess extends BaseModel
         'sys_end_date',
         'eod_process_start',
         'eod_process_end',
-        'total_hours',
+        'total_sec',
         'status',
         'is_active',
         'created_at',
@@ -77,6 +77,11 @@ class EodProcess extends BaseModel
                 
         $query = self::select('*');
         
+        if(isset($whereCond['eod_process_id'])){
+            $query->where('eod_process_id', '>=', $whereCond['eod_process_id']);
+            unset($whereCond['eod_process_id']);
+        }
+
         if (isset($whereCond['sys_start_date_eq'])) {
             $query->where(\DB::raw('DATE(sys_start_date)'), '=', $whereCond['sys_start_date_eq']);
             unset($whereCond['sys_start_date_eq']);
@@ -127,12 +132,17 @@ class EodProcess extends BaseModel
             }
             unset($whereCond['status']);
         }
-                                
-        unset($whereCond['is_active']);
+        
+        if (isset($whereCond['is_active'])) {
+            if (is_array($whereCond['is_active'])){
+                $query->whereIn('is_active', $whereCond['is_active']);
+            } else {
+                $query->where('is_active', $whereCond['is_active']);
+            }
+            unset($whereCond['is_active']);
+        }
         
         $query->where($whereCond);
-        $query->where('is_active', 1);        
-        
         $result = $query->first();
         
         return $result ? $result : null;

@@ -4,7 +4,7 @@ function ValidatePAN() {
             ObjVal = Obj.value;
             var panPat = /^([a-zA-Z]{5})(\d{4})([a-zA-Z]{1})$/;
             if (ObjVal.search(panPat) == -1) {
-                alert("Invalid PAN No");
+                replaceAlert("Invalid PAN No", 'error');
                 // Obj.focus();
                 // return false;
             }
@@ -422,7 +422,7 @@ $(".btnDelete").click(function() {
 
                   $('#myModal').modal('show');
                       }else{
-                          alert ("No such transaction recorded.")
+                          replaceAlert("No such transaction recorded.", 'error');
                       }
                   });
   });
@@ -452,7 +452,7 @@ $(".btnDelete").click(function() {
                   //alert( data.chaincodeID );
                   $('#myModal2').modal('show');
                   }else{
-                      alert("No such block recorded yet");
+                      replaceAlert("No such block recorded yet", 'error');
                   }
                   });
   });
@@ -614,7 +614,7 @@ $(document).on('click', '.active2 #15', function (e) {
     $.ajax({
             type: "post",
             url: '/ajaxroute/get-bank-assessments',
-            data: {supplier_id : supplier_id, fileId, fileId},
+            data: {supplier_id : supplier_id, fileId : fileId},
             dataType: "json",
             cache: false,
             success: function (response) {

@@ -177,8 +177,9 @@ class ReportController extends Controller
             'Due Date' => Carbon::parse($invoice->payment_due_date)->format('d/m/Y') ?? NULL,
             'Bill Amount' => number_format($invoice->invoice->invoice_amount ?? 0),
             'Approve Amount' => number_format($invoice->invoice->invoice_approve_amount ?? 0),
-            'Balance' => number_format($invoice->invoice->invoice_approve_amount ?? 0),
             'Days OD' => $invoice->InterestAccrual->count() ?? 0,
+            'Balance' => number_format($invoice->invoice->invoice_approve_amount ?? 0),
+           
         ];
         endforeach;
         if (strtolower($request->type) == 'excel') {
@@ -219,7 +220,7 @@ class ReportController extends Controller
             'Realisation Amount' => number_format($invoice->invoice->invoice_approve_amount ?? 0),
             'OD/OP Days' => $invoice->InterestAccrual->count() ?? 0,
             'Cheque' => $cheque,
-            'Business' => $invoice->invoice->business->biz_entity_name ?? NULL,
+            'Business Name' => $invoice->invoice->business->biz_entity_name ?? NULL,
         ];
         endforeach;
         if (strtolower($request->type) == 'excel') {

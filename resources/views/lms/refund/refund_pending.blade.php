@@ -29,6 +29,9 @@
                             <button type="button" class="btn btn-success btn-sm ml-2" id="approveBtn">Approve Refund Request</button>
                         </div>
                     </div>
+                    <div class="row pull-left">
+                    @include('lms.refund.common.search')
+                    </div>
                 </div>
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -42,7 +45,7 @@
                                                     <th><input type="checkbox" id="chkAll"></th>
                                                     <th>Ref No</th>
                                                     <th>Customer ID</th>
-                                                    <th>Business Name</th>                                                    
+                                                    <th>Bussiness Entity Name</th>                                                    
 													<th>Amount</th>
                                                     <th>Date</th>
                                                     {{-- <th>Assignee</th>	

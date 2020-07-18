@@ -106,19 +106,21 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                        <td width="40%">
+                             @php if($fromdate && $todate) { @endphp
                             <span style="font-size: small;"><strong>Invoice Over Due From</strong></span>
                             &nbsp;
                             
-                            {{($fromdate)? $fromdate : '0000-00-00' }} &nbsp; To &nbsp; {{($todate)? $todate : '0000-00-00'}}
+                            {{($fromdate)? $fromdate : '' }} &nbsp; To &nbsp; {{($todate)? $todate : ''}}
+                           @php }  @endphp
                         </td>
-                         <td>
+                         <td width="25%">
                             <span style="font-size: small;"><strong>Invoice Over Due Report</strong></span>
                            </td>
-                           <td>
+                            <td width="15%">
                             <span style="font-size: small;"><strong></strong></span>
                            </td>
-                            <td>
+                            <td width="15%">
                             <span style="font-size: small;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $date->isoFormat('MMMM D, Y')}}</strong></span>
                            </td>
                     </tr>
@@ -174,13 +176,13 @@
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Approve Amount</strong></span>
                         </td>
-                       
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                            <span style="font-size: small;"><strong>Balance</strong></span>
-                        </td>
                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Days OD</strong></span>
                         </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Balance</strong></span>
+                        </td>
+                       
                     </tr>
                     @php
                     $invBal = 0;
@@ -216,6 +218,9 @@
                             <span style="font-size: small;">{{number_format($invoice->invoice->invoice_approve_amount)}}</span>
                         </td>
                         <td>
+                            <span style="font-size: small;">{{$invoice->InterestAccrual->count()}}</span>
+                        </td>
+                        <td>
                             <span style="font-size: small;">
                        @php
                        
@@ -226,9 +231,7 @@
                       @endphp
                             </span>
                         </td>
-                          <td>
-                            <span style="font-size: small;">{{$invoice->InterestAccrual->count()}}</span>
-                        </td>
+                          
                     </tr>
                     @endforeach
                        <tr>
@@ -241,11 +244,12 @@
                           <td>
                             <span style="font-size: small;"><strong>{{number_format($invApprBal)}}</strong></span>
                         </td>
-                          <td>
-                            <span style="font-size: small;"><strong>{{number_format($subBal)}}</strong></span>
-                        </td>
+                         
                          <td>
                             <span style="font-size: small;"></span>
+                        </td>
+                         <td>
+                            <span style="font-size: small;"><strong>{{number_format($subBal)}}</strong></span>
                         </td>
                     </tr>
                 </table>

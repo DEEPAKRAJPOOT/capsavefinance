@@ -17,7 +17,7 @@
             <div class="row">
                 
                    <div class="row md-12">
-                <div class="col-md-3">
+                <div class="col-md-4">
                     {!!
                     Form::text('from_date',
                     null,
@@ -30,7 +30,7 @@
                     ])
                     !!} 
                 </div>
-                 <div class="col-md-3">
+                 <div class="col-md-4">
                     {!!
                     Form::text('to_date',
                     null,
@@ -44,19 +44,7 @@
                     !!} 
                 </div>
                
-                <div class="col-md-3" id="prefetch">
-                    {!!
-                    Form::text('search_keyword',
-                    null,
-                    [
-                    'class' => 'form-control',
-                    'required' => 'required',
-                    'placeholder' => 'Search by Client ID/Name',
-                    'id'=>'search_keyword',
-                    'autocomplete'=>'off'
-                    ])
-                    !!}
-                </div>
+               
              
                 <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
                &nbsp; &nbsp; <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldPDF">Pdf</a> &nbsp; &nbsp; <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldEXCEL">Excel</a>
@@ -74,10 +62,11 @@
                                                     <th>Debtor Name</th>
                                                     <th>Debtor Invoice Acc. No.</th>
                                                     <th>Invoice Date</th>
-                                                     <th>Invoice Due Amount Date.</th>
+                                                     <th>Invoice Due Amount</th>
+                                                     <th>Invoice Due Amount Date</th>
                                                      <th>Grace Period</th>
-                                                     <th>Realisation on Date.</th>
-                                                     <th>Realisation  Amount.</th>
+                                                     <th>Realisation on Date</th>
+                                                     <th>Realisation  Amount</th>
                                                      <th>OD/OP Days  </th>
                                                      <th>Cheque</th>
                                                       <th>Business Name</th>

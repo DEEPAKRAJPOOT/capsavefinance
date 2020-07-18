@@ -8,6 +8,7 @@
 */
 
 return [
+    'EOD_FAILURE_MAIL' => explode(',',env('EOD_FAILURE_MAIL','')),
     'LMS_STATUS' => env('LMS_STATUS', 0),
     'NPA_DAYS' => env('NPA_DAYS', 90),
     'TRANS_TYPE' => [    
@@ -96,13 +97,15 @@ return [
         'RUNNING' => 0,
         'COMPLETED' => 1,
         'STOPPED' => 2,
-        'FAILED' => 3
+        'FAILED' => 3,
+        'WATING' => 4,
     ],
     'EOD_PROCESS_STATUS_LIST' => [
         0 => 'Running',
         1 => 'Completed',
         2 => 'Stopped',
         3 => 'Failed',
+        4 => 'WATING',
     ],
     'EOD_PROCESS_ROUTES' => [
         'update_bulk_invoice',
@@ -148,6 +151,7 @@ return [
         'CHARGE_POST' => 'charge_post_status',
         'OVERDUE_INT_ACCRUAL' => 'overdue_int_accrual_status',
         'DISBURSAL_BLOCK' => 'disbursal_block_status',
+        'is_running_trans_settled' => 'is_running_trans_settled',
     ],    
     'DECIMAL_TYPE' => [
         'PERCENTAGE' => '2',

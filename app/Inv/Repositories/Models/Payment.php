@@ -135,7 +135,7 @@ class Payment extends BaseModel {
      * @return type mixed
      */
     public static function getPayments(array $where = []) {
-        $res = self::where($where)->get();
+        $res = self::where($where)->orderBy('payment_id','desc')->get();
         return $res->isEmpty() ? [] :  $res;
     }
 
@@ -172,9 +172,13 @@ class Payment extends BaseModel {
     }   
 
     public function getPaymentModeAttribute() {
-        $payment_type = $this->payment_type;
-        $payModes = config('payment.type') ?? [];
-        $mode_of_pay = $payModes[$payment_type] ?? NULL;
+        if($this->action_type == 1){
+            $payment_type = $this->payment_type;
+            $payModes = config('payment.type') ?? [];
+            $mode_of_pay = $payModes[$payment_type] ?? NULL;
+        }else{
+            $mode_of_pay = $this->paymentname;
+        }
         return $mode_of_pay;
     }
 

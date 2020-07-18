@@ -1,23 +1,26 @@
 <?php
 namespace App\Libraries\Ui;
-use DataTables;
+use DB;
+use Auth;
 use Config;
 use Helpers;
-use DB;
 use Session;
-use Auth;
+use DateTime;
+use DataTables;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
-use App\Inv\Repositories\Models\BizInvoice;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
-use App\Inv\Repositories\Models\AppAssignment;
-use App\Inv\Repositories\Models\Application;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
-use App\Inv\Repositories\Models\Master\DoaLevelRole;
-use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\Application;
+use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\AppProgramLimit;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Models\Master\DoaLevelRole;
+use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\Anchor;
 
@@ -204,12 +207,13 @@ class DataRenderer implements DataProviderInterface
     public function getAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id','biz_entity_name','assignee', 'status', 'assigned_by', 'action','assoc_anchor', 'contact','name'])
+                ->rawColumns(['app_id','biz_entity_name','assignee', 'status', 'assigned_by', 'action','assoc_anchor', 'contact','name', 'app_code'])
                 ->addColumn(
-                    'app_id',
+                    'app_code',
                     function ($app) {
                         $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
                         $app_id = $app->app_id;
+                        $app_code = $app->app_code;
                         $parent_app_id = $app->parent_app_id;
                         $ret = '';
                         $permission = Helpers::checkPermission('company_details');
@@ -218,10 +222,10 @@ class DataRenderer implements DataProviderInterface
                                 $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                            else
                                 $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
-                           $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                           $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $app_code . "</a>";
                                                      
                         } else {
-                            $ret = "<a id='app-id-$app_id' rel='tooltip'>" . \Helpers::formatIdWithPrefix($app_id, 'APP') . "</a>";
+                            $ret = "<a id='app-id-$app_id' rel='tooltip'>" . $app_code . "</a>";
                         }
                         
                         if (!empty($parent_app_id)) {
@@ -428,7 +432,7 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('search_keyword') != '') {                        
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            $query->where('app.app_code', 'like',"%$search_keyword%")
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
                             ->orWhere('anchor_user.pan_no', 'like', "%$search_keyword%");
                         });                        
@@ -1942,9 +1946,9 @@ class DataRenderer implements DataProviderInterface
                     function ($trans) {
                         $created_by = '';
                         $created_by .= $trans->creator ? '<span><b>Name:&nbsp;</b>'.$trans->creator->f_name.'&nbsp;'.$trans->creator->l_name.'</span>' : '';
-                        $created_by .= $trans->created_at ? '<br><span><b>Date & Time:&nbsp;</b>'.Carbon::parse($trans->created_at)->format('d-m-Y H:i:s').'</span>' : '';
+                        $created_by .= '<br><span><b>Date & Time:&nbsp;</b>'.\Helpers::convertDateTimeFormat($trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A').'</span>';
+
                         return $created_by;                        
-                        // return ($trans->created_at) ? Carbon::parse($trans->created_at)->format('d-m-Y H:i:s') : '';
                 })
                 ->addColumn(
                     'action',
@@ -1998,13 +2002,13 @@ class DataRenderer implements DataProviderInterface
                ->addColumn(
                     'amount',
                     function ($invoice) {
-                      
-                       return ($invoice->invoice_amt) ? number_format($invoice->invoice_amt) : ''; 
+                    //   dd($invoice->invoice->invoice_amount);
+                       return ($invoice->invoice_id) ? number_format($invoice->invoice->invoice_amount) : 'N/A'; 
              })
                 ->addColumn(
                     'comment',
                     function ($invoice) { 
-                     return ($invoice->comm_txt) ? $invoice->comm_txt : ''; 
+                     return ($invoice->comm_txt) ? $invoice->comm_txt : 'N/A'; 
                 })
                ->addColumn(
                     'status',
@@ -3763,7 +3767,16 @@ class DataRenderer implements DataProviderInterface
                             }
                             
                             return $act;
-                           
+                        })
+                        ->filter(function ($query) use ($request) {
+                            if ($request->get('search_keyword') != '') {
+                                $query->where(function ($query) use ($request) {
+                                    $search_keyword = trim($request->get('search_keyword'));
+                                    $query->where('f_name', 'like', "%$search_keyword%")
+                                    ->orWhere('biz_name', 'like', "%$search_keyword%")
+                                    ->orWhere('email', 'like', "%$search_keyword%");
+                                });
+                            }
                         })
                         ->make(true);
     }    
@@ -5016,7 +5029,8 @@ class DataRenderer implements DataProviderInterface
                     ->editColumn(
                         'business_name',
                         function ($dataRecords) {
-                        return $dataRecords->getUserName->biz_name;
+                        if($dataRecords->biz_id)
+                        return $dataRecords->getBusinessName->biz_entity_name;
                     })
                     ->editColumn(
                         'virtual_account',
@@ -5037,8 +5051,7 @@ class DataRenderer implements DataProviderInterface
                         'updated_by',
                         function ($dataRecords) {
                         $createdByName = $dataRecords->getCreatedByName->f_name .' '.$dataRecords->getCreatedByName->m_name . ' '. $dataRecords->getCreatedByName->l_name;
-                        // $dateofPay = date('d/m/Y H:i:s', strtotime($dataRecords->date_of_payment));
-                        $dateofPay = date('d/m/Y H:i:s', strtotime($dataRecords->created_at));
+                        $dateofPay = \Helpers::convertDateTimeFormat($dataRecords->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
                         $updated_by = "$createdByName<br />$dateofPay";
                         return $updated_by;
                     }) 
@@ -5288,7 +5301,8 @@ class DataRenderer implements DataProviderInterface
         ->addColumn(
             'biz_entity_name',
             function ($data) {
-                return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
+                // return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
+                return $data->payment->getUserName->biz->biz_entity_name;
             }
         )            
         ->editColumn(
@@ -5345,6 +5359,17 @@ class DataRenderer implements DataProviderInterface
                 return $result;
             }
         )  
+        ->filter(function ($query) use ($request) {
+            if ($request->get('search_keyword') != '') {
+                $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('search_keyword'));
+                    $query->where('ref_code', 'like',"%$search_keyword%")
+                    ->orwhereHas('payment.biz', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     });
+                });
+            }
+        })
         ->make(true);
 
     }
@@ -5379,7 +5404,8 @@ class DataRenderer implements DataProviderInterface
         ->addColumn(
             'biz_entity_name',
             function ($data) {
-                return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
+                // return \Helpers::getEntityNameByUserId($data->payment->user_id);  //$data->req_type_name;
+                return $data->payment->getUserName->biz->biz_entity_name;
             }
         )            
         ->editColumn(
@@ -5420,6 +5446,17 @@ class DataRenderer implements DataProviderInterface
                 return config('lms.REQUEST_STATUS_DISP.'. $data->status . '.SYSTEM');
             }
         )
+        ->filter(function ($query) use ($request) {
+            if ($request->get('search_keyword') != '') {
+                $query->where(function ($query) use ($request) {
+                    $search_keyword = trim($request->get('search_keyword'));
+                    $query->where('ref_code', 'like',"%$search_keyword%")
+                    ->orwhereHas('payment.biz', function ($q) use ($search_keyword){
+                        $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                     });
+                });
+            }
+        })
         ->make(true);
     }
 
@@ -6422,6 +6459,11 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {  
                         return  Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y');
                    })
+                     ->addColumn(
+                    'invoice_due_amount',
+                    function ($invoice) {  
+                        return  number_format($invoice->invoice->invoice_approve_amount);
+                   })
                 ->addColumn(
                     'invoice_due_amount_date',
                     function ($invoice) { 
@@ -6481,7 +6523,7 @@ class DataRenderer implements DataProviderInterface
                     'od',
                     function ($invoice) {
                        
-                           return '<b>'.$invoice->InterestAccrual->count().'</b>';
+                           return '<b>'.($invoice->InterestAccrual) ? $invoice->InterestAccrual->count() : ''.'</b>';
                        
                     }) 
                     ->addColumn(
@@ -6510,4 +6552,94 @@ class DataRenderer implements DataProviderInterface
                  })
               ->make(true);
     }   
+
+    public function getEodList(Request $request,$eod)
+    {  
+        return DataTables::of($eod)
+            ->rawColumns(['status'])
+           
+            ->addColumn( 'current_sys_date', function ($eod) {
+                if($eod->created_at) 
+                return \Helpers::convertDateTimeFormat($eod->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
+            })
+
+            ->addColumn( 'sys_started_at', function ($eod) {
+                if($eod->sys_start_date) 
+                return \Helpers::convertDateTimeFormat($eod->sys_start_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
+            })
+
+            ->addColumn( 'sys_stopped_at', function ($eod) {
+                if($eod->sys_end_date)
+                return \Helpers::convertDateTimeFormat($eod->sys_end_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A'); 
+            })
+
+            ->addColumn( 'eod_process_mode', function ($eod) {
+                $processedBy = null;
+                switch ($eod->eod_process_mode) {
+                    case '1':
+                        $processedBy = 'Automatically';
+                        break;
+                    case '2':
+                        $processedBy = 'Manually';
+                        break;
+                    default:
+                        $processedBy = ''; 
+                        break;
+                }
+                return $processedBy;
+            })
+
+            ->addColumn( 'eod_process_started_at', function ($eod) {
+                if($eod->eod_process_start) 
+                return \Helpers::convertDateTimeFormat($eod->eod_process_start, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s A');
+            })
+
+            ->addColumn( 'eod_process_stopped_at', function ($eod) {
+                if($eod->eod_process_end)
+                return \Helpers::convertDateTimeFormat($eod->eod_process_end, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s A'); 
+            })
+
+            ->addColumn( 'total_sec', function ($eod) { 
+                if($eod->total_sec){
+                    $dt1 = new DateTime("@0");
+                    $dt2 = new DateTime("@$eod->total_sec");
+                    $days = $dt1->diff($dt2)->format('%a');
+                    $hours = $dt1->diff($dt2)->format('%h');
+                    $minutes = $dt1->diff($dt2)->format('%i');
+                    $seconds =  $dt1->diff($dt2)->format('%s');
+                    $result = '';
+                     
+                    $result .= $days? $days. ' days, ':''; 
+                    $result .= $hours? $hours. ' hours, ':''; 
+                    $result .= $minutes? $minutes. ' minutes, ':''; 
+                    $result .= $seconds? $seconds. ' seconds ':'';   
+                    return $result;              
+                }
+            })
+
+            ->addColumn( 'status', function ($eod) { 
+                $status = null;
+                switch ($eod->status) {
+                    case '0':
+                        $status = '<i class="fa fa-circle-o-notch fa-spin  fa-fw margin-bottom"></i>'; 
+                        break;
+                    case '1':
+                        $status = '<i class="fa fa-check" title="Passed" style="color:green" aria-hidden="true"></i>'; 
+                        break;
+                    case '2':
+                        $status = '<i class="fa fa-ban" title="Stopped" style="color:black" aria-hidden="true"></i>'; 
+                        break;
+                    case '3':
+                        $status = '<i class="fa fa-times" title="Failed" style="color:red" aria-hidden="true"></i>'; 
+                        break;
+                    default:
+                        $status = ''; 
+                        break;
+                }
+                return $status;
+            })
+            // ->filter(function ($query) use ($request) {
+            // })
+            ->make(true);
+    } 
 }
