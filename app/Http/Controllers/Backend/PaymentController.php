@@ -132,9 +132,7 @@ class PaymentController extends Controller {
 			[
 				'date_of_payment.before_or_equal' => 'The Transaction Date must be a date before or equal to '.$curdateMesg.'.',
 			]);
-			$user_id  = Auth::user()->user_id;
-			$mytime = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d h:i:s');
-
+			
 			$utr ="";
 			$check  ="";
 			$unr  ="";
@@ -183,8 +181,6 @@ class PaymentController extends Controller {
 				'is_settled' => (in_array($request->action_type, [3])) ? '1':'0',
 				'is_manual' => '1',
 				'sys_date'=>\Helpers::getSysStartDate(),
-				'created_at' => $mytime,
-				'created_by' => $user_id,
 				'generated_by' => 0,
 			];
 			$paymentId = NULL;
@@ -250,9 +246,7 @@ class PaymentController extends Controller {
 					'trans_by' => 1,
 					'pay_from' => ($udata)?$udata->is_buyer:'',
 					'is_settled' => 1,
-					'is_posted_in_taaly' => 0,
-					'created_at' =>  $mytime,
-                    'created_by' =>  $user_id,
+					'is_posted_in_taaly' => 0
                   ];
 			if($request->action_type == 3){
 				$res = $this->invRepo->saveRepaymentTrans($tran);
@@ -281,8 +275,6 @@ class PaymentController extends Controller {
                         }
                         
 			$arrFileData = $request->all();
-			$user_id  = Auth::user()->user_id;
-			$mytime = Carbon::now();
 
 			if(isset($arrFileData['doc_file']) && !is_null($arrFileData['doc_file'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
@@ -294,8 +286,6 @@ class PaymentController extends Controller {
 				'tds_certificate_no' => $request->tds_certificate_no ?? '',
 				'file_id' => $userFile->file_id ?? '',
 				'description' => $request->description,
-				'updated_at' => $mytime,
-				'updated_by' => $user_id,
 			];
 			
 			$response =  $this->invRepo->updatePayment($paymentData, $request->payment_id);
@@ -315,8 +305,6 @@ class PaymentController extends Controller {
                         }
                         
 			$data = array();
-			$id  = Auth::user()->user_id;
-			$mytime = Carbon::now(); 
 			$count =  count($request['payment_date']);
 			   for($i=0; $i < $count ;$i++)
 			   {
@@ -327,9 +315,8 @@ class PaymentController extends Controller {
 							'trans_date' => ($request['payment_date'][$i]) ? Carbon::createFromFormat('d/m/Y', $request['payment_date'][$i])->format('Y-m-d') : '',
 							'virtual_acc_id' => $request['virtual_acc_no'][$i],
 							'amount' => $request['amount'][$i],
-							'comment' => $request['remarks'][$i],  
-							'created_by' =>  $id,
-							'created_at' =>  $mytime ];
+							'comment' => $request['remarks'][$i] 
+						];
 				   $res = $this->invRepo->saveRepaymentTrans($arr);
 			   }
 		 
