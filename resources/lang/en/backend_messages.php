@@ -4,7 +4,7 @@ return [
     'change_app_status' => 'Application status updated successfully.',
     'update_assignee' => 'Application is assigned successfully.',
     'add_note' => 'Note saved successfully.',
-    'anchor_registration_success' => 'Anchor lead registered successfully.',
+    'anchor_registration_success' => 'Anchor lead uploaded successfully.',
     'anchor_lead_created' => 'Anchor Lead Created Successfully',
     'anchor_registration_updated' => 'Anchor information saved successfully.',
     'limit_assessment_success' => 'Limit assigned successfully.',

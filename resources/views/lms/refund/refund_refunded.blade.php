@@ -21,7 +21,7 @@
             @include('lms.refund.common.status_links')
             <div class="row">
                 <div class="card-body">
-                    <div class="row pull-left">
+                    <div class="row col-6 pull-left">
                     @include('lms.refund.common.search')
                     </div>
                 </div>
