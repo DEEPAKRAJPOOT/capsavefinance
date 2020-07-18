@@ -154,7 +154,7 @@ use AuthenticatesUsers;
 
                 return redirect(route('backend_dashboard'));
             }else{
-                return redirect()->back()->with('messages','This user is not active');
+                return redirect()->back()->with('messages', trans('auth.active_user'));
             }
         }
    
