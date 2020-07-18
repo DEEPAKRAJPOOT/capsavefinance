@@ -6248,6 +6248,9 @@ class DataRenderer implements DataProviderInterface
                $inv_comp_data = json_decode($invoiceRec->inv_comp_data, TRUE);
                return ($inv_comp_data['gst_no'] ?? $invoiceRec->biz_gst_no);
            })    
+           ->editColumn('user_id', function ($invoiceRec) {
+               return \Helpers::formatIdWithPrefix($invoiceRec->user_id, 'LEADID');
+           })      
            ->editColumn('customer_name', function ($invoiceRec) {
                return $invoiceRec->biz_entity_name;
            })  
