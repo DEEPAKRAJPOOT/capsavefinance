@@ -386,7 +386,7 @@ cursor: pointer;
             var max = parseFloat(chargeData['debit_amount']);
             if(chargeData){
                 //$('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
-                $('#date_of_payment').datetimepicker('setStartDate', new Date(messages.sysDate));
+                // $('#date_of_payment').datetimepicker('setStartDate', new Date(messages.sysDate));
                 if(userData['action_type']!=3){
                     $('#amount').val(amt.toFixed(2)); 
                 }
