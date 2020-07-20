@@ -189,10 +189,6 @@ class AnchorUser extends BaseModel {
     public function anchors(){
         return $this->hasMany('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');               
     }
-
-    public function anchor(){
-        return $this->hasMany('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');               
-    }
     
     public static function getAnchorsByUserId($userId) {
         $roleData = User::getBackendUser(\Auth::user()->user_id);
