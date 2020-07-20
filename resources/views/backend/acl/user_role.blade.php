@@ -91,7 +91,7 @@
                                        <th>Mobile</th>
                                        <th>Role</th>
                                        <th>Reporting Manager</th>
-                                       <th>Active</th>
+                                       <th>Status</th>
                                        <th>Created On</th>
                                        <!-- <th>Updated By</th> -->
                                        <th>Action</th>
