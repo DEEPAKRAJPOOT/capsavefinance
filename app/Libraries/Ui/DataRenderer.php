@@ -3211,6 +3211,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'agency_name',
                     function ($user) {
+                        // dd($user);
                     return isset($user->agency->comp_name) ? $user->agency->comp_name : '';
                 }) 
                 ->editColumn(
@@ -3249,6 +3250,10 @@ class DataRenderer implements DataProviderInterface
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('by_name'));
                             $query->where('users.f_name', 'like',"%$search_keyword%")
+                            ->orWhere(\DB::raw("CONCAT(rta_users.f_name,' ',rta_users.l_name)"), 'like', "%$search_keyword%")
+                             ->orwhereHas('agency', function ($q) use ($search_keyword){
+                                $q->where('comp_name', 'like', "%$search_keyword%");
+                            })
                             ->orWhere('users.email', 'like', "%$search_keyword%");
                         });
                     }
