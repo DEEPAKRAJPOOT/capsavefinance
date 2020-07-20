@@ -94,7 +94,20 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\AclController@saveUserRolePassword'
                     ]
             );
-                        
+               
+            Route::get(
+                'assign-doal-level-role', [
+            'as' => 'assign_doal_level_role',
+            'uses' => 'Backend\AclController@assignDoalLevelRole'
+                ]
+            );
+
+            Route::post(
+                    'save-assign-doal-level-role', [
+                'as' => 'save_assign_doal_level_role',
+                'uses' => 'Backend\AclController@saveAssignDoalLevelRole'
+                    ]
+            );            
         });
 
 
