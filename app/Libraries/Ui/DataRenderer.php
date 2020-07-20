@@ -277,22 +277,18 @@ class DataRenderer implements DataProviderInterface
                 //     function ($app) {                        
                 //         return $app->mobile_no ? $app->mobile_no : '';
                 // })                
-                ->addColumn(
-                    'assoc_anchor',
-                    function ($app) {
-                        //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
-                    /////return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
+                // ->addColumn(
+                //     'assoc_anchor',
+                //     function ($app) {
                     
-                    if($app->anchor_id){
-                       //$userInfo = User::getUserByAnchorId((int) $app->anchor_id);
-                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
-                    } else {
-                       $achorName='';  
-                    }                    
-                    return $achorName;
+                //     if($app->anchor_id){
+                //         $achorName = Helpers::getAnchorsByUserId($app->user_id);
+                //     } else {
+                //        $achorName='';  
+                //     }                    
+                //     return $achorName;
                     
-                })
+                // })
                 // ->addColumn(
                 //     'user_type',
                 //     function ($app) {

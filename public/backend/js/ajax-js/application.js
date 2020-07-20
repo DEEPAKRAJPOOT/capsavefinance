@@ -37,7 +37,7 @@ try {
                 {data: 'contact'},
                 // {data: 'email'},
                // {data: 'mobile_no'},
-                {data: 'assoc_anchor'},
+                // {data: 'assoc_anchor'},
                // {data: 'user_type'},
                 {data: 'assignee'},
                 {data: 'assigned_by'},
