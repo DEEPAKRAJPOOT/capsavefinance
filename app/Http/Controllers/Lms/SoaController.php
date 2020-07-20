@@ -176,27 +176,26 @@ class SoaController extends Controller
         }
     }
     
-    public function getBalance($trans){
-        $data = '';
-        if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
-            $data = '';
+    public function getBalance($trans, $balance = 0.00){
+
+        if($trans->entry_type=='1'){
+            $balance = $balance+$trans->amount;
         }
-        elseif($trans->balance<0){
-            $data = number_format(abs($trans->balance), 2);
-        }else{
-            $data = number_format(abs($trans->balance), 2);
+        elseif($trans->entry_type=='0'){
+            $balance = $balance-$trans->amount;
         }
-        return $data;
+        return $balance;
     }
     
     public function prepareDataForRendering($expecteddata){
         $preparedData = [];
         foreach($expecteddata as $key => $expData){
             foreach ($expData as $k => $data) {
+                $balance = $this->getBalance($data, $balance??0);
                 $preparedData[$key][$k]['payment_id'] = $data->payment_id;
                 $preparedData[$key][$k]['parent_trans_id'] = $data->parent_trans_id;      
                 $preparedData[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
-                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->created_at));
+                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->sys_created_at ?? $data->created_at));
                 $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->trans_date));
                 $preparedData[$key][$k]['trans_type'] = trim($data->transname);
                 $preparedData[$key][$k]['batch_no'] = $data->batchNo;
@@ -205,7 +204,7 @@ class SoaController extends Controller
                 $preparedData[$key][$k]['currency'] = trim($data->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')]) ? '' : 'INR');
                 $preparedData[$key][$k]['debit'] = $this->getDebit($data);
                 $preparedData[$key][$k]['credit'] = $this->getCredit($data);
-                $preparedData[$key][$k]['balance'] = $this->getBalance($data);
+                $preparedData[$key][$k]['balance'] = ($balance<=0)?number_format(abs($balance),2):'('.number_format(abs($balance),2).')';
                 $preparedData[$key][$k]['soabackgroundcolor'] = $data->soabackgroundcolor;
             }
         }
