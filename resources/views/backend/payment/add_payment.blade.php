@@ -655,11 +655,12 @@ cursor: pointer;
         });         
     });
 
-    $('.getFileName').change(function(){
+    $(document).on('change', '.getFileName', function(){
         $(this).parent('div').children('.custom-file-label').html('Choose file');
-    });
+    })
     
-    $('.getFileName').change(function(e) {
+    
+    $(document).on('change', '.getFileName', function(e){
         var fileName = e.target.files[0].name;
         $(this).parent('div').children('.custom-file-label').html(fileName);
     });
