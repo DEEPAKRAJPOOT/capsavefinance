@@ -150,7 +150,7 @@ class RoleUser extends BaseModel
      */
     public static function updateUserRole($userId, $role)
     {
-        $arrRoles = self::where('user_id', $userId)->update($role);
+        $arrRoles = self::where('user_id', $userId)->where('is_logged_in_role', 1)->update($role);
         return ($arrRoles ? : false);
     }
     
