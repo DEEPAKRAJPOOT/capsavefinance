@@ -105,8 +105,8 @@ class AnchorUser extends BaseModel {
     public static function getAllAnchorUsers($datatable=false) {
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         
-        $result = self::select('anchor_user.*');
-             //->join('users', 'users.user_id', '=', 'anchor_user.user_id')
+        $result = self::select('anchor_user.*', 'anchor.comp_name')
+             ->join('anchor', 'anchor_user.anchor_id', '=', 'anchor.anchor_id');
         
         if ($roleData[0]->is_superadmin != 1) {        
              $result->where('anchor_user.anchor_id', \Auth::user()->anchor_id);
@@ -187,6 +187,10 @@ class AnchorUser extends BaseModel {
     
 
     public function anchors(){
+        return $this->hasMany('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');               
+    }
+
+    public function anchor(){
         return $this->hasMany('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');               
     }
     
