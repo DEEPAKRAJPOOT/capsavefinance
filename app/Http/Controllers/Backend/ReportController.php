@@ -60,6 +60,7 @@ class ReportController extends Controller
 
     public function downloadLeaseReport(Request $request) {
        $whereRaw = '';
+       $userInfo = '';
        if(!empty($request->get('from_date')) && !empty($request->get('to_date'))){
             $from_date = $request->get('from_date');
             $to_date = $request->get('to_date');
