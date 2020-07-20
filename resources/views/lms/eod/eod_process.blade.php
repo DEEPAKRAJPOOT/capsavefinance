@@ -49,7 +49,7 @@
                                                     <thead>
                                                     <tr role="row">
                                                             <th></th>
-                                                            <th>Current System Date</th>
+                                                            {{-- <th>Current System Date</th> --}}
                                                             <th>System Started at</th>
                                                             <th>System Stopped at</th>
                                                             <th>Eod Processed Mode</th>

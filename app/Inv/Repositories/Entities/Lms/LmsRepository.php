@@ -1432,7 +1432,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     }    
 
 	public function getEodList(){
-		return EodProcess::orderBy('eod_process_id','DESC')->get();
+		return EodProcess::whereNotIn('status',[config('lms.EOD_PROCESS_STATUS.WATING')])->orderBy('eod_process_id','DESC')->get();
 	}
 
 	public function createCronLog($data){
