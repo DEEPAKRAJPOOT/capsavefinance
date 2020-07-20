@@ -559,12 +559,12 @@ class DataRenderer implements DataProviderInterface
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
                         });                        
                     }
-                    if ($request->get('is_status') != '') {
-                        $query->where(function ($query) use ($request) {
-                            $is_assigned = $request->get('is_status');
-                            $query->where('app.status', $is_assigned);
-                        });
-                    }
+                    // if ($request->get('is_status') != '') {
+                    //     $query->where(function ($query) use ($request) {
+                    //         $is_assigned = $request->get('is_status');
+                    //         $query->where('app.status', $is_assigned);
+                    //     });
+                    // }
                     
                 })
                 ->make(true);
