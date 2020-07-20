@@ -63,6 +63,13 @@
                     ])
                     !!} 
                 </div>
+                <div class="col-md-3">
+                {!! Form::select('trans_entry_type', $transTypes, Null, [
+                        'class' => 'form-control',
+                        'placeholder' => 'Select Transaction Type',
+                        'id'=>'to_date'
+                        ]) !!}
+                </div>
                 @if(!request()->get('sanctionPageView'))
                 <div class="col-md-3" id="prefetch">
                     {!!

@@ -137,5 +137,37 @@ class TransType extends BaseModel {
         ->orderBy("priority","asc")
         ->get();
     }
+
+    public static function getTransTypeFilterList(){
+        $TransType = [ 
+            '31_0' => 'Adjusted',
+            '8_' => 'Cancelled',
+            '18_' => 'Failed',
+            '9_0' => 'Interest Due',
+            '9_1' => 'Interest Payment',
+            '16_1' => 'Knocked Off',
+            '10_1' => 'Margin',
+            '10_0' => 'Margin Due',
+            '35_' => 'Non Factored Amount',
+            '33_0' => 'Overdue Interest Due',
+            '33_1' => 'Overdue Interest Payment',
+            '16_0' => 'Payment',
+            '32_0' => 'Refunded',
+            '17_' => 'Repayment',
+            '2_' => 'Reversed',
+            '7_' => 'TDS',
+            '31_1' => 'To be Adjusted',
+            '32_1' => 'To be Refunded',
+            '36_' => 'Waived Off',
+            '37_' => 'Write Off',
+        ];
+
+        $customTransTypes = self::where('id','>=','50')->get();
+        
+        foreach ($customTransTypes as $key => $value) {
+            $TransType[$value->id.'_'] = $value->debit_desc;
+        }
+        return $TransType;
+    }
     
 }
