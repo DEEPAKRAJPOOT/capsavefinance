@@ -91,7 +91,7 @@
 
                                         <div class="col-md-4" id="waiveoff_div" style="display: none">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">Transactions On <span class="error_message_label">*</span></label>
+                                                <label for="txtCreditPeriod">TDS Submitted On <span class="error_message_label">*</span></label>
                                                 <select class="form-control" name="charges" id="charges">
                                                     <option value="">Select Charges</option>
                                                 </select>
