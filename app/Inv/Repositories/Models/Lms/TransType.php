@@ -167,6 +167,7 @@ class TransType extends BaseModel {
         foreach ($customTransTypes as $key => $value) {
             $TransType[$value->id.'_'] = $value->debit_desc;
         }
+        asort($TransType);
         return $TransType;
     }
     
