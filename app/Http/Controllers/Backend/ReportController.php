@@ -68,6 +68,8 @@ class ReportController extends Controller
        if(!empty($request->get('user_id'))){
             $user_id = $request->get('user_id');
             $cond[] = " user_id='$user_id' ";
+            //getCustomerDetail
+            $this->reportsRepo->getCustomerDetail($user_id);
        }
        if (!empty($cond)) {
            $whereRaw = implode(' AND ', $cond);
@@ -77,6 +79,7 @@ class ReportController extends Controller
        $condArr = [
             'from_date' => $from_date ?? NULL,
             'to_date' => $to_date ?? NULL,
+            'user_id' => $request->get('user_id'),
             'user_id' => $request->get('user_id'),
         ];
        $leaseRecords = $leaseRegistersList->get();

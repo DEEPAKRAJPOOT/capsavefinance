@@ -63,6 +63,31 @@
                 <p><b>CAPSAVE FINANCE PRIVATE LIMITED</b></p>
                 <br>
             </div>
+            <table class="table  table-td-right">
+                <tbody>
+                    <tr>
+                        <td class="text-left" width="30%"><b>Business Name</b></td>
+                        <td> {{$userInfo->biz->biz_entity_name}}    </td> 
+                        <td class="text-left" width="30%"><b>Full Name</b></td>
+                        <td>{{$userInfo->f_name}} {{$userInfo->m_name}} {{$userInfo->l_name}}</td> 
+
+                    </tr>
+                    <tr>
+                        <td class="text-left" width="30%"><b>Email</b></td>
+                        <td>{{$userInfo->email}}    </td> 
+                        <td class="text-left" width="30%"><b>Mobile</b></td>
+                        <td>{{$userInfo->mobile_no}} </td> 
+                    </tr>
+                    @if($fromdate && $todate)
+                    <tr>
+                        <td class="text-left" width="30%"><b>From Date</b></td>
+                        <td>{{$fromdate}}</td> 
+                        <td class="text-left" width="30%"><b>To Date</b></td>
+                        <td>{{$todate}}</td> 
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
             <div class="breakNow">
                 <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
                     <tr>
