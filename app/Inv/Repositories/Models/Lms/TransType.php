@@ -165,7 +165,7 @@ class TransType extends BaseModel {
         $customTransTypes = self::where('id','>=','50')->get();
         
         foreach ($customTransTypes as $key => $value) {
-            $TransType[$value->id.'_'] = $value->debit_desc;
+            $TransType[$value->id.'_'] = $value->trans_name;
         }
         asort($TransType);
         return $TransType;
