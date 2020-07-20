@@ -393,4 +393,32 @@ class AclController extends Controller {
             
         }
     }
+    
+    public function assignDoalLevelRole(Request $request)
+    {
+        try {             
+            $roles = $this->userRepo->getRolesByType(2);
+            $rolesDataArray = [];
+            foreach($roles as $role) {
+                $rolesDataArray[$role->id] = $role->name;
+            }
+           
+            return view('backend.acl.assign_doal_level_role')
+                    ->with('rolesList', $rolesDataArray);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+    
+    public function saveAssignDoalLevelRole(Request $request)
+    {
+        try {
+
+            $data = $request->all(); 
+            
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }            
+    }     
 }

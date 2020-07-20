@@ -30,7 +30,7 @@
                 border-right:#c5c5c5 solid 1px;
                 color:#ffffff;
             }
-            table td{
+            table#style_Req td{
                 border-right:#c5c5c5 solid 1px;
                 border-bottom:#c5c5c5 solid 1px;
             }
@@ -63,26 +63,37 @@
                 <p><b>CAPSAVE FINANCE PRIVATE LIMITED</b></p>
                 <br>
             </div>
-            <div class="breakNow">
-                <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
+            @if(!empty($filter))
+            <table class="table  table-td-right">
+                <tbody>
+                    @if(!empty($filter['userInfo']))
                     <tr>
-                           @if(!empty($filter['from_date']) && !empty($filter['to_date']))
-                            <td width="50%">
-                                    <span style="font-size: small;"><strong>Lease Register Between</strong></span>
-                                &nbsp;
-                                {{$filter['from_date']}} &nbsp; To &nbsp; {{$filter['to_date']}}
-                            </td>
-                          @endif
-                          @if(!empty($filter['user_id']))
-                            <td width="50%">
-                                    <span style="font-size: small;"><strong>Customer Id</strong></span>
-                                &nbsp;
-                                {{\Helpers::formatIdWithPrefix($filter['user_id'], 'LEADID')}}
-                            </td>
-                          @endif
+                        <td class="text-left" width="30%"><b>Business Name</b></td>
+                        <td> {{$filter['userInfo']->biz->biz_entity_name}}    </td> 
+                        <td class="text-left" width="30%"><b>Full Name</b></td>
+                        <td>{{$filter['userInfo']->f_name}} {{$filter['userInfo']->m_name}} {{$filter['userInfo']->l_name}}</td> 
+
                     </tr>
-                </table>
-                <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
+                    <tr>
+                        <td class="text-left" width="30%"><b>Email</b></td>
+                        <td>{{$filter['userInfo']->email}}    </td> 
+                        <td class="text-left" width="30%"><b>Mobile</b></td>
+                        <td>{{$filter['userInfo']->mobile_no}} </td> 
+                    </tr>
+                    @endif
+                    @if($filter['from_date'] && $filter['to_date'])
+                    <tr>
+                        <td class="text-left" width="30%"><b>From Date</b></td>
+                        <td>{{$filter['from_date']}}</td> 
+                        <td class="text-left" width="30%"><b>To Date</b></td>
+                        <td>{{$filter['to_date']}}</td> 
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
+            @endif
+            <div class="breakNow">
+                <table border="0" id="style_Req" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
                        <tr>
                         @php
                            $header_cols = array_keys($pdfArr[0]);
