@@ -67,46 +67,28 @@
                 <tbody>
                     <tr>
                         <td class="text-left" width="30%"><b>Business Name</b></td>
-                        <td> {{$userInfo->biz->biz_entity_name}}    </td> 
+                        <td> {{$filter['userInfo']->biz->biz_entity_name}}    </td> 
                         <td class="text-left" width="30%"><b>Full Name</b></td>
-                        <td>{{$userInfo->f_name}} {{$userInfo->m_name}} {{$userInfo->l_name}}</td> 
+                        <td>{{$filter['userInfo']->f_name}} {{$filter['userInfo']->m_name}} {{$filter['userInfo']->l_name}}</td> 
 
                     </tr>
                     <tr>
                         <td class="text-left" width="30%"><b>Email</b></td>
-                        <td>{{$userInfo->email}}    </td> 
+                        <td>{{$filter['userInfo']->email}}    </td> 
                         <td class="text-left" width="30%"><b>Mobile</b></td>
-                        <td>{{$userInfo->mobile_no}} </td> 
+                        <td>{{$filter['userInfo']->mobile_no}} </td> 
                     </tr>
-                    @if($fromdate && $todate)
+                    @if($filter['from_date'] && $filter['to_date'])
                     <tr>
                         <td class="text-left" width="30%"><b>From Date</b></td>
-                        <td>{{$fromdate}}</td> 
+                        <td>{{$filter['from_date']}}</td> 
                         <td class="text-left" width="30%"><b>To Date</b></td>
-                        <td>{{$todate}}</td> 
+                        <td>{{$filter['to_date']}}</td> 
                     </tr>
                     @endif
                 </tbody>
             </table>
             <div class="breakNow">
-                <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
-                    <tr>
-                           @if(!empty($filter['from_date']) && !empty($filter['to_date']))
-                            <td width="50%">
-                                    <span style="font-size: small;"><strong>Lease Register Between</strong></span>
-                                &nbsp;
-                                {{$filter['from_date']}} &nbsp; To &nbsp; {{$filter['to_date']}}
-                            </td>
-                          @endif
-                          @if(!empty($filter['user_id']))
-                            <td width="50%">
-                                    <span style="font-size: small;"><strong>Customer Id</strong></span>
-                                &nbsp;
-                                {{\Helpers::formatIdWithPrefix($filter['user_id'], 'LEADID')}}
-                            </td>
-                          @endif
-                    </tr>
-                </table>
                 <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
                        <tr>
                         @php
