@@ -2117,19 +2117,19 @@ class DataRenderer implements DataProviderInterface
                         }
                         return $app->name ? $app->name .' '. $anchorUserType : $anchorUserType;
                 })
-                ->addColumn(
-                    'assoc_anchor',
-                    function ($app) {
-                    if($app->anchor_id){
-                       //$userInfo = User::getUserByAnchorId($app->anchor_id);
-                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
-                    } else {
-                       $achorName='';  
-                    }                    
-                    return $achorName;
+                // ->addColumn(
+                //     'assoc_anchor',
+                //     function ($app) {
+                //     if($app->anchor_id){
+                //        //$userInfo = User::getUserByAnchorId($app->anchor_id);
+                //        //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                //         $achorName = Helpers::getAnchorsByUserId($app->user_id);
+                //     } else {
+                //        $achorName='';  
+                //     }                    
+                //     return $achorName;
                     
-                })
+                // })
                 ->addColumn(
                     'contact',
                     function ($app) {                        
