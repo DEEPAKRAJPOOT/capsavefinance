@@ -181,7 +181,7 @@ class Apportionment {
         var message = '';
         var paymentAmt = parseFloat(this.data.payment_amt);
         var totalSettledAmt = 0;
-        if(check.filter(':checked').length == 0){
+        if(check.length > 0 &&  check.filter(':checked').length == 0){
             message = "Please Select at least one ";
             status = false;
         }
