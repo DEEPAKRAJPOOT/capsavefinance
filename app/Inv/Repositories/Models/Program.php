@@ -81,6 +81,10 @@ class Program extends BaseModel {
         'processing_fee',
         'check_bounce_fee',
         'status',
+        'copied_prgm_id',
+        'modify_reason_type',
+        'modify_reason',
+        'is_edit_allow',
         'created_by',
         'created_at',
         'updated_by',
@@ -151,6 +155,7 @@ class Program extends BaseModel {
                         'prgm.processing_fee',
                         'prgm.check_bounce_fee',
                         'prgm.status',
+                        'prgm.copied_prgm_id',
                         'mst_industry.name as industry_name',
                         'mst_sub_industry.name as sub_industry_name',
                         DB::raw("CASE
@@ -222,11 +227,14 @@ class Program extends BaseModel {
         }
 
         $res = self::select('prgm.*', 'u.f_name','mp.product_name as mp_product_name')
-                ->join('users as u', 'prgm.anchor_id', '=', 'u.anchor_id')
-                ->join('mst_product as mp', 'prgm.product_id', '=', 'mp.id')
-                ->where(['u.user_type' => 2])
+                ->join('users as u', function($query){
+                    $query->on('prgm.anchor_id', '=', 'u.anchor_id');
+                    $query->where('u.user_type', 2);
+                })
+                ->join('mst_product as mp', 'prgm.product_id', '=', 'mp.id')                
                 ->where('prgm.parent_prgm_id', '0')
-                ->orderBy('prgm.prgm_id', 'desc');
+                ->orderBy('prgm.prgm_id', 'desc')
+                ->groupBy('prgm.anchor_id');
         if (!empty($id)) {
             $res = $res->where('prgm.anchor_id', $id);
         }
@@ -273,6 +281,10 @@ class Program extends BaseModel {
         if (isset($where['sub_program_id_nte']) && !empty($where['sub_program_id_nte'])) {
             $res = $res->where('prgm_id', '!=', $where['sub_program_id_nte']);
         }
+        
+        if (isset($where['status']) && !empty($where['status'])) {
+            $res = $res->where('status', $where['status']);
+        }        
         
         if (!empty($relations)) {
             $res = $res->with($relations);
@@ -421,4 +433,23 @@ class Program extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Program', 'parent_prgm_id', 'prgm_id');
     }
 
+    public function updatedByUser()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\User', 'user_id', 'updated_by');
+    } 
+    
+    public static function getProgramAnchors() {
+        return self::groupBy('anchor_id')->pluck('anchor_id')->toArray();
+    }
+    
+    public static function getProgramByWhereCond($where)
+    {
+        $result = self::where($where)->get(); 
+        return isset($result[0]) ? $result : [];
+    }
+    
+    public static function deleteProgram($prgmId)
+    {
+        return self::where('prgm_id', $prgmId)->delete();        
+    }     
 }
