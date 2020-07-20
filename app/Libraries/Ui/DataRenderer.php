@@ -1127,10 +1127,27 @@ class DataRenderer implements DataProviderInterface
                         $id = Auth::user()->user_id;
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                       if( $chkUser->id!=11)
-                        {
-                          return '<input type="checkbox" class="invoice_id" name="checkinvoiceid" value="'.$invoice->invoice_id.'">';
+
+                        $this->overDueFlag = 0;
+                        $disburseAmount = 0;
+                        $apps = $invoice->supplier->apps;
+                        if ($this->overDueFlag == 0) {
+                            foreach ($apps as $app) {
+                                foreach ($app->invoices as $inv) {
+                                    $invc = $inv->toArray();
+                                    $dueDate = strtotime((isset($invc['invoice_due_date'])) ? $invc['invoice_due_date'] : ''); // or your date as well
+                                    $now = strtotime(date('Y-m-d'));
+                                    $datediff = ($now - $dueDate);
+                                    $days = round($datediff / (60 * 60 * 24));
+                                    if ($this->overDueFlag == 0 && $days < 0 && $invc['is_repayment'] == 0) {
+                                        $this->overDueFlag = 1;
+                                    }
+                                }
+                            }
                         }
+
+                        return ($this->overDueFlag == 1 || $chkUser->id == 11 ) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+
                      })
                 ->addColumn(
                     'anchor_id',

@@ -1393,6 +1393,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     public function getActualTallyAmount() {
        return TallyEntry::getActualPostedAmount();
-    }    
+    }
+
+    public function getDisbursalByUserAndBatchId($data)
+	{
+		return Disbursal::where($data)
+				->first();
+	}    
 
 }

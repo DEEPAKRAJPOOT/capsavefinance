@@ -302,10 +302,13 @@ class InvoiceController extends Controller {
         $userId = $request->get('user_id');
         $batchId = $request->get('disbursal_batch_id');
 
+        $disbursal = $this->lmsRepo->getDisbursalByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $batchId]);
+        // dd($disbursal);
         return view('backend.invoice.update_invoice_disbursal')
                 ->with(
                     ['user_id' => $userId, 
-                    'disbursal_batch_id' => $batchId
+                    'disbursal_batch_id' => $batchId,
+                    'disbursal' => $disbursal
                 ]);
     }
 

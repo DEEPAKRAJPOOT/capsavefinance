@@ -741,4 +741,10 @@ class User extends Authenticatable
     {
         return $this->hasOne('App\Inv\Repositories\Models\UserDetail', 'user_id', 'user_id');
     }
+    public  function apps()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id');
+         return $this->belongsTo('App\Inv\Repositories\Models\Application', 'user_id', 'user_id');
+
+    }
 }
