@@ -483,12 +483,13 @@ class DataRenderer implements DataProviderInterface
     public function getFiRcuAppList(Request $request, $app)
     {
         return DataTables::of($app)
-                ->rawColumns(['app_id', 'action','assoc_anchor', 'status'])
+                ->rawColumns(['app_id', 'action','assoc_anchor', 'status', 'app_code'])
                 ->addColumn(
                     'app_id',
                     function ($app) {
+                        $app_code = $app->app_code;
                         $link = route('backend_fi', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . \Helpers::formatIdWithPrefix($app->app_id, $type='APP') . "</a> ";
+                        return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app_code. "</a> ";
                     }
                 )
                 ->addColumn(
@@ -554,16 +555,16 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('search_keyword') != '') {                        
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            $query->where('app.app_code', 'like',"%$search_keyword%")
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
                         });                        
                     }
-                    if ($request->get('is_status') != '') {
-                        $query->where(function ($query) use ($request) {
-                            $is_assigned = $request->get('is_status');
-                            $query->where('app.status', $is_assigned);
-                        });
-                    }
+                    // if ($request->get('is_status') != '') {
+                    //     $query->where(function ($query) use ($request) {
+                    //         $is_assigned = $request->get('is_status');
+                    //         $query->where('app.status', $is_assigned);
+                    //     });
+                    // }
                     
                 })
                 ->make(true);
