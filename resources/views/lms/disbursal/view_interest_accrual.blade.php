@@ -7,10 +7,10 @@
     <table class="table table-striped cell-border no-footer"  cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
         <tbody> 
             <tr>
-                <td><b>Principal Amount:</b></td>
-                <td>{{ number_format((float)$disbursal->invoice->invoice_approve_amount, 2, '.', '') }}</td>
-                <td><b>Disburse Amount:</b></td>
-                <td>{{ $disbursal->disburse_amt}}</td>
+                <td><b>Invoice Amount:</b></td>
+                <td>{{ number_format($disbursal->invoice->invoice_approve_amount, 2) }}</td>
+                <td><b>Disburse/Principal Amount:</b></td>
+                <td>{{ number_format($disbursal->disburse_amt,2)}}</td>
             </tr>
             <tr>
                 <td><b>Interest Rate:</b></td>
@@ -61,8 +61,8 @@
             <tr>
                 <td><b>Payment Frequency:</b></td>
                 <td>{{$paymentFrequency == 1 ? 'Up Front' : ($paymentFrequency == 2 ? 'Monthly' : 'Rear Ended') }}</td>
-                <td></td>
-                <td></td>
+                <td><b>Actual Disburse/Principal Amount:</b></td>
+                <td>{{ number_format(($disbursal->disburse_amt - $disbursal->total_interest),2)}}</td>
             </tr>
            {{--<tr>
                 <td><b>Outstanding Amount:</b></td>
