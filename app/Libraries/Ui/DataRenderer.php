@@ -2348,8 +2348,8 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     if($user->anchor_id){
                        //$userInfo = User::getUserByAnchorId($app->anchor_id);
-                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-                        $achorName = Helpers::getAnchorById($user->anchor_id);                        
+                       $achorName= ucwords($user->comp_name);
+                        // $achorName = Helpers::getAnchorById($user->anchor_id);                        
                     } else {
                        $achorName='';  
                     }                    
@@ -2381,7 +2381,8 @@ class DataRenderer implements DataProviderInterface
                                 ->orWhere('anchor_user.l_name', 'like', "%$by_nameOrEmail%")                                  
                                 ->orWhere(\DB::raw("CONCAT(rta_anchor_user.name,' ',rta_anchor_user.l_name)"), 'like', "%$by_nameOrEmail%")
                                 ->orWhere('anchor_user.email', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
+                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('anchor.comp_name', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
