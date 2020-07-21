@@ -82,6 +82,7 @@ try {
 
         from_date = $('input[name="from_date"]').val().trim();
         to_date = $('input[name="to_date"]').val().trim();
+        trans_entry_type = $('select[name=trans_entry_type]').val().trim();
         if(action.trim() == 'pdf'){
             url = messages.pdf_soa_url;
         }
@@ -96,6 +97,10 @@ try {
 
         if(to_date){
             url += '&to_date='+to_date;
+        }
+
+        if(trans_entry_type){
+            url += '&trans_entry_type='+trans_entry_type;
         }
         window.open(url, '_blank');
     }
