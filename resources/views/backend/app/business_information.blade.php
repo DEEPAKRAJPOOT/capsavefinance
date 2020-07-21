@@ -42,10 +42,12 @@
 										<span class="text-success" id="pan-msg" style="display: none;">
 											<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 										</span>
-                                                                                <div class="relative">
-                                                                                    <a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
-                                                                                    <input type="text" name="biz_pan_number" value="{{ $pan ? $pan : old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" @if ($pan) readonly="readonly" @endif >
-                                                                                </div>
+                                        <div class="relative">
+                                        	@if(config('proin.CONFIGURE_API'))
+                                            <a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
+                                        	@endif
+                                            <input type="text" name="biz_pan_number" value="{{ $pan ? $pan : old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" @if ($pan) readonly="readonly" @endif >
+                                        </div>
 										@error('biz_pan_number')
 							                <span class="text-danger error">{{ $message }}</span>
 							            @enderror
@@ -54,22 +56,34 @@
 								<div class="col-md-4">
 									<div class="form-group password-input">
 										<span class="span_gst_select">
+											@if(config('proin.CONFIGURE_API'))
 											<label for="txtPassword">GST Number
 												<span class="mandatory">*</span>
 											</label>
 											<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
 											<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" >
-												</select>
-												<!-- <input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number"> -->
-												@error('biz_gst_number')
-													<span class="text-danger error">{{ $message }}</span>
-												@enderror
+											</select>
+											<!-- <input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number"> -->
+											@error('biz_gst_number')
+												<span class="text-danger error">{{ $message }}</span>
+											@enderror
 										</span>
 										<input type="hidden" name="is_gst_manual" value="0"/>
 										<span class="span_gst_text" style="display: none">
-											<label for="txtPassword">GST Number</label>
+											<label for="txtPassword">GST Number
+												<span class="mandatory">*</span>
+											</label>
 											<input type="text" name="biz_gst_number_text" value="{{old('biz_gst_number_text')}}" class="form-control" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
 										</span>
+										@else
+										<input type="hidden" name="is_gst_manual" value="1"/>
+										<span class="span_gst_text">
+											<label for="txtPassword">GST Number
+												<span class="mandatory">*</span>
+											</label>
+											<input type="text" name="biz_gst_number_text" value="{{old('biz_gst_number_text')}}" class="form-control" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
+										</span>
+										@endif
 									</div>
 								</div>
 								<div class="col-md-4">
@@ -87,12 +101,13 @@
 								<div class="row">
 									<div class="col-md-4">
 										<div class="form-group password-input" >
-											<label for="txtPassword">Select CIN
-													<span class="mandatory mandatory-biz-cin">*</span>
-											</label>
-
-											<select class="form-control" name="biz_cin" tabindex="2">
+											<label for="txtPassword">Select CIN</label>
+											@if(config('proin.CONFIGURE_API'))
+											<select class="form-control" name="biz_cin" tabindex="4">
 											</select>
+											@else
+											<input type="text" name="biz_cin" value="{{old('biz_cin')}}" class="form-control" tabindex="4" placeholder="Enter CIN Number" maxlength="21">
+											@endif
 										</div>
 									</div>
 									<div class="col-md-4">
@@ -173,10 +188,10 @@
 										<div class="form-group password-input INR">
 											<label for="txtPassword">Business Turnover
 											</label>
-                                                                                        <div class="relative">
-                                                                                            <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                                                                            <input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
-                                                                                        </div>
+                                            <div class="relative">
+                                                <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                <input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
+                                            </div>
 											@error('biz_turnover')
 								                <span class="text-danger error">{{ $message }}</span>
 								            @enderror
@@ -628,5 +643,5 @@ $(document).ready(function () {
 
 </script>
 <!-- <script src="{{url('common/js/business_information.js?v=1')}}"></script> -->
-<script src="{{url('common/js/business_info.js?v=1.1')}}"></script>
+<script src="{{url('common/js/business_info.js?v=1.2')}}"></script>
 @endsection

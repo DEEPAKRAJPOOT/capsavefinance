@@ -42,7 +42,9 @@
 											<span class="text-success" id="pan-msg" style="display: none;">
 												<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 											</span>
+											@if(config('proin.CONFIGURE_API'))
 											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
+											@endif
 											<input type="text" name="biz_pan_number" value="{{$pan ? $pan : old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10"  @if ($pan) readonly="readonly" @endif >
 											@error('biz_pan_number')
 												<span class="text-danger error">{{ $message }}</span>
@@ -53,6 +55,7 @@
 										<div class="form-group password-input">											
 											<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
 											<span class="span_gst_select">
+											@if(config('proin.CONFIGURE_API'))
 												<label for="txtPassword">GST Number
 													<span class="mandatory">*</span>
 												</label>
@@ -68,6 +71,15 @@
 												<label for="txtPassword">GST Number</label>
 												<input type="text" name="biz_gst_number_text" value="{{old('biz_gst_number_text')}}" class="form-control" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
 											</span>
+											@else
+											<input type="hidden" name="is_gst_manual" value="1"/>
+											<span class="span_gst_text">
+												<label for="txtPassword">GST Number
+													<span class="mandatory">*</span>
+												</label>
+												<input type="text" name="biz_gst_number_text" value="{{old('biz_gst_number_text')}}" class="form-control" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
+											</span>
+											@endif
 										</div>
 									</div>
 									<div class="col-md-4">
@@ -86,12 +98,13 @@
 								<div class="row">
 									<div class="col-md-4">
 										<div class="form-group password-input" >
-											<label for="txtPassword">Select CIN
-													<span class="mandatory mandatory-biz-cin">*</span>
-											</label>
-
-											<select class="form-control" name="biz_cin" tabindex="2">
+											<label for="txtPassword">Select CIN</label>
+											@if(config('proin.CONFIGURE_API'))
+											<select class="form-control" name="biz_cin" tabindex="4">
 											</select>
+											@else
+											<input type="text" name="biz_cin" value="{{old('biz_cin')}}" class="form-control" tabindex="4" placeholder="Enter CIN Number" maxlength="21">
+											@endif
 										</div>
 									</div>
 									<div class="col-md-4">
@@ -614,5 +627,5 @@ $(document).ready(function () {
 });
 </script>
 <!-- <script src="{{url('common/js/business_information.js?v=1')}}"></script> -->
-<script src="{{url('common/js/business_info.js?v=1.1')}}"></script>
+<script src="{{url('common/js/business_info.js?v=1.2')}}"></script>
 @endsection

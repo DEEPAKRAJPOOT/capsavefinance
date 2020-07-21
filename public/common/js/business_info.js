@@ -177,7 +177,7 @@ function checkValidation(){
 	unsetError('input[name=biz_pan_number]');
 	unsetError('select[name=biz_gst_number]');
 	unsetError('select[name=biz_cin]');
-	//unsetError('input[name=biz_gst_number_text]');
+	unsetError('input[name=biz_gst_number_text]');
 	unsetError('input[name=biz_entity_name]');
 	unsetError('select[name=biz_type_id]');
 	unsetError('input[name=incorporation_date]');
@@ -258,15 +258,16 @@ function checkValidation(){
 
 	if((biz_gst_number == '' || biz_gst_number == null) && is_gst_manual!=1){
 		setError('select[name=biz_gst_number]', 'Please select GST Number');
-		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
+		flag = false;
+	}else if((biz_gst_number == '' || biz_gst_number == null) && is_gst_manual==1){
+		setError('input[name=biz_gst_number_text]', 'Please enter GST Number');
 		flag = false;
 	}
 
-	if($('select[name=biz_cin] option').length > 1 && (biz_cin == '' || biz_cin == null) && is_gst_manual!=1){
+	/*if($('select[name=biz_cin] option').length > 1 && (biz_cin == '' || biz_cin == null) && is_gst_manual!=1){
 		setError('select[name=biz_cin]', 'Please select CIN Number');
-		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
 		flag = false;
-	}
+	}*/
 	/*else if($('input[name=biz_cin]').val()  == ''){
 		setError('select[name=biz_gst_number]', 'Service unavailable!');
 		flag = false;	
