@@ -218,14 +218,24 @@ class ChargeController extends Controller
                         }
                     }
                     $getMstLog =  $this->lmsRepo->getChrgLog($request->chrg_name);
+                    if(isset($getMstLog['chrg_gst_id']))
+                    {
+                        $chrg_gst_id =  $getMstLog['chrg_gst_id'];
+                        $gst_val    = $getMstLog['gst_val'];
+                    }
+                    else
+                    {
+                        $chrg_gst_id =  Null; 
+                        $gst_val     =  Null;
+                    }
                     $arr  = [ 
                             "user_id" =>  $request->user_id,
                             "payment_id"=>null,
                             "amount" =>   $totalSumAmount,
                             "soa_flag" =>1,
                             "gst"   => 1,
-                            'gst_per' => ($getMstLog->gst_val) ? $getMstLog->gst_val : '',
-                            'chrg_gst_id' => ($getMstLog->chrg_gst_id) ? $getMstLog->chrg_gst_id : '',
+                            'gst_per' => $gst_val,
+                            'chrg_gst_id' => $chrg_gst_id,
                             'entry_type' =>0,
                             "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
                             "trans_type" => $getTransType->id,

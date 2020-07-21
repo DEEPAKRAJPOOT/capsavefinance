@@ -37,18 +37,24 @@
                 <select class="form-control chrg_name" id="chrg_name" name="chrg_name">
 
                 </select>
+                <span id="chrgMsg" class="error"></span>
                  <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
             </div>
             <div class="form-group col-md-6">          
-                <label for="chrg_type">Charge Type</label><br>            
+                <label for="chrg_type">Charge Type</label>&nbsp;&nbsp;<span id="RadioValidation" class="error"></span><br>            
                 <div class="form-check-inline ">              
                     <label class="form-check-label fnt">               
-                        <input type="radio" class="form-check-input" id="chrg_calculation_type1" name="chrg_calculation_type" value="1"> &nbsp;&nbsp;Fixed </label>            
+                        <input type="radio" class="form-check-input chrgT" id="chrg_calculation_type1" name="chrg_calculation_type" value="1"> &nbsp;&nbsp;Fixed </label>            
                 </div>
                 <div class="form-check-inline">               
                     <label class="form-check-label fnt">               
-                        <input type="radio" class="form-check-input" id="chrg_calculation_type2"  name="chrg_calculation_type" value="2">&nbsp;&nbsp;Percentage</label>
-                </div> </div></div>
+                        <input type="radio" class="form-check-input chrgT" id="chrg_calculation_type2"  name="chrg_calculation_type" value="2">&nbsp;&nbsp;Percentage</label>
+               
+                </div>
+                       </div> 
+
+        
+        </div>
         <div class="row unsettledPayment" style="display: none">
             <div class="form-group col-md-12 payment">
                 <label for="chrg_type">Select Payment</label>

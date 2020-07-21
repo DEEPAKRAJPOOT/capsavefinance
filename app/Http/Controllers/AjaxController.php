@@ -3345,7 +3345,7 @@ if ($err) {
           
              return response()->json(['status' => 1,
                  'chrg_applicable_id' => $getamount->chrg_applicable_id,
-                 'amount' => number_format($getamount->chrg_calculation_amt),
+                 'amount' => $getamount->chrg_calculation_amt,
                  'id' => $getamount->id,
                  'limit' => $limitAmount,
                  'type' => $getamount->chrg_calculation_type,
