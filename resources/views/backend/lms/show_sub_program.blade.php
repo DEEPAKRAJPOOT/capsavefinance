@@ -26,8 +26,7 @@
 
                     <div class="head-sec">
                         <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
-                            @can('add_program')
-                            @if($programStatus)
+                            @can('add_program')                            
                             <a href="{{route('add_sub_program',['anchor_id'=>$anchor_id ,'program_id'=>$program_id])}}" >
                                 <button class="btn  btn-success btn-sm" type="button">
                                     <span class="btn-label">
@@ -35,8 +34,7 @@
                                     </span>
                                     {{ trans('backend.mange_program.add_sub_program') }}
                                 </button>
-                            </a>
-                            @endif
+                            </a>                            
                             @endcan
                         </div>
                     </div>
@@ -49,12 +47,10 @@
                             <thead>
                                 <tr role="row">
                                     <th>{{ trans('backend.mange_program.sub_program_id') }}</th>
-                                    <th>{{ trans('backend.mange_program.anchor_name') }}</th>
-                                    <th>{{ trans('backend.mange_program.sub_program_name') }}</th>
-                                    <th>{{ trans('backend.mange_program.program_type') }}</th>
-                                    <th>{{ trans('backend.mange_program.total_anchor_limit') }}</th>
-                                    <th>{{ trans('backend.mange_program.sub_anchor_limit') }}</th>
-                                    <th>{{ trans('backend.mange_program.loan_size') }}</th>
+                                    <th>{{ trans('backend.mange_program.anchor_detail') }}</th>
+                                    <th>{{ trans('backend.mange_program.sub_program_limit') }}</th>
+                                    <th>{{ trans('backend.mange_program.updated_by') }}</th>
+                                    <th>{{ trans('backend.mange_program.reason') }}</th>
                                     <th>{{ trans('backend.mange_program.status') }}</th>
                                     <th>{{ trans('backend.mange_program.action') }}</th>
 
@@ -77,7 +73,8 @@
 </div>
 </div>
 </div>
-
+{!!Helpers::makeIframePopup('modifyProgramLimit','Modify Program Limit', 'modal-md')!!}
+{!!Helpers::makeIframePopup('showEndProgramReason','View Reason', 'modal-md')!!}
 @endsection
 
 @section('jscript')

@@ -38,6 +38,9 @@ return [
     'validate_reduce_limit_amt' => 'Reduce Limit can\'t be less than previous utilized limit.',
     'lms_eod_batch_process_msg' => 'System is stopped, you can\'t do any transactions.',
     'offer_rejected' => 'Offer rejected successfully.',
-    'reject_app' => 'Application Status Changed Successfully'
+    'reject_app' => 'Application Status Changed Successfully',    
+    'enhanced_tot_limit_amt_validation' => 'Total credit assessed limit can\'t be less than previous total credit assessed limit',
+    'reduced_tot_limit_amt_validation' => 'Total credit assessed limit can\'t be  more than previous total credit assessed limit',
+    'reduced_utilized_amt_validation' => 'Total credit assessed limit can\'t be less than the Utilized limit.'
 ];
 

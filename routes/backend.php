@@ -844,6 +844,31 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             'as' => 'save_sub_program',
             'uses' => 'Backend\ProgramController@saveSubProgram'
            ]);
+             
+            Route::get('confirm-end-program', [
+            'as' => 'confirm_end_program',
+            'uses' => 'Backend\ProgramController@confirmEndProgram'
+           ]); 
+            
+            Route::post('save-end-program', [
+            'as' => 'save_end_program',
+            'uses' => 'Backend\ProgramController@saveEndProgram'
+           ]); 
+            
+            Route::get('view-sub-program', [
+            'as' => 'view_sub_program',
+            'uses' => 'Backend\ProgramController@addSubProgram'
+           ]); 
+            Route::get('view-end-program-reason', [
+            'as' => 'view_end_program_reason',
+            'uses' => 'Backend\ProgramController@viewEndPrgmReason'
+           ]); 
+
+             Route::get('edit-program', [
+                'as' => 'edit_program',
+                'uses' => 'Backend\ProgramController@addProgram'
+            ]);
+             
         });
             // All master routes
         Route::group(['prefix' => 'manage'], function () {

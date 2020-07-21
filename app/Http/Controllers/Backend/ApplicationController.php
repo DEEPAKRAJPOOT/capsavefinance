@@ -834,18 +834,7 @@ class ApplicationController extends Controller
 					if (!$offerData) {
 						Session::flash('error_code', 'no_offer_found');
 						return redirect()->back();
-					} else {
-                                            //Validate Enchancement Limit
-                                            $result = \Helpers::checkLimitAmount($app_id, 1);
-                                            if ($result['status']) {
-                                                if ($result['app_type'] == 2) {
-                                                    Session::flash('error_code', 'validate_limit_enhance_amt');
-                                                } else {
-                                                    Session::flash('error_code', 'validate_reduce_limit_amt');
-                                                }
-                                                return redirect()->back()->withInput();
-                                            }                                            
-                                        }
+					}
 				} else if ($currStage->stage_code == 'approver') {
 					$whereCondition = ['app_id' => $app_id, 'status' => null];
 					$offerData = $this->appRepo->getOfferData($whereCondition);
@@ -1228,26 +1217,26 @@ class ApplicationController extends Controller
 			} else if($request->has('btn_reject_offer')) {				
 				$offerData['status'] = 2;
 				$message = trans('backend_messages.offer_rejected');
-	            $appApprData = [
-	                'app_id' => $appId,
-	                'approver_user_id' => \Auth::user()->user_id,
-	                'status' => 2
-	              ];
-	            //$this->appRepo->saveAppApprovers($appApprData);
-	            AppApprover::updateAppApprActiveFlag($appId);
-	            $addl_data = [];
-	            $addl_data['sharing_comment'] = $cmntText;
-	            $selRoleId = 6;
-	            $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
-	            $selUserId = $roles[0]->user_id;
-	            $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
-	            $currStage = Helpers::getCurrentWfStage($appId);
-	            Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
-	            Session::flash('operation_status', 1);
+                                $appApprData = [
+                                    'app_id' => $appId,
+                                    'approver_user_id' => \Auth::user()->user_id,
+                                    'status' => 2
+                                  ];
+                                //$this->appRepo->saveAppApprovers($appApprData);
+                                AppApprover::updateAppApprActiveFlag($appId);
+                                $addl_data = [];
+                                $addl_data['sharing_comment'] = $cmntText;
+                                $selRoleId = 6;
+                                $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
+                                $selUserId = $roles[0]->user_id;
+                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
+                                $currStage = Helpers::getCurrentWfStage($appId);
+                                Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
+                                Session::flash('operation_status', 1);
 	 
 				/*$addl_data = [];
-				$addl_data['sharing_comment'] = 'Reject comment goes here';
-				$message = trans('backend_messages.reject_offer_success');*/
+                                $addl_data['sharing_comment'] = 'Reject comment goes here';
+                                $message = trans('backend_messages.reject_offer_success');*/
 				
 				//Update workflow stage
 				//Helpers::updateWfStage('approver', $appId, $wf_status = 2);
@@ -1264,7 +1253,22 @@ class ApplicationController extends Controller
 			}
 			
 			// $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);
-			$savedOfferData = $this->appRepo->updateActiveOfferByAppId($appId, $offerData);
+			$savedOfferData = $this->appRepo->updateActiveOfferByAppId($appId, $offerData); 
+                                                
+                        $appPrgmOffers = $this->appRepo->getAllOffers($appId);
+                        foreach($appPrgmOffers as $appPrgmOffer) {
+                            if (!empty($appPrgmOffer->prgm_id) && ($appPrgmOffer->status == 1 || $appPrgmOffer->status == 2)) {
+                                $prgmId = $appPrgmOffer->prgm_id;
+
+                                $updatePrgmData = [];
+                                $updatePrgmData['is_edit_allow'] = 1;
+
+                                $whereUpdatePrgmData = [];
+                                $whereUpdatePrgmData['prgm_id'] = $prgmId;                                        
+                                $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+                            }
+                        }
+
 			if ($savedOfferData) {
 				Session::flash('message', $message);
 				//return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]);

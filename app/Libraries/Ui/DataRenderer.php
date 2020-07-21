@@ -277,22 +277,18 @@ class DataRenderer implements DataProviderInterface
                 //     function ($app) {                        
                 //         return $app->mobile_no ? $app->mobile_no : '';
                 // })                
-                ->addColumn(
-                    'assoc_anchor',
-                    function ($app) {
-                        //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
-                    /////return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
+                // ->addColumn(
+                //     'assoc_anchor',
+                //     function ($app) {
                     
-                    if($app->anchor_id){
-                       //$userInfo = User::getUserByAnchorId((int) $app->anchor_id);
-                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
-                    } else {
-                       $achorName='';  
-                    }                    
-                    return $achorName;
+                //     if($app->anchor_id){
+                //         $achorName = Helpers::getAnchorsByUserId($app->user_id);
+                //     } else {
+                //        $achorName='';  
+                //     }                    
+                //     return $achorName;
                     
-                })
+                // })
                 // ->addColumn(
                 //     'user_type',
                 //     function ($app) {
@@ -1966,7 +1962,7 @@ class DataRenderer implements DataProviderInterface
                     function ($trans) { 
                         $payment = '';
                         $payment .= $trans->created_at ? '<span><b>Trans. Date:&nbsp;</b>'.Carbon::parse($trans->date_of_payment)->format('d-m-Y').'</span>' : '';
-                        $payment .= $trans->amount ? '<br><span><b>Trans. Amount:&nbsp;</b> ₹ '.number_format($trans->amount).'</span>' : '';
+                        $payment .= $trans->amount ? '<br><span><b>Trans. Amount:&nbsp;</b> ₹ '.number_format($trans->amount,2).'</span>' : '';
                         return $payment;
                 })
                
@@ -2117,19 +2113,19 @@ class DataRenderer implements DataProviderInterface
                         }
                         return $app->name ? $app->name .' '. $anchorUserType : $anchorUserType;
                 })
-                ->addColumn(
-                    'assoc_anchor',
-                    function ($app) {
-                    if($app->anchor_id){
-                       //$userInfo = User::getUserByAnchorId($app->anchor_id);
-                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
-                    } else {
-                       $achorName='';  
-                    }                    
-                    return $achorName;
+                // ->addColumn(
+                //     'assoc_anchor',
+                //     function ($app) {
+                //     if($app->anchor_id){
+                //        //$userInfo = User::getUserByAnchorId($app->anchor_id);
+                //        //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                //         $achorName = Helpers::getAnchorsByUserId($app->user_id);
+                //     } else {
+                //        $achorName='';  
+                //     }                    
+                //     return $achorName;
                     
-                })
+                // })
                 ->addColumn(
                     'contact',
                     function ($app) {                        
@@ -2572,7 +2568,8 @@ class DataRenderer implements DataProviderInterface
                     function ($role) {
                     $user_edit =  "<a title=\"Edit User\"  data-toggle=\"modal\" data-target=\"#manageUserRole\" data-url =\"" . route('edit_user_role', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a>"; 
                     $user_email = "<a title=\"Change User Password\"  data-toggle=\"modal\" data-target=\"#manageUserRolePassword\" data-url =\"" . route('change_user_role_password', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"195px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-expeditedssl\"></i></a>";
-                    return '<div class="btn-group"><label>'. $user_edit .'</label> <label>'. $user_email .'</label></div>';;
+                    //$assign_doa_level =  "<a title=\"Assign Doa Level Role\"  data-toggle=\"modal\" data-target=\"#assignDoaLevelRole\" data-url =\"" . route('assign_doal_level_role', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a>"; 
+                    return '<div class="btn-group"><label>'. $user_edit .'</label> <label>'. $user_email .'</label></div>';
                     })
                     ->filter(function ($query) use ($request) {
                         if ($request->get('by_email') != '') {
@@ -2680,7 +2677,7 @@ class DataRenderer implements DataProviderInterface
     function getPromgramList($request , $program)
     {
          return DataTables::of($program)
-                ->rawColumns([ 'action', 'active','status' ,'anchor_limit'])                
+                ->rawColumns([ 'action', 'active','status','reason' ,'anchor_limit'])                
                 ->editColumn(
                     'prgm_id',
                     function ($program) {                   
@@ -2728,6 +2725,19 @@ class DataRenderer implements DataProviderInterface
                                              
                                           </div></b>';
                         })
+                /*
+                ->editColumn(
+                        'reason',
+                        function ($program) {
+                    $res = '';
+                    if ($program->modify_reason_type) {
+                        $reasonList = config('common.program_modify_reasons');
+                        $link = route('view_end_program_reason', ['program_id'=> $program->prgm_id] );                                
+                        $res .= '<small><a href="#" title="View Reason" data-toggle="modal" data-target="#showEndProgramReason" data-url="'. $link . '" data-height="200px" data-width="100%" data-placement="top">' .$reasonList[$program->modify_reason_type]  . '</a></small>';
+                        }
+                         return  $res;
+
+                    })*/                        
                         ->addColumn(
                     'action',
                     function ($program) {
@@ -2735,9 +2745,16 @@ class DataRenderer implements DataProviderInterface
                       if(Helpers::checkPermission('manage_sub_program')){
                           $action .='<a title="View Sub-Program" href="'.route('manage_sub_program',['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]).'" class="btn btn-action-btn btn-sm "><i class="fa fa-cog" aria-hidden="true"></i></a>';
                       }
-                    
-                    //add_sub_program
-                    
+                   
+                      /*
+                      $editType = \Helpers::isProgamEditAllowed($program->prgm_id);
+                      if (Helpers::checkPermission('edit_program') && $editType == 2){  
+                          $action .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit', 'type' => 'anchor_program']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';                          
+                      } else if (Helpers::checkPermission('edit_program') && $editType == 1) {
+                          $action .= '<a title="Edit Program" data-toggle="modal"  data-height="420px" data-width="100%" data-target="#editProgram" data-url="' . route('edit_program', ['program_id'=>$program->prgm_id ,'anchor_id'=>$program->anchor_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Program"><i class="fa fa-edit"></i></a>';
+                      }
+                      */
+                      
                       if($program->status){
                            return $action.'<a title="In Active" href="'.route('change_program_status', [ 'program_id'=> $program->prgm_id , 'status'=>0 ]).'"  class="btn btn-action-btn btn-sm program_status "><i class="fa fa-eye" aria-hidden="true"></i></a>';
                       }else{
@@ -3250,57 +3267,100 @@ class DataRenderer implements DataProviderInterface
      */
     function getSubProgramList($request, $program)
     {
+        $this->anchor_utilized_balance = \Helpers::getAnchorUtilizedLimit(request()->get('program_id'));
         return DataTables::of($program)
-                        ->rawColumns(['user_id', 'status', 'action' ,'anchor_sub_limit' ,'anchor_limit' ,'loan_size'])
+                        ->rawColumns(['prgm_id','f_name','updated_by','user_id', 'status', 'action' ,'anchor_sub_limit' ,'anchor_limit' ,'loan_size','utilized_limit','reason'])
                         ->editColumn(
                                 'prgm_id',
-                                function ($program) {
-                            return $program->prgm_id;
-                        })
+                                function ($program) {                                                      
+                            $ret = '<strong>ID:</strong> '. $program->prgm_id . '<br>';
+                            $ret .= '<strong>Name:</strong> ' . $program->product_name . '<br>';
+                            $ret .= '<strong>Type:</strong> ' . ($program->prgm_type == 1 ? 'Vendor Finance' : 'Channel Finance');
+                            if ($program->copied_prgm_id) {
+                            $link = route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->copied_prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] );  
+                            $ret .= '<br><strong>Parent: </strong><a href="' . $link . '">' . $program->copied_prgm_id . '</a>';
+                            }
+                            return $ret;
+                        })                        
                         ->editColumn(
-                                'product_name',
+                                'f_name',
                                 function ($program) {
-                            return $program->product_name;
-                        })
-                        ->editColumn(
-                               'prgm_type',
-                               function ($program) {
-                           return ($program->prgm_type == 1) ?'Vendor Finance': 'Channel Finance';
-                        })
+                            $ret = '<strong>Name:</strong> '. $program->f_name . '<br>';
+                            $ret .= '<strong>Total Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit) . '<br>';
+                            $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - $this->anchor_utilized_balance );
+                            return $ret;
+                        })                        
                         ->editColumn(
                                 'anchor_sub_limit',
                                 function ($program) {
-                            return  \Helpers::formatCurreny($program->anchor_sub_limit);
-                        })
-                        ->editColumn(
-                                'anchor_limit',
-                                function ($program) {
-                            return  \Helpers::formatCurreny($program->anchor_limit);
-                        })
+                            $ret = '<strong>Limit:</strong> '. \Helpers::formatCurreny($program->anchor_sub_limit) . '<br>';
+                            $ret .= '<strong>Utilized Limit in Offer:</strong> '. \Helpers::formatCurreny(\Helpers::getPrgmBalLimit($program->prgm_id)) . '<br>';
+                            $ret .= '<strong>Loan Size:</strong> '. \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size);
+                            return  $ret;
+                        })                       
                         ->addColumn(
-                                'loan_size',
-                                function ($program) {
-                             return  \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size);
+                                'updated_by',
+                                function ($program) {                            
+                            $ret = '<strong>By:</strong> '. (isset($program->updatedByUser) ? $program->updatedByUser->f_name . ' ' . $program->updatedByUser->l_name : '') . '<br>';
+                            $ret .= '<strong>Date:</strong> '. \Helpers::convertDateTimeFormat($program->updated_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d/m/Y') ;
+                             return  $ret;
                            
                         })
+                        ->addColumn(
+                                'reason',
+                                function ($program) {
+                            $res = '';
+                            if ($program->copied_prgm_id) {
+                                $reasonList = config('common.program_modify_reasons');
+                                $link = route('view_end_program_reason', ['program_id'=> $program->prgm_id] );                                
+                                $res .= '<small><a href="#" title="View Reason" data-toggle="modal" data-target="#showEndProgramReason" data-url="'. $link . '" data-height="200px" data-width="100%" data-placement="top">' .$reasonList[$program->modify_reason_type]  . '</a></small>';
+                            }
+                             return  $res;
+                           
+                        })                        
                         ->editColumn(
                                 'status',
                                 function ($program) {
-                            return ($program->status == '0')?'<div class="btn-group ">
+                            if ($program->status == '0') {
+                                $res = '<div class="btn-group ">
+                            
                                              <label class="badge badge-warning current-status">In Active</label>
                                              
-                                          </div></b>':'<div class="btn-group ">
+                                          </div></b>';
+                            } else if ($program->status == '1') {
+                                $res = '<div class="btn-group ">
+                            
                                              <label class="badge badge-success current-status">Active</label>
                                              
+                                          </div></b>';                                
+                            } else if ($program->status == '2') {
+                                $res = '<div class="btn-group ">
+                                             <label class="badge badge-secondary current-status">End</label>
+                                             
                                           </div></b>';
+                            } else if ($program->status == '3') {
+                                $res = '<div class="btn-group ">
+                                             <label class="badge badge-danger current-status">Reject</label>
+                                             
+                                          </div></b>';
+                            }
+                            return $res;
                         })
                         ->addColumn(
                                 'action',
                                 function ($program) {
                             $act = '';
-                            //if(Helpers::checkPermission('edit_anchor_reg')){
-                            $act = "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'edit'] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\"></a>";
+                            //if (Helpers::checkPermission('view_sub_program')){
+                                $act = "<a  href='". route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] )."' class=\"btn btn-action-btn btn-sm\" title=\"View Sub-Program\"><i class=\"fa fa-eye\" aria-hidden=\"true\"></i></a>";
                             //}
+                            if (!in_array($program->status, [2,3]) && !Helpers::checkApprPrgm($program->prgm_id, $isOfferAcceptedOrRejected=false)) { 
+                            if ($program->is_edit_allow == 1) {    
+                                $act .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';
+                            } else {                                
+                                $act .= "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'edit', 'reason_type'=> $program->modify_reason_type] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\" aria-hidden=\"true\"></i></a>";
+                            }
+                            }
+                            
                             return $act;
                         }
                         )->make(true);
@@ -4260,12 +4320,11 @@ class DataRenderer implements DataProviderInterface
                     });
                 }
 
-                if($request->get('customer_id')!= ''){
-                    $query->whereHas('lmsUser',function ($query) use ($request) {
-                        $customer_id = trim($request->get('customer_id'));
-                        $query->where('customer_id', '=', "$customer_id");
-                    });
-                }
+                $query->whereHas('lmsUser',function ($query) use ($request) {
+                    $customer_id = trim($request->get('customer_id')) ?? null ;
+                    $query->where('customer_id', '=', "$customer_id");
+                });
+                
               
             })
             ->make(true);

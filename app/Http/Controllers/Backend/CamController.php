@@ -1555,11 +1555,26 @@ class CamController extends Controller
             }
 
             //Validate Enchancement Limit  
+            $totLimitAmt = str_replace(',', '', $request->get('tot_limit_amt'));
             $result = \Helpers::checkLimitAmount($appId, $request->product_id, $request->limit_amt);
-            if ($result['status']) {
+                                    
+            if ($result['app_type'] == 2 && isset($result['tot_limit_amt']) 
+                    && $result['tot_limit_amt'] > $totLimitAmt) {
+                Session::flash('error', trans('backend_messages.enhanced_tot_limit_amt_validation'));
+                return redirect()->back()->withInput();                
+            } else if ($result['app_type'] == 3 && isset($result['tot_limit_amt']) 
+                    && ($result['tot_limit_amt'] < $totLimitAmt)) {
+                Session::flash('error', trans('backend_messages.reduced_tot_limit_amt_validation'));
+                return redirect()->back()->withInput();                
+            } else if ($result['app_type'] == 3 && isset($result['parent_inv_utilized_amt']) 
+                    && ($result['parent_inv_utilized_amt'] >= $totLimitAmt)) {
+                Session::flash('error', trans('backend_messages.reduced_utilized_amt_validation'));
+                return redirect()->back()->withInput();                
+            } else if ($result['status']) {
                 Session::flash('error', $result['message']);
                 return redirect()->back()->withInput();
             }
+            
 
             
             $totalLimit = $this->appRepo->getAppLimit($appId);
@@ -1804,7 +1819,18 @@ class CamController extends Controller
           $this->appRepo->addOfferPTPQ($ptpqArr);
         }
 
-        if($offerData){
+        /*
+        if (\Helpers::checkApprPrgm($request->prgm_id)) {
+            $updatePrgmData = [];
+            $updatePrgmData['is_edit_allow'] = 1;
+
+            $whereUpdatePrgmData = [];
+            $whereUpdatePrgmData['prgm_id'] = $request->prgm_id;
+            $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+        }
+        */
+        
+        if($offerData){                           
           Session::flash('message',trans('backend_messages.limit_offer_success'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }else{

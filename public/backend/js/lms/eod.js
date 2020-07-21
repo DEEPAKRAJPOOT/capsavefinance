@@ -28,7 +28,7 @@ try {
                     data:           null,
                     defaultContent: '<i class = "glyphicon glyphicon-plus-sign"> </ i>'
                 },
-                { data: "current_sys_date" },
+                // { data: "current_sys_date" },
                 { data: "sys_started_at" },
                 { data: "sys_stopped_at" },
                 { data: "eod_process_mode" },

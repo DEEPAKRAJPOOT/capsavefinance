@@ -28,6 +28,7 @@
 
     <body class="sidebar-icon-only"> 
         <div class=" row-offcanvas row-offcanvas-right">
+            <div id="iframeMessage" class="content-wrapper-msg" style="background:none;display:none;"></div>
             <!-- partial -->
             <div id="iframeMessage" class="content-wrapper-msg" style="background:none;display:none;"></div>
             

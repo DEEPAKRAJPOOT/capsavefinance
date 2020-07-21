@@ -11,6 +11,7 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
+use Session;
 
 class ProgramController extends Controller {
 
@@ -68,19 +69,25 @@ class ProgramController extends Controller {
     {
         try {
             $anchor_id = (int) $request->get('anchor_id');
+            $program_id = $request->has('program_id') ? (int) $request->get('program_id') : null;
+            $action_type = $request->has('type') ? $request->get('type') : '';
+            
             if ($anchor_id) {
                 $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->toArray();
             } else {
                 $anchorData = $this->userRepo->getAllAnchor('comp_name')->toArray();
             }
-
-            $anchorList = array_reduce($anchorData, function ($output, $element) {
-                $output[$element['anchor_id']] = $element['f_name'];
+            
+            $anchors = $this->appRepo->getProgramAnchors();            
+            
+            $anchorList = array_reduce($anchorData, function ($output, $element) use ($anchors) {
+                $output[$element['anchor_id']]['name'] = $element['f_name'];                      
+                $output[$element['anchor_id']]['used'] = in_array($element['anchor_id'], $anchors) ? 1 : 0;
                 return $output;
             }, []);
 
             if (\Session::has('is_mange_program')) {
-                $anchorList = ['' => 'Please Select'] + $anchorList;
+                //$anchorList = ['' => 'Please Select'] + $anchorList;
             }
 
             $productItem = $this->master->getProductDataList()->toArray();
@@ -92,8 +99,39 @@ class ProgramController extends Controller {
 //            $productList = ['' => 'Please Select'] + $product;
             $productList = $product;
             $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
-            $industryList = $this->appRepo->getIndustryDropDown()->toArray();
-            return view('backend.lms.add_program', compact('anchorList', 'industryList', 'anchor_id', 'redirectUrl', 'productList'));
+            $industryList = $this->appRepo->getIndustryDropDown()->toArray(); 
+            
+
+            $programData = null;
+            $subIndustryList = null;
+            $utilizedLimit = 0;
+            $remaningAmount = 0;
+            if (!empty($program_id)) {
+                $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'])->first();
+                $subIndustryList = $this->appRepo->getSubIndustryByWhere(['industry_id' => $programData->industry_id])->pluck('name','id')->toArray();    
+                $subPrgms = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id], ['prgm_id'])->pluck('prgm_id');
+                $prgmIds = $subPrgms ? $subPrgms->toArray() : [];            
+                $utilizedLimit = count($prgmIds) > 0 ? $this->appRepo->getPrgmBalLimit($prgmIds) : 0;
+                
+                $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id, 'status' => 1], ['anchor_sub_limit'])->sum('anchor_sub_limit'); 
+                $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal;
+            
+                $view = 'backend.lms.edit_program';
+            } else {
+                $view = 'backend.lms.add_program';
+            }    
+                                    
+            return view($view)            
+            ->with('industryList', $industryList)
+            ->with('subIndustryList', $subIndustryList)
+            ->with('anchor_id', $anchor_id)
+            ->with('redirectUrl', $redirectUrl)
+            ->with('productList', $productList)
+            ->with('anchorList', $anchorList)
+            ->with('program', $programData)
+            ->with('utilizedLimit', $utilizedLimit)
+            ->with('remaningAmount', $remaningAmount)
+            ->with('action_type', $action_type);
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
@@ -111,9 +149,32 @@ class ProgramController extends Controller {
 //            dd($request->all());
             $anchor_id = $request->get('anchor_id');
             $prgm_name = $request->get('prgm_name');
-            $programInfo = $this->appRepo->getProgramByProgramName($prgm_name);
+            $program_id = $request->get('program_id');
+            $action_type = $request->has('type') ? $request->get('type') : '';
+            $status = $request->has('status') ? $request->get('status') : 1;
+            
+            if (empty($program_id)) {
+                $programInfo = $this->appRepo->getProgramByProgramName($prgm_name);
+                if (count($programInfo) > 0 ) {
+                     \Session::flash('error', trans('success_messages.program_already_exist'));
+                     return redirect()->back()->withInput();
+                }
+            } else {
+                $programInfo = [];
+                $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['anchor_limit','modify_reason_type','modify_reason'])->first();
+                $oldAnchorLimitAmount = $programData ? $programData->anchor_limit : 0;
+                $anchorLimit = ($request->get('anchor_limit')) ? (float) str_replace(',', '', $request->get('anchor_limit')) : 0;
+                $subPrgms = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id], ['prgm_id'])->pluck('prgm_id');
+                $prgmIds = $subPrgms ? $subPrgms->toArray() : [];
+                $utilizedLimit = count($prgmIds) > 0 ? $this->appRepo->getPrgmBalLimit($prgmIds) : 0;
+                if ($anchorLimit < $utilizedLimit ) {
+                    Session::flash('error_code', 'error_anchor_limit');
+                    Session::flash('msg', trans('error_messages.program_anchor_limit'));
+                    return redirect()->back();
+                }
+            }
 //            dd(count($programInfo));
-            if(count($programInfo)<=0){
+            
                 $prepareDate = [
                     'anchor_id' => $anchor_id,
                     //   'anchor_user_id' => $request->get('anchor_user_id'),
@@ -123,19 +184,46 @@ class ProgramController extends Controller {
                     'anchor_limit' => ($request->get('anchor_limit')) ? str_replace(',', '', $request->get('anchor_limit')) : null,
                     'is_fldg_applicable' => $request->get('is_fldg_applicable'),
                     'product_id'=>$request->get('product_id'),
-                    'status' => 1
+                    'status' => $status
                 ];
-                $this->appRepo->saveProgram($prepareDate);
+                if (!empty($program_id)) {
+                    $this->appRepo->updateProgramData($prepareDate, ['prgm_id' => $program_id]);
+
+                    if ($action_type == 'anchor_program') {
+                        //$programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['anchor_limit'])->first();
+                        //$anchorLimitAmount = $programData ? $programData->anchor_limit : 0;
+                        $addlData=[];
+                        $addlData['reason']  = $programData ? $programData->modify_reason_type : null;
+                        $addlData['comment'] = $programData ? $programData->modify_reason : null;
+                        $addlData['anchor_limit'] = $anchorLimit;
+                        $subPrgms = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $program_id,'status'=>1], ['parent_prgm_id','is_edit_allow', 'prgm_id']);
+                        //dd($subPrgms);
+                        foreach($subPrgms as $prgm) {
+                            $result = $this->copyProgram($prgm->prgm_id, $addlData);
+                            //if (empty($result['new_prgm_id'])) {
+                            //    Session::flash('error_code', 'error_prgm_limit');
+                            //    return redirect()->back();
+                            //}
+                        }
+                    } else {
+                        if ($oldAnchorLimitAmount != $anchorLimit) {
+                            $this->appRepo->updateProgramData(['status' => 0, 'anchor_limit' => $anchorLimit], ['parent_prgm_id' => $program_id]);
+                        }
+                    }
+                    Session::flash('is_accept', 1);
+                    Session::flash('msg', trans('success_messages.program_save_successfully'));                    
+                    Session::put('route_url', route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $program_id]));
+                    return redirect()->back();
+                } else {
+                    $this->appRepo->saveProgram($prepareDate);
+                }
                 \Session::flash('message', trans('success_messages.program_save_successfully'));
                 $redirect = redirect()->route('manage_program', ['anchor_id' => $anchor_id]);
                 if (\Session::has('is_mange_program')) {
                     $redirect = redirect()->route('manage_program');
                 }
                 return $redirect;
-            }else{
-                 \Session::flash('error', trans('success_messages.program_already_exist'));
-                 return redirect()->back()->withInput();
-            }
+            
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
@@ -151,11 +239,10 @@ class ProgramController extends Controller {
     {
         try {
             $anchor_id = (int) $request->get('anchor_id');
-            $program_id = (int) $request->get('program_id');
-
+            $program_id = (int) $request->get('program_id');            
+            
             $programData = $this->appRepo->getProgram($program_id);
-            $programStatus = ($programData)? $programData->status : 0;
-            // dd($programStatus);
+            $programStatus = ($programData)? $programData->status : 0;             
             \Session::put('list_program_id', $program_id);
 
             $is_prg_list = $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
@@ -176,17 +263,21 @@ class ProgramController extends Controller {
         try {
             $anchor_id = (int) $request->get('anchor_id');
             $program_id = (int) $request->get('program_id');
+            $reason_type = $request->has('reason_type') ? $request->get('reason_type') : null;
+            $copied_prgm_id = $request->has('copied_prgm_id') ? $request->get('copied_prgm_id') : null;
             
             if ($request->has('parent_program_id')) {  //Edit Sub Program
                 $parent_program_id = (int) $request->get('parent_program_id');
-                $whereCond = ['sub_program_id_nte' => $program_id];
+                $whereCond = ['sub_program_id_nte' => $program_id];                                                
             } else {
                 $parent_program_id = $program_id;
                 $whereCond = [];
             }
             $action = $request->get('action');
             $subProgramData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id, 'is_null_parent_prgm_id' => true], ['*'], ['programDoc', 'programCharges'])->first();
-//            dd($subProgramData);
+            //dd($subProgramData);
+            $copied_prgm_id = $subProgramData ? $subProgramData->copied_prgm_id : null;
+            
             $anchorData = $this->userRepo->getAnchorDataById($anchor_id)->first();
 //          dd($program_id);
             $programData = $this->appRepo->getSelectedProgramData(['prgm_id' => $program_id], ['*'], ['programDoc', 'programCharges'])->first();
@@ -195,15 +286,27 @@ class ProgramController extends Controller {
             $postSanction = $this->appRepo->getDocumentList(['doc_type_id' => 3, 'is_active' => 1])->toArray();
             $charges = $this->appRepo->getChargesList()->toArray();
 
-            $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $parent_program_id]+$whereCond, ['anchor_sub_limit'])->sum('anchor_sub_limit');            
+            $anchorSubLimitTotal = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $parent_program_id, 'status' => 1]+$whereCond, ['anchor_sub_limit'])->sum('anchor_sub_limit');            
             $baserate_list =$this->master->getBaseRateDropDown();
-//            dd($baserate_list);
-            
-            $remaningAmount = null;
-            if (isset($programData->anchor_limit)) {
-                $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal;
-            }
 
+            //$subPrgms = $this->appRepo->getSelectedProgramData(['parent_prgm_id' => $parent_program_id], ['prgm_id'])->pluck('prgm_id');
+            //$prgmIds = $subPrgms ? $subPrgms->toArray() : [];            
+            //$utilizedLimit = $this->appRepo->getPrgmBalLimit([$copied_prgm_id,$program_id]); 
+            $utilizedLimit = \Helpers::getPrgmBalLimit($program_id);
+            $remaningAmount = 0;
+            if (isset($programData->anchor_limit)) {
+                $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal; //- $utilizedLimit;
+            }
+            
+            $pAnchorLimit = 0;
+            $pAnchorSubLimit = 0;
+            if (!empty($copied_prgm_id)) {
+                $copiedPrgm = $this->appRepo->getSelectedProgramData(['prgm_id' => $copied_prgm_id], ['anchor_limit', 'anchor_sub_limit']);
+                if (isset($copiedPrgm[0])) {
+                    $pAnchorLimit    = $copiedPrgm[0]->anchor_limit;
+                    $pAnchorSubLimit = $copiedPrgm[0]->anchor_sub_limit;                    
+                }
+            }
             /**
              * get DOA list 
              */
@@ -259,7 +362,14 @@ class ProgramController extends Controller {
                             'action',
                             'doaResult',
                             'invoiceDataCount',
-                            'baserate_list'
+                            'baserate_list',
+                            'reason_type',
+                            'action',
+                            'copied_prgm_id',
+                            'utilizedLimit',
+                            'anchorSubLimitTotal',
+                            'pAnchorLimit',
+                            'pAnchorSubLimit'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
@@ -283,15 +393,15 @@ class ProgramController extends Controller {
             'prgm_name' => $request->get('product_name'),
             'prgm_type' => $request->get('prgm_type'),
             'interest_rate' => $request->get('interest_rate'),
-            'anchor_sub_limit' => ($request->get('anchor_sub_limit')) ? str_replace(',', '', $request->get('anchor_sub_limit')) : null,
-            'anchor_limit' => $request->get('anchor_limit'),
-            'min_loan_size' => ($request->has('min_loan_size')) ? str_replace(',', '', $request->get('min_loan_size')) : null,
-            'max_loan_size' => ($request->has('max_loan_size')) ? str_replace(',', '', $request->get('max_loan_size')) : null,
+            'anchor_sub_limit' => ($request->get('anchor_sub_limit')) ? str_replace(',', '', $request->get('anchor_sub_limit')) : 0,
+            'anchor_limit' => str_replace(',', '', $request->get('anchor_limit')),
+            'min_loan_size' => ($request->get('min_loan_size')) ? str_replace(',', '', $request->get('min_loan_size')) : 0,
+            'max_loan_size' => ($request->get('max_loan_size')) ? str_replace(',', '', $request->get('max_loan_size')) : 0,
             'base_rate_id' => $request->get('interest_linkage'),
             'interest_borne_by' => $request->get('interest_borne_by'),
             'margin' => $request->get('margin'),
             'is_adhoc_facility' => $request->get('is_adhoc_facility'),
-            'adhoc_interest_rate' => $request->get('adhoc_interest_rate'),
+            'adhoc_interest_rate' => $request->get('is_adhoc_facility') ? $request->get('adhoc_interest_rate') : null,
             'max_interest_rate' => $request->get('max_interest_rate'),
             'min_interest_rate' => $request->get('min_interest_rate'),
             'overdue_interest_rate' => $request->get('overdue_interest_rate'),
@@ -367,25 +477,42 @@ class ProgramController extends Controller {
             $user_id = \Auth::user()->user_id;
             $dataForProgram = $this->prepareSubProgramData($request);
             $pkeys = $request->get('program_id');
-
+            
+            $program_list_id = (\Session::has('list_program_id')) ? \Session::get('list_program_id') : $request->get('parent_prgm_id');
+            if ($request->has('is_reject') && $request->get('is_reject') == '1') {
+                $copied_prgm_id = $request->get('copied_prgm_id');
+                $this->appRepo->updateProgramData(['status' => 3], ['prgm_id' => $pkeys]); //Rejected
+                $this->appRepo->updateProgramData(['status' => 1], ['prgm_id' => $copied_prgm_id]);                
+                return redirect()->route('manage_sub_program', ['anchor_id' => $request->get('anchor_id'), 'program_id' => $program_list_id]);                
+            }
+            
             if($request->get('interest_rate') == 1) {
                 $dataForProgram['base_rate_id'] = '';
             }
             
+            $anchorSubLimit = ($request->get('anchor_sub_limit')) ? str_replace(',', '', $request->get('anchor_sub_limit')) : 0;
+            $utilizedLimit = \Helpers::getPrgmBalLimit($pkeys);            
+            if ($anchorSubLimit < $utilizedLimit ) {
+                return redirect()->back()->withErrors(trans('error_messages.program_anchor_limit'))->withInput();
+            }
+                
             /**
              * save program data
              */
             if (!empty($pkeys)) {
                 unset($dataForProgram['parent_prgm_id']);
-                // dd($dataForProgram);
+                // dd($dataForProgram);                
                 $this->appRepo->updateProgramData($dataForProgram, ['prgm_id' => $pkeys]);
                 $lastInsertId = $pkeys;
             } else {
                 $lastInsertId = $this->appRepo->saveProgram($dataForProgram);
             }
 
-
-
+            $program = [];
+            $program['anchor_limit'] = str_replace(',', '', $request->get('anchor_limit'));
+            $this->appRepo->updateProgramData($program, ['parent_prgm_id' => $program_list_id ,'status' => 1]);
+            $this->appRepo->updateProgramData($program, ['prgm_id' => $program_list_id]);
+            
             /**
              * Save program charges data 
              */
@@ -436,6 +563,16 @@ class ProgramController extends Controller {
              */
             $this->saveDoaLevel($request, $lastInsertId);
 
+            if ($request->has('copied_prgm_id') && !empty($request->get('copied_prgm_id'))) {
+                //Update status of existing program id
+                $updatePrgmData = [];
+                $updatePrgmData['status'] = 2;         
+
+                $whereUpdatePrgmData = [];
+                $whereUpdatePrgmData['prgm_id'] = $request->get('copied_prgm_id');
+                $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+            }
+            
             \Session::flash('message', trans('success_messages.sub_program_save_successfully'));
             $program_list_id = (\Session::has('list_program_id')) ? \Session::get('list_program_id') : $request->get('parent_prgm_id');
             return redirect()->route('manage_sub_program', ['anchor_id' => $request->get('anchor_id'), 'program_id' => $program_list_id]);
@@ -471,4 +608,211 @@ class ProgramController extends Controller {
         }
     }
 
+    protected function copyProgram($prgmId, $addlData=[])
+    {
+        \DB::beginTransaction();
+
+        try {
+            
+            $excludeKeys = ['created_at', 'created_by','updated_at', 'updated_by'];
+            $newPrgmId = null;
+            
+            //Get and save Program Data
+            $whereCond=[];
+            $whereCond['prgm_id'] = $prgmId;
+            $prgms = $this->appRepo->getSelectedProgramData($whereCond);
+            if (isset($prgms[0])) {
+                $prgm = $prgms[0];
+                $insPrgmData = $prgm ? $this->arrayExcept($prgm->toArray(), array_merge($excludeKeys, ['prgm_id', 'is_edit_allow'])) : [];
+                $insPrgmData['copied_prgm_id'] = $prgmId;
+                $insPrgmData['status'] = 0;     
+                $insPrgmData['modify_reason_type'] = $addlData['reason'];
+                $insPrgmData['modify_reason'] = $addlData['comment'];
+                if (isset($addlData['anchor_limit']) && !empty($addlData['anchor_limit'])) {
+                    $insPrgmData['anchor_limit'] = $addlData['anchor_limit'];
+                }
+                $newPrgmId = $this->appRepo->saveProgram($insPrgmData);
+                
+                if ($newPrgmId) {                    
+                    //Update status of existing program id
+                    $updatePrgmData = [];
+                    $updatePrgmData['status'] = 2;
+                    //$updatePrgmData['modify_reason_type'] = $addlData['reason'];
+                    //$updatePrgmData['modify_reason'] = $addlData['comment'];            
+
+                    $whereUpdatePrgmData = [];
+                    $whereUpdatePrgmData['prgm_id'] = $prgmId;             
+                    $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+
+
+                    //Get and save Program Charge Data
+                    $whereCond=[];
+                    $whereCond['prgm_id'] = $prgmId;
+                    $prgmCharges = $this->appRepo->getPrgmChargeData($whereCond);
+                    foreach($prgmCharges as $prgmCharge) {  
+                        $insPrgmChargeData = $prgmCharge ? $this->arrayExcept($prgmCharge->toArray(), array_merge($excludeKeys, ['id'])) : [];
+                        $insPrgmChargeData['prgm_id'] =  $newPrgmId;                    
+                        $insPrgmChargeData['created_by'] =  \Auth::user()->user_id;
+                        $insPrgmChargeData['created_at'] =  \Carbon\Carbon::now();
+                        //$insPrgmChargeData['updated_by'] =  \Auth::user()->user_id;
+                        //$insPrgmChargeData['updated_at'] =  \Carbon\Carbon::now();
+
+                        $this->appRepo->saveProgramChrgData($insPrgmChargeData);                    
+                    }
+
+
+                    //Get and save Progam Docs
+                    $whereCond=[];
+                    $whereCond['prgm_id'] = $prgmId;
+                    $prgmDocs = $this->appRepo->getPrgmDocs($whereCond);
+                    foreach($prgmDocs as $prgmDoc) {
+                        $insPrgmDocsData = $prgmDoc ? $this->arrayExcept($prgmDoc->toArray(), array_merge($excludeKeys, ['prgm_doc_id'])) : [];
+                        $insPrgmDocsData['prgm_id'] =  $newPrgmId;
+                        $insPrgmDocsData['created_by'] =  \Auth::user()->user_id;
+                        $insPrgmDocsData['created_at'] =  \Carbon\Carbon::now();
+                        $insPrgmDocsData['updated_by'] =  \Auth::user()->user_id;
+                        $insPrgmDocsData['updated_at'] =  \Carbon\Carbon::now();
+
+                        $this->appRepo->saveProgramDoc($insPrgmDocsData);
+                    }
+                }
+            }
+                   
+            \DB::commit();
+            
+            $result = [];
+            $result['new_prgm_id'] = $newPrgmId;
+            
+            return $result;
+            // all good
+        } catch (\Exception $e) {
+            \DB::rollback();
+            // something went wrong
+            dd($e->getFile(), $e->getLine(), $e->getMessage());       
+            return [];
+        }
+    }
+
+    protected function arrayExcept($array, $keys)
+    {
+
+        foreach($keys as $key){
+            if (isset($array[$key])) {
+              unset($array[$key]);
+            }
+        }
+
+        return $array;
+
+    } 
+
+    
+    /**
+     * Confirm End Program
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function confirmEndProgram(Request $request)
+    {
+        $anchor_id  = (int) $request->get('anchor_id');
+        $program_id = (int) $request->get('program_id');
+        $parent_program_id = $request->get('parent_program_id');
+        $action            = $request->get('action');               
+        $action_type       = $request->has('type') ? $request->get('type') : '';       
+        
+        $reasonList = config('common.program_modify_reasons');
+        
+        return view('backend.lms.confirm_end_program')
+            ->with('reasonList', $reasonList)
+            ->with('anchor_id', $anchor_id)
+            ->with('program_id', $program_id)
+            ->with('parent_program_id', $parent_program_id)
+            ->with('action', $action)
+            ->with('action_type', $action_type);
+    }
+    
+    /**
+     * Save End Program
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function saveEndProgram(Request $request)
+    {
+        try {            
+            $anchor_id = (int) $request->get('anchor_id');
+            $program_id = (int) $request->get('program_id');
+            $parent_program_id = $request->get('parent_program_id');
+            $action            = $request->get('action');            
+            $reason_type = $request->get('reason');
+            $comment = $request->get('comment');
+            
+            $addlData = [];
+            $addlData['reason'] = $reason_type;
+            $addlData['comment'] = $comment;
+            if ($request->has('type') && $request->get('type') == 'anchor_program') { 
+                $this->appRepo->updateProgramData(['status' => 0, 'modify_reason_type' => $reason_type, 'modify_reason' => $comment], ['prgm_id' => $program_id]);
+                
+                Session::flash('is_accept_redirect', 1);
+                //Session::put('route_url', route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $parent_program_id]));
+                Session::put('route_url', route('edit_program', ['anchor_id' => $anchor_id, 'program_id' => $program_id, 'type' => 'anchor_program']));
+                return redirect()->back();                
+            } else {
+                $result = $this->copyProgram($program_id, $addlData);
+            
+                if (empty($result['new_prgm_id'])) {
+                    Session::flash('error_code', 'error_prgm_limit');
+                    return redirect()->back();
+                }
+
+                $new_prgm_id = $result['new_prgm_id'];
+                                
+                /*
+                $updatePrgmData = [];
+                $updatePrgmData['is_edit_allow'] = 1;
+
+                $whereUpdatePrgmData = [];
+                $whereUpdatePrgmData['prgm_id'] = $program_id;
+                $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+                */
+
+                Session::flash('is_accept', 1);
+                Session::put('route_url', route('add_sub_program', ['anchor_id' => $anchor_id, 'program_id' => $new_prgm_id, 'parent_program_id' => $parent_program_id, 'action' => $action, 'reason_type' => $reason_type, 'copied_prgm_id' => $program_id]));
+                return redirect()->back();                
+            }            
+
+        } catch (Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
+    
+    /**
+     * View End Program Reason
+     * 
+     * @param Request $request
+     * @return response
+     */
+    public function viewEndPrgmReason(Request $request)
+    {
+        $prgmId = (int) $request->get('program_id');
+        
+        $reason  = '';
+        $comment = '';
+        
+        $reasonList = config('common.program_modify_reasons');
+        
+        $whereCond=[];
+        $whereCond['prgm_id'] = $prgmId;
+        $prgms = $this->appRepo->getSelectedProgramData($whereCond);
+        if (isset($prgms[0])) {
+            $prgm = $prgms[0];
+            $reason  = $reasonList[$prgm->modify_reason_type];
+            $comment = $prgm->modify_reason;
+        }
+                        
+        return view('backend.lms.view_end_program_reason')
+            ->with('reason', $reason)
+            ->with('comment', $comment);
+    }
 }
