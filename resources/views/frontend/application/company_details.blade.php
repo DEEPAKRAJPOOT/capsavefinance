@@ -93,7 +93,7 @@
 								<div class="row">
 									<div class="col-md-4">
 										<div class="form-group password-input">
-											@if(config('proin.CONFIGURE_API'))
+											@if(config('proin.CONFIGURE_API') && $business_info->is_gst_manual == 0)
 											<label for="txtPassword">Select CIN</label>
 											<select class="form-control" name="biz_cin" tabindex="4">
 												<option value="">Select CIN Number</option>

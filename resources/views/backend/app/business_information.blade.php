@@ -105,6 +105,7 @@
 											@if(config('proin.CONFIGURE_API'))
 											<select class="form-control" name="biz_cin" tabindex="4">
 											</select>
+											<input type="text" name="biz_cin" value="{{old('biz_cin')}}" class="form-control" style="display: none;" tabindex="4" placeholder="Enter CIN Number" maxlength="21">
 											@else
 											<input type="text" name="biz_cin" value="{{old('biz_cin')}}" class="form-control" tabindex="4" placeholder="Enter CIN Number" maxlength="21">
 											@endif

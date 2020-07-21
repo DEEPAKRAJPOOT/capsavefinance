@@ -50,6 +50,8 @@ $(document).ready(function(){
 			    }else{
 					$(".span_gst_select").hide();
 					$(".span_gst_text").show();		
+					$("select name['biz_cin']").hide();
+					$("input name['biz_cin']").show();
 					setUnsetError(1);
 					$('input[name=is_gst_manual]').val('1');			
 			    	replaceAlert('No GST associated with the entered PAN.', 'error');
