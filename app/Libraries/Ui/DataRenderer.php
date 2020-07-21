@@ -6762,5 +6762,50 @@ class DataRenderer implements DataProviderInterface
               
             })
            ->make(true);
-   }   
+   }
+   
+   public function tds(Request $request, $data) {
+       $this->sr_no = 1;
+       return DataTables::of($data)    
+           ->editColumn('user_id', function ($tds) {
+               return \Helpers::formatIdWithPrefix($tds->user_id, 'LEADID');
+           })      
+           ->editColumn('customer_name', function ($tds) {
+               return $tds->biz_entity_name;
+           })  
+           ->editColumn('trans_name', function ($tds) {
+               return $tds->trans_name ;//== 3 ? 'tds' : '';
+           })   
+           ->editColumn('date_of_payment', function ($tds) {
+               return date('d-m-Y', strtotime($tds->date_of_payment));
+           })
+           ->editColumn('trans_date', function ($tds) {
+               return date('d-m-Y', strtotime($tds->trans_date));
+           })
+           ->editColumn('amount',  function ($tds) {
+               return $tds->amount;
+           })
+           ->editColumn('trans_by',  function ($tds) {
+               $full_name = $tds->f_name.' '.$tds->l_name;
+               return $full_name;
+           })
+           ->editColumn('tds_certificate_no',  function ($tds) {
+               return $tds->tds_certificate_no;
+           })
+           ->editColumn('file_id',  function ($tds) {
+               return $tds->file_id == 0 ? 'N' : '';
+           }) 
+           ->filter(function ($query) use ($request) {
+                if($request->get('user_id')!= ''){
+                    $query->where(function ($query) use ($request) {
+                        $user_id = trim($request->get('user_id'));
+                        $query->where('user_id', '=',$user_id);
+                    });
+                }
+              
+            })
+           
+           ->make(true);
+   }
+   
 }

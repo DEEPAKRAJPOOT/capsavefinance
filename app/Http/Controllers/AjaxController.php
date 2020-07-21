@@ -4676,5 +4676,31 @@ if ($err) {
         $reportsList['pdfUrl'] = route('download_lms_cibil_reports', $condArr);
         return new JsonResponse($reportsList);
     }
+    
+    /**
+     * Get all TDS
+     * 
+     * @param DataProviderInterface $dataProvider
+     * @return JsonResponse
+     */
+    public function Tds(DataProviderInterface $dataProvider) {
+//        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+//            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('Y-m-d 00:00:00');
+//            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d 23:59:59');
+//        }
+        $condArr = [
+//            'from_date' => $from_date ?? NULL,
+//            'to_date' => $to_date ?? NULL,
+            'user_id' => $this->request->get('user_id'),
+            'type' => 'excel',
+        ];
+        $tdsList = $this->reportsRepo->tds();
+        $tds = $dataProvider->tds($this->request, $tdsList);
+        $tds = $tds->getData(true);
+        $tds['excelUrl'] = route('tds_download_reports', $condArr);
+        $condArr['type']  = 'pdf';
+        $tds['pdfUrl'] = route('tds_download_reports', $condArr);
+        return new JsonResponse($tds);
+    } 
 
 }
