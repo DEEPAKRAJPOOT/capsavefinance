@@ -79,7 +79,7 @@
         <thead style="height: 10px !important; overflow: scroll;">
             <tr role="row">
                 <th>Date</th>
-                <th>Principal Amount</th>
+                <th>Disburse/Principal Amount</th>
                 <th>Interest/Overdue Rate</th>
                 {{--<th>Overdue Interest Rate</th> --}}
                 <th>Accrued Interest</th>                    
