@@ -2970,7 +2970,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'chrg_calculation_amt',
                     function ($charges) {
-                    return number_format($charges->amount);
+                    return $charges->amount;
                 })  
                 ->addColumn(
                     'is_gst_applicable',

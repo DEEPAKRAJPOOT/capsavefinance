@@ -269,8 +269,20 @@
         required: "Please enter date",
         }
         }); 
-        if ($(".chrgT:checked").length == 0){
+        if ($(".chrgT:checked").length == 0)
+        {
                 $('#RadioValidation').text("Charge Type is required.");
+                return false;
+        }
+        if($("#program_id").val()=='')
+        {
+     
+                $('#msgprogram').text("Please select program");
+                return false;
+        }
+        if($("#chrg_name").val()=='')
+        {
+                $('#chrgMsg').text("Please select charge.");
                 return false;
         }
         if(amount==0)
