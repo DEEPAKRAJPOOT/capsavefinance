@@ -66,7 +66,7 @@
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="chrg_name">Amount/Percent</label>
-                <input type="text"  class="form-control" id="amount" name="amount" placeholder="Charge Calculation Amount" maxlength="50">
+                <input type="text"  class="form-control" readonly="readonly" id="amount" name="amount" placeholder="Charge Calculation Amount" maxlength="50">
 
             </div>
             <div class="form-group col-md-6 chargeTypeCal" id="approved_limit_div"  style="display: none">
