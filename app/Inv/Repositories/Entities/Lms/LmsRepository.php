@@ -1466,4 +1466,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		}
 		return $response ?? false;
 	}
+
+	public static function updateDisbursalByTranId($data = [], $updatingId = null)
+	{
+		$response =  Disbursal::where('tran_id', $updatingId)
+			->update($data);
+		return ($response) ?? $response;
+	}
 }

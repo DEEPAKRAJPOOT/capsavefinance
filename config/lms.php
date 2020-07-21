@@ -174,4 +174,15 @@ return [
         'IDFC' => '1'
     ],
     'DISBURSAL_TIME_VALIDATE' => '17',
+    'DISBURSAL_STATUS' => [    
+       'PENDING' => '7',
+       'APPROVED'=>'8',
+       'DISBURSMENT_QUE'=>'9',
+       'SENT_TO_BANK'=>'10',
+       'FAILED_DISBURSMENT'=>'11',
+       'DISBURSED' =>'12',
+       'PARTIALLY_PAYMENT_SETTLED '=> '13',
+       'REJECT'=>'14',
+       'PAYMENT_SETTLED'=>'15',
+    ],
 ];

@@ -361,7 +361,7 @@ class InvoiceController extends Controller {
             $tenor = $value['tenor_days'];
             $updateInvoiceDisbursed = $this->lmsRepo->updateInvoiceDisbursed([
                         'payment_due_date' => ($value['invoice']['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")) : $value['invoice']['invoice_due_date'],
-                        'status_id' => 12,
+                        'status_id' => config('lms.DISBURSAL_STATUS')['DISBURSED'],
                         'int_accrual_start_dt' => $selectDate,
                         'updated_by' => Auth::user()->user_id,
                         'updated_at' => $curData
@@ -687,6 +687,7 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
+                // dd($$result);
                 if ($result['status'] == 'success') {
                     $fileDirPath = getPathByTxnId($transId);
                     $time = date('y-m-d H:i:s');
@@ -1437,8 +1438,11 @@ class InvoiceController extends Controller {
             $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId)->toArray();
             $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
             $transId = $reqData['txn_id'];
+            // $transId = '2RGIK4436OUMXHZGXH';
             $createdBy = Auth::user()->user_id;
             $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
+            $transDisbursalIds = [];
+            $tranNewIds = [];
 
             if(!empty($reqData)) {
             
@@ -1461,7 +1465,6 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $params);
-                // dd($result);
                 if ($result['status'] == 'success') {
                     $fileDirPath = getPathByTxnId($transId);
                     $time = date('y-m-d H:i:s');
@@ -1489,26 +1492,39 @@ class InvoiceController extends Controller {
 
                     $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
                     $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
-                    
                     if ($disbursalIds) {
                         $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById([
                                 'batch_status' => 2], $disbursalBatchId);
 
                         $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
-                                'status_id' => 12,
+                                'status_id' => config('lms.DISBURSAL_STATUS')['DISBURSED'],
                                 'funded_date' => (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s')
                             ], $disbursalIds);
                         foreach ($disbursalIds as $key => $value) {
-                            $this->lmsRepo->createDisbursalStatusLog($value, 12, 'online disbursed', $createdBy);
+                            $this->lmsRepo->createDisbursalStatusLog($value, config('lms.DISBURSAL_STATUS')['DISBURSED'], 'online disbursed', $createdBy);
+                        }
+                        foreach ($result['result']['body']['Transaction'] as $key => $value) {
+                            if ($value['RefStatus'] == 'SUCCESS') {
+                                $updateDisbursalByTranId = $this->lmsRepo->updateDisbursalByTranId([
+                                    'status_id' => config('lms.DISBURSAL_STATUS')['DISBURSED']
+                                ], $value['RefNo']);
+                                $transDisbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['tran_id' => $value['RefNo']])->toArray();
+                                $tranNewIds = array_merge($tranNewIds, $transDisbursalIds);
+
+                            } else {
+                                $updateDisbursalByTranId = $this->lmsRepo->updateDisbursalByTranId([
+                                    'status_id' => config('lms.DISBURSAL_STATUS')['FAILED_DISBURSMENT']
+                                ], $value['RefNo']);
+                            }
                         }
                     }            
                     if ($invoiceIds) {
-                        $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, 12);
+                        $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, config('lms.DISBURSAL_STATUS')['DISBURSED']);
                         foreach ($invoiceIds as $key => $value) {
-                            $this->invRepo->saveInvoiceStatusLog($value, 12);
+                            $this->invRepo->saveInvoiceStatusLog($value, config('lms.DISBURSAL_STATUS')['DISBURSED']);
                         }
                     }
-                    $updateTransaction = $this->updateTransactionInvoiceDisbursed($disbursalIds, $fundedDate);
+                    $updateTransaction = $this->updateTransactionInvoiceDisbursed($tranNewIds, $fundedDate);
                 } else {
                     Session::flash('message',trans('backend_messages.disbursed_error'));
                     return redirect()->back()->withErrors('message',trans('backend_messages.disbursed_error'));
