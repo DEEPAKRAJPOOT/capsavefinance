@@ -88,7 +88,7 @@
 									</div>
 								</div>
 							</div>
-								<div class="row">
+                                                    <div class="row">
 									<div class="col-md-4">
 										<div class="form-group password-input" style="display: {{$business_info->is_gst_manual!=1 ? 'block' : 'none' }}">
 											<label for="txtPassword">Select CIN
