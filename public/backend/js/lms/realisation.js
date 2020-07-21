@@ -31,6 +31,7 @@ try {
                 $('#dwnldPDF').attr('href', pdfUrl)
             },
             columns: [
+                {data: 'customer_id'},
                 {data: 'debtor_name'},
                 {data: 'debtor_acc_no'},
                 {data: 'invoice_date'},

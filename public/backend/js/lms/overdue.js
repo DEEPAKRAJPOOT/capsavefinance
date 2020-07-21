@@ -31,6 +31,7 @@ try {
                 $('#dwnldPDF').attr('href', pdfUrl)
             },
             columns: [
+                {data: 'customer_id'},
                 {data: 'batch_no'},
                 {data: 'batch_date'},
                 {data: 'bills_no'},
