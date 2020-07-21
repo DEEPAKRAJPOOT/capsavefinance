@@ -42,9 +42,11 @@
 											<span class="text-success" id="pan-msg" style="display: none;">
 												<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 											</span>
+                                                                                    <div class="relative">
 											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
 											<input type="text" name="biz_pan_number" value="{{$pan ? $pan : old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10"  @if ($pan) readonly="readonly" @endif >
-											@error('biz_pan_number')
+                                                                                    </div>
+                                                                                    @error('biz_pan_number')
 												<span class="text-danger error">{{ $message }}</span>
 											@enderror
 										</div>
@@ -168,9 +170,12 @@
 									<div class="col-md-4">
 										<div class="form-group password-input INR">
 											<label for="txtPassword">Business Turnover
-											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+											</label> 
+                                                                                    <div class="relative">   
+                                                                                    <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 											<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
-											@error('biz_turnover')
+                                                                                    </div>	
+                                                                                        @error('biz_turnover')
 												<span class="text-danger error">{{ $message }}</span>
 											@enderror
 										</div>
@@ -221,9 +226,11 @@
 												<label for="txtCreditPeriod">Supply Chain Loan Amount 
 													<span class="mandatory">*</span>
 												</label>
+                                                                                             <div class="relative"> 
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 												<input type="text" name="product_id[1][loan_amount]" value="{{old('product_id.1.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Supply Chain Loan Amount " maxlength="19">
-												<div id="product_type_1_loan"></div>
+                                                                                             </div>	
+                                                                                                <div id="product_type_1_loan"></div>
 												@error('product_id.1.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
@@ -245,9 +252,11 @@
 												<label for="txtCreditPeriod">Term Loan Amount
 													<span class="mandatory">*</span>
 												</label>
+                                                                                             <div class="relative"> 
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 												<input type="text" name="product_id[2][loan_amount]" value="{{old('product_id.2.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Term Loan Amount" maxlength="19">
-												<div id="product_type_2_loan" ></div>
+                                                                                             </div>
+                                                                                            <div id="product_type_2_loan" ></div>
 												@error('product_id.2.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
@@ -269,9 +278,11 @@
 												<label for="txtCreditPeriod">Leasing Loan Amount
 													<span class="mandatory">*</span>
 												</label>
+                                                                                                <div class="relative"> 
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 												<input type="text" name="product_id[3][loan_amount]" value="{{old('product_id.3.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Leasing Loan Amount" maxlength="19">
-												<div id="product_type_3_loan"></div>
+                                                                                                </div>
+                                                                                                <div id="product_type_3_loan"></div>
 												@error('product_id.3.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
