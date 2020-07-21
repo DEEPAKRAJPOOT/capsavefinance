@@ -4316,8 +4316,21 @@ class DataRenderer implements DataProviderInterface
                     $query->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                        $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
                     });
+                }
+                if($request->has('trans_entry_type')){
+                    if($request->trans_entry_type != ''){
+                        $trans_entry_type = explode('_',$request->trans_entry_type);
+                        $trans_type = $trans_entry_type[0];
+                        $entry_type = $trans_entry_type[1];
+                        if($trans_type){
+                            $query->where('trans_type',$trans_type);
+                        }
+                        if($entry_type != ''){
+                            $query->where('entry_type',$entry_type);
+                        }
+                    }
                 }
 
                 $query->whereHas('lmsUser',function ($query) use ($request) {
@@ -4437,8 +4450,21 @@ class DataRenderer implements DataProviderInterface
                 $query->where(function ($query) use ($request) {
                     $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
                     $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
-                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                    $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
                 });
+            }
+            if($request->has('trans_entry_type')){
+                if($request->trans_entry_type != ''){
+                    $trans_entry_type = explode('_',$request->trans_entry_type);
+                    $trans_type = $trans_entry_type[0];
+                    $entry_type = $trans_entry_type[1];
+                    if($trans_type){
+                        $query->where('trans_type',$trans_type);
+                    }
+                    if($entry_type != ''){
+                        $query->where('entry_type',$entry_type);
+                    }
+                }
             }
             if($request->get('user_id')!= ''){
                 $query->where(function ($query) use ($request) {
