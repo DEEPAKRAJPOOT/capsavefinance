@@ -1044,6 +1044,16 @@ class Helper extends PaypalHelper
                 }
             }
             
+            if (isset($roleData[0]) && $roleData[0]->id == 15) {
+                $where=[];
+                $where['app_id'] = $app_id;
+                $where['co_lender_id'] = \Auth::user()->co_lender_id;
+                $coLender = $appRepo->getSharedColender($where);
+                if (isset($coLender[0])) {
+                    return 1;
+                }
+            }
+            
             $isWfStageCompleted = self::isWfStageCompleted('app_submitted', $app_id);
             if (!$isWfStageCompleted) {
                 $isViewOnly = 1;
