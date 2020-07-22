@@ -2354,8 +2354,8 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     if($user->anchor_id){
                        //$userInfo = User::getUserByAnchorId($app->anchor_id);
-                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-                        $achorName = Helpers::getAnchorById($user->anchor_id);                        
+                       $achorName= ucwords($user->comp_name);
+                        // $achorName = Helpers::getAnchorById($user->anchor_id);                        
                     } else {
                        $achorName='';  
                     }                    
@@ -2387,7 +2387,8 @@ class DataRenderer implements DataProviderInterface
                                 ->orWhere('anchor_user.l_name', 'like', "%$by_nameOrEmail%")                                  
                                 ->orWhere(\DB::raw("CONCAT(rta_anchor_user.name,' ',rta_anchor_user.l_name)"), 'like', "%$by_nameOrEmail%")
                                 ->orWhere('anchor_user.email', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
+                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('anchor.comp_name', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
@@ -6470,13 +6471,12 @@ class DataRenderer implements DataProviderInterface
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
                         $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
                     }
-                     if ($request->get('search_keyword') != '') {                        
+                     if ($request->get('customer_id') != '') {                        
                         $query->where(function ($query) use ($request) {
-                            $search_keyword = trim($request->get('search_keyword'));
-                             $query->whereHas('invoice.lms_user', function($query1) use ($search_keyword) {
-                                $query1->where('customer_id', 'like',"%$search_keyword%");
+                            $customer_id = trim($request->get('customer_id'));
+                             $query->whereHas('invoice.lms_user', function($query1) use ($customer_id) {
+                                $query1->where('customer_id', 'like',"%$customer_id%");
                              });
-
                             
                         });                        
                     }
@@ -6551,11 +6551,11 @@ class DataRenderer implements DataProviderInterface
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
                         $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
                     }
-                     if ($request->get('search_keyword') != '') {                        
+                     if ($request->get('customer_id') != '') {                        
                         $query->where(function ($query) use ($request) {
-                            $search_keyword = trim($request->get('search_keyword'));
-                             $query->whereHas('invoice.lms_user', function($query1) use ($search_keyword) {
-                                $query1->where('customer_id', 'like',"%$search_keyword%");
+                            $customer_id = trim($request->get('customer_id'));
+                             $query->whereHas('invoice.lms_user', function($query1) use ($customer_id) {
+                                $query1->where('customer_id', 'like',"%$customer_id%");
                              });
 
                             
@@ -6666,11 +6666,11 @@ class DataRenderer implements DataProviderInterface
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
                         $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
                     }
-                     if ($request->get('search_keyword') != '') {                        
+                     if ($request->get('customer_id') != '') {                        
                         $query->where(function ($query) use ($request) {
-                            $search_keyword = trim($request->get('search_keyword'));
-                             $query->whereHas('invoice.lms_user', function($query1) use ($search_keyword) {
-                                $query1->where('customer_id', 'like',"%$search_keyword%");
+                            $customer_id = trim($request->get('customer_id'));
+                             $query->whereHas('invoice.lms_user', function($query1) use ($customer_id) {
+                                $query1->where('customer_id', 'like',"%$customer_id%");
                              });
 
                             

@@ -3959,7 +3959,8 @@ if ($err) {
         $condArr = [
             'from_date' => $from_date ?? NULL,
             'to_date' => $to_date ?? NULL,
-            'customer_id' => $this->request->get('search_keyword'),
+            'user_id' => $this->request->get('user_id'),
+            'customer_id' => $this->request->get('customer_id'),
             'type' => 'excel',
         ];
         $transactionList = $this->invRepo->getReportAllInvoice();
@@ -3984,7 +3985,8 @@ if ($err) {
         $condArr = [
             'from_date' => $from_date ?? NULL,
             'to_date' => $to_date ?? NULL,
-            'customer_id' => $this->request->get('search_keyword'),
+            'user_id' => $this->request->get('user_id'),
+            'customer_id' => $this->request->get('customer_id'),
             'type' => 'excel',
         ];
         $transactionList = $this->invRepo->getReportAllOverdueInvoice();
@@ -4004,7 +4006,8 @@ if ($err) {
         $condArr = [
             'from_date' => $from_date ?? NULL,
             'to_date' => $to_date ?? NULL,
-            'customer_id' => $this->request->get('search_keyword'),
+            'user_id' => $this->request->get('user_id'),
+            'customer_id' => $this->request->get('customer_id'),
             'type' => 'excel',
         ];
         $transactionList = $this->invRepo->getInvoiceRealisationList();

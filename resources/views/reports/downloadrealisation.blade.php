@@ -74,7 +74,7 @@
             .pagenum:before {
                 content: counter(page);
             }
-            div.breakNow { page-break-inside:avoid; page-break-after:always; }
+            /*div.breakNow { page-break-inside:avoid; page-break-after:always; }*/
         </style>
 
     </head>
@@ -101,11 +101,6 @@
                 
                    <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
                     <tr>
-                        <td colspan="8">
-                            <span style="font-size: small;"><strong><b>CAPSAVE FINANCE PRIVATE LIMITED</b> </strong></span>
-                        </td>
-                    </tr>
-                    <tr>
                          <td width="40%">
                             @php if($fromdate && $todate) { @endphp
                             <span style="font-size: small;"><strong>Invoice Realisation Between</strong></span>
@@ -116,17 +111,20 @@
                           <td width="25%">
                             <span style="font-size: small;"><strong>Invoice Realisation Report</strong></span>
                            </td>
-                            <td width="15%">
+                            <td width="10%">
                             <span style="font-size: small;"><strong></strong></span>
                            </td>
-                             <td width="15%">
-                            <span style="font-size: small;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Run Date: &nbsp;{{ $date->isoFormat('MMMM D, Y')}}</strong></span>
+                             <td width="25%">
+                            <span style="font-size: small;"><strong>&nbsp;&nbsp;Run Date: &nbsp;{{ $date->isoFormat('MMMM D, Y')}}</strong></span>
                            </td>
                     </tr>
                 </table>
               
                 <table border="1px" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
                     <tr>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Customer Id</strong></span>
+                        </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Debtor Name</strong></span>
                         </td>
@@ -173,6 +171,9 @@
                    $invApprBal += $invoice->invoice->invoice_approve_amount;
                    @endphp
                     <tr>
+                        <td>
+                            <span style="font-size: small;">{{$invoice->customer_id}}</span>
+                        </td>
                         <td>
                             <span style="font-size: small;">{{$invoice->invoice->anchor->comp_name}}</span>
                         </td>
@@ -250,7 +251,7 @@
                     </tr>
                     @endforeach
                        <tr>
-                           <td colspan="3">
+                           <td colspan="4">
                             <span style="font-size: small;"><strong>Grand Total</strong></span>
                         </td>
                           <td>
