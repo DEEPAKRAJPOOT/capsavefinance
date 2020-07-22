@@ -9,7 +9,7 @@
         </div>
         <div class="header-title">
             <h3>Manage Refund</h3>
-            <small>(Disbursed Queue)</small>
+            <small>(Refund Queue)</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
                 <li class="active">Manage Refund </li>

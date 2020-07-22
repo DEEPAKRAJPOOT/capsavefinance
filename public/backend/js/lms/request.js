@@ -104,7 +104,7 @@ $(document).on('click','#pendingBtn', function(){
         return false;
     }else{
         $(this).addClass('btn-disabled');
-        if (confirm('Are you sure? You want to Submit it.')){
+        if (confirm('Are you sure you want to generate the refund request?.')){
             $("#refundReqForm").submit();
         }else{
             $(this).removeClass('btn-disabled');
@@ -118,7 +118,7 @@ $(document).on('click','#approveBtn', function(){
         return false;
     }else{
         $(this).addClass('btn-disabled');
-        if (confirm('Are you sure? You want to approve it.')){
+        if (confirm('Are you sure you want to approve the refund request?')){
             $("#refundReqForm").submit();
         }else{
             $(this).removeClass('btn-disabled');
@@ -132,7 +132,7 @@ $(document).on('click','#refundQueueBtn', function(){
         return false;
     }else{
         $(this).addClass('btn-disabled');
-        if (confirm('Are you sure? You want to Disbursed it.')){
+        if (confirm('Are you sure you want to move the request to refund queue?')){
             $("#refundReqForm").submit();
         }else{
             $(this).removeClass('btn-disabled');
@@ -157,6 +157,10 @@ $(document).on('click','#sentToBankBtn', function(){
     $(document).on('click', '.disburseClickBtn', function(){
         var invoiceIds = $('#transaction_ids').val().trim();
         var dataUrl = $(this).attr('data-url');
+        if (invoiceIds.length == 0) {
+            replaceAlert('Please select atleast one Ref No', 'error');
+            return false;
+        }
         var newUrl = dataUrl+'&transaction_ids='+invoiceIds;
         $('#openDisburseInvoice').attr('data-url', newUrl);
         $('#openDisburseInvoice').trigger('click');
