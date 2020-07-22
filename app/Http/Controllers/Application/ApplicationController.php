@@ -550,7 +550,8 @@ class ApplicationController extends Controller
                 Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
              
                 //Add application workflow stages                
-                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);                
+                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
+                Helpers::updateAppCurrentStatus($appId, $userId, config('common.mst_status_id.COMPLETED'));
                 
                 //Insert Pre Offer Documents
                 $prgmDocsWhere = [];

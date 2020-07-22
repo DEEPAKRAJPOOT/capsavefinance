@@ -590,7 +590,8 @@ class ApplicationController extends Controller
 			 
 				//Add application workflow stages                
 				Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
-				
+				Helpers::updateAppCurrentStatus($appId, $userId, config('common.mst_status_id.COMPLETED'));
+                                
 				//Update workflow stage
 				//$currentStage = Helpers::getCurrentWfStage($app_id);            
 				//$curr_wf_stage_code = $currentStage ? $currentStage->stage_code : null;
@@ -909,7 +910,8 @@ class ApplicationController extends Controller
                                     }
                                     $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
                                     $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
-                                    $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);                                    
+                                    $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
+                                    \Helpers::updateAppCurrentStatus($parentAppId, $user_id, config('common.mst_status_id.APP_CLOSED'));                                    
                                 }
                                 
         		if (!is_null($appLimitId)) {
@@ -925,7 +927,8 @@ class ApplicationController extends Controller
 			  	
 			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
                                 UserDetail::where('user_id',$user_id)->update(['is_active' =>1]);
-                                $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction                                
+                                $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction  
+                                \Helpers::updateAppCurrentStatus($app_id, $user_id, config('common.mst_status_id.APP_SANCTIONED'));
                                 $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
                                 if($prcsAmt && isset($prcsAmt->offer)) {
 				  if($createCustomer != null) {   
