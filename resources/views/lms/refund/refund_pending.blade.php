@@ -29,7 +29,7 @@
                             <button type="button" class="btn btn-success btn-sm ml-2" id="approveBtn">Approve Refund Request</button>
                         </div>
                     </div>
-                    <div class="row pull-left">
+                    <div class="row col-6 pull-left">
                     @include('lms.refund.common.search')
                     </div>
                 </div>

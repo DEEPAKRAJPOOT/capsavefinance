@@ -60,6 +60,7 @@ class ReportController extends Controller
 
     public function downloadLeaseReport(Request $request) {
        $whereRaw = '';
+       $userInfo = '';
        if(!empty($request->get('from_date')) && !empty($request->get('to_date'))){
             $from_date = $request->get('from_date');
             $to_date = $request->get('to_date');
@@ -68,11 +69,19 @@ class ReportController extends Controller
        if(!empty($request->get('user_id'))){
             $user_id = $request->get('user_id');
             $cond[] = " user_id='$user_id' ";
+            $userInfo = $this->reportsRepo->getCustomerDetail($user_id);
        }
        if (!empty($cond)) {
            $whereRaw = implode(' AND ', $cond);
        }
        $leaseRegistersList = $this->reportsRepo->leaseRegisters([], $whereRaw);
+
+       $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'user_id' => $request->get('user_id'),
+            'userInfo' => $userInfo,
+        ];
        $leaseRecords = $leaseRegistersList->get();
        $leaseArr = [];
        foreach ($leaseRecords as $lease) {
@@ -85,9 +94,10 @@ class ReportController extends Controller
          $leaseArr[] = [
             'State' => $lease->name, 
             'GSTN' => ($inv_comp_data['gst_no'] ?? $lease->biz_gst_no), 
-            'Customer Name' => $lease->biz_entity_name, 
-            'Customer Address' => $lease->gst_addr, 
-            'Customer GSTN' => $lease->biz_gst_no, 
+            'Cust. Id' =>  \Helpers::formatIdWithPrefix($lease->user_id, 'LEADID'), 
+            'Cust. Name' => $lease->biz_entity_name, 
+            'Cust. Addr' => $lease->gst_addr, 
+            'Cust. GSTN' => $lease->biz_gst_no, 
             'SAC Code' => $sac_code, 
             'Contract No' => $contract_no, 
             'Invoice No' => $lease->invoice_no, 
@@ -108,8 +118,8 @@ class ReportController extends Controller
            $toExportData['Lease Register'] = $leaseArr;
            return $this->fileHelper->array_to_excel($toExportData, 'leaseRegisterReport.xlsx');
        }
-       $pdfArr = ['pdfArr' => $leaseArr];
-       $pdf = $this->fileHelper->array_to_pdf($pdfArr);
+       $pdfArr = ['pdfArr' => $leaseArr, 'filter' => $condArr];
+       $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.leaseRegisterReport');
        return $pdf->download('leaseRegisterReport.pdf');        
     }
     
@@ -145,6 +155,7 @@ class ReportController extends Controller
         $duereport = [];
         foreach($getInvoice as $invoice) :
         $duereport[] = [
+            'Customer Id' => $invoice->customer_id ??  NULL,
             'Batch No' => $invoice->disbursal->disbursal_batch->batch_id ?? NULL,
             'Batch Date' => date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at)) ?? NULL,
             'Bill No' => $invoice->invoice->invoice_no ?? NULL,
@@ -170,6 +181,7 @@ class ReportController extends Controller
         $overduereport = [];
         foreach($getInvoice as $invoice) :
         $overduereport[] = [
+            'Customer Id' => $invoice->customer_id ??  NULL,
             'Batch No' => $invoice->disbursal->disbursal_batch->batch_id ?? NULL,
             'Batch Date' => date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at)) ?? NULL,
             'Bill No' => $invoice->invoice->invoice_no ?? NULL,
@@ -210,6 +222,7 @@ class ReportController extends Controller
         $realisationOnDate = implode(', ', $payment);
         $cheque = implode(', ', $chk);
         $realisationreport[] = [
+            'Customer Id' => $invoice->customer_id ??  NULL,
             'Debtor Name' => $invoice->invoice->anchor->comp_name ?? NULL,
             'Debtor Invoice Acc. No.' => $invoice->Invoice->anchor->anchorAccount->acc_no ?? NULL,
             'Invoice Date' => Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y') ?? NULL,

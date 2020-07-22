@@ -25,8 +25,7 @@ var oTable;
                 "url": messages.get_case_pool, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                  //  d.email = $('#customSearchBox').val();
-                  //d.status = $('select[name=status]').val();
+                    d.search_keyword = $('input[name=search_keyword]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -42,7 +41,7 @@ var oTable;
                     {data: 'contact'},
                     // {data: 'email'},
                     // {data: 'mobile_no'},
-                    {data: 'assoc_anchor'},
+                    // {data: 'assoc_anchor'},
                     // {data: 'user_type'},
                     {data: 'assignee'},
                     {data: 'assigned_by'},
@@ -53,11 +52,16 @@ var oTable;
           aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6,7]}]
 
             });
+
             $('#manageUser').on('click', function (e) {
                 e.preventDefault();
-            oTable1.draw();
+                oTable1.draw();
+            });
 
-        });
+            $('#searchbtn').on('click', function (e) {
+                // e.preventDefault();
+                oTable1.draw();
+            });
             
         });
         

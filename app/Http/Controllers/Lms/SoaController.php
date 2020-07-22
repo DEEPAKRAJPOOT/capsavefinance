@@ -22,7 +22,7 @@ use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
-
+use App\Inv\Repositories\Models\Lms\TransType;
 class SoaController extends Controller
 {
 	use ApplicationTrait;
@@ -50,7 +50,8 @@ class SoaController extends Controller
 	 */
 	public function soa_customer_view(Request $request)
 	{	
-		$userData = [];
+        $userData = [];
+        $transTypes = TransType::getTransTypeFilterList();
 		if($request->has('user_id')){
             $result = $this->getUserLimitDetais($request->user_id);
             if(isset($result['userInfo'])){
@@ -73,6 +74,7 @@ class SoaController extends Controller
 		
         return view('lms.soa.list')
         ->with('user',$userData)
+        ->with('transTypes', $transTypes)
         ->with('maxDPD',1)
         ->with('maxPrincipalDPD',$maxPrincipalDPD)
         ->with('maxInterestDPD',$maxInterestDPD)
@@ -89,6 +91,7 @@ class SoaController extends Controller
             'app_id'=>null,
             'biz_id'=>null
         ];
+        $transTypes = TransType::getTransTypeFilterList();
         $maxPrincipalDPD = null;
         $maxInterestDPD = null;
         $result = null;
@@ -109,6 +112,7 @@ class SoaController extends Controller
 		}
         return view('lms.soa.consolidated_soa')
         ->with('user',$userData)
+        ->with('transTypes', $transTypes)
         ->with('maxDPD',1)
         ->with('maxPrincipalDPD',$maxPrincipalDPD)
         ->with('maxInterestDPD',$maxInterestDPD)
@@ -176,27 +180,26 @@ class SoaController extends Controller
         }
     }
     
-    public function getBalance($trans){
-        $data = '';
-        if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
-            $data = '';
+    public function getBalance($trans, $balance = 0.00){
+
+        if($trans->entry_type=='1'){
+            $balance = $balance+$trans->amount;
         }
-        elseif($trans->balance<0){
-            $data = number_format(abs($trans->balance), 2);
-        }else{
-            $data = number_format(abs($trans->balance), 2);
+        elseif($trans->entry_type=='0'){
+            $balance = $balance-$trans->amount;
         }
-        return $data;
+        return $balance;
     }
     
     public function prepareDataForRendering($expecteddata){
         $preparedData = [];
         foreach($expecteddata as $key => $expData){
             foreach ($expData as $k => $data) {
+                $balance = $this->getBalance($data, $balance??0);
                 $preparedData[$key][$k]['payment_id'] = $data->payment_id;
                 $preparedData[$key][$k]['parent_trans_id'] = $data->parent_trans_id;      
                 $preparedData[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
-                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->created_at));
+                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->sys_created_at ?? $data->created_at));
                 $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->trans_date));
                 $preparedData[$key][$k]['trans_type'] = trim($data->transname);
                 $preparedData[$key][$k]['batch_no'] = $data->batchNo;
@@ -205,7 +208,7 @@ class SoaController extends Controller
                 $preparedData[$key][$k]['currency'] = trim($data->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')]) ? '' : 'INR');
                 $preparedData[$key][$k]['debit'] = $this->getDebit($data);
                 $preparedData[$key][$k]['credit'] = $this->getCredit($data);
-                $preparedData[$key][$k]['balance'] = $this->getBalance($data);
+                $preparedData[$key][$k]['balance'] = ($balance<=0)?number_format(abs($balance),2):'('.number_format(abs($balance),2).')';
                 $preparedData[$key][$k]['soabackgroundcolor'] = $data->soabackgroundcolor;
             }
         }
@@ -234,10 +237,20 @@ class SoaController extends Controller
                     $transactionList->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                        $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
                     });
                 }
-
+                if($request->has('trans_entry_type')){
+                    $trans_entry_type = explode('_',$request->trans_entry_type);
+                    $trans_type = $trans_entry_type[0];
+                    $entry_type = $trans_entry_type[1];
+                    if($trans_type){
+                        $transactionList->where('trans_type',$trans_type);
+                    }
+                    if($entry_type){
+                        $transactionList->where('entry_type',$entry_type);
+                    }
+                }
                 $transactionList->whereHas('lmsUser',function ($query) use ($request) {
                     $customer_id = trim($request->get('customer_id'));
                     $query->where('customer_id', '=', "$customer_id");
@@ -272,8 +285,20 @@ class SoaController extends Controller
                 $transactionList->where(function ($query) use ($request) {
                     $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                     $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                    $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
                 });
+            }
+            if($request->has('trans_entry_type')){
+                $trans_entry_type = explode('_',$request->trans_entry_type);
+                $trans_type = $trans_entry_type[0];
+                $entry_type = $trans_entry_type[1];
+
+                if($trans_type){
+                    $transactionList->where('trans_type',$trans_type);
+                }
+                if($entry_type){
+                    $transactionList->where('entry_type',$entry_type);
+                }
             }
 
             $transactionList->whereHas('lmsUser',function ($query) use ($request) {

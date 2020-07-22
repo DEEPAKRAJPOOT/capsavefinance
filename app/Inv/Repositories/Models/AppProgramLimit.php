@@ -128,7 +128,7 @@ class AppProgramLimit extends BaseModel {
     }
 
     public function program(){
-        return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');
+        return $this->belongsTo('App\Inv\Repositories\Models\Program','prgm_id','prgm_id');  
     }
 
     public function offer(){
@@ -165,8 +165,9 @@ class AppProgramLimit extends BaseModel {
             //$user_id =   User::where(['anchor_id' => $aid])->where('anchor_id','<>', null)->pluck('user_id');  //'is_active' => 1,
             $user_id =   AnchorUser::where('anchor_id',$aid)->where('anchor_id','<>', null)->pluck('user_id');  
             $lms_user_id =    LmsUser::whereIn('user_id',$user_id)->pluck('user_id');
-            $app_id =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->pluck('app_id');            
-            return AppProgramOffer::whereHas('productHas')->whereIn('app_id',$app_id)->where(['anchor_id' => $aid,'is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('program')->groupBy('prgm_id')->get();
+            $app_id =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->pluck('app_id');        
+            $prgmId  =  Program::where('anchor_id',$aid)->whereIn('status',[1,2])->pluck('prgm_id');
+            return AppProgramOffer::whereHas('productHas')->whereIn('app_id',$app_id)->whereIn('prgm_id',$prgmId)->where(['anchor_id' => $aid,'is_active' =>1,'is_approve' =>1,'status' =>1])->where('prgm_id','<>', null)->with('program')->groupBy('prgm_id')->get();
      }
      public static function getProgramLmsSingleList($aid)
      {      $id = Auth::user()->user_id;
@@ -351,7 +352,8 @@ class AppProgramLimit extends BaseModel {
     public static function getUtilizeLimit($appId, $productId, $checkApprLimit=true) 
     {
         $curDate = \Carbon\Carbon::now()->format('Y-m-d'); 
-        $query = self::select('app_prgm_limit.app_prgm_limit_id', 'app_prgm_offer.prgm_offer_id', 'app_prgm_offer.prgm_limit_amt as utilize_limit')   
+        $query = self::select('app_prgm_limit.app_prgm_limit_id', 'app_prgm_offer.prgm_offer_id',
+                'app_prgm_offer.anchor_id','app_prgm_offer.prgm_id','app_prgm_offer.prgm_limit_amt as utilize_limit')   
                 ->join('app_prgm_offer', 'app_prgm_offer.app_prgm_limit_id', '=', 'app_prgm_limit.app_prgm_limit_id')
                 ->where('app_prgm_limit.app_id',$appId)
                 ->where('app_prgm_limit.product_id', $productId)        

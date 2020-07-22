@@ -37,7 +37,7 @@
                     Form::text('by_email',                    
                     null,
                     array('id' => 'by_email',
-                    'class'=>'form-control', 'placeholder'=>'Search By name, email and pan'))
+                    'class'=>'form-control', 'placeholder'=>'Search By name or email or pan or anchor'))
                     !!}
                   
                 </div>
@@ -53,7 +53,7 @@
                                 <button class="btn  btn-success btn-sm" type="button"> <span class="btn-label">
                                         <i class="fa fa-plus"></i>
                                     </span>
-                                    Upload Anchor User
+                                    Upload Anchor Lead
                             </a>
                         @endcan
                         </button>

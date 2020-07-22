@@ -277,7 +277,7 @@ class Transactions extends BaseModel {
         if($this->payment_id){
             if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
             $color = '#f3c714';
-            else
+            elseif(!in_array($this->trans_type, [config('lms.TRANS_TYPE.TDS')]))
             $color = '#ffe787';
         }
         return $color;
@@ -305,7 +305,7 @@ class Transactions extends BaseModel {
     public static function getSettledTrans($userId){
         return self::where('entry_type','1')
                 //->whereNotNull('parent_trans_id')
-                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
+                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT'),config('lms.TRANS_TYPE.CANCEL')])
                 ->where('user_id','=',$userId)->get()
                 ->filter(function($item){
                     return $item->refundoutstanding > 0;
@@ -759,7 +759,18 @@ class Transactions extends BaseModel {
         $query = "SELECT DATE_FORMAT(t1.trans_date, '%d/%m/%Y') as trans_date, t1.trans_id, t1.parent_trans_id, t1.trans_name, t1.trans_desc, t1.user_id, t1.entry_type, t1.amount AS debit_amount, IFNULL(SUM(t2.amount), 0) as credit_amount, (t1.amount - IFNULL(SUM(t2.amount), 0)) as remaining 
         FROM `get_all_charges` t1 
         LEFT JOIN rta_transactions as t2 ON t1.trans_id = t2.parent_trans_id 
-        WHERE t1.entry_type = 0  ". $cond ." GROUP BY t1.trans_id";
+        WHERE t1.entry_type = 0  ". $cond ." GROUP BY t1.trans_id
+        UNION 
+        SELECT DATE_FORMAT(t1.trans_date, '%d/%m/%Y') as trans_date, t1.trans_id, t1.parent_trans_id, t2.trans_name, t2.credit_desc as trans_desc, t1.user_id, t1.entry_type, t1.amount AS debit_amount, IFNULL(t1.amount, 0) as credit_amount, 0 as remaining 
+        FROM `rta_transactions` t1 
+        JOIN rta_mst_trans_type as t2 ON t1.`trans_type` = t2.`id`
+        WHERE t1.entry_type = 0 AND t1.trans_type = ". config('lms.TRANS_TYPE')['INTEREST'] . $cond ." GROUP BY t1.trans_id
+        ";
+        
+        // $query = "SELECT DATE_FORMAT(t1.trans_date, '%d/%m/%Y') as trans_date, t1.trans_id, t1.parent_trans_id, t1.trans_name, t1.trans_desc, t1.user_id, t1.entry_type, t1.amount AS debit_amount, IFNULL(SUM(t2.amount), 0) as credit_amount, (t1.amount - IFNULL(SUM(t2.amount), 0)) as remaining 
+        // FROM `get_all_charges` t1 
+        // LEFT JOIN rta_transactions as t2 ON t1.trans_id = t2.parent_trans_id 
+        // WHERE t1.entry_type = 0  ". $cond ." GROUP BY t1.trans_id";
         $result = \DB::SELECT(\DB::raw($query));
         return $result;
     }
@@ -834,5 +845,57 @@ class Transactions extends BaseModel {
         ->filter(function($item) {
             return $item->outstanding > 0;
         });
-    }  
+
+    }
+
+    public static function getDishonouredTxn($user_id) {
+        return self::where(['user_id' => $user_id, 'trans_type' => config('lms.CHARGE_TYPE.CHEQUE_BOUNCE')])->get();
+    }    
+ 
+    
+    public static function getUserLimitOutstanding($attr)
+      {
+        $userId = $attr->user_id;
+        $disbursedList = self::whereNull('parent_trans_id')
+        ->whereNull('payment_id')
+        ->where('entry_type','0')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
+        ->where('user_id',$userId)
+        ->get()
+        ->filter(function($item) {
+            return $item->outstanding > 0;
+        });
+
+        $interestList = self::whereNull('parent_trans_id')
+        ->whereNull('payment_id')
+        ->where('entry_type','0')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST')])
+        ->where('user_id',$userId)
+        ->get()
+        ->filter(function($item) {
+            return $item->outstanding > 0;
+        });
+
+        $outstandingAmt = 0;
+        $outstandingPrincipalAmt = 0;
+
+        foreach($disbursedList as $tran){
+            $outstandingAmt += $tran->outstanding;
+            $outstandingPrincipalAmt += $tran->outstanding - $tran->invoiceDisbursed->total_interest;
+        }
+
+        foreach($interestList as $tran){
+            $outstandingAmt += $tran->outstanding;
+        }
+        if($attr->chrg_applicable_id==2)
+	{    
+            return round($outstandingAmt,2);
+        }
+        if($attr->chrg_applicable_id==3)
+	{
+           return round($outstandingPrincipalAmt,2); 
+        }
+    }
+    
+
 }

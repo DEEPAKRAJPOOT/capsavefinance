@@ -1566,43 +1566,62 @@ class Helper extends PaypalHelper
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
         
         //Validate Enchancement Limit                        
-        $appData = $appRepo->getAppData($appId);
+        $appData = $appRepo->getAppData($appId);        
         $result = [
             'status' => false,
             'app_type' => $appData ? $appData->app_type : 0,
-            'message' => '',
+            'message' => '',            
         ];
-        if ($productId == 1 && $appData && in_array($appData->app_type, [2,3]) ) {
+        if ($appData && in_array($appData->app_type, [2,3]) ) {
             $parentAppId = $appData->parent_app_id;
+            $parentUserId = $appData->user_id;
+            
+            $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 1]);
+            $result['tot_limit_amt'] = isset($appLimitData[0]) ? $appLimitData[0]->tot_limit_amt : 0;            
+            $result['parent_inv_utilized_amt'] = 0;
+            
+            if ($productId == 1) {
+                $pTotalCunsumeLimit = 0;
+                $invUtilizedAmt = 0;        
+                $pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
+                foreach ($pAppPrgmLimit as $value) {
+                    $pTotalCunsumeLimit += $value->utilize_limit;
 
-            $pTotalCunsumeLimit = 0;
-            $pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
-            foreach ($pAppPrgmLimit as $value) {
-                $pTotalCunsumeLimit += $value->utilize_limit;
-            }
+                    $attr=[];
+                    $attr['user_id'] = $parentUserId;
+                    $attr['app_id'] = $parentAppId;
+                    $attr['anchor_id'] = $value->anchor_id;
+                    $attr['prgm_id'] = $value->prgm_id;                     
+                    $invUtilizedAmt += $appRepo->getInvoiceUtilizedAmount($attr);                
+                }
 
-            $totalCunsumeLimit = $inputLimitAmt > 0 ? str_replace(',', '', $inputLimitAmt) : 0;
-            $appPrgmLimit = $appRepo->getUtilizeLimit($appId, 1, $checkApprLimit=false);
-            foreach ($appPrgmLimit as $value) {
-                if (count($excludeId) > 0) {
-                    if (isset($excludeId['app_prgm_limit_id']) && !empty($excludeId['app_prgm_limit_id']) && $excludeId['app_prgm_limit_id'] != $value->app_prgm_limit_id) {                                            
-                        $totalCunsumeLimit += $value->utilize_limit;
-                    } else if (isset($excludeId['prgm_offer_id']) && !empty($excludeId['prgm_offer_id']) && $excludeId['prgm_offer_id'] != $value->prgm_offer_id) {
-                        $totalCunsumeLimit += $value->utilize_limit;
+                $result['parent_inv_utilized_amt'] = $invUtilizedAmt;
+
+                $totalCunsumeLimit = $inputLimitAmt > 0 ? str_replace(',', '', $inputLimitAmt) : 0;
+                $appPrgmLimit = $appRepo->getUtilizeLimit($appId, 1, $checkApprLimit=false);
+                foreach ($appPrgmLimit as $value) {
+                    if (count($excludeId) > 0) {
+                        if (isset($excludeId['app_prgm_limit_id']) && !empty($excludeId['app_prgm_limit_id']) && $excludeId['app_prgm_limit_id'] != $value->app_prgm_limit_id) {                                            
+                            $totalCunsumeLimit += $value->utilize_limit;
+                        } else if (isset($excludeId['prgm_offer_id']) && !empty($excludeId['prgm_offer_id']) && $excludeId['prgm_offer_id'] != $value->prgm_offer_id) {
+                            $totalCunsumeLimit += $value->utilize_limit;
+                        } else {
+                            $totalCunsumeLimit += $value->utilize_limit;
+                        }
                     } else {
                         $totalCunsumeLimit += $value->utilize_limit;
-                    }
-                } else {
-                    $totalCunsumeLimit += $value->utilize_limit;
+                    }                                
                 }
-            }
-            
-            if ($appData->app_type == 2) {
-                $result['status'] = $totalCunsumeLimit <= $pTotalCunsumeLimit;    
-                $result['message'] = trans('backend_messages.validate_limit_enhance_amt'); 
-            } else if ($appData->app_type == 3) {
-                $result['status'] = $totalCunsumeLimit < $pTotalCunsumeLimit;    
-                $result['message'] = trans('backend_messages.validate_reduce_limit_amt');
+
+                if ($appData->app_type == 2) {
+                    $result['status'] = $totalCunsumeLimit <= $pTotalCunsumeLimit;    
+                    $result['message'] = trans('backend_messages.validate_limit_enhance_amt');
+                    $result['parent_consumed_limit'] = $pTotalCunsumeLimit; 
+                } else if ($appData->app_type == 3) {
+                    $result['status'] = $invUtilizedAmt > $totalCunsumeLimit;    
+                    $result['message'] = trans('backend_messages.validate_reduce_limit_amt');
+                    $result['parent_consumed_limit'] = $pTotalCunsumeLimit; 
+                }
             }
         }
         
@@ -1781,4 +1800,79 @@ class Helper extends PaypalHelper
         }
      }
      
+
+     public static function checkApprPrgm($prgmId, $isOfferAcceptedOrRejected=true)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
+        $offerCond=[];
+        $offerCond['prgm_id'] = $prgmId;        
+        $offerCond['is_active'] = 1;
+        if ($isOfferAcceptedOrRejected) {
+            $offerCond['status_is_not_null'] = 1;
+        } else {
+            $offerCond['status_is_null'] = 1;
+        }
+        $appPrgmOffer = $appRepo->getOfferData($offerCond);
+        $res = false;
+        
+        if ($appPrgmOffer && $appPrgmOffer->prgm_offer_id) {            
+            $res = true;
+        }
+        
+        return $res;
+     }
+     
+     public static function getPrgmBalLimit($programId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');  
+        
+        $programs = $appRepo->getParentsPrograms($programId);        
+        $utilizedLimit = 0;
+        foreach($programs as $prgmId) {
+            $utilizedLimit += $appRepo->getPrgmBalLimit($prgmId);
+        }
+        return $utilizedLimit;
+     }
+     
+     public static function getAnchorUtilizedLimit($anchorPrgmId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
+        $anchorSubLimitTotal = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId, 'status' => 1], ['anchor_sub_limit'])->sum('anchor_sub_limit');
+        //$subPrgms = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId], ['prgm_id'])->pluck('prgm_id');
+        //$prgmIds = $subPrgms ? $subPrgms->toArray() : [];
+        //$utilizedLimit = count($prgmIds) > 0 ? $appRepo->getPrgmBalLimit($prgmIds) : 0; 
+        $utilizedLimit = 0;
+        $totalUtilizedAmount = $anchorSubLimitTotal + $utilizedLimit;
+        return $totalUtilizedAmount;
+     }
+     
+     public static function isProgamEditAllowed($anchorPrgmId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
+        $subPrgms = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId], ['parent_prgm_id','is_edit_allow', 'prgm_id']);
+        $isProgamEditAllowed = 0;
+        
+        $prgmIds =   $subPrgms  ? $subPrgms->pluck('prgm_id')->toArray() : [];
+        $appPrgmOffer = $appRepo->checkProgramOffers($prgmIds);        
+                     
+        if (count($subPrgms) == 0 || $appPrgmOffer == 0) {
+            $isProgamEditAllowed = 1;
+        } else {            
+            foreach($subPrgms as $prgm) {   
+                if ($prgm->is_edit_allow && !self::checkApprPrgm($prgm->prgm_id, $isOfferAcceptedOrRejected=false) )  {
+                    $isProgamEditAllowed = 2;               
+                    break;
+                }
+            }       
+        }
+        return $isProgamEditAllowed;
+     }
+     
+     public static function getParentsPrograms($prgmId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');        
+        $programs = $appRepo->getParentsPrograms($prgmId);
+        return $programs;
+     }
+
 }

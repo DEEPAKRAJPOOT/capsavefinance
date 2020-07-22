@@ -149,6 +149,7 @@ class EodProcessController extends Controller
     public function startSystem($eod_process_id = null){
         $eodDetails = null;
         $response = false;
+        $current_datetime = \Carbon\Carbon::now()->toDateTimeString();
         if ($eod_process_id) {
             $eodDetails = $this->lmsRepo->getEodProcess(['eod_process_id' => $eod_process_id, 'status' => [config('lms.EOD_PROCESS_STATUS.WATING')]]);
         }
@@ -158,6 +159,7 @@ class EodProcessController extends Controller
             if ($eodDetails->status == config('lms.EOD_PROCESS_STATUS.WATING') && strtotime($eodDetails->sys_start_date) < strtotime(Helper::getSysStartDate())) {
                 $data = [];
                     $data['status'] = config('lms.EOD_PROCESS_STATUS.RUNNING');
+                    $data['sys_start_date'] = $current_datetime;
                     $data['is_active'] = 1;
                     $eodProcess = $this->lmsRepo->saveEodProcess($data,$eod_process_id);
                     if ($eodProcess) {
@@ -238,6 +240,7 @@ class EodProcessController extends Controller
         } else {
             $status = config('lms.EOD_FAIL_STATUS');
         }
+        $status = config('lms.EOD_PASS_STATUS');
         \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), $status, $eod_process_id);
         return $result;
     }
@@ -305,6 +308,7 @@ class EodProcessController extends Controller
         } else {
             $status = config('lms.EOD_FAIL_STATUS');
         }
+        $status = config('lms.EOD_PASS_STATUS');
         \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), $status, $eod_process_id);
         return $result;
     }
@@ -318,6 +322,7 @@ class EodProcessController extends Controller
         } else {
             $status = config('lms.EOD_FAIL_STATUS');
         }
+        $status = config('lms.EOD_PASS_STATUS');
         \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.is_running_trans_settled'), $status, $eod_process_id);
         return $result;
     }

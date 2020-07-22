@@ -114,15 +114,29 @@ class AppProgramOffer extends BaseModel {
         
         $whereCondition['is_active'] = isset($whereCondition['is_active']) ? $whereCondition['is_active'] : 1;
         
-        $query = self::select('app_prgm_offer.*');
-        if (isset($whereCondition['status']) && is_null(isset($whereCondition['status']))) {
+
+        $offerWhereCond = [];
+        if (isset($whereCondition['status_is_not_null'])) {
+            $offerWhereCond['status_is_not_null'] = $whereCondition['status_is_not_null'];
+            unset($whereCondition['status_is_not_null']);
+        } else if (isset($whereCondition['status_is_null'])) {
+            $offerWhereCond['status_is_null'] = $whereCondition['status_is_null'];
+            unset($whereCondition['status_is_null']);
+        } else if (isset($whereCondition['status']) && is_null(isset($whereCondition['status']))) {            
+            $offerWhereCond['status'] = $whereCondition['status'];
             unset($whereCondition['status']);
+        }
+                                
+        $query = self::select('app_prgm_offer.*')
+                ->where($whereCondition);
+        if (isset($offerWhereCond['status_is_not_null'])) {
+            $query->whereNotNull('status');
+        } else if (isset($offerWhereCond['status_is_null'])) {
             $query->whereNull('status');
-            $query->where($whereCondition);
-        } else {
-            $query->where($whereCondition);
-        }               
-        
+        } else if (isset($offerWhereCond['status']) && is_null($offerWhereCond['status'])) {            
+            $query->whereNull('status');            
+        }
+
         $offerData = $query->first();      
         return $offerData ? $offerData : null;
     }
@@ -550,5 +564,35 @@ class AppProgramOffer extends BaseModel {
     //Anchor Name
     public function anchorUser(){
         return $this->hasOne('App\Inv\Repositories\Models\User', 'anchor_id', 'anchor_id')->where('user_type', 2);
+    }    
+    
+    public static function getPrgmBalLimit($program_id)
+    {
+        if(empty($program_id)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+        $whereCond = [];
+        $whereCond[] = ['is_active', '=', 1];
+        $whereCond[] = ['status', '=', 1];
+        if (is_array($program_id)) {
+            $query = self::whereIn('prgm_id', $program_id);
+        } else {
+            $query = self::where('prgm_id', $program_id);
+        }
+        $query->where($whereCond);
+        return $query->sum('prgm_limit_amt');
+    }
+
+    public static function checkProgramOffers($program_id)
+    {
+        $whereCond = [];
+        $whereCond[] = ['is_active', '=', 1];
+        if (is_array($program_id)) {
+            $query = self::whereIn('prgm_id', $program_id);
+        } else {
+            $query = self::where('prgm_id', $program_id);
+        }
+        $query->where($whereCond);
+        return $query->count();
     }    
 }

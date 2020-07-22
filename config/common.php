@@ -305,5 +305,29 @@ return [
         '2' => 10
     ],    
     'ck_upload_img_path' => env('CKEDITOR_UPLOAD_IMAGE_PATH', ''),
+    'program_modify_reasons' => [
+        1 => 'Limit Enhancement',
+        2 => 'Reduce Limit'
+    ],
+    'cibil_report' => [
+        'MEMBER_ID' => 'PROLITUSUP',
+        'PREV_MEMBER_ID' => 'PROLITUSDL',
+        'MEMBER_BRANCH_CODE' => 'PROLITUSCG',
+        'PREV_MEMBER_BRANCH_CODE' => 'PROLITUSMP',
+    ],
+    'MSMETYPE' => [
+        '01' => 'MSME',
+        '02' => 'SME',
+        '03' => 'Micro',
+        '04' => 'Small',
+        '05' => 'Medium',
+        '06' => 'Large',
+        '07' => 'Others',
+    ],
+    'CREDIT_TYPE' => [
+        '0100' => 'Cash credit',
+        '0200' => 'Overdraft',
+        '0300' => 'Demand loan',
+    ],
 ];
  

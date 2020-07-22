@@ -2666,7 +2666,7 @@ if ($err) {
      * @return json user data
      */
     public function getCasePools(DataProviderInterface $dataProvider) {
-        $appList = $this->application->getApplicationPoolData()->get();
+        $appList = $this->application->getApplicationPoolData();
         $apppool = $dataProvider->getAppLicationPool($this->request, $appList);
         return $apppool;
     }
@@ -3492,9 +3492,13 @@ if ($err) {
     public function getProgramBalanceLimit(Request $request)
     {
         $program_id = (int)$request->program_id;
-        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);
+        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
         $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
-        return json_encode(['prgm_limit' => $prgm_limit, 'prgm_data' => $prgm_data]);
+        $utilizedLimit = 0;
+        if ($prgm_data && $prgm_data->copied_prgm_id) {            
+            $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
+        }
+        return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
     }
     
      public function getProgramSingleList(Request $request)
@@ -3955,7 +3959,8 @@ if ($err) {
         $condArr = [
             'from_date' => $from_date ?? NULL,
             'to_date' => $to_date ?? NULL,
-            'customer_id' => $this->request->get('search_keyword'),
+            'user_id' => $this->request->get('user_id'),
+            'customer_id' => $this->request->get('customer_id'),
             'type' => 'excel',
         ];
         $transactionList = $this->invRepo->getReportAllInvoice();
@@ -3980,7 +3985,8 @@ if ($err) {
         $condArr = [
             'from_date' => $from_date ?? NULL,
             'to_date' => $to_date ?? NULL,
-            'customer_id' => $this->request->get('search_keyword'),
+            'user_id' => $this->request->get('user_id'),
+            'customer_id' => $this->request->get('customer_id'),
             'type' => 'excel',
         ];
         $transactionList = $this->invRepo->getReportAllOverdueInvoice();
@@ -4000,7 +4006,8 @@ if ($err) {
         $condArr = [
             'from_date' => $from_date ?? NULL,
             'to_date' => $to_date ?? NULL,
-            'customer_id' => $this->request->get('search_keyword'),
+            'user_id' => $this->request->get('user_id'),
+            'customer_id' => $this->request->get('customer_id'),
             'type' => 'excel',
         ];
         $transactionList = $this->invRepo->getInvoiceRealisationList();
@@ -4652,5 +4659,25 @@ if ($err) {
         
         return response()->json( $response );
    }
+
+    public function getCibilReportLms(DataProviderInterface $dataProvider) {
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('Y-m-d 00:00:00');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d 23:59:59');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'search_keyword' => $this->request->get('search_keyword'),
+            'type' => 'excel',
+        ];
+        $cibilReports = $this->lmsRepo->getCibilReports();
+        $reportsList = $dataProvider->getCibilReportLms($this->request, $cibilReports);
+        $reportsList     = $reportsList->getData(true);
+        $reportsList['excelUrl'] = route('download_lms_cibil_reports', $condArr);
+        $condArr['type']  = 'pdf';
+        $reportsList['pdfUrl'] = route('download_lms_cibil_reports', $condArr);
+        return new JsonResponse($reportsList);
+    }
 
 }

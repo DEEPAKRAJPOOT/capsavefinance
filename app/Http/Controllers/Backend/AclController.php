@@ -219,6 +219,7 @@ class AclController extends Controller {
             $arrData['state_id'] = $data['state_id'];
             $arrData['city_id'] = $data['city_id'];
             $arrData['is_active'] = (int)$data['is_active'];
+            $arrData['created_by'] = \Auth::user()->user_id;
             $userId = null;
             $existData = $this->userRepo->getUserByemail($data['email']);
             if ($existData) {
@@ -319,9 +320,9 @@ class AclController extends Controller {
             $arrData['is_active'] = (int)$data['is_active'];
             $arrData['is_appr_required'] = isset($data['is_appr_required']) && !empty($data['is_appr_required']) ? $data['is_appr_required'] : null;
             $arrData['state_id'] = $data['state_id'];
-            $arrData['city_id'] = $data['city_id'];            
+            $arrData['city_id'] = $data['city_id'];
+            $arrData['updated_by'] = \Auth::user()->user_id;            
             //dd('oooooooooooo', $arrData);
-            
             $userId = $data['user_id'];
             $existData = $this->userRepo->getUserByemail($data['email']);
             
@@ -392,4 +393,32 @@ class AclController extends Controller {
             
         }
     }
+    
+    public function assignDoalLevelRole(Request $request)
+    {
+        try {             
+            $roles = $this->userRepo->getRolesByType(2);
+            $rolesDataArray = [];
+            foreach($roles as $role) {
+                $rolesDataArray[$role->id] = $role->name;
+            }
+           
+            return view('backend.acl.assign_doal_level_role')
+                    ->with('rolesList', $rolesDataArray);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+    
+    
+    public function saveAssignDoalLevelRole(Request $request)
+    {
+        try {
+
+            $data = $request->all(); 
+            
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }            
+    }     
 }

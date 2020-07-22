@@ -52,7 +52,7 @@
                               <thead>
                                 <tr role="row">
                                   <th>Reference No</th>
-                                  <th>Biz GST No</th>
+                                  <th>Business GST No</th>
                                   <th>Invoice No</th>
                                   <th>Invoice Date</th>
                                   <th>Place of Supply</th>

@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\Lms\Batch;
@@ -57,6 +58,8 @@ use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\Master\TallyEntry;
+use App\Inv\Repositories\Models\Lms\CibilReports;
+use App\Inv\Repositories\Models\Lms\CibilUserData;
 use BlankDataExceptions;
 use InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\Lms\CronLog;
@@ -605,7 +608,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 	   try
 	   {
-		  return Disbursal::getOutstandingAmount($attr); 
+		  return Transactions::getUserLimitOutstanding($attr);
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
@@ -1393,10 +1396,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	   }
 			   
 	}     
-	  
-	   
-    public function getEodDataCount()
-    {
+    
+    public function getEodDataCount() {
         return EodProcess::getEodDataCount();
     }
 
@@ -1406,10 +1407,32 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     public function getActualTallyAmount() {
        return TallyEntry::getActualPostedAmount();
+    }
+
+    public function getCibilReports(array $whereCondition = [], $whereRawCondition = NULL) {
+       return CibilReports::getCibilReports($whereCondition, $whereRawCondition);
+    } 
+
+    public function getCibilUserData(array $whereCondition = [], $whereRawCondition = NULL) {
+       return CibilUserData::getCibilUserDataList($whereCondition, $whereRawCondition);
+    }  
+
+    public function insertCibilUserData(array $userData = []) {
+       return CibilUserData::insertBulkData($userData);
+    }
+
+    public function getAllBusinessData(array $where = []) {
+        return Business::with('app')->whereHas('app', function ($q) use ($where){
+        	$q->where($where);
+        })->get();
+    }
+
+    public function getAllBusinessAddrData(array $whereCond = []) {
+        return BusinessAddress::getBizAddresses($whereCond);
     }    
 
 	public function getEodList(){
-		return EodProcess::orderBy('eod_process_id','DESC')->get();
+		return EodProcess::whereNotIn('status',[config('lms.EOD_PROCESS_STATUS.WATING')])->orderBy('eod_process_id','DESC')->get();
 	}
 
 	public function createCronLog($data){

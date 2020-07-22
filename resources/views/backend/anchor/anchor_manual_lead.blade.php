@@ -48,6 +48,24 @@
                                  {!! $errors->first('comp_name', '<span class="error">:message</span>') !!}
                               </div>
                            </div>
+                           @php 
+                            $role_id=Helpers::getUserRole(Auth::user()->user_id);
+                            @endphp
+                            @if ($role_id[0]->pivot->role_id == '11')
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="anchor_user_type">User Type
+                                    <span class="mandatory">*</span>
+                                    </label>
+                                    <select class="form-control anchor_user_type" name="anchor_user_type" id="anchor_user_type">
+                                        <option value="">Please Select</option>
+                                        <option value="1" {{ (old("anchor_user_type") == "1" ? "selected":"") }}>Supplier</option>
+                                        <option value="2" {{ (old("anchor_user_type") == "2" ? "selected":"") }}>Buyer</option>
+                                    </select>
+                                    {!! $errors->first('anchor_user_type', '<span class="error">:message</span>') !!}
+                                </div>
+                            </div>
+                            @endif
 <!--                           <div class="col-6">
                               <div class="form-group">
                                  <label for="pan_no">PAN No.
@@ -89,9 +107,6 @@
                         
                            
                      </div>  
-                   @php 
-                   $role_id=Helpers::getUserRole(Auth::user()->user_id);
-                   @endphp
                 @if ($role_id[0]->pivot->role_id!= '11')
                 <div  class="row">  
                     <div class="col-6">

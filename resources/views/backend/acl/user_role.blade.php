@@ -91,8 +91,9 @@
                                        <th>Mobile</th>
                                        <th>Role</th>
                                        <th>Reporting Manager</th>
-                                       <th>Active</th>
+                                       <th>Status</th>
                                        <th>Created On</th>
+                                       <!-- <th>Updated By</th> -->
                                        <th>Action</th>
                                     </tr>
                                  </thead>
@@ -116,6 +117,7 @@
 {!!Helpers::makeIframePopup('manageUserRole','Edit User', 'modal-md')!!}
 {!!Helpers::makeIframePopup('addmanageUserRole','Add User', 'modal-md')!!}
 {!!Helpers::makeIframePopup('manageUserRolePassword','Change User Password', 'modal-md')!!}
+{!!Helpers::makeIframePopup('assignDoaLevelRole','Assign Doa Level Role', 'modal-md')!!}
 @endsection
 @section('additional_css')
 <style>

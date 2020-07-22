@@ -60,6 +60,13 @@
                     ])
                     !!} 
                 </div>
+                <div class="col-md-3">
+                {!! Form::select('trans_entry_type',$transTypes, request()->get('trans_entry_type') ?? null, [
+                        'class' => 'form-control',
+                        'placeholder' => 'Select Transaction Type',
+                        'id'=>'to_date'
+                        ]) !!}
+                </div>
                 <div class="col-md-3" id="prefetch">
                     {!!
                     Form::text('search_keyword',
@@ -141,7 +148,7 @@
 <script>
 
     var messages = {
-        lms_get_soa_list: "{{ URL::route('lms_get_consolidated_soa_list',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'], 'from_date'=>request()->get('from_date'), 'to_date'=>request()->get('to_date') ] ) }}",
+        lms_get_soa_list: "{{ URL::route('lms_get_consolidated_soa_list',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'], 'from_date'=>request()->get('from_date'), 'to_date'=>request()->get('to_date'), 'trans_entry_type'=>request()->get('trans_entry_type') ] ) }}",
         get_soa_client_details:"{{ URL::route('get_soa_client_details') }}",
         pdf_soa_url:"{{ URL::route('soa_pdf_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'],'soaType'=>'consolidatedSoa']) }}",
         excel_soa_url:"{{ URL::route('soa_excel_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'],'soaType'=>'consolidatedSoa']) }}",

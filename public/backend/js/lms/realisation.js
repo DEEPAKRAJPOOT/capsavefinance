@@ -15,7 +15,8 @@ try {
                 data: function (d) {
                     d.from_date = $('input[name="from_date"]').val();
                     d.to_date = $('input[name="to_date"]').val();
-                    d.search_keyword = $('input[name=search_keyword]').val();
+                    d.user_id = $('input[name=user_id]').val();
+                    d.customer_id = $('input[name=customer_id]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -31,6 +32,7 @@ try {
                 $('#dwnldPDF').attr('href', pdfUrl)
             },
             columns: [
+                {data: 'customer_id'},
                 {data: 'debtor_name'},
                 {data: 'debtor_acc_no'},
                 {data: 'invoice_date'},

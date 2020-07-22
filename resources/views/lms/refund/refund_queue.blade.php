@@ -33,7 +33,7 @@
                             <input type="hidden" value="" name="transaction_ids" id="transaction_ids">
                         </div>
                     </div>
-                    <div class="row pull-left">
+                    <div class="row col-6 pull-left">
                     @include('lms.refund.common.search')
                     </div>
                 </div>

@@ -91,7 +91,7 @@
 
                                         <div class="col-md-4" id="waiveoff_div" style="display: none">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">Transactions On <span class="error_message_label">*</span></label>
+                                                <label for="txtCreditPeriod">TDS Submitted On <span class="error_message_label">*</span></label>
                                                 <select class="form-control" name="charges" id="charges">
                                                     <option value="">Select Charges</option>
                                                 </select>
@@ -386,7 +386,7 @@ cursor: pointer;
             var max = parseFloat(chargeData['debit_amount']);
             if(chargeData){
                 //$('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
-                $('#date_of_payment').datetimepicker('setStartDate', new Date(messages.sysDate));
+                // $('#date_of_payment').datetimepicker('setStartDate', new Date(messages.sysDate));
                 if(userData['action_type']!=3){
                     $('#amount').val(amt.toFixed(2)); 
                 }
@@ -655,11 +655,12 @@ cursor: pointer;
         });         
     });
 
-    $('.getFileName').change(function(){
+    $(document).on('change', '.getFileName', function(){
         $(this).parent('div').children('.custom-file-label').html('Choose file');
-    });
+    })
     
-    $('.getFileName').change(function(e) {
+    
+    $(document).on('change', '.getFileName', function(e){
         var fileName = e.target.files[0].name;
         $(this).parent('div').children('.custom-file-label').html(fileName);
     });

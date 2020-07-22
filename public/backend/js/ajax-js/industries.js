@@ -7,7 +7,7 @@ try {
         //industries Listing code
         oTable = $('#industriesList').DataTable({
             processing: true,
-            serverSide: false,
+            serverSide: true,
             pageLength: 25,
             searching: false,
             bSort: true,
@@ -31,6 +31,7 @@ try {
                 ],
             aoColumnDefs: [{'bSortable': true, 'aTargets': [0,1,2]}]
         });
+
         //Search
         $('#searchbtn').on('click', function (e) {
             oTable.draw();
