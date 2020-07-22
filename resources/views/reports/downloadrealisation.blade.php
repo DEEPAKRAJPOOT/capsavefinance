@@ -40,10 +40,10 @@
             table th:last-child{ 
                 border-right:none;
             }
-            table td{
-                /*border-right:#c5c5c5 solid 1px;*/
-                /*border-bottom:#c5c5c5 solid 1px;*/
-                padding:5px 10px;
+            td,th{
+                font-size: 8px;
+                padding:5px;
+                text-align: center;
             }
             table td:last-child{
                 border-right:none;
