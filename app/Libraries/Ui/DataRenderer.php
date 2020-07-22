@@ -1137,7 +1137,7 @@ class DataRenderer implements DataProviderInterface
                                     $invc = $inv->toArray();
                                     $dueDate = strtotime((isset($invc['invoice_due_date'])) ? $invc['invoice_due_date'] : ''); // or your date as well
                                     $now = strtotime(date('Y-m-d'));
-                                    $datediff = ($now - $dueDate);
+                                    $datediff = ($dueDate - $now);
                                     $days = round($datediff / (60 * 60 * 24));
                                     if ($this->overDueFlag == 0 && $days < 0 && $invc['is_repayment'] == 0) {
                                         $this->overDueFlag = 1;
