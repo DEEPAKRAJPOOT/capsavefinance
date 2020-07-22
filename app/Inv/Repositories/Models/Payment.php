@@ -194,6 +194,9 @@ class Payment extends BaseModel {
             case '3':
                $attr = $this->unr_no;
                 break;
+            case '4':
+                $attr = $this->unr_no;
+                    break;
             default:
                $attr = '';
                 break;
