@@ -1994,7 +1994,7 @@ class DataRenderer implements DataProviderInterface
                         }
                         if ($trans->action_type == 1 && isset($trans->userFile->file_path)) {                            
                             //$act .= '<a title="Download Cheque" href="'. \Storage::url($trans->userFile->file_path) .'" download="'. $trans->userFile->file_name . '"><i class="fa fa-download"></i></a>';
-                            $act .= '<a title="Download Cheque" href="'. route('download_storage_file', ['file_id' => $trans->userFile->file_id ]) .'" ><i class="fa fa-download"></i></a>';
+                            $act .= '&nbsp;<a title="Download Cheque" href="'. route('download_storage_file', ['file_id' => $trans->userFile->file_id ]) .'" ><i class="fa fa-download"></i></a>';
                         }                        
                     return $act;
                    
