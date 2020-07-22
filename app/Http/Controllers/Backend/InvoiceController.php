@@ -937,7 +937,8 @@ class InvoiceController extends Controller {
 
                         if ($invoiceDisbursedData == null) {
                             $invoice['batch_id'] = $batchId;
-                            $invoice['disburse_date'] = $disburseDate;
+                            $disburseNewDate = \Carbon\Carbon::createFromFormat('d/m/Y', $disburseDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
+                            $invoice['disburse_date'] = $disburseNewDate;
                             $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
                             
                             $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
