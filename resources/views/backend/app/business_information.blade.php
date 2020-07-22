@@ -624,7 +624,8 @@ var messages = {
 	data_not_found: "{{ trans('error_messages.data_not_found') }}",
 	get_sub_industry: "{{ URL::route('get_sub_industry') }}",
 	please_select: "{{ trans('backend.please_select') }}",
-	token: "{{ csrf_token() }}"
+	token: "{{ csrf_token() }}",
+	configure_api: "{{ config('proin.CONFIGURE_API') }}"
 };
 
 $(document).ready(function () {

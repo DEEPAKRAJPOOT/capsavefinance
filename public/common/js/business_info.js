@@ -101,7 +101,7 @@ function fillGSTinput(datas){
 }
 
 function fillEntity(gstinId){
-	if(gstinId == ''){
+	if(gstinId == '' || messages.configure_api == 0){
 		return false;
 	}
 	$('.isloader').show();
