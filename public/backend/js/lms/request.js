@@ -157,6 +157,10 @@ $(document).on('click','#sentToBankBtn', function(){
     $(document).on('click', '.disburseClickBtn', function(){
         var invoiceIds = $('#transaction_ids').val().trim();
         var dataUrl = $(this).attr('data-url');
+        if (invoiceIds.length == 0) {
+            replaceAlert('Please select atleast one Ref No', 'error');
+            return false;
+        }
         var newUrl = dataUrl+'&transaction_ids='+invoiceIds;
         $('#openDisburseInvoice').attr('data-url', newUrl);
         $('#openDisburseInvoice').trigger('click');
