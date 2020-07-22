@@ -764,7 +764,7 @@ class InvoiceController extends Controller {
                     $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
 
                         // dd($invoiceDisbursedData);
-                    if ($invoiceDisbursedData == null) {
+                    if (empty($invoiceDisbursedData)) {
                         $invoice['batch_id'] = $batchId;
                         $invoice['disburse_date'] = $disburseDate;
                         $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
