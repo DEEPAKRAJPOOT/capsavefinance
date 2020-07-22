@@ -129,17 +129,7 @@
                                             <td> {{ isset($app['biz_entity_name']) ? $app['biz_entity_name'] : ''}}</td>
                                             <td> {{ isset($app['email']) ? $app['email'] : ''}}</td>
                                             <td> {{ isset($app['pan_no']) ? $app['pan_no'] : ''}}</td>
-                                            <td>
-                                                @if($app['status'] == 1)
-                                                <button type="button" class="btn btn-success btn-sm">Complete</button>
-                                                @elseif($app['status'] == 2)
-                                                <button type="button" class="btn btn-success btn-sm">Sanctioned</button>
-                                                @elseif($app['status'] == 3)
-                                                <button type="button" class="btn btn-success btn-sm">Closed</button>                                                
-                                                @else
-                                                <button type="button" class="btn btn-info btn-sm">Not Complete</button>
-                                                @endif 
-                                            </td>
+                                            <td><button type="button" class="btn {{ config('common.APP_STATUS_BTN_CLASS.'.$app['curr_status_id']) }} btn-sm">{{ isset($app['status_name']) ? $app['status_name'] : ''}}</button></td>
                                             <td><div class="d-flex inline-action-btn justify-content-center">
                                              @can('company_details')
                                                     <a title="Edit Application" href="{{route('company_details',['user_id'=>$app['user_id'], 'app_id'=>$app['app_id'], 'biz_id'=>$app['biz_id']])}}" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
