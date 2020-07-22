@@ -1020,11 +1020,30 @@ class Helper extends PaypalHelper
     public static function isAccessViewOnly($app_id, $to_id = null)
     {
         try {
+            $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');        
             if (is_null($to_id)) {
                 $to_id = \Auth::user()->user_id;
             }
             $roleData = self::getUserRole();
             if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;
+            
+            if (isset($roleData[0]) && $roleData[0]->id == 12) {
+                $where=[];
+                $where['fi_addr.to_id'] = $to_id;
+                $where['app.app_id'] = $app_id;
+                $where['fi_addr.is_active'] = 1;
+                $fiData = $appRepo->getFiAddressData($where);
+                
+                $where=[];
+                $where['to_id'] = $to_id;
+                $where['app_id'] = $app_id;
+                $where['is_active'] = 1;         
+                $rcuData = $appRepo->getRcuDocumentData($where);
+                if (isset($fiData[0]) || isset($rcuData[0])) {
+                    return 1;
+                }
+            }
+            
             $isWfStageCompleted = self::isWfStageCompleted('app_submitted', $app_id);
             if (!$isWfStageCompleted) {
                 $isViewOnly = 1;

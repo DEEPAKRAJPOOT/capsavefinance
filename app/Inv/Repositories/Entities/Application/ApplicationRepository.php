@@ -74,6 +74,8 @@ use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\BizEntityCin;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\FiAddress;
+use App\Inv\Repositories\Models\RcuDocument;
 
 /**
  * Application repository class
@@ -2412,6 +2414,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Program::deleteProgram($prgmId);
     }    
 
+    public function getFiAddressData($where)
+    {
+        return FiAddress::getFiAddressData($where);
+    }
+
+    public function getRcuDocumentData($where)
+    {
+        return RcuDocument::getRcuDocumentData($where);
+    }    
 }
 
 
