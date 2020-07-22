@@ -687,7 +687,7 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
-                // dd($$result);
+                // dd($result);
                 if ($result['status'] == 'success') {
                     $fileDirPath = getPathByTxnId($transId);
                     $time = date('y-m-d H:i:s');
