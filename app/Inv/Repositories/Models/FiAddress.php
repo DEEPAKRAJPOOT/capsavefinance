@@ -155,7 +155,7 @@ class FiAddress extends BaseModel {
                 ->join('app', 'app.biz_id', '=', 'biz_addr.biz_id')
                 ->where($where)
                 ->get();
-        return isset($result[0]) ? $result[0] : [];
+        return isset($result[0]) ? $result : [];
     }
 
 }

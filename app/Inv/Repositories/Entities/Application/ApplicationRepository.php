@@ -74,8 +74,6 @@ use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\BizEntityCin;
 use App\Inv\Repositories\Models\BizInvoice;
-use App\Inv\Repositories\Models\FiAddress;
-use App\Inv\Repositories\Models\RcuDocument;
 
 /**
  * Application repository class

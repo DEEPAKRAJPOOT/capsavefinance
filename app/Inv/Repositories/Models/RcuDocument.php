@@ -124,6 +124,6 @@ class RcuDocument extends BaseModel {
         $result = self::select('*')
                 ->where($where)
                 ->get();
-        return isset($result[0]) ? $result[0] : [];
+        return isset($result[0]) ? $result : [];
     }    
 }
