@@ -4684,13 +4684,7 @@ if ($err) {
      * @return JsonResponse
      */
     public function Tds(DataProviderInterface $dataProvider) {
-//        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
-//            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('Y-m-d 00:00:00');
-//            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d 23:59:59');
-//        }
         $condArr = [
-//            'from_date' => $from_date ?? NULL,
-//            'to_date' => $to_date ?? NULL,
             'user_id' => $this->request->get('user_id'),
             'type' => 'excel',
         ];

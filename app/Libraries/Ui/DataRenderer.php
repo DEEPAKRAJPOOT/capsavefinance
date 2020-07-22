@@ -6764,6 +6764,13 @@ class DataRenderer implements DataProviderInterface
            ->make(true);
    }
    
+   /**
+    * TDS Data table listing
+    * 
+    * @param Request $request
+    * @param type $data
+    * @return type
+    */
    public function tds(Request $request, $data) {
        $this->sr_no = 1;
        return DataTables::of($data)    
@@ -6799,7 +6806,7 @@ class DataRenderer implements DataProviderInterface
                 if($request->get('user_id')!= ''){
                     $query->where(function ($query) use ($request) {
                         $user_id = trim($request->get('user_id'));
-                        $query->where('user_id', '=',$user_id);
+                        $query->where('payments.user_id', '=',$user_id);
                     });
                 }
               

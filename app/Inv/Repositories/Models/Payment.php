@@ -217,7 +217,14 @@ class Payment extends BaseModel {
           return self::with(['biz','user', 'transType', 'transaction'])->where('trans_type','!=',NULL)->orderBy('payment_id','DESC');
     }
     
-     /*** get all transaction  **/
+    /**
+     * Get all TDS transaction
+     * 
+     * @param type $whereCondition
+     * @param type $whereRawCondition
+     * @return type
+     * @throws InvalidDataTypeExceptions
+     */
     public static function getAllTdsTransaction($whereCondition=[], $whereRawCondition = NULL) {
         if (!is_array($whereCondition)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
@@ -230,8 +237,8 @@ class Payment extends BaseModel {
                         ->where('file_id', 0);
                 
         if (!empty($whereCondition)) {
-            $query->where($whereCondition);
-        }        
+            $query->where('payments.user_id', $whereCondition['user_id']);
+        }
         if (!empty($whereRawCondition)) {
             $query->whereRaw($whereRawCondition);
         }

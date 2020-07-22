@@ -239,6 +239,12 @@ class ReportController extends Controller
         return $pdf->download('InvoiceRealisation.pdf');    
    }
    
+   /**
+    * TDS report listing
+    * 
+    * @param Request $request
+    * @return type
+    */
    public function tdsReport(Request $request) {
         try {
             return view('reports.tds');
@@ -247,25 +253,23 @@ class ReportController extends Controller
         }
     }
 
+    /**
+     * Download TDS report pdf/xlxs
+     * 
+     * @param Request $request
+     * @return type
+     */
     public function downloadTdsReport(Request $request) {
        $whereRaw = '';
-//       if(!empty($request->get('from_date')) && !empty($request->get('to_date'))){
-//            $from_date = $request->get('from_date');
-//            $to_date = $request->get('to_date');
-//            $cond[] = " invoice_date between '$from_date' AND '$to_date' ";
-//       }
        if(!empty($request->get('user_id'))){
             $user_id = $request->get('user_id');
-            $cond[] = " user_id='$user_id' ";
+            $cond[] = " rta_payments.user_id='$user_id' ";
        }
        if (!empty($cond)) {
            $whereRaw = implode(' AND ', $cond);
        }
        $tdsList = $this->reportsRepo->tds([], $whereRaw);
-
        $condArr = [
-//            'from_date' => $from_date ?? NULL,
-//            'to_date' => $to_date ?? NULL,
             'user_id' => $request->get('user_id'),
         ];
        $tdsRecords = $tdsList->get();
