@@ -180,7 +180,7 @@
                       {
                            if( $row->payment->date_of_payment)
                            {
-                             $payment.= \Carbon\Carbon::parse($row->payment->date_of_payment)->format('d/m/Y').",";
+                             $payment.= \Carbon\Carbon::parse($row->payment->date_of_payment)->format('d/m/Y').", ";
                            }
                            
                       }
@@ -202,15 +202,15 @@
                        {
                            if( $row->payment->utr_no)
                            {
-                             $chk.= $row->payment->utr_no.",";
+                             $chk.= $row->payment->utr_no.", ";
                            }
                             if( $row->payment->unr_no)
                            {
-                             $chk.= $row->payment->unr_no.",";
+                             $chk.= $row->payment->unr_no.", ";
                            }
                             if( $row->payment->cheque_no)
                            {
-                             $chk.= $row->payment->cheque_no.",";
+                             $chk.= $row->payment->cheque_no.", ";
                            }
                       }
                      echo substr($chk,0,-1);
