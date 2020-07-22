@@ -37,7 +37,7 @@
                 border-right:none;
             }
             td,th{
-                font-size: 9px;
+                font-size: 10px;
                 padding:5px;
                 text-align: center;
             }
