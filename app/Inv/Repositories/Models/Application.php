@@ -853,6 +853,7 @@ class Application extends BaseModel
                 })                                
                 ->setBindings([$userId])
                 ->whereIn('app.status', [0,1])
+                ->whereNotIn('app.curr_status_id', [43,44,45,46])        
                 ->first();
                        
         return ($appData && $appData->app_id ? true : false);    
