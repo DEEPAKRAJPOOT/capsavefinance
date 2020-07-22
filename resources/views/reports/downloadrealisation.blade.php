@@ -41,7 +41,7 @@
                 border-right:none;
             }
             td,th{
-                font-size: <?php echo count($pdfArr[0]) > 8 ? '8px' : '10px'; ?> !important;
+                font-size: 8px;
                 padding:5px;
                 text-align: center;
             }
