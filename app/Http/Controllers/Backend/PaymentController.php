@@ -12,7 +12,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
-use  App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Payment;
 use Session;
 use Helpers;
@@ -654,4 +654,19 @@ class PaymentController extends Controller {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }  
     }
+	
+	public function deletePayment(Request $request)
+	{
+		try {
+			$paymentId = $request->get('payment_id');
+			if($paymentId){
+				$payment = Payment::find($paymentId);
+				if($payment){
+					$payment->delete();
+				}
+			}
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+		}  
+	}
 }

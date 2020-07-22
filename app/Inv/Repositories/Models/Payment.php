@@ -9,8 +9,12 @@ use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payment extends BaseModel {
+    
+    use SoftDeletes;
+    
     /* The database table used by the model.
      *
      * @var string
@@ -25,6 +29,7 @@ class Payment extends BaseModel {
      */
     protected $primaryKey = 'payment_id';
 
+    protected $softDelete = true;
     /**
      * Maintain created_at and updated_at automatically
      *
@@ -74,6 +79,7 @@ class Payment extends BaseModel {
         'created_by',
         'updated_at',
         'updated_by',
+        'deleted_at',
     ];
     
     public function biz() {

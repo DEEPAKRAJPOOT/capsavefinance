@@ -270,7 +270,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::post('download-cheque', [
                         'as' => 'download_cheque',
                         'uses' => 'Backend\PaymentController@downloadCheque',
-                    ]);                    
+                    ]);   
+                    
+                    Route::delete('delete-payment', [
+                        'as' => 'delete_payment',
+                        'uses' => 'Backend\PaymentController@deletePayment',
+                    ]);
                 }
             });
 

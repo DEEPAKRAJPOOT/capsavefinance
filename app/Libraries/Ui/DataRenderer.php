@@ -1990,8 +1990,14 @@ class DataRenderer implements DataProviderInterface
                     function ($trans) {
                         $act = '';
                         if ($trans->action_type == 3) {
-                            $act .= "<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
+                            $act .= "<a data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
                         }
+
+                        if($trans->is_settled == '0'){
+                            //$act .=  '<form id="delete-form" method="POST" action="'.route('delete_payment', ['payment_id' => $trans->payment_id]).'">'. csrf_field().method_field('DELETE'). '<input type="submit" class="btn btn-danger" value="Delete user"> </form>';
+                            $act .= '<botton url="'. route('delete_payment', ['payment_id' => $trans->payment_id]) .'" ><i class="fa fa-trash"></i></a>';
+                        }
+
                         if ($trans->action_type == 1 && isset($trans->userFile->file_path)) {                            
                             //$act .= '<a title="Download Cheque" href="'. \Storage::url($trans->userFile->file_path) .'" download="'. $trans->userFile->file_name . '"><i class="fa fa-download"></i></a>';
                             $act .= '<a title="Download Cheque" href="'. route('download_storage_file', ['file_id' => $trans->userFile->file_id ]) .'" ><i class="fa fa-download"></i></a>';
