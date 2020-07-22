@@ -42,22 +42,12 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by Customer Name, Eamil',
+                    'placeholder' => 'Search by Cust ID, Customer Name, Eamil',
                     'id'=>'by_name'
                     ])
                     !!}
                 </div>
-                <div class="col-md-4">
-
-                    {!!
-                    Form::text('customer_id',null,
-                    [
-                    'class' => 'form-control',
-                    'placeholder' => 'Search by Customer Id',
-                    'id'=>'customer_id'
-                    ])
-                    !!}
-                </div>
+            
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>
            <div class="row">     
