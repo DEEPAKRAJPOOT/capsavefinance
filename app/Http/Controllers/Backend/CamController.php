@@ -706,15 +706,15 @@ class CamController extends Controller
         $customers_info = [];
         if (!empty($contents)) {
           foreach ($contents['statementdetails'] as $key => $value) {
-            $account_no = $contents['accountXns'][0]['accountNo'];
-            $customer_data = $value['customerInfo'];
+            $account_no = $contents['accountXns'][0]['accountNo'] ?? NULL;
+            $customer_data = $value['customerInfo'] ?? [];
             $customers_info[] = array(
-              'name' => $customer_data['name'],
-              'email' => $customer_data['email'],
-              'mobile' => $customer_data['mobile'],
+              'name' => $customer_data['name'] ?? NULL,
+              'email' => $customer_data['email'] ?? NULL,
+              'mobile' => $customer_data['mobile'] ?? NULL,
               'account_no' => $account_no,
-              'bank' => $customer_data['bank'],
-              'pan' => $customer_data['pan'],
+              'bank' => $customer_data['bank'] ?? NULL,
+              'pan' => $customer_data['pan'] ?? NULL,
             );
           }
         }
