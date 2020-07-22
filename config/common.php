@@ -105,6 +105,9 @@ return [
         'APP_CANCEL'=>44,
         'APP_HOLD'=>45,
         'APP_DATA_PENDING'=>46,
+        'APP_INCOMPLETE'=>49,
+        'APP_SANCTIONED'=>50,
+        'APP_CLOSED'=>51,
     ],
     'facility_type' => [
         '1' => 'Rental Facility',
