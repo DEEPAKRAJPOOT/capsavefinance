@@ -42,7 +42,7 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by Cust ID, Customer Name, Eamil',
+                    'placeholder' => 'Search by Cust ID, Customer Name and Email',
                     'id'=>'by_name'
                     ])
                     !!}
