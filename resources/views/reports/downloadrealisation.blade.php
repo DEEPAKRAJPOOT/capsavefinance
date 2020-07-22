@@ -17,10 +17,6 @@
                 position: fixed;
                 bottom:0.5cm;
             }
-            *{
-                font-size:13px !important;
-                font-family: 'source-sans-pro-regular', sans-serif !important;
-            }
             table{
                 width: 100% !important;
                 /*border:1px solid #ccc;*/
@@ -41,7 +37,7 @@
                 border-right:none;
             }
             td,th{
-                font-size: 8px;
+                font-size: 7px;
                 padding:5px;
                 text-align: center;
             }
