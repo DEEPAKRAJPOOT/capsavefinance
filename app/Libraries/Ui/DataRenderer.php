@@ -4824,6 +4824,7 @@ class DataRenderer implements DataProviderInterface
                             $query->whereHas('user', function($query1) use ($search_keyword) {
                                 $query1->where('f_name', 'like',"%$search_keyword%")
                                 ->orWhere('l_name', 'like', "%$search_keyword%")
+                                ->orWhere(\DB::raw("CONCAT(f_name,' ',l_name)"), 'like', "%$search_keyword%")
                                 ->orWhere('email', 'like', "%$search_keyword%");
                             });
 
