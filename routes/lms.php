@@ -773,6 +773,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'apport_mark_writeOff_save',
                         'uses' => 'Lms\ApportionmentController@markWriteOffSave',
                     ]);
+
+                    Route::delete('/revert',[
+                        'as' => 'undo_apportionment',
+                        'uses' => 'Lms\ApportionmentController@undoApportionment',
+                    ]);
                 }
             });
 
