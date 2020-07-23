@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Session;
 use Helpers;
 use Auth;
+use App\Inv\Repositories\Models\User;
 
 class FiRcuController extends Controller
 {
@@ -94,7 +95,11 @@ class FiRcuController extends Controller
      */
     public function saveAssignFi(Request $request)
     {
-        //dd($request->all());
+        $roleData = \Auth::user()->user_id;
+        $userId = $request->all('to_id');
+        if((int)$userId['to_id'] == $roleData) {
+            Session::flash('error',trans('You can not assign to same user'));
+        }
         $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
         $this->appRepo->insertFIAddress($request->all());  
         return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
