@@ -98,11 +98,11 @@ class Apportionment {
                     parentRef.setTransactionAmt();
                 }
                 var rows = this.fnGetData();
-                if ( rows.length === 0 ) {
-                    $('.action-btn').hide();
-                }else{
-                    $('.action-btn').show();
-                }
+                // if ( rows.length === 0 ) {
+                //     $('.action-btn').hide();
+                // }else{
+                //     $('.action-btn').show();
+                // }
             },
         });
     }
