@@ -1,18 +1,14 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 @php 
-$finalDisburseAmt = 0;
-@endphp
-@foreach($data as $customer)
-
-	@php 
-		$finalDisburseAmt += round($customer->refund_amount, 2);
-		$cust[$customer->payment->user_id] = 1;
-	@endphp
-
-
-@endforeach
-@php
+	$finalDisburseAmt = 0;
+	$cust = [];
+	if(isset($data)){
+		foreach($data as $customer){
+			$finalDisburseAmt += round($customer->refund_amount, 2);
+			$cust[$customer->payment->user_id] = 1;
+		}
+	}
 	$totalCustomer = count($cust);
 @endphp
 <div class="row">
@@ -26,7 +22,7 @@ $finalDisburseAmt = 0;
 		</div>
 		<div class="col-4">
 			<div class="form-group">
-				<label for="nonFactoredAmount"># Amount Disburse</label>
+				<label for="nonFactoredAmount"># Amount Refund</label>
 				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ $finalDisburseAmt }}">
 			</div>
 		</div>
@@ -36,11 +32,11 @@ $finalDisburseAmt = 0;
 <div class="row">
 	<div class="col-6">
 		<form id="manualDisburse" method="POST" action="{{ Route('refund_offline') }}" target="_top">
-			<input type="hidden" value="{{ $transIds }}" name="transaction_ids" id="transaction_ids">
+			<input type="hidden" value="{{ $transIds ?? '' }}" name="transaction_ids" id="transaction_ids">
 			@csrf
 			<div class="col-6">
 				<div class="form-group">
-					<label for="txtCreditPeriod">Disburse Date <span class="error_message_label">*</span> </label>
+					<label for="txtCreditPeriod">Refund Date <span class="error_message_label">*</span> </label>
 					<input type="text" id="disburse_date" name="disburse_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
 					 @if(Session::has('error'))
 					 <div class="error">{{ Session::get('error') }}</div>
@@ -49,7 +45,7 @@ $finalDisburseAmt = 0;
 				</div>
 			</div>
 			<div class="col-6">
-				<input type="submit" id="submitManualDisburse" value="Disburse Offline" class="btn btn-success btn-sm ml-2">
+				<input type="submit" id="submitManualDisburse" value="Refund Offline" class="btn btn-success btn-sm ml-2">
 			</div>
 		</form>
 	</div>
@@ -75,7 +71,7 @@ $finalDisburseAmt = 0;
             },
             messages: {
                 'disburse_date': {
-                    required: "Disburse date is required.",
+                    required: "Refund date is required.",
                 }
             }
         });
