@@ -97,10 +97,11 @@ class FiRcuController extends Controller
     {
         $roleData = \Auth::user()->user_id;
         $userId = $request->all('to_id');
+        $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
         if((int)$userId['to_id'] == $roleData) {
             Session::flash('error',trans('You can not assign to same user'));
+           return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);  
         }
-        $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
         $this->appRepo->insertFIAddress($request->all());  
         return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
