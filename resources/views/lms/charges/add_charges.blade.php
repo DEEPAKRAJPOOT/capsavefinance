@@ -49,11 +49,11 @@
                 <div class="form-check-inline">               
                     <label class="form-check-label fnt">               
                         <input type="radio" class="form-check-input chrgT" id="chrg_calculation_type2"  name="chrg_calculation_type" value="2">&nbsp;&nbsp;Percentage</label>
-               
-                </div>
-                       </div> 
 
-        
+                </div>
+            </div> 
+
+
         </div>
         <div class="row unsettledPayment" style="display: none">
             <div class="form-group col-md-12 payment">
@@ -141,25 +141,24 @@
 <script src="{{ asset('backend/js/ajax-js/lms/add_charge.js') }}"></script>
 <script type="text/javascript">
 
-    var messages = {
-        get_chrg_amount: "{{ URL::route('get_chrg_amount') }}",
-        get_trans_name: "{{ URL::route('get_trans_name') }}",
-        get_payments: "{{URL::route('get_unsettled_payments',['user_id' => $customer->user_id])}}",
-        get_calculation_amount: "{{ URL::route('get_calculation_amount') }}",
-        charges: [ "{{config('lms.CHARGE_TYPE.CHEQUE_BOUNCE')}}", "{{config('lms.CHARGE_TYPE.NACH_BOUNCE')}}"],
-        token: "{{ csrf_token() }}",                
-        eod_sys_date : "{{ \Helpers::getSysStartDate() }}",
-    };
-    
-    $(document).ready(function(){
-        $(".datepicker-charge_date").datetimepicker({
-            format: 'dd/mm/yyyy',
-            autoclose: true,
-            minView : 2,
-            endDate: messages.eod_sys_date
-        });
-    });
-    
-</script>
+var messages = {
+    get_chrg_amount: "{{ URL::route('get_chrg_amount') }}",
+    get_trans_name: "{{ URL::route('get_trans_name') }}",
+    get_payments: "{{URL::route('get_unsettled_payments',['user_id' => $customer->user_id])}}",
+    get_calculation_amount: "{{ URL::route('get_calculation_amount') }}",
+    charges: ["{{config('lms.CHARGE_TYPE.CHEQUE_BOUNCE')}}", "{{config('lms.CHARGE_TYPE.NACH_BOUNCE')}}"],
+    token: "{{ csrf_token() }}",
+    eod_sys_date: "{{ \Helpers::getSysStartDate() }}",
+};
 
+$(document).ready(function () {
+    $(".datepicker-charge_date").datetimepicker({
+        format: 'dd/mm/yyyy',
+        autoclose: true,
+        minView: 2,
+        endDate: messages.eod_sys_date
+    });
+});
+
+</script>
 @endsection
