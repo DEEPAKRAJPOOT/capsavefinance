@@ -195,8 +195,8 @@
                             $(".chargeTypeGstCal").css({"display":"inline"});
                             if(res.type==2)
                             {
-                            var afterPercentGst = parseInt(afterPercent*parseFloat(gst_percentage)/100);
-                            finalTotalAmount  = parseInt(afterPercentGst+afterPercent);
+                            var afterPercentGst = parseFloat(afterPercent*parseFloat(gst_percentage)/100);
+                            finalTotalAmount  = parseFloat(afterPercentGst+afterPercent);
                             var finalTotalAmount =  Math.round(finalTotalAmount * 100) / 100;
                             $("#charge_amount_gst_new").val(finalTotalAmount);
                             
