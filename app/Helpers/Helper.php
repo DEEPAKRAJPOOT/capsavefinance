@@ -1077,7 +1077,11 @@ class Helper extends PaypalHelper
                       $isViewOnly = count($apprUsers) > 0 && in_array($to_id, $apprUsers) ? 1 : 0;
                     
                 } else {
-                    $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
+                    if (isset($roleData[0]) && $roleData[0]->id == 6 && in_array(request()->route()->getName(), ['share_to_colender', 'save_share_to_colender'])) {
+                        $isViewOnly = 1;
+                    } else {
+                        $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
+                    }
                 }
             }
             return $isViewOnly ? 1 : 0;
