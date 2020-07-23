@@ -99,7 +99,7 @@
                                                 <th style="width:9%">{{ trans('backend.app_list_head.contact') }}</th>
                                                 {{-- <th>{{ trans('backend.app_list_head.email') }}</th>
                                                 <th>{{ trans('backend.app_list_head.mobile_no') }}</th> --}}
-                                                <th style="width:12%">{{ trans('backend.app_list_head.anchor') }}</th>
+                                                <!-- <th style="width:12%">{{ trans('backend.app_list_head.anchor') }}</th> -->
                                                 {{-- <th>{{ trans('backend.app_list_head.user_type') }}</th> --}}
                                                 <th style="width:12%">{{ trans('backend.app_list_head.assignee') }}</th>
                                                 <th style="width:12%">{{ trans('backend.app_list_head.assigned_by') }}</th>

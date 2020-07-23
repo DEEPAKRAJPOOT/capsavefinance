@@ -277,22 +277,18 @@ class DataRenderer implements DataProviderInterface
                 //     function ($app) {                        
                 //         return $app->mobile_no ? $app->mobile_no : '';
                 // })                
-                ->addColumn(
-                    'assoc_anchor',
-                    function ($app) {
-                        //return "<a  data-original-title=\"Edit User\" href=\"#\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
-                    /////return isset($app->assoc_anchor) ? $app->assoc_anchor : '';
+                // ->addColumn(
+                //     'assoc_anchor',
+                //     function ($app) {
                     
-                    if($app->anchor_id){
-                       //$userInfo = User::getUserByAnchorId((int) $app->anchor_id);
-                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
-                    } else {
-                       $achorName='';  
-                    }                    
-                    return $achorName;
+                //     if($app->anchor_id){
+                //         $achorName = Helpers::getAnchorsByUserId($app->user_id);
+                //     } else {
+                //        $achorName='';  
+                //     }                    
+                //     return $achorName;
                     
-                })
+                // })
                 // ->addColumn(
                 //     'user_type',
                 //     function ($app) {
@@ -1966,7 +1962,7 @@ class DataRenderer implements DataProviderInterface
                     function ($trans) { 
                         $payment = '';
                         $payment .= $trans->created_at ? '<span><b>Trans. Date:&nbsp;</b>'.Carbon::parse($trans->date_of_payment)->format('d-m-Y').'</span>' : '';
-                        $payment .= $trans->amount ? '<br><span><b>Trans. Amount:&nbsp;</b> ₹ '.number_format($trans->amount).'</span>' : '';
+                        $payment .= $trans->amount ? '<br><span><b>Trans. Amount:&nbsp;</b> ₹ '.number_format($trans->amount,2).'</span>' : '';
                         return $payment;
                 })
                
@@ -2117,19 +2113,19 @@ class DataRenderer implements DataProviderInterface
                         }
                         return $app->name ? $app->name .' '. $anchorUserType : $anchorUserType;
                 })
-                ->addColumn(
-                    'assoc_anchor',
-                    function ($app) {
-                    if($app->anchor_id){
-                       //$userInfo = User::getUserByAnchorId($app->anchor_id);
-                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-                        $achorName = Helpers::getAnchorsByUserId($app->user_id);
-                    } else {
-                       $achorName='';  
-                    }                    
-                    return $achorName;
+                // ->addColumn(
+                //     'assoc_anchor',
+                //     function ($app) {
+                //     if($app->anchor_id){
+                //        //$userInfo = User::getUserByAnchorId($app->anchor_id);
+                //        //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
+                //         $achorName = Helpers::getAnchorsByUserId($app->user_id);
+                //     } else {
+                //        $achorName='';  
+                //     }                    
+                //     return $achorName;
                     
-                })
+                // })
                 ->addColumn(
                     'contact',
                     function ($app) {                        
@@ -2352,8 +2348,8 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     if($user->anchor_id){
                        //$userInfo = User::getUserByAnchorId($app->anchor_id);
-                       //$achorName= $userInfo->f_name . ' ' . $userInfo->l_name;
-                        $achorName = Helpers::getAnchorById($user->anchor_id);                        
+                       $achorName= ucwords($user->comp_name);
+                        // $achorName = Helpers::getAnchorById($user->anchor_id);                        
                     } else {
                        $achorName='';  
                     }                    
@@ -2385,7 +2381,8 @@ class DataRenderer implements DataProviderInterface
                                 ->orWhere('anchor_user.l_name', 'like', "%$by_nameOrEmail%")                                  
                                 ->orWhere(\DB::raw("CONCAT(rta_anchor_user.name,' ',rta_anchor_user.l_name)"), 'like', "%$by_nameOrEmail%")
                                 ->orWhere('anchor_user.email', 'like', "%$by_nameOrEmail%")
-                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
+                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('anchor.comp_name', 'like', "%$by_nameOrEmail%");
                             });
                         }
                     }
@@ -2572,7 +2569,8 @@ class DataRenderer implements DataProviderInterface
                     function ($role) {
                     $user_edit =  "<a title=\"Edit User\"  data-toggle=\"modal\" data-target=\"#manageUserRole\" data-url =\"" . route('edit_user_role', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a>"; 
                     $user_email = "<a title=\"Change User Password\"  data-toggle=\"modal\" data-target=\"#manageUserRolePassword\" data-url =\"" . route('change_user_role_password', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"195px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-expeditedssl\"></i></a>";
-                    return '<div class="btn-group"><label>'. $user_edit .'</label> <label>'. $user_email .'</label></div>';;
+                    //$assign_doa_level =  "<a title=\"Assign Doa Level Role\"  data-toggle=\"modal\" data-target=\"#assignDoaLevelRole\" data-url =\"" . route('assign_doal_level_role', ['role_id' => $role->id,'user_id'=>$role->user_id]) . "\" data-height=\"430px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\"><i class=\"fa fa-edit\"></i></a>"; 
+                    return '<div class="btn-group"><label>'. $user_edit .'</label> <label>'. $user_email .'</label></div>';
                     })
                     ->filter(function ($query) use ($request) {
                         if ($request->get('by_email') != '') {
@@ -4319,16 +4317,28 @@ class DataRenderer implements DataProviderInterface
                     $query->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                        $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
                     });
+                }
+                if($request->has('trans_entry_type')){
+                    if($request->trans_entry_type != ''){
+                        $trans_entry_type = explode('_',$request->trans_entry_type);
+                        $trans_type = $trans_entry_type[0];
+                        $entry_type = $trans_entry_type[1];
+                        if($trans_type){
+                            $query->where('trans_type',$trans_type);
+                        }
+                        if($entry_type != ''){
+                            $query->where('entry_type',$entry_type);
+                        }
+                    }
                 }
 
-                if($request->get('customer_id')!= ''){
-                    $query->whereHas('lmsUser',function ($query) use ($request) {
-                        $customer_id = trim($request->get('customer_id'));
-                        $query->where('customer_id', '=', "$customer_id");
-                    });
-                }
+                $query->whereHas('lmsUser',function ($query) use ($request) {
+                    $customer_id = trim($request->get('customer_id')) ?? null ;
+                    $query->where('customer_id', '=', "$customer_id");
+                });
+                
               
             })
             ->make(true);
@@ -4441,8 +4451,21 @@ class DataRenderer implements DataProviderInterface
                 $query->where(function ($query) use ($request) {
                     $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
                     $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
-                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                    $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
                 });
+            }
+            if($request->has('trans_entry_type')){
+                if($request->trans_entry_type != ''){
+                    $trans_entry_type = explode('_',$request->trans_entry_type);
+                    $trans_type = $trans_entry_type[0];
+                    $entry_type = $trans_entry_type[1];
+                    if($trans_type){
+                        $query->where('trans_type',$trans_type);
+                    }
+                    if($entry_type != ''){
+                        $query->where('entry_type',$entry_type);
+                    }
+                }
             }
             if($request->get('user_id')!= ''){
                 $query->where(function ($query) use ($request) {
@@ -6442,13 +6465,12 @@ class DataRenderer implements DataProviderInterface
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
                         $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
                     }
-                     if ($request->get('search_keyword') != '') {                        
+                     if ($request->get('customer_id') != '') {                        
                         $query->where(function ($query) use ($request) {
-                            $search_keyword = trim($request->get('search_keyword'));
-                             $query->whereHas('invoice.lms_user', function($query1) use ($search_keyword) {
-                                $query1->where('customer_id', 'like',"%$search_keyword%");
+                            $customer_id = trim($request->get('customer_id'));
+                             $query->whereHas('invoice.lms_user', function($query1) use ($customer_id) {
+                                $query1->where('customer_id', 'like',"%$customer_id%");
                              });
-
                             
                         });                        
                     }
@@ -6523,11 +6545,11 @@ class DataRenderer implements DataProviderInterface
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
                         $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
                     }
-                     if ($request->get('search_keyword') != '') {                        
+                     if ($request->get('customer_id') != '') {                        
                         $query->where(function ($query) use ($request) {
-                            $search_keyword = trim($request->get('search_keyword'));
-                             $query->whereHas('invoice.lms_user', function($query1) use ($search_keyword) {
-                                $query1->where('customer_id', 'like',"%$search_keyword%");
+                            $customer_id = trim($request->get('customer_id'));
+                             $query->whereHas('invoice.lms_user', function($query1) use ($customer_id) {
+                                $query1->where('customer_id', 'like',"%$customer_id%");
                              });
 
                             
@@ -6638,11 +6660,11 @@ class DataRenderer implements DataProviderInterface
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
                         $query->WhereBetween('payment_due_date', [$from_date, $to_date]);
                     }
-                     if ($request->get('search_keyword') != '') {                        
+                     if ($request->get('customer_id') != '') {                        
                         $query->where(function ($query) use ($request) {
-                            $search_keyword = trim($request->get('search_keyword'));
-                             $query->whereHas('invoice.lms_user', function($query1) use ($search_keyword) {
-                                $query1->where('customer_id', 'like',"%$search_keyword%");
+                            $customer_id = trim($request->get('customer_id'));
+                             $query->whereHas('invoice.lms_user', function($query1) use ($customer_id) {
+                                $query1->where('customer_id', 'like',"%$customer_id%");
                              });
 
                             

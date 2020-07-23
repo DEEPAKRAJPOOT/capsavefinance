@@ -60,6 +60,7 @@ class ReportController extends Controller
 
     public function downloadLeaseReport(Request $request) {
        $whereRaw = '';
+       $userInfo = '';
        if(!empty($request->get('from_date')) && !empty($request->get('to_date'))){
             $from_date = $request->get('from_date');
             $to_date = $request->get('to_date');
@@ -68,6 +69,7 @@ class ReportController extends Controller
        if(!empty($request->get('user_id'))){
             $user_id = $request->get('user_id');
             $cond[] = " user_id='$user_id' ";
+            $userInfo = $this->reportsRepo->getCustomerDetail($user_id);
        }
        if (!empty($cond)) {
            $whereRaw = implode(' AND ', $cond);
@@ -78,6 +80,7 @@ class ReportController extends Controller
             'from_date' => $from_date ?? NULL,
             'to_date' => $to_date ?? NULL,
             'user_id' => $request->get('user_id'),
+            'userInfo' => $userInfo,
         ];
        $leaseRecords = $leaseRegistersList->get();
        $leaseArr = [];
@@ -152,6 +155,7 @@ class ReportController extends Controller
         $duereport = [];
         foreach($getInvoice as $invoice) :
         $duereport[] = [
+            'Customer Id' => $invoice->customer_id ??  NULL,
             'Batch No' => $invoice->disbursal->disbursal_batch->batch_id ?? NULL,
             'Batch Date' => date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at)) ?? NULL,
             'Bill No' => $invoice->invoice->invoice_no ?? NULL,
@@ -177,6 +181,7 @@ class ReportController extends Controller
         $overduereport = [];
         foreach($getInvoice as $invoice) :
         $overduereport[] = [
+            'Customer Id' => $invoice->customer_id ??  NULL,
             'Batch No' => $invoice->disbursal->disbursal_batch->batch_id ?? NULL,
             'Batch Date' => date('d/m/Y',strtotime($invoice->disbursal->disbursal_batch->created_at)) ?? NULL,
             'Bill No' => $invoice->invoice->invoice_no ?? NULL,
@@ -217,6 +222,7 @@ class ReportController extends Controller
         $realisationOnDate = implode(', ', $payment);
         $cheque = implode(', ', $chk);
         $realisationreport[] = [
+            'Customer Id' => $invoice->customer_id ??  NULL,
             'Debtor Name' => $invoice->invoice->anchor->comp_name ?? NULL,
             'Debtor Invoice Acc. No.' => $invoice->Invoice->anchor->anchorAccount->acc_no ?? NULL,
             'Invoice Date' => Carbon::parse($invoice->invoice->invoice_date)->format('d/m/Y') ?? NULL,
