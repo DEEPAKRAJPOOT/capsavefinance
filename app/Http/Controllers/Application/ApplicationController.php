@@ -582,7 +582,25 @@ class ApplicationController extends Controller
      */
     public function index()
     {
-       return view('frontend.application.index');   
+       $appStatus = $this->masterRepo->getAppStatus($status_type=1);
+       $appStatusList = [];       
+                
+       $selStatusList = [
+            config('common.mst_status_id.APP_INCOMPLETE'),
+            config('common.mst_status_id.COMPLETED'),            
+            config('common.mst_status_id.APP_SANCTIONED'),           
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            config('common.mst_status_id.APP_HOLD'),
+            config('common.mst_status_id.APP_DATA_PENDING'),           
+            config('common.mst_status_id.APP_CLOSED')
+        ];
+       foreach($appStatus as $statusId=>$appStatusName) {
+           if (in_array($statusId, $selStatusList)) {
+                $appStatusList[$statusId] = $appStatusName;
+           }
+       }
+       return view('frontend.application.index')->with('appStatusList', $appStatusList);   
               
     }
 

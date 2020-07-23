@@ -33,7 +33,7 @@
                 <div class="col-md-4">
                     {!!
                     Form::select('is_status',
-                    [''=>'Status', '1'=>'Complete','0'=> 'Incomplete'],
+                    [''=>'Status'] + $appStatusList,
                     null,
                     array('id' => 'is_status',
                     'class'=>'form-control'))

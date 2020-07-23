@@ -434,10 +434,11 @@ class Application extends BaseModel
     protected static function getUserApplications() 
     {  
         $usersIds = AnchorUser::getUsersByPan(\Auth::user()->user_id);        
-        $appData = self::distinct()->select('app.user_id','app.app_id','app_product.loan_amount', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at', 'anchor_user.pan_no')
+        $appData = self::distinct()->select('app.user_id','app.app_id','app_product.loan_amount', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at', 'anchor_user.pan_no','app.app_code','app.curr_status_id','mst_status.status_name')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->join('users', 'app.user_id', '=', 'users.user_id')
                 ->join('app_product', 'app_product.app_id', '=', 'app.app_id')
+                ->leftJoin('mst_status', 'mst_status.id', '=', 'app.curr_status_id')
                 ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
                 //->join(DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
                 //    $join->on( 'anchor_user.pan_no', '=', 'a.pan_no' );

@@ -581,7 +581,7 @@ class DataRenderer implements DataProviderInterface
                     'app_id',
                     function ($app) {
                         $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                        return $app->app_id;
+                        return $app->app_code;
                         //return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
                     }
                 )
@@ -631,7 +631,8 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($app) {
                     $app_status = config('common.app_status');                    
-                    return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(isset($app_status[$app->status]) ? $app_status[$app->status] : '' ).'</label>';
+                    //return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(isset($app_status[$app->status]) ? $app_status[$app->status] : '' ).'</label>';
+                    return '<label class="badge '.(config('common.APP_STATUS_LABEL_CLASS.'.$app->curr_status_id)).'">'.(isset($app->status_name) ? $app->status_name : '' ).'</label>';
 
                 })
                 ->addColumn(
@@ -648,14 +649,14 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('search_keyword') != '') {                        
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('app.app_id', 'like',"%$search_keyword%")
+                            $query->where('app.app_code', 'like',"%$search_keyword%")
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
                         });                        
                     }
                     if ($request->get('is_status') != '') {
                         $query->where(function ($query) use ($request) {
                             $is_assigned = $request->get('is_status');
-                            $query->where('app.status', $is_assigned);
+                            $query->where('app.curr_status_id', $is_assigned);
                         });
                     }
                     
