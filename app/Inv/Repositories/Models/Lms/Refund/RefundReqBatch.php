@@ -44,6 +44,7 @@ class RefundReqBatch extends BaseModel {
     protected $fillable = [
         'batch_no',
         'file_id',
+        'batch_status',
         'created_by',
         'created_at',
         'updated_by',

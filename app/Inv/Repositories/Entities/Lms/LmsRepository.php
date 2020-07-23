@@ -1071,6 +1071,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         if ($data) {
             $disburseBatch['batch_no'] = ($data['batch_no']) ?? null;
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
+            $disburseBatch['batch_status'] = config('lms.BATCH_STATUS')['SENT_TO_BANK'];
         }
         return RefundReqBatch::create($disburseBatch);
     }

@@ -185,4 +185,9 @@ return [
        'REJECT'=>'14',
        'PAYMENT_SETTLED'=>'15',
     ],
+    'BATCH_STATUS' => [    
+       'SENT_TO_BANK' => '1',
+       'SUCCESS'=>'2',
+       'FAILED'=>'3',
+    ],
 ];
