@@ -1359,7 +1359,16 @@ class UserRepository extends BaseRepositories implements UserInterface
     }
 
     public function getAgencyUserLists(){
-        $result = UserModel::orderBy('user_id', 'DESC')->with('agency')->where('agency_id','<>', null);
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
+        $result = UserModel::orderBy('user_id', 'DESC')->with('agency')->where('agency_id','<>', null)->where('users.agency_id', \Auth::user()->agency_id);
+        $resultAdmin = UserModel::orderBy('user_id', 'DESC')->with('agency')->where('agency_id','<>', null);
+
+        if ($roleData[0]->is_superadmin != 1) {
+            return $result;
+        } else {
+            return $resultAdmin;
+        }
+
         return $result ?: false;
 
     }
