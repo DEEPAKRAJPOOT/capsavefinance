@@ -573,7 +573,7 @@ class DataRenderer implements DataProviderInterface
                     'app_id',
                     function ($app) {
                         $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app->app_id]);
-                        return $app->app_code;
+                        return $app->app_id;
                         //return "<a id=\"app-id-" . $app->app_id . "\" href=\"" . $link . "\" rel=\"tooltip\">" . $app->app_id . "</a> ";
                     }
                 )
@@ -641,7 +641,7 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('search_keyword') != '') {                        
                         $query->where(function ($query) use ($request) {
                             $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('app.app_code', 'like',"%$search_keyword%")
+                            $query->where('app.app_id', 'like',"%$search_keyword%")
                             ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%");
                         });                        
                     }

@@ -169,6 +169,7 @@ class Helper extends PaypalHelper
             if ($wf_stage_code == 'new_case') {
                 $updateData['biz_app_id'] = $app_id;
                 $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
+                self::updateAppCurrentStatus($app_id, $user_id, config('common.mst_status_id.APP_INCOMPLETE'));
             } else {
                 $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
             }
@@ -1267,7 +1268,6 @@ class Helper extends PaypalHelper
             if ($wf_stage_code == 'new_case') {
                 $updateData['biz_app_id'] = $app_id;
                 $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
-                self::updateAppCurrentStatus($app_id, $user_id, config('common.mst_status_id.APP_INCOMPLETE'));
             } else {
                 $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
             }
@@ -1902,6 +1902,7 @@ class Helper extends PaypalHelper
 
         $arrUpdateApp=[
             'curr_status_id' => (int) $curStatus,
+            'curr_status_updated_at' => $curDate
         ];
 
         return $appRepo->updateAppDetails($appId, $arrUpdateApp);
