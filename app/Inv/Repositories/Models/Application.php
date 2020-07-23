@@ -144,10 +144,11 @@ class Application extends BaseModel
                 'users.email',
                 'users.mobile_no',                
                 'app_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role',
-                'app_assign.app_assign_id', 'app.parent_app_id', 'note.note_data as reason', 'note.note_id','anchor_user.pan_no')
+                'app_assign.app_assign_id', 'app.parent_app_id', 'note.note_data as reason', 'note.note_id','anchor_user.pan_no','mst_status.status_name')
                 ->join('users', 'users.user_id', '=', 'app.user_id')  
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
-                ->leftjoin('note','app.app_id', '=', 'note.app_id');
+                ->leftjoin('note','app.app_id', '=', 'note.app_id')
+                ->leftjoin('mst_status','app.curr_status_id', '=', 'mst_status.id');
         if ($roleData[0]->id == 11) {            
         $query  = $query->leftJoin('app_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');                    
