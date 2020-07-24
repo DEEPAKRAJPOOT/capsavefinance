@@ -101,8 +101,11 @@ class PaymentController extends Controller {
 	}
 
  	public function EditPayment(Request $request) {
- 		$paymentId = $request->payment_id;
-	  	$data  =  $this->invRepo->getPaymentById($paymentId);
+		 $paymentId = $request->payment_id;
+		 $paymentType = $request->payment_type;
+		//  dd($request->all(),$paymentType);
+		  $data  =  $this->invRepo->getPaymentById($paymentId);
+		//   dd($data);
 	   	return view('backend.payment.edit_payment')->with(['data' => $data]);
  	}
 	 
@@ -110,6 +113,7 @@ class PaymentController extends Controller {
 	public function  savePayment(Request $request)
 	{
 		try {
+			// dd($request->all());
 			if ($request->get('eod_process')) {
 				Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
 				return back();
@@ -287,7 +291,15 @@ class PaymentController extends Controller {
 				$userFile = $this->docRepo->saveFile($uploadData);
 			}
 
+			if(isset($arrFileData['cheque']) && !is_null($arrFileData['cheque'])) {
+				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
+                                $arrFileData['doc_file'] = $arrFileData['cheque'];
+			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
+				$userFile = $this->docRepo->saveFile($uploadData);
+			}
+
 			$paymentData = [
+				'cheque_no' => $request->cheque_no ?? '',
 				'tds_certificate_no' => $request->tds_certificate_no ?? '',
 				'file_id' => $userFile->file_id ?? '',
 				'description' => $request->description,
