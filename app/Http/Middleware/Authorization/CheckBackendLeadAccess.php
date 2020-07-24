@@ -29,9 +29,12 @@ class CheckBackendLeadAccess extends BaseAuthorization
         }
         
         if ($request->has('app_id')) {
-            $isViewOnly = \Helpers::isAccessViewOnly($request->get('app_id'));
+            $isViewOnly = \Helpers::isAccessViewOnly($request->get('app_id'));             
             $request->request->add(['view_only' => $isViewOnly]);
-        }
+            if ($request->method() == "POST" && $isViewOnly != 1) {
+                return response()->view('errors.403', [], 403);
+            }
+        }        
         return $next($request);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Backend\Auth;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -39,7 +39,7 @@ class ChangePasswordController extends Controller
      * @return void
      */
     public function __construct()
-    {
+    {//dd('eeeeeeeee');
         $this->middleware('auth');
     }
 
@@ -54,9 +54,7 @@ class ChangePasswordController extends Controller
      */
     public function showChangePasswordForm(Request $request, $token = null)
     {
-
-        
-        return view('auth.changepassword');
+        return view('backend.auth.passwords.change_password');
     }
     
     /**

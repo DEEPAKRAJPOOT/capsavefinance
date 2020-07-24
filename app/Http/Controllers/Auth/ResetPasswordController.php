@@ -99,13 +99,14 @@ class ResetPasswordController extends Controller
         $this->validate($request,
             [
             'token' => 'required',
-            'password' => 'required|min:8|max:15',
-            'password_confirmation' => 'required|same:password',
+            'password' => 'required|min:8|max:15|regex:/^((?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,})$/',
+            'password_confirmation' => 'required|same:password|regex: /^(?!.*(.)\1\1)(.+)$/',
             ],
             [
             'password.required' => Lang::get('error_messages.req_password').'.',
             'password.min' => 'Password should be minimum 8 characters.',
             'password.max' => 'Password should be maximum 15 characters.',
+            'password.regex' => 'Passwords must include 1 uppercase, 1 lowercase, 1 number and 1 special character.',
             'password_confirmation.same' => Lang::get('error_messages.admin.same_confirm_password').'.',
             'password_confirmation.required' => Lang::get('error_messages.admin.req_confirm_password').'.',
             ]
