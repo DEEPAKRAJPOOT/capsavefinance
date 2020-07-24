@@ -95,7 +95,10 @@ class FileHelper {
         return $fileContent;
     }
 
-    public function array_to_excel($toExportData, $file_name = "") {
+    public function array_to_excel($toExportData, $file_name = "", $moreDetails = []) {
+        // dd($moreDetails);
+        $moreDetails = array_chunk(array_filter($moreDetails), 2, true);
+        $requiredRowsForDetails = ceil(count($moreDetails) / 2);
         ob_start();
         if(empty($file_name)) {
             $file_name = "Report - " . _getRand(15).".xlsx";
@@ -103,6 +106,46 @@ class FileHelper {
         $activeSheet = 0;
         $lastkey = array_key_last($toExportData);
         $objPHPExcel = new PHPExcel();
+
+        $ExtraRow = 3;
+          $styleArr2 = $styleArray = array(
+              'font' => array(
+                'bold' => true,
+              ),
+              'alignment' => array(
+                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
+              ),
+              'borders' => array(
+                  'top' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                  ),
+              ),
+              'fill' => array(
+                  'rotation' => 90,
+                  'startcolor' => array(
+                    'argb' => 'FFA0A0A0',
+                  ),
+                  'endcolor' => array(
+                    'argb' => 'FFFFFFFF',
+                  ),
+              ),
+            );
+        foreach ($moreDetails as $kk => $vv) {
+          $objPHPExcel->setActiveSheetIndex($activeSheet);
+          $coll = 0;
+          foreach ($vv as $moreIndex => $moreValue) {
+              $chrr = chr(ord('A') + $coll);
+              $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($coll, $ExtraRow, $moreIndex);
+              $objPHPExcel->getActiveSheet()->getStyle($chrr. $ExtraRow)->applyFromArray($styleArray);
+              unset($styleArr2['font']);
+              $coll++;
+              $chrr = chr(ord('A') + $coll);
+              $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($coll, $ExtraRow, $moreValue);
+              $objPHPExcel->getActiveSheet()->getStyle($chrr. $ExtraRow)->applyFromArray($styleArr2);
+              $coll = $coll+2;
+          }
+          $ExtraRow++;
+        }
         foreach ($toExportData as $title => $data) {
             if ($title != $lastkey) {
                 $objPHPExcel->createSheet();
@@ -118,8 +161,8 @@ class FileHelper {
             $objPHPExcel->setActiveSheetIndex($activeSheet);
             $activeSheet++;
             $column = 0;
-            $header_row = 2;
-            $start_row = 4;
+            $header_row = $ExtraRow + 1;
+            $start_row = $ExtraRow + 3;
             $row = $start_row;
             $column = 0;
             $floor = floor($rec_count/26);

@@ -82,6 +82,16 @@ class ReportController extends Controller
             'user_id' => $request->get('user_id'),
             'userInfo' => $userInfo,
         ];
+        $moreDetails = [
+            'From Date' => $from_date ?? NULL,
+            'To Date' => $to_date ?? NULL,
+        ];
+        if (!empty($userInfo)) {
+          $moreDetails['Business Name'] = $userInfo->biz->biz_entity_name;
+          $moreDetails['Full Name'] = $userInfo->f_name . ' ' . $userInfo->m_name . ' ' . $userInfo->l_name;
+          $moreDetails['Email'] = $userInfo->email;
+          $moreDetails['Mobile No'] = $userInfo->mobile_no;
+        }
        $leaseRecords = $leaseRegistersList->get();
        $leaseArr = [];
        foreach ($leaseRecords as $lease) {
@@ -116,7 +126,7 @@ class ReportController extends Controller
        }
        if (strtolower($request->type) == 'excel') {
            $toExportData['Lease Register'] = $leaseArr;
-           return $this->fileHelper->array_to_excel($toExportData, 'leaseRegisterReport.xlsx');
+           return $this->fileHelper->array_to_excel($toExportData, 'leaseRegisterReport.xlsx', $moreDetails);
        }
        $pdfArr = ['pdfArr' => $leaseArr, 'filter' => $condArr];
        $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.leaseRegisterReport');
