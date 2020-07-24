@@ -539,11 +539,18 @@ class ApplicationController extends Controller
             $userId = Auth::user()->user_id;
             // $response = $this->docRepo->isUploadedCheck($userId, $appId);
             // if ($response->count() < 1) {
-                //$appData = $this->appRepo->getAppData($appId);
-                //$curStatus = $appData ? $appData->status : 0;                        
+                $appData = $this->appRepo->getAppData($appId);
+                $curStatus = $appData ? $appData->curr_status_id : 0;                        
                 $currentStage = Helpers::getCurrentWfStage($appId);
-                if ($currentStage && $currentStage->order_no < 4 ) {                                  
+                $appStatusList = [
+                    config('common.mst_status_id.APP_REJECTED'),
+                    config('common.mst_status_id.APP_CANCEL'),
+                    config('common.mst_status_id.APP_HOLD'),
+                    config('common.mst_status_id.APP_DATA_PENDING')
+                ];                
+                if ($currentStage && $currentStage->order_no < 4 && !in_array($curStatus, $appStatusList) ) {                                  
                     $this->appRepo->updateAppData($appId, ['status' => 1]);
+                    Helpers::updateAppCurrentStatus($appId, $userId, config('common.mst_status_id.COMPLETED'));
                 }                
                 
                 
@@ -551,8 +558,7 @@ class ApplicationController extends Controller
              
                 //Add application workflow stages                
                 Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
-                Helpers::updateAppCurrentStatus($appId, $userId, config('common.mst_status_id.COMPLETED'));
-                
+                                
                 //Insert Pre Offer Documents
                 $prgmDocsWhere = [];
                 $prgmDocsWhere['stage_code'] = 'pre_offer';

@@ -871,6 +871,12 @@ class Application extends BaseModel
      
      public static function checkAppByPan($userId)
      {
+        $appStatusList = [
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            config('common.mst_status_id.APP_HOLD'),
+            config('common.mst_status_id.APP_DATA_PENDING')
+        ];           
         $appData = self::select('app.*')
                 ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id') 
                 ->join(DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
@@ -878,7 +884,7 @@ class Application extends BaseModel
                 })                                
                 ->setBindings([$userId])
                 ->whereIn('app.status', [0,1])
-                ->whereNotIn('app.curr_status_id', [43,44,45,46])        
+                ->whereNotIn('app.curr_status_id', $appStatusList)        
                 ->first();
                        
         return ($appData && $appData->app_id ? true : false);    
