@@ -1020,11 +1020,40 @@ class Helper extends PaypalHelper
     public static function isAccessViewOnly($app_id, $to_id = null)
     {
         try {
+            $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');        
             if (is_null($to_id)) {
                 $to_id = \Auth::user()->user_id;
             }
             $roleData = self::getUserRole();
             if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;
+            
+            if (isset($roleData[0]) && $roleData[0]->id == 12) {
+                $where=[];
+                $where['fi_addr.to_id'] = $to_id;
+                $where['app.app_id'] = $app_id;
+                $where['fi_addr.is_active'] = 1;
+                $fiData = $appRepo->getFiAddressData($where);
+                
+                $where=[];
+                $where['to_id'] = $to_id;
+                $where['app_id'] = $app_id;
+                $where['is_active'] = 1;         
+                $rcuData = $appRepo->getRcuDocumentData($where);
+                if (isset($fiData[0]) || isset($rcuData[0])) {
+                    return 1;
+                }
+            }
+            
+            if (isset($roleData[0]) && $roleData[0]->id == 15) {
+                $where=[];
+                $where['app_id'] = $app_id;
+                $where['co_lender_id'] = \Auth::user()->co_lender_id;
+                $coLender = $appRepo->getSharedColender($where);
+                if (isset($coLender[0])) {
+                    return 1;
+                }
+            }
+            
             $isWfStageCompleted = self::isWfStageCompleted('app_submitted', $app_id);
             if (!$isWfStageCompleted) {
                 $isViewOnly = 1;
@@ -1048,7 +1077,11 @@ class Helper extends PaypalHelper
                       $isViewOnly = count($apprUsers) > 0 && in_array($to_id, $apprUsers) ? 1 : 0;
                     
                 } else {
-                    $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
+                    if (isset($roleData[0]) && $roleData[0]->id == 6 && in_array(request()->route()->getName(), ['share_to_colender', 'save_share_to_colender'])) {
+                        $isViewOnly = 1;
+                    } else {
+                        $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
+                    }
                 }
             }
             return $isViewOnly ? 1 : 0;

@@ -142,5 +142,20 @@ class FiAddress extends BaseModel {
     public function updateAddressStatus($biz_addr_id){
         return BusinessAddress::where('biz_addr_id', $biz_addr_id)->update();
     }
+    
+    public static function getFiAddressData($where)
+    {
+        //Check $whereCondition is not an array
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+                
+        $result = self::select('fi_addr.*')
+                ->join('biz_addr', 'biz_addr.biz_addr_id', '=', 'fi_addr.biz_addr_id')
+                ->join('app', 'app.biz_id', '=', 'biz_addr.biz_id')
+                ->where($where)
+                ->get();
+        return isset($result[0]) ? $result : [];
+    }
 
 }
