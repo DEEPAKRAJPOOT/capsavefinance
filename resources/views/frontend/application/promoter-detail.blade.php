@@ -87,26 +87,34 @@
                             foreach ($row->document as $row2) {
                                 if ($row2->doc_id == 2) {
                                     $main1[$key]['panNoFile'] = $row2->userFile->file_path;
+                                    $main1[$key]['panNoId'] = $row2->userFile->file_id;
                                 } else if ($row2->doc_id == 31) {
 
                                     $main1[$key]['dlNoFile'] = $row2->userFile->file_path;
+                                    $main1[$key]['dlNoId'] = $row2->userFile->file_id;
                                 } else if ($row2->doc_id == 30) {
 
                                     $main1[$key]['voterNoFile'] = $row2->userFile->file_path;
+                                    $main1[$key]['voterNoId'] = $row2->userFile->file_id;
                                 } else if ($row2->doc_id == 32) {
                                     $main1[$key]['passNoFile'] = $row2->userFile->file_path;
+                                    $main1[$key]['passNoId'] = $row2->userFile->file_id;
                                 } else if ($row2->doc_id == 22) {
 
                                     $main1[$key]['photoFile'] = $row2->userFile->file_path;
+                                    $main1[$key]['photoId'] = $row2->userFile->file_id;
                                 } else if ($row2->doc_id == 34) {
 
                                     $main1[$key]['aadharFile'] = $row2->userFile->file_path;
+                                    $main1[$key]['aadharId'] = $row2->userFile->file_id;
                                 }else if ($row2->doc_id == 37) {
 
                                     $main1[$key]['electricityFile'] = $row2->userFile->file_path;
+                                    $main1[$key]['electricityId'] = $row2->userFile->file_id;
                                 }else if ($row2->doc_id == 38) {
 
                                     $main1[$key]['telephoneFile'] = $row2->userFile->file_path;
+                                    $main1[$key]['telephoneId'] = $row2->userFile->file_id;
                                 }
                             }
                             ?>
@@ -320,7 +328,7 @@
                                                             <td width="14%">
 
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <a  href="{{ isset($main1[$j]['panNoFile']) ? Storage::url($main1[$j]['panNoFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['panNoId']) ? route('download_storage_file', ['file_id' =>$main1[$j]['panNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" > <i class="fa fa-download"></i></a>
 
 
 
@@ -353,7 +361,7 @@
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                   <a  href="{{ isset($main1[$j]['dlNoFile']) ? Storage::url($main1[$j]['dlNoFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                   <a  href="{{ isset($main1[$j]['dlNoId']) ? route('download_storage_file', ['file_id' => $main1[$j]['dlNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 
@@ -381,7 +389,7 @@
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <a  href="{{ isset($main1[$j]['voterNoFile']) ? Storage::url($main1[$j]['voterNoFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['voterNoId']) ? route('download_storage_file', ['file_id' => $main1[$j]['voterNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 
@@ -412,7 +420,7 @@
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
-                                                                    <a  href="{{ isset($main1[$j]['passNoFile']) ? Storage::url($main1[$j]['passNoFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['passNoId']) ? route('download_storage_file', ['file_id' => $main1[$j]['passNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 
@@ -434,7 +442,7 @@
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
 
-                                                                    <a  href="{{ isset($main1[$j]['photoFile']) ? Storage::url($main1[$j]['photoFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['photoId']) ? route('download_storage_file', ['file_id' => $main1[$j]['photoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 
@@ -457,7 +465,7 @@
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
 
-                                                                    <a  href="{{ isset($main1[$j]['aadharFile']) ? Storage::url($main1[$j]['aadharFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['aadharId']) ? route('download_storage_file', ['file_id' => $main1[$j]['aadharId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 
@@ -478,7 +486,7 @@
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
 
-                                                                    <a  href="{{ isset($main1[$j]['electricityFile']) ? Storage::url($main1[$j]['electricityFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['electricityId']) ? route('download_storage_file', ['file_id' => $main1[$j]['electricityId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <input type="file" class="downloadelectricity"  name="downloadelectricity[]" id="downloadelectricity{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 
@@ -500,7 +508,7 @@
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
 
-                                                                    <a  href="{{ isset($main1[$j]['telephoneFile']) ? Storage::url($main1[$j]['telephoneFile']) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                    <a  href="{{ isset($main1[$j]['telephoneId']) ? route('download_storage_file', ['file_id' => $main1[$j]['telephoneId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <input type="file" class="downloadtelephone"  name="downloadtelephone[]" id="downloadtelephone{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
                                                                 </div>
 

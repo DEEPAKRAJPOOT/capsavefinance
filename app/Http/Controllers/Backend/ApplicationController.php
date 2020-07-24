@@ -547,21 +547,20 @@ class ApplicationController extends Controller
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
-	
-	public function documentDelete($appDocFileId)
+	public function documentDelete(Request $request)
 	{
-		try {
-			$response = $this->docRepo->deleteDocument($appDocFileId);
-			
-			if ($response) {
-				Session::flash('message',trans('success_messages.deleted'));
-				return redirect()->back();
-			} else {
-				return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
-			}
-		} catch (Exception $ex) {
-			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-		}
+            try {
+                    $appDocFileId = $request->get('app_doc_file_id');
+                    $response = $this->docRepo->deleteDocument($appDocFileId);
+                    if ($response) {
+                            Session::flash('message',trans('success_messages.deleted'));
+                            return redirect()->back();
+                    } else {
+                            return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+                    }
+            } catch (Exception $ex) {
+                    return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
 	}
 	
 	/**
@@ -1303,7 +1302,8 @@ class ApplicationController extends Controller
 		if (file_exists($supplyChainFormFile)) {
 		  $supplyChainFormData = json_decode(base64_decode(file_get_contents($supplyChainFormFile)),true); 
 		}
-		$data = $this->getSanctionLetterData($appId, $bizId, $offerId, $sanctionId);
+		// $data = $this->getSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
+		$data = $this->getSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
 		$supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
 		return view('backend.app.sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData]);  
 	}

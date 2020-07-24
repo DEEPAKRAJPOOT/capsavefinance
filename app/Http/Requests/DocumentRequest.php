@@ -20,15 +20,16 @@ class DocumentRequest extends Request
     public function rules()
     {
         return [
-            'doc_file' => 'required',
-            'doc_file.*' => 'required'
+            'doc_file' => 'required|checkmime',
+            'doc_file.*' => 'required|checkmime'
         ];
     }
 
     public function messages()
     {
         return [
-            'doc_file.required' => 'Input file Required. '
+            'doc_file.required' => 'Input file Required. ',
+            'doc_file.checkmime' => 'Invalid format.'
         ];
     }
 }

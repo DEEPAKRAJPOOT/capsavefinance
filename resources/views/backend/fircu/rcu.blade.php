@@ -104,7 +104,7 @@
                                                       <td width="25%">{{ $document->userFile->file_name }}</td>
                                                       <td width="25%">{{\Carbon\Carbon::parse($document->created_at)->format('d/m/Y h:i A')}}</td>
                                                     <td width="25%">
-                                                        <a class="btn-sm" title="Download Document" href="{{ Storage::url($document->userFile->file_path) }}" download="{{$document->userFile->file_name}}">
+                                                        <a class="btn-sm" title="Download Document" href="{{ route('download_storage_file', ['file_id' => $document->userFile->file_id ]) }}" >
                                                             <button class="btn-upload btn-sm" type="button"> <i class="fa fa-download"></i>
                                                             </button>
                                                         </a>
@@ -162,7 +162,7 @@
                                                        <td width="15%">
                                                            
                                                         @if(isset($value2->userFile->file_path))
-                                                        <a title="Download Report Document" href="{{ Storage::url($value2->userFile->file_path) }}" download="{{$document->userFile->file_name}}"><i class="fa fa-download"></i></a>
+                                                        <a title="Download Report Document" href="{{ route('download_storage_file', ['file_id' => $value2->userFile->file_id ]) }}"><i class="fa fa-download"></i></a>
                                                         @endif
                                                         @if($value2->is_active)
                                                         <button class="btn-upload btn-sm trigger-for-rcu-doc" style="padding: 1px 8px;" type="button" data-rcu_doc_id="{{$value2->rcu_doc_id}}"> <i class="fa fa-upload"></i></button>

@@ -15,5 +15,6 @@ return [
         'status'                => 'Status',
         'action'                => 'Action',
         'gst'                   => 'Pull GST',
+        'fircu_status'          => 'FI/RCU Status',
     ]
 ];

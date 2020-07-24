@@ -22,7 +22,21 @@
             <div class="container">
                 <div class="d-flex">
                     <a href="#"><img src="{{url('frontend/assets/images/logo.svg')}}" alt="logo" width="150px"> </a>
+                    @if (Auth::user() && Auth::user()->user_type == 1)
+                        <a style="padding-left: 80%;" href="{{ route('frontend_logout') }}" onclick="event.preventDefault();
+                            document.getElementById('logout-form').submit();">
+                             <span class="notification-text btn btn-primary verify-btn">Logout</span>
+                             <form id="logout-form" action="{{ route('frontend_logout') }}" method="POST" style="display: none;">{{ csrf_field() }}</form>
+                        </a>
+                    @elseif (Auth::user() && Auth::user()->user_type == 2)
+                        <a style="padding-left: 80%;" href="{{ route('backend_logout') }}" onclick="event.preventDefault();
+                            document.getElementById('logout-form').submit();">
+                             <span class="notification-text btn btn-primary verify-btn">Logout</span>
+                             <form id="logout-form" action="{{ route('backend_logout') }}" method="POST" style="display: none;">{{ csrf_field() }}</form>
+                         </a>
+                    @endif
                 </div>
+            </div>
         </header>
                 <div id="iframeMessage" class="content-wrapper-msg"></div>
                 @if(Session::has('message'))

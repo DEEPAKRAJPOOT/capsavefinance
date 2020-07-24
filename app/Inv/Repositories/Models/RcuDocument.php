@@ -113,4 +113,17 @@ class RcuDocument extends BaseModel {
             'file_id'=>$data->file_id
             ]);
     }
+    
+    public static function getRcuDocumentData($where)
+    {
+        //Check $whereCondition is not an array
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+                
+        $result = self::select('*')
+                ->where($where)
+                ->get();
+        return isset($result[0]) ? $result : [];
+    }    
 }
