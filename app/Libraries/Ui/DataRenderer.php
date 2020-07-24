@@ -4765,7 +4765,7 @@ class DataRenderer implements DataProviderInterface
                 ->rawColumns(['customer_id','app_id', 'customer_name', 'status','limit', 'consume_limit', 'available_limit','anchor','action'])
 
                 ->editColumn('app_id', function ($customer) {
-                    $link = route('colender_view_offer', ['biz_id' => $customer->biz_id ?? '', 'app_id' => $customer->app_id]);
+                    $link = route('colender_view_offer', ['biz_id' => $customer->getBusinessId->biz_id ?? '', 'app_id' => $customer->app_id]);
                         return "<a id=\"app-id-" . $customer->app_id . "\" href=\"" . $link . "\" title=\"View Offer\" rel=\"tooltip\">" . \Helpers::formatIdWithPrefix($customer->app_id, 'APP')  . "</a> ";
                 }) 
                 ->addColumn('customer_id', function ($customer) {
