@@ -67,6 +67,9 @@
                 padding:15px;
                 clear: both;
             }
+            #filterTable td,th{
+                text-align: left;
+            }
             .pagenum:before {
                 content: counter(page);
             }
@@ -91,26 +94,35 @@
                 <p><b><b>CAPSAVE FINANCE PRIVATE LIMITED</b></b></p>
                 <br>
             </div>
-            <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
-                <tr>
-                     <td width="40%">
-                        @php if($fromdate && $todate) { @endphp
-                        <span><strong>Invoice Realisation Between</strong></span>
-                        &nbsp;
-                        {{($fromdate)? $fromdate : '' }} &nbsp; To &nbsp; {{($todate)? $todate : ''}}
-                        @php  } @endphp
-                    </td>
-                      <td width="25%">
-                        <span><strong>Invoice Realisation Report</strong></span>
-                       </td>
-                        <td width="10%">
-                        <span><strong></strong></span>
-                       </td>
-                         <td width="25%">
-                        <span><strong>&nbsp;&nbsp;Run Date: &nbsp;{{ $date->isoFormat('MMMM D, Y')}}</strong></span>
-                       </td>
-                </tr>
+            @if(!empty($filter))
+            <table class="table  table-td-right" id="filterTable">
+                <tbody>
+                    @if(!empty($filter['userInfo']))
+                    <tr>
+                        <td><strong>Business Name</strong></td>
+                        <td> {{$filter['userInfo']->biz->biz_entity_name}}    </td> 
+                        <td><strong>Full Name</strong></td>
+                        <td>{{$filter['userInfo']->f_name}} {{$filter['userInfo']->m_name}} {{$filter['userInfo']->l_name}}</td> 
+
+                    </tr>
+                    <tr>
+                        <td><strong>Email</strong></td>
+                        <td>{{$filter['userInfo']->email}}    </td> 
+                        <td><strong>Mobile</strong></td>
+                        <td>{{$filter['userInfo']->mobile_no}} </td> 
+                    </tr>
+                    @endif
+                    @if($filter['from_date'] && $filter['to_date'])
+                    <tr>
+                        <td><strong>From Date</strong></td>
+                        <td>{{$filter['from_date']}}</td> 
+                        <td><strong>To Date</strong></td>
+                        <td>{{$filter['to_date']}}</td> 
+                    </tr>
+                    @endif
+                </tbody>
             </table>
+            @endif
           
             <div class="breakNow">
                 <table border="1px" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
