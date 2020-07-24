@@ -284,31 +284,37 @@ class PaymentController extends Controller {
                         }
                         
 			$arrFileData = $request->all();
+			// $fileId = '';
 
 			if(isset($arrFileData['doc_file']) && !is_null($arrFileData['doc_file'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
+				// $fileId = $userFile->file_id;
 			}
-			
+
 			// dd($arrFileData);
 			// if(!isset($arrFileData['doc_file'])) {
 			// 	$data  =  $this->invRepo->getPaymentById($request->payment_id);
-			// 	$userFile = $data->file_id;
-			// 	dd($data->file_id);
+			// 	if(!empty($data) && $data->file_id == 0){
+			// 		$fileId = $data->file_id;
+			// 	}
 			// }
+			// dd($userFile, 'kjsafhk');
 
 			if(isset($arrFileData['cheque']) && !is_null($arrFileData['cheque'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
                 $arrFileData['doc_file'] = $arrFileData['cheque'];
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
+				// $fileId = $userFile->file_id;
 			}
 
 			$paymentData = [
 				'cheque_no' => $request->cheque_no ?? '',
 				'tds_certificate_no' => $request->tds_certificate_no ?? '',
 				'file_id' => $userFile->file_id ?? '',
+				// 'file_id' => $fileId ?? '',
 				'description' => $request->description,
 			];
 			
