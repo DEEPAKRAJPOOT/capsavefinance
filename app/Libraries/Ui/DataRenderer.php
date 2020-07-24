@@ -4772,12 +4772,13 @@ class DataRenderer implements DataProviderInterface
                 ->rawColumns(['customer_id','app_id', 'customer_name', 'status','limit', 'consume_limit', 'available_limit','anchor','action'])
 
                 ->editColumn('app_id', function ($customer) {
-                    $link = route('colender_view_offer', ['biz_id' => $customer->biz_id ?? '', 'app_id' => $customer->app_id]);
+                    $link = route('colender_view_offer', ['biz_id' => $customer->getBusinessId->biz_id ?? '', 'app_id' => $customer->app_id]);
                         return "<a id=\"app-id-" . $customer->app_id . "\" href=\"" . $link . "\" title=\"View Offer\" rel=\"tooltip\">" . \Helpers::formatIdWithPrefix($customer->app_id, 'APP')  . "</a> ";
                 }) 
                 ->addColumn('customer_id', function ($customer) {
                         $link = $customer->customer_id;
-                        return "<a id=\"" . $customer->user_id . "\" href=\"".route('view_colander_soa', ['user_id' => $customer->user_id,'app_id' => $customer->app_id])."\" title=\"View SOA\" rel=\"tooltip\"   >$link</a> ";
+                        return "<a id=\"" . $customer->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $customer->user_id,'app_id' => $customer->app_id])."\" rel=\"tooltip\"   >$link</a> ";
+
                 })
                 ->addColumn('virtual_acc_id', function ($customer) {
                         return $customer->virtual_acc_id;
@@ -4831,15 +4832,11 @@ class DataRenderer implements DataProviderInterface
                             $query->whereHas('user', function($query1) use ($search_keyword) {
                                 $query1->where('f_name', 'like',"%$search_keyword%")
                                 ->orWhere('l_name', 'like', "%$search_keyword%")
-                                ->orWhere('email', 'like', "%$search_keyword%");
+                                ->orWhere(\DB::raw("CONCAT(f_name,' ',l_name)"), 'like', "%$search_keyword%")
+                                ->orWhere('email', 'like', "%$search_keyword%")
+                                ->orWhere('customer_id', 'like', "%$search_keyword%");
                             });
 
-                        }
-                    }
-                    if ($request->get('customer_id') != '') {
-                        if ($request->has('customer_id')) {
-                            $customer_id = trim($request->get('customer_id'));
-                                $query->where('customer_id', 'like',"%$customer_id%");
                         }
                     }
                 })

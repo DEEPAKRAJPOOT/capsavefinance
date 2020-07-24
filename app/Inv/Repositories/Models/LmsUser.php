@@ -175,5 +175,10 @@ class LmsUser extends Authenticatable
        
         return self::where(['user_id' => $uid,'is_active' =>1])->count();
     }
+
+    public function getBusinessId() 
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Business', 'app_id');
+    }
     
 }
