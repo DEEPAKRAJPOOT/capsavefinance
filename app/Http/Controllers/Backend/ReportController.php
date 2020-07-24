@@ -169,6 +169,16 @@ class ReportController extends Controller
             'user_id' => $user_id,
             'userInfo' => $this->reportsRepo->getCustomerDetail($user_id) ?? '',
         ];
+        $moreDetails = [
+            'From Date' => $request->from_date,
+            'To Date' => $request->to_date,
+        ];
+        if (!empty($condArr['userInfo'])) {
+          $moreDetails['Business Name'] = $condArr['userInfo']->biz->biz_entity_name;
+          $moreDetails['Full Name'] = $condArr['userInfo']->f_name . ' ' . $condArr['userInfo']->m_name . ' ' . $condArr['userInfo']->l_name;
+          $moreDetails['Email'] = $condArr['userInfo']->email;
+          $moreDetails['Mobile No'] = $condArr['userInfo']->mobile_no;
+        }
         $duereport = [];
         foreach($getInvoice as $invoice) :
         $duereport[] = [
@@ -185,7 +195,7 @@ class ReportController extends Controller
         endforeach;
         if (strtolower($request->type) == 'excel') {
            $toExportData['Invoice Due'] = $duereport;
-           return $this->fileHelper->array_to_excel($toExportData, 'InvoiceDueReport.xlsx');
+           return $this->fileHelper->array_to_excel($toExportData, 'InvoiceDueReport.xlsx', $moreDetails);
         }
         $pdfArr = ['filter' => $condArr, 'userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
         $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadinvoicedue');
@@ -202,6 +212,16 @@ class ReportController extends Controller
             'user_id' => $user_id,
             'userInfo' => $this->reportsRepo->getCustomerDetail($user_id) ?? '',
         ];
+        $moreDetails = [
+            'From Date' => $request->from_date,
+            'To Date' => $request->to_date,
+        ];
+        if (!empty($condArr['userInfo'])) {
+          $moreDetails['Business Name'] = $condArr['userInfo']->biz->biz_entity_name;
+          $moreDetails['Full Name'] = $condArr['userInfo']->f_name . ' ' . $condArr['userInfo']->m_name . ' ' . $condArr['userInfo']->l_name;
+          $moreDetails['Email'] = $condArr['userInfo']->email;
+          $moreDetails['Mobile No'] = $condArr['userInfo']->mobile_no;
+        }
         $overduereport = [];
         foreach($getInvoice as $invoice) :
         $overduereport[] = [
@@ -220,7 +240,7 @@ class ReportController extends Controller
         endforeach;
         if (strtolower($request->type) == 'excel') {
            $toExportData['Invoice OverDue'] = $overduereport;
-           return $this->fileHelper->array_to_excel($toExportData, 'InvoiceOverDueReport.xlsx');
+           return $this->fileHelper->array_to_excel($toExportData, 'InvoiceOverDueReport.xlsx', $moreDetails);
         }
         $pdfArr = ['filter' => $condArr, 'userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
         $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadinvoiceoverdue');
@@ -238,6 +258,16 @@ class ReportController extends Controller
             'user_id' => $user_id,
             'userInfo' => $this->reportsRepo->getCustomerDetail($user_id) ?? '',
         ];
+        $moreDetails = [
+            'From Date' => $request->from_date,
+            'To Date' => $request->to_date,
+        ];
+        if (!empty($condArr['userInfo'])) {
+          $moreDetails['Business Name'] = $condArr['userInfo']->biz->biz_entity_name;
+          $moreDetails['Full Name'] = $condArr['userInfo']->f_name . ' ' . $condArr['userInfo']->m_name . ' ' . $condArr['userInfo']->l_name;
+          $moreDetails['Email'] = $condArr['userInfo']->email;
+          $moreDetails['Mobile No'] = $condArr['userInfo']->mobile_no;
+        }
         $realisationreport = [];
         foreach($getInvoice as $invoice) :
         $payment  = [];                   
@@ -269,7 +299,7 @@ class ReportController extends Controller
         endforeach;
         if (strtolower($request->type) == 'excel') {
            $toExportData['Invoice Realisation'] = $realisationreport;
-           return $this->fileHelper->array_to_excel($toExportData, 'InvoiceRealisation.xlsx');
+           return $this->fileHelper->array_to_excel($toExportData, 'InvoiceRealisation.xlsx', $moreDetails);
         }
         $pdfArr = ['filter' => $condArr, 'userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
         $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadrealisation');
