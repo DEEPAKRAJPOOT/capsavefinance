@@ -5,16 +5,19 @@
         <input type="hidden" name="payment_id" value="{{ $data->payment_id }}">
         <input type="hidden" name="biz_id" value="{{ $data->biz_id }}">
         @if($data->action_type == 1 && $data->payment_type == 2)
-        <div class="col-md-4 cheque_no">
+        <div class="col-md-4 cheque_no mb-4">
             <div class="form-group">
                 <label for="txtCreditPeriod">Cheque No<span class="error_message_label">*</span></label>
                 <input type="text" id="cheque_no" name="cheque_no" class="form-control" value="{{ $data->cheque_no }}">
             </div>
         </div>
-        <div class="col-md-4 cheque_no">
-            <div class="custom-file upload-btn-cls mb-3 mt-4">
-                <input type="file" class="custom-file-input getFileName cheque" id="cheque" name="cheque" multiple="">
-                <label class="custom-file-label" for="customFile">Upload cheque</label>
+        <div class="col-md-4 form-group cheque_no">
+            <div class="form-group">
+                <label for="txtCreditPeriod">Upload cheque<span class="error_message_label">*</span></label>
+                <div class="custom-file upload-btn-cls mt-0">
+                    <input type="file" class="custom-file-input getFileName cheque" id="cheque" name="cheque" multiple="">
+                    <label class="custom-file-label" for="customFile">Upload cheque</label>
+                </div>
             </div>
         </div>
         @endif
@@ -69,6 +72,9 @@
                 'cheque_no' : {
                     required: true,
                 },
+                'cheque': {
+                    required: true,
+                }
             },
             messages: {
                 'tds_certificate_no': {
@@ -79,6 +85,9 @@
                 },
                 'cheque_no' : {
                     required: "Please input Cheque No."
+                },
+                'cheque' : {
+                    required: "Please upload the cheque"
                 }
             }
         });
