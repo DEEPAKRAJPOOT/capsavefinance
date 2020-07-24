@@ -1080,6 +1080,8 @@ class Helper extends PaypalHelper
                 } else {
                     if (isset($roleData[0]) && $roleData[0]->id == 6 && in_array(request()->route()->getName(), ['share_to_colender', 'save_share_to_colender'])) {
                         $isViewOnly = 1;
+                    } else if (isset($roleData[0]) && $roleData[0]->id == 11 && in_array(request()->route()->getName(), ['reject_app', 'save_app_rejection'])) {
+                        $isViewOnly = 1;
                     } else {
                         $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
                     }
