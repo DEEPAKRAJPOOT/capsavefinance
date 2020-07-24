@@ -290,6 +290,13 @@ class PaymentController extends Controller {
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
 			}
+			
+			// dd($arrFileData);
+			// if(!isset($arrFileData['doc_file'])) {
+			// 	$data  =  $this->invRepo->getPaymentById($request->payment_id);
+			// 	$userFile = $data->file_id;
+			// 	dd($data->file_id);
+			// }
 
 			if(isset($arrFileData['cheque']) && !is_null($arrFileData['cheque'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
