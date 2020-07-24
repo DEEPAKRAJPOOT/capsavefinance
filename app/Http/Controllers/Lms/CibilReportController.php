@@ -127,7 +127,7 @@ class CibilReportController extends Controller
       }
       try {
         if (empty($finalCibilData)) {
-           $response['message'] =  'No Records are selected to Post in tally.';
+           $response['message'] =  'No Records are selected to Post in Cibil.';
            return $response;
         }
         $res = $this->lmsRepo->insertCibilUserData($finalCibilData);
