@@ -98,7 +98,7 @@
                <span style="font-size: 9px;font-family: Book Antiqua;"><strong>State:</strong></span>
             </td>
             <td style="border: 1px solid #ddd;padding: 2px;">
-               <span style="font-size: 9px;font-family: Book Antiqua;">{{$origin_of_recipient['place_of_supply']}}</span>
+               <span style="font-size: 9px;font-family: Book Antiqua;">{{$company_data['state_name']}}</span>
             </td>
          </tr>
          <tr>

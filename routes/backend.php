@@ -15,9 +15,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'backend_dashboard',
                 'uses' => 'Backend\DashboardController@index'
             ]);
-            Route::get('/idfc', [
-                'as' => 'idfc',
-                'uses' => 'Backend\DashboardController@idfc'
+            Route::get('/download-file', [
+                'as' => 'download_storage_file',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
             ]);
             Route::get('/download-file', [
                 'as' => 'download_storage_file',
@@ -158,11 +158,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@saveBankDocument'
             ]);
             
-            
-            Route::get('document-delete/{appDocFileId}',
+            Route::get('document-delete',
                 [
                 'as' => 'document_delete',
-                'uses' => 'Application\ApplicationController@documentDelete'
+                'uses' => 'Backend\ApplicationController@documentDelete'
             ]);
             
             Route::post('promoter-document-save', [

@@ -39,6 +39,9 @@
                 padding:5px;
                 text-align: center;
             }
+            #filterTable td,th{
+                text-align: left;
+            }
             .pagenum:before {
                 content: counter(page);
             }
@@ -64,28 +67,28 @@
                 <br>
             </div>
             @if(!empty($filter))
-            <table class="table  table-td-right">
+            <table class="table  table-td-right" id="filterTable">
                 <tbody>
                     @if(!empty($filter['userInfo']))
                     <tr>
-                        <td class="text-left" width="30%"><b>Business Name</b></td>
+                        <td><strong>Business Name</strong></td>
                         <td> {{$filter['userInfo']->biz->biz_entity_name}}    </td> 
-                        <td class="text-left" width="30%"><b>Full Name</b></td>
+                        <td><strong>Full Name</strong></td>
                         <td>{{$filter['userInfo']->f_name}} {{$filter['userInfo']->m_name}} {{$filter['userInfo']->l_name}}</td> 
 
                     </tr>
                     <tr>
-                        <td class="text-left" width="30%"><b>Email</b></td>
+                        <td><strong>Email</strong></td>
                         <td>{{$filter['userInfo']->email}}    </td> 
-                        <td class="text-left" width="30%"><b>Mobile</b></td>
+                        <td><strong>Mobile</strong></td>
                         <td>{{$filter['userInfo']->mobile_no}} </td> 
                     </tr>
                     @endif
                     @if($filter['from_date'] && $filter['to_date'])
                     <tr>
-                        <td class="text-left" width="30%"><b>From Date</b></td>
+                        <td><strong>From Date</strong></td>
                         <td>{{$filter['from_date']}}</td> 
-                        <td class="text-left" width="30%"><b>To Date</b></td>
+                        <td><strong>To Date</strong></td>
                         <td>{{$filter['to_date']}}</td> 
                     </tr>
                     @endif

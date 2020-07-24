@@ -2412,6 +2412,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Program::deleteProgram($prgmId);
     }    
 
+    public function getFiAddressData($where)
+    {
+        return FiAddress::getFiAddressData($where);
+    }
+
+    public function getRcuDocumentData($where)
+    {
+        return RcuDocument::getRcuDocumentData($where);
+    }    
 }
 
 

@@ -43,6 +43,7 @@ class Otp extends BaseModel
     protected $fillable = [
         'user_id',
         'activity_id',
+        'mobile_no',
         'otp_no',
         'otp_creation_time',
         'otp_exp_time',
@@ -100,7 +101,7 @@ class Otp extends BaseModel
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        $arrSkill = self::where('user_id', (int) $userId)->orderBy('otp_trans_id','DESC')->where('is_otp_resent', '<' ,3)
+        $arrSkill = self::where('user_id', (int) $userId)->orderBy('otp_trans_id','DESC')
             ->get();
 
         return ($arrSkill ?: false);

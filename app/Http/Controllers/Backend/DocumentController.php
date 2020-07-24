@@ -195,5 +195,5 @@ class DocumentController extends Controller
         } catch (Exception $ex) {                
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
-    }    
+    }
 }

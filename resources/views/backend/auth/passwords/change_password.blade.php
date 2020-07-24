@@ -5,7 +5,7 @@
 		<div class="col-md-4 form-design">
 
 			<div id="reg-box">
-				<form class="form-horizontal" method="POST" action="{{ url('password/change') }}">
+				<form class="form-horizontal" method="POST" action="{{ route('save_change_password') }}">
 					{{ csrf_field() }}
 					<div class="section-header">
 						<h4 class="section-title"> Change Password</h4>
@@ -47,12 +47,10 @@
 						</div>
 					
 						<div class="col-md-12">
-                                                    <button type='submit' class='btn btn-primary verify-btn' name='Submit' value='{{trans('master.chgPassForm.submit')}}' >SUBMIT</button>
-						@if(Auth::user()->is_pwd_changed == 1)
-                                                    <a href="{{ url('dashboard') }}" class="pull-right mt-2"><u>Back To Dashboard</u></a>
-						@endif
-                                                </div>
+							<input type='submit' class='btn btn-primary verify-btn' name='Submit' value='{{trans('master.chgPassForm.submit')}}' />
+						</div>
 
+						
 					</div>
 					
 				</form>
