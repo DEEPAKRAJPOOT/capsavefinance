@@ -161,7 +161,14 @@ class ReportController extends Controller
     } 
     public function pdfInvoiceDue(Request $request) {
         $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
+        $user_id = $user[0] ?? '';
         $getInvoice  =  $this->invRepo->pdfInvoiceDue($request);
+        $condArr = [
+            'from_date' => $request->from_date,
+            'to_date' => $request->to_date,
+            'user_id' => $user_id,
+            'userInfo' => $this->reportsRepo->getCustomerDetail($user_id) ?? '',
+        ];
         $duereport = [];
         foreach($getInvoice as $invoice) :
         $duereport[] = [
@@ -180,14 +187,21 @@ class ReportController extends Controller
            $toExportData['Invoice Due'] = $duereport;
            return $this->fileHelper->array_to_excel($toExportData, 'InvoiceDueReport.xlsx');
         }
-        $pdfArr = ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
+        $pdfArr = ['filter' => $condArr, 'userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
         $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadinvoicedue');
         return $pdf->download('InvoiceDueReport.pdf');  
     }
     
      public function pdfInvoiceOverDue(Request $request) {
         $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
+        $user_id = $user[0] ?? '';
         $getInvoice  =  $this->invRepo->pdfInvoiceOverDue($request);
+        $condArr = [
+            'from_date' => $request->from_date,
+            'to_date' => $request->to_date,
+            'user_id' => $user_id,
+            'userInfo' => $this->reportsRepo->getCustomerDetail($user_id) ?? '',
+        ];
         $overduereport = [];
         foreach($getInvoice as $invoice) :
         $overduereport[] = [
@@ -208,7 +222,7 @@ class ReportController extends Controller
            $toExportData['Invoice OverDue'] = $overduereport;
            return $this->fileHelper->array_to_excel($toExportData, 'InvoiceOverDueReport.xlsx');
         }
-        $pdfArr = ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
+        $pdfArr = ['filter' => $condArr, 'userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
         $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadinvoiceoverdue');
         return $pdf->download('InvoiceOverDueReport.pdf');  
     }
@@ -216,7 +230,14 @@ class ReportController extends Controller
    public function pdfInvoiceRealisation(Request $request)
    {
         $user = LmsUser::where('customer_id',$request->customer_id)->pluck('user_id');
+        $user_id = $user[0] ?? '';
         $getInvoice  =  $this->invRepo->pdfInvoiceRealisation($request);
+        $condArr = [
+            'from_date' => $request->from_date,
+            'to_date' => $request->to_date,
+            'user_id' => $user_id,
+            'userInfo' => $this->reportsRepo->getCustomerDetail($user_id) ?? '',
+        ];
         $realisationreport = [];
         foreach($getInvoice as $invoice) :
         $payment  = [];                   
@@ -250,7 +271,7 @@ class ReportController extends Controller
            $toExportData['Invoice Realisation'] = $realisationreport;
            return $this->fileHelper->array_to_excel($toExportData, 'InvoiceRealisation.xlsx');
         }
-        $pdfArr = ['userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
+        $pdfArr = ['filter' => $condArr, 'userInfo' => $getInvoice, 'fromdate' => $request->from_date, 'todate' => $request->to_date,'user' => $user];
         $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadrealisation');
         return $pdf->download('InvoiceRealisation.pdf');    
    }
