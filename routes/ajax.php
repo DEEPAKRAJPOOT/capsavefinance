@@ -1152,8 +1152,8 @@ Route::group(
         ]
     );
 
-    Route::post('backend_ajax_get_refund_batch_requests',[
-        'as' => 'backend_ajax_get_refund_batch_requests',
+    Route::post('backend_ajax_get_refund_batch_request',[
+        'as' => 'backend_ajax_get_refund_batch_request',
         'uses' => 'AjaxController@getBackendRefundBatchRequest'
         ]
     );

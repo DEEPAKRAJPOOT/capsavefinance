@@ -645,6 +645,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'lms_process_refund',
                         'uses' => 'Lms\RefundController@processRefund',
                     ]);
+
+                    Route::get('refund-payment-enquiry', [
+                        'as' => 'refund_payment_enquiry',
+                        'uses' => 'Lms\RefundController@refundPaymentEnquiry',
+                    ]);
                 }
             });
 

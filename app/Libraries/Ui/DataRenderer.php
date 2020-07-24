@@ -6430,5 +6430,46 @@ class DataRenderer implements DataProviderInterface
                     }
                 })
                 ->make(true);
+    }/*
+     * 
+     * get all refund batch request
+     */
+    public function lmsGetRefundBatchRequest(Request $request, $refundBatchRequest)
+    {
+        return DataTables::of($refundBatchRequest)
+                ->rawColumns(['total_disburse_amount','status', 'action'])
+                ->editColumn(
+                    'batch_id',
+                    function ($refundBatchRequest) {
+                        return (isset($refundBatchRequest->batch_no)) ? $refundBatchRequest->batch_no : '';
+                    }
+                )
+                ->editColumn(
+                    'total_customer',
+                    function ($refundBatchRequest) {   
+                        return $refundBatchRequest->refund->count();
+                }) 
+                ->editColumn(
+                    'total_disburse_amount',
+                    function ($refundBatchRequest) {
+
+                        return '<i class="fa fa-inr"></i> '.number_format($refundBatchRequest->refund->sum('refund_amount'), 2);
+                })
+                ->addColumn(
+                    'action',
+                    function ($refundBatchRequest) {
+                        $act = '<a   href="' . route('refund_payment_enquiry', ['refund_req_batch_id' => $refundBatchRequest->refund_req_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';
+                        
+                        return $act;
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('batch_id') != '') {
+                        if ($request->has('batch_id')) {
+                            $batch_id = trim($request->get('batch_id'));
+                            $query->where('batch_no', 'like',"%$batch_id%");
+                        }
+                    }
+                })
+                ->make(true);
     }   
 }

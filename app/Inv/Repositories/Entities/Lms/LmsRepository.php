@@ -1072,6 +1072,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
             $disburseBatch['batch_no'] = ($data['batch_no']) ?? null;
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
             $disburseBatch['batch_status'] = config('lms.BATCH_STATUS')['SENT_TO_BANK'];
+            $disburseBatch['refund_type'] = $data['refund_type'] ?? 0;
+            $disburseBatch['disbursal_api_log_id'] = $data['disbursal_api_log_id'] ?? null;
         }
         return RefundReqBatch::create($disburseBatch);
     }
@@ -1474,4 +1476,21 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			->update($data);
 		return ($response) ?? $response;
 	}
+
+	/**
+     * Get refund batch
+     * 
+     * @param integer $batchId
+     * @return array
+     */
+	public function lmsGetRefundBatchRequest()
+	{
+		return RefundReqBatch::lmsGetRefundBatchRequest();
+	}
+
+	public function lmsGetCustomerRefundById($id = null)
+    {
+        return RefundReq::where('refund_req_id', $id)
+			   ->first();
+    } 
 }

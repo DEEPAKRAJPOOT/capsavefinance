@@ -78,8 +78,9 @@ class DashboardController extends Controller
        $getRespWithoutParse = true;
        $result = [];
        $idfcObj= new Idfc_lib();
-       // $request = $this->getIdfcRequest();
-       // $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $request, $getRespWithoutParse);
+       $request = $this->getIdfcRequest();
+       $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $request, $getRespWithoutParse);
+       dd($result);
        // $transId = '2RFJS5825ZBUWI0JPU'; // 35505
        $transId = '2RFPR57599AE0X2TFJ'; //887.625
 
@@ -96,7 +97,6 @@ class DashboardController extends Controller
        $enquiryReq = $this->getIdfcEnquiryRequest($transId);
        $enquiryRes = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $enquiryReq, $getRespWithoutParse);
        // dd($result, $enquiryRes);
-       dd($enquiryRes);
     }
 
     private function getIdfcRequest() {
@@ -112,7 +112,7 @@ class DashboardController extends Controller
             ), 
             'request' => array ( 
                 617 => array ( 
-                    'RefNo' => 'CAPVA0000003', 
+                    'RefNo' => _getRand('12'), 
                     'Amount' => 936.04688, 
                     'Debit_Acct_No' => '21480259346', 
                     'Debit_Acct_Name' => 'Debit Account Name', 
@@ -129,7 +129,36 @@ class DashboardController extends Controller
                 ), 
             ), 
         );
-       return $params;
+       $params2 = array ( 
+            'http_header' => array(
+                'timestamp' => date('Y-m-d H:i:s'), 
+                'txn_id' => _getRand('18'), 
+            ), 
+            'header' => array (
+                'Maker_ID' => 'CAPSAVE.M', 
+                'Checker_ID' => 'CAPSAVE.C1', 
+                'Approver_ID' => 'CAPSAVE.C2', 
+            ), 
+            'request' => array ( 
+                617 => array ( 
+                    "RefNo" => _getRand('12'),
+                    "Amount" => 1380.00,
+                    "Debit_Acct_No" => "21480259346",
+                    "Debit_Acct_Name" => "testing name",
+                    "Debit_Mobile" => "9876543210",
+                    "Ben_IFSC" => "UTIB0000001",
+                    "Ben_Acct_No" => "21480314831",
+                    "Ben_BankName" => "State Bank Of India",
+                    "Ben_Name" => "Ravi Prakash",
+                    "Ben_Email" => "testing.jkg_01@sofodev.co",
+                    "Ben_Mobile" => "8787876787",
+                    "Mode_of_Pay" => "IFT",
+                    "Nature_of_Pay" => "MPYMT",
+                    "Remarks" => "test remarks",
+                ), 
+            ), 
+        );
+       return $params2;
     }
 
      private function getIdfcEnquiryRequest($transId = null) {

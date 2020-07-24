@@ -662,7 +662,7 @@ class InvoiceController extends Controller {
                     $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
                     $exportData[$userid]['Mode_of_Pay'] = $modePay;
                     $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
-                    $exportData[$userid]['Remarks'] = 'test remarks';
+                    $exportData[$userid]['Remarks'] = 'invoice disbursal';
 
                 } 
             }

@@ -126,6 +126,9 @@ class LmsUser extends Authenticatable
                     if (!empty($userIds)) {
                         $query->whereIn('supplier_id', $userIds);
                     }
+                })
+                ->whereHas('senttb_app.senttb_invoices.invoice_disbursed.disbursal', function($query) {
+                        $query->where('disburse_type', 2);
                 });
     }
 
