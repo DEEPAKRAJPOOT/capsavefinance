@@ -1664,4 +1664,28 @@ class Helper extends PaypalHelper
             return $variable;
         }
      }
+     
+    /**
+     * 
+     * @param type $wf_stage_code
+     * @param type $app_id
+     * @return int
+     */
+    public static function getWfDetailById($wf_stage_code, $app_id)
+    {
+        $isWfStageCompleted = 0;
+        $wfData = WfStage::getWfDetailById($wf_stage_code);
+        if ($wfData) {
+            //$wf_stage_id = $wfData->wf_stage_id;
+            $wf_order_no = $wfData->order_no;
+            //$assignedRoleId = $wfData->role_id;
+
+            $last_completed_wf_stage = WfAppStage::getCurrentWfStage($app_id);
+            $app_wf_order_no = $last_completed_wf_stage ? $last_completed_wf_stage->order_no : 0;
+            if ($app_wf_order_no >= $wf_order_no) {
+                $isWfStageCompleted = 1;
+            }
+        }
+        return $isWfStageCompleted;
+    }     
 }
