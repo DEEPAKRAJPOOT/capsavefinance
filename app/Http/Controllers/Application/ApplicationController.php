@@ -447,8 +447,8 @@ class ApplicationController extends Controller
                 
             }
             
-            $currentStage = Helpers::getCurrentWfStage($appId);
-            if ($currentStage && $currentStage->app_wf_status != 4 ) {                 
+            $wfStage = Helpers::getWfDetailById('doc_upload', $userId, $appId);
+            if ($wfStage && $wfStage->app_wf_status != 1 ) {
                 $wf_status = 2;                
                 Helpers::updateWfStage('doc_upload', $appId, $wf_status);
             }
@@ -544,7 +544,7 @@ class ApplicationController extends Controller
             // }
         } catch (Exception $ex) {
             //Add application workflow stages                
-            Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
+            //Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
                 
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
