@@ -1666,10 +1666,13 @@ class Helper extends PaypalHelper
      }
      
     /**
+     * Get workflow deatail by workflow id
      * 
-     * @param type $wf_stage_code
-     * @param type $app_id
-     * @return int
+     * @param string $wf_stage_code
+     * @param int $user_id
+     * @param int $app_id
+     * 
+     * @return object
      */
     public static function getWfDetailById($wf_stage_code, $user_id, $app_id)
     {        
