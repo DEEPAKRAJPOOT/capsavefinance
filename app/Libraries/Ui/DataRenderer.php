@@ -1134,8 +1134,9 @@ class DataRenderer implements DataProviderInterface
                         if ($this->overDueFlag == 0) {
                             foreach ($apps as $app) {
                                 foreach ($app->invoices as $inv) {
+                                    
                                     $invc = $inv->toArray();
-                                    $dueDate = strtotime((isset($invc['invoice_due_date'])) ? $invc['invoice_due_date'] : ''); // or your date as well
+                                    $dueDate = strtotime((isset($invc['payment_due_date'])) ? $invc['invoice_due_date'] : ''); // or your date as well
                                     $now = strtotime(date('Y-m-d'));
                                     $datediff = ($dueDate - $now);
                                     $days = round($datediff / (60 * 60 * 24));
@@ -1145,13 +1146,14 @@ class DataRenderer implements DataProviderInterface
                                 }
                             }
                         }
-
-                        return ($this->overDueFlag == 1 || $chkUser->id == 11 ) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                       return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                        ////return ($this->overDueFlag == 1 || $chkUser->id == 11 ) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
 
                      })
                 ->addColumn(
                     'anchor_id',
-                    function ($invoice) use ($request)  {     
+                    function ($invoice) use ($request)  {    
+                   
                         return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
         
                 })
