@@ -332,7 +332,7 @@
 
 
 
-                                                                    <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -362,7 +362,7 @@
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
                                                                    <a  href="{{ isset($main1[$j]['dlNoId']) ? route('download_storage_file', ['file_id' => $main1[$j]['dlNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -390,7 +390,7 @@
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <a  href="{{ isset($main1[$j]['voterNoId']) ? route('download_storage_file', ['file_id' => $main1[$j]['voterNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -421,7 +421,7 @@
                                                             <td width="14%">
                                                                 <div class="file-browse float-left position-seta">
                                                                     <a  href="{{ isset($main1[$j]['passNoId']) ? route('download_storage_file', ['file_id' => $main1[$j]['passNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -443,7 +443,7 @@
                                                                 <div class="file-browse float-left position-seta">
 
                                                                     <a  href="{{ isset($main1[$j]['photoId']) ? route('download_storage_file', ['file_id' => $main1[$j]['photoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -466,7 +466,7 @@
                                                                 <div class="file-browse float-left position-seta">
 
                                                                     <a  href="{{ isset($main1[$j]['aadharId']) ? route('download_storage_file', ['file_id' => $main1[$j]['aadharId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -487,7 +487,7 @@
                                                                 <div class="file-browse float-left position-seta">
 
                                                                     <a  href="{{ isset($main1[$j]['electricityId']) ? route('download_storage_file', ['file_id' => $main1[$j]['electricityId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <input type="file" class="downloadelectricity"  name="downloadelectricity[]" id="downloadelectricity{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" class="downloadelectricity"  name="downloadelectricity[]" id="downloadelectricity{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -509,7 +509,7 @@
                                                                 <div class="file-browse float-left position-seta">
 
                                                                     <a  href="{{ isset($main1[$j]['telephoneId']) ? route('download_storage_file', ['file_id' => $main1[$j]['telephoneId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
-                                                                    <input type="file" class="downloadtelephone"  name="downloadtelephone[]" id="downloadtelephone{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" class="downloadtelephone"  name="downloadtelephone[]" id="downloadtelephone{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>

@@ -367,7 +367,7 @@
                                                                     <button type="button" class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" name="panfiles[]" id="panfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['panNoFileID']) ? $main1[$key]['panNoFileID'] : 'null' }}, 2)" ><i class="fa fa-times-circle-o error"></i></button>
                                                                     @endif
 
-                                                                    <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -409,7 +409,7 @@
                                                                     <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" name="dlfiles[]" id="dlfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['dlNoFileID']) ? $main1[$key]['dlNoFileID'] : 'null' }}, 31)" ><i class="fa fa-times-circle-o error"></i></button>
                                                                     @endif
 
-                                                                    <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                     
                                                                 </div>
 
@@ -420,7 +420,7 @@
                                                                     @if(request()->get('view_only'))
                                                                     <button type='button' class="btn">Upload</button>
                                                                     @endif
-                                                                    <input type="file" name="dlfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  id="dlfile{{isset($row->first_name) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 31)">
+                                                                    <!-- <input type="file" name="dlfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  id="dlfile{{isset($row->first_name) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 31)"> -->
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -448,7 +448,7 @@
                                                                     <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" name="voterdowns[]" id="voterdowns{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['voterNoFileID']) ? $main1[$key]['voterNoFileID'] : 'null' }}, 30)" ><i class="fa fa-times-circle-o error"></i></button>
                                                                     @endif
 
-                                                                    <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -489,7 +489,7 @@
                                                                     <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}"  name="passportfiles[]" id="passportfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['passNoFileID']) ? $main1[$key]['passNoFileID'] : 'null' }}, 32)" ><i class="fa fa-times-circle-o error"></i></button>
                                                                     @endif
 
-                                                                    <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -517,7 +517,7 @@
                                                                     <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}"  name="photofiles[]" id="photofiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['photoFileID']) ? $main1[$key]['photoFileID'] : 'null' }}, 22)" ><i class="fa fa-times-circle-o error"></i></button>
                                                                 @endif
 
-                                                                    <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -546,7 +546,7 @@
                                                                     <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" name="downloadaadhars[]" id="downloadaadhars{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['aadharFileID']) ? $main1[$key]['aadharFileID'] : 'null' }}, 34)" ><i class="fa fa-times-circle-o error"></i></button>
                                                                 @endif
 
-                                                                    <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -573,7 +573,7 @@
                                                                     <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" name="downloadelectricitys[]" id="downloadelectricitys{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['electricityFileID']) ? $main1[$key]['electricityFileID'] : 'null' }}, 37)" ><i class="fa fa-times-circle-o error"></i></button>
                                                                 @endif
 
-                                                                    <input type="file" class="downloadelectricity"  name="downloadelectricity[]" id="downloadelectricity{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" class="downloadelectricity"  name="downloadelectricity[]" id="downloadelectricity{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
@@ -601,7 +601,7 @@
                                                                     <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" name="downloadtelephones[]" id="downloadtelephones{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['telephoneFileID']) ? $main1[$key]['telephoneFileID'] : 'null' }}, 38)" ><i class="fa fa-times-circle-o error"></i></button>
                                                                 @endif
 
-                                                                    <input type="file" class="downloadtelephone"  name="downloadtelephone[]" id="downloadtelephone{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple="">
+                                                                    <!-- <input type="file" class="downloadtelephone"  name="downloadtelephone[]" id="downloadtelephone{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
 
                                                             </td>
