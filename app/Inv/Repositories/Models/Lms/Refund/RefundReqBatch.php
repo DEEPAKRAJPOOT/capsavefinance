@@ -77,5 +77,8 @@ class RefundReqBatch extends BaseModel {
         return $this->hasMany('App\Inv\Repositories\Models\Lms\Refund\RefundReq', 'refund_req_batch_id', 'refund_req_batch_id'); 
     }
 
-}
+    public function disbursal_api_log() { 
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\DisburseApiLog', 'disbursal_api_log_id', 'disbursal_api_log_id'); 
+    }
+}   
 

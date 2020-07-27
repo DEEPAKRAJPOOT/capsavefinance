@@ -1492,5 +1492,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return RefundReq::where('refund_req_id', $id)
 			   ->first();
-    } 
+    }
+
+    public function getrefundBatchByDBId($efundrBatchId)
+	{
+		return RefundReqBatch::with('disbursal_api_log')
+				->where('refund_req_batch_id', $efundrBatchId)
+				->first();
+	} 
 }

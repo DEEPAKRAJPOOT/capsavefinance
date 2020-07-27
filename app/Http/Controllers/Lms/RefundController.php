@@ -928,10 +928,10 @@ class RefundController extends Controller
                 return back();
             }
             
-            $disbursalBatchId = $request->get('disbursal_batch_id');
+            $refundBatchId = $request->get('refund_req_batch_id');
             $sysDate =  \Helpers::getSysStartDate();
             date_default_timezone_set("Asia/Kolkata");
-            $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId)->toArray();
+            $data = $this->lmsRepo->getrefundBatchByDBId($refundBatchId)->toArray();
             $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
             $transId = $reqData['txn_id'];
             // $transId = '2RGIK4436OUMXHZGXH';
@@ -985,6 +985,7 @@ class RefundController extends Controller
                     if ($createDisbusalApiLog) {
                         $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
                     }
+                    dd($createDisbusalApiLog);
 
                     $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
                     $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
