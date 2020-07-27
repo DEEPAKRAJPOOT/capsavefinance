@@ -219,4 +219,32 @@ class Payment extends BaseModel {
     {
           return self::with(['biz','user', 'transType', 'transaction'])->where('trans_type','!=',NULL)->orderBy('payment_id','DESC');
     }
+    
+    /**
+     * Get all TDS transaction
+     * 
+     * @param type $whereCondition
+     * @param type $whereRawCondition
+     * @return type
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getAllTdsTransaction($whereCondition=[], $whereRawCondition = NULL) {
+        if (!is_array($whereCondition)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        $query = self::select('payments.user_id', 'trans_type', 'action_type', 'amount', 'date_of_payment', 'tds_certificate_no', 'file_id', 'payments.created_at as trans_date', 'payments.created_by', 'biz.biz_entity_name', 'users.f_name', 'users.l_name', 'mst_trans_type.trans_name')
+                        ->join('biz', 'biz.biz_id', '=', 'payments.biz_id')
+                        ->join('users', 'payments.created_by', '=', 'users.user_id')
+                        ->join('mst_trans_type', 'mst_trans_type.id', '=', 'payments.trans_type')
+                        ->where('action_type', 3)
+                        ->where('file_id', 0);
+                
+        if (!empty($whereCondition)) {
+            $query->where('payments.user_id', $whereCondition['user_id']);
+        }
+        if (!empty($whereRawCondition)) {
+            $query->whereRaw($whereRawCondition);
+        }
+        return $query;
+    }
 }

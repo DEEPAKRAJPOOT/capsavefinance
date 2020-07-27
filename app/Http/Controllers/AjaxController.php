@@ -4679,5 +4679,25 @@ if ($err) {
         $reportsList['pdfUrl'] = route('download_lms_cibil_reports', $condArr);
         return new JsonResponse($reportsList);
     }
+    
+    /**
+     * Get all TDS
+     * 
+     * @param DataProviderInterface $dataProvider
+     * @return JsonResponse
+     */
+    public function Tds(DataProviderInterface $dataProvider) {
+        $condArr = [
+            'user_id' => $this->request->get('user_id'),
+            'type' => 'excel',
+        ];
+        $tdsList = $this->reportsRepo->tds();
+        $tds = $dataProvider->tds($this->request, $tdsList);
+        $tds = $tds->getData(true);
+        $tds['excelUrl'] = route('tds_download_reports', $condArr);
+        $condArr['type']  = 'pdf';
+        $tds['pdfUrl'] = route('tds_download_reports', $condArr);
+        return new JsonResponse($tds);
+    } 
 
 }
