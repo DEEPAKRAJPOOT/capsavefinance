@@ -190,4 +190,15 @@ return [
        'SUCCESS'=>'2',
        'FAILED'=>'3',
     ],
+    'REFUND_STATUS' => [    
+       'NEW' => '1',
+       'DELETED' => '2',
+       'PENDING' => '3',
+       'REJECTED'=>'4',
+       'APPROVED'=>'5',
+       'REFUND_QUE'=>'6',
+       'SENT_TO_BANK'=>'7',
+       'DISBURSED' =>'8',
+       'FAILED_REFUND'=>'9',
+    ],
 ];

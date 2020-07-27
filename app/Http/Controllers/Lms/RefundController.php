@@ -936,7 +936,7 @@ class RefundController extends Controller
             $transId = $reqData['txn_id'];
             // $transId = '2RGIK4436OUMXHZGXH';
             $createdBy = Auth::user()->user_id;
-            $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
+            $actual_refund_date = \Carbon\Carbon::now()->format('Y-m-d');
             $transDisbursalIds = [];
             $tranNewIds = [];
 
@@ -961,6 +961,7 @@ class RefundController extends Controller
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $params);
+                // dd($result);
                 if ($result['status'] == 'success') {
                     $fileDirPath = getPathByTxnId($transId);
                     $time = date('y-m-d H:i:s');
@@ -985,43 +986,32 @@ class RefundController extends Controller
                     if ($createDisbusalApiLog) {
                         $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
                     }
-                    dd($createDisbusalApiLog);
 
-                    $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
-                    $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
-                    if ($disbursalIds) {
-                        $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById([
-                                'batch_status' => 2], $disbursalBatchId);
+                    if ($refundBatchId) {
+                        $updateDisbursal = $this->lmsRepo->updateRefundBatchById([
+                                'batch_status' => 2], $refundBatchId);
 
-                        $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
-                                'status_id' => config('lms.DISBURSAL_STATUS')['DISBURSED'],
-                                'funded_date' => (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s')
-                            ], $disbursalIds);
-                        foreach ($disbursalIds as $key => $value) {
-                            $this->lmsRepo->createDisbursalStatusLog($value, config('lms.DISBURSAL_STATUS')['DISBURSED'], 'online disbursed', $createdBy);
-                        }
                         foreach ($result['result']['body']['Transaction'] as $key => $value) {
                             if ($value['RefStatus'] == 'SUCCESS') {
-                                $updateDisbursalByTranId = $this->lmsRepo->updateDisbursalByTranId([
-                                    'status_id' => config('lms.DISBURSAL_STATUS')['DISBURSED']
-                                ], $value['RefNo']);
-                                $transDisbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['tran_id' => $value['RefNo']])->toArray();
-                                $tranNewIds = array_merge($tranNewIds, $transDisbursalIds);
+                                
+                                $apiLogData = [];
+                                $apiLogData['comment'] = 'online refunded';
+                                $apiLogData['actual_refund_date'] = $actual_refund_date;
+                                $apiLogData['status'] = config('lms.REFUND_STATUS')['DISBURSED'];
+                                
+                                $updateRefundByTranId = $this->lmsRepo->updateRefundByTranId($apiLogData, $value['RefNo']);
+                                if (isset($updateRefundByTranId->refund_req_id)) {
+                                    $this->finalRefundTransactions($updateRefundByTranId->refund_req_id, $actual_refund_date);
+                                }
 
                             } else {
-                                $updateDisbursalByTranId = $this->lmsRepo->updateDisbursalByTranId([
-                                    'status_id' => config('lms.DISBURSAL_STATUS')['FAILED_DISBURSMENT']
+                                $updateRefundByTranId = $this->lmsRepo->updateRefundByTranId([
+                                    'status_id' => config('lms.REFUND_STATUS')['FAILED_REFUND']
                                 ], $value['RefNo']);
                             }
                         }
                     }            
-                    if ($invoiceIds) {
-                        $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, config('lms.DISBURSAL_STATUS')['DISBURSED']);
-                        foreach ($invoiceIds as $key => $value) {
-                            $this->invRepo->saveInvoiceStatusLog($value, config('lms.DISBURSAL_STATUS')['DISBURSED']);
-                        }
-                    }
-                    $updateTransaction = $this->updateTransactionInvoiceDisbursed($tranNewIds, $fundedDate);
+                    
                 } else {
                     Session::flash('message',trans('backend_messages.disbursed_error'));
                     return redirect()->back()->withErrors('message',trans('backend_messages.disbursed_error'));
