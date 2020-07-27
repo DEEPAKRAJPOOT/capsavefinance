@@ -20,12 +20,12 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Fi/Rcu Application</h3>
-            <small>Fi/Rcu Application List</small>
+            <h3>FI/RCU Application</h3>
+            <small>FI/RCU Application List</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li style="color:#374767;">Fi/Rcu Application</li>
-                <li class="active">Fi/Rcu Application</li>
+                <li style="color:#374767;">FI/RCU Application</li>
+                <li class="active">FI/RCU Application</li>
             </ol>
         </div>
     </section>
@@ -42,12 +42,12 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by App Id, Name',
+                    'placeholder' => 'Search by App Id,Business Name',
                     'id'=>'by_name'
                     ])
                     !!}
                 </div>
-                <div class="col-md-4">
+                <!-- <div class="col-md-4">
 
                     {!!
                     Form::select('is_assign',
@@ -56,7 +56,7 @@
                     array('id' => 'is_active',
                     'class'=>'form-control'))
                     !!}
-                </div>
+                </div> -->
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>
            <div class="row">     
@@ -74,7 +74,7 @@
                                                 <th>{{ trans('frontend.app_list_head.user_email') }}</th>
                                                 <th>{{ trans('frontend.app_list_head.user_phone') }}</th>
                                                 <th>{{ trans('frontend.app_list_head.anchor') }}</th>
-                                                <th>{{ trans('frontend.app_list_head.applied_loan_amount') }}</th>
+                                                <!-- <th>{{ trans('frontend.app_list_head.applied_loan_amount') }}</th> -->
                                                 <th>{{ trans('frontend.app_list_head.created_date') }}</th>
                                                 <th>{{ trans('frontend.app_list_head.status') }}</th>
                                                 <!-- <th>{{ trans('frontend.app_list_head.action') }}</th> -->
