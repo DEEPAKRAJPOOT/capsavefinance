@@ -125,7 +125,7 @@ class WfAppStage extends BaseModel
      */
     protected static function getAppWfStage($wf_stage_code, $user_id, $app_id=0, $prgm_id=1) 
     {
-        $appData = self::select('app_wf.wf_stage_id', 'wf_stage.order_no', 'wf_stage.route_name')
+        $appData = self::select('app_wf.wf_stage_id', 'wf_stage.order_no', 'wf_stage.route_name', 'app_wf.app_wf_status', 'app_wf.is_complete')
                 ->join('wf_stage', 'app_wf.wf_stage_id', '=', 'wf_stage.wf_stage_id')
                 ->where('wf_stage.stage_code', $wf_stage_code)                
                 ->where('wf_stage.prgm_id', $prgm_id)
