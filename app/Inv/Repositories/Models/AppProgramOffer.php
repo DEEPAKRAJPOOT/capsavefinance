@@ -345,7 +345,7 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        $tot_offered_limit = AppProgramOffer::where(['app_id' => $app_id, 'is_active'=>1])->sum('prgm_limit_amt');
+        $tot_offered_limit = AppProgramOffer::where(['app_id' => $app_id, 'is_active'=>1])->where('status','!=',2)->sum('prgm_limit_amt');
         
         return $tot_offered_limit;
     }
