@@ -287,11 +287,11 @@ class ReportController extends Controller
          $tdsArr[] = [
             'user_id' => $user_id,
             'customer_name' => $customer_name,
-            'trans_name' => $trans_name,
+            'transaction_type' => $trans_name,
             'date_of_payment' => $date_of_payment,
-            'trans_date' => $trans_date,
-            'amount' => $amount,
-            'trans_by' => $trans_by,
+            'transaction_date' => $trans_date,
+            'Transaction_amount' => $amount,
+            'transaction_by' => $trans_by,
             'tds_certificate_no' => $tds_certificate_no,
             'file_id' => $file_id,
          ];
