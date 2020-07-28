@@ -4689,10 +4689,9 @@ if ($err) {
      */
     public function changeUsersAgencyStatus(Request $request)
     {
-        dd('dddd');
         $user_id = $request->get('user_id');
         $is_active = $request->get('is_active');
-        $result = $this->application->updateProgramData(['is_active' => $is_active], ['user_id' => $user_id]);
+        $result = $this->userRepo->updateUserStatus(['is_active' => $is_active], ['user_id' => $user_id]);
         return \Response::json(['success' => $result]);
     }
 
