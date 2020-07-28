@@ -1133,21 +1133,27 @@ class DataRenderer implements DataProviderInterface
                         $apps = $invoice->supplier->apps;
                         if ($this->overDueFlag == 0) {
                             foreach ($apps as $app) {
-                                foreach ($app->invoices as $inv) {
-                                    
+                                foreach ($app->disbursed_invoices as $inv) {
                                     $invc = $inv->toArray();
-                                    $dueDate = strtotime((isset($invc['payment_due_date'])) ? $invc['invoice_due_date'] : ''); // or your date as well
-                                    $now = strtotime(date('Y-m-d'));
-                                    $datediff = ($dueDate - $now);
-                                    $days = round($datediff / (60 * 60 * 24));
-                                    if ($this->overDueFlag == 0 && $days < 0 && $invc['is_repayment'] == 0) {
-                                        $this->overDueFlag = 1;
+                                    $invc['invoice_disbursed'] = $inv->invoice_disbursed->toArray();
+                                    if ((isset($invc['invoice_disbursed']['payment_due_date']))) {
+                                        if (!is_null($invc['invoice_disbursed']['payment_due_date'])) {
+                                            $calDay = $invc['invoice_disbursed']['grace_period'];
+                                            $dueDate = strtotime($invc['invoice_disbursed']['payment_due_date']."+ $calDay Days");
+                                            $dueDate = $dueDate ?? 0; // or your date as well
+                                            $now = strtotime(date('Y-m-d'));
+                                            $datediff = ($dueDate - $now);
+                                            $days = round($datediff / (60 * 60 * 24));
+                                            if ($this->overDueFlag == 0 && $days < 0 && $invc['is_repayment'] == 0) {
+                                                $this->overDueFlag = 1;
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
-                       return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
-                        ////return ($this->overDueFlag == 1 || $chkUser->id == 11 ) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                       // return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                        return ($this->overDueFlag == 1 || $chkUser->id == 11 ) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
 
                      })
                 ->addColumn(

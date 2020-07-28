@@ -166,12 +166,12 @@ public static function saveBulkInvoice($arrInvoice)
         {
             $res  = User::where('user_id',$id)->first();
 
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['disbursed','bulkUpload', 'business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail', 'supplier.apps.invoices'])->orderBy('invoice_id', 'DESC');
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['bulkUpload', 'business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail', 'supplier.apps.disbursed_invoices.invoice_disbursed'])->orderBy('invoice_id', 'DESC');
 
         }
         else
         {
-           return self::where('status_id',$status)->with(['disbursed','business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail', 'supplier.app.invoices'])->orderBy('invoice_id', 'DESC');
+           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail', 'supplier.app.disbursed_invoices.invoice_disbursed'])->orderBy('invoice_id', 'DESC');
         }
      } 
      
@@ -484,12 +484,7 @@ public static function saveBulkInvoice($arrInvoice)
           return $this->belongsTo('App\Inv\Repositories\Models\UserDetail', 'supplier_id','user_id')->where('is_overdue',1); 
      
      }
-     
-      function disbursed()
-     {
-          return $this->hasOne('App\Inv\Repositories\Models\Lms\InvoiceDisbursed', 'invoice_id','invoice_id');  
-     
-     }
+    
      
     
 }

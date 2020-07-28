@@ -121,6 +121,11 @@ class Application extends BaseModel
     {
         return $this->hasMany('App\Inv\Repositories\Models\BizInvoice', 'app_id', 'app_id')->where('status_id', 9);
     }
+    
+    public function disbursed_invoices()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\BizInvoice', 'app_id', 'app_id')->where('status_id', 12);
+    }
 
     public function senttb_invoices()
     {
