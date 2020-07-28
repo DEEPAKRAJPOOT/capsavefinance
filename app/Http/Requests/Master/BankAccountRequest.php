@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Lms;
+namespace App\Http\Requests\Master;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BankAccountRequest extends FormRequest {
@@ -25,7 +26,8 @@ class BankAccountRequest extends FormRequest {
     {
         return [
             'acc_name' => 'required|regex:/^[a-zA-Z ]+$/|max:50',
-            'acc_no' => 'required|numeric|digits_between:9,18|unique:user_bank_account',
+            'acc_no' => 'required|numeric|digits_between:9,18',
+                        Rule::unique('user_bank_account')->ignore($this->request->get('bank_account_id')),
             'confim_acc_no' => 'required|numeric|digits_between:9,18|same:acc_no',
             'bank_id' => 'required',
             'ifsc_code' => 'required|alpha_num|max:11',

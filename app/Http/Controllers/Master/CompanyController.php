@@ -138,7 +138,7 @@ class CompanyController extends Controller {
             $by_default = ($request->get('by_default')) ? ((int)$request->get('by_default')) : 0;
             $bank_acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
             $compId = ($request->get('comp_addr_id')) ? \Crypt::decrypt($request->get('comp_addr_id')) : null;
-//            dd($request->all(),$compId,$bank_acc_id,$by_default);
+        //    dd($request->all(),$compId,$bank_acc_id,$by_default);
             
             $prepareData = [
                 'acc_name' => $request->get('acc_name'),
@@ -150,6 +150,7 @@ class CompanyController extends Controller {
                 'user_id' => auth()->user()->user_id,
                 'comp_addr_id' => $compId,
                 'is_default' => $by_default,
+                'sponser_bank_code' => $request->get('sponser_bank'),
             ];
 //            dd($prepareData);
             if($by_default == 1){

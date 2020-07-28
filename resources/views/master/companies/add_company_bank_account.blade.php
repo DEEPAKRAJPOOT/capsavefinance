@@ -88,6 +88,15 @@ Form::open(
         </div>
         <div class="col-md-6">
             <div class="form-group">
+                <label for="sponser_bank">Sponser Branch Code
+                    <span class="mandatory">*</span>
+                </label>
+                {!! Form::text('sponser_bank',isset($bankAccount->sponser_bank_code) ? $bankAccount->sponser_bank_code : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Sponser Branch Code', 'maxlength'=>30]) !!}
+                {!! $errors->first('sponser_bank', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
                 <span style="background-color:yellow">Do you want to set this bank account as by default for all transactions?</span>
                 <span style="margin-left:10px"></span><input type='checkbox' name='by_default' id='by_name' {{ ($bankAccount['is_default']) == 1 ? 'checked' : '' }} value='1'>
             </div>

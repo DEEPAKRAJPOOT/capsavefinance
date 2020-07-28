@@ -58,7 +58,8 @@ class UserBankAccount extends BaseModel {
         'updated_by',
         'doc_name',
         'doc_ext',
-        'enc_id'
+        'enc_id',
+        'sponser_bank_code'
     ];
 
 
