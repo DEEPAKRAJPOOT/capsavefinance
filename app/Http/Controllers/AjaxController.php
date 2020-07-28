@@ -4700,4 +4700,19 @@ if ($err) {
         return new JsonResponse($tds);
     } 
 
+        
+    /**
+     * change Agency User status
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function changeUsersAgencyStatus(Request $request)
+    {
+        $user_id = $request->get('user_id');
+        $is_active = $request->get('is_active');
+        $result = $this->userRepo->updateUserStatus(['is_active' => $is_active], ['user_id' => $user_id]);
+        return \Response::json(['success' => $result]);
+    }
+
 }
