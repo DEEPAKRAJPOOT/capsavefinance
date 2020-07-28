@@ -1915,32 +1915,36 @@ class Helper extends PaypalHelper
     {
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
         $curDate = \Carbon\Carbon::now();
-        if (isset($data['note_data']) && !empty($data['note_data'])) {
-            $noteData = [
-                'app_id'     => $appId, 
-                'note_data'  => $data['note_data'],
-                'created_at' => $curDate,
-                'created_by' => \Auth::user()->user_id
+        $appData = $appRepo->getAppData($appId);
+        
+        if ($appData && $appData->curr_status_id != $curStatus) {
+            if (isset($data['note_data']) && !empty($data['note_data'])) {
+                $noteData = [
+                    'app_id'     => $appId, 
+                    'note_data'  => $data['note_data'],
+                    'created_at' => $curDate,
+                    'created_by' => \Auth::user()->user_id
+                ];
+                $result = $appRepo->saveAppNote($noteData)->latest()->first()->toArray();
+            }
+        
+            $appStatusData = [
+                'app_id'    => $appId,
+                'user_id'   => $userId,
+                'note_id'   => isset($result['note_id']) ? $result['note_id'] : null,
+                'status_id' => (int) $curStatus,
+                'created_at'=> $curDate,
+                'created_by'=> \Auth::user()->user_id
             ];
-            $result = $appRepo->saveAppNote($noteData)->latest()->first()->toArray();
+            $appRepo->saveAppStatusLog($appStatusData);
+
+            $arrUpdateApp=[
+                'curr_status_id' => (int) $curStatus,
+                'curr_status_updated_at' => $curDate
+            ];
+
+            return $appRepo->updateAppDetails($appId, $arrUpdateApp);
         }
-                
-        $appStatusData = [
-            'app_id'    => $appId,
-            'user_id'   => $userId,
-            'note_id'   => isset($result['note_id']) ? $result['note_id'] : null,
-            'status_id' => (int) $curStatus,
-            'created_at'=> $curDate,
-            'created_by'=> \Auth::user()->user_id
-        ];
-        $appRepo->saveAppStatusLog($appStatusData);
-
-        $arrUpdateApp=[
-            'curr_status_id' => (int) $curStatus,
-            'curr_status_updated_at' => $curDate
-        ];
-
-        return $appRepo->updateAppDetails($appId, $arrUpdateApp);
 
     }
 }

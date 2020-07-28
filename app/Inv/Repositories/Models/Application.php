@@ -874,8 +874,8 @@ class Application extends BaseModel
         $appStatusList = [
             config('common.mst_status_id.APP_REJECTED'),
             config('common.mst_status_id.APP_CANCEL'),
-            config('common.mst_status_id.APP_HOLD'),
-            config('common.mst_status_id.APP_DATA_PENDING')
+            //config('common.mst_status_id.APP_HOLD'),
+            //config('common.mst_status_id.APP_DATA_PENDING')
         ];           
         $appData = self::select('app.*')
                 ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id') 
