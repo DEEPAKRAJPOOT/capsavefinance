@@ -49,66 +49,22 @@ class Idfc_lib{
 			return $request;
 		}
 		list($payload, $http_header, $txn_id) = $request;
-     	// $response = $this->_curlCall($url, $payload, $http_header);
-     	$response['result'] = 'HTTP/1.1 200 OK
-X-OneAgent-JS-Injection: true
-Set-Cookie: dtCookie=v_4_srv_1_sn_07B50FA3D64AFD4B3D98530CBDFEEBD9_perc_100000_ol_0_mul_1; Path=/; Domain=.idfcbank.com
-Date: Fri, 10 Jul 2020 07:02:16 GMT
-server: 
-Content-Type: application/json;charset=UTF-8
-Content-Length: 943
+     	$response = $this->_curlCall($url, $payload, $http_header);
+     	
+     	if ($getApiResponse) {
+     		return [$txn_id, $payload, $http_header, $response['result']];
+     	}
 
-{
-  "doMultiPaymentCorpRes":{
-    "Header":{
-      "Tran_ID":"2RGWS0334PX3OJ32AD",
-      "Corp_ID":"CAPSAVEUAT",
-      "Status":"Success"
-    },
-    "Body":{
-      "Tran_ID":"2RGWS0334PX3OJ32AD",
-      "TranID_Status":"SUCCESS",
-      "TranID_StatusDesc":"FILE HAS BEEN ACCEPTED",
-      "Transaction":[
-        {
-          "RefNo":"2RGWS0334JQ0",
-          "UTR_No":"IDFBH20191091074",
-          "Mode_of_Pay":"NEFT",
-          "Ben_Acct_No":"21480314831",
-          "Ben_Name_as_per_dest_bank":null,
-          "Ben_IFSC":"UTIB0000001",
-          "RefStatus":"SUCCESS",
-          "StatusDesc":"SUCCESS"
-        },
-        {
-          "RefNo":"2RGIK4436X1O",
-          "UTR_No":"IDFBH20191091073",
-          "Mode_of_Pay":"NEFT",
-          "Ben_Acct_No":"21480314831",
-          "Ben_Name_as_per_dest_bank":null,
-          "Ben_IFSC":"UTIB0000001",
-          "RefStatus":"SUCCESS",
-          "StatusDesc":"SUCCESS"
-        }
-      ]
-    }
-  }
-}';
-     	// dd($response);
-  //    	if ($getApiResponse) {
-  //    		return [$txn_id, $payload, $http_header, $response['result']];
-  //    	}
-
-		// if (!empty($response['error_no'])) {
-		// 	$resp['code'] 	 = "CurlError : " . $response['error_no'];
-		// 	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
-		// 	return $resp;
-		// }
-		// if (empty($response['error_no']) && $response['curl_info']['http_code'] != 200) {
-		// 	$resp['code'] 	 = "HTTPCode : " . $response['curl_info']['http_code'];
-		// 	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
-		// 	return $resp;
-		// }
+		if (!empty($response['error_no'])) {
+			$resp['code'] 	 = "CurlError : " . $response['error_no'];
+			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
+			return $resp;
+		}
+		if (empty($response['error_no']) && $response['curl_info']['http_code'] != 200) {
+			$resp['code'] 	 = "HTTPCode : " . $response['curl_info']['http_code'];
+			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
+			return $resp;
+		}
 		$result = $this->_parseResult($response['result'], $method);
 		$result['result']['url'] = $url;
 		$result['result']['payload'] = $payload;
