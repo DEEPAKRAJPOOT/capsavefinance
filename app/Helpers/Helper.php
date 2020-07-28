@@ -1695,4 +1695,19 @@ class Helper extends PaypalHelper
             return $variable;
         }
      }
+     
+    /**
+     * Get workflow deatail by workflow id
+     * 
+     * @param string $wf_stage_code
+     * @param int $user_id
+     * @param int $app_id
+     * 
+     * @return object
+     */
+    public static function getWfDetailById($wf_stage_code, $user_id, $app_id)
+    {        
+        $wfData = WfAppStage::getAppWfStage($wf_stage_code, $user_id, $app_id);
+        return $wfData;
+    }     
 }

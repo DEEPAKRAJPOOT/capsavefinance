@@ -292,9 +292,12 @@ class CamController extends Controller
           $contents['FinancialStatement']['NameOfTheBorrower'] = $NameOfTheBorrower;
           $fy = $contents['FinancialStatement']['FY'] ?? array();
           $financeData = [];
-          $curr_fin_year = date('Y') - 1;
+          $curr_fin_year = ((date('m') > 3) ? date('Y') : (date('Y') - 1));
           if (!empty($fy)) {
             foreach ($fy as $k => $v) {
+              if (!empty($v['year']) && $k == 0) {
+                $curr_fin_year = $v['year'];
+              }
               if ($this->genBlankfinJSON) {
                 $v['year'] = empty($v['year']) ? $curr_fin_year : $v['year'];
                 $curr_fin_year--;
@@ -631,9 +634,12 @@ class CamController extends Controller
         $fy = $contents['FinancialStatement']['FY'] ?? array();
         $financeData = [];
         $audited_years = [];
-        $curr_fin_year = date('Y') - 1;
+        $curr_fin_year = ((date('m') > 3) ? date('Y') : (date('Y') - 1));
         if (!empty($fy)) {
           foreach ($fy as $k => $v) {
+            if (!empty($v['year']) && $k == 0) {
+              $curr_fin_year = $v['year'];
+            }
             if ($this->genBlankfinJSON) {
               $v['year'] = empty($v['year']) ? $curr_fin_year : $v['year'];
               $curr_fin_year--;
@@ -703,15 +709,15 @@ class CamController extends Controller
         $customers_info = [];
         if (!empty($contents)) {
           foreach ($contents['statementdetails'] as $key => $value) {
-            $account_no = $contents['accountXns'][0]['accountNo'];
-            $customer_data = $value['customerInfo'];
+            $account_no = $contents['accountXns'][0]['accountNo'] ?? NULL;
+            $customer_data = $value['customerInfo'] ?? [];
             $customers_info[] = array(
-              'name' => $customer_data['name'],
-              'email' => $customer_data['email'],
-              'mobile' => $customer_data['mobile'],
+              'name' => $customer_data['name'] ?? NULL,
+              'email' => $customer_data['email'] ?? NULL,
+              'mobile' => $customer_data['mobile'] ?? NULL,
               'account_no' => $account_no,
-              'bank' => $customer_data['bank'],
-              'pan' => $customer_data['pan'],
+              'bank' => $customer_data['bank'] ?? NULL,
+              'pan' => $customer_data['pan'] ?? NULL,
             );
           }
         }

@@ -442,7 +442,7 @@ class User extends Authenticatable
      */
     public function roles()
     {
-        return $this->belongsToMany(Role::class, "role_user", 'user_id');
+        return $this->belongsToMany(Role::class, "role_user", 'user_id')->where('is_logged_in_role', 1);
     }
 
     /**
