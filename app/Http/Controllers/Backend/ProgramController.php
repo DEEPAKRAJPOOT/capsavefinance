@@ -297,7 +297,7 @@ class ProgramController extends Controller {
             if (isset($programData->anchor_limit)) {
                 $remaningAmount = $programData->anchor_limit - $anchorSubLimitTotal; //- $utilizedLimit;
             }
-            
+            $anchorUtilizedBalance = \Helpers::getAnchorUtilizedLimit($parent_program_id);
             $pAnchorLimit = 0;
             $pAnchorSubLimit = 0;
             if (!empty($copied_prgm_id)) {
@@ -342,7 +342,7 @@ class ProgramController extends Controller {
                 }, []);
                 $invoiceDataCount = $this->invRepo->getInvoiceData(['program_id' => $subProgramData->prgm_id], ['invoice_id'])->count();
             }
-
+            
             $redirectUrl = (\Session::has('is_mange_program')) ? route('manage_program') : route('manage_program', ['anchor_id' => $anchor_id]);
             return view('backend.lms.add_sub_program',
                     compact(
@@ -369,7 +369,8 @@ class ProgramController extends Controller {
                             'utilizedLimit',
                             'anchorSubLimitTotal',
                             'pAnchorLimit',
-                            'pAnchorSubLimit'
+                            'pAnchorSubLimit',
+                            'anchorUtilizedBalance'
             ));
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);
