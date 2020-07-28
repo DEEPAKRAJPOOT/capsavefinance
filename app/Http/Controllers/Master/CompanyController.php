@@ -56,7 +56,7 @@ class CompanyController extends Controller {
             $arrCompaniesData = $request->all();
             $arrCompaniesData['charge_prefix'] = strtoupper($request->get('charge_prefix'));
             $arrCompaniesData['interest_prefix'] = strtoupper($request->get('interest_prefix'));
-
+            // dd($request->all());
             $status = false;
             $company_id = false;
             if($request->get('is_reg') == 1){
