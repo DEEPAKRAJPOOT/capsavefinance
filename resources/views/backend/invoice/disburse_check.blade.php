@@ -29,7 +29,11 @@ foreach ($apps as $app) {
 		if($invoice['program_offer']['payment_frequency'] == 1) {
 			$interest = $fundedAmount * $tenor * (($interestRate/100) / 360) ;                
         }
-		$finalDisburseAmt += round($fundedAmount - $interest, 2);
+            if ($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {		
+                $finalDisburseAmt += round($fundedAmount - $interest, 2);
+            } else {
+                $finalDisburseAmt += round($fundedAmount, 2);
+            }
 	}
 }
 @endphp
@@ -203,14 +207,18 @@ foreach ($apps as $app) {
 									        $datediff = abs($now - $your_date);
 									        $tenor = round($datediff / (60 * 60 * 24));
 
-
-
+                                                                                       
+                                                                                    
 											$tMargin = (($invoice['invoice_approve_amount']*$margin)/100);
 											$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
-											if($invoice['program_offer']['payment_frequency'] == 1) {
+											if ($invoice['program_offer']['payment_frequency'] == 1) {
     											$interest = $fundedAmount * $tenor * (($interestRate/100) / 360) ;                
-						                    }
+                                                                                        }
+                                                                                        if ($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
 											$disburseAmount += round($fundedAmount - $interest, 2);
+                                                                                        } else {
+                                                                                        $disburseAmount += round($fundedAmount, 2);
+                                                                                        }
 											$totalMargin += round($tMargin, 2);
 											$totalInterest += round($interest, 2);
 										}

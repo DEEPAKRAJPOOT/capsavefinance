@@ -638,7 +638,11 @@ class InvoiceController extends Controller {
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                         $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
 
-                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                        $prgmWhere=[];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);   
+                        
+                        if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 
@@ -743,7 +747,11 @@ class InvoiceController extends Controller {
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                         $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
 
-                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                        $prgmWhere=[];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);  
+
+                        if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 
@@ -855,7 +863,11 @@ class InvoiceController extends Controller {
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                         $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
-                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                        $prgmWhere=[];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);   
+
+                        if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 
@@ -938,13 +950,17 @@ class InvoiceController extends Controller {
                         }
                         $interest= 0;
                         $margin= 0;
+                        
+                        $prgmWhere=[];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);                          
 
                         $tenor = $this->calculateTenorDays($invoice);
                         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                         $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
-                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                        if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 
