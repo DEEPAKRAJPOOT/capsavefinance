@@ -75,6 +75,10 @@ class Transactions extends BaseModel {
         'updated_by'
     ];
 
+    public function childTransactions(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions', 'trans_id', 'parent_trans_id');
+    }
+
     public function payment(){
         return $this->belongsTo('App\Inv\Repositories\Models\Payment','payment_id','payment_id');
     } 

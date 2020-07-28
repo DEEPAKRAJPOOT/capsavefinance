@@ -1456,4 +1456,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		->where('is_settled','=','0')
 		->get();
 	}
+
+    public function isApportPaymentValid($paymentId, $userId){
+        $isValid = false;
+        $validPaymentId = Payment::where('user_id',$userId)
+        ->where('is_settled','0')
+        ->where('action_type','1')
+        ->orderBy('date_of_payment','asc')
+        ->orderBy('payment_id','asc')
+        ->first();
+
+        if($validPaymentId->payment_id == $paymentId){
+            $isValid = true;
+        }
+        return $isValid;
+    }
 }

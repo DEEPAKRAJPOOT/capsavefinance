@@ -4415,9 +4415,9 @@ if ($err) {
         $user_id = $this->request->user_id;
         $this->dataRecords = [];
         if (!empty($user_id)) {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 0, 'user_id' => $user_id]);
+            $this->dataRecords = Payment::getPayments(['is_settled' => 0, 'user_id' => $user_id],['created_at'=>'desc']);
         } else {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 0]);
+            $this->dataRecords = Payment::getPayments(['is_settled' => 0],['created_at'=>'desc']);
         }
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
@@ -4427,9 +4427,9 @@ if ($err) {
         $user_id = $this->request->user_id;
         $this->dataRecords = [];
         if (!empty($user_id)) {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id]);
+            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id],['updated_at'=>'desc']);
         } else {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 1]);
+            $this->dataRecords = Payment::getPayments(['is_settled' => 1],['updated_at'=>'desc']);
         }
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;

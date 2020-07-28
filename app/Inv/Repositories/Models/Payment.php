@@ -140,8 +140,14 @@ class Payment extends BaseModel {
      * 
      * @return type mixed
      */
-    public static function getPayments(array $where = []) {
-        $res = self::where($where)->orderBy('payment_id','desc')->get();
+    public static function getPayments(array $where = [], $orderBy = []) {
+        $res = self::where($where);
+        if(!empty($orderBy)){
+            foreach($orderBy as $key => $val){
+                $res = $res->orderBy($key, $val);
+            }
+        }
+        $res = $res->get();
         return $res->isEmpty() ? [] :  $res;
     }
 
@@ -224,5 +230,20 @@ class Payment extends BaseModel {
     public static function getAllManualTransaction()
     {
           return self::with(['biz','user', 'transType', 'transaction'])->where('trans_type','!=',NULL)->orderBy('payment_id','DESC');
+    }
+
+    public function getisApportPayValidAttribute (){
+        $isValid = false;
+        $validPaymentId = self::where('user_id',$this->user_id)
+        ->where('is_settled','0')
+        ->where('action_type','1')
+        ->orderBy('date_of_payment','asc')
+        ->orderBy('payment_id','asc')
+        ->first();
+
+        if($validPaymentId && $validPaymentId->payment_id == $this->payment_id){
+            $isValid = true;
+        }
+        return $isValid;
     }
 }

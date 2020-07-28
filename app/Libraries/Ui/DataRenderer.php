@@ -5190,7 +5190,9 @@ class DataRenderer implements DataProviderInterface
                         function ($dataRecords) {
                             $btn = '';
                             if($dataRecords->is_settled == 0){
-                                $btn .= "<div class=\"d-flex inline-action-btn\"> <a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a></div>"; 
+                                if($dataRecords->isApportPayValid){
+                                    $btn .= "<div class=\"d-flex inline-action-btn\"> <a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a></div>"; 
+                                }
                             }elseif($dataRecords->is_refundable && !$dataRecords->refundReq){
                                 $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
                             } 

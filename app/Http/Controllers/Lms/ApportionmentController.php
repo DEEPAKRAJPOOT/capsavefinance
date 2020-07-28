@@ -91,6 +91,11 @@ class ApportionmentController extends Controller
                 $payment = $this->getPaymentDetails($paymentId,$userId); 
                 $payment_amt = $payment['payment_amt']; 
             }
+            if(!$payment['isApportPayValid']){
+                Session::flash('error', trans('Please select Valid Payment!'));
+                return redirect()->back()->withInput();
+            }
+
             $result = $this->getUserLimitDetais($userId);
             return view('lms.apportionment.unsettledTransactions')
             ->with('paymentId', $paymentId)  
@@ -497,6 +502,7 @@ class ApportionmentController extends Controller
                 'transactionno'=> $payment->transactionno,
                 'payment_amt' => $payment->amount,
                 'is_settled' => $payment->is_settled,
+                'isApportPayValid' => $payment->isApportPayValid
             ];
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
@@ -584,6 +590,10 @@ class ApportionmentController extends Controller
             $userDetails = $this->getUserDetails($userId); 
             $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
 
+            if(!$paymentDetails['isApportPayValid']){
+                Session::flash('error', trans('Apportionment is not possible for the selected Payment. Please select valid payment for the unsettled payment screen.'));
+                return redirect()->back()->withInput();
+            }
             $repaymentAmt = $paymentDetails['amount']; 
             
             foreach ($checks as $Ckey => $Cval) {
@@ -779,6 +789,7 @@ class ApportionmentController extends Controller
                 }
                 foreach ($invoiceList as $invDisb) {
                     $Obj->intAccrual($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
+                    $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], 2);
                 }
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
                 $request->session()->forget('apportionment');
@@ -839,7 +850,7 @@ class ApportionmentController extends Controller
                     'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                     'user_id' => $trans->user_id,
                     'trans_date' => $trans->trans_date,
-                    'amount' => $trans->amount,
+                    'amount' => $trans->outstanding,
                     'entry_type' => $trans->entry_type,
                     'soa_flag' => 1,
                     'trans_type' => $trans->trans_type,
@@ -1335,21 +1346,39 @@ class ApportionmentController extends Controller
 
     private function apportionmentUndoProcess($payment_id){
         $result = false;
+        $error = null;        
         $Obj = new ManualApportionmentHelper($this->lmsRepo);
         $invoiceDisbursedId = Transactions::where('payment_id',$payment_id)
         ->groupBy('invoice_disbursed_id')
         ->whereNotNull('invoice_disbursed_id')
         ->pluck('sys_created_at','invoice_disbursed_id')
         ->toArray();
+        $transactions = Transactions::where('payment_id',$payment_id)->get();
         
-        $result = Transactions::where('payment_id',$payment_id)->delete();
-        if($result){
-            $result = true;
-            foreach ($invoiceDisbursedId as $invDisb => $sysCreatedAt) {
-                $Obj->intAccrual($invDisb, $sysCreatedAt);
+        if($transactions){
+            foreach($transactions as $trans){
+                if($trans->refundReqTrans){
+                    $error = "Apportionment Reversal has been blocked due to Refund Process.";
+                }
+                if($trans->entry_type == 0 && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.ADJUSTMENT'),config('lms.TRANS_TYPE.REFUND')])){
+                    $error = "Apportionment Reversal has been blocked due to ".$trans->transName." of amount ".$trans->amount.".";
+                }
             }
         }
-        return $result;
+        
+        if(!$error){
+            $result = Transactions::where('payment_id',$payment_id)->delete();
+            if($result){
+                $result = true;
+                foreach ($invoiceDisbursedId as $invDisb => $sysCreatedAt) {
+                    $Obj->intAccrual($invDisb, $sysCreatedAt);
+                }
+            }
+            return ['status' => $result];
+        }else{
+            return ['status' => $result, 'error' => $error];
+        }
+        
     }
 
     public function undoApportionment(Request $request){
@@ -1361,11 +1390,13 @@ class ApportionmentController extends Controller
                     if($payment->is_settled == '1' && $payment->action_type == '1' && $payment->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($payment->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d'))
                     ){
 						$aporUndoPro = self::apportionmentUndoProcess($paymentId);
-                        if($aporUndoPro){
+                        if($aporUndoPro['status']){
                             $payment->is_settled = '0';
                             $payment->save();
+                            return response()->json(['status' => 1,'message' => 'Successfully Apportionment Reverted']); 
+                        }else{
+                            return response()->json(['status' => 0,'message' => $aporUndoPro['error']]);
                         }
-                        return response()->json(['status' => 1,'message' => 'Successfully Apportionment Reverted']); 
 					}
 					else{
 						return response()->json(['status' => 0,'message' => 'Invalid Request: Apportionment cannot be reverted']);

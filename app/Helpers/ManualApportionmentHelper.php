@@ -60,6 +60,58 @@ class ManualApportionmentHelper{
         ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
     }
 
+    public function transactionPostingAdjustment($invDisbId, $startDate, $payFreq){
+        $transactionList = [];
+        if($payFreq == '2'){
+            $adjTransactions = Transactions::with('transRunning')
+            ->where('invoice_disbursed_id','=',$invDisbId)
+            ->where('entry_type','=',0)
+            ->whereNotNull('trans_running_id')
+            ->groupBy('trans_running_id')
+            ->get()
+            ->filter(function($item){ 
+                if($item->amount > $item->transRunning->amount)
+                { 
+                    return true;
+                }
+            });
+
+            foreach($adjTransactions as $adjTrans){
+                $cancelableAmount = $adjTrans->amount - $adjTrans->transRunning->amount;
+
+                $transactions = Transactions::where('trans_running_id',$adjTrans->trans_running_id)
+                ->orderBy('trans_date','desc')
+                ->orderBy('trans_id','desc')
+                ->get();
+
+                foreach($transactions as $trans){
+                    $transOutstanding = $trans->outstanding;
+                    if($transOutstanding <= $cancelableAmount && $transOutstanding > 0 && $cancelableAmount > 0){
+                        $transactionList[] = [
+                            'payment_id' => null,
+                            'link_trans_id' => $trans->trans_id,
+                            'parent_trans_id' => $trans->trans_id,
+                            'trans_running_id'=> null,
+                            'invoice_disbursed_id' => $trans->invoice_disbursed_id,
+                            'user_id' => $trans->user_id,
+                            'trans_date' => $startDate,
+                            'amount' => $transOutstanding,
+                            'entry_type' => 1,
+                            'soa_flag' => 1,
+                            'trans_type' => config('lms.TRANS_TYPE.CANCEL')
+                        ];
+                        $cancelableAmount -= $transOutstanding;
+                    }
+                }
+            }
+        }
+        if(!empty($transactionList)){
+            foreach ($transactionList as $key => $newTrans) {
+                $this->lmsRepo->saveTransaction($newTrans);
+            }
+        }
+    }
+
     private function runningToTransPosting($invDisbId, $intAccrualDt, $payFreq, $invdueDate, $odStartDate){
         $intAccrualDate = $this->subDays($intAccrualDt,1);
         $graceStartDate = $invdueDate;
