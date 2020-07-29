@@ -295,11 +295,11 @@ class CamController extends Controller
           $curr_fin_year = ((date('m') > 3) ? date('Y') : (date('Y') - 1));
           if (isset($fy) && !empty($fy)) {
             foreach ($fy as $k => $v) {
-              if (!empty($v['year']) && $k == 0) {
+              if (isset($v['year']) && !empty($v['year']) && $k == 0) {
                 $curr_fin_year = $v['year'];
               }
               if ($this->genBlankfinJSON) {
-                $v['year'] = empty($v['year']) ? $curr_fin_year : $v['year'];
+                $v['year'] = empty($v['year']) && !isset($v['year']) ? $curr_fin_year : $v['year'];
                 $curr_fin_year--;
               }
               $vyear = $v['year'];
