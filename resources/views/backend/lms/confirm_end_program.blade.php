@@ -4,6 +4,17 @@
 
 
 <div class="modal-body text-left">
+    @if ($action == 'view')
+            <div class="row">                
+               <div class="col-12">                    
+                          
+                                      
+                    To edit this sub-program please accept or reject the created offer linked with this sub-program.<br><br><br><br>
+                    
+                    <button type="button" id="close_btn" class="btn btn-secondary btn-sm">Close</button>                   
+              </div>
+            </div>
+    @else
             {!!
              Form::open(
                 array(
@@ -53,8 +64,9 @@
                 {!! Form::hidden('type', $action_type) !!}    
                 {!!
                 Form::close()
-                !!}                      
-        </div>
+                !!}  
+    @endif
+</div>
 
 
 @endsection
