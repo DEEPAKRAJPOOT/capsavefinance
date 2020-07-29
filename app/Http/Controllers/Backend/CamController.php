@@ -293,17 +293,22 @@ class CamController extends Controller
           $fy = $contents['FinancialStatement']['FY'] ?? array();
           $financeData = [];
           $curr_fin_year = ((date('m') > 3) ? date('Y') : (date('Y') - 1));
-          if (isset($fy) && !empty($fy)) {
+          if (!empty($fy)) {
             foreach ($fy as $k => $v) {
-              if (isset($v['year']) && !empty($v['year']) && $k == 0) {
+              if (!empty($v['year']) && $k == 0) {
                 $curr_fin_year = $v['year'];
               }
               if ($this->genBlankfinJSON) {
-                $v['year'] = empty($v['year']) && !isset($v['year']) ? $curr_fin_year : $v['year'];
+                $v['year'] = empty($v['year']) ? $curr_fin_year : $v['year'];
                 $curr_fin_year--;
               }
               $vyear = $v['year'];
               $request_year = $request->get('year');
+              // dd($request_year, $vyear);
+              if(!isset($request_year[$vyear])){
+                Session::flash('error',trans('Something went wrong with financial year'));
+                return redirect()->back();
+              }
               $financeData[$k] = array_replace_recursive($v, $request_year[$vyear]);
             }
           }
