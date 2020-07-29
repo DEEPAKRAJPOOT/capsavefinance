@@ -1962,6 +1962,7 @@ class Helper extends PaypalHelper
             config('common.mst_status_id.APP_SANCTIONED'),
             config('common.mst_status_id.APP_CLOSED'),
             config('common.mst_status_id.DISBURSED'),
+            config('common.mst_status_id.NPA'),
         ];
         $isChangeAppStatusAllowed = !in_array($curStatusId, $appStatusList);
         return $isChangeAppStatusAllowed;
