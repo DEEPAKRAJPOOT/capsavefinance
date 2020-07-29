@@ -590,7 +590,7 @@ class ApplicationController extends Controller
                                 ];
                                 if ($currentStage && $currentStage->order_no < 4 && !in_array($curStatus, $appStatusList) ) {                                  
                                     $this->appRepo->updateAppData($appId, ['status' => 1]);
-                                    Helpers::updateAppCurrentStatus($appId, $userId, config('common.mst_status_id.COMPLETED'));
+                                    Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.COMPLETED'));
                                 }				  
 				Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
 			 
@@ -916,7 +916,7 @@ class ApplicationController extends Controller
                                     $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
                                     $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
                                     $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
-                                    \Helpers::updateAppCurrentStatus($parentAppId, $user_id, config('common.mst_status_id.APP_CLOSED'));                                    
+                                    \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                    
                                 }
                                 
         		if (!is_null($appLimitId)) {
@@ -933,7 +933,7 @@ class ApplicationController extends Controller
 			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
                                 UserDetail::where('user_id',$user_id)->update(['is_active' =>1]);
                                 $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction  
-                                \Helpers::updateAppCurrentStatus($app_id, $user_id, config('common.mst_status_id.APP_SANCTIONED'));
+                                \Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_SANCTIONED'));
                                 $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
                                 if($prcsAmt && isset($prcsAmt->offer)) {
 				  if($createCustomer != null) {   
@@ -1222,6 +1222,8 @@ class ApplicationController extends Controller
 				$appData = $this->appRepo->getAppDataByAppId($appId);
 				$userId = $appData ? $appData->user_id : null;
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
+                                
+                                Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_ACCEPTED'));
 			} else if($request->has('btn_reject_offer')) {				
 				$offerData['status'] = 2;
 				$message = trans('backend_messages.offer_rejected');
@@ -1242,6 +1244,8 @@ class ApplicationController extends Controller
                                 Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
                                 Session::flash('operation_status', 1);
 	 
+                                Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_REJECTED'));
+                                
 				/*$addl_data = [];
                                 $addl_data['sharing_comment'] = 'Reject comment goes here';
                                 $message = trans('backend_messages.reject_offer_success');*/
@@ -1802,6 +1806,9 @@ class ApplicationController extends Controller
 			$supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId);
 			$filepath = storage_path('app/public/user/'.$appId.'_supplychain.json');
 			\File::put($filepath, base64_encode(json_encode($arrFileData)));
+                        
+                        Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.SANCTION_LETTER_GENERATED'));
+                        
 			Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
 			return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);  
 		} catch (Exception $ex) {

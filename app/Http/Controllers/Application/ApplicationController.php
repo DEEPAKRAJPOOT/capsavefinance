@@ -550,7 +550,7 @@ class ApplicationController extends Controller
                 ];                
                 if ($currentStage && $currentStage->order_no < 4 && !in_array($curStatus, $appStatusList) ) {                                  
                     $this->appRepo->updateAppData($appId, ['status' => 1]);
-                    Helpers::updateAppCurrentStatus($appId, $userId, config('common.mst_status_id.COMPLETED'));
+                    Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.COMPLETED'));
                 }                
                 
                 

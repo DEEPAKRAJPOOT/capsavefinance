@@ -1647,7 +1647,7 @@ class CamController extends Controller
 
             //update approve status in offer table after all approver approve the offer.
             $this->appRepo->changeOfferApprove((int)$appId);
-            Helpers::updateAppCurrentStatus($appId, $userId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+            Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
             Session::flash('message',trans('backend_messages.offer_approved'));
             return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
         }catch (Exception $ex) {
@@ -1699,7 +1699,8 @@ class CamController extends Controller
             $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
             $currStage = Helpers::getCurrentWfStage($appId);
             Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
- 
+            Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_REJECTED'));
+            
             Session::flash('message', trans('backend_messages.offer_rejected'));
             Session::flash('operation_status', 1);
             return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
@@ -1801,7 +1802,7 @@ class CamController extends Controller
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
         if (empty($prgmOfferId)) {
-            Helpers::updateAppCurrentStatus($appId, $userId, config('common.mst_status_id.OFFER_GENERATED'));
+            Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
         }
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 

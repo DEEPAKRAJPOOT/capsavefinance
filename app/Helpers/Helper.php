@@ -169,7 +169,7 @@ class Helper extends PaypalHelper
             if ($wf_stage_code == 'new_case') {
                 $updateData['biz_app_id'] = $app_id;
                 $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
-                self::updateAppCurrentStatus($app_id, $user_id, config('common.mst_status_id.APP_INCOMPLETE'));
+                self::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_INCOMPLETE'));
             } else {
                 $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
             }
@@ -1911,13 +1911,14 @@ class Helper extends PaypalHelper
         return $programs;
      }
 
-    public static function updateAppCurrentStatus($appId, $userId, $curStatus, $data=[])
+    public static function updateAppCurrentStatus($appId, $curStatus, $data=[])
     {
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
         $curDate = \Carbon\Carbon::now();
         $appData = $appRepo->getAppData($appId);
         
         if ($appData && $appData->curr_status_id != $curStatus) {
+            $userId = $appData->user_id;
             if (isset($data['note_data']) && !empty($data['note_data'])) {
                 $noteData = [
                     'app_id'     => $appId, 
