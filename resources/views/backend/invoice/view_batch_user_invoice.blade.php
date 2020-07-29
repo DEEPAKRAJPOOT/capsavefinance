@@ -10,8 +10,8 @@
                         <th>Disbursed Date </th>
                         <th>Invoice Amt.</th>
                         <th>Margin(%) </th>
-                        <th>Disburse Amt.</th>
-                        <th>Actual Funded Amt.</th>
+                        <th>Disburse/Principal Amt.</th>
+                        <th>Actual Disburse /Principal Amt.</th>
                         <th>Type</th>
                         <th>Status</th>
                     </tr>
@@ -47,7 +47,18 @@
 
 							{{ number_format($disburseAmount, 2) }}
 							</td>
-							<td> <span class="badge badge-primary">{{ ($invoice->program_offer->payment_frequency == 1) ? 'UPFRONT' : 'MONTHLY'  }}</span></td>
+							<td> <span class="badge badge-primary">
+							@switch($invoice->program_offer->payment_frequency)
+								@case(1)
+									UPFRONT
+									@break
+								@case(2)
+									MONTHLY
+									@break
+								@case(3)
+								    REAR END
+									@break
+							@endswitch</span></td>
 							<td> <span class="badge badge-warning">{{ $invoice->mstStatus->status_name }}</span></td>
 						</tr>
 	                @endforeach
