@@ -2015,7 +2015,7 @@ class ApplicationController extends Controller
                     $appStatus = 'APP_DATA_PENDING';
 				}
 		            
-            if ($cur_status_id != (int)config('common.mst_status_id')[$appStatus]) {                                
+            if (isset(config('common.mst_status_id')[$appStatus]) && $cur_status_id != (int)config('common.mst_status_id')[$appStatus]) {
                 $noteData = [
                         'app_id' => $app_id, 
                         'note_data' => $reason,

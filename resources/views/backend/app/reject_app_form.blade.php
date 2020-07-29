@@ -1,6 +1,9 @@
 @extends('layouts.backend.admin_popup_layout')
 
 @section('content')
+@php
+$is_enabled = \Helpers::isChangeAppStatusAllowed($cur_status_id);
+@endphp
   <div class="modal-body text-left">
 {!!
 Form::open(
@@ -21,23 +24,21 @@ Form::open(
         <div class="form-group form-check">
             <ul class="custom-check-label">                
                 <li>
-                    <input type="radio" class="form-check-input" {{($status_id == config('common.mst_status_id')['APP_REJECTED']) ? 'checked' : ''}} id="status1" name="status" value="1" data-error="#errNm1">
+                    <input type="radio" class="form-check-input" @if(!$is_enabled) disabled="disabled" @endif {{($status_id == config('common.mst_status_id')['APP_REJECTED']) ? 'checked' : ''}} id="status1" name="status" value="1" data-error="#errNm1">
                     <label class="form-check-label" for="status1">Reject</label>
                 </li>
                 <li>
-                    <input type="radio" class="form-check-input" {{($status_id == config('common.mst_status_id')['APP_CANCEL']) ? 'checked' : ''}} id="status2" name="status" value="2" data-error="#errNm1">
+                    <input type="radio" class="form-check-input" @if(!$is_enabled) disabled="disabled" @endif {{($status_id == config('common.mst_status_id')['APP_CANCEL']) ? 'checked' : ''}} id="status2" name="status" value="2" data-error="#errNm1">
                     <label class="form-check-label" for="status2">Cancel</label> 
-                </li>
-                @if (!in_array($cur_status_id, [config('common.mst_status_id.APP_REJECTED'),config('common.mst_status_id.APP_CANCEL')]) )
+                </li>                
                 <li>
-                    <input type="radio" class="form-check-input" {{($status_id == config('common.mst_status_id')['APP_HOLD']) ? 'checked' : ''}} id="status3" name="status" value="3" data-error="#errNm1">
+                    <input type="radio" class="form-check-input" @if(!$is_enabled) disabled="disabled" @endif {{($status_id == config('common.mst_status_id')['APP_HOLD']) ? 'checked' : ''}} id="status3" name="status" value="3" data-error="#errNm1">
                     <label class="form-check-label" for="status3">Hold</label>
                 </li>
                 <li>
-                    <input type="radio" class="form-check-input" {{($status_id == config('common.mst_status_id')['APP_DATA_PENDING']) ? 'checked' : ''}} id="status4" name="status" value="4" data-error="#errNm1">
+                    <input type="radio" class="form-check-input" @if(!$is_enabled) disabled="disabled" @endif {{($status_id == config('common.mst_status_id')['APP_DATA_PENDING']) ? 'checked' : ''}} id="status4" name="status" value="4" data-error="#errNm1">
                     <label class="form-check-label" for="status4">Data Pending</label>
-                </li>
-                @endif
+                </li>                
             </ul>
         </div>
         <div class="errorTxt">

@@ -1948,4 +1948,22 @@ class Helper extends PaypalHelper
         }
 
     }
+    
+    public static function isChangeAppStatusAllowed ($curStatusId) 
+    {
+        $appStatusList = [
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            config('common.mst_status_id.OFFER_LIMIT_APPROVED'),
+            //config('common.mst_status_id.OFFER_LIMIT_REJECTED'),
+            config('common.mst_status_id.OFFER_ACCEPTED'),
+            //config('common.mst_status_id.OFFER_REJECTED'),
+            config('common.mst_status_id.SANCTION_LETTER_GENERATED'),
+            config('common.mst_status_id.APP_SANCTIONED'),
+            config('common.mst_status_id.APP_CLOSED'),
+            config('common.mst_status_id.DISBURSED'),
+        ];
+        $isChangeAppStatusAllowed = !in_array($curStatusId, $appStatusList);
+        return $isChangeAppStatusAllowed;
+    }
 }
