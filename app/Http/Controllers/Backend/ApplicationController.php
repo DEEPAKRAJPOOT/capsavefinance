@@ -2046,6 +2046,7 @@ class ApplicationController extends Controller
                     
                     $arrUpdateApp=[
 			'curr_status_id'=>(int) config('common.mst_status_id')[$appStatus],
+                        'curr_status_updated_at' => \Carbon\Carbon::now()
                     ];
 			
                     $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);
