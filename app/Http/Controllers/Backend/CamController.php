@@ -293,7 +293,7 @@ class CamController extends Controller
           $fy = $contents['FinancialStatement']['FY'] ?? array();
           $financeData = [];
           $curr_fin_year = ((date('m') > 3) ? date('Y') : (date('Y') - 1));
-          if (!empty($fy)) {
+          if (isset($fy) && !empty($fy)) {
             foreach ($fy as $k => $v) {
               if (!empty($v['year']) && $k == 0) {
                 $curr_fin_year = $v['year'];
