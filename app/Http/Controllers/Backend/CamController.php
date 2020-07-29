@@ -305,11 +305,13 @@ class CamController extends Controller
               $vyear = $v['year'];
               $request_year = $request->get('year');
               // dd($request_year, $vyear);
-              if(!isset($request_year[$vyear])){
-                Session::flash('error',trans('Something went wrong with financial year'));
-                return redirect()->back();
+              // if(!isset($request_year[$vyear])){
+              //   Session::flash('error',trans('Something went wrong with financial year'));
+              //   return redirect()->back();
+              // }
+              if(isset($request_year[$vyear])){
+                $financeData[$k] = array_replace_recursive($v, $request_year[$vyear]);
               }
-              $financeData[$k] = array_replace_recursive($v, $request_year[$vyear]);
             }
           }
           $financeData = arrayValuesToInt($financeData);
