@@ -1975,6 +1975,8 @@ class ApplicationController extends Controller
 			$noteData = $this->appRepo->getNoteDataById($note_id, $app_id);
 			$reason =  $noteData->note_data;
 		}
+                $appData = $this->appRepo->getAppData($app_id);
+                $curStatusId = $appData ? $appData->curr_status_id : 0;
 		// dd($request->all());
 		return view('backend.app.reject_app_form')
 				->with('app_id', $app_id)
@@ -1982,7 +1984,8 @@ class ApplicationController extends Controller
 				->with('user_id', $user_id)
 				->with('reason', $reason)
 				->with('status_id', $status_id)
-				->with('note_id', $note_id);
+				->with('note_id', $note_id)
+                                ->with('cur_status_id', $curStatusId);
 	}
         
     /**
@@ -2000,17 +2003,19 @@ class ApplicationController extends Controller
                 $reason = $request->get('reason');
 				$status = $request->get('status');
 				$note_id = $request->get('note_id');
+                $cur_status_id = $request->get('cur_status_id');
                 $appStatus = '';
                 if($status == 1){
-                    $appStatus .= 'APP_REJECTED';
+                    $appStatus = 'APP_REJECTED';
                 }else if($status == 2){
-                    $appStatus .= 'APP_CANCEL';
+                    $appStatus = 'APP_CANCEL';
                 }else if($status == 3){
-                    $appStatus .= 'APP_HOLD';
+                    $appStatus = 'APP_HOLD';
                 }else if($status == 4){
-                    $appStatus .= 'APP_DATA_PENDING';
+                    $appStatus = 'APP_DATA_PENDING';
 				}
-				
+		            
+            if ($cur_status_id != (int)config('common.mst_status_id')[$appStatus]) {                                
                 $noteData = [
                         'app_id' => $app_id, 
                         'note_data' => $reason,
@@ -2045,6 +2050,7 @@ class ApplicationController extends Controller
 			
                     $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);
                 }
+            }
                 
                 Session::flash('message',trans('backend_messages.reject_app'));
                 return redirect()->route('application_list');
