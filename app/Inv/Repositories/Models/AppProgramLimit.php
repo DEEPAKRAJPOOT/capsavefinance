@@ -290,7 +290,9 @@ class AppProgramLimit extends BaseModel {
     }
 
     public function getTotalByPrgmLimitId(){
-        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_prgm_limit_id', 'app_prgm_limit_id')->where(['is_active'=>1])->sum('prgm_limit_amt');
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramOffer', 'app_prgm_limit_id', 'app_prgm_limit_id')->where(['is_active'=>1])->where(function($q) {
+                            $q->where('status', NULL)->orWhere('status', 1);
+                        })->sum('prgm_limit_amt');
     }
 
     public static function getTotalPrgmLimitByAppId($appId){
