@@ -262,11 +262,11 @@ function checkValidation(){
 		flag = false;
 	}
 
-	if($('select[name=biz_cin] option').length > 1 && (biz_cin == '' || biz_cin == null) && is_gst_manual!=1){
+	/*if($('select[name=biz_cin] option').length > 1 && (biz_cin == '' || biz_cin == null) && is_gst_manual!=1){
 		setError('select[name=biz_cin]', 'Please select CIN Number');
 		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
 		flag = false;
-	}
+	}*/
 	/*else if($('input[name=biz_cin]').val()  == ''){
 		setError('select[name=biz_gst_number]', 'Service unavailable!');
 		flag = false;	
