@@ -108,7 +108,7 @@ return [
         'APP_INCOMPLETE'=>49,
         'APP_SANCTIONED'=>50,
         'APP_CLOSED'=>51,
-        'OFFER_LIMIT_REJECTED'=>52,
+        'OFFER_LIMIT_REJECTED'=>55,
         'NPA' => 48
     ],
     'facility_type' => [
