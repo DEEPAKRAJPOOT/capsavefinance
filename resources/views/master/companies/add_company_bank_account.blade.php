@@ -220,6 +220,9 @@ try {
                 'is_active': {
                     required: true
                 },
+                'sponser_bank':{
+                    required: true
+                }
             },
             messages: {
                 acc_no: {

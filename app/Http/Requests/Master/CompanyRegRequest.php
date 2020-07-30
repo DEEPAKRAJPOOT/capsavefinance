@@ -35,7 +35,10 @@ class CompanyRegRequest extends Request
             'pan_no'  => 'required|regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/',
             'cin_no' => 'required|regex:/^[U,L]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[P,C,L,T,N,G,O,S]{3}[0-9]{6}$/',
             'is_active' => 'required',
-            'is_reg' => 'required'
+            'is_reg' => 'required',
+            'utility_code' => 'required',
+            'member_id' => 'required',
+            'member_branch_code' => 'required',
             ];
     }
 
@@ -59,6 +62,9 @@ class CompanyRegRequest extends Request
             'cin_no.regex' => trans('master_messages.cinno'),
             'is_active.required' => trans('master_messages.required'),
             'is_reg.required' => trans('master_messages.required'),
+            'utility_code.required' => trans('master_messages.required'),
+            'member_id.required' => trans('master_messages.required'),
+            'member_branch_code.required' => trans('master_messages.required'),
         ];
     }
 }
