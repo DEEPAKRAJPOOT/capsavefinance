@@ -691,6 +691,12 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
+                if ($result['status'] == 'fail') { 
+                    $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
+                    $message = $result['message'] ?? $result['message'];
+                    Session::flash('message', 'Error : '. 'HTTP Code '. $http_code  .  $message);
+                    return redirect()->route('backend_get_disbursed_invoice');
+                }
                 $fileDirPath = getPathByTxnId($transId);
                 $time = date('y-m-d H:i:s');
                 
@@ -715,9 +721,6 @@ class InvoiceController extends Controller {
                 }
                 if ($result['status'] == 'success') {
                     $this->disburseTableInsert($exportData, $supplierIds, $allinvoices, $disburseType, $disburseDate, $disbursalApiLogId);
-                } else {
-                    Session::flash('message', 'Error : '.$result['message']);
-                    return redirect()->route('backend_get_disbursed_invoice');
                 }
             }
                     

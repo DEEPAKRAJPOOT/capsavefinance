@@ -50,7 +50,6 @@ class Idfc_lib{
 		}
 		list($payload, $http_header, $txn_id) = $request;
      	$response = $this->_curlCall($url, $payload, $http_header);
-     	// dd($response);
      	if ($getApiResponse) {
      		return [$txn_id, $payload, $http_header, $response['result']];
      	}
@@ -70,6 +69,7 @@ class Idfc_lib{
 		$result['result']['payload'] = $payload;
 		$result['result']['http_header'] = $http_header;
 		$result['result']['response'] = $response['result'];
+		$result['http_code'] = $response['curl_info']['http_code'];
 
 		return $result;
     }

@@ -105,7 +105,7 @@ foreach ($apps as $app) {
 							<thead>
 								<tr role="row">
 									<th width="4%">Cust ID</th>
-									<th width="4%">App ID</th>
+									<!-- <th width="4%">App ID</th> -->
 									<th width="10%">Ben Name</th>
 									<th width="20%">Bank Detail</th>
 									<th width="15%">Total Invoice</th>
@@ -123,7 +123,7 @@ foreach ($apps as $app) {
 								@foreach($customersDisbursalList as $customer)
 								<tr role="row" class="odd">
 									<td> {{ $customer->customer_id }}</td>
-									<td> CAPS000{{ $customer->app_id }} </td>
+									<!-- <td> CAPS000{{ $customer->app_id }} </td> -->
 									@php
 									if ($customer->user->is_buyer == 2) {
 										$benName = (isset($customer->user->anchor_bank_details->acc_name)) ? $customer->user->anchor_bank_details->acc_name : '';
