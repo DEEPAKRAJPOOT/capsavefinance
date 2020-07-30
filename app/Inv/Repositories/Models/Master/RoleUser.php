@@ -124,6 +124,7 @@ class RoleUser extends BaseModel
                  ->join('users', 'role_user.user_id', '=', 'users.user_id')
                 ->join('roles', 'roles.id', '=', 'role_user.role_id')
                  ->leftJoin('users as rptmgr', 'users.parent_id', '=', 'rptmgr.user_id')
+                 ->whereIn('roles.id', [4, 5, 6, 7, 8, 9, 10, 13, 14])
                  ->where('roles.is_editable','!=',0);
                 return $arr;
     }
