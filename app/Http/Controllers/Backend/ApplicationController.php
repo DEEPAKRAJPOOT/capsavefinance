@@ -2050,6 +2050,15 @@ class ApplicationController extends Controller
                     ];
 			
                     $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);
+                    
+                    
+                    $appStatusList = Helpers::getAppStatusList();
+                    $arrActivity = [];
+                    $arrActivity['activity_code'] = 'app_status_changed';
+                    $arrActivity['activity_desc'] = 'Application status is modified from ' . $appStatusList[$cur_status_id] . ' to ' . $appStatusList[$arrUpdateApp['curr_status_id']];
+                    $arrActivity['user_id'] = $user_id;
+                    $arrActivity['app_id'] = $app_id;
+                    \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));                    
                 }
             }
                 
