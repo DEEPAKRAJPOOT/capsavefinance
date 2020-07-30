@@ -1022,15 +1022,15 @@ trait LmsTrait
         $disbursalData['disbursal_batch_id'] = $data['disbursal_batch_id'] ?? null;
 
         $disbursalData['bank_type'] = $data['bank_type'] ?? null;
-        $disbursalData['txn_id'] = $response['header']['Tran_ID'] ?? null;
+        $disbursalData['txn_id'] = $response['result']['http_header']['Tran_ID'] ?? null;
         $disbursalData['enq_txn_id'] = $data['enq_txn_id'] ?? null;
-        $disbursalData['url'] = $response['url'] ?? null;
+        $disbursalData['url'] = $response['result']['url'] ?? null;
         
-        $disbursalData['header'] = $response['http_header'] ?? null;
-        $disbursalData['req_text'] = $response['payload'] ?? null ;
-        $disbursalData['res_text'] = $response['response'] ?? null;
+        $disbursalData['header'] = $response['result']['http_header'] ?? null;
+        $disbursalData['req_text'] = $response['result']['payload'] ?? null ;
+        $disbursalData['res_text'] = $response['result']['response'] ?? null;
         $disbursalData['file_id'] = $fileData['file_id'] ?? null;            
-        $disbursalData['status'] = ($response['header']['Status'] == 'Success') ? 1 : 0;
+        $disbursalData['status'] = ($response['status'] == 'success') ? 1 : 0;
 
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
                         

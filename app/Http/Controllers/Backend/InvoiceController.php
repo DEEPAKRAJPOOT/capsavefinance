@@ -553,11 +553,12 @@ class InvoiceController extends Controller {
         $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
         
         $customersDisbursalList = $this->lmsRepo->lmsGetInvoiceClubCustomer($supplierIds, $allrecords);
-        // dd($customersDisbursalList);
+        // dd($disburseType);
         return view('backend.invoice.disburse_check')
                 ->with([
                     'customersDisbursalList' => $customersDisbursalList,
-                    'invoiceIds' => $invoiceIds 
+                    'invoiceIds' => $invoiceIds, 
+                    'disburseType' => $disburseType 
                 ]);;              
     }
 
@@ -572,18 +573,21 @@ class InvoiceController extends Controller {
             date_default_timezone_set("Asia/Kolkata");
             $currentTimeHour = \Carbon\Carbon::now()->format('H');
             $validateTimeHour = config('lms.DISBURSAL_TIME_VALIDATE');
+            $invoiceIds = $request->get('invoice_ids');
+            $disburseDateCal = $request->get('value_date');
+            // $disburseDate =  \Helpers::getSysStartDate();
+            $disburseDate = \Carbon\Carbon::createFromFormat('d/m/Y', $disburseDateCal)->setTimezone(config('common.timezone'))->format('Y-m-d');
+            $disburseType = config('lms.DISBURSE_TYPE')['ONLINE'];
+            $creatorId = Auth::user()->user_id;
+
             if ($request->get('eod_process')) {
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
-            if (date('H') >= $validateTimeHour) { 
-                Session::flash('error', 'Disbursment can not be done after '. Carbon::createFromFormat('H', $validateTimeHour)->format('g:i A'));
-                return redirect()->route('backend_get_disbursed_invoice');
-            }
-            $invoiceIds = $request->get('invoice_ids');
-            $disburseDate =  \Helpers::getSysStartDate();
-            $disburseType = config('lms.DISBURSE_TYPE')['ONLINE'];
-            $creatorId = Auth::user()->user_id;
+            // if (date('H') >= $validateTimeHour) { 
+            //     Session::flash('error', 'Disbursment can not be done after '. Carbon::createFromFormat('H', $validateTimeHour)->format('g:i A'));
+            //     return redirect()->route('backend_get_disbursed_invoice');
+            // }
             if(empty($invoiceIds)){
                 return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
             }
@@ -669,7 +673,7 @@ class InvoiceController extends Controller {
             if($disburseType == 1 && !empty($allrecords)) {
             
                 $http_header = [
-                    'timestamp' => date('Y-m-d H:i:s'),
+                    'timestamp' => \Carbon\Carbon::createFromFormat('d/m/Y', $disburseDateCal)->setTimezone(config('common.timezone'))->format('Y-m-d H:i:s'),
                     'txn_id' => $transId
                     ];
 
@@ -687,34 +691,33 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
-                // dd($result);
+                $fileDirPath = getPathByTxnId($transId);
+                $time = date('y-m-d H:i:s');
+                
+                $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
+                $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
+                    .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
+                    .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
+                    .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
+                
+                $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
+                if(is_array($createOrUpdatefile)) {
+                    $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
+                } else {
+                    $userFileSaved = $createOrUpdatefile;
+                }
+                
+                $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
+                $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result, $otherData);
+                $createDisbusalApiLog = $this->lmsRepo->saveUpdateDisbursalApiLog($disbusalApiLogData);
+                if ($createDisbusalApiLog) {
+                    $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
+                }
                 if ($result['status'] == 'success') {
-                    $fileDirPath = getPathByTxnId($transId);
-                    $time = date('y-m-d H:i:s');
-                    
-                    $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
-                    $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
-                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
-                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
-                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
-                    
-                    $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
-                    if(is_array($createOrUpdatefile)) {
-                        $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
-                    } else {
-                        $userFileSaved = $createOrUpdatefile;
-                    }
-                    
-                    $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
-                    $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result['result'], $otherData);
-                    $createDisbusalApiLog = $this->lmsRepo->saveUpdateDisbursalApiLog($disbusalApiLogData);
-                    if ($createDisbusalApiLog) {
-                        $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
-                    }
                     $this->disburseTableInsert($exportData, $supplierIds, $allinvoices, $disburseType, $disburseDate, $disbursalApiLogId);
                 } else {
-                    Session::flash('message',trans('backend_messages.disbursed_error'));
-                    return redirect()->route('backend_get_disbursed_invoice')->withErrors('message',trans('backend_messages.disbursed_error'));
+                    Session::flash('message', 'Error : '.$result['message']);
+                    return redirect()->route('backend_get_disbursed_invoice');
                 }
             }
                     
