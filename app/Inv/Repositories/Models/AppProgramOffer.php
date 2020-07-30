@@ -571,13 +571,23 @@ class AppProgramOffer extends BaseModel {
         if(empty($program_id)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
+        $appStatusList=[
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            //config('common.mst_status_id.APP_HOLD'),
+            //config('common.mst_status_id.APP_DATA_PENDING')
+        ];
         $whereCond = [];
-        $whereCond[] = ['is_active', '=', 1];
-        $whereCond[] = ['status', '=', 1];
+        $whereCond[] = ['app_prgm_offer.is_active', '=', 1];
+        $whereCond[] = ['app_prgm_offer.status', '=', 1];
         if (is_array($program_id)) {
-            $query = self::whereIn('prgm_id', $program_id);
+            $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+                    ->whereNotIn('app.curr_status_id', $appStatusList)
+                    ->whereIn('app_prgm_offer.prgm_id', $program_id);
         } else {
-            $query = self::where('prgm_id', $program_id);
+            $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+                    ->whereNotIn('app.curr_status_id', $appStatusList)
+                    ->where('app_prgm_offer.prgm_id', $program_id);
         }
         $query->where($whereCond);
         return $query->sum('prgm_limit_amt');
