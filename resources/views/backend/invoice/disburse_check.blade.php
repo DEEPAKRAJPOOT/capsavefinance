@@ -26,7 +26,7 @@ foreach ($apps as $app) {
 
 		$tMargin = (($invoice['invoice_approve_amount']*$margin)/100);
 		$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
-		if($invoice['program_offer']['payment_frequency'] == 1) {
+		if($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
 			$interest = $fundedAmount * $tenor * (($interestRate/100) / 360) ;                
         }
             if ($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {		
@@ -211,7 +211,7 @@ foreach ($apps as $app) {
                                                                                     
 											$tMargin = (($invoice['invoice_approve_amount']*$margin)/100);
 											$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
-											if ($invoice['program_offer']['payment_frequency'] == 1) {
+											if ($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
     											$interest = $fundedAmount * $tenor * (($interestRate/100) / 360) ;                
                                                                                         }
                                                                                         if ($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
