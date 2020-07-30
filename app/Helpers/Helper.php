@@ -1031,9 +1031,9 @@ class Helper extends PaypalHelper
                 config('common.mst_status_id.APP_REJECTED'),
                 config('common.mst_status_id.APP_CANCEL'),
             ];
-            if ($appData && in_array($appData->curr_status_id, $appStatusList)) {
-                return 0;
-            }            
+            //if ($appData && in_array($appData->curr_status_id, $appStatusList)) {
+            //    return 0;
+            //}            
             $roleData = self::getUserRole();
             if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;            
             
