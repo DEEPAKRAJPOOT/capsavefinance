@@ -319,7 +319,9 @@
                            <textarea class="form-control" id="promoter_cmnt" name="promoter_cmnt" rows="3" spellcheck="false">{{isset($arrCamData->promoter_cmnt) ? $arrCamData->promoter_cmnt : ''}}</textarea>
                         <!-- </div> -->
                      </div>
+                     @if(request()->get('view_only'))
                      <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
+                     @endif
                 </form>
                  
                </div>

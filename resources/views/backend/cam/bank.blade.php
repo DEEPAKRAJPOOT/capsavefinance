@@ -336,7 +336,9 @@
                      </div>
                  </div>
                  <br/>
+                 @if (request()->get('view_only'))
                  <button type="submit" class="btn btn-success btn-sm float-right mt-2 mb-3"> Save</button>
+                 @endif
               </form>
             </div>
          </div>

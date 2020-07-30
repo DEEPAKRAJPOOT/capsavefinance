@@ -1025,8 +1025,17 @@ class Helper extends PaypalHelper
             if (is_null($to_id)) {
                 $to_id = \Auth::user()->user_id;
             }
+            
+            $appData = $appRepo->getAppData($app_id);
+            $appStatusList = [
+                config('common.mst_status_id.APP_REJECTED'),
+                config('common.mst_status_id.APP_CANCEL'),
+            ];
+            if ($appData && in_array($appData->curr_status_id, $appStatusList)) {
+                return 0;
+            }            
             $roleData = self::getUserRole();
-            if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;
+            if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;            
             
             if (isset($roleData[0]) && $roleData[0]->id == 12) {
                 $where=[];
@@ -1944,6 +1953,13 @@ class Helper extends PaypalHelper
                 'curr_status_updated_at' => $curDate
             ];
 
+            $arrActivity = [];
+            $arrActivity['activity_code'] = 'application_renewal';
+            $arrActivity['activity_desc'] = 'Application ' . $appId . ' status is modified.';
+            $arrActivity['user_id'] = $userId;
+            $arrActivity['app_id'] = $appId;
+            \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));
+
             return $appRepo->updateAppDetails($appId, $arrUpdateApp);
         }
 
@@ -1954,8 +1970,9 @@ class Helper extends PaypalHelper
         $appStatusList = [
             config('common.mst_status_id.APP_REJECTED'),
             config('common.mst_status_id.APP_CANCEL'),
-            config('common.mst_status_id.OFFER_LIMIT_APPROVED'),
-            //config('common.mst_status_id.OFFER_LIMIT_REJECTED'),
+            //config('common.mst_status_id.OFFER_LIMIT_APPROVED'),
+            //config('common.mst_status_id.OFFER_LIMIT_REJECTED'),            
+            //config('common.mst_status_id.OFFER_GENERATED'),
             config('common.mst_status_id.OFFER_ACCEPTED'),
             //config('common.mst_status_id.OFFER_REJECTED'),
             config('common.mst_status_id.SANCTION_LETTER_GENERATED'),

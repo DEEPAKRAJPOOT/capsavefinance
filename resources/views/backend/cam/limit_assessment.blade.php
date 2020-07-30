@@ -70,7 +70,9 @@
                             </div>
                             <div class="col-md-1">
                                 <div class="form-group">
+				    @if (request()->get('view_only'))
                                     <button class="btn btn-success btn-sm mt-44" type="submit" name="program_submit">Submit</button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
