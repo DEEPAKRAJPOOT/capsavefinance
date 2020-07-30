@@ -54,7 +54,7 @@
                 <label for="txtEmail">Email
                     <span class="mandatory">*</span>
                 </label>
-                <input type="email" name="email" id="email"  value="{{ isset($coLenderData->comp_email) ? $coLenderData->comp_email  : old('email') }}" class="form-control email" tabindex="3" placeholder="Email" maxlength="50" {{ isset($coLenderData->co_lender_id) ? "readonly"  : null }}>
+                <input type="email" name="email" id="email"  value="{{ isset($coLenderData->comp_email) ? $coLenderData->comp_email  : old('email') }}" class="form-control email" tabindex="3" placeholder="Email" maxlength="50" {{ isset($coLenderData->co_lender_id) ? "disabled"  : null }}>
                 {!! $errors->first('email', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -177,7 +177,7 @@ $error = session()->get('error', false);
         p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($messages, 'success') !!}');
         p.jQuery('#addcolenders').modal('hide');
         p.refresh();
-        // p.reloadDataTable();
+        p.reloadDataTable();
     } catch (e) {
         if (typeof console !== 'undefined') {
         console.log(e);

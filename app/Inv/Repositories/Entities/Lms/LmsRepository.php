@@ -1381,8 +1381,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	public function getColenderApplications() 
        {
-            $getAppId  = ColenderShare::where(['is_active' => 1, 'co_lender_id' => \Auth::user()->co_lender_id])->pluck('app_id');
-            $result = LmsUser::whereIn('app_id',$getAppId)->with('user')->orderBy('lms_user_id','DESC');
+            $roleData = User::getBackendUser(\Auth::user()->user_id);
+
+			 if ($roleData[0]->is_superadmin != 1) {
+				$getAppId  = ColenderShare::where(['is_active' => 1, 'co_lender_id' => \Auth::user()->co_lender_id])->pluck('app_id');
+				$result = LmsUser::whereIn('app_id',$getAppId)->with('user')->orderBy('lms_user_id','DESC');
+			} else {
+				$getAppId  = ColenderShare::where(['is_active' => 1])->pluck('app_id');
+				$result = LmsUser::whereIn('app_id',$getAppId)->with(['user', 'getBusinessId'])->orderBy('lms_user_id','DESC');
+			}
+			
             return $result ?: false;
 	}
         

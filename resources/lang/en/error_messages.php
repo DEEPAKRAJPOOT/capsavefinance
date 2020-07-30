@@ -58,7 +58,9 @@ return [
     'req_right_description' =>'Please enter description.',
     
     'app.incomplete' =>'Please upload all documents carefully.',
-    'minlen_password' => 'Passwords must be at least 6 characters.',
+    'minlen_password' => 'Passwords must be at least 8 characters.',
+    'regex' => 'Passwords must include 1 uppercase, 1 lowercase, 1 number and 1 special character.',
+    'same_password' => 'Password and confirm password should be the same.',
     
     //Admin Error Messages
     'admin' => [
@@ -115,5 +117,6 @@ return [
     'apport_invalid_repayment_id' => 'Invalid Re-Payment',
     'apport_invalid_unapplied_amt' => 'Total requested amout to settle is greater than the repayment amt',
     'active_app_check' => 'You cannot create a new application until the filled application got sanctioned or rejected by the lender.',
-    'program_anchor_limit' => 'You can\'t enter limit amount less than utilized amount.'
+    'program_anchor_limit' => 'You can\'t enter limit amount less than utilized amount.',
+    'documentNotFound' => 'Document not found!',
     ];

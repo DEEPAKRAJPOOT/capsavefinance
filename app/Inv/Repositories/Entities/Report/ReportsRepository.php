@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Models\Lms\UserInvoiceTrans;
 use App\Inv\Repositories\Models\User as UserModel;
+use App\Inv\Repositories\Models\Payment;
 
 
 /**
@@ -49,6 +50,10 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 	public function getCustomerDetail($userId) {
         $result = UserModel::getCustomerDetail((int) $userId);
         return $result ?: false;
-    }
+        }
 
+        
+        public function tds($whereCondition=[], $whereRawCondition = NULL) {
+		return Payment::getAllTdsTransaction($whereCondition, $whereRawCondition);
+	}
 }

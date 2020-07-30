@@ -63,6 +63,7 @@ class CoLenderControllers extends Controller {
             $user_info = false;
             $co_lender_id = $request['co_lender_id'] ??  null;
             $user_id = $request['user_id'] ?? null;
+
             if (isset($request['email'])) {
                 $user_info = $this->userRepo->getUserByEmail($request['email']);
             }

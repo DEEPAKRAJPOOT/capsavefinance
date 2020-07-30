@@ -171,7 +171,7 @@ trait ApplicationTrait
         if(!empty($offerData)){
             $sanctionData = $this->appRepo->getOfferSanction($offerData->prgm_offer_id);
             $businessData = $this->appRepo->getApplicationById($bizId); 
-            $businessAddress = $businessData->address->where('address_type','2')->first();
+            $businessAddress = $businessData ? $businessData->address->where('address_type','2')->first() : null;
             $cam =  Cam::select('contact_person')->where('biz_id',$bizId)->where('app_id',$appId)->first();
             
             $programLimitData = $this->appRepo->getLimit($offerData->app_prgm_limit_id);
@@ -207,7 +207,7 @@ trait ApplicationTrait
             $data['covenants'] = ($sanctionData)?$sanctionData->covenants:'';
             $data['sanctionData'] = ($sanctionData)?$sanctionData:'';
             $data['product_id'] = $programLimitData->product_id;
-            $data['biz_entity_name'] = $businessData->biz_entity_name;
+            $data['biz_entity_name'] = $businessData ? $businessData->biz_entity_name : null;
             $data['security_deposit_of'] = $security_deposit_of;
             $data['offerId'] = $offerData->prgm_offer_id;
             $data['equipmentData'] = $equipmentData;

@@ -26,7 +26,7 @@ class CoLenderRequest extends FormRequest {
         return [
             'employee' => 'required',
             'comp_name' => 'required',
-            'email' => 'required|email',
+            // 'email' => 'required|email',
             'phone' => 'required|numeric|digits:10',
             'pan_no' => 'required|regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/',
             'gst' => 'required|regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/',
@@ -43,7 +43,7 @@ class CoLenderRequest extends FormRequest {
         return $messages = [
             'employee.required' => trans('master_messages.required'),
             'comp_name.required' => trans('master_messages.required'),
-            'email.required' => trans('master_messages.required'),
+            // 'email.required' => trans('master_messages.required'),
             'phone.required' => trans('master_messages.required'),
             'gst.required' => trans('master_messages.required'),
             'gst.regex' => trans('master_messages.gstno'),

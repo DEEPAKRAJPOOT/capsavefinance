@@ -305,4 +305,70 @@ class ReportController extends Controller
         $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.downloadrealisation');
         return $pdf->download('InvoiceRealisation.pdf');    
    }
+   
+   /**
+    * TDS report listing
+    * 
+    * @param Request $request
+    * @return type
+    */
+   public function tdsReport(Request $request) {
+        try {
+            return view('reports.tds');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    /**
+     * Download TDS report pdf/xlxs
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function downloadTdsReport(Request $request) {
+       $whereRaw = '';
+       if(!empty($request->get('user_id'))){
+            $user_id = $request->get('user_id');
+            $cond[] = " rta_payments.user_id='$user_id' ";
+       }
+       if (!empty($cond)) {
+           $whereRaw = implode(' AND ', $cond);
+       }
+       $tdsList = $this->reportsRepo->tds([], $whereRaw);
+       $condArr = [
+            'user_id' => $request->get('user_id'),
+        ];
+       $tdsRecords = $tdsList->get();
+       $tdsArr = [];
+       foreach ($tdsRecords as $tds) {
+         $user_id = $tds->user_id != 0 ? \Helpers::formatIdWithPrefix($tds->user_id, 'LEADID') : '';   
+         $customer_name = $tds->biz_entity_name ? $tds->biz_entity_name : '';  
+         $trans_name =  $tds->trans_name ? $tds->trans_name : '';
+         $date_of_payment =  $tds->date_of_payment ? $tds->date_of_payment : '';
+         $trans_date = $tds->trans_date ? date('d-m-Y', strtotime($tds->trans_date)) : '';
+         $amount =  $tds->amount ? $tds->amount : '';
+         $trans_by = $tds->f_name.' '.$tds->l_name;
+         $tds_certificate_no = $tds->tds_certificate_no;
+         $file_id = $tds->file_id == 0 ? 'N' : '';
+         $tdsArr[] = [
+            'user_id' => $user_id,
+            'customer_name' => $customer_name,
+            'transaction_type' => $trans_name,
+            'date_of_payment' => $date_of_payment,
+            'transaction_date' => $trans_date,
+            'Transaction_amount' => $amount,
+            'transaction_by' => $trans_by,
+            'tds_certificate_no' => $tds_certificate_no,
+            'file_id' => $file_id,
+         ];
+       }
+       if (strtolower($request->type) == 'excel') {
+           $toExportData['TDS'] = $tdsArr;
+           return $this->fileHelper->array_to_excel($toExportData, 'tdsReport.xlsx');
+       }
+       $pdfArr = ['pdfArr' => $tdsArr, 'filter' => $condArr];
+       $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.tdsReport');
+       return $pdf->download('tdsReport.pdf');        
+    }
 }

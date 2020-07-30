@@ -2,7 +2,9 @@
 
 namespace App\Inv\Repositories\Providers;
 
+use Validator;
 use Illuminate\Support\ServiceProvider;
+use App\Inv\Repositories\Libraries\Validations\Files\Mimes;
 
 class InvServiceProvider extends ServiceProvider
 {
@@ -14,7 +16,10 @@ class InvServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        //Check file Mime type
+        Validator::extend('checkmime', function ($attribute, $value, $parameters, $validator) {
+            return (new Mimes($attribute, $value, $parameters, $validator))->isValid();
+        });
     }
 
     public function register()

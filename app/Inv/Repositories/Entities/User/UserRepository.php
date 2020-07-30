@@ -1723,6 +1723,29 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return $result ?: false;
     }
+    
+    /**
+     * 
+     * @param type $emailId
+     * @param type $attributes
+     * @return type
+     */
+    public function updateAnchorUserByEmailId($emailId, $attributes = []) {
+        $result = AnchorUser::updateAnchorUserByEmailId($emailId, $attributes);
+        return $result ?: false;
+    }
 
+    /**
+     * Update User status in agency user list
+     * 
+     * @param type $attributes
+     * @param type $conditions 
+     * @return mixed
+     */
+    public function updateUserStatus($attributes, $conditions)
+    {
+        return User::updateUserStatus($attributes, $conditions);
+    }
+    
 }
 

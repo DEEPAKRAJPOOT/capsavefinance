@@ -52,7 +52,7 @@ foreach ($apps as $app) {
 		</div>
 		<div class="col-4">
 			<div class="form-group">
-				<label for="nonFactoredAmount"># Amount Disburse</label>
+				<label for="nonFactoredAmount"># Disburse/Principal Amount</label>
 				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ number_format((float)$finalDisburseAmt, 2, '.', '') }}">
 			</div>
 		</div>
@@ -107,10 +107,10 @@ foreach ($apps as $app) {
 									<th width="20%">Bank Detail</th>
 									<th width="15%">Total Invoice</th>
 									<th width="15%">Total Invoice Amt.</th>
-									<th width="15%">Total Disburse Amt.</th>
+									<th width="15%">Total Disburse/Principal Amt</th>
 									<th width="15%">Total Margin</th>
 									<th width="15%">Total Interest</th>
-									<th width="30%">Total Actual Disburse Amt.</th>
+									<th width="30%">Total Actual Disburse/Principal Amt.</th>
 								</tr>
 							</thead>
 							<tbody>
