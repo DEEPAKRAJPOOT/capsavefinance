@@ -28,5 +28,6 @@ return [
     'equipment_add_success' => 'Equipment updated successfully',
     'base_rate_add_success' => 'Base Rate added successfully',
     'base_rate_update_success' => 'Base Rate updated successfully',
+    'unique_acc_no' => 'This bank account is already exist.'
 ];
 
