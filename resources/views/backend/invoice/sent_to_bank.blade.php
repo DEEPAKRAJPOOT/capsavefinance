@@ -84,7 +84,7 @@
                                                                 <th width="5%">Cust ID</th>
                                                                 <th width="13%">Ben Name</th>
                                                                 <th width="20%">Bank Detail</th>
-                                                                <th width="15%">Total Disburse Amt.</th>
+                                                                <th width="15%">Total Disburse/ Principal Amt.</th>
                                                                 <th width="8%">Total Invoice </th>
                                                                <th> Updated At</th> 
                                                                 <th width="4%">Action</th>

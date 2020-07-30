@@ -417,6 +417,7 @@ class ManualApportionmentHelper{
             $invDisbDetail = InvoiceDisbursed::find($invDisbId);
             $offerDetails = $invDisbDetail->invoice->program_offer;
             $userId = $invDisbDetail->disbursal->user_id;
+            $funded_date = $invDisbDetail->disbursal->funded_date;
             $intRate = $invDisbDetail->interest_rate;
             $odIntRate = $invDisbDetail->overdue_interest_rate;
             $gPeriod = $invDisbDetail->grace_period;
@@ -451,7 +452,11 @@ class ManualApportionmentHelper{
 
             while(strtotime($curdate) > strtotime($loopStratDate)){
                 if($bankRatesArr){
-                    $intRate = $this->getIntRate($oldIntRate, $bankRatesArr, strtotime($loopStratDate));//$str_to_time_date is the time at that point of time you want to get interest rate
+                    if(isset($payFreq) && $payFreq == 1){
+                        $intRate = $this->getIntRate($oldIntRate, $bankRatesArr, strtotime($funded_date));//$str_to_time_date is the time at that point of time you want to get interest rate
+                    }else{
+                        $intRate = $this->getIntRate($oldIntRate, $bankRatesArr, strtotime($loopStratDate));//$str_to_time_date is the time at that point of time you want to get interest rate
+                    }
                     $currentIntRate = $intRate;
                 }else{
                     $currentIntRate = $intRate;

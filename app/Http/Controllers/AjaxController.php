@@ -3345,7 +3345,7 @@ if ($err) {
           
              return response()->json(['status' => 1,
                  'chrg_applicable_id' => $getamount->chrg_applicable_id,
-                 'amount' => number_format($getamount->chrg_calculation_amt),
+                 'amount' => $getamount->chrg_calculation_amt,
                  'id' => $getamount->id,
                  'limit' => $limitAmount,
                  'type' => $getamount->chrg_calculation_type,
@@ -4699,5 +4699,20 @@ if ($err) {
         $tds['pdfUrl'] = route('tds_download_reports', $condArr);
         return new JsonResponse($tds);
     } 
+
+        
+    /**
+     * change Agency User status
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function changeUsersAgencyStatus(Request $request)
+    {
+        $user_id = $request->get('user_id');
+        $is_active = $request->get('is_active');
+        $result = $this->userRepo->updateUserStatus(['is_active' => $is_active], ['user_id' => $user_id]);
+        return \Response::json(['success' => $result]);
+    }
 
 }
