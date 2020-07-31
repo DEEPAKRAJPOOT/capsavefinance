@@ -906,14 +906,14 @@ class Transactions extends BaseModel {
         $fromDate = null;
         if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
             $fromDate = self::where('invoice_disbursed_id',$this->invoice_disbursed_id)
-            ->whereDate('trans_date','<',$this->trans_date)
+            ->whereDate('trans_date','<=',$this->trans_date)
+            ->where('trans_id','<',$this->trans_id)
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
             ->whereNull('link_trans_id')
             ->whereNull('parent_trans_id')
             ->where('entry_type','0')
             ->max('trans_date');
             
-
             if(!$fromDate){
                 $fromDate = $this->disburse->int_accrual_start_dt;
             }else{
@@ -932,11 +932,24 @@ class Transactions extends BaseModel {
     }
 
     public function getTempInterestAttribute(){
-        $amount = InterestAccrualTemp::whereDate('interest_date','>=',self::getFromIntDateAttribute())
-                        ->whereDate('interest_date','<=',self::getToIntDateAttribute())
-                        ->where('invoice_disbursed_id',$this->invoice_disbursed_id)
-                        ->sum('accrued_interest');
-        return round($amount,2);
+        $amount = null;
+        $from = self::getFromIntDateAttribute();
+        $to = self::getToIntDateAttribute();
+        $outstanding = self::getOutstandingAttribute();
+        $invoice_disbursed_id = $this->invoice_disbursed_id;
+        if($from && $to && $invoice_disbursed_id && in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+            $amount = InterestAccrualTemp::whereDate('interest_date','>=',$from)
+            ->whereDate('interest_date','<=',$to)
+            ->where('invoice_disbursed_id',$invoice_disbursed_id)
+            ->sum('accrued_interest');   
+            if($amount <= $outstanding){
+                $amount = round($amount,2);
+            }else{
+                $amount = round($outstanding,2);
+            }
+
+        }
+        return $amount;
     }
 
 }
