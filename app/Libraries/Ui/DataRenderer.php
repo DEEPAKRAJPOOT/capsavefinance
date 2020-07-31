@@ -5833,6 +5833,10 @@ class DataRenderer implements DataProviderInterface
                 function ($data) {
                     return date('d/m/Y', strtotime($data->invoice_date));
                 }
+            )  
+            ->editColumn('invoice_type',  function ($data) {
+                    return ($data->invoice_type == 'C' ? 'Charge' : 'Interest');
+                }
             )   
             ->editColumn(
                 'pan_no',
@@ -5849,7 +5853,8 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'reference_no',
                 function ($data) {
-                    return $data->reference_no;
+                    // return $data->reference_no;
+                    return \Helpers::formatIdWithPrefix($data->user_id, 'CUSTID');
                 }
             )      
             ->editColumn(
