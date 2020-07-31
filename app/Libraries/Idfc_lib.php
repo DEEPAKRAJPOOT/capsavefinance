@@ -53,7 +53,6 @@ class Idfc_lib{
      	if ($getApiResponse) {
      		return [$txn_id, $payload, $http_header, $response['result']];
      	}
-
 		if (!empty($response['error_no'])) {
 			$resp['code'] 	 = "CurlError : " . $response['error_no'];
 			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
@@ -186,7 +185,6 @@ class Idfc_lib{
     	}
     	$header = $response['doMultiPaymentCorpRes']['Header'];
     	$body = $response['doMultiPaymentCorpRes']['Body'] ?? [];
-
 	    if (strtolower($header['Status']) != 'success' ) {
 	    	$result['code'] = $header['Error_Cde'] ?? 'CAP001'; //change to Error_Code if response changes
 	    	$result['message'] = $header['Error_Desc'] ?? 'Some error occured';

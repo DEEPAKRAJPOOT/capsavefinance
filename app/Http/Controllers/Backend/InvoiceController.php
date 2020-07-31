@@ -691,11 +691,15 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params);
-                if ($result['status'] == 'fail') { 
-                    $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
-                    $message = $result['message'] ?? $result['message'];
-                    Session::flash('message', 'Error : '. 'HTTP Code '. $http_code  .  $message);
-                    return redirect()->route('backend_get_disbursed_invoice');
+                if (isset($result['code'])) {
+                    if (isset($result['http_code']) && $result['http_code'] == 200) {
+                        
+                    } else{
+                        $http_code = $result['code'] ? $result['code']  : $result['http_code']. ', ';
+                        $message = $result['message'] ?? $result['message'];
+                        Session::flash('message', 'Error : '. $http_code  .  $message);
+                        return redirect()->route('backend_get_disbursed_invoice');
+                    }
                 }
                 $fileDirPath = getPathByTxnId($transId);
                 $time = date('y-m-d H:i:s');
@@ -721,6 +725,11 @@ class InvoiceController extends Controller {
                 }
                 if ($result['status'] == 'success') {
                     $this->disburseTableInsert($exportData, $supplierIds, $allinvoices, $disburseType, $disburseDate, $disbursalApiLogId);
+                } else { 
+                    $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
+                    $message = $result['message'] ?? $result['message'];
+                    Session::flash('message', 'Error : '. 'HTTP Code '. $http_code  .  $message);
+                    return redirect()->route('backend_get_disbursed_invoice');
                 }
             }
                     
@@ -1472,30 +1481,40 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $params);
-                if ($result['status'] == 'success') {
-                    $fileDirPath = getPathByTxnId($transId);
-                    $time = date('y-m-d H:i:s');
-                    
-                    $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
-                    $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
-                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
-                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
-                        .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
-                    
-                    $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
-                    if(is_array($createOrUpdatefile)) {
-                        $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
+                if (isset($result['code'])) { 
+                    if (isset($result['http_code']) && $result['http_code'] == 200) {
+                        
                     } else {
-                        $userFileSaved = $createOrUpdatefile;
+                        $http_code = $result['code'] ? $result['code']  : $result['http_code']. ', ';
+                        $message = $result['message'] ?? $result['message'];
+                        Session::flash('message', 'Error : '. $http_code  .  $message);
+                        return redirect()->back();
                     }
-                    
-                    $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
-                    $otherData['enq_txn_id'] = $transId;
-                    $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result['result'], $otherData);
-                    $createDisbusalApiLog = $this->lmsRepo->saveUpdateDisbursalApiLog($disbusalApiLogData);
-                    if ($createDisbusalApiLog) {
-                        $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
-                    }
+                }
+                $fileDirPath = getPathByTxnId($transId);
+                $time = date('y-m-d H:i:s');
+                
+                $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
+                $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
+                    .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
+                    .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
+                    .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
+                
+                $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
+                if(is_array($createOrUpdatefile)) {
+                    $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
+                } else {
+                    $userFileSaved = $createOrUpdatefile;
+                }
+                
+                $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
+                $otherData['enq_txn_id'] = $transId;
+                $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result, $otherData);
+                $createDisbusalApiLog = $this->lmsRepo->saveUpdateDisbursalApiLog($disbusalApiLogData);
+                if ($createDisbusalApiLog) {
+                    $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
+                }
+                if ($result['status'] == 'success') {
 
                     $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
                     $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
@@ -1533,8 +1552,11 @@ class InvoiceController extends Controller {
                     }
                     $updateTransaction = $this->updateTransactionInvoiceDisbursed($tranNewIds, $fundedDate);
                 } else {
-                    Session::flash('message',trans('backend_messages.disbursed_error'));
-                    return redirect()->back()->withErrors('message',trans('backend_messages.disbursed_error'));
+                    $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
+                    $message = $result['message'] ?? $result['message'];
+                    Session::flash('message', 'Error : '. 'HTTP Code '. $http_code  .  $message);
+                    return redirect()->route('backend_get_disbursed_invoice');
+                   
                 }
                  
             }

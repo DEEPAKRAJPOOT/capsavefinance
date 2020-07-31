@@ -1022,7 +1022,7 @@ trait LmsTrait
         $disbursalData['disbursal_batch_id'] = $data['disbursal_batch_id'] ?? null;
 
         $disbursalData['bank_type'] = $data['bank_type'] ?? null;
-        $disbursalData['txn_id'] = $response['result']['http_header']['Tran_ID'] ?? null;
+        $disbursalData['txn_id'] = $response['result']['header']['Tran_ID'] ?? null;
         $disbursalData['enq_txn_id'] = $data['enq_txn_id'] ?? null;
         $disbursalData['url'] = $response['result']['url'] ?? null;
         
