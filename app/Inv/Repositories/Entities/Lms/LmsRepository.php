@@ -62,7 +62,6 @@ use App\Inv\Repositories\Models\Lms\TransactionComments;
 use App\Inv\Repositories\Models\Lms\TransactionsRunning;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
-use App\Inv\Repositories\Models\Lms\TransactionsRunningTemp;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 
@@ -162,20 +161,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function saveTransactionRunning($transactions,$whereCondition=[])
 	{
 		return TransactionsRunning::saveTransactionRunning($transactions,$whereCondition);
-	}	
-
-	
-	/**
-	 * Save Running Transactions Temp
-	 * 
-	 * @param array $transactions
-	 * @return mixed
-	 * @throws InvalidDataTypeExceptions
-	 */
-	public static function saveTransactionRunningTemp($transactions,$whereCondition=[])
-	{
-		return TransactionsRunningTemp::saveTransactionRunningTemp($transactions,$whereCondition);
-	}	
+	}
 
 	/**
 	 * Save TransactionsComments
