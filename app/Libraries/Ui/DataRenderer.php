@@ -11,18 +11,19 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
 use Illuminate\Support\Facades\Crypt;
+use App\Inv\Repositories\Models\Anchor;
 use Illuminate\Support\Facades\Storage;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
+use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
+use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
-use App\Inv\Repositories\Models\AnchorUser;
-use App\Inv\Repositories\Models\Anchor;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -6139,7 +6140,7 @@ class DataRenderer implements DataProviderInterface
     public function getUnsettledTrans(Request $request, $trans,$payment)
     {
         return DataTables::of($trans)
-            ->rawColumns(['select', 'pay'])
+            ->rawColumns(['select', 'pay','outstanding_amt'])
             ->addColumn('disb_date', function($trans){
                 return Carbon::parse($trans->parenttransdate)->format('d-m-Y');
             })
@@ -6154,8 +6155,15 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('total_repay_amt', function($trans){
                 return "₹ ".number_format($trans->amount,2);
             })
-            ->addColumn('outstanding_amt', function($trans){
-                return "₹ ".number_format($trans->outstanding,2);
+            ->addColumn('outstanding_amt', function($trans)use($payment){
+                $outResult = "₹ ".number_format($trans->outstanding,2);
+                if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                    $accuredInterest = $trans->tempInterest;
+                    if(!is_null($accuredInterest)){
+                        $outResult .= " <span style=\"color:red\">(".number_format($accuredInterest,2).")</span>";
+                    }
+                }
+                return $outResult;
             })
             ->addColumn('payment_date', function($trans)use($payment){
                 if($payment){

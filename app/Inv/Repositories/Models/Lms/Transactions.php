@@ -6,6 +6,7 @@ use Helpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
@@ -858,7 +859,7 @@ class Transactions extends BaseModel {
  
     
     public static function getUserLimitOutstanding($attr)
-      {
+    {
         $userId = $attr->user_id;
         $disbursedList = self::whereNull('parent_trans_id')
         ->whereNull('payment_id')
@@ -892,14 +893,50 @@ class Transactions extends BaseModel {
             $outstandingAmt += $tran->outstanding;
         }
         if($attr->chrg_applicable_id==2)
-	{    
+        {    
             return round($outstandingAmt,2);
         }
         if($attr->chrg_applicable_id==3)
-	{
+        {
            return round($outstandingPrincipalAmt,2); 
         }
     }
     
+    public function getFromIntDateAttribute(){
+        $fromDate = null;
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+            $fromDate = self::where('invoice_disbursed_id',$this->invoice_disbursed_id)
+            ->whereDate('trans_date','<',$this->trans_date)
+            ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+            ->whereNull('link_trans_id')
+            ->whereNull('parent_trans_id')
+            ->where('entry_type','0')
+            ->max('trans_date');
+            
+
+            if(!$fromDate){
+                $fromDate = $this->disburse->int_accrual_start_dt;
+            }else{
+                $fromDate = date('Y-m-d', strtotime($fromDate . "+ 1 days"));
+            }
+        }
+        return $fromDate;
+    }
+
+    public function getToIntDateAttribute(){
+        $toDate = null;
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+            $toDate = $this->trans_date;
+        }
+        return $toDate;
+    }
+
+    public function getTempInterestAttribute(){
+        $amount = InterestAccrualTemp::whereDate('interest_date','>=',self::getFromIntDateAttribute())
+                        ->whereDate('interest_date','<=',self::getToIntDateAttribute())
+                        ->where('invoice_disbursed_id',$this->invoice_disbursed_id)
+                        ->sum('accrued_interest');
+        return round($amount,2);
+    }
 
 }

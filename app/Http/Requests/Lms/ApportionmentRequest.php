@@ -60,11 +60,15 @@ class ApportionmentRequest extends FormRequest
                 $selectedPayment = $formData['payment'][$key] ?? 0;
                 $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);
                 $outstandingAmount = $transDetail->getOutstandingAttribute();
+                $realOurstandingAmount = $transDetail->getTempInterestAttribute();
                 if (empty($selectedPayment)) {
                     $validator->errors()->add("payment.{$key}", 'Pay is required against selected transaction');
                 }
                 if ($outstandingAmount < $selectedPayment) {
                     $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the outsanding amount');
+                }
+                if ($realOurstandingAmount < $selectedPayment) {
+                    $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the Suggested outsanding amount'); 
                 }
                 $totalselectedAmount += $selectedPayment;
             }

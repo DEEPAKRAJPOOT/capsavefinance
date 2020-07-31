@@ -46,6 +46,7 @@ class TransactionsRunningTemp extends BaseModel {
      * @var array
      */
     protected $fillable = [
+        'payment_id',
         'invoice_disbursed_id',
         'user_id',
         'trans_date',
@@ -59,10 +60,6 @@ class TransactionsRunningTemp extends BaseModel {
         'updated_at',
         'updated_by'
     ];
-
-    public function transaction(){
-        return $this->hasMany(Transactions::class,'trans_running_id','trans_running_id');
-    }
 
     public function invoiceDisbursed(){
         return $this->belongsTo('App\Inv\Repositories\Models\Lms\InvoiceDisbursed','invoice_disbursed_id','invoice_disbursed_id');
@@ -140,7 +137,7 @@ class TransactionsRunningTemp extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveTransactionRunning($transactions,$whereCondition=[])
+    public static function saveTransactionRunningTemp($transactions,$whereCondition=[])
     {
         if (!is_array($transactions)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));

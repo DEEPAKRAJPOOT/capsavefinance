@@ -19,6 +19,7 @@ use App\Helpers\ManualApportionmentHelper;
 use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Http\Requests\Lms\AdjustmentRequest;
+use App\Helpers\ManualApportionmentHelperTemp;
 use App\Http\Requests\Lms\ApportionmentRequest;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
@@ -90,6 +91,8 @@ class ApportionmentController extends Controller
                 $paymentId = $request->payment_id;
                 $payment = $this->getPaymentDetails($paymentId,$userId); 
                 $payment_amt = $payment['payment_amt']; 
+                $Obj = new ManualApportionmentHelperTemp($this->lmsRepo);
+                $Obj->setTempInterest($paymentId);
             }
             if(!$payment['isApportPayValid']){
                 Session::flash('error', trans('Please select Valid Payment!'));
