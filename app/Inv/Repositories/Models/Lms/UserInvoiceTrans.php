@@ -101,7 +101,7 @@ class UserInvoiceTrans extends BaseModel {
         if (!is_array($whereCondition)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
-        $query = self::select('name','inv_comp_data','biz_gst_no','biz_entity_name','gst_addr','sac_code','invoice_no','invoice_date','base_amount','sgst_rate','sgst_amount','cgst_rate','cgst_amount','igst_rate','igst_amount','user_id')
+        $query = self::select('name','inv_comp_data','biz_gst_no','biz_entity_name','gst_addr','sac_code','invoice_type','invoice_no','invoice_date','base_amount','sgst_rate','sgst_amount','cgst_rate','cgst_amount','igst_rate','igst_amount','user_id')
         ->join('user_invoice', 'user_invoice.user_invoice_id', 'user_invoice_trans.user_invoice_id')
         ->join('mst_state', 'mst_state.id','user_invoice.comp_gst_state_id');
                 
