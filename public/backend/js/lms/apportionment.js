@@ -98,11 +98,11 @@ class Apportionment {
                     parentRef.setTransactionAmt();
                 }
                 var rows = this.fnGetData();
-                if ( rows.length === 0 ) {
-                    $('.action-btn').hide();
-                }else{
-                    $('.action-btn').show();
-                }
+                // if ( rows.length === 0 ) {
+                //     $('.action-btn').hide();
+                // }else{
+                //     $('.action-btn').show();
+                // }
             },
         });
     }
@@ -181,7 +181,7 @@ class Apportionment {
         var message = '';
         var paymentAmt = parseFloat(this.data.payment_amt);
         var totalSettledAmt = 0;
-        if(check.filter(':checked').length == 0){
+        if(check.length > 0 &&  check.filter(':checked').length == 0){
             message = "Please Select at least one ";
             status = false;
         }

@@ -53,9 +53,9 @@ class ApportionmentRequest extends FormRequest
                 $totalRePayAmount = $payment->amount;
             }
 
-            if (empty($formData['check']) || !is_array($formData['check'])) {
-              $validator->errors()->add("check.required", 'Atleast a payment is require to settle');
-            }
+            //if (empty($formData['check']) || !is_array($formData['check'])) {
+            //  $validator->errors()->add("check.required", 'Atleast a payment is require to settle');
+            //}
             foreach ($formData['check'] as $key => $value) {
                 $selectedPayment = $formData['payment'][$key] ?? 0;
                 $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);

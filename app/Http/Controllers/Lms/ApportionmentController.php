@@ -505,7 +505,8 @@ class ApportionmentController extends Controller
                 'transactionno'=> $payment->transactionno,
                 'payment_amt' => $payment->amount,
                 'is_settled' => $payment->is_settled,
-                'isApportPayValid' => $payment->isApportPayValid
+                'isApportPayValid' => $payment->isApportPayValid,
+                'user_id' => $payment->user_id,
             ];
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
@@ -720,7 +721,7 @@ class ApportionmentController extends Controller
                         'link_trans_id' => $trans->trans_id,
                         'parent_trans_id' => $trans->trans_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
-                        'user_id' => $trans->user_id,
+                        'user_id' => $userId,
                         'trans_date' => $paymentDetails['date_of_payment'],
                         'amount' => $payments[$trans->trans_id],
                         'entry_type' => 1,
@@ -759,7 +760,7 @@ class ApportionmentController extends Controller
                             'link_trans_id' => $refundParentTrans->trans_id,
                             'parent_trans_id' => $refundParentTrans->trans_id,
                             'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
-                            'user_id' => $refundParentTrans->user_id,
+                            'user_id' => $userId,
                             'trans_date' => $invDisb['date_of_payment'],
                             'amount' => $refundAmt,
                             'soa_flag' => 1,
@@ -776,7 +777,7 @@ class ApportionmentController extends Controller
                         'link_trans_id' => null,
                         'parent_trans_id' => null,
                         'invoice_disbursed_id' => null,
-                        'user_id' => $trans->user_id,
+                        'user_id' => $userId,
                         'trans_date' => $paymentDetails['date_of_payment'],
                         'amount' => $unAppliedAmt,
                         'entry_type' => 1,

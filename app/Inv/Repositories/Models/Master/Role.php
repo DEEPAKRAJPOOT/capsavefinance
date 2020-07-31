@@ -207,7 +207,9 @@ class Role extends BaseModel
      */
     public static function getAllRole()
     {
-        $arrRoles = Role::where('is_active', 1)->pluck('name','id');
+        $arrRoles = Role::whereIn('id', [4, 5, 6, 7, 8, 9, 10, 13, 14])
+                        ->where('is_active', 1)
+                        ->pluck('name','id');
         return ($arrRoles ? $arrRoles: []);
     }
     

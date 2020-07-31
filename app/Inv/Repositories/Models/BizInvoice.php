@@ -414,7 +414,7 @@ public static function saveBulkInvoice($arrInvoice)
 
     public static function getAllUserBatchInvoice($data)
     {
-        return self::with('app.acceptedOffer')->with('invoice_disbursed')
+        return self::with('app.acceptedOffer')->with('invoice_disbursed')->with('program')
             ->whereHas('invoice_disbursed.disbursal', function($query) use ($data) {
                     $query->where($data);
                 })
