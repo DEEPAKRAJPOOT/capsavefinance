@@ -25,6 +25,7 @@ try {
             },
            columns: [
                 {data: 'reference_no'},
+                {data: 'invoice_type'},
                 {data: 'biz_gst_no'},
                 {data: 'invoice_no'},
                 {data: 'invoice_date'},
