@@ -117,7 +117,7 @@
 
 									        $tInterest = $fundedAmount * $tenorDays * ($invoice['program_offer']['interest_rate'] / 360) ;                
 
-											if($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) {
+											if($invoice['program']['interest_borne_by'] == 2 && ($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) ) {
 												$interest = $tInterest;
 											}
 											$disburseAmount += round($fundedAmount - $interest, 2);

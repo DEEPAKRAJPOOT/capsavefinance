@@ -20,7 +20,7 @@
 				@if($userIvoices->count() != 0)
 					@foreach($userIvoices as $invoice)
 						@php 
-							$margin = (isset($invoice->app->acceptedOffer->margin))	? $invoice->app->acceptedOffer->margin : 0;
+							$margin = (isset($invoice->app->acceptedOffer->margin))	? $invoice->app->acceptedOffer->margin : 0;                                                        
 						        @endphp
 
 	                    <tr role="row" class="odd">
@@ -39,7 +39,7 @@
 								$tenor = round($datediff / (60 * 60 * 24));
 								$fundedAmount = $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$invoice->program_offer->margin)/100);
 				    			$tInterest = $fundedAmount * $tenor * (($invoice->program_offer->interest_rate/100) / 360) ;     
-				    			if($invoice->program_offer->payment_frequency == 1 || empty($invoice->program_offer->payment_frequency)) {
+				    			if( ($invoice->program->interest_borne_by == 2) && ($invoice->program_offer->payment_frequency == 1 || empty($invoice->program_offer->payment_frequency)) ) {
 						            $interest = $tInterest;
 						        }           
 								$disburseAmount = round($fundedAmount - $interest, 5);

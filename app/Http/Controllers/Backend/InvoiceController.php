@@ -359,7 +359,7 @@ class InvoiceController extends Controller {
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $Obj = new ManualApportionmentHelper($this->lmsRepo);
         
-        foreach ($invoiceDisbursed as $key => $value) {
+        foreach ($invoiceDisbursed as $key => $value) {            
             $tenor = $value['tenor_days'];
             $banchMarkDateFlag = $value['invoice']['program_offer']['benchmark_date'];
 
@@ -385,14 +385,19 @@ class InvoiceController extends Controller {
 
             $transactionData = $this->createTransactionData($userId, ['amount' => $value['disburse_amt'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
             $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
-
+            
+            $prgmWhere=[];
+            $prgmWhere['prgm_id'] = $value['invoice']['program_id'];
+            $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);      
             $intrstAmt = round($interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
             if ($intrstAmt > 0.00) {
                 $intrstDbtTrnsData = $this->createTransactionData($userId, ['amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'));
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                $intrstCdtTrnsData = $this->createTransactionData($userId, ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'), 1);
-                $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
+                if (isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2) {
+                    $intrstCdtTrnsData = $this->createTransactionData($userId, ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'), 1);
+                    $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
+                }
             }
 
             // Margin transaction $tranType = 10 
@@ -633,7 +638,11 @@ class InvoiceController extends Controller {
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                         $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
 
-                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                        $prgmWhere=[];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);   
+                        
+                        if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 
@@ -738,7 +747,11 @@ class InvoiceController extends Controller {
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                         $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
 
-                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                        $prgmWhere=[];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);  
+
+                        if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 
@@ -850,7 +863,11 @@ class InvoiceController extends Controller {
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                         $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
-                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                        $prgmWhere=[];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);   
+
+                        if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 
@@ -933,13 +950,17 @@ class InvoiceController extends Controller {
                         }
                         $interest= 0;
                         $margin= 0;
+                        
+                        $prgmWhere=[];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);                          
 
                         $tenor = $this->calculateTenorDays($invoice);
                         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                         $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
-                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                        if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 
