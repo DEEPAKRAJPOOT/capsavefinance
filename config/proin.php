@@ -50,5 +50,6 @@ return [
     'GUPSHUP_KEY' => env('GUPSHUP_KEY', ''),   
     'GUPSHUP_USR' => env('GUPSHUP_USR', ''),   
     'GUPSHUP_PASS' => env('GUPSHUP_PASS', ''),   
+    'CONFIGURE_API' => env('CONFIGURE_API', 1),   
       
 ];

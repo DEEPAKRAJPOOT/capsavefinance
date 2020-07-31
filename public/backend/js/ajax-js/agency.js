@@ -69,6 +69,29 @@ try {
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,-6]}]
         });
 
+        $(document).on('click', '.user_status', function (e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    _token: messages.token
+                },
+                success: function (data) {
+                    if (data.success) {
+                        oTable1.draw();
+                    }
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+
         //Search
         $('#searchbtn').on('click', function (e) {
             oTable.draw();

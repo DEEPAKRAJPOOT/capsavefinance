@@ -1878,6 +1878,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_approval = Config::get('common.inv_approval');
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                        
                          $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
                         if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
                         {
@@ -1899,13 +1900,14 @@ class DataRenderer implements DataProviderInterface
                       { 
                        $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"   data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv5"><option value="0">Change Status</option>';
                        $action .= '<option value="7">Pending</option>';
-                       if(in_array($customer, $expl)) 
-                       {
-                        $action .='<option value="8">Approve</option>';
-                       }
+                    //    if(in_array($customer, $expl)) 
+                    //    {
+                    //     $action .='<option value="8">Approve</option>';
+                    //    }
                         $action .='</select></div>';
                       }
                      }
+                     
                         return $action;
 
                 })
@@ -2980,7 +2982,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'chrg_calculation_amt',
                     function ($charges) {
-                    return number_format($charges->amount);
+                    return $charges->amount;
                 })  
                 ->addColumn(
                     'is_gst_applicable',
@@ -3206,7 +3208,7 @@ class DataRenderer implements DataProviderInterface
     public function getAgencyUserLists(Request $request, $user)
     {
         return DataTables::of($user)
-                ->rawColumns(['user_id', 'action'])
+                ->rawColumns(['user_id', 'action', 'status'])
                 ->addColumn(
                     'user_id',
                     function ($user) {
@@ -3238,7 +3240,14 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                     'status',
                     function ($user) {
-                    return ($user->is_active == 1)? 'Active': 'In-active'; 
+                    return ($user->is_active == 0)? 
+                    '<div class="btn-group ">
+                                             <label class="badge badge-warning current-status">In Active</label>
+                                             
+                                          </div></b>':'<div class="btn-group ">
+                                             <label class="badge badge-success current-status">Active</label>
+                                             
+                                          </div></b>';
                 }) 
                 ->editColumn(
                     'created_at',
@@ -3250,9 +3259,14 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                        $act = '';
                      //if(Helpers::checkPermission('edit_anchor_reg')){
-                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyUserFrame\" data-url =\"" . route('edit_agency_user_reg', ['user_id' => $user->user_id]) . "\" data-height=\"350px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency User Detail\"><i class=\"fa fa-edit\"></a>";
+                        $act .= "<a  data-toggle=\"modal\" data-target=\"#editAgencyUserFrame\" data-url =\"" . route('edit_agency_user_reg', ['user_id' => $user->user_id]) . "\" data-height=\"350px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency User Detail\"><i class=\"fa fa-edit\"></i></a>";
                      //}
-                     return $act;
+
+                        if($user->is_active){
+                            return $act.'<a title="In Active" href="'.route('change_agency_user_status', ['user_id' => $user->user_id, 'is_active' => 0]).'"  class="btn btn-action-btn btn-sm user_status "><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                        }else{
+                            return $act.'<a title="Active" href="'.route('change_agency_user_status', ['user_id' => $user->user_id, 'is_active' => 1]).'"  class="btn btn-action-btn btn-sm  user_status"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>';
+                        }
                     }
                 )
                 ->filter(function ($query) use ($request) {
@@ -3368,12 +3382,16 @@ class DataRenderer implements DataProviderInterface
                             //if (Helpers::checkPermission('view_sub_program')){
                                 $act = "<a  href='". route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] )."' class=\"btn btn-action-btn btn-sm\" title=\"View Sub-Program\"><i class=\"fa fa-eye\" aria-hidden=\"true\"></i></a>";
                             //}
-                            if (!in_array($program->status, [2,3]) && !Helpers::checkApprPrgm($program->prgm_id, $isOfferAcceptedOrRejected=false)) { 
-                            if ($program->is_edit_allow == 1) {    
-                                $act .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';
-                            } else {                                
-                                $act .= "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'edit', 'reason_type'=> $program->modify_reason_type] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\" aria-hidden=\"true\"></i></a>";
-                            }
+                            if (!in_array($program->status, [2,3])) { 
+                                if (Helpers::checkApprPrgm($program->prgm_id, $isOfferAcceptedOrRejected=false)) {
+                                    $act .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'view']) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';
+                                } else {
+                                    if ($program->is_edit_allow == 1) {    
+                                        $act .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';
+                                    } else {                                
+                                        $act .= "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'edit', 'reason_type'=> $program->modify_reason_type] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\" aria-hidden=\"true\"></i></a>";
+                                    }
+                                }
                             }
                             
                             return $act;
@@ -6807,5 +6825,57 @@ class DataRenderer implements DataProviderInterface
               
             })
            ->make(true);
-   }   
+   }
+   
+   /**
+    * TDS Data table listing
+    * 
+    * @param Request $request
+    * @param type $data
+    * @return type
+    */
+   public function tds(Request $request, $data) {
+       $this->sr_no = 1;
+       return DataTables::of($data)    
+           ->editColumn('user_id', function ($tds) {
+               return \Helpers::formatIdWithPrefix($tds->user_id, 'LEADID');
+           })      
+           ->editColumn('customer_name', function ($tds) {
+               return $tds->biz_entity_name;
+           })  
+           ->editColumn('trans_name', function ($tds) {
+               return $tds->trans_name ;//== 3 ? 'tds' : '';
+           })   
+           ->editColumn('date_of_payment', function ($tds) {
+               return date('d-m-Y', strtotime($tds->date_of_payment));
+           })
+           ->editColumn('trans_date', function ($tds) {
+               return date('d-m-Y', strtotime($tds->trans_date));
+           })
+           ->editColumn('amount',  function ($tds) {
+               return $tds->amount;
+           })
+           ->editColumn('trans_by',  function ($tds) {
+               $full_name = $tds->f_name.' '.$tds->l_name;
+               return $full_name;
+           })
+           ->editColumn('tds_certificate_no',  function ($tds) {
+               return $tds->tds_certificate_no;
+           })
+           ->editColumn('file_id',  function ($tds) {
+               return $tds->file_id == 0 ? 'N' : '';
+           }) 
+           ->filter(function ($query) use ($request) {
+                if($request->get('user_id')!= ''){
+                    $query->where(function ($query) use ($request) {
+                        $user_id = trim($request->get('user_id'));
+                        $query->where('payments.user_id', '=',$user_id);
+                    });
+                }
+              
+            })
+           
+           ->make(true);
+   }
+   
 }

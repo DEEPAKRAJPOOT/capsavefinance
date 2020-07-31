@@ -47,12 +47,16 @@
 										<span class="mandatory">*</span>
 									</label>
 									<span class="text-success" id="pan-msg" style="">
+										@if(config('proin.CONFIGURE_API'))
 										<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
+										@endif
 									</span>
-                                                                    <div class="relative">
+                                    <div class="relative">
+                                    @if(config('proin.CONFIGURE_API'))
 									<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="pointer-events: none;">Verified</a>
+									@endif
 									<input type="text" name="biz_pan_number" value="{{old('biz_pan_number', $business_info->pan->pan_gst_hash)}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" readonly>
-                                                                    </div>
+                                    </div>
 									@error('biz_pan_number')
 						                <span class="text-danger error">{{ $message }}</span>
 						            @enderror
@@ -100,18 +104,20 @@
 						<div class="row">
 
 							<div class="col-md-4">
-								<div class="form-group password-input" style="display: {{$business_info->is_gst_manual!=1 ? 'block' : 'none' }}">
-									<label for="txtPassword">Select CIN
-											<span class="mandatory mandatory-biz-cin" @if (isset($business_info->cins) && count($business_info->cins) == 0) style="display:none;"  @endif >*</span>
-									</label>
-
-									<select class="form-control" name="biz_cin" tabindex="2">
+								<div class="form-group password-input">
+									@if(config('proin.CONFIGURE_API') && $business_info->is_gst_manual == 0)
+									<label for="txtPassword">Select CIN</label>
+									<select class="form-control" name="biz_cin" tabindex="4">
 										<option value="">Select CIN Number</option>
 										@forelse($business_info->cins as $cin_key => $cin_value)
 											<option value="{{$cin_value->cin}}" {{(old('biz_cin', Helpers::customIsset($business_info->cin, 'cin')) == $cin_value->cin)? 'selected':''}}>{{$cin_value->cin}}</option>
 										@empty
 										@endforelse
 									</select>
+									@else
+									<label for="txtPassword">Enter CIN</label>
+									<input type="text" name="biz_cin" value="{{old('biz_cin', $business_info->cin->cin)}}" class="form-control" tabindex="4" placeholder="Enter CIN Number" maxlength="21">
+									@endif
 								</div>
 							</div>
 
@@ -651,7 +657,8 @@ var messages = {
 	data_not_found: "{{ trans('error_messages.data_not_found') }}",
 	get_sub_industry: "{{ URL::route('get_sub_industry') }}",
 	please_select: "{{ trans('backend.please_select') }}",
-	token: "{{ csrf_token() }}"
+	token: "{{ csrf_token() }}",
+	configure_api: "{{ config('proin.CONFIGURE_API') }}"
 };
 
 $(document).ready(function () {
@@ -668,7 +675,7 @@ $(document).ready(function () {
 });
 </script>
 <!-- <script src="{{url('common/js/company_details.js?v=1')}}"></script> -->
-<script src="{{url('common/js/business_info.js?v=1.1')}}"></script>
+<script src="{{url('common/js/business_info.js?v=1.2')}}"></script>
 <script>
 var subind={{$business_info->entity_type_id}};
 var segmentId={{$business_info->biz_segment}};

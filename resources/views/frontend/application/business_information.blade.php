@@ -43,7 +43,9 @@
 												<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 											</span>
                                                                                     <div class="relative">
+											@if(config('proin.CONFIGURE_API'))
 											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
+											@endif
 											<input type="text" name="biz_pan_number" value="{{$pan ? $pan : old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10"  @if ($pan) readonly="readonly" @endif >
                                                                                     </div>
                                                                                     @error('biz_pan_number')
@@ -55,6 +57,7 @@
 										<div class="form-group password-input">											
 											<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
 											<span class="span_gst_select">
+											@if(config('proin.CONFIGURE_API'))
 												<label for="txtPassword">GST Number
 													<span class="mandatory">*</span>
 												</label>
@@ -70,6 +73,15 @@
 												<label for="txtPassword">GST Number</label>
 												<input type="text" name="biz_gst_number_text" value="{{old('biz_gst_number_text')}}" class="form-control" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
 											</span>
+											@else
+											<input type="hidden" name="is_gst_manual" value="1"/>
+											<span class="span_gst_text">
+												<label for="txtPassword">GST Number
+													<span class="mandatory">*</span>
+												</label>
+												<input type="text" name="biz_gst_number_text" value="{{old('biz_gst_number_text')}}" class="form-control" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
+											</span>
+											@endif
 										</div>
 									</div>
 									<div class="col-md-4">
@@ -88,12 +100,14 @@
 								<div class="row">
 									<div class="col-md-4">
 										<div class="form-group password-input" >
-											<label for="txtPassword">Select CIN
-													<span class="mandatory mandatory-biz-cin">*</span>
-											</label>
-
-											<select class="form-control" name="biz_cin" tabindex="2">
+											<label for="txtPassword">Select CIN</label>
+											@if(config('proin.CONFIGURE_API'))
+											<select class="form-control" name="biz_cin" tabindex="4">
 											</select>
+											<input type="text" name="biz_cin" value="{{old('biz_cin')}}" class="form-control" style="display: none;" tabindex="4" placeholder="Enter CIN Number" maxlength="21">
+											@else
+											<input type="text" name="biz_cin" value="{{old('biz_cin')}}" class="form-control" tabindex="4" placeholder="Enter CIN Number" maxlength="21">
+											@endif
 										</div>
 									</div>
 									<div class="col-md-4">
@@ -608,7 +622,8 @@ var messages = {
 	data_not_found: "{{ trans('error_messages.data_not_found') }}",	
 	get_sub_industry: "{{ URL::route('get_sub_industry') }}",
 	please_select: "{{ trans('backend.please_select') }}",
-	token: "{{ csrf_token() }}"
+	token: "{{ csrf_token() }}",
+	configure_api: "{{ config('proin.CONFIGURE_API') }}"
 };
 
 $(document).ready(function () {
@@ -625,5 +640,5 @@ $(document).ready(function () {
 });
 </script>
 <!-- <script src="{{url('common/js/business_information.js?v=1')}}"></script> -->
-<script src="{{url('common/js/business_info.js?v=1.1')}}"></script>
+<script src="{{url('common/js/business_info.js?v=1.2')}}"></script>
 @endsection

@@ -474,9 +474,12 @@ class ApplicationController extends Controller
                 
             }
             
-            $wf_status = 2;                
-            Helpers::updateWfStage('doc_upload', $appId, $wf_status);
-            
+            $wfStage = Helpers::getWfDetailById('doc_upload', $userId, $appId);
+            if ($wfStage && $wfStage->app_wf_status != 1 ) {
+                $wf_status = 2;                
+                Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+            }
+                                
             $document_info = $this->docRepo->saveDocument($arrFileData, $docId, $userId);
             if ($document_info) {
                 //$appId = $arrFileData['appId'];       
@@ -568,7 +571,7 @@ class ApplicationController extends Controller
             // }
         } catch (Exception $ex) {
             //Add application workflow stages                
-            Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
+            //Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
                 
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

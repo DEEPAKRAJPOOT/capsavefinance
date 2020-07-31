@@ -885,7 +885,7 @@ class Transactions extends BaseModel {
 
         foreach($disbursedList as $tran){
             $outstandingAmt += $tran->outstanding;
-            $outstandingPrincipalAmt += $tran->outstanding - $tran->invoiceDisbursed->total_interest;
+            $outstandingPrincipalAmt += $tran->outstanding;
         }
 
         foreach($interestList as $tran){

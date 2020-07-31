@@ -29,4 +29,9 @@
         <a class=" {{( $active=='cibil_report') ? 'active': null }} " href="{{route('cibil_report')}}">Cibil UserData </a>
     </li>
     @endcan
+    @can('lease_register')
+    <li>
+        <a class=" {{ ($active=='tds')? 'active': null }} " href="{{ route('tds') }}">TDS Report</a>
+    </li>
+    @endcan
 </ul>
