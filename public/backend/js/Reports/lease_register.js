@@ -49,6 +49,8 @@ try {
                 {data: 'total_amt'},
                 {data: 'total_rate'},
                 {data: 'total_tax'},
+                {data: 'cash_flow'},
+                {data: 'considered_in'},
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [1,2,3]}]
         });

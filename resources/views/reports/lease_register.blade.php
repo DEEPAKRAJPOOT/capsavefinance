@@ -92,6 +92,8 @@
                                                     <th>Total Amount</th>
                                                     <th>Total Rate</th>
                                                     <th>Total Tax</th>
+                                                    <th>CashFlow Type</th>
+                                                    <th>Considered In</th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>

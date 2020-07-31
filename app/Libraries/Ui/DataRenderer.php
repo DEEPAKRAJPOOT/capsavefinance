@@ -6424,6 +6424,12 @@ class DataRenderer implements DataProviderInterface
            })         
            ->editColumn('total_amt',  function ($invoiceRec) {
                return number_format($invoiceRec->base_amount + $invoiceRec->sgst_amount + $invoiceRec->cgst_amount + $invoiceRec->igst_amount, 2);
+           })           
+           ->editColumn('cash_flow',  function ($invoiceRec) {
+               return (!empty($invoiceRec->invoice_type) && $invoiceRec->invoice_type == 'C') ? 'Charge' : 'Interest';
+           })           
+           ->editColumn('considered_in',  function ($invoiceRec) {
+               return date('M-Y', strtotime($invoiceRec->invoice_date));
            })  
            ->filter(function ($query) use ($request) {
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){

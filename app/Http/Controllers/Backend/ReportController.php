@@ -122,6 +122,8 @@ class ReportController extends Controller
             'Total Amount' => number_format($total_amount, 2), 
             'Total Rate' => ($total_rate != 0 ? $total_rate.'%' : '-'), 
             'Total Tax' => ($total_tax != 0 ? number_format($total_tax, 2) : '-'), 
+            'CashFlow Type' => (!empty($lease->invoice_type) && $lease->invoice_type == 'C' ? 'Charge' : 'Interest'), 
+            'Considered In' => date('M-Y', strtotime($lease->invoice_date)), 
          ];
        }
        if (strtolower($request->type) == 'excel') {
