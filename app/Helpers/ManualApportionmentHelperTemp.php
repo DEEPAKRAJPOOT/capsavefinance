@@ -118,6 +118,7 @@ class ManualApportionmentHelperTemp{
             
             $interest_accrual_temp_id = InterestAccrualTemp::whereDate('interest_date',$gStartDate)
             ->where('invoice_disbursed_id','=',$invDisbId)
+            ->where('payment_id','=',$paymentId)
             ->value('interest_accrual_temp_id');
 
             $intAccrualData = [];
@@ -215,6 +216,7 @@ class ManualApportionmentHelperTemp{
                     
                     $interest_accrual_temp_id = InterestAccrualTemp::whereDate('interest_date',$loopStratDate)
                     ->where('invoice_disbursed_id','=',$invDisbId)
+                    ->where('payment_id','=',$paymentId)
                     ->value('interest_accrual_temp_id');
                     
                     $intAccrualData = [];
@@ -237,6 +239,7 @@ class ManualApportionmentHelperTemp{
                 }else{
                     InterestAccrualTemp::where('invoice_disbursed_id','=',$invDisbId)
                     ->where('interest_date','>=',$loopStratDate)
+                    ->where('payment_id','=',$paymentId)
                     ->delete();
                 }
                
