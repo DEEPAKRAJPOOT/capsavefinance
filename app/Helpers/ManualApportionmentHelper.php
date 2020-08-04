@@ -62,6 +62,7 @@ class ManualApportionmentHelper{
 
     private function runningToTransPosting($invDisbId, $intAccrualDt, $payFreq, $invdueDate, $odStartDate){
         $intAccrualDate = $this->subDays($intAccrualDt,1);
+        $invdueDate = $this->subDays($invdueDate,1);
         $graceStartDate = $invdueDate;
         $graceEndDate = $this->subDays($odStartDate,1);
         $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $intAccrualDate)->endOfMonth()->format('Y-m-d');
@@ -249,7 +250,7 @@ class ManualApportionmentHelper{
         ->sum('amount');
 
         if($intTransIds){
-            $Cr +=  Transactions::whereDate('trans_date','<=',$odStartDate) 
+            $Cr +=  Transactions::whereDate('trans_date','<=',$transDate) 
             ->where('invoice_disbursed_id','=',$invDisbId)
             ->where('entry_type','=','1')
             ->where(function($query) use($intTransIds){
