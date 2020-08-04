@@ -28,7 +28,7 @@ class CompanyRegRequest extends Request
 //      dd($this->request);
         return $rules = [
             'cmp_name' => 'required',
-            'cmp_add' => 'required',
+            'cmp_add' => 'required|unique:mst_company',
             'cmp_email' => 'required|email',
             'cmp_mobile' => 'required|numeric',
             'gst_no' => 'required|regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/',
