@@ -105,11 +105,11 @@ class ReportController extends Controller
             'State' => $lease->name, 
             'GSTN' => ($inv_comp_data['gst_no'] ?? $lease->biz_gst_no), 
             'Cust. Id' =>  \Helpers::formatIdWithPrefix($lease->user_id, 'LEADID'), 
-            'Cust. Name' => $lease->biz_entity_name, 
+            'Business Name' => $lease->biz_entity_name, 
             'Cust. Addr' => $lease->gst_addr, 
             'Cust. GSTN' => $lease->biz_gst_no, 
             'SAC Code' => $sac_code, 
-            'Contract No' => $contract_no, 
+            // 'Contract No' => $contract_no, 
             'Invoice No' => $lease->invoice_no, 
             'Invoice Date' => $lease->invoice_date, 
             'Base Amount' => number_format($lease->base_amount, 2), 
@@ -122,6 +122,8 @@ class ReportController extends Controller
             'Total Amount' => number_format($total_amount, 2), 
             'Total Rate' => ($total_rate != 0 ? $total_rate.'%' : '-'), 
             'Total Tax' => ($total_tax != 0 ? number_format($total_tax, 2) : '-'), 
+            'CashFlow Type' => (!empty($lease->invoice_type) && $lease->invoice_type == 'C' ? 'Charge' : 'Interest'), 
+            'Considered In' => date('M-Y', strtotime($lease->invoice_date)), 
          ];
        }
        if (strtolower($request->type) == 'excel') {

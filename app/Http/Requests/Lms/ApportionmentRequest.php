@@ -53,20 +53,23 @@ class ApportionmentRequest extends FormRequest
                 $totalRePayAmount = $payment->amount;
             }
 
-            if (empty($formData['check']) || !is_array($formData['check'])) {
-              $validator->errors()->add("check.required", 'Atleast a payment is require to settle');
-            }
-            foreach ($formData['check'] as $key => $value) {
-                $selectedPayment = $formData['payment'][$key] ?? 0;
-                $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);
-                $outstandingAmount = $transDetail->getOutstandingAttribute();
-                if (empty($selectedPayment)) {
-                    $validator->errors()->add("payment.{$key}", 'Pay is required against selected transaction');
+            // if (empty($formData['check']) || !is_array($formData['check'])) {
+            //    $validator->errors()->add("check.required", 'Atleast a payment is require to settle');
+            // }
+            if(isset($formData['check'])){
+
+                foreach ($formData['check'] as $key => $value) {
+                    $selectedPayment = $formData['payment'][$key] ?? 0;
+                    $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);
+                    $outstandingAmount = $transDetail->getOutstandingAttribute();
+                    if (empty($selectedPayment)) {
+                        $validator->errors()->add("payment.{$key}", 'Pay is required against selected transaction');
+                    }
+                    if ($outstandingAmount < $selectedPayment) {
+                        $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the outsanding amount');
+                    }
+                    $totalselectedAmount += $selectedPayment;
                 }
-                if ($outstandingAmount < $selectedPayment) {
-                    $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the outsanding amount');
-                }
-                $totalselectedAmount += $selectedPayment;
             }
             if ($totalselectedAmount > $totalRePayAmount) {
                     $validator->errors()->add("totalRepayAmount", 'Sum of pay must be less than: '. $totalRePayAmount);

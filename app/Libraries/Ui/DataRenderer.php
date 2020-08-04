@@ -3234,12 +3234,10 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     return ($user->is_active == 0)? 
                     '<div class="btn-group ">
-                                             <label class="badge badge-warning current-status">In Active</label>
-                                             
-                                          </div></b>':'<div class="btn-group ">
-                                             <label class="badge badge-success current-status">Active</label>
-                                             
-                                          </div></b>';
+                    <label class="badge badge-warning current-status">In Active</label>
+                    </div></b>':'<div class="btn-group ">
+                    <label class="badge badge-success current-status">Active</label>
+                    </div></b>';
                 }) 
                 ->editColumn(
                     'created_at',
@@ -3251,14 +3249,13 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                        $act = '';
                      //if(Helpers::checkPermission('edit_anchor_reg')){
-                        $act .= "<a  data-toggle=\"modal\" data-target=\"#editAgencyUserFrame\" data-url =\"" . route('edit_agency_user_reg', ['user_id' => $user->user_id]) . "\" data-height=\"350px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency User Detail\"><i class=\"fa fa-edit\"></i></a>";
+                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyUserFrame\" data-url =\"" . route('edit_agency_user_reg', ['user_id' => $user->user_id]) . "\" data-height=\"350px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency User Detail\"><i class=\"fa fa-edit\"></i></a>";
                      //}
-
-                        if($user->is_active){
-                            return $act.'<a title="In Active" href="'.route('change_agency_user_status', ['user_id' => $user->user_id, 'is_active' => 0]).'"  class="btn btn-action-btn btn-sm user_status "><i class="fa fa-eye" aria-hidden="true"></i></a>';
-                        }else{
-                            return $act.'<a title="Active" href="'.route('change_agency_user_status', ['user_id' => $user->user_id, 'is_active' => 1]).'"  class="btn btn-action-btn btn-sm  user_status"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>';
-                        }
+                     if($user->is_active){
+                        return $act.'<a title="In Active" href="'.route('change_agency_user_status', ['user_id' => $user->user_id, 'is_active' => 0]).'"  class="btn btn-action-btn btn-sm user_status "><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                    }else{
+                        return $act.'<a title="Active" href="'.route('change_agency_user_status', ['user_id' => $user->user_id, 'is_active' => 1]).'"  class="btn btn-action-btn btn-sm  user_status"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>';
+                    }
                     }
                 )
                 ->filter(function ($query) use ($request) {
@@ -3374,16 +3371,12 @@ class DataRenderer implements DataProviderInterface
                             //if (Helpers::checkPermission('view_sub_program')){
                                 $act = "<a  href='". route('view_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'view'] )."' class=\"btn btn-action-btn btn-sm\" title=\"View Sub-Program\"><i class=\"fa fa-eye\" aria-hidden=\"true\"></i></a>";
                             //}
-                            if (!in_array($program->status, [2,3])) { 
-                                if (Helpers::checkApprPrgm($program->prgm_id, $isOfferAcceptedOrRejected=false)) {
-                                    $act .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'view']) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';
-                                } else {
-                                    if ($program->is_edit_allow == 1) {    
-                                        $act .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';
-                                    } else {                                
-                                        $act .= "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'edit', 'reason_type'=> $program->modify_reason_type] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\" aria-hidden=\"true\"></i></a>";
-                                    }
-                                }
+                            if (!in_array($program->status, [2,3]) && !Helpers::checkApprPrgm($program->prgm_id, $isOfferAcceptedOrRejected=false)) { 
+                            if ($program->is_edit_allow == 1) {    
+                                $act .= '<a href="#" title="Modify Program Limit" data-toggle="modal" data-target="#modifyProgramLimit" data-url="' . route('confirm_end_program', ['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id'), 'action' => 'edit']) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a> ';
+                            } else {                                
+                                $act .= "<a  href='". route('add_sub_program',['anchor_id'=> $program->anchor_id, 'program_id'=> $program->prgm_id ,'parent_program_id' => request()->get('program_id') ,  'action' => 'edit', 'reason_type'=> $program->modify_reason_type] )."' class=\"btn btn-action-btn btn-sm\" title=\"Edit Sub-Program\"><i class=\"fa fa-edit\" aria-hidden=\"true\"></i></a>";
+                            }
                             }
                             
                             return $act;
@@ -3648,7 +3641,7 @@ class DataRenderer implements DataProviderInterface
                                 
                                 $tenorDays = $this->calculateTenorDays($invoice);
                                 $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenorDays);
-                                if($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) {
+                                if( $invoice['program']['interest_borne_by'] == 2 && ($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) ) {
                                     $interest = $tInterest;
                                 }
                                 $disburseAmount += round($fundedAmount - $interest, 2);
@@ -5849,6 +5842,10 @@ class DataRenderer implements DataProviderInterface
                 function ($data) {
                     return date('d/m/Y', strtotime($data->invoice_date));
                 }
+            )  
+            ->editColumn('invoice_type',  function ($data) {
+                    return ($data->invoice_type == 'C' ? 'Charge' : 'Interest');
+                }
             )   
             ->editColumn(
                 'pan_no',
@@ -5865,7 +5862,8 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'reference_no',
                 function ($data) {
-                    return $data->reference_no;
+                    // return $data->reference_no;
+                    return \Helpers::formatIdWithPrefix($data->user_id, 'CUSTID');
                 }
             )      
             ->editColumn(
@@ -6404,6 +6402,12 @@ class DataRenderer implements DataProviderInterface
            })         
            ->editColumn('total_amt',  function ($invoiceRec) {
                return number_format($invoiceRec->base_amount + $invoiceRec->sgst_amount + $invoiceRec->cgst_amount + $invoiceRec->igst_amount, 2);
+           })           
+           ->editColumn('cash_flow',  function ($invoiceRec) {
+               return (!empty($invoiceRec->invoice_type) && $invoiceRec->invoice_type == 'C') ? 'Charge' : 'Interest';
+           })           
+           ->editColumn('considered_in',  function ($invoiceRec) {
+               return date('M-Y', strtotime($invoiceRec->invoice_date));
            })  
            ->filter(function ($query) use ($request) {
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){

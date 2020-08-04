@@ -75,11 +75,11 @@
                                                     <th>State</th>
                                                     <th>GSTN</th>
                                                     <th>Cust. Id</th>
-                                                    <th>Cust. Name</th>
+                                                    <th>Business Name</th>
                                                     <th>Cust. Addr</th>
                                                     <th>Cust. GSTN</th>
                                                     <th>SAC Code</th>
-                                                    <th>Contract No</th>
+                                                    <!-- <th>Contract No</th> -->
                                                     <th>Invoice No</th>
                                                     <th>Invoice Date</th>
                                                     <th>Base Amount</th>
@@ -92,6 +92,8 @@
                                                     <th>Total Amount</th>
                                                     <th>Total Rate</th>
                                                     <th>Total Tax</th>
+                                                    <th>CashFlow Type</th>
+                                                    <th>Considered In</th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
