@@ -1198,9 +1198,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		
 		if($invDisbursed){
 			$response['invoice_id'] = $invDisbursed->invoice_id;
-			$response['payment'] = $invDisbursed->invoice->invoice_approve_amount;
+			$response['payment'] = $invDisbursed->invoice->invoice_margin_amount;
 			$response['case'] = $invDisbursed->invoice->program_offer->payment_frequency;
 			$response['is_settled'] = false;
+			$response['receipt'] = 0;
 
 			$transactions = Transactions::whereNull('parent_trans_id')
 			->whereNull('payment_id')
@@ -1241,8 +1242,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 						];
 						break;
 				}
-				$response['receipt'] += $trans->amount - $trans->outstanding;
+
 			}
+			foreach($response['principal'] as $val){
+				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
+			}
+
 			if($response['payment'] <= $response['receipt']){
 				$response['is_settled'] = true;
 			}

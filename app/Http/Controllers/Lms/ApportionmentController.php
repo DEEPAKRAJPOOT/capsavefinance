@@ -1026,13 +1026,13 @@ class ApportionmentController extends Controller
             if($flag['is_settled']){
                 $inv->is_repayment = 1;
                 $inv->status_id = 15;
-                $inv->repayment_amt = $flag['amount'] - $flag['outstanding'];
+                $inv->repayment_amt = $flag['receipt'];
             }else{
                 if($inv->is_repayment == 1)
                 $inv->is_repayment = 0;
                 if($inv->status_id == 15)
                 $inv->status_id = 12;
-                $inv->repayment_amt = $flag['amount'] - $flag['outstanding'];
+                $inv->repayment_amt = $flag['receipt'];
             }
             $inv->save();
         }
