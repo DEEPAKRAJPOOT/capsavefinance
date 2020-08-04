@@ -179,7 +179,7 @@ class RoleUser extends BaseModel
      */
     public static function getBackendUsersByRoleId($role_id, $usersNotIn=[], $orUsersIn=[])
     {
-        dump($usersNotIn, $orUsersIn);
+        // dump($usersNotIn, $orUsersIn);
          $query = self::select('users.*')
                  ->join('users', 'role_user.user_id', '=', 'users.user_id')
                  ->where('role_user.role_id',$role_id)
