@@ -102,6 +102,25 @@
                 {!! $errors->first('is_reg', '<span class="error">:message</span>') !!}
             </div>
             <div class="form-group col-md-6">
+                <label for="utility_code">Utility Code<span class="mandatory">*</span></label>
+                <input type="text" class="form-control" id="utility_code" name="utility_code" placeholder="Enter Utility Code" maxlength="50" value="{{ isset($comData['utility_code']) ? $comData['utility_code'] : old('utility_code') }}">
+                {!! $errors->first('utility_code', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="member_id">Member Id<span class="mandatory">*</span></label>
+                <input type="text" class="form-control" id="member_id" name="member_id" placeholder="Enter Member Id" maxlength="50" value="{{ isset($comData['city']) ? $comData['member_id'] : old('member_id') }}">
+                {!! $errors->first('member_id', '<span class="error">:message</span>') !!}
+            </div>
+            <div class="form-group col-md-6">
+                <label for="member_branch_code">Member Branch Code<span class="mandatory">*</span></label>
+                <input type="text" class="form-control" id="member_branch_code" name="member_branch_code" placeholder="Enter Member Branch Code" maxlength="50" value="{{ isset($comData['member_branch_code']) ? $comData['member_branch_code'] : old('member_branch_code') }}">
+                {!! $errors->first('member_branch_code', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-6">
                 <label for="chrg_type">Status <span class="mandatory">*</span></label><br />
                 <select class="form-control" name="is_active" id="is_active">
                     <option value="" selected>Select</option>
@@ -282,6 +301,15 @@
                 },
                 'is_reg': {
                     required: true
+                },
+                'utility_code': {
+                    required: true
+                },
+                'member_id': {
+                    required: true
+                },
+                'member_branch_code': {
+                    required: true
                 }
             },
             messages: {
@@ -319,6 +347,15 @@
                 },
                 'interest_prefix': {
                     required: "Please enter Interest Prefix"
+                },
+                'utility_code': {
+                    required: "Please enter Utility Code"
+                },
+                'member_branch_code': {
+                    required: "Please enter Member Branch Code"
+                },
+                'member_id': {
+                    required: "Please enter Member Id"
                 }
             }
         });
