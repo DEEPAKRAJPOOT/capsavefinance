@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Master;
 
 use Session;
+use Illuminate\Validation\Rule;
 use App\Http\Requests\Request;
 
 class CompanyRegRequest extends Request
@@ -28,7 +29,8 @@ class CompanyRegRequest extends Request
 //      dd($this->request);
         return $rules = [
             'cmp_name' => 'required',
-            'cmp_add' => 'required|unique:mst_company',
+            'cmp_add' => 'required',
+            Rule::unique('mst_company')->ignore($this->request->get('comp_addr_id')),
             'cmp_email' => 'required|email',
             'cmp_mobile' => 'required|numeric',
             'gst_no' => 'required|regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/',
