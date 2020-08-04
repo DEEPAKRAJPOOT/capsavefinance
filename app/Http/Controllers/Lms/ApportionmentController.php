@@ -1021,16 +1021,18 @@ class ApportionmentController extends Controller
     public function updateInvoiceRepaymentFlag(array $invDisbId){
         $invDisbs = InvoiceDisbursed::whereIn('invoice_disbursed_id',$invDisbId)->get();
         foreach($invDisbs as $invd){
-            $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id, true);
+            $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
             $inv = BizInvoice::find($invd->invoice_id);
-            if($flag){
+            if($flag['is_settled']){
                 $inv->is_repayment = 1;
                 $inv->status_id = 15;
+                $inv->repayment_amt = $flag['amount'] - $flag['outstanding'];
             }else{
                 if($inv->is_repayment == 1)
                 $inv->is_repayment = 0;
                 if($inv->status_id == 15)
                 $inv->status_id = 12;
+                $inv->repayment_amt = $flag['amount'] - $flag['outstanding'];
             }
             $inv->save();
         }

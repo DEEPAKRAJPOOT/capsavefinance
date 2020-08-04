@@ -1200,6 +1200,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			$response['invoice_id'] = $invDisbursed->invoice_id;
 			$response['payment'] = $invDisbursed->invoice->invoice_approve_amount;
 			$response['case'] = $invDisbursed->invoice->program_offer->payment_frequency;
+			$response['is_settled'] = false;
 
 			$transactions = Transactions::whereNull('parent_trans_id')
 			->whereNull('payment_id')
