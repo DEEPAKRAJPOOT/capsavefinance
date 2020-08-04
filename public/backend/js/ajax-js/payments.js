@@ -85,6 +85,7 @@ try {
                     {data: 'business_name'},
                     {data: 'amount'},
                     {data: 'trans_type'},
+                    {data: 'date_of_payment'},
                     {data: 'updated_by'},
                     {data: 'action'}
                 ],

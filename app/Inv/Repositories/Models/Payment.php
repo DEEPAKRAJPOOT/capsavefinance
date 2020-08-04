@@ -234,17 +234,29 @@ class Payment extends BaseModel {
 
     public function getisApportPayValidAttribute (){
         $isValid = false;
-        $validPaymentId = self::where('user_id',$this->user_id)
+        $error = '';
+        $lastSettledPaymentDate = self::where('user_id',$this->user_id)
+        ->where('is_settled','0')->max('date_of_payment');
+        
+        $validPayment = self::where('user_id',$this->user_id)
         ->where('is_settled','0')
-        ->where('action_type','1')
-        ->orderBy('date_of_payment','asc')
+        ->where('action_type','1');
+
+        if($lastSettledPaymentDate){
+            $validPayment = $validPayment->whereDate('date_of_payment','>=',$lastSettledPaymentDate);
+            if(strtotime($lastSettledPaymentDate) > $this->date_of_payment){
+                $error = 'Invalid Payment: The backdated payment from the last settled payment!';
+            }
+        }
+
+        $validPaymentId = $validPayment->orderBy('date_of_payment','asc')
         ->orderBy('payment_id','asc')
         ->first();
 
         if($validPaymentId && $validPaymentId->payment_id == $this->payment_id){
             $isValid = true;
         }
-        return $isValid;
+        return ['isValid' => $isValid, 'error' => $error];
     }
     
     /**

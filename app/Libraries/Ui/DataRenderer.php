@@ -5189,6 +5189,11 @@ class DataRenderer implements DataProviderInterface
                         function ($dataRecords) {   
                             return $dataRecords->paymentname;
                     }) 
+                    ->addColumn(
+                        'date_of_payment', 
+                        function ($dataRecords) {
+                        return Carbon::parse($dataRecords->date_of_payment)->format('d-m-Y');
+                    })
                     ->editColumn(
                         'updated_by',
                         function ($dataRecords) {
@@ -5201,13 +5206,6 @@ class DataRenderer implements DataProviderInterface
                         'action',
                         function ($dataRecords) {
                             $btn = '';
-                            if($dataRecords->is_settled == 0){
-                                if($dataRecords->isApportPayValid){
-                                    $btn .= "<div class=\"d-flex inline-action-btn\"> <a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a></div>"; 
-                                }
-                            }elseif($dataRecords->is_refundable && !$dataRecords->refundReq){
-                                $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
-                            } 
 
                             if($dataRecords->is_settled == '0' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($dataRecords->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
                                 $btn .= '<button class="btn btn-action-btn btn-sm"  title="Delete Payment" onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
@@ -5216,7 +5214,17 @@ class DataRenderer implements DataProviderInterface
                             if($dataRecords->is_settled == '1' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($dataRecords->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
                                 $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
                             }
-                            
+
+                            if(Helpers::checkPermission('apport_unsettled_view') && $dataRecords->is_settled == 0){
+                                if($dataRecords->isApportPayValid['isValid']){
+                                    $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
+                                }else{
+                                    $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
+                                }
+                            }elseif(Helpers::checkPermission('lms_refund_payment_advise') && $dataRecords->is_refundable && !$dataRecords->refundReq){
+                                $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
+                            } 
+
                             return $btn;
                     }) 
                     ->make(true);
