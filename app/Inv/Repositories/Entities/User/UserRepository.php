@@ -1380,9 +1380,9 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @param integer $role_id
      * @return array
      */
-    public function getBackendUsersByRoleId($role_id, $usersNotIn=[])
+    public function getBackendUsersByRoleId($role_id, $usersNotIn=[], $orUsersIn=[])
     {
-        return RoleUser::getBackendUsersByRoleId($role_id, $usersNotIn);
+        return RoleUser::getBackendUsersByRoleId($role_id, $usersNotIn, $orUsersIn);
     }
     
     /**

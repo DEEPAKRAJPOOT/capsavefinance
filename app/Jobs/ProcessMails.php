@@ -66,7 +66,6 @@ class ProcessMails implements ShouldQueue
                         
                     break;
                 }
-
                 if($assignmentData->assign_type == '1'){
                     $from_user = $userRepo->getfullUserDetail($assignmentData->to_id);
                 }else{
@@ -82,14 +81,21 @@ class ProcessMails implements ShouldQueue
                 $emailData['comment'] = $assignmentData->sharing_comment;
                 $emailData['sender_user_name'] = $from_user->f_name .' '. $from_user->m_name .' '. $from_user->l_name ;
                 $emailData['sender_role_name'] = '';//$from_user->roles[0]->name;
-                
                 if($to_all){
                     if(is_null($assignmentData->role_id)){
                         $to_user = $userRepo->getfullUserDetail($assignmentData->to_id);
                         $to_users = $userRepo->getBackendUsersByRoleId($to_user->roles[0]->id);
-                    }else{
+                        if ($event == "APPLICATION_PICKUP") {
+                            $to_user = $userRepo->getfullUserDetail($assignmentData->to_id);
+                            $to_users = $userRepo->getBackendUsersByRoleId($to_user->roles[0]->id, [$assignmentData->to_id], [$assignmentData->from_id]);
+                        }
+                    } else {
                         $to_users = $userRepo->getBackendUsersByRoleId($assignmentData->role_id);
+                        if ($event == "APPLICATION_PICKUP") {
+                            $to_users = $userRepo->getBackendUsersByRoleId($assignmentData->role_id, [$assignmentData->to_id], [$assignmentData->from_id]);
+                        }
                     }
+                    // dd($to_users);
                     foreach($to_users as $user) {
                         $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                         $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
