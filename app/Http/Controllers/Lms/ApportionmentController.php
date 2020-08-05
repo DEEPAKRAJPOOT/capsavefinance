@@ -24,6 +24,7 @@ use App\Http\Requests\Lms\ApportionmentRequest;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Models\Lms\TransactionsRunning;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
@@ -796,6 +797,9 @@ class ApportionmentController extends Controller
                     $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], 2);
                 }
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
+                // if($paymentId){
+                //     InterestAccrualTemp::where('payment_id',$paymentId)->delete();
+                // }
                 $request->session()->forget('apportionment');
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }

@@ -24,16 +24,7 @@ try {
                         $("#requestList_processing").css("display", "none");
                     }
                 },
-                columns: [
-                    {data: 'id'},
-                    {data: 'ref_code'},
-                    {data: 'customer_id'},
-                    {data: 'biz_entity_name'},                    
-                    {data: 'amount'},
-                    {data: 'created_at'},
-                    // {data: 'assignee'},
-                    // {data: 'assignedBy'}
-                ],
+                columns: messages.columns,
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });
         }

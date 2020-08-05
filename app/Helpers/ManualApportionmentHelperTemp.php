@@ -133,6 +133,7 @@ class ManualApportionmentHelperTemp{
             if($interest_accrual_temp_id){
                 $recalwhereCond = [];
                 $recalwhereCond['interest_accrual_temp_id'] = $interest_accrual_temp_id;
+                $recalwhereCond['payment_id'] = $paymentId;
                 $this->lmsRepo->saveInterestAccrualTemp($intAccrualData,$recalwhereCond);
             }else{
                 $this->lmsRepo->saveInterestAccrualTemp($intAccrualData);
@@ -167,7 +168,7 @@ class ManualApportionmentHelperTemp{
             $gStartDate = $payDueDate;
             $gEndDate = $this->addDays($payDueDate,$gPeriod);
             $odStartDate = $this->addDays($gEndDate,1);
-            $maxAccrualDate = $invDisbDetail->interestTemp->max('interest_date');
+            $maxAccrualDate = $invDisbDetail->interestTemp->where('payment_id',$paymentId)->max('interest_date');
             if($maxAccrualDate){
                 $maxAccrualDate = $this->addDays($maxAccrualDate,1);
             } 
@@ -231,6 +232,7 @@ class ManualApportionmentHelperTemp{
                     if($interest_accrual_temp_id){
                         $recalwhereCond = [];
                         $recalwhereCond['interest_accrual_temp_id'] = $interest_accrual_temp_id;
+                        $recalwhereCond['payment_id'] = $paymentId;
                         $this->lmsRepo->saveInterestAccrualTemp($intAccrualData,$recalwhereCond);
                     }else{
                         $this->lmsRepo->saveInterestAccrualTemp($intAccrualData);
@@ -257,6 +259,7 @@ class ManualApportionmentHelperTemp{
         if($paymentId){
             $payment = Payment::find($paymentId);
             if($payment){
+                InterestAccrualTemp::where('payment_id',$paymentId)->delete();
                 $paymentDate = $payment->date_of_payment;
                 $userId = $payment->user_id;
                 $invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true, 'user_id'=>$userId]);

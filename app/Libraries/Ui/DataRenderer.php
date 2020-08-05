@@ -5218,7 +5218,7 @@ class DataRenderer implements DataProviderInterface
                             if(Helpers::checkPermission('apport_unsettled_view') && $dataRecords->is_settled == 0){
                                 if($dataRecords->isApportPayValid['isValid']){
                                     $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
-                                }else{
+                                }elseif($dataRecords->isApportPayValid['error']){
                                     $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
                                 }
                             }elseif(Helpers::checkPermission('lms_refund_payment_advise') && $dataRecords->is_refundable && !$dataRecords->refundReq){
@@ -5436,7 +5436,7 @@ class DataRenderer implements DataProviderInterface
      
         ->make(true);
     }
-    
+    //refund
     public function getApprovedRefundList(Request $request, $data){
         return DataTables::of($data)
         ->rawColumns(['ref_code','assignee','banck_detail','action'])
@@ -5475,7 +5475,7 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'created_at',
             function ($data) {
-                return \Helpers::convertDateTimeFormat($data->created_at, 'Y-m-d H:i:s', 'j F, Y h:i A');  //date('d-m-Y',strtotime($data->created_at));
+                return \Helpers::convertDateTimeFormat($data->created_at, 'Y-m-d H:i:s', 'd-m-Y h:i A');
             }
         )
         ->editColumn(
@@ -5497,7 +5497,7 @@ class DataRenderer implements DataProviderInterface
         )
         ->editColumn(
             'updated_at', function ($data) {
-                return \Helpers::convertDateTimeFormat($data->updated_at, 'Y-m-d H:i:s', 'j F, Y h:i A');  //date('d-m-Y',strtotime($data->created_at));
+                return \Helpers::convertDateTimeFormat($data->updated_at, 'Y-m-d H:i:s', 'd-m-Y h:i A');
             }
         )
         ->editColumn(
@@ -5534,6 +5534,7 @@ class DataRenderer implements DataProviderInterface
         ->make(true);
 
     }
+    //refund
     public function getRequestList(Request $request, $data){
         return DataTables::of($data)
         ->rawColumns(['id','ref_code','assignee','assignedBy','action'])
@@ -5584,7 +5585,13 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'created_at',
             function ($data) {
-                return \Helpers::convertDateTimeFormat($data->created_at, 'Y-m-d H:i:s', 'j F, Y h:i A');  //date('d-m-Y',strtotime($data->created_at));
+                return \Helpers::convertDateTimeFormat($data->created_at, 'Y-m-d H:i:s', 'd-m-Y h:i A');
+            }
+        )
+        ->editColumn(
+            'updated_at',
+            function ($data) {
+                return \Helpers::convertDateTimeFormat($data->updated_at, 'Y-m-d H:i:s', 'd-m-Y h:i A');
             }
         )
         ->addColumn(
