@@ -125,7 +125,9 @@ var iframe_ids = [
     'approveLimitFrame',
     'modifyProgramLimit',
     'showEndProgramReason',
-    'editProgram'    
+    'editProgram' ,   
+    'addTDSFrame',    
+    'editTDSFrame'    
 ];
 
 iframe_ids.forEach(function (id) {

@@ -4715,4 +4715,12 @@ if ($err) {
         return \Response::json(['success' => $result]);
     }
 
+    // TDS List in master
+    public function getTDSList(DataProviderInterface $dataProvider) 
+    {
+        $tdsList = $this->masterRepo->getTDSLists();
+        $data = $dataProvider->getTDSLists($this->request, $tdsList);
+        return $data;
+    }
+
 }

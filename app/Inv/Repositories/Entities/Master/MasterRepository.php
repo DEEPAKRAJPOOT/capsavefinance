@@ -33,6 +33,7 @@ use App\Inv\Repositories\Models\Master\FacilityType;
 use App\Inv\Repositories\Models\Master\BaseRate;
 use App\Inv\Repositories\Models\Master\Activity;
 use App\Inv\Repositories\Models\Master\ChargeGST;
+use App\Inv\Repositories\Models\Master\Tds;
 
 
 
@@ -768,6 +769,37 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return DoaLevel::getProIdByDoaLevel($doid);
              
     }
+
+    /**
+     * start TDS in master 
+     */
+
+    public function findTDSById($tds_id)
+    {
+        if (empty($tds_id) || !ctype_digit($tds_id)) {
+        throw new BlankDataExceptions('No Data Found');
+        }
+        $result = Tds::find($tds_id);
+        return $result ?: false;
+    }
+
+    public function getTDSLists()
+    {
+        $result = Tds::getTDSLists();
+        return $result;
+    }
+
+    public function saveTds($tdsData) 
+    {
+        return Tds::saveTds($tdsData);
+    }
+
+    public function updateTds($tdsData, $tds_id)
+    {
+        $status = Tds::updateTds($tdsData, $tds_id);
+        return $status ? $status : false;
+    }
+    // END TDS
     
 
 }
