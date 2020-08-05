@@ -33,6 +33,7 @@ class BankAccountRequest extends FormRequest {
             'ifsc_code' => 'required|alpha_num|max:11',
             'branch_name' => 'required|regex:/^[a-zA-Z0-9 -]+$/|max:30',
             'is_active' => 'required',
+            'sponser_bank' => 'required',
         ];
     }
 
@@ -45,6 +46,7 @@ class BankAccountRequest extends FormRequest {
         $messages['branch_name.required'] = trans('error_messages.required', ['field' => 'Branch Name ']);
         $messages['is_active.required'] = trans('error_messages.required', ['field' => 'Status']);
         $messages['acc_no.unique'] = trans('master_messages.unique_acc_no');
+        $messages['sponser_bank.required'] = trans('error_messages.required', ['field' => 'Sponser Branch Code']);
         return $messages;
     }
 
