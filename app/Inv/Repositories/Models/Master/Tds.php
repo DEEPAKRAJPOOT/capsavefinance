@@ -43,10 +43,15 @@ class Tds extends BaseModel
      */
     protected $fillable = [
         'id',
-        'tds_percentage',
+        'tds_per',
         'is_active',
+        'created_by',
+        'start_date',
+        'end_date',
+        'created_by',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'updated_by'
     ];
 
     public static function saveTds($tdsData)
@@ -59,7 +64,7 @@ class Tds extends BaseModel
     }
 
     public static function getTDSLists() {
-        $data = self::select('mst_tds.id', 'mst_tds.tds_percentage', 'mst_tds.is_active', 'mst_tds.created_at')->orderBy('mst_tds.id', 'DESC');
+        $data = self::select('mst_tds.id', 'mst_tds.tds_per', 'mst_tds.is_active', 'mst_tds.created_at')->orderBy('mst_tds.id', 'DESC');
         return $data ? $data : "";
     }
 
