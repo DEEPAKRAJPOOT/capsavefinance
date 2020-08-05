@@ -36,6 +36,8 @@
             rules: {
                 'tds_percentage' : {
                     required : true,
+                    number: true,
+                    max: 100,
                 },
                 'is_active' : {
                     required : true,
@@ -50,6 +52,19 @@
                 },
             }
         });
+    });
+    
+    
+    document.getElementById('tds_percentage').addEventListener('input', event =>{
+        let values = document.getElementById('tds_percentage').value;
+        let s = values.toString();
+        if(isNaN(document.getElementById('tds_percentage').value || event.keyCode(190))) {
+            document.getElementById('tds_percentage').value = ""
+
+        }
+        if(s.length >= 6) {
+            document.getElementById('tds_percentage').value = ""
+        }
     });
 </script>
 @endsection

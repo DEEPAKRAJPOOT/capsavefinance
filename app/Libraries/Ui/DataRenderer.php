@@ -6871,14 +6871,15 @@ class DataRenderer implements DataProviderInterface
     // TDS in master
     public function getTDSLists(Request $request, $data)
     {
+        $this->sr_no = 1;
         return DataTables::of($data)
                 ->rawColumns(['is_active', 'action'])
                 
-                ->addColumn(
-                    'id',
+                ->editColumn(
+                    'sr_no',
                     function ($data) {
-                        return $data->id;
-                })
+                    return $this->sr_no++;
+                }) 
                 ->addColumn(
                     'created_at',
                     function ($data) {

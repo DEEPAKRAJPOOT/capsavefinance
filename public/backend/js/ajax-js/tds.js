@@ -24,7 +24,7 @@ try {
                 }
             },
             columns: [
-                { data: 'id' },
+                { data: 'sr_no' },
                 { data: 'tds_percentage' },
                 { data: 'created_at' },
                 { data: 'is_active' }
