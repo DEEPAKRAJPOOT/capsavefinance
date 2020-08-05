@@ -55,6 +55,7 @@
                                   <th>Business Name</th>
                                   <th>Amount</th>
                                   <th>Txn Type</th>
+                                  <th>Payment Date</th>
                                   <th>Updated By</th>
                                   <th>Action</th> 
                                 </tr>
