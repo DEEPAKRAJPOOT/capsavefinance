@@ -1956,7 +1956,7 @@ class Helper extends PaypalHelper
             $appStatusList = self::getAppStatusList();
             $arrActivity = [];
             $arrActivity['activity_code'] = 'app_status_changed';
-            $arrActivity['activity_desc'] = 'Application status is modified from ' . $appStatusList[$appData->curr_status_id] . ' to ' . $appStatusList[$curStatus];
+            $arrActivity['activity_desc'] = 'Application status is modified from ' . (isset($appStatusList[$appData->curr_status_id]) ? $appStatusList[$appData->curr_status_id] : '' ) . ' to ' . (isset($appStatusList[$curStatus]) ? $appStatusList[$curStatus] : '' );
             $arrActivity['user_id'] = $userId;
             $arrActivity['app_id'] = $appId;
             \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));

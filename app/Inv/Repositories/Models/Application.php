@@ -68,6 +68,7 @@ class Application extends BaseModel
         'status',
         'is_assigned',
         'curr_status_id',
+        'curr_status_updated_at',
         'app_type',
         'renewal_status',
         'app_code',
