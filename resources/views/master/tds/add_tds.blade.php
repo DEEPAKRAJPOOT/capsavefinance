@@ -11,12 +11,19 @@
           <input type="text" class="form-control" id="tds_per" name="tds_per" placeholder="Enter TDS Percentage" maxlength="50">
         </div>
         <div class="form-group col-6">
-             <label for="state_type">Status</label><br />
-             <select class="form-control" name="is_active" id="is_active">
-                  <option disabled value="" selected>Select</option>
-                  <option value="1">Active</option>
-                  <option value="0">In-Active</option>
-              </select>
+            <label for="start_date">Start Date <span class="mandatory">*</span></label>
+            <input type="text" name="start_date" id="start_date" readonly="readonly" class="form-control" value="{{old('start_date')}}">
+            {!! $errors->first('start_date', '<span class="error">:message</span>') !!}
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-12">
+            <label for="state_type">Status</label><br />
+            <select class="form-control" name="is_active" id="is_active">
+                <option disabled value="" selected>Select</option>
+                <option value="1">Active</option>
+                <option value="0">In-Active</option>
+            </select>
         </div>
       </div>
       <div class="row">
@@ -30,6 +37,20 @@
 @section('jscript')
 <script type="text/javascript">
     $(document).ready(function () {
+
+        $("#start_date").datetimepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            minView: 2,
+            endDate: new Date()
+        });
+        
+        $("#end_date").datetimepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            minView: 2,
+            startDate: new Date()
+        });
 
 
         $('#tdsForm').validate({ // initialize the plugin

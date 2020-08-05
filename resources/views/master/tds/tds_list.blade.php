@@ -21,7 +21,7 @@
         <div class="card-body">
             <div class="row" style="margin-bottom: 25px;">
                 <div class="col-md-12 text-right">
-                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addTDSFrame" data-url ="{{ route('add_tds') }}" data-height="150px" data-width="100%" data-placement="top" >
+                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addTDSFrame" data-url ="{{ route('add_tds') }}" data-height="250px" data-width="100%" data-placement="top" >
                             <i class="fa fa-plus"></i> Add TDS
                     </a>
                 </div>
