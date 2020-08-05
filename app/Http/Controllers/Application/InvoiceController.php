@@ -205,6 +205,12 @@ class InvoiceController extends Controller {
             else {
                InvoiceTrait::getManualInvoiceStatus($result);
             }
+             if( $statusId==8)
+            {
+               $inv_apprv_margin_amount = InvoiceTrait::invoiceMargin($result);
+               $is_margin_deduct =  1;  
+               $this->invRepo->updateFileId(['invoice_margin_amount'=>$inv_apprv_margin_amount,'is_margin_deduct' =>1],$result['invoice_id']);
+            }
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {

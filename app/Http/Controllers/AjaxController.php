@@ -3679,9 +3679,16 @@ if ($err) {
                         $attr['status_id'] = $updateInvoice['status_id'];
                         $attr['invoice_margin_amount'] = $updateInvoice['invoice_margin_amount'];
                         $res  =  $this->invRepo->saveFinalInvoice($attr);
-                        InvoiceStatusLog::saveInvoiceStatusLog($res->invoice_id,$attr['status_id']); 
+                        InvoiceStatusLog::saveInvoiceStatusLog($res->invoice_id,$attr['status_id']);
+                         if($res['status_id']==8)
+                        {
+                            $inv_apprv_margin_amount = InvoiceTrait::invoiceMargin($res);
+                            $is_margin_deduct =  1;  
+                            $this->invRepo->updateFileId(['invoice_margin_amount'=>$inv_apprv_margin_amount,'is_margin_deduct' =>1],$res['invoice_id']);
+                        } 
 
                    }
+                  
                   $attribute['invoice_id'] = $invoice_id;
                   $attribute['status'] = 1;
                   $attribute['invoice_bulk_upload_id'] = $attr->invoice_bulk_upload_id;
