@@ -4,20 +4,19 @@
  <div class="modal-body text-left">
      <form id="tdsForm" name="tdsForm" method="POST" action="{{ route('save_tds') }}" target="_top">
               @csrf
-
+    <div class="row">
+      <div class="form-group col-12">
+            <label for="start_date">Start Date <span class="mandatory">*</span></label>
+            <input type="text" name="start_date" id="start_date" readonly="readonly" class="form-control" value="{{old('start_date')}}">
+            
+        </div>
+      </div>
       <div class="row">
         <div class="form-group col-6">
           <label for="tds_per">TDS Percentage</label>
           <input type="text" class="form-control" id="tds_per" name="tds_per" placeholder="Enter TDS Percentage" maxlength="50">
         </div>
         <div class="form-group col-6">
-            <label for="start_date">Start Date <span class="mandatory">*</span></label>
-            <input type="text" name="start_date" id="start_date" readonly="readonly" class="form-control" value="{{old('start_date')}}">
-            {!! $errors->first('start_date', '<span class="error">:message</span>') !!}
-        </div>
-      </div>
-      <div class="row">
-        <div class="form-group col-12">
             <label for="state_type">Status</label><br />
             <select class="form-control" name="is_active" id="is_active">
                 <option disabled value="" selected>Select</option>
@@ -26,6 +25,7 @@
             </select>
         </div>
       </div>
+      
       <div class="row">
          <div class="form-group col-md-12 mb-0">
              <input type="submit" class="btn btn-success btn-sm pull-right" name="add_tds_per" id="add_tds_per" value="Submit"/>
@@ -37,6 +37,9 @@
 @section('jscript')
 <script type="text/javascript">
     $(document).ready(function () {
+         $.validator.addMethod("tds_per", function (value, element) {
+            return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
+        }, "base rate can't be exceed two digits after decimal.");
 
         $("#start_date").datetimepicker({
             format: 'dd/mm/yyyy',
@@ -63,6 +66,9 @@
                 'is_active' : {
                     required : true,
                 },
+                'start_date' : {
+                    required : true,
+                },
             },
             messages: {
                 'tds_per': {
@@ -70,6 +76,9 @@
                 },
                 'is_active': {
                     required: "Please select TDS Status",
+                },
+                'start_date': {
+                    required: "Please Enter Start Date",
                 },
             }
         });

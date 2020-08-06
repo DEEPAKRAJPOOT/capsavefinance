@@ -25,7 +25,9 @@ try {
             },
             columns: [
                 { data: 'sr_no' },
-                { data: 'tds_percentage' },
+                { data: 'tds_per' },
+                { data: 'start_date' },
+                { data: 'end_date' },
                 { data: 'created_at' },
                 { data: 'is_active' }
             ],

@@ -64,7 +64,7 @@ class Tds extends BaseModel
     }
 
     public static function getTDSLists() {
-        $data = self::select('mst_tds.id', 'mst_tds.tds_per', 'mst_tds.is_active', 'mst_tds.created_at')->orderBy('mst_tds.id', 'DESC');
+        $data = self::select('mst_tds.id', 'mst_tds.tds_per', 'mst_tds.is_active', 'mst_tds.created_at', 'mst_tds.start_date', 'mst_tds.end_date')->orderBy('mst_tds.id', 'DESC');
         return $data ? $data : "";
     }
 

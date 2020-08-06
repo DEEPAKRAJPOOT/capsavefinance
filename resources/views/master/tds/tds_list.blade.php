@@ -21,7 +21,7 @@
         <div class="card-body">
             <div class="row" style="margin-bottom: 25px;">
                 <div class="col-md-12 text-right">
-                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addTDSFrame" data-url ="{{ route('add_tds') }}" data-height="250px" data-width="100%" data-placement="top" >
+                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addTDSFrame" data-url ="{{ route('add_tds') }}" data-height="300px" data-width="100%" data-placement="top" >
                             <i class="fa fa-plus"></i> Add TDS
                     </a>
                 </div>
@@ -33,10 +33,12 @@
                         <table id="TdsList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
-                                    <th style="width: 10%">Sr No.</th>
-                                    <th style="width: 50%">TDS Percentage</th>
-                                    <th style="width: 20%">Created at</th>
-                                    <th style="width: 20%">Status</th>
+                                    <th>Sr No.</th>
+                                    <th>TDS Percentage (%)</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Created at</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
