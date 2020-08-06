@@ -2057,7 +2057,7 @@ class ApplicationController extends Controller
                     $appStatusList = Helpers::getAppStatusList();
                     $arrActivity = [];
                     $arrActivity['activity_code'] = 'app_status_changed';
-                    $arrActivity['activity_desc'] = 'Application status is modified from ' . $appStatusList[$cur_status_id] . ' to ' . $appStatusList[$arrUpdateApp['curr_status_id']];
+                    $arrActivity['activity_desc'] = 'Application status is modified from ' . (isset($appStatusList[$cur_status_id]) ? $appStatusList[$cur_status_id] : '') . ' to ' . (isset($appStatusList[$arrUpdateApp['curr_status_id']]) ? $appStatusList[$arrUpdateApp['curr_status_id']] : '');
                     $arrActivity['user_id'] = $user_id;
                     $arrActivity['app_id'] = $app_id;
                     \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));                    
