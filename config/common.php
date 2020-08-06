@@ -99,7 +99,7 @@ return [
         'PRE_SANCTION_DOC_UPLOADED'=>24,
         'SANCTION_LETTER_GENERATED'=>25,
         'POST_SANCTION_DOC_UPLOADED'=>26,
-        'OFFER_GENERATED'=>28,
+        'OFFER_GENERATED'=>56,
         'DISBURSED'=>27,
         'APP_REJECTED'=>43,
         'APP_CANCEL'=>44,
