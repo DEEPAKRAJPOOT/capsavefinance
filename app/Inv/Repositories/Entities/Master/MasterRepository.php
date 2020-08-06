@@ -799,6 +799,11 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         $status = Tds::updateTds($tdsData, $tds_id);
         return $status ? $status : false;
     }
+
+    public function updateTdsEndDate($id, $date)
+    {
+        return Tds::updateTdsEndDate($id, $date);
+    }   
     // END TDS
     
 

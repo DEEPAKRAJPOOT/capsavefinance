@@ -48,6 +48,7 @@ class TdsController extends Controller {
                 $tdsData['created_by'] = Auth::user()->user_id;
                 $tdsData['created_at'] = \carbon\Carbon::now();
                 $status = $this->masterRepo->saveTds($tdsData); 
+                $this->masterRepo->updateTdsEndDate($status->id, $e_date);
             }
             if($status){
                 Session::flash('message', $tds_id ? trans('master_messages.tds_edit_success') :trans('master_messages.tds_add_success'));

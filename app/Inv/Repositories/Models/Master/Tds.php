@@ -77,5 +77,15 @@ class Tds extends BaseModel
         return self::where('id', $tds_id)->first()->update($tdsData);
     }
 
+    public static function updateTdsEndDate($id, $date)
+    {
+        $query = self::where('id','<>',$id)->orderBy('id', 'DESC')->first();
+        if($query){
+            return $query->update(['end_date'=>$date, 'is_active'=>1]);
+        }else{
+            return true;
+        }    
+    }
+
 
 }
