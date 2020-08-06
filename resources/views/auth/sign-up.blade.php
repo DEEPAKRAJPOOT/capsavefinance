@@ -123,6 +123,17 @@
                                 </div>
                             </div>
                             <div class="row">
+                            @if($anchorDetail->supplier_code != null)
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="supplier_code">Supplier Code
+                                    <span class="mandatory">*</span>
+                                    </label>
+                                    <input type="text" name="supplier_code" id="supplier_code" value="@if($anchorDetail){{$anchorDetail->supplier_code}}@else{{old('supplier_code')}}@endif" class="form-control" tabindex="4" placeholder="Supplier Code" readonly="readonly">
+                                    {!! $errors->first('supplier_code', '<span class="error">:message</span>') !!}
+                                </div>
+                            </div>
+                            @endif
                             <div class="col-md-6">
                             <div class="g-recaptcha" id="recaptcha" data-sitekey="{{config('common.google_recaptcha_key')}}"></div>
                             <span class="text-danger error"> {{$errors->first('g-recaptcha-response')}} </span>

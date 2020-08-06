@@ -104,6 +104,7 @@ use RegistersUsers,
         $arrData['parent_id'] = 0;
         $arrData['is_active'] = 0;
         $arrData['is_active'] = 0;
+        $arrData['supplier_code'] =$data['supplier_code'];
         $userId = null;
         
         $userData = $this->userRepo->getUserByemail($data['email']);
@@ -243,6 +244,7 @@ use RegistersUsers,
                     $userArr = $this->userRepo->find($userId);
                 }
                 $anchorLeadInfo = $this->userRepo->getAnchorUsersByToken($anchortoken);
+                // dd($anchorLeadInfo);
                 if(!empty($anchorLeadInfo) && $anchorLeadInfo->is_registered == 1){
                    $email = $anchorLeadInfo->email;
                    return redirect(route('otp', ['token' => Crypt::encrypt($email)]));

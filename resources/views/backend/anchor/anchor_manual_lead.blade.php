@@ -25,7 +25,7 @@
                                  </label>
                                  <input type="text" name="f_name" id="f_name" value="{{ old('f_name') }}" class="form-control f_name" tabindex="1" placeholder="First Name" onkeyup="return checkFname(this.value)">
                                  {!! $errors->first('f_name', '<span class="error">:message</span>') !!}                                 
-                                 <p><small style="font-size: 60%;">You can include first and middlle name (e.g Varun Dudani)</small></p>
+                                 <p><small style="font-size: 80%;">You can include first and middlle name (e.g Varun Dudani)</small></p>
                               </div>
                            </div>
                             <div class="col-6">
@@ -139,6 +139,17 @@
                        
                 </div>
                 @endif
+                <div class="row supplier_code">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="supplier_code">Supplier Code
+                            <span class="mandatory">*</span>
+                            </label>
+                            <input type="text" name="supplier_code" id="supplier_code" value="{{ old('supplier_code') }}" class="form-control" tabindex="4" placeholder="Supplier Code">
+                            {!! $errors->first('supplier_code', '<span class="error">:message</span>') !!}
+                        </div>
+                    </div>
+                </div>
                 <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
           {!!
         Form::close()
@@ -180,6 +191,17 @@ $messages = session()->get('message', false);
 </script>
 <script type="text/javascript">
         $(document).ready(function () {
+
+            $('#anchor_user_type').on('change', function() {
+                if ( this.value == 1)
+                {
+                    $(".supplier_code").show();
+                }
+                else
+                {
+                    $(".supplier_code").hide();
+                }
+            });
             
             $(document).on('input', '.number_format', function (event) {
                 // skip for arrow keys
@@ -330,7 +352,14 @@ $messages = session()->get('message', false);
                             {
                                 required: true,
                             })
-                });                
+                }); 
+
+                $('#supplier_code').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });               
                 
                 // test if form is valid                
                 if (!$('#anchorForm').valid()) {

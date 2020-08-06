@@ -68,7 +68,8 @@ class AnchorUser extends BaseModel {
         'created_by',
         'created_at',
         'updated_at',
-        'updated_by'
+        'updated_by',
+        'supplier_code'
     ];
 
     /**

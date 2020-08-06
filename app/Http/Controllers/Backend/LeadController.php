@@ -711,7 +711,7 @@ class LeadController extends Controller {
     public function saveManualAnchorLead(Request $request){
        try {
             $arrAnchorVal = $request->all();    
-//            dd($arrAnchorVal);            
+        //    dd($arrAnchorVal);            
                             
             if (!empty($arrAnchorVal['assigned_anchor'])){
                 $anchorId = $arrAnchorVal['assigned_anchor'];
@@ -744,7 +744,8 @@ class LeadController extends Controller {
                     'created_by' => Auth::user()->user_id,
                     'created_at' => \Carbon\Carbon::now(),
                     'token' => $token,
-                    'anchor_id' => $anchorId
+                    'anchor_id' => $anchorId,
+                    'supplier_code' => trim($arrAnchorVal['supplier_code']),
                 ];
             
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
