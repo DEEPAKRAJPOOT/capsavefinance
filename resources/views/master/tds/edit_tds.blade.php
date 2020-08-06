@@ -42,12 +42,6 @@
             return this.optional(element) || /^\d+(\.\d{1,2})?$/.test(value);
         }, "base rate can't be exceed two digits after decimal.");
 
-        // $("#start_date").datetimepicker({
-        //     format: 'dd/mm/yyyy',
-        //     autoclose: true,
-        //     minView: 2,
-        //     endDate: new Date()
-        // });
         
         $("#end_date").datetimepicker({
             format: 'dd/mm/yyyy',

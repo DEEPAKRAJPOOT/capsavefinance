@@ -36,9 +36,10 @@ class TdsController extends Controller {
                 $tds_id = preg_replace('#[^0-9]#', '', $request->get('id'));
                 $tds_data = $this->masterRepo->findTDSById($tds_id);
                 if(!empty($tds_data)) {
-                    $tds_data['start_date'] = ($request['start_date']) ? Carbon::createFromFormat('d/m/Y', $request['start_date'])->format('Y-m-d') : '';
-                    //$tds_data['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : null;
-                    $tds_data['updated_by'] = Auth::user()->user_id;
+                    $tdsData['start_date'] = ($request['start_date']) ? Carbon::createFromFormat('d/m/Y', $request['start_date'])->format('Y-m-d') : '';
+                    //$tdsData['end_date'] = ($request['end_date']) ? Carbon::createFromFormat('d/m/Y', $request['end_date'])->format('Y-m-d') : null;
+                    $tdsData['updated_by'] = Auth::user()->user_id;
+                    // dd($tdsData);
                     $status = $this->masterRepo->updateTds($tdsData, $tds_id);
                 }
             } else {
