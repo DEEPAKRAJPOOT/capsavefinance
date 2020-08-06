@@ -450,14 +450,14 @@ class LeadController extends Controller {
 
             $fullFilePath  = $destinationPath . '/' . $fileName;
             $header = [
-                0,1,2,3,4,5
+                0,1,2,3,4,5,6
             ];
 
             $fileHelper = new FileHelper();
             $fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
-            
+            // dd($fileArrayData);
             if($fileArrayData['status'] != 'success'){
-                Session::flash('message', 'Please select only csv and xlsx file format');
+                Session::flash('message', 'Please fill the data countiously till 7th column in the sheet');
                 return redirect()->back();
             }
 
@@ -472,7 +472,7 @@ class LeadController extends Controller {
             $arrAnchLeadData = [];
             $arrUpdateAnchor = [];
             foreach ($rowData as $key => $value) {
-                if ($value && (empty($value[0]) || empty($value[1]) || empty($value[2]) || empty($value[3]) || empty($value[4]) || empty($value[5]) )) {
+                if ($value && (empty($value[0]) || empty($value[1]) || empty($value[2]) || empty($value[3]) || empty($value[4]) || empty($value[5]) || empty($value[0]) )) {
                     Session::flash('message', 'Please fill the correct details.');
                     return redirect()->back();                     
                 }
@@ -498,7 +498,8 @@ class LeadController extends Controller {
                         'is_registered'=>0,
                         'registered_type'=>1,
                         'token' => $token,
-                        'anchor_id' => $anchorId
+                        'anchor_id' => $anchorId,
+                        'supplier_code' => isset($value[6]) ? $value[6] : null,
                     ];
 
                     $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
