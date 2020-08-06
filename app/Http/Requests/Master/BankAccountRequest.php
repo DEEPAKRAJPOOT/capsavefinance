@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Lms;
+namespace App\Http\Requests\Master;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BankAccountRequest extends FormRequest {
@@ -25,12 +26,14 @@ class BankAccountRequest extends FormRequest {
     {
         return [
             'acc_name' => 'required|regex:/^[a-zA-Z ]+$/|max:50',
-            'acc_no' => 'required|numeric|digits_between:9,18|unique:user_bank_account',
+            'acc_no' => 'required|numeric|digits_between:9,18',
+                        Rule::unique('user_bank_account')->ignore($this->request->get('bank_account_id')),
             'confim_acc_no' => 'required|numeric|digits_between:9,18|same:acc_no',
             'bank_id' => 'required',
             'ifsc_code' => 'required|alpha_num|max:11',
             'branch_name' => 'required|regex:/^[a-zA-Z0-9 -]+$/|max:30',
             'is_active' => 'required',
+            'sponser_bank' => 'required',
         ];
     }
 
@@ -43,6 +46,7 @@ class BankAccountRequest extends FormRequest {
         $messages['branch_name.required'] = trans('error_messages.required', ['field' => 'Branch Name ']);
         $messages['is_active.required'] = trans('error_messages.required', ['field' => 'Status']);
         $messages['acc_no.unique'] = trans('master_messages.unique_acc_no');
+        $messages['sponser_bank.required'] = trans('error_messages.required', ['field' => 'Sponser Branch Code']);
         return $messages;
     }
 

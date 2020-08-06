@@ -1734,5 +1734,18 @@ class UserRepository extends BaseRepositories implements UserInterface
         $result = AnchorUser::updateAnchorUserByEmailId($emailId, $attributes);
         return $result ?: false;
     }
+
+    /**
+     * Update User status in agency user list
+     * 
+     * @param type $attributes
+     * @param type $conditions 
+     * @return mixed
+     */
+    public function updateUserStatus($attributes, $conditions)
+    {
+        return User::updateUserStatus($attributes, $conditions);
+    }
+    
 }
 

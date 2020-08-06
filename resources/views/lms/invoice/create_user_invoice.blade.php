@@ -221,6 +221,7 @@
            format: 'dd/mm/yyyy',
            autoclose: true,
            startDate:  new Date("{{$eodStartDate}}"),
+           endDate: '+0d',
            minView : 2,
        });
    });

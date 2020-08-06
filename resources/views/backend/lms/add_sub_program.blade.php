@@ -43,6 +43,20 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                             <i class="fa fa-inr" aria-hidden="true"></i> 
                                                             <span id="total-anchor-limit" class="number_format">{!! isset($programData->anchor_limit) ?  number_format($programData->anchor_limit )   : null !!}</span>
                                                         </p>
+                                                        &nbsp;&nbsp;&nbsp;
+                                                        @if ($action == 'view')
+
+
+                                                        <p class="float-right mb-0">
+                                                            <b>Remaining Anchor Limit : </b>
+                                                            <i class="fa fa-inr" aria-hidden="true"></i>
+                                                            <span id="remaining-anchor-limit" class="number_format">{{ isset($programData->anchor_limit) ?  number_format($programData->anchor_limit - $anchorUtilizedBalance)  : null }}</span>
+                                                            <br>
+                                                            <b>Utilized Limit in Offer : </b>
+                                                            <i class="fa fa-inr" aria-hidden="true"></i>
+                                                            {{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}                                                             
+                                                        </p>                                                        
+                                                        @else
 
 
                                                         <p class="float-right mb-0">
@@ -54,7 +68,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                             <i class="fa fa-inr" aria-hidden="true"></i>
                                                             {{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}                                                             
                                                         </p>
-                                                        
+                                                        @endif
                                                    
                                                     </div>
                                                     <!--                                                    <div class="col-sm-3 text-right">

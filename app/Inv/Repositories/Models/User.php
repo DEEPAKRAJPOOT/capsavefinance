@@ -779,4 +779,42 @@ class User extends Authenticatable
 
        return ($arrUser ?: false);
    }
+
+       /**
+     * Update User status in agency user list 
+     * 
+     * @param type $attributes
+     * @param type $conditions
+     * @return type
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions 
+     */
+    public static function updateUserStatus($attributes = [], $conditions = [])
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+       
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($conditions)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($conditions)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        $res = self::where($conditions)->update($attributes);
+
+        return ($res ?: false);
+    }
+
 }

@@ -164,7 +164,7 @@ class DisbursalController extends Controller
 			        $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
 			        $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
 
-			        if($invoice['program_offer']['payment_frequency'] == 1) {
+			        if($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
 			            $interest = $tInterest;
 			        }
 

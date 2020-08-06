@@ -1,7 +1,7 @@
 try {
     var oTable;
     jQuery(document).ready(function ($) {
-        oTable = $('#lease_register_report').DataTable({
+        oTable = $('#tds_report').DataTable({
             processing: true,
             serverSide: true,
             pageLength: 50,
@@ -9,48 +9,37 @@ try {
             responsive: true,
             searching: false,
             ajax: {
-                "url": messages.get_all_lease_registers, // json datasource
+                "url": messages.get_all_tds, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                    d.from_date = $('input[name="from_date"]').val();
-                    d.to_date = $('input[name="to_date"]').val();
+//                    d.from_date = $('input[name="from_date"]').val();
+//                    d.to_date = $('input[name="to_date"]').val();
                     d.user_id = $('input[name=user_id]').val();
                     d._token = messages.token;
                 },
                 "error": function () {
-                    $("#lease_register_report").append('<tbody class="error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
-                    $("#lease_register_report_processing").css("display", "none");
+                    $("#tds_report").append('<tbody class="error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#tds_report_processing").css("display", "none");
                 }
             },
             "drawCallback": function( settings ) {
                 excelUrl = settings.json.excelUrl;
+                console.log('excelUrl--', excelUrl);
                 $('#dwnldEXCEL').attr('href', excelUrl)
                 pdfUrl = settings.json.pdfUrl;
+                console.log('pdfUrl--', pdfUrl);
                 $('#dwnldPDF').attr('href', pdfUrl)
             },
             columns: [
-                {data: 'state'},
-                {data: 'gstn'},
                 {data: 'user_id'},
                 {data: 'customer_name'},
-                {data: 'customer_address', width:'200px'},
-                {data: 'customer_gstn'},
-                {data: 'sac_code'},
-                // {data: 'contract_no'},
-                {data: 'invoice_no'},
-                {data: 'invoice_date'},
-                {data: 'base_amount'},
-                {data: 'sgst_rate'},
-                {data: 'sgst_amount'},
-                {data: 'cgst_rate'},
-                {data: 'cgst_amount'},
-                {data: 'igst_rate'},
-                {data: 'igst_amount'},
-                {data: 'total_amt'},
-                {data: 'total_rate'},
-                {data: 'total_tax'},
-                {data: 'cash_flow'},
-                {data: 'considered_in'},
+                {data: 'trans_name'},
+                {data: 'date_of_payment'},
+                {data: 'trans_date'},
+                {data: 'amount'},
+                {data: 'trans_by'},
+                {data: 'tds_certificate_no'},
+                {data: 'file_id'}
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [1,2,3]}]
         });
@@ -62,14 +51,14 @@ try {
 
     });
 
-        $('#from_date').datetimepicker({
-            format: 'dd/mm/yyyy',
-            autoclose: true,
-            minView: 2, });
-        $('#to_date').datetimepicker({
-            format: 'dd/mm/yyyy',
-            autoclose: true,
-            minView: 2, });
+//        $('#from_date').datetimepicker({
+//            format: 'dd/mm/yyyy',
+//            autoclose: true,
+//            minView: 2, });
+//        $('#to_date').datetimepicker({
+//            format: 'dd/mm/yyyy',
+//            autoclose: true,
+//            minView: 2, });
 
 
       var sample_data = new Bloodhound({
@@ -108,9 +97,10 @@ try {
     }
 
     function download(action){
+        alert(action);
         url = '';
-        from_date = $('input[name="from_date"]').val().trim();
-        to_date = $('input[name="to_date"]').val().trim();
+//        from_date = $('input[name="from_date"]').val().trim();
+//        to_date = $('input[name="to_date"]').val().trim();
         customer_id = $('input[name=customer_id]').val().trim();
         if(action.trim() == 'pdf'){
             url = messages.pdf_soa_url;
@@ -120,13 +110,13 @@ try {
             url = messages.excel_soa_url;
         }
 
-        if(from_date){
-            url += '&from_date='+from_date;
-        }
-
-        if(to_date){
-            url += '&to_date='+to_date;
-        }
+//        if(from_date){
+//            url += '&from_date='+from_date;
+//        }
+//
+//        if(to_date){
+//            url += '&to_date='+to_date;
+//        }
 
         window.open(url, '_blank');
     }

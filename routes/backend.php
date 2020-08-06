@@ -62,6 +62,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\ReportController@pdfInvoiceRealisation'
             ]);
              
+            Route::get('/tds', [
+                'as' => 'tds',
+                'uses' => 'Backend\ReportController@tdsReport'
+            ]);
+            Route::get('/tds-download', [
+                'as' => 'tds_download_reports',
+                'uses' => 'Backend\ReportController@downloadTdsReport'
+            ]);
+             
         });
 
         Route::group(['prefix' => 'application'], function () {

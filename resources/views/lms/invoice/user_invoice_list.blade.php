@@ -52,6 +52,7 @@
                               <thead>
                                 <tr role="row">
                                   <th>Reference No</th>
+                                  <th>Int/Charge Name</th>
                                   <th>Business GST No</th>
                                   <th>Invoice No</th>
                                   <th>Invoice Date</th>

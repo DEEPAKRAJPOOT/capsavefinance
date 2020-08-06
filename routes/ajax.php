@@ -1183,5 +1183,16 @@ Route::group(
         'as' => 'get_cibil_report_lms',
         'uses' => 'AjaxController@getCibilReportLms',
     ]);
+    
+    Route::post('get_all_tds',[
+        'as' => 'get_all_tds',
+        'uses' => 'AjaxController@tds'
+        ]
+    );
+
+    Route::post('/change_agency_user_status', [
+        'as' => 'change_agency_user_status',
+        'uses' => 'AjaxController@changeUsersAgencyStatus',
+    ]);
 
 });
