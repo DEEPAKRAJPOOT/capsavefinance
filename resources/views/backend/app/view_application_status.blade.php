@@ -31,7 +31,7 @@
                                     $date = Helpers::convertDateTimeFormat($rowData->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i:s');
                                     @endphp
                                     <tr>
-                                        <td>{{ $statusIdArr[$rowData->status_id] }}</td>
+                                        <td>{{ $rowData->status_name }}</td>
                                         <td>{{ $rowData->note_data }}</td>
                                         <td>{{$rowData->f_name.' '.$rowData->m_name}}</td>
                                         <td>{{ $date }}</td>

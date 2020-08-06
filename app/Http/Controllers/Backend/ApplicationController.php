@@ -2080,7 +2080,7 @@ class ApplicationController extends Controller
 
 		if($app_id){
 			$allCommentsData = $this->appRepo->getAllCommentsByAppId($app_id);
-			// dd($allCommentsData);
+			//dd($allCommentsData);
 		}
 
 		return view('backend.app.view_application_status')
