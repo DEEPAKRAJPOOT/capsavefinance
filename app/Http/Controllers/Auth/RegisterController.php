@@ -104,7 +104,7 @@ use RegistersUsers,
         $arrData['parent_id'] = 0;
         $arrData['is_active'] = 0;
         $arrData['is_active'] = 0;
-        $arrData['supplier_code'] =$data['supplier_code'];
+        $arrData['supplier_code'] = isset($data['supplier_code']) ? $data['supplier_code'] : null;
         $userId = null;
         
         $userData = $this->userRepo->getUserByemail($data['email']);
