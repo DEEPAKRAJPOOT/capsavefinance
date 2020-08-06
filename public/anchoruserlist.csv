@@ -1,3 +1,5 @@
-First Name,Last Name,Business Name,Email,Mobile,User Type
-Demo,ABC,ABC COMPANY LLP,demo.abc@test.in,9999901114,Supplier
-Demo,XYZ,XYZ COMPANY,demo.xyz@test.in,9999901119,Buyer
+First Name,Last Name,Business Name,Email,Mobile,User Type,Supplier Code
+UMESH KUMAR ,GUPTA ,Gupta Pvt Ltd.,umeshkumar48@sofodev.co,7836090909,Supplier,123
+Bharat ,Kumar,BHARAT TANNERY ,bharatkumar48@sofodev.co,8787878787,Buyer,
+Yogesh,khanna,MATRIX SYSTEM,yogeshkhanna48@sofodev.co,8787878788,Supplier,234
+Akash,Khanna,SILVER TRADERS,akashkhanna48@sofodev.co,8787878789,Buyer,

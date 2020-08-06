@@ -320,6 +320,7 @@ class FileHelper {
           $objReader      =   PHPExcel_IOFactory::createReader($inputFileType);
           $objPHPExcel    =   $objReader->load($inputFileName);
           $sheet = $objPHPExcel->getActiveSheet(); 
+          // $sheet = $sheet->removeColumnByIndex(15);
           $highestRow = $sheet->getHighestRow(); 
           $highestColumn = $sheet->getHighestDataColumn();
           for ($row = 1; $row <= $highestRow; $row++){ 
