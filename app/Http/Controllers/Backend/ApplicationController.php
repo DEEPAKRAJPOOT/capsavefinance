@@ -74,8 +74,10 @@ class ApplicationController extends Controller
                 $panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->biz_name . ")";
                 //$panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->name . " " . $anchUser->l_name . ")";
             }
-            $appStatusList = \Helpers::getAppStatusList($statusType=1)->toArray();            
-	   return view('backend.app.index')->with('panList', $panList)->with('appStatusList', $appStatusList);              
+            $appStatusList = \Helpers::getAppStatusList($statusType=1)->toArray(); 
+            $appStatusList = ['1'=>'Ready for Renewal','2' => 'Renewed', '3' => 'Limit Enhanced', '4' => 'Limit Reduced']+$appStatusList;
+            asort($appStatusList);            
+	    return view('backend.app.index')->with('panList', $panList)->with('appStatusList', $appStatusList);              
 	}
 	
 	public function addAppCopy(Request $request)
