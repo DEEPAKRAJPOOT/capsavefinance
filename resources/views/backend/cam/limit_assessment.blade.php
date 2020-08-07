@@ -70,7 +70,9 @@
                             </div>
                             <div class="col-md-1">
                                 <div class="form-group">
+				    @if (request()->get('view_only'))
                                     <button class="btn btn-success btn-sm mt-44" type="submit" name="program_submit">Submit</button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -409,7 +411,7 @@
                             @if((request()->get('view_only') || $currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
                                 <form method="POST" action="{{route('approve_offer')}}">
                                 @csrf
-                                <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
+                                <input type="hidden" name="app_id" value="{{request()->get('app_id')}}"><input type="hidden" name="user_id" value="{{$limitData->user_id}}">
                                 <input name="btn_save_offer" class="btn btn-success btn-sm float-right mt-3 ml-3" type="submit" value="Approve Limit">
                                 </form>
                             @endif

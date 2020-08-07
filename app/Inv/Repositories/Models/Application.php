@@ -68,6 +68,7 @@ class Application extends BaseModel
         'status',
         'is_assigned',
         'curr_status_id',
+        'curr_status_updated_at',
         'app_type',
         'renewal_status',
         'app_code',
@@ -144,10 +145,11 @@ class Application extends BaseModel
                 'users.email',
                 'users.mobile_no',                
                 'app_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role',
-                'app_assign.app_assign_id', 'app.parent_app_id', 'note.note_data as reason', 'note.note_id','anchor_user.pan_no')
+                'app_assign.app_assign_id', 'app.parent_app_id', 'note.note_data as reason', 'note.note_id','anchor_user.pan_no','mst_status.status_name')
                 ->join('users', 'users.user_id', '=', 'app.user_id')  
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
-                ->leftjoin('note','app.app_id', '=', 'note.app_id');
+                ->leftjoin('note','app.app_id', '=', 'note.app_id')
+                ->leftjoin('mst_status','app.curr_status_id', '=', 'mst_status.id');
         if ($roleData[0]->id == 11) {            
         $query  = $query->leftJoin('app_assign', function ($join) use($roleData, $curUserId, $userArr) {
                     $join->on('app.app_id', '=', 'app_assign.app_id');                    
@@ -434,10 +436,11 @@ class Application extends BaseModel
     protected static function getUserApplications() 
     {  
         $usersIds = AnchorUser::getUsersByPan(\Auth::user()->user_id);        
-        $appData = self::distinct()->select('app.user_id','app.app_id','app_product.loan_amount', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at', 'anchor_user.pan_no')
+        $appData = self::distinct()->select('app.user_id','app.app_id','app_product.loan_amount', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at', 'anchor_user.pan_no','app.app_code','app.curr_status_id','mst_status.status_name')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->join('users', 'app.user_id', '=', 'users.user_id')
                 ->join('app_product', 'app_product.app_id', '=', 'app.app_id')
+                ->leftJoin('mst_status', 'mst_status.id', '=', 'app.curr_status_id')
                 ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
                 //->join(DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
                 //    $join->on( 'anchor_user.pan_no', '=', 'a.pan_no' );
@@ -869,6 +872,12 @@ class Application extends BaseModel
      
      public static function checkAppByPan($userId)
      {
+        $appStatusList = [
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            //config('common.mst_status_id.APP_HOLD'),
+            //config('common.mst_status_id.APP_DATA_PENDING')
+        ];           
         $appData = self::select('app.*')
                 ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id') 
                 ->join(DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
@@ -876,6 +885,7 @@ class Application extends BaseModel
                 })                                
                 ->setBindings([$userId])
                 ->whereIn('app.status', [0,1])
+                ->whereNotIn('app.curr_status_id', $appStatusList)        
                 ->first();
                        
         return ($appData && $appData->app_id ? true : false);    
@@ -910,11 +920,12 @@ class Application extends BaseModel
             $usersIds = AnchorUser::getUsersByPan($userId);
         }
         
-        $appData = self::distinct()->select('app.user_id','app.app_id','app_product.loan_amount', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at','anchor_user.pan_no')
+        $appData = self::distinct()->select('app.user_id','app.app_id','app_product.loan_amount', 'users.f_name', 'users.m_name', 'users.l_name', 'users.email', 'users.mobile_no', 'biz.biz_entity_name', 'biz.biz_id', 'app.status', 'users.anchor_id', 'users.is_buyer as user_type', 'app.created_at','anchor_user.pan_no', 'app.curr_status_id','mst_status.status_name')
                 ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
                 ->join('users', 'app.user_id', '=', 'users.user_id')
                 ->join('app_product', 'app_product.app_id', '=', 'app.app_id')
-                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
+                ->leftJoin('mst_status', 'mst_status.id', '=', 'app.curr_status_id');
                 //->join(DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
                 //    $join->on( 'anchor_user.pan_no', '=', 'a.pan_no' );
                 //})

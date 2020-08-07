@@ -130,15 +130,9 @@
                                             <td> {{ isset($app['email']) ? $app['email'] : ''}}</td>
                                             <td> {{ isset($app['pan_no']) ? $app['pan_no'] : ''}}</td>
                                             <td>
-                                                @if($app['status'] == 1)
-                                                <button type="button" class="btn btn-success btn-sm">Complete</button>
-                                                @elseif($app['status'] == 2)
-                                                <button type="button" class="btn btn-success btn-sm">Sanctioned</button>
-                                                @elseif($app['status'] == 3)
-                                                <button type="button" class="btn btn-success btn-sm">Closed</button>                                                
-                                                @else
-                                                <button type="button" class="btn btn-info btn-sm">Not Complete</button>
-                                                @endif 
+                                                @if (isset($app['status_name']) && !empty(isset($app['status_name'])))
+                                                <button type="button" class="btn {{ config('common.APP_STATUS_BTN_CLASS.'.$app['curr_status_id']) ? config('common.APP_STATUS_BTN_CLASS.'.$app['curr_status_id']) : 'btn-success' }} btn-sm">{{ $app['status_name'] }}</button>                                                
+                                                @endif
                                             </td>
                                             <td><div class="d-flex inline-action-btn justify-content-center">
                                              @can('company_details')

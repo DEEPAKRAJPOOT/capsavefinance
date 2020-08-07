@@ -1449,3 +1449,7 @@ ul.custom-check-label li label{padding:0;font-weight: 400;}
 
 /*15/07/2020 Add Css*/
 a.btn.btn-success.btn-sm {color: #fff; cursor: pointer;} 
+/* For Radio Button 07-08-2020 */
+#addAppRejection ul.custom-check-label li {padding: 0 10px 0 25px;}
+#addAppRejection ul.custom-check-label{padding: 0;}
+#addAppRejection .form-check{padding:0}

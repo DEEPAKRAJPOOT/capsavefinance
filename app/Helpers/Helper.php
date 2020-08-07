@@ -169,6 +169,7 @@ class Helper extends PaypalHelper
             if ($wf_stage_code == 'new_case') {
                 $updateData['biz_app_id'] = $app_id;
                 $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
+                self::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_INCOMPLETE'));
             } else {
                 $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
             }
@@ -1024,8 +1025,17 @@ class Helper extends PaypalHelper
             if (is_null($to_id)) {
                 $to_id = \Auth::user()->user_id;
             }
+            
+            $appData = $appRepo->getAppData($app_id);
+            $appStatusList = [
+                config('common.mst_status_id.APP_REJECTED'),
+                config('common.mst_status_id.APP_CANCEL'),
+            ];
+            if ($appData && in_array($appData->curr_status_id, $appStatusList)) {
+                return 0;
+            }            
             $roleData = self::getUserRole();
-            if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;
+            if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;            
             
             if (isset($roleData[0]) && $roleData[0]->id == 12) {
                 $where=[];
@@ -1078,6 +1088,8 @@ class Helper extends PaypalHelper
                     
                 } else {
                     if (isset($roleData[0]) && $roleData[0]->id == 6 && in_array(request()->route()->getName(), ['share_to_colender', 'save_share_to_colender'])) {
+                        $isViewOnly = 1;
+                    } else if (isset($roleData[0]) && $roleData[0]->id == 11 && in_array(request()->route()->getName(), ['reject_app', 'save_app_rejection'])) {
                         $isViewOnly = 1;
                     } else {
                         $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
@@ -1907,6 +1919,77 @@ class Helper extends PaypalHelper
         return $programs;
      }
 
+    public static function updateAppCurrentStatus($appId, $curStatus, $data=[])
+    {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
+        $curDate = \Carbon\Carbon::now();
+        $appData = $appRepo->getAppData($appId);
+        
+        if ($appData && $appData->curr_status_id != $curStatus) {
+            $userId = $appData->user_id;
+            if (isset($data['note_data']) && !empty($data['note_data'])) {
+                $noteData = [
+                    'app_id'     => $appId, 
+                    'note_data'  => $data['note_data'],
+                    'created_at' => $curDate,
+                    'created_by' => \Auth::user()->user_id
+                ];
+                $result = $appRepo->saveAppNote($noteData)->latest()->first()->toArray();
+            }
+        
+            $appStatusData = [
+                'app_id'    => $appId,
+                'user_id'   => $userId,
+                'note_id'   => isset($result['note_id']) ? $result['note_id'] : null,
+                'status_id' => (int) $curStatus,
+                'created_at'=> $curDate,
+                'created_by'=> \Auth::user()->user_id
+            ];
+            $appRepo->saveAppStatusLog($appStatusData);
+
+            $arrUpdateApp=[
+                'curr_status_id' => (int) $curStatus,
+                'curr_status_updated_at' => $curDate
+            ];
+
+            $appStatusList = self::getAppStatusList();
+            $arrActivity = [];
+            $arrActivity['activity_code'] = 'app_status_changed';
+            $arrActivity['activity_desc'] = 'Application status is modified from ' . (isset($appStatusList[$appData->curr_status_id]) ? $appStatusList[$appData->curr_status_id] : '' ) . ' to ' . (isset($appStatusList[$curStatus]) ? $appStatusList[$curStatus] : '' );
+            $arrActivity['user_id'] = $userId;
+            $arrActivity['app_id'] = $appId;
+            \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));
+
+            return $appRepo->updateAppDetails($appId, $arrUpdateApp);
+        }
+
+    }
+    
+    public static function isChangeAppStatusAllowed ($curStatusId) 
+    {
+        $appStatusList = [
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            //config('common.mst_status_id.OFFER_LIMIT_APPROVED'),
+            //config('common.mst_status_id.OFFER_LIMIT_REJECTED'),            
+            //config('common.mst_status_id.OFFER_GENERATED'),
+            //config('common.mst_status_id.OFFER_ACCEPTED'),
+            //config('common.mst_status_id.OFFER_REJECTED'),
+            //config('common.mst_status_id.SANCTION_LETTER_GENERATED'),
+            config('common.mst_status_id.APP_SANCTIONED'),
+            config('common.mst_status_id.APP_CLOSED'),
+            config('common.mst_status_id.DISBURSED'),
+            config('common.mst_status_id.NPA'),
+        ];
+        $isChangeAppStatusAllowed = !in_array($curStatusId, $appStatusList);
+        return $isChangeAppStatusAllowed;
+    }
+    
+    public static function getAppStatusList()
+    {
+        return \App\Inv\Repositories\Models\Master\Status::getStatusList($status_type=1);
+    }
+
     /**
      * Get workflow deatail by workflow id
      * 
@@ -1921,4 +2004,5 @@ class Helper extends PaypalHelper
         $wfData = WfAppStage::getAppWfStage($wf_stage_code, $user_id, $app_id);
         return $wfData;
     }     
+        
 }

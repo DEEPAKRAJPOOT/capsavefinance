@@ -542,19 +542,26 @@ class ApplicationController extends Controller
             $userId = Auth::user()->user_id;
             // $response = $this->docRepo->isUploadedCheck($userId, $appId);
             // if ($response->count() < 1) {
-                //$appData = $this->appRepo->getAppData($appId);
-                //$curStatus = $appData ? $appData->status : 0;                        
+                $appData = $this->appRepo->getAppData($appId);
+                $curStatus = $appData ? $appData->curr_status_id : 0;                        
                 $currentStage = Helpers::getCurrentWfStage($appId);
-                if ($currentStage && $currentStage->order_no < 4 ) {                                  
+                $appStatusList = [
+                    config('common.mst_status_id.APP_REJECTED'),
+                    config('common.mst_status_id.APP_CANCEL'),
+                    config('common.mst_status_id.APP_HOLD'),
+                    config('common.mst_status_id.APP_DATA_PENDING')
+                ];                
+                if ($currentStage && $currentStage->order_no < 4 && !in_array($curStatus, $appStatusList) ) {                                  
                     $this->appRepo->updateAppData($appId, ['status' => 1]);
+                    Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.COMPLETED'));
                 }                
                 
                 
                 Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
              
                 //Add application workflow stages                
-                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);                
-                
+                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
+                                
                 //Insert Pre Offer Documents
                 $prgmDocsWhere = [];
                 $prgmDocsWhere['stage_code'] = 'pre_offer';
@@ -584,7 +591,25 @@ class ApplicationController extends Controller
      */
     public function index()
     {
-       return view('frontend.application.index');   
+       $appStatus = $this->masterRepo->getAppStatus($status_type=1);
+       $appStatusList = [];       
+                
+       $selStatusList = [
+            config('common.mst_status_id.APP_INCOMPLETE'),
+            config('common.mst_status_id.COMPLETED'),            
+            config('common.mst_status_id.APP_SANCTIONED'),           
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            config('common.mst_status_id.APP_HOLD'),
+            config('common.mst_status_id.APP_DATA_PENDING'),           
+            config('common.mst_status_id.APP_CLOSED')
+        ];
+       foreach($appStatus as $statusId=>$appStatusName) {
+           if (in_array($statusId, $selStatusList)) {
+                $appStatusList[$statusId] = $appStatusName;
+           }
+       }
+       return view('frontend.application.index')->with('appStatusList', $appStatusList);   
               
     }
 
