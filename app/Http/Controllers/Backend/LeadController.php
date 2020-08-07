@@ -450,14 +450,14 @@ class LeadController extends Controller {
 
             $fullFilePath  = $destinationPath . '/' . $fileName;
             $header = [
-                0,1,2,3,4,5,6
+                0,1,2,3,4,5
             ];
 
             $fileHelper = new FileHelper();
             $fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
             // dd($fileArrayData);
             if($fileArrayData['status'] != 'success'){
-                Session::flash('message', 'Please fill the data countiously till 7th column in the sheet');
+                Session::flash('message', 'Please fill the data countiously till 6th column in the sheet');
                 return redirect()->back();
             }
 
@@ -468,11 +468,34 @@ class LeadController extends Controller {
                 return redirect()->back();                     
             }
 
+            foreach($rowData as $key => $value){
+                if ($value && (empty($value[0]) || empty($value[1]) || empty($value[2]) || empty($value[3]) || empty($value[4]) || empty($value[5]))) {
+                    Session::flash('message', 'Please fill the correct details.');
+                    return redirect()->back();                     
+                }
+        
+                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));
+                if($anchUserInfo){
+                    Session::flash('message', 'User is already registered with '.$value[3]);
+                    return redirect()->back(); 
+                }
+                
+                if(!preg_match("/^([a-zA-Z' ]+)$/",$value[0])){
+                    Session::flash('message', 'Please fill correct first name'.$value[0]);
+                    return redirect()->back();
+                }
+
+                if(!preg_match("/^([a-zA-Z' ]+)$/",$value[1])){
+                    Session::flash('message', 'Please fill correct last name'.$value[1]);
+                    return redirect()->back();
+                }
+            }
+
             $anchLeadMailArr = [];
             $arrAnchLeadData = [];
             $arrUpdateAnchor = [];
             foreach ($rowData as $key => $value) {
-                if ($value && (empty($value[0]) || empty($value[1]) || empty($value[2]) || empty($value[3]) || empty($value[4]) || empty($value[5]) || empty($value[0]) )) {
+                if ($value && (empty($value[0]) || empty($value[1]) || empty($value[2]) || empty($value[3]) || empty($value[4]) || empty($value[5]) )) {
                     Session::flash('message', 'Please fill the correct details.');
                     return redirect()->back();                     
                 }
@@ -499,7 +522,7 @@ class LeadController extends Controller {
                         'registered_type'=>1,
                         'token' => $token,
                         'anchor_id' => $anchorId,
-                        'supplier_code' => isset($value[6]) ? $value[6] : null,
+                        // 'supplier_code' => isset($value[6]) ? $value[6] : null,
                     ];
 
                     $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
