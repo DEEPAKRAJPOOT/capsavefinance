@@ -129,7 +129,11 @@
                                             <td> {{ isset($app['biz_entity_name']) ? $app['biz_entity_name'] : ''}}</td>
                                             <td> {{ isset($app['email']) ? $app['email'] : ''}}</td>
                                             <td> {{ isset($app['pan_no']) ? $app['pan_no'] : ''}}</td>
-                                            <td><button type="button" class="btn {{ config('common.APP_STATUS_BTN_CLASS.'.$app['curr_status_id']) }} btn-sm">{{ isset($app['status_name']) ? $app['status_name'] : ''}}</button></td>
+                                            <td>
+                                                @if (isset($app['status_name']) && !empty(isset($app['status_name'])))
+                                                <button type="button" class="btn {{ config('common.APP_STATUS_BTN_CLASS.'.$app['curr_status_id']) ? config('common.APP_STATUS_BTN_CLASS.'.$app['curr_status_id']) : 'btn-success' }} btn-sm">{{ $app['status_name'] }}</button>                                                
+                                                @endif
+                                            </td>
                                             <td><div class="d-flex inline-action-btn justify-content-center">
                                              @can('company_details')
                                                     <a title="Edit Application" href="{{route('company_details',['user_id'=>$app['user_id'], 'app_id'=>$app['app_id'], 'biz_id'=>$app['biz_id']])}}" class="btn btn-action-btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>

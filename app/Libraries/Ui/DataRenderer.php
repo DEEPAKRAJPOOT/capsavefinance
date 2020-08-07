@@ -611,7 +611,8 @@ class DataRenderer implements DataProviderInterface
                     function ($app) {
                     $app_status = config('common.app_status');                    
                     //return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(isset($app_status[$app->status]) ? $app_status[$app->status] : '' ).'</label>';
-                    return '<label class="badge '.(config('common.APP_STATUS_LABEL_CLASS.'.$app->curr_status_id)).'">'.(isset($app->status_name) ? $app->status_name : '' ).'</label>';
+                    $app_status_class = config('common.APP_STATUS_LABEL_CLASS.'.$app->curr_status_id) ? config('common.APP_STATUS_LABEL_CLASS.'.$app->curr_status_id) : 'badge-primary';
+                    return '<label class="badge '. $app_status_class .'">'.(isset($app->status_name) ? $app->status_name : '' ).'</label>';
 
                 })
                 ->addColumn(
