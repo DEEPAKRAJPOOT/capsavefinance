@@ -99,12 +99,17 @@ return [
         'PRE_SANCTION_DOC_UPLOADED'=>24,
         'SANCTION_LETTER_GENERATED'=>25,
         'POST_SANCTION_DOC_UPLOADED'=>26,
-        'OFFER_GENERATED'=>28,
+        'OFFER_GENERATED'=>56,
         'DISBURSED'=>27,
         'APP_REJECTED'=>43,
         'APP_CANCEL'=>44,
         'APP_HOLD'=>45,
         'APP_DATA_PENDING'=>46,
+        'APP_INCOMPLETE'=>49,
+        'APP_SANCTIONED'=>50,
+        'APP_CLOSED'=>51,
+        'OFFER_LIMIT_REJECTED'=>55,
+        'NPA' => 48
     ],
     'facility_type' => [
         '1' => 'Rental Facility',
@@ -329,5 +334,25 @@ return [
         '0200' => 'Overdraft',
         '0300' => 'Demand loan',
     ],
+    'APP_STATUS_BTN_CLASS' => [
+        '20' => 'btn-success',   //COMPLETED
+        '49' => 'btn-info',      //IN COMPLETE
+        '50' => 'btn-success',   //SANCTIONED
+        '51' => 'btn-secondary',   //CLOSED
+        '43' => 'btn-danger',   //APP_REJECTED
+        '44' => 'btn-danger',   //APP_CANCEL
+        '45' => 'btn-warning',   //APP_HOLD
+        '46' => 'btn-warning'    //APP_DATA_PENDING
+    ],
+    'APP_STATUS_LABEL_CLASS' => [
+        '20' => 'badge-primary',   //COMPLETED
+        '49' => 'badge-warning',   //IN COMPLETE
+        '50' => 'badge-primary',   //SANCTIONED
+        '51' => 'badge-warning',   //CLOSED
+        '43' => 'badge-warning',   //APP_REJECTED
+        '44' => 'badge-warning',   //APP_CANCEL
+        '45' => 'badge-warning',   //APP_HOLD
+        '46' => 'badge-warning'    //APP_DATA_PENDING
+    ]    
 ];
  

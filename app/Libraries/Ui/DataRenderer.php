@@ -344,22 +344,14 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'status',
                     function ($app) {
-                    $app_status = config('common.app_status');                    
-                    $status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
+                    //$app_status = config('common.app_status');                    
+                    //$status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
+                    $status = isset($app->status_name) ? $app->status_name : ''; 
 
                     $link = '<a title="View Application Status" href="#" data-toggle="modal" data-target="#viewApplicationStatus" data-url="' . route('view_app_status_list', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn">View Status</a>';
 
-                    if(Helpers::checkPermission('view_app_status_list') && $app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_REJECTED']){
-                        $status = 'Rejected'.$link;                        
-                    }
-                    if(Helpers::checkPermission('view_app_status_list') &&$app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_CANCEL']){
-                        $status = 'Cancelled'.$link;
-                    }
-                    if(Helpers::checkPermission('view_app_status_list') &&$app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_HOLD']){
-                        $status = 'On Hold'.$link;
-                    }
-                    if(Helpers::checkPermission('view_app_status_list') &&$app->curr_status_id !== null && $app->curr_status_id == config('common.mst_status_id')['APP_DATA_PENDING']){
-                        $status = 'Data Pending'.$link;
+                    if(Helpers::checkPermission('view_app_status_list') ){
+                        $status .= $link;                        
                     }
                     return $status;
                 })
@@ -415,7 +407,7 @@ class DataRenderer implements DataProviderInterface
                         
                         //Route for Application Rejection
                         // if (Helpers ::checkPermission('reject_app') && ($app->curr_status_id === null && $app->curr_status_id !== config('common.mst_status_id')['APP_REJECTED'])) {
-                       if (Helpers ::checkPermission('reject_app')) {
+                        if (Helpers::isChangeAppStatusAllowed($app->curr_status_id) && Helpers ::checkPermission('reject_app')) {
                            $act = $act . '<a title="Modify Status" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></a>';
                         }
                         
@@ -442,27 +434,14 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('status') != '') {
                         $query->where(function ($query) use ($request) {
                             $status = $request->get('status');
-                            if ($status == 3) {
+                            if ($status == 1 || $status == 2) {
+                                $query->where('app.renewal_status', $status);  
+                            } else if ($status == 3) {
                                 $query->where('app.app_type', 2);
                             } else if ($status == 4) {
                                 $query->where('app.app_type', 3);
-                            }else if ($status == 5) {
-                                $query->where('app.curr_status_id', 43);
-                            }else if ($status == 6) {
-                                $query->where('app.curr_status_id', 44);
-                            }else if ($status == 7) {
-                                $query->where('app.curr_status_id', 45);
-                            }else if ($status == 8) {
-                                $query->where('app.curr_status_id', 46);
                             } else {
-                                
-                                //if ($status == 4) {
-                                    //$query->whereNotNull('app.parent_app_id');
-                                //    $query->where('app.status', $status);
-                                //} else {
-                                    //$query->where('app.status', $status);                                
-                                //}
-                                $query->where('app.renewal_status', $status);
+                                $query->where('app.curr_status_id', $status);
                             }
                         });
                     }  
@@ -631,7 +610,9 @@ class DataRenderer implements DataProviderInterface
                     'status',
                     function ($app) {
                     $app_status = config('common.app_status');                    
-                    return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(isset($app_status[$app->status]) ? $app_status[$app->status] : '' ).'</label>';
+                    //return '<label class="badge '.(($app->status == 1)? "badge-primary":"badge-warning").'">'.(isset($app_status[$app->status]) ? $app_status[$app->status] : '' ).'</label>';
+                    $app_status_class = config('common.APP_STATUS_LABEL_CLASS.'.$app->curr_status_id) ? config('common.APP_STATUS_LABEL_CLASS.'.$app->curr_status_id) : 'badge-primary';
+                    return '<label class="badge '. $app_status_class .'">'.(isset($app->status_name) ? $app->status_name : '' ).'</label>';
 
                 })
                 ->addColumn(
@@ -655,7 +636,7 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('is_status') != '') {
                         $query->where(function ($query) use ($request) {
                             $is_assigned = $request->get('is_status');
-                            $query->where('app.status', $is_assigned);
+                            $query->where('app.curr_status_id', $is_assigned);
                         });
                     }
                     

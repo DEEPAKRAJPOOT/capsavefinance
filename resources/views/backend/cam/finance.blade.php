@@ -42,9 +42,11 @@
                          @if(!empty($active_json_filename) && !empty($active_xlsx_filename) && file_exists(storage_path("app/public/user/docs/$appId/finance/".$active_xlsx_filename)))
                                <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/finance/'.$active_xlsx_filename) }}" download>Download</a>
                          @endif 
+                         @if(request()->get('view_only'))
                          @can('upload_xlsx_document')
                                <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document_finance', ['app_id' => request()->get('app_id'),  'file_type' => 'finance']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
                          @endcan
+                         @endif
                          @if(request()->get('view_only') && !empty($pending_rec) && $pending_rec['status'] == 'fail')
                          @php $class_enable="disabled"; @endphp
                                <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
@@ -962,7 +964,9 @@
                                    <div class="clearfix"></div>
                                 <!-- </div> -->
                              </div>
+                             @if (request()->get('view_only'))  
                              <button type="submit" class="btn btn-success btn-sm float-right mt-2 mb-3"> Save</button>
+                             @endif
                             </div>
                           </form>
                        </div>

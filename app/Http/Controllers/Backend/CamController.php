@@ -1643,6 +1643,8 @@ class CamController extends Controller
         try {
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
+            $userId = $request->has('user_id') ? $request->get('user_id') : null;
+            
             $appApprData = [
                 'app_id' => $appId,
                 'approver_user_id' => \Auth::user()->user_id,
@@ -1652,6 +1654,7 @@ class CamController extends Controller
 
             //update approve status in offer table after all approver approve the offer.
             $this->appRepo->changeOfferApprove((int)$appId);
+            Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
             Session::flash('message',trans('backend_messages.offer_approved'));
             return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
         }catch (Exception $ex) {
@@ -1703,7 +1706,8 @@ class CamController extends Controller
             $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
             $currStage = Helpers::getCurrentWfStage($appId);
             Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
- 
+            Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_REJECTED'));
+            
             Session::flash('message', trans('backend_messages.offer_rejected'));
             Session::flash('operation_status', 1);
             return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
@@ -1804,7 +1808,9 @@ class CamController extends Controller
           Session::flash('message', trans('backend_messages.under_approval'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
-        
+        if (empty($prgmOfferId)) {
+            Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
+        }
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
         $limitData = $this->appRepo->getLimit($aplid);

@@ -74,7 +74,10 @@ class ApplicationController extends Controller
                 $panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->biz_name . ")";
                 //$panList[$anchUser->pan_no] = $anchUser->pan_no . " (". $anchUser->name . " " . $anchUser->l_name . ")";
             }
-	   return view('backend.app.index')->with('panList', $panList);              
+            $appStatusList = \Helpers::getAppStatusList($statusType=1)->toArray(); 
+            $appStatusList = ['1'=>'Ready for Renewal','2' => 'Renewed', '3' => 'Limit Enhanced', '4' => 'Limit Reduced']+$appStatusList;
+            asort($appStatusList);            
+	    return view('backend.app.index')->with('panList', $panList)->with('appStatusList', $appStatusList);              
 	}
 	
 	public function addAppCopy(Request $request)
@@ -581,17 +584,24 @@ class ApplicationController extends Controller
 			// $response = $this->docRepo->isUploadedCheck($userId, $appId);
 			
 			// if ($response->count() < 1) {
-				//$appData = $this->appRepo->getAppData($appId);
-                                //$curStatus = $appData ? $appData->status : 0;                        
+				$appData = $this->appRepo->getAppData($appId);
+                                $curStatus = $appData ? $appData->curr_status_id : 0;                        
                                 $currentStage = Helpers::getCurrentWfStage($appId);
-                                if ($currentStage && $currentStage->order_no < 4 ) {                                  
+                                $appStatusList = [
+                                    config('common.mst_status_id.APP_REJECTED'),
+                                    config('common.mst_status_id.APP_CANCEL'),
+                                    config('common.mst_status_id.APP_HOLD'),
+                                    config('common.mst_status_id.APP_DATA_PENDING')
+                                ];
+                                if ($currentStage && $currentStage->order_no < 4 && !in_array($curStatus, $appStatusList) ) {                                  
                                     $this->appRepo->updateAppData($appId, ['status' => 1]);
+                                    Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.COMPLETED'));
                                 }				  
 				Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
 			 
 				//Add application workflow stages                
-				Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
-				
+				Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);				
+                                
 				//Update workflow stage
 				//$currentStage = Helpers::getCurrentWfStage($app_id);            
 				//$curr_wf_stage_code = $currentStage ? $currentStage->stage_code : null;
@@ -910,7 +920,8 @@ class ApplicationController extends Controller
                                     }
                                     $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
                                     $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
-                                    $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);                                    
+                                    $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
+                                    \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                    
                                 }
                                 
         		if (!is_null($appLimitId)) {
@@ -926,7 +937,8 @@ class ApplicationController extends Controller
 			  	
 			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
                                 UserDetail::where('user_id',$user_id)->update(['is_active' =>1]);
-                                $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction                                
+                                $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction  
+                                \Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_SANCTIONED'));
                                 $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
                                 if($prcsAmt && isset($prcsAmt->offer)) {
 				  if($createCustomer != null) {   
@@ -1215,6 +1227,8 @@ class ApplicationController extends Controller
 				$appData = $this->appRepo->getAppDataByAppId($appId);
 				$userId = $appData ? $appData->user_id : null;
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
+                                
+                                Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_ACCEPTED'));
 			} else if($request->has('btn_reject_offer')) {				
 				$offerData['status'] = 2;
 				$message = trans('backend_messages.offer_rejected');
@@ -1235,6 +1249,8 @@ class ApplicationController extends Controller
                                 Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
                                 Session::flash('operation_status', 1);
 	 
+                                Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_REJECTED'));
+                                
 				/*$addl_data = [];
                                 $addl_data['sharing_comment'] = 'Reject comment goes here';
                                 $message = trans('backend_messages.reject_offer_success');*/
@@ -1795,6 +1811,9 @@ class ApplicationController extends Controller
 			$supplyChaindata = $this->getSanctionLetterSupplyChainData($appId, $bizId, $offerId);
 			$filepath = storage_path('app/public/user/'.$appId.'_supplychain.json');
 			\File::put($filepath, base64_encode(json_encode($arrFileData)));
+                        
+                        Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.SANCTION_LETTER_GENERATED'));
+                        
 			Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
 			return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);  
 		} catch (Exception $ex) {
@@ -1961,6 +1980,8 @@ class ApplicationController extends Controller
 			$noteData = $this->appRepo->getNoteDataById($note_id, $app_id);
 			$reason =  $noteData->note_data;
 		}
+                $appData = $this->appRepo->getAppData($app_id);
+                $curStatusId = $appData ? $appData->curr_status_id : 0;
 		// dd($request->all());
 		return view('backend.app.reject_app_form')
 				->with('app_id', $app_id)
@@ -1968,7 +1989,8 @@ class ApplicationController extends Controller
 				->with('user_id', $user_id)
 				->with('reason', $reason)
 				->with('status_id', $status_id)
-				->with('note_id', $note_id);
+				->with('note_id', $note_id)
+                                ->with('cur_status_id', $curStatusId);
 	}
         
     /**
@@ -1986,17 +2008,19 @@ class ApplicationController extends Controller
                 $reason = $request->get('reason');
 				$status = $request->get('status');
 				$note_id = $request->get('note_id');
+                $cur_status_id = $request->get('cur_status_id');
                 $appStatus = '';
                 if($status == 1){
-                    $appStatus .= 'APP_REJECTED';
+                    $appStatus = 'APP_REJECTED';
                 }else if($status == 2){
-                    $appStatus .= 'APP_CANCEL';
+                    $appStatus = 'APP_CANCEL';
                 }else if($status == 3){
-                    $appStatus .= 'APP_HOLD';
+                    $appStatus = 'APP_HOLD';
                 }else if($status == 4){
-                    $appStatus .= 'APP_DATA_PENDING';
+                    $appStatus = 'APP_DATA_PENDING';
 				}
-				
+		            
+            if (isset(config('common.mst_status_id')[$appStatus]) && $cur_status_id != (int)config('common.mst_status_id')[$appStatus]) {
                 $noteData = [
                         'app_id' => $app_id, 
                         'note_data' => $reason,
@@ -2027,10 +2051,21 @@ class ApplicationController extends Controller
                     
                     $arrUpdateApp=[
 			'curr_status_id'=>(int) config('common.mst_status_id')[$appStatus],
+                        'curr_status_updated_at' => \Carbon\Carbon::now()
                     ];
 			
                     $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);
+                    
+                    
+                    $appStatusList = Helpers::getAppStatusList();
+                    $arrActivity = [];
+                    $arrActivity['activity_code'] = 'app_status_changed';
+                    $arrActivity['activity_desc'] = 'Application status is modified from ' . (isset($appStatusList[$cur_status_id]) ? $appStatusList[$cur_status_id] : '') . ' to ' . (isset($appStatusList[$arrUpdateApp['curr_status_id']]) ? $appStatusList[$arrUpdateApp['curr_status_id']] : '');
+                    $arrActivity['user_id'] = $user_id;
+                    $arrActivity['app_id'] = $app_id;
+                    \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));                    
                 }
+            }
                 
                 Session::flash('message',trans('backend_messages.reject_app'));
                 return redirect()->route('application_list');
@@ -2048,7 +2083,7 @@ class ApplicationController extends Controller
 
 		if($app_id){
 			$allCommentsData = $this->appRepo->getAllCommentsByAppId($app_id);
-			// dd($allCommentsData);
+			//dd($allCommentsData);
 		}
 
 		return view('backend.app.view_application_status')

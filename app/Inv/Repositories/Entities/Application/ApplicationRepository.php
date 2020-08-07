@@ -2341,7 +2341,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     public function getAllCommentsByAppId($appId){
-        return AppNote::getAllCommentsByAppId($appId);
+        //return AppNote::getAllCommentsByAppId($appId);
+        return AppStatusLog::getAllCommentsByAppId($appId);
     }   
     
     public function getBizDataByPan($pan, $userId=null) {
