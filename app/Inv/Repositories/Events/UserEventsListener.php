@@ -522,7 +522,7 @@ class UserEventsListener extends BaseEvent
         if ($email_content) {
             $mail_body = str_replace(
                 ['%sender_user_name', '%sender_role_name','%receiver_user_name','%receiver_role_name','%app_id'],
-                [$user['sender_user_name'],$user['sender_role_name'],$user['receiver_user_name'],$user['receiver_role_name']],
+                [$user['sender_user_name'],$user['sender_role_name'],$user['receiver_user_name'],$user['receiver_role_name'],$user['app_id']],
                 $email_content->message
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
