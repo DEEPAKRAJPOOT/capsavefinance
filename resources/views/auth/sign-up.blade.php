@@ -123,7 +123,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                            @if($anchorDetail->supplier_code != null)
+                            <!-- @if($anchorDetail->supplier_code != null)
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="supplier_code">Supplier Code
@@ -133,7 +133,7 @@
                                     {!! $errors->first('supplier_code', '<span class="error">:message</span>') !!}
                                 </div>
                             </div>
-                            @endif
+                            @endif -->
                             <div class="col-md-6">
                             <div class="g-recaptcha" id="recaptcha" data-sitekey="{{config('common.google_recaptcha_key')}}"></div>
                             <span class="text-danger error"> {{$errors->first('g-recaptcha-response')}} </span>

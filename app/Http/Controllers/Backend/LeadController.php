@@ -746,7 +746,7 @@ class LeadController extends Controller {
                     'created_at' => \Carbon\Carbon::now(),
                     'token' => $token,
                     'anchor_id' => $anchorId,
-                    'supplier_code' => isset($arrAnchorVal['supplier_code']) ? trim($arrAnchorVal['supplier_code']) : null,
+                    // 'supplier_code' => isset($arrAnchorVal['supplier_code']) ? trim($arrAnchorVal['supplier_code']) : null,
                 ];
             
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);

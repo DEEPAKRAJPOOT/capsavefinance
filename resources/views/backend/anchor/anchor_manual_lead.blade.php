@@ -139,7 +139,7 @@
                        
                 </div>
                 @endif
-                <div class="row supplier_code">
+                <!-- <div class="row supplier_code">
                     <div class="col-6">
                         <div class="form-group">
                             <label for="supplier_code">Supplier Code
@@ -149,7 +149,7 @@
                             {!! $errors->first('supplier_code', '<span class="error">:message</span>') !!}
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
           {!!
         Form::close()

@@ -76,7 +76,7 @@ class User extends Authenticatable
         'created_at',
         'updated_at',
         'updated_by',
-        'supplier_code',
+        // 'supplier_code',
     ];
 
     /**
