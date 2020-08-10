@@ -37,8 +37,8 @@
             <form action="{{ route('soa_consolidated_view') }}" method="post" onsubmit="return validate()">
                 @csrf
             <div class="row mt-4">
-            	
-                <div class="col-md-3">
+             
+                <div class="col-md-2">
                     {!!
                     Form::text('from_date',
                     request()->get('from_date') ?? null,
@@ -49,7 +49,7 @@
                     ])
                     !!} 
                 </div>
-                 <div class="col-md-3">
+                <div class="col-md-2">
                     {!!
                     Form::text('to_date',
                     request()->get('to_date') ?? null,
@@ -61,7 +61,7 @@
                     !!} 
                 </div>
                 <div class="col-md-3">
-                {!! Form::select('trans_entry_type',$transTypes, request()->get('trans_entry_type') ?? null, [
+                    {!! Form::select('trans_entry_type',$transTypes, request()->get('trans_entry_type') ?? null, [
                         'class' => 'form-control',
                         'placeholder' => 'Select Transaction Type',
                         'id'=>'to_date'
@@ -79,7 +79,9 @@
                     ])
                     !!}
                 </div>
-                <button id="searchbtn" type="submit" class="btn  btn-success btn-sm float-right">Search</button>
+                <div class="col-md-1">
+                    <button id="searchbtn" type="submit" class="btn  btn-success btn-sm float-right">Search</button>
+                </div>
                 {!! Form::hidden('biz_id', 
                     isset($user['biz_id'])?$user['biz_id']:null, 
                     [ 'id'=>'biz_id']) 
