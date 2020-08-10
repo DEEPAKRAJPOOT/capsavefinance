@@ -94,7 +94,7 @@
                                                     <td width="15%">
 
                                                         @if(isset($fiAdd->userFile->file_path))
-                                                        <a title="Download Document" href="{{ route('download_storage_file', ['file_id' => $fiAdd->userFile->file_id]) }}" download="{{$fiAdd->userFile->file_name}}"><i class="fa fa-download"></i></a>
+                                                        <a title="Download Document" href="{{ route('download_fi_doc', ['file_id' => $fiAdd->userFile->file_id]) }}" download="{{$fiAdd->userFile->file_name}}"><i class="fa fa-download"></i></a>
                                                         @endif
 
                                                         @if($fiList->cmFiStatus && $fiList->cmFiStatus->cmStatus->status_name == 'Positive')
