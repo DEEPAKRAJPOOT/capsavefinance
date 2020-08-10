@@ -713,6 +713,8 @@ class ApportionmentController extends Controller
                     if($trans->invoice_disbursed_id){
 
                         $invoiceList[$trans->invoice_disbursed_id] = [
+                            'payment_due_date'=>$trans->invoiceDisbursed->payment_due_date,
+                            'grace_period'=>$trans->invoiceDisbursed->grace_period,
                             'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
                             'date_of_payment'=>$paymentDetails['date_of_payment']
                         ];             
@@ -793,7 +795,14 @@ class ApportionmentController extends Controller
                     }
                 }
                 foreach ($invoiceList as $invDisb) {
-                    $Obj->intAccrual($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
+                    $date_of_payment = $invDisb['date_of_payment'];
+                    $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                    
+                    if( (strtotime($invDisb['payment_due_date']) <= strtotime($invDisb['date_of_payment']) )  && ( strtotime($invDisb['date_of_payment']) <= strtotime($invDisb['payment_due_date'] . "+". $invDisb['grace_period']." days"))){
+                        $date_of_payment = $invDisb['payment_due_date'];
+                    }
+                    
+                    $Obj->intAccrual($invDisb['invoice_disbursed_id'], $date_of_payment);
                     $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], 2);
                 }
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));

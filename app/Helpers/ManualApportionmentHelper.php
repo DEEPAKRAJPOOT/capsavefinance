@@ -360,7 +360,7 @@ class ManualApportionmentHelper{
                 TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
-                ->where(\DB::raw('MONTH(trans_date)'),'>',date('m', strtotime($interest->interestDate)))
+                ->whereMonth('trans_date','>', date('m', strtotime($interest->interestDate)))
                 ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
             }
 
