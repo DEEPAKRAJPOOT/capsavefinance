@@ -667,7 +667,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getDisbursals($disburseIds)
    {
-	  return Disbursal::whereIn('disbursal_id', $disburseIds)
+	  return Disbursal::whereIn('disbursal_id', $disburseIds)->with('user.anchor')
 			->get();
    }
 
