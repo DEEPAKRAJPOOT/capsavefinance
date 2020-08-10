@@ -475,19 +475,22 @@ class InvoiceController extends Controller {
         if ($attributes['exception']) {
             $statusId = 28;
             $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';
-      
+           
         } else {
           if(in_array($customer, $expl))  
           {
-            $statusId = 8;  
+            $statusId = 8; 
+            
           }
           else if($getPrgm->invoice_approval==4)
           {
               $statusId = 8;   
+             
           }
           else
           {
             $statusId = 7;
+           
           }
         }
        //////* chk the adhoc condition  
@@ -534,6 +537,12 @@ class InvoiceController extends Controller {
             {
            
                InvoiceTrait::getManualInvoiceStatus($result);
+            }
+            if( $statusId==8)
+            {
+               $inv_apprv_margin_amount = InvoiceTrait::invoiceMargin($result);
+               $is_margin_deduct =  1;  
+               $this->invRepo->updateFileId(['invoice_margin_amount'=>$inv_apprv_margin_amount,'is_margin_deduct' =>1],$result['invoice_id']);
             }
             Session::flash('message', 'Invoice successfully saved');
             return back();
