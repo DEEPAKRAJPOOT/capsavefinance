@@ -22,7 +22,7 @@
                    <input type="hidden" name="_token" value="{{csrf_token()}}">
 
                 Are you sure you want to pick up this application?<br>
-                <button type="submit" class="btn btn-success btn-sm float-right">Yes</button>
+                <button type="submit" class="btn btn-success btn-sm float-right" id="pickupBtn">Yes</button>
                 {!!
                 Form::close()
                 !!}
@@ -46,11 +46,10 @@ var messages = {
        var parent =  window.parent;     
        parent.jQuery("#pickLead").modal('hide');  
        //window.parent.jQuery('#my-loading').css('display','block');
-       
         parent.oTable1.draw();
        //window.parent.location.href = messages.paypal_gatway;
     }
         
-    })
+    });
     </script>
 @endsection

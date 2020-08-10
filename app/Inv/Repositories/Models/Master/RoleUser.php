@@ -177,14 +177,18 @@ class RoleUser extends BaseModel
      *
      * @since 0.1
      */
-    public static function getBackendUsersByRoleId($role_id, $usersNotIn=[])
+    public static function getBackendUsersByRoleId($role_id, $usersNotIn=[], $orUsersIn=[])
     {
+        // dump($usersNotIn, $orUsersIn);
          $query = self::select('users.*')
                  ->join('users', 'role_user.user_id', '=', 'users.user_id')
                  ->where('role_user.role_id',$role_id)
                  ->where('users.is_active', 1);
          if (count($usersNotIn) > 0) {
              $query->whereNotIn('users.user_id', $usersNotIn);
+         }
+         if (count($orUsersIn) > 0) {
+             $query->orWhereIn('users.user_id', $orUsersIn);
          }
          $arr =   $query->get();
          return $arr;
