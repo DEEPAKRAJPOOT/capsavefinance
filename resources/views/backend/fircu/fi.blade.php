@@ -94,7 +94,7 @@
                                                     <td width="15%">
 
                                                         @if(isset($fiAdd->userFile->file_path))
-                                                        <a title="Download Document" href="{{ route('download_storage_file', ['file_id' => $fiAdd->userFile->file_id]) }}" download="{{$fiAdd->userFile->file_name}}"><i class="fa fa-download"></i></a>
+                                                        <a title="Download Document" href="{{ route('download_fi_doc', ['file_id' => $fiAdd->userFile->file_id]) }}" download="{{$fiAdd->userFile->file_name}}"><i class="fa fa-download"></i></a>
                                                         @endif
 
                                                         @if($fiList->cmFiStatus && $fiList->cmFiStatus->cmStatus->status_name == 'Positive')
@@ -133,10 +133,10 @@
                 <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group text-right">
-                           {{-- @if(request()->get('view_only')) --}}
+                           @can('show_assign_fi')
                            <button class="btn btn-success btn-sm" id="trigger-for-fi">Trigger for FI</button>
+                           @endcan
                            <a data-toggle="modal" data-target="#assignFiFrame" data-url ="{{route('show_assign_fi', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
-                           {{-- @endif --}}
                            <a data-toggle="modal" data-target="#uploadFiDocFrame" data-url ="{{route('fi_upload', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" data-height="200px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openFiDocModal" style="display: none;"><i class="fa fa-plus"></i>Assign FI</a>
                            <input type="hidden" id="fiaid4upload" value="">
                             <!--<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal1" style="clear: both;">Report Uploads</a>-->

@@ -31,7 +31,7 @@
                             <small>{{ $financedoc->finc_year }}</small>
                             <ul>
                                <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
-                               <li><a href="{{ route('download_storage_file', ['file_id' => $financedoc->file_id]) }}" download="{{$financedoc->file_name}}" target="_blank">Download Finance Statement</a></li>
+                               <li><a href="{{ route('download_fin_stmt_doc', ['file_id' => $financedoc->file_id]) }}" download="{{$financedoc->file_name}}" target="_blank">Download Finance Statement</a></li>
                                <li><a href="javascript:void(0)"></a></li>
                             </ul>
                          </div>
