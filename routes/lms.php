@@ -270,7 +270,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::post('download-cheque', [
                         'as' => 'download_cheque',
                         'uses' => 'Backend\PaymentController@downloadCheque',
-                    ]);                    
+                    ]);   
+                    
+                    Route::delete('delete-payment', [
+                        'as' => 'delete_payment',
+                        'uses' => 'Backend\PaymentController@deletePayment',
+                    ]);
                 }
             });
 
@@ -767,6 +772,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::post('/mark/writeOff/save', [
                         'as' => 'apport_mark_writeOff_save',
                         'uses' => 'Lms\ApportionmentController@markWriteOffSave',
+                    ]);
+
+                    Route::delete('/revert',[
+                        'as' => 'undo_apportionment',
+                        'uses' => 'Lms\ApportionmentController@undoApportionment',
                     ]);
                 }
             });

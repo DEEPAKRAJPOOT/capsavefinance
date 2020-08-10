@@ -85,6 +85,7 @@ try {
                     {data: 'business_name'},
                     {data: 'amount'},
                     {data: 'trans_type'},
+                    {data: 'date_of_payment'},
                     {data: 'updated_by'},
                     {data: 'action'}
                 ],
@@ -100,6 +101,33 @@ try {
             }
         });   
     });
+    
+    function delete_payment(url, ele) {
+        var ele = $(ele);
+        var oldHtml = ele.html();
+        $.ajax({
+            type: "delete",
+            url: url,
+            beforeSend: function(res){
+                ele.html('<i class="fa fa-spinner" aria-hidden="true"></i>');
+                ele.prop('disabled', true);
+            },
+            success: function(res){
+                if(res.status == '1'){
+                    ele.remove();
+                    oTable.draw();
+                    $("#iframeMessage").html('<div class="alert alert-success" role="alert">'+res.message+'</div>');
+                }else{
+                    ele.html(oldHtml);
+                    $("#iframeMessage").html('<div class="alert alert-danger" role="alert">'+res.message+'</div>');
+                }
+            },
+            error: function(res){
+                ele.html(oldHtml);
+                $("#iframeMessage").html('<div class="alert alert-danger" role="alert">Please try after some time.</div>');
+            }
+        });
+    }
 } catch (e) {
     if (typeof console !== 'undefined') {
         console.log(e);

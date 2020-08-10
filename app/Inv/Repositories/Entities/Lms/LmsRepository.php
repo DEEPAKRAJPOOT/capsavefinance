@@ -3,40 +3,48 @@
 namespace App\Inv\Repositories\Entities\Lms;
 
 use DB;
+use Auth;
 use Session;
 use Carbon\Carbon;
-use Auth;
-use App\Inv\Repositories\Models\UserDetail;
-use App\Inv\Repositories\Models\LmsUsersLog;
+use BlankDataExceptions;
 use App\Http\Requests\Request;
+use InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\Payment;
-use App\Inv\Repositories\Models\Business;
-use App\Inv\Repositories\Models\BusinessAddress;
-use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Models\AppLimit;
+use App\Inv\Repositories\Models\Business;
+use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Models\Lms\Batch;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Lms\Refund;
+use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Lms\Charges;
+use App\Inv\Repositories\Models\Lms\CronLog;
 use App\Inv\Repositories\Models\Lms\WfStage;
+use App\Inv\Repositories\Models\LmsUsersLog;
 use App\Inv\Repositories\Models\Lms\BatchLog;
+use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Models\Lms\Variables;
 use App\Inv\Repositories\Models\Master\GstTax;
-use App\Inv\Repositories\Models\Master\ChargeGST;
 use App\Inv\Repositories\Models\Lms\EodProcess;
 use App\Inv\Repositories\Models\ProgramCharges;
 use App\Inv\Repositories\Contracts\LmsInterface;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\Lms\RefundBatch;
 use App\Inv\Repositories\Models\Master\RoleUser;
+use App\Inv\Repositories\Models\Lms\CibilReports;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Master\ChargeGST;
+use App\Inv\Repositories\Models\Lms\CibilUserData;
 use App\Inv\Repositories\Models\Lms\EodProcessLog;
 use App\Inv\Repositories\Models\Lms\RequestAssign;
+use App\Inv\Repositories\Models\Master\TallyEntry;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\Lms\DisbursalBatch;
 use App\Inv\Repositories\Models\Lms\DisburseApiLog;
 use App\Inv\Repositories\Models\Lms\RequestWfStage;
@@ -49,20 +57,13 @@ use App\Inv\Repositories\Models\Lms\WriteOffStatusLog;
 use App\Inv\Repositories\Models\Lms\ApprovalRequestLog;
 use App\Inv\Repositories\Models\Lms\DisbursalStatusLog;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
+use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Models\Lms\TransactionComments;
 use App\Inv\Repositories\Models\Lms\TransactionsRunning;
 use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
-use App\Inv\Repositories\Models\AppOfferAdhocLimit;
-use App\Inv\Repositories\Models\ColenderShare;
-use App\Inv\Repositories\Models\Master\TallyEntry;
-use App\Inv\Repositories\Models\Lms\CibilReports;
-use App\Inv\Repositories\Models\Lms\CibilUserData;
-use BlankDataExceptions;
-use InvalidDataTypeExceptions;
-use App\Inv\Repositories\Models\Lms\CronLog;
 
 /**
  * Lms Repository class
@@ -160,7 +161,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function saveTransactionRunning($transactions,$whereCondition=[])
 	{
 		return TransactionsRunning::saveTransactionRunning($transactions,$whereCondition);
-	}	
+	}
 
 	/**
 	 * Save TransactionsComments
@@ -198,6 +199,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function saveInterestAccrual($data, $whereCondition=[])
 	{
 		return InterestAccrual::saveInterestAccrual($data, $whereCondition);
+	}
+
+	/**
+	 * Save or Update Interest Accrual Temp
+	 * 
+	 * @param array $data
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public function saveInterestAccrualTemp($data, $whereCondition=[])
+	{
+		return InterestAccrualTemp::saveInterestAccrualTemp($data, $whereCondition);
 	}
 	
 	/**
@@ -1462,4 +1476,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		->where('is_settled','=','0')
 		->get();
 	}
+
+    public function isApportPaymentValid($paymentId, $userId){
+        $isValid = false;
+        $validPaymentId = Payment::where('user_id',$userId)
+        ->where('is_settled','0')
+        ->where('action_type','1')
+        ->orderBy('date_of_payment','asc')
+        ->orderBy('payment_id','asc')
+        ->first();
+
+        if($validPaymentId->payment_id == $paymentId){
+            $isValid = true;
+        }
+        return $isValid;
+    }
 }

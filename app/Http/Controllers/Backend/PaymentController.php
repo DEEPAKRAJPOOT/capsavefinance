@@ -12,7 +12,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
-use  App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Payment;
 use Session;
 use Helpers;
@@ -681,4 +681,30 @@ class PaymentController extends Controller {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }  
     }
+	
+	public function deletePayment(Request $request)
+	{
+		try {
+			$paymentId = $request->get('payment_id');
+			if($paymentId){
+				$payment = Payment::find($paymentId);
+				if($payment){
+					if($payment->is_settled == '0' && $payment->action_type == '1' && $payment->trans_type == '17' && 
+					strtotime(\Helpers::convertDateTimeFormat($payment->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d'))
+					){
+						$payment->delete();
+						InterestAccrualTemp::where('payment_id',$paymentId)->delete();
+						return response()->json(['status' => 1,'message' => 'Successfully Deleted Payment']); 
+					}
+					else{
+						return response()->json(['status' => 0,'message' => 'Invalid Request: Payment cannot be deleted']);
+					}
+				}
+				return response()->json(['status' => 0,'message' => 'Record Not Found / Already deleted!']);
+			}
+			return response()->json(['status' => 0,'message' => 'Invalid Request: Payment details missing.']);
+        } catch (Exception $ex) {
+			return response()->json(['status' => 0,'message' => Helpers::getExceptionMessage($ex)]); 
+		}  
+	}
 }

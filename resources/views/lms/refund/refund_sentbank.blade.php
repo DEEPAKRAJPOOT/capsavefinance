@@ -54,7 +54,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div id="requestList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                                    <div id="approvedList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>

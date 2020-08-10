@@ -11,18 +11,19 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\User;
 use Illuminate\Support\Facades\Crypt;
+use App\Inv\Repositories\Models\Anchor;
 use Illuminate\Support\Facades\Storage;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
+use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
+use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
-use App\Inv\Repositories\Models\AnchorUser;
-use App\Inv\Repositories\Models\Anchor;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -1972,7 +1973,15 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($trans) {
                         $act = '';
-                        if (Helpers::checkPermission('download_storage_file') && isset($trans->userFile->file_path) && ($trans->action_type == 1 ||$trans->action_type == 3)){                            
+                        if ($trans->action_type == 3) {
+                            $act .= "<a data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
+                        }
+
+                        if($trans->is_settled == '0' && $trans->action_type == '1' && $trans->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($trans->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
+                            $act .= '<button  onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $trans->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
+                        }
+
+                        if ($trans->action_type == 1 && isset($trans->userFile->file_path)) {                            
                             //$act .= '<a title="Download Cheque" href="'. \Storage::url($trans->userFile->file_path) .'" download="'. $trans->userFile->file_name . '"><i class="fa fa-download"></i></a>';
                             $act .= '<a title="Download" href="'. route('download_storage_file', ['file_id' => $trans->userFile->file_id ]) .'" class="btn btn-action-btn btn-sm" ><i class="fa fa-download"></i></a>';
                         }
@@ -5161,6 +5170,11 @@ class DataRenderer implements DataProviderInterface
                         function ($dataRecords) {   
                             return $dataRecords->paymentname;
                     }) 
+                    ->addColumn(
+                        'date_of_payment', 
+                        function ($dataRecords) {
+                        return Carbon::parse($dataRecords->date_of_payment)->format('d-m-Y');
+                    })
                     ->editColumn(
                         'updated_by',
                         function ($dataRecords) {
@@ -5173,11 +5187,25 @@ class DataRenderer implements DataProviderInterface
                         'action',
                         function ($dataRecords) {
                             $btn = '';
-                            if($dataRecords->is_settled == 0){
-                                $btn .= "<div class=\"d-flex inline-action-btn\"> <a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a></div>"; 
-                            }elseif($dataRecords->is_refundable && !$dataRecords->refundReq){
-                                $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-undo"></a>';
+
+                            if($dataRecords->is_settled == '0' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($dataRecords->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
+                                $btn .= '<button class="btn btn-action-btn btn-sm"  title="Delete Payment" onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
+                            }
+
+                            if($dataRecords->is_settled == '1' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($dataRecords->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
+                                $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
+                            }
+
+                            if(Helpers::checkPermission('apport_unsettled_view') && $dataRecords->is_settled == 0){
+                                if($dataRecords->isApportPayValid['isValid']){
+                                    $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
+                                }elseif($dataRecords->isApportPayValid['error']){
+                                    $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
+                                }
+                            }elseif(Helpers::checkPermission('lms_refund_payment_advise') && $dataRecords->is_refundable && !$dataRecords->refundReq){
+                                $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
                             } 
+
                             return $btn;
                     }) 
                     ->make(true);
@@ -5389,7 +5417,7 @@ class DataRenderer implements DataProviderInterface
      
         ->make(true);
     }
-    
+    //refund
     public function getApprovedRefundList(Request $request, $data){
         return DataTables::of($data)
         ->rawColumns(['ref_code','assignee','banck_detail','action'])
@@ -5428,7 +5456,7 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'created_at',
             function ($data) {
-                return \Helpers::convertDateTimeFormat($data->created_at, 'Y-m-d H:i:s', 'j F, Y h:i A');  //date('d-m-Y',strtotime($data->created_at));
+                return \Helpers::convertDateTimeFormat($data->created_at, 'Y-m-d H:i:s', 'd-m-Y h:i A');
             }
         )
         ->editColumn(
@@ -5450,7 +5478,7 @@ class DataRenderer implements DataProviderInterface
         )
         ->editColumn(
             'updated_at', function ($data) {
-                return \Helpers::convertDateTimeFormat($data->updated_at, 'Y-m-d H:i:s', 'j F, Y h:i A');  //date('d-m-Y',strtotime($data->created_at));
+                return \Helpers::convertDateTimeFormat($data->updated_at, 'Y-m-d H:i:s', 'd-m-Y h:i A');
             }
         )
         ->editColumn(
@@ -5487,6 +5515,7 @@ class DataRenderer implements DataProviderInterface
         ->make(true);
 
     }
+    //refund
     public function getRequestList(Request $request, $data){
         return DataTables::of($data)
         ->rawColumns(['id','ref_code','assignee','assignedBy','action'])
@@ -5537,7 +5566,13 @@ class DataRenderer implements DataProviderInterface
         ->editColumn(
             'created_at',
             function ($data) {
-                return \Helpers::convertDateTimeFormat($data->created_at, 'Y-m-d H:i:s', 'j F, Y h:i A');  //date('d-m-Y',strtotime($data->created_at));
+                return \Helpers::convertDateTimeFormat($data->created_at, 'Y-m-d H:i:s', 'd-m-Y h:i A');
+            }
+        )
+        ->editColumn(
+            'updated_at',
+            function ($data) {
+                return \Helpers::convertDateTimeFormat($data->updated_at, 'Y-m-d H:i:s', 'd-m-Y h:i A');
             }
         )
         ->addColumn(
@@ -6099,7 +6134,7 @@ class DataRenderer implements DataProviderInterface
     public function getUnsettledTrans(Request $request, $trans,$payment)
     {
         return DataTables::of($trans)
-            ->rawColumns(['select', 'pay'])
+            ->rawColumns(['select', 'pay','outstanding_amt'])
             ->addColumn('disb_date', function($trans){
                 return Carbon::parse($trans->parenttransdate)->format('d-m-Y');
             })
@@ -6114,8 +6149,15 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('total_repay_amt', function($trans){
                 return "₹ ".number_format($trans->amount,2);
             })
-            ->addColumn('outstanding_amt', function($trans){
-                return "₹ ".number_format($trans->outstanding,2);
+            ->addColumn('outstanding_amt', function($trans)use($payment){
+                $outResult = "₹ ".number_format($trans->outstanding,2);
+                if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                    $accuredInterest = $trans->tempInterest;
+                    if(!is_null($accuredInterest)){
+                        $outResult .= " <span style=\"color:red\">(".number_format($accuredInterest,2).")</span>";
+                    }
+                }
+                return $outResult;
             })
             ->addColumn('payment_date', function($trans)use($payment){
                 if($payment){
@@ -6125,7 +6167,14 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('pay', function($trans)use($payment){
                 $result = '';
                 if($payment){
+                    if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                        $accuredInterest = $trans->tempInterest;
+                        if(!is_null($accuredInterest)){
+                            return  "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($accuredInterest,2)."' name='payment[".$trans->trans_id."]'>";
+                        }
+                    }
                     $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]'>";
+                    
                 }
                 return $result;
             })
@@ -6170,16 +6219,13 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('select', function($trans){
                 $result = '';
-                $to = Carbon::createFromFormat('Y-m-d H:i:s', Helpers::getSysStartDate());
-                $from = Carbon::createFromFormat('Y-m-d H:i:s', $trans->sys_created_at??$trans->created_at);
-                $days = $to->diffInDays($from);
                 $flag = true;
                 if($trans->invoice_disbursed_id ){
                     if($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->outstanding == 0)
                     $flag = false;
                 }
                 
-                if($trans->payment && $days <= 1 && $flag && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
+                if($trans->payment && strtotime(\Helpers::convertDateTimeFormat($trans->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) && $flag && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
                     $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
                 }
                 return $result;
