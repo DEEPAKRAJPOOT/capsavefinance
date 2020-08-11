@@ -94,10 +94,10 @@ class ApportionmentController extends Controller
                 $payment_amt = $payment['payment_amt']; 
                 $Obj = new ManualApportionmentHelperTemp($this->lmsRepo);
                 $Obj->setTempInterest($paymentId);
-            }
-            if(!$payment['isApportPayValid']){
-                Session::flash('error', trans('Please select Valid Payment!'));
-                return redirect()->back()->withInput();
+                if(!$payment['isApportPayValid']){
+                    Session::flash('error', trans('Please select Valid Payment!'));
+                    return redirect()->back()->withInput();
+                }
             }
 
             $result = $this->getUserLimitDetais($userId);

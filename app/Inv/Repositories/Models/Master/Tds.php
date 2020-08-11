@@ -87,5 +87,7 @@ class Tds extends BaseModel
         }    
     }
 
-
+    public static function getActiveTds($da){
+        self::where('is_active',1)->value('tds_per');
+    }
 }
