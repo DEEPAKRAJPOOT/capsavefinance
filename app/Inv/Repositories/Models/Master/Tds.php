@@ -87,7 +87,10 @@ class Tds extends BaseModel
         }    
     }
 
-    public static function getActiveTds($da){
-        self::where('is_active',1)->value('tds_per');
+    public static function getActiveTdsBaseRate($date){
+        return self::where('is_active',1)
+            ->where('start_date','>=',$date)
+            ->where('end_date','<=',$date)
+            ->value('tds_per');
     }
 }

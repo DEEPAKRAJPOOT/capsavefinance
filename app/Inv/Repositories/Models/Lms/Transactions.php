@@ -762,6 +762,8 @@ class Transactions extends BaseModel {
            $cond = ' AND ' .implode(' AND ', $wh);
         }
 
+        $tdsDetails = 
+
         $query = "SELECT DATE_FORMAT(t1.trans_date, '%d/%m/%Y') as trans_date, t1.trans_id, t1.parent_trans_id, t1.trans_name, t1.trans_desc, t1.user_id, t1.entry_type, t1.amount AS debit_amount, IFNULL(SUM(t2.amount), 0) as credit_amount, (t1.amount - IFNULL(SUM(t2.amount), 0)) as remaining ,
         t1.amount * 
         FROM `get_all_charges` t1 
