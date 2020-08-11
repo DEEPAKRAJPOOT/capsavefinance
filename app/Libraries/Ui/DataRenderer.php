@@ -6893,4 +6893,45 @@ class DataRenderer implements DataProviderInterface
            ->make(true);
    }
    
+
+
+    // TDS in master
+    public function getTDSLists(Request $request, $data)
+    {
+        $this->sr_no = 1;
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action', ''])
+                
+                ->editColumn(
+                    'sr_no',
+                    function ($data) {
+                    return $this->sr_no++;
+                }) 
+                ->addColumn(
+                'start_date', 
+                function ($data) {
+                    return ($data->start_date) ? date('d-M-Y', strtotime($data->start_date)) : '---';
+                })
+                ->addColumn(
+                'end_date', 
+                function ($data) {
+                    return ($data->end_date) ? date('d-M-Y', strtotime($data->end_date)) : '---';
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($data) {
+                    return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editTDSFrame" title="Edit TDS Detail" data-url ="'.route('edit_tds', ['id' => $data->id]).'" data-height="300px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group""><label class="badge badge-'.($act==1 ? 'success' : 'danger pt-2').' current-status" style="margin-bottom: 13px">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->make(true);
+    }
+   
 }

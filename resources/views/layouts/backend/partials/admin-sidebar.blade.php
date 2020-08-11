@@ -380,6 +380,11 @@
                     <a class="nav-link" href="{{ route('get_baserate_list') }}">Manage Base Rate</a>
                 </li>
                 @endcan
+                @can('get_tds_list')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_tds_list') }}">Manage TDS</a>
+                </li>
+                @endcan
             </ul>
         </div>
     </li>
