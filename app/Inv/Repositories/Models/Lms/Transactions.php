@@ -319,7 +319,9 @@ class Transactions extends BaseModel {
         foreach($tds as $tdsTrans){
             $amount -= $tdsTrans->settledOutstanding;
         }
-
+        if($amount < 0 ){
+            $amount = 0;
+        }
         return $amount;
     }
 
