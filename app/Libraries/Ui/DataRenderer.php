@@ -5518,7 +5518,7 @@ class DataRenderer implements DataProviderInterface
             'action',
             function ($data){
                 $result = '';
-                if ((int)$data->status == (int)config('lms.REQUEST_STATUS.SEND_TO_BANK') ) {
+                if (Helpers::checkPermission('refund_udpate_disbursal') && (int)$data->status == (int)config('lms.REQUEST_STATUS.SEND_TO_BANK') ) {
                     $result = '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('refund_udpate_disbursal', [
                     'payment_id' => $data->payment_id,  
                     'refund_req_batch_id' => $data->refund_req_batch_id,
