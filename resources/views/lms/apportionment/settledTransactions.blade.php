@@ -44,7 +44,9 @@
             </div>
             <div class="row pull-right action-btn">
                 <div class="col-md-12" >
-                    <input type="button" value="Reverse Amount" class="btn btn-success btn-sm" onclick="apport.onReversalAmount()">
+                    @can('apport_trans_reversal')
+                        <input type="button" value="Reverse Amount" class="btn btn-success btn-sm" onclick="apport.onReversalAmount()">
+                    @endcan
                 </div>
             </div>
         </div>

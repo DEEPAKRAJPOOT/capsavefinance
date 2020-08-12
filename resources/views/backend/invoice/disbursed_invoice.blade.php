@@ -49,7 +49,9 @@ $role = (isset($role)) ? $role :     11;
                                         </div>  
                                         <div class="col-md-2" id="buttonDiv">
                                             @php if($role!=11) { @endphp
-                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank</a>
+                                            @can('disburse_confirm')
+                                                <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank</a>
+                                            @endcan
                                             @php  } @endphp
                                             <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="560px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;" >Disburse Trigger</a>
                                         </div>

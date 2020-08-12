@@ -72,14 +72,16 @@
 
                                                 </select>
                                             </div>  -->   
-                                            <div class="col-md-2">	
-                                             <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
-                                              
+                                            <div class="col-md-2">
+                                             @can('backend_bulk_invoice')
+                                                <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
+                                             @endcan
                                        
                                             </div>
-                                            <div class="col-md-1">	          
-                                      <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-app">Approve</button>
-
+                                            <div class="col-md-1">
+                                            @can('update_bulk_invoice')
+                                                <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-app">Approve</button>
+                                            @endcan
                                                
                                             
                                             </div>

@@ -44,7 +44,9 @@
             </div>
             <div class="row pull-right action-btn">
                 <div class="col-md-12" >
-                    <input type="submit" name="action" value="Adjustment" class="btn btn-success btn-sm"> 
+                    @can('apport_mark_adjustment_confirmation')
+                        <input type="submit" name="action" value="Adjustment" class="btn btn-success btn-sm">
+                    @endcan
                     {{-- <input type="submit" name="action" value="Refund" class="btn btn-success btn-sm"> --}}
                 </div>
             </div>

@@ -50,11 +50,14 @@
             <div class="row pull-right action-btn">
                 <div class="col-md-12" >
                     @if($paymentId) 
-                        <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm"> 
+                        @can('apport_mark_settle_confirmation')
+                            <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm">
+                        @endcan
                     @endif
                     @if($sanctionPageView) 
+                        @can('apport_trans_waiveoff')
                         <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
-
+                        @endcan
                         @if($userDetails['status_id'] == 41 && in_array($userDetails['wo_status_id'],[config('lms.WRITE_OFF_STATUS.APPROVED'),config('lms.WRITE_OFF_STATUS.TRANSACTION_SETTLED')]))
                             <input type="submit" name="action" value="Write Off" class="btn btn-success btn-sm">
                         @endif

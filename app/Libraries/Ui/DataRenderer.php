@@ -167,7 +167,11 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($users) {
-                    return  "<a title=\"edit Lead\"  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
+                    $link = '';
+                        if(Helpers::checkPermission('edit_backend_lead') ){
+                            $link = "<a title=\"edit Lead\"  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
+                        }
+                    return $link;
                     }
                 )
                 ->filter(function ($query) use ($request) {
@@ -318,7 +322,9 @@ class DataRenderer implements DataProviderInterface
                         $data .= $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
                     }
                    // $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Approver List"><i class="fa fa-eye"></i></a>';
-                    $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Approver List">View Approver List</a>';
+                    if(Helpers::checkPermission('view_approvers') ){
+                        $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Approver List">View Approver List</a>';
+                    }
                     return $data;
                 })
                 ->addColumn(
@@ -331,7 +337,9 @@ class DataRenderer implements DataProviderInterface
                             $data .= $app->assigned_by ? $app->assigned_by : '';
                         }
                        // $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
-                        $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Shared Details">View Shared Details</a>';
+                        if(Helpers::checkPermission('view_shared_details') ){
+                            $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Shared Details">View Shared Details</a>';
+                        }
                         return $data;
                         //$fromData = AppAssignment::getOrgFromUser($app->app_id);
                         //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
@@ -363,9 +371,9 @@ class DataRenderer implements DataProviderInterface
                         $lmsStatus = config('lms.LMS_STATUS');
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
                         if ($view_only && in_array($app->status, [0,1,2])) {
-                           //if(Helpers::checkPermission('add_app_note')){
+                           if(Helpers::checkPermission('add_app_note')){
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
-                            //}                            
+                            }                            
                         }
                         if ($view_only && $app->status == 1) {
                           //// $act = $act . '<a title="Copy application" href="#" data-toggle="modal" data-target="#addAppCopy" data-url="' . route('add_app_copy', ['user_id' =>$app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Copy Application</a>';
@@ -402,8 +410,10 @@ class DataRenderer implements DataProviderInterface
                         //$appData = Application::getApplicationsData($where);
                         $appData = Application::checkAppByPan($app->user_id);
                         if ($lmsStatus && $app->status == 2 && !$appData) { //Limit Enhancement
-                            $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-plus" aria-hidden="true"></i></a> ';
-                            $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-times" aria-hidden="true"></i></a> ';
+                            if(Helpers::checkPermission('copy_app_confirmbox')){
+                                $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-plus" aria-hidden="true"></i></a> ';
+                                $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-times" aria-hidden="true"></i></a> ';
+                            }
                         }
                         
                         //Route for Application Rejection
@@ -705,12 +715,18 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) use ($request)  {     
                            if($request->front)
                            {
-                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-            
+                               $link = '';
+                              if(Helpers::checkPermission('frontend_view_invoice_details') ){
+                                $link = '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                              }
+                              return $link;
                            }
                         else {
-                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-        
+                              $link = '';
+                              if(Helpers::checkPermission('view_invoice_details') ){
+                                  $link = '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                              }
+                              return $link;
                         }
              })
              
@@ -772,9 +788,11 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                     
                         $act = $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
-
+                        
                         if($invoice->invoice_disbursed) { 
-                        $act .='&nbsp;&nbsp;<a data-toggle="modal"  data-height="550px" data-width="100%" data-target="#viewInterestAccrual" data-url="' . route('view_interest_accrual', ['invoice_disbursed_id' =>$invoice->invoice_disbursed->invoice_disbursed_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
+                            if(Helpers::checkPermission('view_interest_accrual') ){
+                                $act .='&nbsp;&nbsp;<a data-toggle="modal"  data-height="550px" data-width="100%" data-target="#viewInterestAccrual" data-url="' . route('view_interest_accrual', ['invoice_disbursed_id' =>$invoice->invoice_disbursed->invoice_disbursed_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
+                            }
                         }
                         return $act;
                 })
@@ -840,8 +858,12 @@ class DataRenderer implements DataProviderInterface
                     })
                   ->addColumn(
                     'invoice_id',
-                    function ($invoice) use ($request)  {     
-                         return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                    function ($invoice) use ($request)  { 
+                        $link = '';
+                        if(Helpers::checkPermission('view_invoice_details') ){
+                            $link = '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                        }
+                        return $link;
                   
                        
              })
@@ -1059,10 +1081,12 @@ class DataRenderer implements DataProviderInterface
                         })
                  ->addColumn(
                     'invoice_id',
-                    function ($invoice) use ($request)  {     
-                         
-                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-        
+                    function ($invoice) use ($request)  {  
+                            $link = '';
+                            if(Helpers::checkPermission('view_invoice_details') ){
+                              $link = '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                            }
+                            return $link;
                        
              })
              
@@ -1119,8 +1143,12 @@ class DataRenderer implements DataProviderInterface
                      $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
                       if($chkUser->id!=11) 
                      {
-                      $action .='<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm disburseInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
-                      $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv2"><option value="0">Change Status</option><option value="7">Pending</option><option value="14"> Reject</option></select></div>';
+                      if(Helpers::checkPermission('update_invoice_approve_single_tab') ){
+                        $action .='<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm disburseInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
+                      }
+                      if(Helpers::checkPermission('update_invoice_approve_tab') ){
+                        $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv2"><option value="0">Change Status</option><option value="7">Pending</option><option value="14"> Reject</option></select></div>';
+                      }
                      }
                      return  $action;
                 })
@@ -1391,8 +1419,11 @@ class DataRenderer implements DataProviderInterface
             
                            }
                         else {
-                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-        
+                              $link = '';
+                              if(Helpers::checkPermission('view_invoice_details') ){
+                                $link = '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                              }
+                              return $link;
                         }
              })
              
@@ -1512,8 +1543,12 @@ class DataRenderer implements DataProviderInterface
             
                            }
                         else {
-                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-        
+                              $link = '';
+                              if(Helpers::checkPermission('view_invoice_details') ){
+                                $link = '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                              }
+                              return $link;
+                              
                         }
              })
              ->addColumn(
@@ -1951,8 +1986,12 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'customer_id',
                     function ($trans) { 
-                        $link = $trans->lmsUser->customer_id;
-                        return "<a id=\"" . $trans->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $trans->user_id])."\" rel=\"tooltip\"   >$link</a> "; 
+                        $cId = $trans->lmsUser->customer_id;
+                        $link = '';
+                        if(Helpers::checkPermission('lms_get_customer_applications') ){
+                            $link = "<a id=\"" . $trans->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $trans->user_id])."\" rel=\"tooltip\"   >$cId</a> "; 
+                        }
+                        return $link;
                 })
                 ->addColumn(
                     'customer_name',
@@ -1999,16 +2038,22 @@ class DataRenderer implements DataProviderInterface
                     function ($trans) {
                         $act = '';
                         if ($trans->action_type == 3) {
-                            $act .= "<a data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
+                            if(Helpers::checkPermission('edit_payment') ){
+                                $act .= "<a data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
+                            }
                         }
 
                         if($trans->is_settled == '0' && $trans->action_type == '1' && $trans->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($trans->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
-                            $act .= '<button  onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $trans->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
+                            if(Helpers::checkPermission('delete_payment') ){
+                                $act .= '<button  onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $trans->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
+                            }
                         }
 
                         if ($trans->action_type == 1 && isset($trans->userFile->file_path)) {                            
                             //$act .= '<a title="Download Cheque" href="'. \Storage::url($trans->userFile->file_path) .'" download="'. $trans->userFile->file_name . '"><i class="fa fa-download"></i></a>';
-                            $act .= '<a title="Download" href="'. route('download_storage_file', ['file_id' => $trans->userFile->file_id ]) .'" class="btn btn-action-btn btn-sm" ><i class="fa fa-download"></i></a>';
+                            if(Helpers::checkPermission('download_storage_file') ){
+                                $act .= '<a title="Download" href="'. route('download_storage_file', ['file_id' => $trans->userFile->file_id ]) .'" class="btn btn-action-btn btn-sm" ><i class="fa fa-download"></i></a>';
+                            }
                         }
                         if (Helpers::checkPermission('edit_payment') && ($trans->action_type == 3 || ($trans->action_type == 1 && $trans->payment_type == 2))) {
                             $act .= "&nbsp;&nbsp;<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id, 'payment_type' => $trans->payment_type]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
@@ -5165,8 +5210,12 @@ class DataRenderer implements DataProviderInterface
                     ->addColumn(
                     'customer_id',
                         function ($dataRecords) {
-                            $link = \Helpers::formatIdWithPrefix($dataRecords->user_id, 'CUSTID');
-                            return "<a id=\"" . $dataRecords->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $dataRecords->user_id])."\" rel=\"tooltip\" >$link</a> ";
+                            $cId = \Helpers::formatIdWithPrefix($dataRecords->user_id, 'CUSTID');
+                            $link = '';
+                            if(Helpers::checkPermission('lms_get_customer_applications') ){
+                                $link = "<a id=\"" . $dataRecords->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $dataRecords->user_id])."\" rel=\"tooltip\" >$cId</a> ";
+                            }
+                            return $link;
                     })
                     ->editColumn(
                         'user_name',
@@ -5213,11 +5262,11 @@ class DataRenderer implements DataProviderInterface
                         function ($dataRecords) {
                             $btn = '';
 
-                            if($dataRecords->is_settled == '0' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($dataRecords->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
+                            if(Helpers::checkPermission('delete_payment') && $dataRecords->is_settled == '0' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($dataRecords->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
                                 $btn .= '<button class="btn btn-action-btn btn-sm"  title="Delete Payment" onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
                             }
 
-                            if($dataRecords->is_settled == '1' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($dataRecords->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
+                            if(Helpers::checkPermission('undo_apportionment') && $dataRecords->is_settled == '1' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($dataRecords->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
                                 $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
                             }
 
@@ -5828,10 +5877,14 @@ class DataRenderer implements DataProviderInterface
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
                         $act = '';
-                        $act = '<a  data-toggle="modal" data-target="#viewBatchSendToBankInvoice" data-url ="' . route('view_batch_user_invoice', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
+                        if(Helpers::checkPermission('view_batch_user_invoice') ){
+                            $act = '<a  data-toggle="modal" data-target="#viewBatchSendToBankInvoice" data-url ="' . route('view_batch_user_invoice', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
+                        }
                         if( $chkUser->id!=11)
                         {  
-                           $act .= '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('invoice_udpate_disbursal', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Update Transaction"><i class="fa fa-plus-square"></i></a>';
+                            if(Helpers::checkPermission('invoice_udpate_disbursal') ){
+                                $act .= '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('invoice_udpate_disbursal', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Update Transaction"><i class="fa fa-plus-square"></i></a>';
+                            }
                         }
                         return $act;
                 })
@@ -5922,7 +5975,11 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'action',
                 function ($data) {
-                return  "<a title='Download User Invoice' href='".route('download_user_invoice', ['user_id' => $data->user_id, 'user_invoice_id' => $data->user_invoice_id])."' class='btn btn-success btn-sm'><i style='color:#fff' class='fa fa-download'> Download</a>";
+                $link = '';
+                    if(Helpers::checkPermission('download_user_invoice') ){
+                        $link = "<a title='Download User Invoice' href='".route('download_user_invoice', ['user_id' => $data->user_id, 'user_invoice_id' => $data->user_invoice_id])."' class='btn btn-success btn-sm'><i style='color:#fff' class='fa fa-download'> Download</a>";
+                    }
+                return $link;
                 }
             )
             ->filter(function ($query) use ($request) {
@@ -6029,7 +6086,9 @@ class DataRenderer implements DataProviderInterface
                         $data .= $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
                     }
                    // $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Approver List"><i class="fa fa-eye"></i></a>';
-                    $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Approver List">View Approver List</a>';
+                    if(Helpers::checkPermission('view_approvers') ){
+                        $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Approver List">View Approver List</a>';
+                    }
                     return $data;
                 })
                 ->addColumn(
@@ -6042,7 +6101,9 @@ class DataRenderer implements DataProviderInterface
                             $data .= $app->assigned_by ? $app->assigned_by : '';
                         }
                        // $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
-                        $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Shared Details">View Shared Details</a>';
+                        if(Helpers::checkPermission('view_shared_details') ){
+                            $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Shared Details">View Shared Details</a>';
+                        }
                         return $data;
                         //$fromData = AppAssignment::getOrgFromUser($app->app_id);
                         //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
@@ -6336,7 +6397,10 @@ class DataRenderer implements DataProviderInterface
                'is_active',
                function ($data) {
                    $id = $data->user_invoice_rel_id;
-                   $btn = "<a title='Address Unpublish' href='".route('get_user_invoice_unpublished', ['user_id' => $data->user_id, 'user_invoice_rel_id' => $data->user_invoice_rel_id])."' class='btn btn-action-btn btn-sm'> <i class='fa fa-edit'></i></a>";
+                   $btn = '';
+                   if(Helpers::checkPermission('get_user_invoice_unpublished') ){
+                    $btn = "<a title='Address Unpublish' href='".route('get_user_invoice_unpublished', ['user_id' => $data->user_id, 'user_invoice_rel_id' => $data->user_invoice_rel_id])."' class='btn btn-action-btn btn-sm'> <i class='fa fa-edit'></i></a>";
+                   }
                    $status = ($data->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>&nbsp;'. $btn.'</div></b>';
                    return $status;
            })

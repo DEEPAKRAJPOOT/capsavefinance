@@ -67,7 +67,9 @@
                                         </select>
                                     </div>
                                     <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
-                                    <button type="submit" class="btn  btn-success btn-sm float-right ml-4">Download Excel</button>
+                                    @can('download_batch_data')
+                                        <button type="submit" class="btn  btn-success btn-sm float-right ml-4">Download Excel</button>
+                                    @endcan
                                 </div>
                             </form>
 
