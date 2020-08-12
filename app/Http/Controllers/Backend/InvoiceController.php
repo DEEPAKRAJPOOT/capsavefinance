@@ -303,10 +303,13 @@ class InvoiceController extends Controller {
         $userId = $request->get('user_id');
         $batchId = $request->get('disbursal_batch_id');
 
+        $disbursal = $this->lmsRepo->getDisbursalByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $batchId]);
+        // dd($disbursal);
         return view('backend.invoice.update_invoice_disbursal')
                 ->with(
                     ['user_id' => $userId, 
-                    'disbursal_batch_id' => $batchId
+                    'disbursal_batch_id' => $batchId,
+                    'disbursal' => $disbursal
                 ]);
     }
 
@@ -475,19 +478,22 @@ class InvoiceController extends Controller {
         if ($attributes['exception']) {
             $statusId = 28;
             $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';
-      
+           
         } else {
           if(in_array($customer, $expl))  
           {
-            $statusId = 8;  
+            $statusId = 8; 
+            
           }
           else if($getPrgm->invoice_approval==4)
           {
               $statusId = 8;   
+             
           }
           else
           {
             $statusId = 7;
+           
           }
         }
        //////* chk the adhoc condition  
@@ -534,6 +540,12 @@ class InvoiceController extends Controller {
             {
            
                InvoiceTrait::getManualInvoiceStatus($result);
+            }
+            if( $statusId==8)
+            {
+               $inv_apprv_margin_amount = InvoiceTrait::invoiceMargin($result);
+               $is_margin_deduct =  1;  
+               $this->invRepo->updateFileId(['invoice_margin_amount'=>$inv_apprv_margin_amount,'is_margin_deduct' =>1],$result['invoice_id']);
             }
             Session::flash('message', 'Invoice successfully saved');
             return back();

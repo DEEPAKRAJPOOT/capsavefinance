@@ -3679,9 +3679,16 @@ if ($err) {
                         $attr['status_id'] = $updateInvoice['status_id'];
                         $attr['invoice_margin_amount'] = $updateInvoice['invoice_margin_amount'];
                         $res  =  $this->invRepo->saveFinalInvoice($attr);
-                        InvoiceStatusLog::saveInvoiceStatusLog($res->invoice_id,$attr['status_id']); 
+                        InvoiceStatusLog::saveInvoiceStatusLog($res->invoice_id,$attr['status_id']);
+                         if($res['status_id']==8)
+                        {
+                            $inv_apprv_margin_amount = InvoiceTrait::invoiceMargin($res);
+                            $is_margin_deduct =  1;  
+                            $this->invRepo->updateFileId(['invoice_margin_amount'=>$inv_apprv_margin_amount,'is_margin_deduct' =>1],$res['invoice_id']);
+                        } 
 
                    }
+                  
                   $attribute['invoice_id'] = $invoice_id;
                   $attribute['status'] = 1;
                   $attribute['invoice_bulk_upload_id'] = $attr->invoice_bulk_upload_id;
@@ -4415,9 +4422,9 @@ if ($err) {
         $user_id = $this->request->user_id;
         $this->dataRecords = [];
         if (!empty($user_id)) {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 0, 'user_id' => $user_id]);
+            $this->dataRecords = Payment::getPayments(['is_settled' => 0, 'user_id' => $user_id],['created_at'=>'desc']);
         } else {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 0]);
+            $this->dataRecords = Payment::getPayments(['is_settled' => 0],['created_at'=>'desc']);
         }
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
@@ -4427,9 +4434,9 @@ if ($err) {
         $user_id = $this->request->user_id;
         $this->dataRecords = [];
         if (!empty($user_id)) {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id]);
+            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id],['updated_at'=>'desc']);
         } else {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 1]);
+            $this->dataRecords = Payment::getPayments(['is_settled' => 1],['updated_at'=>'desc']);
         }
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;

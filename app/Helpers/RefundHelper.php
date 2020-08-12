@@ -95,50 +95,33 @@ class RefundHelper{
 
     public static function createRequest($payment, $amount){
         $curData = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
-        $curUserId  = \Auth::user()->user_id;
         return RefundReq::saveRefundReqData([
             'ref_code'=>'',  
             'payment_id'=>$payment->payment_id,  
             'refund_date'=>$curData,  
-            'refund_amount'=>$amount,  
-            'created_at'=>$curData,
-            'created_by'=>$curUserId, 
-            'updated_at'=>$curData,
-            'updated_by'=>$curUserId
+            'refund_amount'=>$amount
         ]);
     }
 
     public static function createLog(array $data, int $refundReqId){
-        $curData = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
         $curUserId  = \Auth::user()->user_id;
-
         return RefundReqLog::saveRefundReqLogData([
             'refund_req_id'=>$refundReqId,
             'assigned_user_id'=>$curUserId, 
             'status'=>$data['status'], 
             'comment'=>$data['comment'], 
             'wf_stage_id'=>$data['wf_stage_id'],
-            'is_active'=>$data['is_active'],
-            'created_at'=>$curData,
-            'created_by'=>$curUserId, 
-            'updated_at'=>$curData,
-            'updated_by'=>$curUserId
+            'is_active'=>$data['is_active']
         ]);
     }
    
     public static function createTrans($transactions, int $refundReqId){
-        $curData = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
-        $curUserId  = \Auth::user()->user_id;
         $response = new collection(); 
         foreach ($transactions as $key => $value) {
             $resRefReqTran = RefundReqTrans::saveRefundReqTransData([
                 'refund_req_id' => $refundReqId,
                 'trans_id' => $value->trans_id,
-                'req_amount' => $value->amount,
-                'created_at' => $curData,
-                'created_by' => $curUserId,
-                'updated_at' => $curData,
-                'updated_by' => $curUserId
+                'req_amount' => $value->amount
             ]);
             $response->push($resRefReqTran);
         }
@@ -147,19 +130,13 @@ class RefundHelper{
 
     public static function createType(array $refundTypeAmt, int $refundReqId){
         $refundTypes = RefundType::get();
-        $curData = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
-        $curUserId  = \Auth::user()->user_id;
         $response = new collection();
         foreach ($refundTypes as $key => $value) {
             if(isset($refundTypeAmt[$value->name])){
                 $resRefReqType = RefundReqType::saveRefundReqTypeData([ 
                     'refund_req_id' => $refundReqId,
                     'refund_type_id' => $value->id, 
-                    'amount' => $refundTypeAmt[$value->name], 
-                    'created_by' => $curUserId,
-                    'created_at' => $curData,
-                    'updated_by' => $curUserId,
-                    'updated_at' => $curData
+                    'amount' => $refundTypeAmt[$value->name]
                 ]);
                 $response->push($resRefReqType);
             }

@@ -199,6 +199,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@FiUpload'
             ]);
 
+            Route::get('fircu/fi-download', [
+                'as' => 'download_fi_doc',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            ]);
+
             Route::post('fircu/fiupload', [
                 'as' => 'save_fi_upload',
                 'uses' => 'Backend\FiRcuController@saveFiUpload'
@@ -671,6 +676,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'approve_limit_form',
                     'uses' => 'Backend\CamController@approveLimitForm'
                 ]);
+                Route::get('/finstmt-download', [
+                'as' => 'download_fin_stmt_doc',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            ]);
             }); //end of cam   
                         
             Route::get('copy-app-confirmBox', [

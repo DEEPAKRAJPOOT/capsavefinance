@@ -9,8 +9,12 @@ use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payment extends BaseModel {
+    
+    use SoftDeletes;
+    
     /* The database table used by the model.
      *
      * @var string
@@ -25,6 +29,7 @@ class Payment extends BaseModel {
      */
     protected $primaryKey = 'payment_id';
 
+    protected $softDelete = true;
     /**
      * Maintain created_at and updated_at automatically
      *
@@ -74,6 +79,7 @@ class Payment extends BaseModel {
         'created_by',
         'updated_at',
         'updated_by',
+        'deleted_at',
     ];
     
     public function biz() {
@@ -134,8 +140,14 @@ class Payment extends BaseModel {
      * 
      * @return type mixed
      */
-    public static function getPayments(array $where = []) {
-        $res = self::where($where)->orderBy('payment_id','desc')->get();
+    public static function getPayments(array $where = [], $orderBy = []) {
+        $res = self::where($where);
+        if(!empty($orderBy)){
+            foreach($orderBy as $key => $val){
+                $res = $res->orderBy($key, $val);
+            }
+        }
+        $res = $res->get();
         return $res->isEmpty() ? [] :  $res;
     }
 
@@ -218,6 +230,33 @@ class Payment extends BaseModel {
     public static function getAllManualTransaction()
     {
           return self::with(['biz','user', 'transType', 'transaction'])->where('trans_type','!=',NULL)->orderBy('payment_id','DESC');
+    }
+
+    public function getisApportPayValidAttribute (){
+        $isValid = false;
+        $error = '';
+        $lastSettledPaymentDate = self::where('user_id',$this->user_id)
+        ->where('is_settled','1')->max('date_of_payment');
+        
+        $validPayment = self::where('user_id',$this->user_id)
+        ->where('is_settled','0')
+        ->where('action_type','1');
+
+        if($lastSettledPaymentDate){
+            $validPayment = $validPayment->whereDate('date_of_payment','>=',$lastSettledPaymentDate);
+            if(strtotime($lastSettledPaymentDate) > strtotime($this->date_of_payment)){
+                $error = 'Invalid Payment: The backdated payment from the last settled payment!';
+            }
+        }
+
+        $validPaymentId = $validPayment->orderBy('date_of_payment','asc')
+        ->orderBy('payment_id','asc')
+        ->first();
+
+        if($validPaymentId && $validPaymentId->payment_id == $this->payment_id ){
+            $isValid = true;
+        }
+        return ['isValid' => $isValid, 'error' => $error];
     }
     
     /**

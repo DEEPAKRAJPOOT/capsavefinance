@@ -79,6 +79,16 @@
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             token: "{{ csrf_token() }}",
             status:"5",
+            columns: [
+                {data: 'id'},
+                {data: 'ref_code'},
+                {data: 'customer_id'},
+                {data: 'biz_entity_name'},                    
+                {data: 'amount'},
+                {data: 'updated_at'},
+                // {data: 'assignee'},
+                // {data: 'assignedBy'}
+            ]
         };
     </script>
     <script src="{{ asset('backend/js/lms/request.js') }}" type="text/javascript"></script>
