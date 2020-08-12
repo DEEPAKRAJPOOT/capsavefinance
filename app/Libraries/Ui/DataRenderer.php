@@ -1699,11 +1699,14 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) use ($request)  {     
                            if($request->front)
                            {
-                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
-            
-                           }
+                               if(Helpers::checkPermission('frontend_view_invoice_details')){
+                                return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                               }
+                            }
                         else {
-                              return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                            if(Helpers::checkPermission('view_invoice_details')){
+                                return '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';   
+                            }
         
                         }
              })
@@ -1720,7 +1723,11 @@ class DataRenderer implements DataProviderInterface
                     'supplier_name',
                     function ($invoice) { 
                         $custo_name = '';
-                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
+                        
+                        if(Helpers::checkPermission('lms_get_customer_applications')){
+                            $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
+                        }
+
                         $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
                         $custo_name .= $invoice->business->biz_entity_name ? '<br><b>Business Name :</b>'.$invoice->business->biz_entity_name.'</span></br>' : '';
                         $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
