@@ -33,7 +33,7 @@ trait LmsTrait
      */
     protected function calInterest($principalAmt, $interestRate, $tenorDays)
     {
-        $interest = $principalAmt * $tenorDays * ($interestRate / 360) ;                
+        $interest = $principalAmt * $tenorDays * ($interestRate / config('common.DCC')) ;                
         return $interest;        
     }  
 

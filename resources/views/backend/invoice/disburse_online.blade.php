@@ -115,7 +115,7 @@
 
 									        $tenorDays = round($datediff / (60 * 60 * 24));
 
-									        $tInterest = $fundedAmount * $tenorDays * ($invoice['program_offer']['interest_rate'] / 360) ;                
+									        $tInterest = $fundedAmount * $tenorDays * ($invoice['program_offer']['interest_rate'] / config('common.DCC')) ;                
 
 											if($invoice['program']['interest_borne_by'] == 2 && ($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) ) {
 												$interest = $tInterest;

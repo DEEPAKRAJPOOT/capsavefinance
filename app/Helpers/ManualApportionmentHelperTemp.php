@@ -21,7 +21,7 @@ class ManualApportionmentHelperTemp{
     }
 
     private function calInterest($principalAmt, $interestRate, $tenorDays){
-        $interest = $principalAmt * $tenorDays * ($interestRate / 360) ;                
+        $interest = $principalAmt * $tenorDays * ($interestRate / config('common.DCC')) ;                
         return $interest/100;        
     }  
     

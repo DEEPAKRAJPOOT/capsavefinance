@@ -904,7 +904,7 @@ class ApportionmentController extends Controller
     //     if($gracePeriod > 0 && strtotime($toDate) <= strtotime($graceDueDate)){
             
     //         $interestData = InterestAccrual::whereBetween('interest_date', [$graceStartDate, $toDate])
-    //         ->select(DB::row("sum((principal_amount*($intRate/360))100) as total"))->get();
+    //         ->select(DB::row("sum((principal_amount*($intRate/config('common.DCC')))100) as total"))->get();
     //         if($interestData){
     //             $accuredIntAmount += $interestData->total;
     //         }
