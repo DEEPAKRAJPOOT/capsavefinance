@@ -46,7 +46,13 @@ $(document).ready(function(){
 			    	$('.pan-verify').css('pointer-events','none');
 			    	$('input[name=biz_pan_number]').attr('readonly',true);
 			    	$('input[name=biz_pan_number] +span').remove();
-			    	fillGSTinput(res.result);
+			    	let gst_status = fillGSTinput(res.result);
+			    	if(!gst_status){
+			    		$(".span_gst_select").hide();
+						$(".span_gst_text").show();		
+						setUnsetError(1);
+						$('input[name=is_gst_manual]').val('1');
+			    	}
 			    }else{
 					$(".span_gst_select").hide();
 					$(".span_gst_text").show();		
@@ -78,24 +84,24 @@ function setUnsetError(is_gst_manual){
 
 function fillGSTinput(datas){
 	let res ='';
-        let  active = 0;
+    let  active = 0;
 	let option_html = '<option value="">Select GST Number</option>';
 	$(datas).each(function(i,data){
 		if(data.authStatus == 'Active'){
-                         res += data.gstinId+',';
+             res += data.gstinId+',';
 			 option_html += '<option value="'+data.gstinId+'">'+data.gstinId+'</option>';
-	                 return  active=1;	
+	         active=1;	
             }
 	})
-        if(active==0)
-        {
-            alert(datas[0].authStatus);            
-            return false;         
-        }
+    if(active==0){
+        alert('PAN is in '+datas[0].authStatus+' mode');            
+        return false;         
+    }
         
 	$('select[name=biz_gst_number]').html(option_html);
 	$('input[name=pan_api_res]').val(res);
 	//$('#business_information_form input[type=submit]').prop("disabled", false);
+	return true;
 }
 
 function fillEntity(gstinId){
