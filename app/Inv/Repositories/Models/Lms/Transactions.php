@@ -215,12 +215,14 @@ class Transactions extends BaseModel {
                 }
                 if($this->link_trans_id){
                     $linkTrans = self::find($this->link_trans_id);
-                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')]))
-                    if($linkTrans->entry_type == 0){
-                        $name .= ' '.$linkTrans->transType->debit_desc;
-                    }elseif($linkTrans->entry_type == 1){
-                        $name .= ' '.$linkTrans->transType->credit_desc;
-                    }    
+                    if($linkTrans){
+                        if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')]))
+                        if($linkTrans->entry_type == 0){
+                            $name .= ' '.$linkTrans->transType->debit_desc;
+                        }elseif($linkTrans->entry_type == 1){
+                            $name .= ' '.$linkTrans->transType->credit_desc;
+                        }    
+                    }
                 }
             }
         }
