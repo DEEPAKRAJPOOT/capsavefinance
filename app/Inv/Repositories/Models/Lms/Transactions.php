@@ -315,9 +315,9 @@ class Transactions extends BaseModel {
         $tds = self::where('parent_trans_id',$this->trans_id)
         ->where('trans_type', config('lms.TRANS_TYPE.TDS'))
         ->where('entry_type','1')
-        ->get();
+        ->get();   
         foreach($tds as $tdsTrans){
-            $amount -= $tdsTrans->settledOutstanding();
+            $amount -= $tdsTrans->settledOutstanding;
         }
 
         return $amount;
