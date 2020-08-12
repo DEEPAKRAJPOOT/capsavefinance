@@ -19,17 +19,17 @@
 <div class="content-wrapper">
 
     <ul class="sub-menu-main pl-0 m-0">
-        @can('company_details')
+        @can('business_information_open')
         <li>
             <a href="{{ route('business_information_open', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" >Business Information</a>
         </li>
         @endcan 
-        @can('promoter_details')
+        @can('promoter-detail')
         <li>
             <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="active">Management Information</a>
         </li>
         @endcan 
-        @can('documents')
+        @can('document')
         <li>
             <a href="{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Documents</a>
         </li>
@@ -183,9 +183,10 @@
                                                 <span class="text-danger" id="failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
                                             
                                             </label>
-                                             <div class="relative"> 
+                                             <div class="relative">
+                                             @can('chk_user_pan_karza') 
                                             <a href="javascript:void(0);" data-id="{{isset($row->first_name) ? $i : '1'}}" id="pan_verify{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no promoter_pan_verify" style=" pointer-events:{{isset($main[$j]['panVerifyNo']->requestId) ? 'none' : '' }}">{{isset($main[$j]['panVerifyNo']->requestId) ?  'Verified' : 'Verify' }}</a>
-                                           
+                                           @endcan
                                             <input type="text" name="pan_no[]" id="pan_no{{isset($row->first_name) ? $i : '1'}}" value="{{isset($main[$j]['panVerifyNo']->requestId) ?  $main[$j]['panVerifyNo']->requestId : $row->pan_number }}" class="form-control pan_no" placeholder="Enter Pan Number" {{(isset($main[$j]['panVerifyNo']->requestId)) ? 'readonly' : '' }}>
                                            <input name="response[]" id="response{{isset($row->first_name) ? $i : '1'}}" type="hidden" value="">                       
                                              </div>
@@ -257,16 +258,20 @@
                                         </div>
                                     <div class="col-md-3">
                                         <div class="form-group" >
-                                            <label class="d-block">&nbsp;</label> 
+                                            <label class="d-block">&nbsp;</label>
+                                            @can('verify_mobile') 
                                            <a class="btn btn-primary  btn-sm verify_mobile_no" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_no" id="verify_mobile_no{{isset($row->first_name) ? $i : '1'}}" style="color:white;bottom: 15px;top: auto;  display:{{ (isset($main[$j]['mobileNo']->mobile)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileNo']->mobile) ? 'Verified' : 'Verify without OTP' }}</a>
+                                           @endcan
+                                           @can('sent_otp_mobile')
                                             <a class="btn btn-primary btn-sm ml-2 sen_otp_to_mobile" data-id="{{isset($row->first_name) ? $i : '1'}}" name="verify_mobile_otp_no" id="verify_mobile_otp_no{{isset($row->first_name) ? $i : '1'}}" style="color:white;bottom: 15px;top: auto; display:{{ (isset($main[$j]['mobileOtpNo']->request_id)) ? 'none' : ''}}" > {{ isset($main[$j]['mobileOtpNo']->request_id) ? 'Verified' : 'Verify with OTP' }}</a> 
-                                            
+                                            @endcan
                                         </div>
                                            </div>
                                     <div class="col-md-2" id="toggleOtp{{isset($row->first_name) ? $i : '1'}}" style="display:none">
                                         <div class="form-group" >
                                                
-                                                <label for="txtEmail">OTP <span class="mandatory">*</span></label>  
+                                                <label for="txtEmail">OTP <span class="mandatory">*</span></label> 
+                                                @can('verify_otp_mobile') 
                                                 <a class="verify-owner-no verify-show verify_otp" name="verify_otp" data-id="{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileOtpNo']->request_id) ?  'Verified' : 'Verify' }}</a>
                                                 <input type="text" name="otp_no[]"   maxlength="6" id="verify_otp_no{{isset($row->first_name) ? $i : '1'}}" value="" class="form-control mobileotpveri"  placeholder="Enter OTP" >
                                                <span class="text-success float-left" id="v6successpanverify{{isset($row->first_name) ? $i : '1'}}"> {{isset($main[$j]['mobileNo']->request_id) ? 'Verified Successfully' : '' }} </span>
@@ -318,7 +323,9 @@
                                                             <td width="30%">Pan Card</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
+                                                                @can('chk_user_pan_status_karza')
                                                                    <a href="javascript:void(0);" id='ppan{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veripan" style="top:0px; pointer-events:{{ (isset($main[$j]['panNo']->requestId)) ? 'none' : ''}}">{{ isset($main[$j]['panNo']->requestId) ? 'Verified' : 'Verify' }}</a>
+                                                                   @endcan
                                                                     <input type="text" {{isset($main[$j]['panNo']->requestId) ? "readonly='readonly'" : '' }} value="{{ isset($main[$j]['panNo']->requestId) ? $main[$j]['panNo']->requestId : $row->pan_card }}"  name="veripan[]" id="veripan{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifydl"  placeholder="Enter PAN Number">
                                                                     <span class="text-success float-left" id="v1successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['panNo']->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
                                                                     <span class="text-danger float-left" id="v1failurepanverify{{isset($row->first_name) ? $i : '1'}}" style="display:none;"><i class="fa fa-close" aria-hidden="true"></i> <i>Not Verified</i> </span>
@@ -326,7 +333,7 @@
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
-
+                                                                @can('frontend_download_storage_file')
                                                                 <div class="file-browse float-left position-seta">
                                                                     <a  href="{{ isset($main1[$j]['panNoId']) ? route('frontend_download_storage_file', ['file_id' =>$main1[$j]['panNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" > <i class="fa fa-download"></i></a>
 
@@ -334,7 +341,7 @@
 
                                                                     <!-- <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
-
+                                                                @endcan
                                                             </td>
                                                             <td width="14%">
 
@@ -350,7 +357,9 @@
                                                             <td width="30%">Driving License</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
+                                                                @can('chk_user_dl_karza')
                                                                    <a href="javascript:void(0);" id='ddriving{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veridl" style="top:0px; pointer-events:{{ (isset($main[$j]['dlNo']->requestId)) ? 'none' : ''}}">{{ isset($main[$j]['dlNo']->requestId) ? 'Verified' : 'Verify' }}</a>
+                                                                   @endcan
                                                                     <input type="text" {{ isset($main[$j]['dlNo']->requestId) ? "readonly='readonly'" : '' }} value="{{ isset($main[$j]['dlNo']->requestId) ? $main[$j]['dlNo']->requestId : $row->driving_license }}" name="verifydl[]" id="verifydl{{isset($row->first_name) ? $i : '1'}}" class="form-control verifydl"  placeholder="Enter DL Number">
 
                                                                            <span class="text-success float-left" id="v2successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['dlNo']->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
@@ -360,11 +369,12 @@
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
+                                                                @can('frontend_download_storage_file')
                                                                 <div class="file-browse float-left position-seta">
                                                                    <a  href="{{ isset($main1[$j]['dlNoId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['dlNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <!-- <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
-
+                                                                @endcan
                                                             </td>
                                                             <td width="14%">
 
@@ -379,7 +389,9 @@
                                                             <td width="30%">Voter ID</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
+                                                                @can('chk_user_voterid_karza')
                                                                     <a href="javascript:void(0);" id='vvoter{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show verivoter" style="top:0px; pointer-events:{{ (isset($main[$j]['voterNo']->requestId)) ? 'none' : ''}}">{{ isset($main[$j]['voterNo']->requestId) ? 'Verified' : 'Verify' }}</a>
+                                                                    @endcan
                                                                    <input type="text" {{isset($main[$j]['voterNo']->requestId) ? "readonly='readonly'" : '' }} value="{{ isset($main[$j]['voterNo']->requestId) ? $main[$j]['voterNo']->requestId : $row->voter_id }}" name="verifyvoter[]" id="verifyvoter{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifyvoter"  placeholder="Enter Voter's Epic Number">
                                                                     <span class="text-success float-left" id="v3successpanverify{{isset($row->first_name) ? $i : '1'}}" style="display:{{isset($main[$j]['voterNo']->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
 
@@ -388,11 +400,12 @@
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
+                                                                @can('frontend_download_storage_file')
                                                                 <div class="file-browse float-left position-seta">
                                                                     <a  href="{{ isset($main1[$j]['voterNoId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['voterNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <!-- <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
-
+                                                                @endcan
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="upload-btn-wrapper setupload-btn">
@@ -408,7 +421,9 @@
                                                             <td width="30%">Passport</td>
                                                             <td width="30%" >
                                                                 <div class="col-md-12">
+                                                                @can('chk_user_passport_karza')
                                                                     <a href="javascript:void(0);" id='ppassport{{isset($row->first_name) ? $i : '1'}}' data-id="{{isset($row->first_name) ? $i : '1'}}" class="verify-owner-no verify-show veripass" style="top:0px; pointer-events:{{ (isset($main[$j]['passNo']->requestId)) ? 'none' : ''}}">{{ isset($main[$j]['passNo']->requestId) ? 'Verified' : 'Verify' }}</a>
+                                                                    @endcan
                                                                    <input type="text"  {{ isset($main[$j]['passNo']->requestId) ? "readonly='readonly'" : '' }}  value="{{ isset($main[$j]['passNo']->requestId) ? $main[$j]['passNo']->requestId : $row->passport }}" name="verifypassport[]" id="verifypassport{{isset($row->first_name) ? $i : '1'}}"  class="form-control verifypassport" placeholder="Enter File Number">
 
                                                                            <span class="text-success float-left" id="v4successpanverify{{isset($row->first_name) ? $i : '1'}}"  style="display:{{isset($main[$j]['passNo']->requestId) ? 'inline' : 'none'}}"><i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i> </span>
@@ -419,11 +434,12 @@
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
+                                                                @can('frontend_download_storage_file')
                                                                 <div class="file-browse float-left position-seta">
                                                                     <a  href="{{ isset($main1[$j]['passNoId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['passNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <!-- <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
-
+                                                                @endcan
                                                             </td>
                                                             <td width="14%">
                                                                 <div class="upload-btn-wrapper setupload-btn">
@@ -440,12 +456,13 @@
 
                                                             </td>
                                                             <td width="14%">
+                                                                @can('frontend_download_storage_file')
                                                                 <div class="file-browse float-left position-seta">
 
                                                                     <a  href="{{ isset($main1[$j]['photoId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['photoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <!-- <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
-
+                                                                @endcan
                                                             </td>
                                                             <td width="14%"> 
                                                                 <div class="upload-btn-wrapper setupload-btn">
@@ -463,12 +480,13 @@
 
                                                             </td>
                                                             <td width="14%">
+                                                                @can('frontend_download_storage_file')
                                                                 <div class="file-browse float-left position-seta">
 
                                                                     <a  href="{{ isset($main1[$j]['aadharId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['aadharId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <!-- <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
-
+                                                                @endcan
                                                             </td>
                                                             <td width="14%"> 
                                                                 <div class="upload-btn-wrapper setupload-btn">
@@ -484,12 +502,13 @@
 
                                                             </td>
                                                             <td width="14%">
+                                                                @can('frontend_download_storage_file')
                                                                 <div class="file-browse float-left position-seta">
 
                                                                     <a  href="{{ isset($main1[$j]['electricityId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['electricityId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <!-- <input type="file" class="downloadelectricity"  name="downloadelectricity[]" id="downloadelectricity{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
-
+                                                                @endcan
                                                             </td>
                                                             <td width="14%"> 
                                                                 <div class="upload-btn-wrapper setupload-btn">
@@ -506,12 +525,13 @@
 
                                                             </td>
                                                             <td width="14%">
+                                                            @can('frontend_download_storage_file')
                                                                 <div class="file-browse float-left position-seta">
 
                                                                     <a  href="{{ isset($main1[$j]['telephoneId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['telephoneId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <!-- <input type="file" class="downloadtelephone"  name="downloadtelephone[]" id="downloadtelephone{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
-
+                                                            @endcan
                                                             </td>
                                                             <td width="14%"> 
                                                                 <div class="upload-btn-wrapper setupload-btn">
