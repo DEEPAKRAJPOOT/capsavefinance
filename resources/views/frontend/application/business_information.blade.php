@@ -63,8 +63,10 @@
 												<label for="txtPassword">GST Number
 													<span class="mandatory">*</span>
 												</label>
+												@can('biz_gst_to_entity_karza')
 												<select class="form-control" name="biz_gst_number" tabindex="2" onchange="fillEntity(this.value)" >
 												</select>
+												@endcan
 												<!-- <input type="text" name="biz_gst_number" value="{{old('biz_gst_number')}}" class="form-control" tabindex="1" placeholder="Enter GST Number"> -->
 												@error('biz_gst_number')
 													<span class="text-danger error">{{ $message }}</span>
