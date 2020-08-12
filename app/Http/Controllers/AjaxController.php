@@ -4347,7 +4347,23 @@ if ($err) {
     public function getRemainingCharges(Request $request){
         $user_id = $request->get('user_id');
         $trans_type = $request->get('trans_type');
-        $res = Transactions::getAllChargesApplied(['user_id' => $user_id,'trans_type'=>$trans_type]);
+        $charges = Transactions::getAllChargesApplied(['user_id' => $user_id,'trans_type'=>$trans_type]);
+        
+        foreach($charges as $trans){
+            $res[] = [
+                'trans_date' => Carbon::parse($trans->trans_date)->format('d-m-Y'),
+                'trans_id' => $trans->trans_id,
+                'parent_trans_id' => $trans->parent_trans_id,
+                'trans_name' => $trans->transName,
+                'trans_desc' => $trans->transName,
+                'user_id' => $trans->user_id,
+                'entry_type' => $trans->entry_type,
+                'debit_amount' => (float) $trans->amount,
+                'credit_amount' => (float) ($trans->amount - $trans->outstanding),
+                'remaining' => (float) $trans->outstanding,
+                'tds_amount'=> (float) $trans->TDSAmount,
+            ];
+        }
         $data['result'] = $res;
         if (!empty($res)) {
             $data['status'] = 'success';
