@@ -599,11 +599,13 @@
 								</div>
 						</div>
 					</div>
+					@can('business_information_save')
 					<div class="d-flex btn-section">
 						<div class="ml-auto text-right">
 							<input type="submit" value="Save and Continue" class="btn btn-success btn-sm">
 						</div>
 					</div>
+					@endcan
 					</div>
 					</form>
 				</div>
