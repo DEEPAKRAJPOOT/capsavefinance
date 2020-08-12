@@ -679,8 +679,10 @@
                                        <!-- <input type="button" value="Back" class="btn btn-warning" onclick="window.location.href='company-details.php'">
                                         -->
                                         @if(request()->get('view_only'))
+                                        @can('promoter_save')
                                          <input type="button" value="Save" data-type="save" id="submit" class="submit btn btn-success btn-sm">
                                          <input type="button" value="Next" data-type="next" id="submit" class="submit btn btn-success btn-sm">
+                                        @endcan 
                                         @endif
                                     </div>
                                 </div>	
