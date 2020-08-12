@@ -1437,6 +1437,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
        return TallyEntry::getActualPostedAmount();
     }
 
+
     public function getCibilReports(array $whereCondition = [], $whereRawCondition = NULL) {
        return CibilReports::getCibilReports($whereCondition, $whereRawCondition);
     } 
@@ -1458,6 +1459,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getAllBusinessAddrData(array $whereCond = []) {
         return BusinessAddress::getBizAddresses($whereCond);
     }    
+
+    public function getDisbursalByUserAndBatchId($data)
+	{
+		return Disbursal::where($data)
+				->first();
+	}    
+
 
 	public function getEodList(){
 		return EodProcess::whereNotIn('status',[config('lms.EOD_PROCESS_STATUS.WATING')])->orderBy('eod_process_id','DESC')->get();
