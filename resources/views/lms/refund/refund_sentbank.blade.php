@@ -22,9 +22,11 @@
             <div class="row">
                 <div class="card-body">
                     <div class="row pull-right">
+                    @can('download_sentbank')
                         <div class="col-md-2" id="buttonDiv">
                             <a href="{{ route('download_sentbank') }}" class="btn btn-success btn-sm ml-2" >Download Excel</a>
                         </div>
+                    @endcan
                     </div>
                     <div class="row col-6 pull-left">
                     @include('lms.refund.common.search')

@@ -28,7 +28,9 @@
                     <div class="row pull-right">
                         <div class="col-md-2" id="buttonDiv">
                             {{-- <button type="button" class="btn btn-success btn-sm ml-2" id="sentToBankBtn">Sent To Bank</button> --}}
+                            @can('refund_confirm')
                             <a data-url="{{ route('refund_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank</a>
+                            @endcan
                             <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;">Disburse Trigger</a>
                             <input type="hidden" value="" name="transaction_ids" id="transaction_ids">
                         </div>

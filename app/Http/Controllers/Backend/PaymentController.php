@@ -244,6 +244,7 @@ class PaymentController extends Controller {
 					'link_trans_id' =>$request->charges,
 					'parent_trans_id' =>$request->charges,
 					'user_id' => $request['user_id'],
+					'invoice_disbursed_id' => $transaction ? $transaction->invoice_disbursed_id : null,
 					'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
 					'trans_type' => (in_array($request->action_type, [3])) ? config('lms.TRANS_TYPE.TDS') : $request['trans_type'],
 					'amount' => str_replace(',', '', $request['amount']),
