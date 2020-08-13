@@ -1998,20 +1998,17 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($trans) {
                         $act = '';
-                        if ($trans->action_type == 3) {
-                            $act .= "<a data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
-                        }
 
                         if($trans->is_settled == '0' && $trans->action_type == '1' && $trans->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($trans->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
                             $act .= '<button  onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $trans->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
                         }
 
-                        if ($trans->action_type == 1 && isset($trans->userFile->file_path)) {                            
+                        if (($trans->action_type == 3 || ($trans->action_type == 1 && $trans->payment_type == 2)) && isset($trans->userFile->file_path)) {                            
                             //$act .= '<a title="Download Cheque" href="'. \Storage::url($trans->userFile->file_path) .'" download="'. $trans->userFile->file_name . '"><i class="fa fa-download"></i></a>';
                             $act .= '<a title="Download" href="'. route('download_storage_file', ['file_id' => $trans->userFile->file_id ]) .'" class="btn btn-action-btn btn-sm" ><i class="fa fa-download"></i></a>';
                         }
                         if (Helpers::checkPermission('edit_payment') && ($trans->action_type == 3 || ($trans->action_type == 1 && $trans->payment_type == 2))) {
-                            $act .= "&nbsp;&nbsp;<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id, 'payment_type' => $trans->payment_type]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
+                            $act .= "<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id, 'payment_type' => $trans->payment_type]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
                         }                        
                     return $act;
                    
