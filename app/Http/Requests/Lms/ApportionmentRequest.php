@@ -69,7 +69,7 @@ class ApportionmentRequest extends FormRequest
                     if ($outstandingAmount < $selectedPayment) {
                         $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the outsanding amount');
                     }
-                    if(!($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1)){
+                    if($transDetail->invoice_disbursed_id && !($transDetail->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $transDetail->invoiceDisbursed->invoice->program->interest_borne_by == 1)){
                         if ($realOurstandingAmount < $selectedPayment && in_array($transDetail->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])) {
                             $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the Suggested outsanding amount'); 
                         }

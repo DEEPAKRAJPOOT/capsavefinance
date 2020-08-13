@@ -6178,10 +6178,8 @@ class DataRenderer implements DataProviderInterface
                 $outResult = "₹ ".number_format($trans->outstanding,2);
                 if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                     $accuredInterest = $trans->tempInterest;
-                    if(!is_null($accuredInterest)){
-                       if(!($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1)){
+                    if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1)){
                            $outResult .= " <span style=\"color:red\">(".number_format($accuredInterest,2).")</span>";
-                       }
                     }
                 }
                 return $outResult;
@@ -6196,7 +6194,7 @@ class DataRenderer implements DataProviderInterface
                 if($payment){
                     if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                         $accuredInterest = $trans->tempInterest;
-                        if(!is_null($accuredInterest)){
+                        if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1)){
                             return  "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($accuredInterest,2)."' name='payment[".$trans->trans_id."]'>";
                         }
                     }
