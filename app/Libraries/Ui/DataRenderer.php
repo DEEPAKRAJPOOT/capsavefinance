@@ -6179,7 +6179,9 @@ class DataRenderer implements DataProviderInterface
                 if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                     $accuredInterest = $trans->tempInterest;
                     if(!is_null($accuredInterest)){
-                        $outResult .= " <span style=\"color:red\">(".number_format($accuredInterest,2).")</span>";
+                       if(!($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1)){
+                           $outResult .= " <span style=\"color:red\">(".number_format($accuredInterest,2).")</span>";
+                       }
                     }
                 }
                 return $outResult;
