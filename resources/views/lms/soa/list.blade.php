@@ -156,6 +156,8 @@
         get_customer: "{{ route('get_customer') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
+        check_excel_perm: "{{Helpers::checkPermission('soa_excel_download')}}",
+        check_pdf_perm: "{{Helpers::checkPermission('soa_pdf_download')}}"
     };
     $('#from_date').datetimepicker({
         format: 'dd/mm/yyyy',
