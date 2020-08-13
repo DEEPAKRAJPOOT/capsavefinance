@@ -60,7 +60,9 @@
                         <div class="action-btn">
                             <div class="upload-btn-wrapper setupload-btn pos">
                                 @if(request()->get('view_only'))
+                                @can('show_upload_document')
                                 <button class="btn upload-btn openModal" data-id="{{ $data->doc_id }}">Upload</button>
+                                @endcan
                                 @endif
                                 
                             </div>
