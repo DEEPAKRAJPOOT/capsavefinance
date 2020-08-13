@@ -71,7 +71,9 @@
                             <div class="col-md-1">
                                 <div class="form-group">
 				    @if (request()->get('view_only'))
+                    @can('save_limit_assessment')
                                     <button class="btn btn-success btn-sm mt-44" type="submit" name="program_submit">Submit</button>
+                                    @endcan
                                     @endif
                                 </div>
                             </div>
@@ -113,11 +115,19 @@
                                                        <td width="20%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
                                                        <td width="20%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
                                                        <td width="24%">
+                                                       @can('show_limit')
                                                        <button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}"  title="Edit Limit"><i class="fa fa-edit"></i></button>
+                                                       @endcan
+                                                       @can('show_limit_offer')
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
+                                                       @endcan
                                                        @if($offerStatus == 2)
+                                                       @can('share_to_colender')
                                                        <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 13px;" title="Share with Co-Lender"><i class="fa fa-share"></i></a>
+                                                       @endcan
+                                                       @can('view_shared_colender')
                                                        <a data-toggle="modal" data-target="#viewSharedColenderFrame" data-url ="{{route('view_shared_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 13px;" title="View Shared Co-Lender"><i class="fa fa-eye"></i></a>
+                                                       @endcan
                                                        @endif
                                                        </td>
                                                     </tr>
@@ -156,7 +166,9 @@
                                                     @if($prgmOffer->status == 2)
                                                     <label class="badge badge-danger">Rejected</label>
                                                     @else
+                                                    @can('show_limit_offer')
                                                     <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
+                                                    @endcan
                                                     @endif
                                                 </td>
                                             </tr>
@@ -209,8 +221,13 @@
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
-                                                       <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Edit Limit"><i class="fa fa-edit"></i></button>
+                                                       <td width="25%">
+                                                       @can('show_limit')
+                                                       <button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Edit Limit"><i class="fa fa-edit"></i></button>
+                                                       @endcan
+                                                       @can('show_limit_offer')
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
+                                                       @endcan
                                                        </td>
                                                     </tr>
                                                 </tbody>
@@ -266,7 +283,9 @@
                                                     @if($prgmOffer->status == 2)
                                                     <label class="badge badge-success">Rejected</label>
                                                     @else
+                                                    @can('show_limit_offer')
                                                     <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
+                                                    @endcan
                                                     @endif
                                                 </td>
                                             </tr>
