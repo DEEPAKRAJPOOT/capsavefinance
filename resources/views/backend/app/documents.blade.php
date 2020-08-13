@@ -104,6 +104,7 @@
                                         <td width="10%">
                                         @can('download_storage_file')
                                         <a title="Download Document" href="{{ route('download_storage_file', ['file_id' => $value->userFile->file_id ]) }}" ><i class="fa fa-download"></i></a>
+                                        @endcan
                                         </td>
                                         <td align="center" width="20%">
                                             @if(request()->get('view_only'))
