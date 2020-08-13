@@ -3,21 +3,15 @@
 @section('content')
 <div class="content-wrapper">
     <ul class="sub-menu-main pl-0 m-0">
-        @can('business_information_open')
         <li>
             <a href="{{ route('business_information_open', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Business Information</a>
         </li>
-        @endcan
-        @can('promoter-detail')
         <li>
             <a href="{{ route('promoter-detail', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}">Management Information</a>
         </li>
-        @endcan
-        @can('document')
         <li>
             <a href="{{ route('document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'edit' => 1]) }}"  class="active">Documents</a>
         </li>
-        @endcan
     </ul>
     <div class="card mt-4">
         <div class="card-body">
@@ -94,17 +88,11 @@
                                         <td width="20%"> {{ (isset($value->comment)) ? $value->comment : ''}} </td>
 
                                         <td width="20%">
-                                        @can('download_storage_file')
                                         <a title="Download Document" href="{{  route('download_storage_file', ['file_id' => $value->userFile->file_id ]) }}"><i class="fa fa-download"></i></a>
-                                        @endcan
                                         </td>
                                         <td align="center" width="20%">
-                                        @can('document-delete')
                                             <a title="Delete Document" onclick="return confirm('Are you sure you want to delete this file?')" href="{{ Route('document-delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>
-                                            @endcan
-                                            @can('front_edit_upload_document')
                                             <a title="Edit Comment" data-toggle="modal" data-target="#EdituploadDocument" data-url ="{{route('front_edit_upload_document', ['app_doc_file_id' => $value->app_doc_file_id, 'app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="float-right" ><i class="fa fa-edit"></i></a>
-                                            @endcan
                                         </td>
                                     </tr>
                                     @endforeach
@@ -124,18 +112,14 @@
                                 <input type="hidden" name="biz_id" value="{{ request()->get('biz_id') }}">
                                 <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}">                                    
                                 <!--<input type="button" value="Back" class="btn btn-warning" onclick="window.location.href = 'promoter-details'">-->
-                                @can('front_application_save')
                                 <input type="submit" value="Submit" class="btn btn-success btn-sm">
-                                @endcan
                             </form>
                         </div>
                     </div>
 
                 </div>
                 @endif
-                @can('front_show_upload_document')
                 <a data-toggle="modal" data-target="#uploadDocument" data-url ="{{route('front_show_upload_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openUploadDocument" style="display: none;"><i class="fa fa-plus"></i>Show Upload Document</a>
-                @endcan
                 <input type="hidden" name="uploadDocId" id="uploadDocId" value="" >
             </div>
         </div>
@@ -171,9 +155,7 @@
                      </div>
                   </div>
                </div>
-               @can('gstAnalysis')
-               <button type="button" class="btn btn-success float-right  btn-sm" id="fetchdetails">Fetch Detail</button>  
-               @endcan
+               <button type="button" class="btn btn-success float-right  btn-sm" id="fetchdetails">Fetch Detail</button>
             </div>
          </form>
       </div>

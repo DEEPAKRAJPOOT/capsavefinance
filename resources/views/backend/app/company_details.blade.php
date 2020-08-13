@@ -53,7 +53,9 @@
 									</span>
                                     <div class="relative">
                                     @if(config('proin.CONFIGURE_API'))
+									@can('chk_biz_pan_to_gst')
 									<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="pointer-events: none;">Verified</a>
+									@endcan
 									@endif
 									<input type="text" name="biz_pan_number" value="{{old('biz_pan_number', $business_info->pan->pan_gst_hash)}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" readonly>
                                     </div>
@@ -633,11 +635,13 @@
 						</div>
 					</div>
 					@if(request()->get('view_only'))
+                                        @can('company_details_save')
 					<div class="d-flex btn-section" style="/*display: none !important;*/">
 						<div class="ml-auto text-right">
 							<input type="submit" value="Save and Continue" class="btn btn-success btn-sm">
 						</div>
 					</div>
+                                        @endcan
 					@endif
 				</div>
 				</form>

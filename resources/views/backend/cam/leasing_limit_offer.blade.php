@@ -225,9 +225,11 @@
         </div>
     </div>
     <div class="row">
+    @can('update_limit_offer')
       <div class="col-md-12">
         <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>
       </div>
+    @endcan
     </div>   
   </form>
  

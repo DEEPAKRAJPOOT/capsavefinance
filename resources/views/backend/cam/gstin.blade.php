@@ -16,7 +16,11 @@
                      <small>{{ date("F",strtotime('2019-'.$gstdoc->gst_month.'-01')) . '-'. $gstdoc->gst_year }}</small>
                      <ul>
                         <li><span class="icon"><i class="fa fa-file-excel-o"></i></span></li>
-                        <li><a href="{{ route('download_storage_file', ['file_id' => $gstdoc->file_id ]) }}" target="_blank">Download GST Statement</a></li>
+                        <li>
+                        @can('download_storage_file')
+                        <a href="{{ route('download_storage_file', ['file_id' => $gstdoc->file_id ]) }}" target="_blank">Download GST Statement</a>
+                        @endcan
+                        </li>
                         <li><a href="javascript:void(0)"></a>&nbsp;</li>
                      </ul>
                   </div>

@@ -1063,7 +1063,7 @@ class ApplicationController extends Controller
 	 * @return \Illuminate\Http\Response
 	 */
 	public function showBusinessInformation()
-	{            
+	{       
             $userId = request()->get('user_id');
             //$where=[];
             //$where['user_id'] = $userId;
