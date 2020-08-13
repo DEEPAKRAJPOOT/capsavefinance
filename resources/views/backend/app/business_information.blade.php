@@ -44,7 +44,9 @@
 										</span>
                                         <div class="relative">
                                         	@if(config('proin.CONFIGURE_API'))
+											@can('chk_biz_pan_to_gst')
                                             <a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
+											@endcan
                                         	@endif
                                             <input type="text" name="biz_pan_number" value="{{ $pan ? $pan : old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" @if ($pan) readonly="readonly" @endif >
                                         </div>
@@ -602,7 +604,9 @@
 						<div class="d-flex btn-section">
 							<div class="ml-auto text-right">                                                            
                                 {{-- @if(request()->get('view_only')) --}}
+								@can('save_new_application')
 								<input type="submit" value="Save and Continue" class="btn btn-success btn-sm">
+								@endcan
                                 {{-- @endif --}}
 							</div>
 						</div>
