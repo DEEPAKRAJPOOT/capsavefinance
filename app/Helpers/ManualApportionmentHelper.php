@@ -34,7 +34,7 @@ class ManualApportionmentHelper{
         return $calDate;
     }
 
-    public function transactionPostingAdjustment($invDisbId, $startDate, $payFreq){
+    public function transactionPostingAdjustment($invDisbId, $startDate, $payFreq, $paymentId = null){
         $transactionList = [];
         if($payFreq == '2'){
             $adjTransactions = Transactions::with('transRunning')
@@ -62,7 +62,7 @@ class ManualApportionmentHelper{
                     $transOutstanding = $trans->outstanding;
                     if($transOutstanding <= $cancelableAmount && $transOutstanding > 0 && $cancelableAmount > 0){
                         $transactionList[] = [
-                            'payment_id' => null,
+                            'payment_id' => $paymentId,
                             'link_trans_id' => $trans->trans_id,
                             'parent_trans_id' => $trans->trans_id,
                             'trans_running_id'=> null,
@@ -208,6 +208,7 @@ class ManualApportionmentHelper{
         $intrest = 0;
         $disbTransIds = null;
         $intTransIds = null;
+
         if($payFreq == 2){
             $disbTransIds = Transactions::whereDate('trans_date','<=',$odStartDate) 
             ->where('invoice_disbursed_id','=',$invDisbId) 
@@ -217,8 +218,7 @@ class ManualApportionmentHelper{
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
             ->pluck('trans_id')->toArray();
         
-            $intTransIds = Transactions::whereMonth('trans_date','<=',date('m', strtotime($odStartDate)))
-            ->whereYear('trans_date',date('Y', strtotime($odStartDate)))
+            $intTransIds = Transactions::whereDate('trans_date','<=',$odStartDate)
             ->where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
             ->whereNull('link_trans_id') 
@@ -245,17 +245,6 @@ class ManualApportionmentHelper{
         })
         ->sum('amount');
 
-       if($intTransIds){
-           $Dr += Transactions::whereDate('trans_date','<=',$odStartDate)
-           ->where('invoice_disbursed_id','=',$invDisbId)
-           ->where('entry_type','=','0')
-           ->where(function($query) use($intTransIds){
-               $query->whereIn('trans_id',$intTransIds);
-               $query->OrwhereIn('parent_trans_id',$intTransIds);
-            })
-            ->sum('amount');
-        }
-            
         $Cr =  Transactions::whereDate('trans_date','<=',$transDate) 
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','1')
@@ -265,7 +254,16 @@ class ManualApportionmentHelper{
         })
         ->sum('amount');
 
-        if($intTransIds){
+       if($intTransIds){
+           $Dr += Transactions::whereDate('trans_date','<=',$transDate)
+           ->where('invoice_disbursed_id','=',$invDisbId)
+           ->where('entry_type','=','0')
+           ->where(function($query) use($intTransIds){
+               $query->whereIn('trans_id',$intTransIds);
+               $query->OrwhereIn('parent_trans_id',$intTransIds);
+            })
+            ->sum('amount');
+ 
             $Cr +=  Transactions::whereDate('trans_date','<=',$transDate) 
             ->where('invoice_disbursed_id','=',$invDisbId)
             ->where('entry_type','=','1')

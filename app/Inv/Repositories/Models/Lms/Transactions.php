@@ -164,9 +164,18 @@ class Transactions extends BaseModel {
     }
 
     public function getRevertedAmtAttribute(){
-        return self::where('parent_trans_id','=',$this->trans_id)
-        ->where('entry_type','=','0')
+        return self::where('link_trans_id','=',$this->trans_id)
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL')])
+        ->where(function($query){
+            $query->where(function($q){
+                $q->where('entry_type','=','0');
+                $q->where('trans_type','=', config('lms.TRANS_TYPE.REVERSE'));
+            });
+            $query->orWhere(function($q){
+                $q->where('entry_type','=','1');
+                $q->where('trans_type','=', config('lms.TRANS_TYPE.CANCEL'));
+            });
+        })
         ->sum('amount');
     }
 
