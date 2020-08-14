@@ -320,7 +320,9 @@
                         <!-- </div> -->
                      </div>
                      @if(request()->get('view_only'))
+                     @can('cam_promoter_comment_save')
                      <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
+                     @endcan
                      @endif
                 </form>
                  

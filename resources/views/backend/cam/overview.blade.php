@@ -362,7 +362,9 @@
 
                 </div>
                 @if(request()->get('view_only'))
-                <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
+                @can('cam_information_save')
+                    <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
+                @endcan
                 @endif
               </form>
             </div>

@@ -34,9 +34,11 @@
         <div class="card-body">
           <div class=" form-fields">
            <div class="col-md-12">
-              <h5 class="card-title form-head-h5">Personal Discussion Note  
+              <h5 class="card-title form-head-h5">Personal Discussion Note 
+              @can('backend_pd_notes_from')
               <a data-toggle="modal" data-target="#pdNoteFrame" data-url ="{{route('backend_pd_notes_from',['app_id' => request()->get('app_id')])}}" data-height="500px" data-width="100%" data-placement="top" class="add-btn-cls btn btn-success btn-sm float-right"><i class="fa fa-plus">&nbsp;</i>Add Note</a>
-            </h5>
+              @endcan
+              </h5>
                     <div class="col-md-12-cls">
                             <div class="prtm-full-block">       
                                 <div class="prtm-block-content">
