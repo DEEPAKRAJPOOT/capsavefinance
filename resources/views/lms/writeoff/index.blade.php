@@ -18,7 +18,7 @@
                                     @if (count($woData) < 1)
                                         <a href="{{route('generate_write_off',[ 'user_id' => $userInfo->user_id ])}}" >
                                             <button class="btn  btn-success btn-sm float-right mb-3" type="button">
-                                            <i class="fa fa-plus"></i> Generate Wtite Off
+                                            <i class="fa fa-plus"></i> Generate Write Off
                                             </button>
                                         </a>
                                     @endif
