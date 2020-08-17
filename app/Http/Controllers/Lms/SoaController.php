@@ -116,7 +116,7 @@ class SoaController extends Controller
         ->with('maxDPD',1)
         ->with('maxPrincipalDPD',$maxPrincipalDPD)
         ->with('maxInterestDPD',$maxInterestDPD)
-        ->with(['userInfo' =>  $result['userInfo'], 'application' => $result['application'], 'anchors' =>  $result['anchors']]); 
+        ->with(['userInfo' =>  $result['userInfo']??null, 'application' => $result['application']??null, 'anchors' =>  $result['anchors']??null]); 
     }
          /* use function for the manage sention tabs */ 
     
