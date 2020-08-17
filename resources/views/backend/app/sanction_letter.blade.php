@@ -355,7 +355,7 @@
                               </tbody>
                            </table>
                            <br />
-                           <h5>Section 2:- Common Securities << Depending on Addition Security selected on Limit Assesment>></h5>
+                           <h5>Section 2:- Common Securities << Depending on Addition Security selected on Limit Assessment>></h5>
                            @foreach($supplyChaindata['offerData'] as $offerD)
                            <div class="offerdiv">
                               @if($offerD->offerPs->count())

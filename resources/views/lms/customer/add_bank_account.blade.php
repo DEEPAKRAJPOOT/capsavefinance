@@ -38,7 +38,7 @@ Form::open(
                 </label>
                 {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
                 ['class'=>'form-control form-control-sm number_format' ,
-                'id'=>'acc_no','placeholder'=>'Enter Account Number', 'maxlength' => "18"]) !!}
+                'id'=>'acc_no','placeholder'=>'Enter Account Number', 'maxlength' => "18", 'autocomplete' => 'off']) !!}
                 {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -51,7 +51,7 @@ Form::open(
                 </label>
 
                 {!! Form::password('confim_acc_no',
-                ['class'=>'form-control form-control-sm number_format' ,'placeholder'=>'Enter Account Number', 'id' => 'confim_acc_no', 'maxlength' => "18"]) !!}
+                ['class'=>'form-control form-control-sm number_format' ,'placeholder'=>'Enter Account Number', 'id' => 'confim_acc_no', 'maxlength' => "18", 'autocomplete' => 'off']) !!}
                 
             </div>
         </div>
@@ -73,7 +73,7 @@ Form::open(
                 <label for="txtCreditPeriod">IFSC Code
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm ifsc_code' ,'placeholder'=>'Enter IFSC Code', 'id' => 'ifsc_code']) !!}
+                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm ifsc_code' ,'placeholder'=>'Enter IFSC Code', 'id' => 'ifsc_code', 'autocomplete' => 'off']) !!}
                 {!! $errors->first('ifsc_code', '<span class="error">:message</span>') !!}
             </div>
         </div>
