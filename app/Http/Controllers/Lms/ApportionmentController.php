@@ -838,7 +838,6 @@ class ApportionmentController extends Controller
                         $date_of_payment = $invDisb['payment_due_date'];
                     }
                     
-                    $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId);
                     $Obj->intAccrual($invDisb['invoice_disbursed_id'], $date_of_payment);
                     $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId);
                 }
