@@ -11,7 +11,6 @@ use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Master\BaseRate;
 use App\Inv\Repositories\Models\Lms\Transactions;
-use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 
@@ -67,7 +66,7 @@ class ManualApportionmentHelperTemp{
         ->sum('amount');
 
         if($payFreq == 2){
-            $Dr += InterestAccrual::where('invoice_disbursed_id','=',$invDisbId)
+            $Dr += InterestAccrualTemp::where('invoice_disbursed_id','=',$invDisbId)
             ->whereNotNull('interest_rate')
             ->where(function($query) use($odStartDate,$transDate){
                 $query->whereMonth('interest_date','<', date('m', strtotime($transDate)));
