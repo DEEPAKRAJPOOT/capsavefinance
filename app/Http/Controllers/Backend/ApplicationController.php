@@ -1180,7 +1180,7 @@ class ApplicationController extends Controller
 				$addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
 									
 				//Update workflow stage
-				Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true, $addl_data);                
+				Helpers::updateWfStage('sales_queue', $appId, $wf_status = 1, $assign_case=true, $addl_data, $sendEmail = false);                
 				
 			} else if($request->has('btn_reject_offer')) {
 				$addl_data = [];
