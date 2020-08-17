@@ -842,9 +842,9 @@ class ApportionmentController extends Controller
                     $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId);
                 }
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
-                // if($paymentId){
-                //     InterestAccrualTemp::where('payment_id',$paymentId)->delete();
-                // }
+                if($paymentId){
+                    InterestAccrualTemp::where('payment_id',$paymentId)->delete();
+                }
                 $request->session()->forget('apportionment');
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
