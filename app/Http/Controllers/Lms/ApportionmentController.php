@@ -831,15 +831,16 @@ class ApportionmentController extends Controller
                     }
                 }
                 foreach ($invoiceList as $invDisb) {
-                    $date_of_payment = $invDisb['date_of_payment'];
                     $Obj = new ManualApportionmentHelper($this->lmsRepo);
                     
+                    $date_of_payment = $invDisb['date_of_payment'];
                     if( (strtotime($invDisb['payment_due_date']) <= strtotime($invDisb['date_of_payment']) )  && ( strtotime($invDisb['date_of_payment']) <= strtotime($invDisb['payment_due_date'] . "+". $invDisb['grace_period']." days"))){
                         $date_of_payment = $invDisb['payment_due_date'];
                     }
                     
                     $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId);
                     $Obj->intAccrual($invDisb['invoice_disbursed_id'], $date_of_payment);
+                    $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId);
                 }
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
                 // if($paymentId){

@@ -97,7 +97,7 @@ class ManualApportionmentHelperTemp{
         ->sum('amount');
 
         if($intTransIds){
-            $Cr +=  Transactions::whereDate('trans_date','<=',$odStartDate) 
+            $Cr +=  Transactions::whereDate('trans_date','<=',$transDate) 
             ->where('invoice_disbursed_id','=',$invDisbId)
             ->where('entry_type','=','1')
             ->where(function($query) use($intTransIds){

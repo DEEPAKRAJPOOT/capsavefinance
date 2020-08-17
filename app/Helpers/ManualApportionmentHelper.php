@@ -36,49 +36,142 @@ class ManualApportionmentHelper{
 
     public function transactionPostingAdjustment($invDisbId, $startDate, $payFreq, $paymentId = null){
         $transactionList = [];
-        if($payFreq == '2'){
-            $adjTransactions = Transactions::with('transRunning')
-            ->where('invoice_disbursed_id','=',$invDisbId)
+        $amount = 0;
+
+        $runningTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)->get();
+
+        foreach($runningTransactions as $rTrans){
+            $amount = $rTrans->amount;
+            $transactions = Transactions::where('invoice_disbursed_id','=',$invDisbId)
+            ->where('trans_running_id','=',$rTrans->trans_running_id)
             ->where('entry_type','=',0)
             ->whereNotNull('trans_running_id')
-            ->groupBy('trans_running_id')
-            ->get()
-            ->filter(function($item){ 
-                if($item->amount > $item->transRunning->amount)
-                { 
-                    return true;
-                }
-            });
+            ->get();
 
-            foreach($adjTransactions as $adjTrans){
-                $cancelableAmount = $adjTrans->amount - $adjTrans->transRunning->amount;
-
-                $transactions = Transactions::where('trans_running_id',$adjTrans->trans_running_id)
-                ->orderBy('trans_date','desc')
-                ->orderBy('trans_id','desc')
+            foreach($transactions as $trans){
+                $amount -= $trans->amount;
+                $cTransactions = Transactions::where('link_trans_id','=',$trans->trans_id)
+                ->where('invoice_disbursed_id','=',$invDisbId)
+                ->where('trans_running_id','=',$rTrans->trans_running_id)
+                ->where('entry_type','=',1)
+                ->where('trans_type','=',config('lms.TRANS_TYPE.CANCEL'))
+                ->whereNotNull('trans_running_id')
                 ->get();
 
-                foreach($transactions as $trans){
-                    $transOutstanding = $trans->outstanding;
-                    if($transOutstanding <= $cancelableAmount && $transOutstanding > 0 && $cancelableAmount > 0){
-                        $transactionList[] = [
-                            'payment_id' => $paymentId,
-                            'link_trans_id' => $trans->trans_id,
-                            'parent_trans_id' => $trans->trans_id,
-                            'trans_running_id'=> null,
-                            'invoice_disbursed_id' => $trans->invoice_disbursed_id,
-                            'user_id' => $trans->user_id,
-                            'trans_date' => $startDate,
-                            'amount' => $transOutstanding,
-                            'entry_type' => 1,
-                            'soa_flag' => 1,
-                            'trans_type' => config('lms.TRANS_TYPE.CANCEL')
-                        ];
-                        $cancelableAmount -= $transOutstanding;
-                    }
+                foreach($cTransactions as $cTrans){
+                    $amount += $cTrans->amount;
                 }
             }
+
+            if($amount > 0){
+                /*$ICPTransactions = Transactions::where('invoice_disbursed_id','=',$invDisbId)
+                ->where('trans_running_id','=',$rTrans->trans_running_id)
+                ->where('entry_type','=',0)
+                ->whereNull('payment_id')  
+                ->whereNull('link_trans_id')
+                ->whereNull('parent_trans_id')
+                ->get()
+                ->filter(function($item){
+                    return $item->outstanding > 0;
+                });
+                $transactionList[] = [
+                    'payment_id' => null,
+                    'link_trans_id' => null,
+                    'parent_trans_id' => null,
+                    'trans_running_id'=> $rTrans->trans_running_id,
+                    'invoice_disbursed_id' => $rTrans->invoice_disbursed_id,
+                    'user_id' => $rTrans->user_id,
+                    'trans_date' => $rTrans->trans_date,
+                    'amount' => $amount,
+                    'entry_type' => 1,
+                    'soa_flag' => 1,
+                    'trans_type' => config('lms.TRANS_TYPE.INTEREST')
+                ];*/
+            }
+            
+            elseif($amount < 0){
+                $amount = abs($amount);
+                // Interest cancelation Process
+                if($amount > 0){
+                    $ICPTransactions = Transactions::where('invoice_disbursed_id','=',$invDisbId)
+                    ->where('trans_running_id','=',$rTrans->trans_running_id)
+                    ->where('entry_type','=',0)
+                    ->whereNull('payment_id')  
+                    ->whereNull('link_trans_id')
+                    ->whereNull('parent_trans_id')
+                    ->get()
+                    ->filter(function($item){
+                        return $item->outstanding > 0;
+                    });
+                    
+                    foreach ($ICPTransactions as $icpTrans) {
+                        if($amount >= $icpTrans->outstanding){
+                            $cAmt = $icpTrans->outstanding;
+                        }else{
+                            $cAmt = $amount;
+                        }
+                        $amount -= $cAmt;
+                        
+                        if($amount > 0){
+                            $transactionList[] = [
+                                'payment_id' => null,
+                                'link_trans_id' => $icpTrans->link_trans_id,
+                                'parent_trans_id' => $icpTrans->parent_trans_id,
+                                'trans_running_id'=> $icpTrans->trans_running_id,
+                                'invoice_disbursed_id' => $icpTrans->invoice_disbursed_id,
+                                'user_id' => $icpTrans->user_id,
+                                'trans_date' => $icpTrans->trans_date,
+                                'amount' => $cAmt,
+                                'entry_type' => 1,
+                                'soa_flag' => 1,
+                                'trans_type' => config('lms.TRANS_TYPE.CANCEL')
+                            ];
+                        }
+                    }
+                }
+                // Interest Refund Process
+                
+                if($amount > 0){
+                    $IRPTransactions = Transactions::where('invoice_disbursed_id','=',$invDisbId)
+                    ->where('trans_running_id','=',$rTrans->trans_running_id)
+                    ->where('entry_type','=',0)
+                    ->whereNull('payment_id')  
+                    ->whereNull('link_trans_id')
+                    ->whereNull('parent_trans_id')
+                    ->get()
+                    ->filter(function($item){
+                        return ($item->amount - $item->outstanding) > 0;
+                    });
+
+                    foreach ($IRPTransactions as $irpTrans) {
+                        $irpAmt = $irpTrans->amount - $irpTrans->outstanding;
+                        if($amount >= $irpAmt){
+                            $rAmt = $irpAmt;
+                        }else{
+                            $rAmt = $amount;
+                        }
+                        $amount -= $rAmt;
+                        
+                        if($amount > 0){
+                            $transactionList[] = [
+                                'payment_id' => null,
+                                'link_trans_id' => $irpTrans->link_trans_id,
+                                'parent_trans_id' => $irpTrans->parent_trans_id,
+                                'trans_running_id'=> $irpTrans->trans_running_id,
+                                'invoice_disbursed_id' => $irpTrans->invoice_disbursed_id,
+                                'user_id' => $irpTrans->user_id,
+                                'trans_date' => $irpTrans->trans_date,
+                                'amount' => $rAmt,
+                                'entry_type' => 1,
+                                'soa_flag' => 1,
+                                'trans_type' => config('lms.TRANS_TYPE.REFUND')
+                            ];
+                        }
+                    }
+                }   
+            }
         }
+
         if(!empty($transactionList)){
             foreach ($transactionList as $key => $newTrans) {
                 $this->lmsRepo->saveTransaction($newTrans);
