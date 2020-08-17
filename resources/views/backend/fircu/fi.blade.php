@@ -107,7 +107,7 @@
 
                                                         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-fi_address_id="{{$fiAdd->fi_addr_id}}">
                                                         @foreach($status_lists as $status_id => $status_name)
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="{{$status_id}}">{{$status_name}}</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="{{$status_id}}" @if(isset($fiAdd->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >{{$status_name}}</a>
                                                         @endforeach
                                                         </div>
                                                     </td>
@@ -198,6 +198,10 @@ $(document).ready(function(){
         let fi_addr_id = $(this).parent('div').data('fi_address_id');
         let status = $(this).attr('value');
         let token = '{{ csrf_token() }}';
+        if ($(this).data('is_uploaded') == '0') {
+            alert('You cannot update the FI status until the document is uploaded.')
+            return false;
+        }        
         $('.isloader').show();
         
         $.ajax({
