@@ -21,6 +21,7 @@
 
                             <div id="menu1" class=" active tab-pane "><br>
                              <span id="moveCase" class="text-success"></span>
+                             @can('user_wise_invoice_list')
                                <div class="row">
                                     <input type="hidden" name="user_id" value="{{($user_id) ? $user_id : ''}}">
                                     <div class="col-md-3">
@@ -69,6 +70,7 @@
 
                                             </div>
                                         </div>
+                             @endcan
                            </div>
 
                         </div>

@@ -2,6 +2,9 @@ try {
     var oTable;
     jQuery(document).ready(function ($) {
         //User Listing code
+        var pdf_perm = messages.check_pdf_perm;
+        var excel_perm = messages.check_excel_perm;
+        
         oTable = $('#lmsSoaList').DataTable({
             processing: true,
             serverSide: true,
@@ -51,12 +54,14 @@ try {
                 
                 {
                     text: 'PDF',
+                    className: "pdf_button",
                     action: function ( e, dt, node, config ) {
                        download('pdf');
                     }
                 },
                 {
                     text: 'Excel',
+                    className: "excel_button",
                     action: function ( e, dt, node, config ) {
                         download('excel');
                     }
@@ -64,7 +69,12 @@ try {
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
         });
-
+        if(pdf_perm != 1){
+            oTable.button(".pdf_button").remove();
+        }
+        if(excel_perm != 1){
+            oTable.button('.excel_button').remove();
+        } 
         //Search
         $('#searchbtn').on('click', function (e) {
             $("#client_details").html('');

@@ -75,6 +75,7 @@
                                                     <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     Action
                                                     </button>
+                                                    @can('change_cm_rcu_status')
                                                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;"  data-rcu_doc_id="{{ $value->current_rcu->rcu_doc_id}}">
                                                         <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="1">Pending</a>
                                                         <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="2">Inprogress</a>
@@ -82,6 +83,7 @@
                                                         <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="4">Negative</a>
                                                         <a class="dropdown-item change-cm-status" href="javascript:void(0);" value="5">Cancelled</a>
                                                     </div>
+                                                    @endcan
                                                     @endif
                                                 </div>
                                                 @endif
@@ -104,38 +106,48 @@
                                                       <td width="25%">{{ $document->userFile->file_name }}</td>
                                                       <td width="25%">{{\Carbon\Carbon::parse($document->created_at)->format('d/m/Y h:i A')}}</td>
                                                     <td width="25%">
+                                                        @can('download_storage_file')
                                                         <a class="btn-sm" title="Download Document" href="{{ route('download_storage_file', ['file_id' => $document->userFile->file_id ]) }}" >
                                                             <button class="btn-upload btn-sm" type="button"> <i class="fa fa-download"></i>
                                                             </button>
                                                         </a>
+                                                        @endcan
                                                     </td>
                                                     <td width="25%">
                                                         @if($document->doc_id == 31)
+                                                        @can('show_dl_data')
                                                         <a class="btn-sm" data-toggle="modal"  data-target="#modalPromoter" data-height="400" data-width="100%" data-url="{{route('show_dl_data',['type'=>'5','ownerid' => $document->biz_owner_id ])}}" style="display: inline">  
                                                             <button class="btn-upload btn-sm" type="button" title="View Details (Pan Card)" data-id="{{isset($document->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i>
                                                             </button>
                                                         </a>
+                                                        @endcan
                                                         @endif
 
                                                         @if($document->doc_id == 30)
+                                                        @can('show_voter_data')
                                                         <a class="btn-sm" data-toggle="modal"  data-target="#modalPromoter" data-height="400" data-width="100%" data-url="{{route('show_voter_data',['type'=>'4','ownerid' => $document->biz_owner_id ])}}" style="display: inline">  
                                                             <button class="btn-upload btn-sm" type="button" title="View Details (Pan Card)" data-id="{{isset($document->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i>
                                                             </button>
                                                         </a>
+                                                        @endcan
                                                         @endif
 
                                                         @if($document->doc_id == 32)
+                                                        @can('show_pass_data')
                                                         <a class="btn-sm" data-toggle="modal"  data-target="#modalPromoter" data-height="400" data-width="100%" data-url="{{route('show_pass_data',['type'=>'6','ownerid' => $document->biz_owner_id ])}}" style="display: inline">  
                                                             <button class="btn-upload btn-sm" type="button" title="View Details (Pan Card)" data-id="{{isset($document->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i>
                                                             </button>
                                                         </a>
+                                                        @endcan
                                                         @endif
 
                                                         @if($document->doc_id == 2)
+                                                        @can('show_pan_data')
                                                         <a class="btn-sm" data-toggle="modal"  data-target="#modalPromoter" data-height="400" data-width="100%" data-url="{{route('show_pan_data',['type'=>'3','ownerid' => $document->biz_owner_id ])}}" style="display: inline">  
                                                             <button class="btn-upload btn-sm" type="button" title="View Details (Pan Card)" data-id="{{isset($document->first_name) ? $i : '1'}}" data-type="5" > <i class="fa fa-eye"></i>
                                                             </button>
                                                         </a>
+                                                        @endcan
                                                         @endif
                                                     </td>
                                                      </tr>
@@ -162,14 +174,17 @@
                                                        <td width="15%">
                                                            
                                                         @if(isset($value2->userFile->file_path))
+                                                        @can('download_storage_file')
                                                         <a title="Download Report Document" href="{{ route('download_storage_file', ['file_id' => $value2->userFile->file_id ]) }}"><i class="fa fa-download"></i></a>
+                                                        @endcan
                                                         @endif                                                        
                                                         
                                                         @if(isset($value2->status->id) && $value2->status->id != 2)
                                                         @else
                                                         @if($value2->is_active)
                                                         <button class="btn-upload btn-sm trigger-for-rcu-doc" style="padding: 1px 8px;" type="button" data-rcu_doc_id="{{$value2->rcu_doc_id}}"> <i class="fa fa-upload"></i></button>
-                                                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>                                                                                                                
+                                                        @can('change_agent_rcu_status')
+                                                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>                                                                                                                                                                        
                                                         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-rcu_doc_id="{{$value2->rcu_doc_id}}">
                                                             <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="1" @if(isset($value2->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >Pending</a>
                                                             <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="2" @if(isset($value2->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >Inprogress</a>
@@ -178,6 +193,7 @@
                                                             <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="5" @if(isset($value2->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >Cancelled</a>
                                                             <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="6" @if(isset($value2->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >Refer to Credit</a>
                                                         </div>
+                                                        @endcan
                                                         @endif
                                                         @endif
                                                        </td>

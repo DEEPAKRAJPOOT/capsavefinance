@@ -49,7 +49,9 @@
             </div>
             <div class="row pull-right action-btn">
                 <div class="col-md-12" >
+                  @can('apport_running_save')
                     <input type="submit" value="Mark Posted" class="btn btn-success btn-sm" >
+                  @endcan
                 </div>
             </div>
             </form>

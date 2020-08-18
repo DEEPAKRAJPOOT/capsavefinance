@@ -66,10 +66,14 @@
                                 <form  method="post" action="{{Route('account_closure')}}" enctype= multipart/form-data>
                                 @csrf 
                                 <input type="hidden" name="user_id" value="{{$userId}}">
-                                <input type="submit" id="submit" name="submit" value="Account Closure" class="btn-sm btn btn-success">
+                                @can('account_closure')
+                                    <input type="submit" id="submit" name="submit" value="Account Closure" class="btn-sm btn btn-success">
+                                @endcan
                                 </form>
                                 @elseif($uLimit->app->status==2)
-                                   <button type="button" class="btn-sm badge badge-warning btn-sm float-right">Account closed </button>
+                                   @can('account_closure')
+                                        <button type="button" class="btn-sm badge badge-warning btn-sm float-right">Account closed </button>
+                                   @endcan
                                 @endif
                             </div>
                             @endif

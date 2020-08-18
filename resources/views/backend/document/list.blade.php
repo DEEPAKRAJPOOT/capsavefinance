@@ -68,7 +68,9 @@
                         <div class="action-btn">
                             <div class="upload-btn-wrapper setupload-btn pos">
                                 @if( (request()->get('view_only') && in_array($data->ppDocument->doc_type_id, [2,3])) || ($data->ppDocument->doc_type_id == 4) )
+                                @can('pp_upload_document')
                                 <button class="btn upload-btn openModal" data-id="{{ $data->doc_id }}">Upload</button>
+                                @endcan
                                 @endif
                                 
                             </div>
@@ -90,11 +92,19 @@
                                         <td width="20%"> {{ (isset($value->userFile->file_name)) ? $value->userFile->file_name : ''}} </td>
                                         <td width="20%"> {{ (isset($value->created_at)) ? date('d-m-Y', strtotime($value->created_at)) : ''}} </td>
                                         <td width="20%"> {{ (isset($value->comment)) ? $value->comment : ''}} </td>
-                                        <td width="20%"><a title="Download Document" href="{{ route('download_storage_file', ['file_id' => $value->userFile->file_id ]) }}" ><i class="fa fa-download"></i></a></td>
+                                        <td width="20%">
+                                        @can('download_storage_file')
+                                        <a title="Download Document" href="{{ route('download_storage_file', ['file_id' => $value->userFile->file_id ]) }}" ><i class="fa fa-download"></i></a>
+                                        @endcan
+                                        </td>
                                         <td align="center" width="20%">
                                             @if( (request()->get('view_only') && in_array($data->ppDocument->doc_type_id, [2,3])) || ($data->ppDocument->doc_type_id == 4) )
+                                            @can('document_delete')
                                             <a title="Delete Document" onclick="return confirm('Are you sure you want to delete this file?')" href="{{ route('document_delete', ['app_doc_file_id' => $value->app_doc_file_id, 'app_id' => request()->get('app_id')]) }}" ><i class="fa fa-times-circle-o error"></i></a>
+                                            @endcan
+                                            @can('pp_edit_upload_document')
                                             <a title="Edit Comment" data-toggle="modal" data-target="#EdituploadDocument" data-url ="{{route('pp_edit_upload_document', ['app_doc_file_id' => $value->app_doc_file_id, 'app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="float-right" ><i class="fa fa-edit"></i></a>
+                                            @endcan
                                             @endif
                                         </td>
                                     </tr>
@@ -122,7 +132,9 @@
             @endforeach
             @endif
         </div>
+        @can('pp_upload_document')
         <a data-toggle="modal" data-target="#ppUploadDocument" data-url ="{{route('pp_upload_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" data-height="300px" data-width="100%" data-placement="top" class="add-btn-cls float-right" id="openUploadDocument" style="display: none;"><i class="fa fa-plus"></i>Show Upload Document</a>
+        @endcan
         <input type="hidden" name="uploadDocId" id="uploadDocId" value="" >
             
     </div>

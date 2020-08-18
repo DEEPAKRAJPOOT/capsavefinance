@@ -8,21 +8,24 @@
         </li>
       @endcan
     
-      @can('reviewer_summary')
+    @can('reviewer_summary')
         <li>
             <a href="{{route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{ $route_name == 'reviewer_summary' ? 'active' : ''}}">Reviewer Summary</a>
         </li>
-      @endcan
+    @endcan
 
+    @can('cam_report')
         <li>
             <a href="{{route('cam_report', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{ $route_name == 'cam_report' ? 'active' : ''}}">CAM Report</a>
         </li>
+        @endcan
 
-
+      @can('anchor_view')
         <li>
             <a href="{{route('anchor_view', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{$route_name == 'anchor_view' ? 'active' : '' }}">Anchor</a>
         </li>
-       
+        @endcan
+
       @can('cam_promoter')
         <li>
             <a href="{{route('cam_promoter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{$route_name == 'cam_promoter' ? 'active' : '' }}">Management</a>

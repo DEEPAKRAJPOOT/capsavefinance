@@ -62,7 +62,9 @@
 											$checked = ($account->is_default == 1) ? 'checked' : null;
 											$act = '';
 											if($account->is_active){
-											  $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($account->bank_account_id) . '"  class="make_default" name="add"><label for="add">Default</label> ';
+                                                                                            if (Helpers::checkPermission('set_default_account')) {
+                                                                                                $act .= '    <input type="checkbox"  ' . $checked . ' data-rel = "' . \Crypt::encrypt($account->bank_account_id) . '"  class="make_default" name="add"><label for="add">Default</label> ';
+                                                                                            }
 											}
 										  
 											if (Helpers::checkPermission('add_bank_account')) {
@@ -73,11 +75,12 @@
 											}
 
 
-
-											$act .= '<a href="' . route('see_upload_bank_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '" class="btn btn-action-btn btn-sm" target="_blank" title="See Upload Document"><i class="fa fa-eye"></i></a>';
-											
-										   $act .= '<a href="' . route('download_bank_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '" class="btn btn-action-btn btn-sm" target="_blank" title="Download Upload File"><i class="fa fa-download"></i></a>';
-											
+                                                                                        if (Helpers::checkPermission('see_upload_bank_detail')) {
+                                                                                            $act .= '<a href="' . route('see_upload_bank_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '" class="btn btn-action-btn btn-sm" target="_blank" title="See Upload Document"><i class="fa fa-eye"></i></a>';
+											}
+                                                                                        if (Helpers::checkPermission('download_bank_detail')) {
+                                                                                            $act .= '<a href="' . route('download_bank_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '" class="btn btn-action-btn btn-sm" target="_blank" title="Download Upload File"><i class="fa fa-download"></i></a>';
+											}
 											@endphp
 											<td>{!! $act !!}</td>
 										</tr>

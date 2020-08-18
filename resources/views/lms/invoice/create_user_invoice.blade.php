@@ -180,7 +180,9 @@
                       </div>
                   </div>
                   <div class="form-group mb-0 mt-1 d-flex justify-content-between">
+                      @can('preview_user_invoice')
                       <button type="button" class="btn btn-default" id="preview_invoice">Preview</button>
+                      @endcan
                       <button type="submit" class="btn btn-primary" id="save_invoice">Save</button>
                   </div>
                 </form>

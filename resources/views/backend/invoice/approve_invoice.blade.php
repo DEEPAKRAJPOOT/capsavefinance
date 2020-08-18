@@ -79,7 +79,9 @@
                                         -->
                                         <div class="col-md-2">
                                             @php if($role!=11) { @endphp
+                                            @can('update_disburse_bulk_invoice')
                                             <button type="button" id="bulkDisburseApprove" data-status="9" class="btn btn-primary btn-sm ml-2 btn-app">Send to Disbursement</button>
+                                            @endcan
                                             @php } @endphp 
                                         </div>
 

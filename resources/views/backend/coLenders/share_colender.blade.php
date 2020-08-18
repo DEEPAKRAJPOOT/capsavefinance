@@ -62,7 +62,9 @@
              </div>
           </div>
         </div> 
+        @can('save_share_to_colender')
         <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAgency">Submit</button>  
+        @endcan
      </form>
    </div>
 @endsection
