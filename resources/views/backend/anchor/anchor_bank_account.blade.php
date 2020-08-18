@@ -66,7 +66,7 @@ Form::open(
                 <label for="ifsc_code">IFSC Code
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter IFSC Code']) !!}
+                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter IFSC Code', 'id'=>'ifsc_code', 'autocomplete' => 'off']) !!}
                 {!! $errors->first('ifsc_code', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -185,6 +185,11 @@ try {
                 form.submit();
             }
         });
+        if (/firefox/.test(navigator.userAgent.toLowerCase())) {            
+            $("#account_no").attr('autocomplete', 'new-password');
+            $("#confim_acc_no").attr('autocomplete', 'new-password');
+            $("#ifsc_code").attr('autocomplete', 'new-password');
+        }
     });
 </script>
 @endsection
