@@ -156,19 +156,20 @@
                                                     <tr>
                                                        <td width="20%">{{$value2->agency->comp_name}}</td>
                                                        <td width="20%">{{ucwords($value2->user->f_name.' '.$value2->user->l_name)}}</td>
-                                                       <td width="15%">{{\Carbon\Carbon::parse($value2->created_at)->format('d/m/Y h:i A')}}</td>
-                                                       <td width="15%">{{($value2->rcu_status_updatetime)? \Carbon\Carbon::parse($value2->rcu_status_updatetime)->format('d/m/Y h:i A'): ''}}</td>
+                                                       <td width="15%">{{\Helpers::convertDateTimeFormat($value2->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d/m/Y h:i A') }}</td>
+                                                       <td width="15%">{{($value2->rcu_status_updatetime)? \Helpers::convertDateTimeFormat($value2->rcu_status_updatetime, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d/m/Y h:i A') : ''}}</td>
                                                        <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$value2->status->status_name}}</td>
                                                        <td width="15%">
                                                            
                                                         @if(isset($value2->userFile->file_path))
                                                         <a title="Download Report Document" href="{{ route('download_storage_file', ['file_id' => $value2->userFile->file_id ]) }}"><i class="fa fa-download"></i></a>
-                                                        @endif
+                                                        @endif                                                        
+                                                        
+                                                        @if(isset($value2->status->status_name))
+                                                        @else
                                                         @if($value2->is_active)
                                                         <button class="btn-upload btn-sm trigger-for-rcu-doc" style="padding: 1px 8px;" type="button" data-rcu_doc_id="{{$value2->rcu_doc_id}}"> <i class="fa fa-upload"></i></button>
-                                                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
-                                                        @endif
-
+                                                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>                                                                                                                
                                                         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-rcu_doc_id="{{$value2->rcu_doc_id}}">
                                                             <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="1" @if(isset($value2->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >Pending</a>
                                                             <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="2" @if(isset($value2->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >Inprogress</a>
@@ -177,8 +178,8 @@
                                                             <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="5" @if(isset($value2->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >Cancelled</a>
                                                             <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="6" @if(isset($value2->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >Refer to Credit</a>
                                                         </div>
-
-
+                                                        @endif
+                                                        @endif
                                                        </td>
                                                     </tr>
                                                     @empty
