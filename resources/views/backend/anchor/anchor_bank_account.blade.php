@@ -53,7 +53,7 @@ Form::open(
             <div class="form-group">
                 <label for="confim_acc_no">Confirm Account Number
                     <span class="mandatory">*</span>
-                </label>                 
+                </label>                            
                 {!! Form::password('confim_acc_no',
                 ['class'=>'form-control form-control-sm number_format', 'id'=>'confim_acc_no', 'placeholder'=>'Enter Account Number', 'autocomplete' => 'off', 'maxlength' => '18']) !!}
 
