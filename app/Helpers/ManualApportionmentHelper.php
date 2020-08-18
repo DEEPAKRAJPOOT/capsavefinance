@@ -628,6 +628,7 @@ class ManualApportionmentHelper{
         $invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true]);
         foreach ($invoiceList as $invId => $trans) {
             $this->intAccrual($invId);
+            $this->transactionPostingAdjustment($invId, NULL, NULL, NULL);
         }
         
         if($cLogDetails){
