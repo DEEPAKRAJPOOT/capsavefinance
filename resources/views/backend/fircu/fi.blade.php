@@ -97,7 +97,7 @@
                                                         <a title="Download Document" href="{{ route('download_fi_doc', ['file_id' => $fiAdd->userFile->file_id]) }}" download="{{$fiAdd->userFile->file_name}}"><i class="fa fa-download"></i></a>
                                                         @endif
                                                         
-                                                        @if(isset($fiAdd->status->status_name))
+                                                        @if(isset($fiAdd->status->id) && $fiAdd->status->id != 2)
                                                         <!-- Take Rest -->
                                                         @elseif($fiAdd->is_active && Auth::user()->agency_id !=null)
                                                         <button class="btn-upload btn-sm trigger-for-fi-doc" style="padding: 1px 8px;" type="button" data-fiadd_id="{{$fiAdd->fi_addr_id}}"> <i class="fa fa-upload"></i></button>

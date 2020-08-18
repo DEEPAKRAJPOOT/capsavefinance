@@ -165,7 +165,7 @@
                                                         <a title="Download Report Document" href="{{ route('download_storage_file', ['file_id' => $value2->userFile->file_id ]) }}"><i class="fa fa-download"></i></a>
                                                         @endif                                                        
                                                         
-                                                        @if(isset($value2->status->status_name))
+                                                        @if(isset($value2->status->id) && $value2->status->id != 2)
                                                         @else
                                                         @if($value2->is_active)
                                                         <button class="btn-upload btn-sm trigger-for-rcu-doc" style="padding: 1px 8px;" type="button" data-rcu_doc_id="{{$value2->rcu_doc_id}}"> <i class="fa fa-upload"></i></button>
