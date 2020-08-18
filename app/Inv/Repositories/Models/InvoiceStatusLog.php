@@ -58,10 +58,13 @@ class InvoiceStatusLog extends BaseModel {
       /* invoice  status log  */
        public static function  saveInvoiceStatusLog($invoice_id,$status_id)
        {
-           $created_at  = Carbon::now()->toDateTimeString();
-           $id = Auth::user()->user_id;
-           $arr  =  ['invoice_id' => $invoice_id,'status_id' =>$status_id,'created_at' =>$created_at,'created_by' => $id]; 
-           return  self::insert($arr);  
+           //$invlog = self::where(['invoice_id' => $invoice_id])->orderBy('invoice_log_id', 'desc')->first();
+           //if ($invlog && $invlog->status_id != $status_id) {
+            $created_at  = Carbon::now()->toDateTimeString();
+            $id = Auth::user()->user_id;
+            $arr  =  ['invoice_id' => $invoice_id,'status_id' =>$status_id,'created_at' =>$created_at,'created_by' => $id]; 
+            return  self::insert($arr);  
+           //}
        }
       public static function getAllActivityInvoiceLog($inv)
        {

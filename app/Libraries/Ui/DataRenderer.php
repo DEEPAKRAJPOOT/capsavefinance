@@ -2052,7 +2052,7 @@ class DataRenderer implements DataProviderInterface
                     'amount',
                     function ($invoice) {
                     //   dd($invoice->invoice->invoice_amount);
-                       return ($invoice->invoice_id) ? number_format($invoice->invoice->invoice_amount) : 'N/A'; 
+                       return ($invoice->invoice_id) ? number_format($invoice->invoice->invoice_approve_amount) : 'N/A'; 
              })
                 ->addColumn(
                     'comment',

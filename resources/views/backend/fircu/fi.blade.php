@@ -88,16 +88,16 @@
                                                  <tr>
                                                     <td width="20%">{{$fiAdd->agency->comp_name}}</td>
                                                     <td width="20%">{{ucwords($fiAdd->user->f_name.' '.$fiAdd->user->l_name)}}</td>
-                                                    <td width="15%">{{\Carbon\Carbon::parse($fiAdd->created_at)->format('d/m/Y h:i A')}}</td>
-                                                    <td width="15%">{{($fiAdd->fi_status_updatetime)? \Carbon\Carbon::parse($fiAdd->fi_status_updatetime)->format('d/m/Y h:i A'): ''}}</td>
+                                                    <td width="15%">{{\Helpers::convertDateTimeFormat($fiAdd->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d/m/Y h:i A') }}</td>
+                                                    <td width="15%">{{($fiAdd->fi_status_updatetime)? \Helpers::convertDateTimeFormat($fiAdd->fi_status_updatetime, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d/m/Y h:i A'): ''}}</td>
                                                     <td align="center" width="15%" style="border-right: 1px solid #e9ecef;">{{$fiAdd->status->status_name}}</td>
                                                     <td width="15%">
 
                                                         @if(isset($fiAdd->userFile->file_path))
                                                         <a title="Download Document" href="{{ route('download_fi_doc', ['file_id' => $fiAdd->userFile->file_id]) }}" download="{{$fiAdd->userFile->file_name}}"><i class="fa fa-download"></i></a>
                                                         @endif
-
-                                                        @if($fiList->cmFiStatus && $fiList->cmFiStatus->cmStatus->status_name == 'Positive')
+                                                        
+                                                        @if(isset($fiAdd->status->id) && $fiAdd->status->id != 2)
                                                         <!-- Take Rest -->
                                                         @elseif($fiAdd->is_active && Auth::user()->agency_id !=null)
                                                         <button class="btn-upload btn-sm trigger-for-fi-doc" style="padding: 1px 8px;" type="button" data-fiadd_id="{{$fiAdd->fi_addr_id}}"> <i class="fa fa-upload"></i></button>
@@ -107,7 +107,7 @@
 
                                                         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-fi_address_id="{{$fiAdd->fi_addr_id}}">
                                                         @foreach($status_lists as $status_id => $status_name)
-                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="{{$status_id}}">{{$status_name}}</a>
+                                                            <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="{{$status_id}}" @if(isset($fiAdd->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >{{$status_name}}</a>
                                                         @endforeach
                                                         </div>
                                                     </td>
@@ -198,6 +198,10 @@ $(document).ready(function(){
         let fi_addr_id = $(this).parent('div').data('fi_address_id');
         let status = $(this).attr('value');
         let token = '{{ csrf_token() }}';
+        if ($(this).data('is_uploaded') == '0') {
+            alert('You cannot update the FI status until the document is uploaded.')
+            return false;
+        }        
         $('.isloader').show();
         
         $.ajax({

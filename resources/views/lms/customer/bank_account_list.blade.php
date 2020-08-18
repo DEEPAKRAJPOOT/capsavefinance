@@ -147,8 +147,7 @@ var messages = {
 				});
 			});
 
-
-		});
+		});               
 	} catch (e) {
 		if (typeof console !== 'undefined') {
 			console.log(e);

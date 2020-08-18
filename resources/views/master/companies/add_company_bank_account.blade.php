@@ -43,7 +43,7 @@ Form::open(
                 </label>
                 {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
                 ['class'=>'form-control form-control-sm number_format' ,
-                'id'=>'account_no','placeholder'=>'Enter Account Number', 'maxlength'=>18]) !!}
+                'id'=>'account_no','placeholder'=>'Enter Account Number', 'maxlength'=>18, 'autocomplete' => 'off']) !!}
                 {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -54,8 +54,9 @@ Form::open(
                 <label for="confim_acc_no">Confirm Account Number
                     <span class="mandatory">*</span>
                 </label>
+                <input type="password" style="display:none">
                 {!! Form::password('confim_acc_no',
-                ['class'=>'form-control form-control-sm number_format', 'id'=>'confim_acc_no', 'placeholder'=>'Enter Account Number', 'maxlength'=>18]) !!}
+                ['class'=>'form-control form-control-sm number_format', 'id'=>'confim_acc_no', 'placeholder'=>'Enter Account Number', 'maxlength'=>18, 'autocomplete' => 'off']) !!}
 
             </div>
         </div>
@@ -66,7 +67,7 @@ Form::open(
                 <label for="ifsc_code">IFSC Code
                     <span class="mandatory">*</span>
                 </label>
-                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter IFSC Code', 'maxlength'=>11]) !!}
+                {!! Form::text('ifsc_code', isset($bankAccount->ifsc_code) ? $bankAccount->ifsc_code : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter IFSC Code', 'maxlength'=>11, 'autocomplete' => 'off', 'id'=>'ifsc_code']) !!}
                 {!! $errors->first('ifsc_code', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -197,11 +198,13 @@ try {
                 'acc_no': {
                     required: true,
                     number: true,
+                    minlength: 6,
                     maxlength: 18,
                     unique_acc: true
                 },
                 'confim_acc_no': {
                     required: true,
+                    minlength: 6,
                     maxlength: 18,
                     equalTo: "#account_no"
                 },
@@ -240,6 +243,12 @@ try {
                 form.submit();
             }
         });
+        
+        if (/firefox/.test(navigator.userAgent.toLowerCase())) {            
+            $("#account_no").attr('autocomplete', 'new-password');
+            $("#confim_acc_no").attr('autocomplete', 'new-password');
+            $("#ifsc_code").attr('autocomplete', 'new-password');
+        }         
     });
 </script>
 @endsection
