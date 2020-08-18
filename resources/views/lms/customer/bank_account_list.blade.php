@@ -147,11 +147,6 @@ var messages = {
 				});
 			});
 
-                    if (/firefox/.test(navigator.userAgent.toLowerCase())) {            
-                        $("#account_no").attr('autocomplete', 'new-password');
-                        $("#confim_acc_no").attr('autocomplete', 'new-password');
-                        $("#ifsc_code").attr('autocomplete', 'new-password');
-                    } 
 		});               
 	} catch (e) {
 		if (typeof console !== 'undefined') {
