@@ -5,6 +5,7 @@ use DB;
 use Helpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Inv\Repositories\Models\Master\Tds;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
@@ -162,6 +163,26 @@ class Transactions extends BaseModel {
         return round(($this->amount - $this->getsettledAmtAttribute()),2);
     }
 
+    public function getRevertedAmtAttribute(){
+        return self::where('link_trans_id','=',$this->trans_id)
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL')])
+        ->where(function($query){
+            $query->where(function($q){
+                $q->where('entry_type','=','0');
+                $q->where('trans_type','=', config('lms.TRANS_TYPE.REVERSE'));
+            });
+            $query->orWhere(function($q){
+                $q->where('entry_type','=','1');
+                $q->where('trans_type','=', config('lms.TRANS_TYPE.CANCEL'));
+            });
+        })
+        ->sum('amount');
+    }
+
+    public function getSettledOutstandingAttribute(){
+        return round(($this->amount - $this->getRevertedAmtAttribute()),2);
+    }
+
     public function getDpdAttribute(){
         $to = Carbon::createFromFormat('Y-m-d H:i:s', Helpers::getSysStartDate());
         if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
@@ -215,12 +236,14 @@ class Transactions extends BaseModel {
                 }
                 if($this->link_trans_id){
                     $linkTrans = self::find($this->link_trans_id);
-                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')]))
-                    if($linkTrans->entry_type == 0){
-                        $name .= ' '.$linkTrans->transType->debit_desc;
-                    }elseif($linkTrans->entry_type == 1){
-                        $name .= ' '.$linkTrans->transType->credit_desc;
-                    }    
+                    if($linkTrans){
+                        if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')]))
+                        if($linkTrans->entry_type == 0){
+                            $name .= ' '.$linkTrans->transType->debit_desc;
+                        }elseif($linkTrans->entry_type == 1){
+                            $name .= ' '.$linkTrans->transType->credit_desc;
+                        }    
+                    }
                 }
             }
         }
@@ -291,6 +314,26 @@ class Transactions extends BaseModel {
     public  function getBalanceAttribute()
     {
         return self::get_balance($this->user_id.Carbon::parse($this->created_at)->format('ymd').(1000000000+$this->trans_id), $this->user_id);
+    }
+
+    public function getTDSAmountAttribute(){
+        $amount = 0;
+        if($this->transType->chrg_master_id || $this->transType == config('lms.TRANS_TYPE.INTEREST')){
+            $tdsRate = Tds::getActiveTdsBaseRate($this->trans_date);
+            $amount = $this->amount*$tdsRate/100;
+        }
+        
+        $tds = self::where('parent_trans_id',$this->trans_id)
+        ->where('trans_type', config('lms.TRANS_TYPE.TDS'))
+        ->where('entry_type','1')
+        ->get();   
+        foreach($tds as $tdsTrans){
+            $amount -= $tdsTrans->settledOutstanding;
+        }
+        if($amount < 0 ){
+            $amount = 0;
+        }
+        return $amount;
     }
 
     public static function getUnsettledTrans($userId){
@@ -754,30 +797,12 @@ class Transactions extends BaseModel {
 
     
     public static function getAllChargesApplied(array $where = array()) {
-        $cond = '';
-        if (!empty($where)) {
-            foreach ($where as $key => $value) {
-                $wh[] = "t1.$key = '$value'";
-            }
-           $cond = ' AND ' .implode(' AND ', $wh);
-        }
-        $query = "SELECT DATE_FORMAT(t1.trans_date, '%d/%m/%Y') as trans_date, t1.trans_id, t1.parent_trans_id, t1.trans_name, t1.trans_desc, t1.user_id, t1.entry_type, t1.amount AS debit_amount, IFNULL(SUM(t2.amount), 0) as credit_amount, (t1.amount - IFNULL(SUM(t2.amount), 0)) as remaining 
-        FROM `get_all_charges` t1 
-        LEFT JOIN rta_transactions as t2 ON t1.trans_id = t2.parent_trans_id 
-        WHERE t1.entry_type = 0  ". $cond ." GROUP BY t1.trans_id
-        UNION 
-        SELECT DATE_FORMAT(t1.trans_date, '%d/%m/%Y') as trans_date, t1.trans_id, t1.parent_trans_id, t2.trans_name, t2.credit_desc as trans_desc, t1.user_id, t1.entry_type, t1.amount AS debit_amount, IFNULL(t1.amount, 0) as credit_amount, 0 as remaining 
-        FROM `rta_transactions` t1 
-        JOIN rta_mst_trans_type as t2 ON t1.`trans_type` = t2.`id`
-        WHERE t1.entry_type = 0 AND t1.trans_type = ". config('lms.TRANS_TYPE')['INTEREST'] . $cond ." GROUP BY t1.trans_id
-        ";
-        
-        // $query = "SELECT DATE_FORMAT(t1.trans_date, '%d/%m/%Y') as trans_date, t1.trans_id, t1.parent_trans_id, t1.trans_name, t1.trans_desc, t1.user_id, t1.entry_type, t1.amount AS debit_amount, IFNULL(SUM(t2.amount), 0) as credit_amount, (t1.amount - IFNULL(SUM(t2.amount), 0)) as remaining 
-        // FROM `get_all_charges` t1 
-        // LEFT JOIN rta_transactions as t2 ON t1.trans_id = t2.parent_trans_id 
-        // WHERE t1.entry_type = 0  ". $cond ." GROUP BY t1.trans_id";
-        $result = \DB::SELECT(\DB::raw($query));
-        return $result;
+        return self::where($where)
+        ->whereNull('parent_trans_id')
+        ->whereNull('link_trans_id')
+        ->whereNull('payment_id')
+        ->where('entry_type',0)
+        ->get();
     }
     
     public static function getTallyTxns(array $where = array()) {

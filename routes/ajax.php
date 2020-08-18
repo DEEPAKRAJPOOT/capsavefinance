@@ -1195,4 +1195,9 @@ Route::group(
         'uses' => 'AjaxController@changeUsersAgencyStatus',
     ]);
 
+    Route::post('/get_ajax_tds_list', [
+        'as' => 'get_ajax_tds_list',
+        'uses' => 'AjaxController@getTDSList',
+    ]);
+
 });

@@ -29,6 +29,8 @@ return [
     'base_rate_add_success' => 'Base Rate added successfully',
     'base_rate_update_success' => 'Base Rate updated successfully',
     'unique_acc_no' => 'This bank account is already exist.',
-    'unique_address' => 'The company branch is already present at this address.'
+    'unique_address' => 'The company branch is already present at this address.',
+    'tds_add_success' => 'TDS added successfully.',
+    'tds_edit_success' => 'TDS updated successfully.'
 ];
 

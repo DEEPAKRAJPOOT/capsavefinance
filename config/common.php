@@ -5,6 +5,7 @@ return [
      * All common config items those we are not keeping in
      * the file level.
      */
+    'DCC' => '365', #Day-Count Convention
     'EDUCATION_FORM_LIMIT' => '5',
     'SOCIAL_MEDIA_LINK' => '5',
     'DOCUMENT_LIMIT' => '5',

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Auth;
-use Datetime;
+use DateTime;
 use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use Illuminate\Support\Facades\Storage;
@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Helpers\ApportionmentHelper;
 use Illuminate\Validation\Rule;
+use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 
 class PaymentController extends Controller {
 
@@ -113,6 +114,7 @@ class PaymentController extends Controller {
 	public function  savePayment(Request $request)
 	{
 		try {
+			$transaction = null;
 			// dd($request->all());
 			if ($request->get('eod_process')) {
 				Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
@@ -162,7 +164,7 @@ class PaymentController extends Controller {
                         
 			if(isset($arrFileData['cheque']) && !is_null($arrFileData['cheque'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
-                                $arrFileData['doc_file'] = $arrFileData['cheque'];
+                $arrFileData['doc_file'] = $arrFileData['cheque'];
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
 			}                        
@@ -196,6 +198,12 @@ class PaymentController extends Controller {
 			
 			if($request->has('charges') && $request->action_type == 3){
 				$transaction = Transactions::find($request->charges);
+				if($transaction){
+					if($transaction->TDSAmount < $request->amount){
+						Session::flash('error', 'TDS amount must be less than or equal to '.$transaction->TDSAmount);
+						return back();
+					}
+				}
 				if(isset($transaction) && (float)$transaction->outstanding <= 0){
 					$paymentData['is_refundable'] = '1';
 				}else{
@@ -247,6 +255,7 @@ class PaymentController extends Controller {
 					'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
 					'trans_type' => (in_array($request->action_type, [3])) ? config('lms.TRANS_TYPE.TDS') : $request['trans_type'],
 					'amount' => str_replace(',', '', $request['amount']),
+					'invoice_disbursed_id' => $transaction ? $transaction->invoice_disbursed_id : null,
 					'entry_type' => 1,
 					'gst'=> $request['incl_gst'],
 					'tds_per' => 1,

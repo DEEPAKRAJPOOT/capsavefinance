@@ -283,6 +283,7 @@ class ApportionmentController extends Controller
      */
     public function saveReversalDetail(Request $request){
         try {
+            $newTransactions = array();
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
                 $sanctionPageView = $request->get('sanctionPageView');
@@ -334,7 +335,41 @@ class ApportionmentController extends Controller
                     'pay_from' => 1,
                     'is_settled' => 2,
             ];
+            
             $resp = $this->lmsRepo->saveTransaction($txnInsertData);
+
+            if($TransDetail->invoice_disbursed_id && in_array($TransDetail->trans_type, [config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])){
+                $cancelRevTrans =Transactions::where('trans_type', config('lms.TRANS_TYPE.CANCEL'))
+                ->where('entry_type',1)
+                ->where('invoice_disbursed_id', $TransDetail->invoice_disbursed_id)
+                ->where('payment_id', $TransDetail->payment->payment_id)
+                ->get()
+                ->filter(function($item) {
+                    return $item->settledOutstanding > 0;
+                });
+                
+                foreach ($cancelRevTrans as $crt) {
+                    $newTransactions[] = [
+                        'payment_id' => NULL,
+                        'link_trans_id'=> $crt->trans_id,
+                        'parent_trans_id' => $TransDetail->parent_trans_id,
+                        'invoice_disbursed_id' => $TransDetail->invoice_disbursed_id ?? NULL,
+                        'user_id' => $TransDetail->user_id,
+                        'trans_date' => $paymentDetails->date_of_payment,
+                        'amount' => $crt->settledOutstanding,
+                        'entry_type' => 0,
+                        'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
+                        'trans_mode' => 1,
+                        'gl_flag' => 0,
+                        'soa_flag' => 0,
+                        'pay_from' => 1,
+                        'is_settled' => 2,
+                    ];
+                }
+            }
+            foreach ($newTransactions as $newTrans) {
+                $this->lmsRepo->saveTransaction($newTrans);
+            }
             
             $paymentData = [
                 'user_id' => $paymentDetails->user_id,
@@ -716,7 +751,8 @@ class ApportionmentController extends Controller
                             'payment_due_date'=>$trans->invoiceDisbursed->payment_due_date,
                             'grace_period'=>$trans->invoiceDisbursed->grace_period,
                             'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
-                            'date_of_payment'=>$paymentDetails['date_of_payment']
+                            'date_of_payment'=>$paymentDetails['date_of_payment'],
+                            'payment_frequency' => $trans->invoiceDisbursed->invoice->program_offer->payment_frequency,
                         ];             
                     }
                     $transactionList[] = [
@@ -795,20 +831,20 @@ class ApportionmentController extends Controller
                     }
                 }
                 foreach ($invoiceList as $invDisb) {
-                    $date_of_payment = $invDisb['date_of_payment'];
                     $Obj = new ManualApportionmentHelper($this->lmsRepo);
                     
+                    $date_of_payment = $invDisb['date_of_payment'];
                     if( (strtotime($invDisb['payment_due_date']) <= strtotime($invDisb['date_of_payment']) )  && ( strtotime($invDisb['date_of_payment']) <= strtotime($invDisb['payment_due_date'] . "+". $invDisb['grace_period']." days"))){
                         $date_of_payment = $invDisb['payment_due_date'];
                     }
                     
                     $Obj->intAccrual($invDisb['invoice_disbursed_id'], $date_of_payment);
-                    $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], 2);
+                    //$Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId);
                 }
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
-                // if($paymentId){
-                //     InterestAccrualTemp::where('payment_id',$paymentId)->delete();
-                // }
+                if($paymentId){
+                    InterestAccrualTemp::where('payment_id',$paymentId)->delete();
+                }
                 $request->session()->forget('apportionment');
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
@@ -904,7 +940,7 @@ class ApportionmentController extends Controller
     //     if($gracePeriod > 0 && strtotime($toDate) <= strtotime($graceDueDate)){
             
     //         $interestData = InterestAccrual::whereBetween('interest_date', [$graceStartDate, $toDate])
-    //         ->select(DB::row("sum((principal_amount*($intRate/360))100) as total"))->get();
+    //         ->select(DB::row("sum((principal_amount*($intRate/config('common.DCC')))100) as total"))->get();
     //         if($interestData){
     //             $accuredIntAmount += $interestData->total;
     //         }

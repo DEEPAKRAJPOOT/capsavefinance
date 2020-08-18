@@ -1167,7 +1167,28 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_base_rate',
                 'uses' => 'Master\BaseRateController@saveBaseRate'
             ]);
-            
+
+            // Manage TDS
+            Route::get('/get-tds', [
+                'as' => 'get_tds_list',
+                'uses' => 'Master\TdsController@list'
+            ]);
+
+            Route::get('/add-tds', [
+                'as' => 'add_tds',
+                'uses' => 'Master\TdsController@addTds'
+            ]);
+
+            Route::get('/edit_tds', [
+                'as' => 'edit_tds',
+                'uses' => 'Master\TdsController@editTds'
+            ]);
+
+            Route::post('/save-tds', [
+                'as' => 'save_tds',
+                'uses' => 'Master\TdsController@saveTds'
+            ]);
+            // END Manage TDS
             
         });
 

@@ -1998,20 +1998,17 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($trans) {
                         $act = '';
-                        if ($trans->action_type == 3) {
-                            $act .= "<a data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
-                        }
 
                         if($trans->is_settled == '0' && $trans->action_type == '1' && $trans->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($trans->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
                             $act .= '<button  onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $trans->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
                         }
 
-                        if ($trans->action_type == 1 && isset($trans->userFile->file_path)) {                            
+                        if (($trans->action_type == 3 || ($trans->action_type == 1 && $trans->payment_type == 2)) && isset($trans->userFile->file_path)) {                            
                             //$act .= '<a title="Download Cheque" href="'. \Storage::url($trans->userFile->file_path) .'" download="'. $trans->userFile->file_name . '"><i class="fa fa-download"></i></a>';
                             $act .= '<a title="Download" href="'. route('download_storage_file', ['file_id' => $trans->userFile->file_id ]) .'" class="btn btn-action-btn btn-sm" ><i class="fa fa-download"></i></a>';
                         }
                         if (Helpers::checkPermission('edit_payment') && ($trans->action_type == 3 || ($trans->action_type == 1 && $trans->payment_type == 2))) {
-                            $act .= "&nbsp;&nbsp;<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id, 'payment_type' => $trans->payment_type]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
+                            $act .= "<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id, 'payment_type' => $trans->payment_type]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
                         }                        
                     return $act;
                    
@@ -6178,8 +6175,8 @@ class DataRenderer implements DataProviderInterface
                 $outResult = "₹ ".number_format($trans->outstanding,2);
                 if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                     $accuredInterest = $trans->tempInterest;
-                    if(!is_null($accuredInterest)){
-                        $outResult .= " <span style=\"color:red\">(".number_format($accuredInterest,2).")</span>";
+                    if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
+                           $outResult .= " <span style=\"color:red\">(".number_format($accuredInterest,2).")</span>";
                     }
                 }
                 return $outResult;
@@ -6194,7 +6191,7 @@ class DataRenderer implements DataProviderInterface
                 if($payment){
                     if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                         $accuredInterest = $trans->tempInterest;
-                        if(!is_null($accuredInterest)){
+                        if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
                             return  "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($accuredInterest,2)."' name='payment[".$trans->trans_id."]'>";
                         }
                     }
@@ -6917,5 +6914,46 @@ class DataRenderer implements DataProviderInterface
            
            ->make(true);
    }
+   
+
+
+    // TDS in master
+    public function getTDSLists(Request $request, $data)
+    {
+        $this->sr_no = 1;
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action', ''])
+                
+                ->editColumn(
+                    'sr_no',
+                    function ($data) {
+                    return $this->sr_no++;
+                }) 
+                ->addColumn(
+                'start_date', 
+                function ($data) {
+                    return ($data->start_date) ? date('d-M-Y', strtotime($data->start_date)) : '---';
+                })
+                ->addColumn(
+                'end_date', 
+                function ($data) {
+                    return ($data->end_date) ? date('d-M-Y', strtotime($data->end_date)) : '---';
+                })
+                ->addColumn(
+                    'created_at',
+                    function ($data) {
+                    return ($data->created_at) ? date('d-M-Y',strtotime($data->created_at)) : '---';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editTDSFrame" title="Edit TDS Detail" data-url ="'.route('edit_tds', ['id' => $data->id]).'" data-height="300px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group""><label class="badge badge-'.($act==1 ? 'success' : 'danger pt-2').' current-status" style="margin-bottom: 13px">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->make(true);
+    }
    
 }

@@ -21,7 +21,7 @@ class ManualApportionmentHelperTemp{
     }
 
     private function calInterest($principalAmt, $interestRate, $tenorDays){
-        $interest = $principalAmt * $tenorDays * ($interestRate / 360) ;                
+        $interest = $principalAmt * $tenorDays * ($interestRate / config('common.DCC')) ;                
         return $interest/100;        
     }  
     
@@ -39,34 +39,14 @@ class ManualApportionmentHelperTemp{
         $intrest = 0;
         $disbTransIds = null;
         $intTransIds = null;
-        if($payFreq == 2){
-            $disbTransIds = Transactions::whereDate('trans_date','<=',$odStartDate) 
-            ->where('invoice_disbursed_id','=',$invDisbId) 
-            ->whereNull('payment_id') 
-            ->whereNull('link_trans_id') 
-            ->whereNull('parent_trans_id')
-            ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
-            ->pluck('trans_id')->toArray();
-        
-            $intTransIds = Transactions::whereMonth('trans_date','<=',date('m', strtotime($odStartDate)))
-            ->whereYear('trans_date',date('Y', strtotime($odStartDate)))
-            ->where('invoice_disbursed_id','=',$invDisbId) 
-            ->whereNull('payment_id') 
-            ->whereNull('link_trans_id') 
-            ->whereNull('parent_trans_id')
-            ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST')]) 
-            ->pluck('trans_id')->toArray();
-        }
-        else{
-            $disbTransIds = Transactions::whereDate('trans_date','<=',$odStartDate) 
-            ->where('invoice_disbursed_id','=',$invDisbId) 
-            ->whereNull('payment_id') 
-            ->whereNull('link_trans_id') 
-            ->whereNull('parent_trans_id')
-            ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
-            ->pluck('trans_id')->toArray();
-        }
-        
+
+        $disbTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
+        ->whereNull('payment_id') 
+        ->whereNull('link_trans_id') 
+        ->whereNull('parent_trans_id')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
+        ->pluck('trans_id')->toArray();
+
         $Dr = Transactions::whereDate('trans_date','<=',$transDate)
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','0')
@@ -76,17 +56,6 @@ class ManualApportionmentHelperTemp{
         })
         ->sum('amount');
 
-       if($intTransIds){
-           $Dr += Transactions::whereDate('trans_date','<=',$odStartDate)
-           ->where('invoice_disbursed_id','=',$invDisbId)
-           ->where('entry_type','=','0')
-           ->where(function($query) use($intTransIds){
-               $query->whereIn('trans_id',$intTransIds);
-               $query->OrwhereIn('parent_trans_id',$intTransIds);
-            })
-            ->sum('amount');
-        }
-            
         $Cr =  Transactions::whereDate('trans_date','<=',$transDate) 
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','1')
@@ -96,17 +65,36 @@ class ManualApportionmentHelperTemp{
         })
         ->sum('amount');
 
-        if($intTransIds){
-            $Cr +=  Transactions::whereDate('trans_date','<=',$odStartDate) 
-            ->where('invoice_disbursed_id','=',$invDisbId)
-            ->where('entry_type','=','1')
-            ->where(function($query) use($intTransIds){
-                $query->whereIn('trans_id',$intTransIds);
-                $query->OrwhereIn('parent_trans_id',$intTransIds);
+        if($payFreq == 2){
+            $Dr += InterestAccrualTemp::where('invoice_disbursed_id','=',$invDisbId)
+            ->whereNotNull('interest_rate')
+            ->where(function($query) use($odStartDate,$transDate){
+                $query->whereMonth('interest_date','<', date('m', strtotime($transDate)));
+                if($odStartDate <= $transDate){
+                    $query->orWhere('interest_date','<',$odStartDate);
+                }
             })
-            ->sum('amount');
+            ->sum('accrued_interest');
+            
+            $intTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
+            ->whereNull('payment_id') 
+            ->whereNull('link_trans_id') 
+            ->whereNull('parent_trans_id')
+            ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST')]) 
+            ->pluck('trans_id')->toArray();
         }
 
+        if($intTransIds){
+  
+             $Cr +=  Transactions::whereDate('trans_date','<=',$transDate) 
+             ->where('invoice_disbursed_id','=',$invDisbId)
+             ->where('entry_type','=','1')
+             ->where(function($query) use($intTransIds){
+                 $query->whereIn('trans_id',$intTransIds);
+                 $query->OrwhereIn('parent_trans_id',$intTransIds);
+             })
+             ->sum('amount');
+        }
         return $Dr-$Cr;
     }
     
