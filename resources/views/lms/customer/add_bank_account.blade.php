@@ -201,7 +201,7 @@ try {
                 },
                 'confim_acc_no': {
                     required: true,
-                    equalTo: "#acc_no"
+                    equalTo: "#acc_no",
                     minlength: 6,
                     maxlength: 18,                    
                 },
