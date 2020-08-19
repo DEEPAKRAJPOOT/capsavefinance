@@ -37,7 +37,7 @@ Form::open(
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
-                ['class'=>'form-control form-control-sm number_format' ,
+                ['class'=>'form-control form-control-sm' ,
                 'id'=>'acc_no','placeholder'=>'Enter Account Number', 'maxlength' => "18", 'autocomplete' => 'off']) !!}
                 {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
             </div>
@@ -51,7 +51,7 @@ Form::open(
                 </label>
                 <input type="password" style="display:none">
                 {!! Form::password('confim_acc_no',
-                ['class'=>'form-control form-control-sm number_format' ,'placeholder'=>'Enter Account Number', 'id' => 'confim_acc_no', 'maxlength' => "18", 'autocomplete' => 'off']) !!}
+                ['class'=>'form-control form-control-sm ' ,'placeholder'=>'Enter Account Number', 'id' => 'confim_acc_no', 'maxlength' => "18", 'autocomplete' => 'off']) !!}
                 
             </div>
         </div>
@@ -163,8 +163,12 @@ try {
             }
         });
         return this.optional(element) || (status === true);
-    });
-   
+    });   
+    
+    jQuery.validator.addMethod("alphanumeric", function(value, element) {
+        return this.optional(element) || /^[A-Za-z0-9]+$/i.test(value);
+    }, "Letters and numbers only please");
+    
     $('#confim_acc_no').on("cut copy paste",function(e) {
       e.preventDefault();
    });
@@ -194,7 +198,7 @@ try {
                 },
                 'acc_no': {
                     required: true,
-                    number: true,
+                    alphanumeric: true,
                     unique_acc: true,
                     minlength: 6,
                     maxlength: 18,                    
