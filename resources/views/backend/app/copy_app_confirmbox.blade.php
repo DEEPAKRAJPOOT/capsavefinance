@@ -8,7 +8,7 @@
                     Form::open(
                     array(
                     'method' => 'post',
-                    'route' => 'renew_application',
+                    'route' => $save_route,
                     'id' => 'frmCopyApp',   
                     'target' => '_top'
                     )
@@ -88,7 +88,7 @@
 var messages = {
     is_accept: "{{ Session::get('is_accept') }}",    
     error_code : "{{ Session::has('error_code') }}",
-    redirect_url : "{{ route('copy_app_confirmbox', ['user_id' => $userId,'app_id' => $appId, 'biz_id' => $bizId]) }}"
+    redirect_url : "{{ $redirect_url }}"
  };
      $(document).ready(function(){        
         var targetModel = ''; 

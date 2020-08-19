@@ -43,13 +43,24 @@ class RenewalController extends Controller {
         //    return redirect()->back();
             $flag = 1; 
         }
-            
+        if ($appType == 1) {
+            $save_route = 'renew_application';
+            $redirect_url = route('copy_app_confirmbox', ['user_id' => $userId,'app_id' => $appId, 'biz_id' => $bizId]);
+        } else if ($appType == 2) {
+            $save_route = 'create_enhanced_limit_app';
+            $redirect_url = route('enhance_limit_confirmbox', ['user_id' => $userId,'app_id' => $appId, 'biz_id' => $bizId]);
+        } else if ($appType == 3) {
+            $save_route = 'create_reduced_limit_app';
+            $redirect_url = route('reduce_limit_confirmBox', ['user_id' => $userId,'app_id' => $appId, 'biz_id' => $bizId]);
+        }
         return view('backend.app.copy_app_confirmbox')
                         ->with('userId', $userId)
                         ->with('appId', $appId)           
                         ->with('bizId', $bizId)
                         ->with('appType', $appType)
-                        ->with('flag', $flag);
+                        ->with('flag', $flag)
+                        ->with('save_route', $save_route)
+                        ->with('redirect_url', $redirect_url);
     }    
 
     /**

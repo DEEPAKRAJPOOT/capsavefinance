@@ -700,6 +700,26 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('check-renewal-application', [
                 'as' => 'check_renewal_application',
                 'uses' => 'Backend\RenewalController@checkRenewalApps'
+            ]); 
+                        
+            Route::get('enhance-limit-confirmBox', [
+                'as' => 'enhance_limit_confirmbox',
+                'uses' => 'Backend\RenewalController@copyAppConfirmbox'
+            ]);
+            
+            Route::post('create-enhanced-limit-app', [
+                'as' => 'create_enhanced_limit_app',
+                'uses' => 'Backend\RenewalController@renewApplication'
+            ]);
+
+            Route::get('reduce-limit-confirmBox', [
+                'as' => 'reduce_limit_confirmBox',
+                'uses' => 'Backend\RenewalController@copyAppConfirmbox'
+            ]);
+            
+            Route::post('create_reduced_limit_app', [
+                'as' => 'create_reduced_limit_app',
+                'uses' => 'Backend\RenewalController@renewApplication'
             ]);            
             
         });//end of application
