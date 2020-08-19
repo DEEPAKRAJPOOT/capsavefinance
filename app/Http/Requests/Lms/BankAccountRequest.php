@@ -29,15 +29,21 @@ class BankAccountRequest extends FormRequest {
     public function rules()
     {
         // dd($this->request);
-        return [
+        $rules = [
             'acc_name' => 'required|regex:/^[a-zA-Z ]+$/|max:50',
-            'acc_no' => 'required|alpha_num|min:6|max:18',
-            'confim_acc_no' => 'required|alpha_num|min:6|max:18|same:acc_no',
+            'acc_no' => 'required|alpha_num|min:6|max:18'
+        ];
+        if (empty(request()->get('bank_account_id')) ) {
+            $rules['confim_acc_no'] = 'required|alpha_num|min:6|max:18|same:acc_no';
+        }
+        $rules += [
             'bank_id' => 'required',
             'ifsc_code' => 'required|alpha_num|max:11',
             'branch_name' => 'required|regex:/^[a-zA-Z0-9 -]+$/|max:30',
             'is_active' => 'required',
         ];
+        
+        return $rules;
     }
 
     public function withValidator($validator){
