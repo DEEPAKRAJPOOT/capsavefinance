@@ -123,7 +123,7 @@
                                 <label for="txtPassword"><b>Group Name</b></label> <span style="color: red; font-size: 20px"> * </span>
                             </div>
                             <div class="col-md-2">
-                                <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name" @if(\Helpers::checkPermission('get_group_company') && request()->get('view_only')) @else readonly="readonly" @endif autocomplete="off" style="padding: -;position:absolute; right: 17px;" >
+                                <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name" @if(\Helpers::checkPermission('get_group_company') && request()->get('view_only')) @else disabled="disabled" @endif autocomplete="off" style="padding: -;position:absolute; right: 17px;" >
                             </div>
                             <label class="error" for="group_company"></label>
                             <span  class="group_nameId" style="color:red;"></span>
@@ -562,6 +562,7 @@ return false;
 $(document).on('submit', '#camForm', function(e) {
    $('.group_nameId').text(" ");
    $filledInput = 0;
+   $('input[name="group_company"]').removeAttr("disabled");
    $('#ptpq-block input').each(function () {
       if ($(this).val()) $filledInput++;
    })
@@ -571,6 +572,7 @@ $(document).on('submit', '#camForm', function(e) {
        $('input[name="group_company"]').focus();
        return false;
    }
+   
    return true;
 });
 
