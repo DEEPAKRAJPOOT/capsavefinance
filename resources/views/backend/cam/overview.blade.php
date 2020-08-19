@@ -123,7 +123,7 @@
                                 <label for="txtPassword"><b>Group Name</b></label> <span style="color: red; font-size: 20px"> * </span>
                             </div>
                             <div class="col-md-2">
-                                <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name" autocomplete="off"/ style="padding: -;position:absolute; right: 17px;" >
+                                <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name" @if(\Helpers::checkPermission('get_group_company') && request()->get('view_only')) @else readonly="readonly" @endif autocomplete="off" style="padding: -;position:absolute; right: 17px;" >
                             </div>
                             <label class="error" for="group_company"></label>
                             <span  class="group_nameId" style="color:red;"></span>
