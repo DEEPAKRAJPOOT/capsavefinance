@@ -42,7 +42,7 @@ Form::open(
                     <span class="mandatory">*</span>
                 </label>
                 {!! Form::text('acc_no', isset($bankAccount->acc_no) ? $bankAccount->acc_no : null,
-                ['class'=>'form-control form-control-sm number_format' ,
+                ['class'=>'form-control form-control-sm' ,
                 'id'=>'account_no','placeholder'=>'Enter Account Number', 'autocomplete' => 'off', 'maxlength' => '18']) !!}
                 {!! $errors->first('acc_no', '<span class="error">:message</span>') !!}
             </div>
@@ -55,7 +55,7 @@ Form::open(
                     <span class="mandatory">*</span>
                 </label>                            
                 {!! Form::password('confim_acc_no',
-                ['class'=>'form-control form-control-sm number_format', 'id'=>'confim_acc_no', 'placeholder'=>'Enter Account Number', 'autocomplete' => 'off', 'maxlength' => '18']) !!}
+                ['class'=>'form-control form-control-sm', 'id'=>'confim_acc_no', 'placeholder'=>'Enter Account Number', 'autocomplete' => 'off', 'maxlength' => '18']) !!}
 
             </div>
         </div>
@@ -112,7 +112,8 @@ try {
     var p = window.parent;
     p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($messages, 'success') !!}');
     p.jQuery('#add_bank_account').modal('hide');
-    p.reloadDataTable();
+    //p.reloadDataTable();
+    p.oTables1.draw();
 } catch (e) {
     if (typeof console !== 'undefined') {
         console.log(e);
@@ -123,7 +124,8 @@ try {
     var p = window.parent;
     p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($messages, 'success') !!}');
     p.jQuery('#edit_bank_account').modal('hide');
-    p.reloadDataTable();
+    //p.reloadDataTable();
+    p.oTables1.draw();
 } catch (e) {
     if (typeof console !== 'undefined') {
         console.log(e);
@@ -142,7 +144,11 @@ try {
             return value.replace(/\D/g, "");
         });
     });
-
+    
+    jQuery.validator.addMethod("alphanumeric", function(value, element) {
+        return this.optional(element) || /^[A-Za-z0-9]+$/i.test(value);
+    }, "Letters and numbers only please");
+    
     $('#confim_acc_no').val($('#account_no').val());
     
     $(function () {
@@ -154,7 +160,7 @@ try {
                 },
                 'acc_no': {
                     required: true,
-                    number: true,
+                    alphanumeric: true,
                     minlength: 6,
                     maxlength: 18,
                 },
