@@ -66,7 +66,7 @@ class ManualApportionmentHelperTemp{
         ->sum('amount');
 
         if($payFreq == 2){
-            $Dr += InterestAccrualTemp::where('invoice_disbursed_id','=',$invDisbId)
+            $mIntrest = InterestAccrualTemp::where('invoice_disbursed_id','=',$invDisbId)
             ->whereNotNull('interest_rate')
             ->where(function($query) use($odStartDate,$transDate){
                 $query->whereMonth('interest_date','<', date('m', strtotime($transDate)));
@@ -75,6 +75,8 @@ class ManualApportionmentHelperTemp{
                 }
             })
             ->sum('accrued_interest');
+
+            $Dr +=  round($mIntrest,2);
             
             $intTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
