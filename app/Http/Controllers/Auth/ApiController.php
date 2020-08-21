@@ -101,10 +101,10 @@ class ApiController
           'mode_of_pay' => '',
           'inst_no' =>  NULL,
           'inst_date' =>  NULL,
-          'favoring_name' =>  NULL,
-          'remarks' => NULL,
+          'favoring_name' =>  '',
+          'remarks' => '',
           'generated_by' => '0',
-          'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+          'narration' => 'Being '.$trans_type_name.' Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $gstData = [];
      if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
@@ -264,10 +264,10 @@ class ApiController
             'mode_of_pay' => '',
             'inst_no' =>  NULL,
             'inst_date' =>  NULL,
-            'favoring_name' =>  NULL,
-            'remarks' => NULL,
+            'favoring_name' =>  '',
+            'remarks' => '',
             'generated_by' => '0',
-            'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+            'narration' => 'Being '.$trans_type_name.' Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
        ];
        $reversalPayment[] = $reversalRow;
       }
@@ -328,8 +328,8 @@ class ApiController
           'mode_of_pay' => '',
           'inst_no' =>  NULL,
           'inst_date' =>  NULL,
-          'favoring_name' =>  NULL,
-          'remarks' => NULL,
+          'favoring_name' =>  '',
+          'remarks' => '',
           'generated_by' => '0',
           'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
@@ -357,7 +357,7 @@ class ApiController
           'inst_no' =>  $inst_no,
           'inst_date' =>  $inst_date,
           'favoring_name' =>  $userName,
-          'remarks' => NULL,
+          'remarks' => '',
           'generated_by' => '1',
           'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
@@ -404,8 +404,8 @@ class ApiController
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
-              'favoring_name' =>  NULL,
-              'remarks' => NULL,
+              'favoring_name' =>  '',
+              'remarks' => '',
               'generated_by' => '0',
               'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
@@ -433,7 +433,7 @@ class ApiController
               'inst_no' =>  $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL,
               'inst_date' =>  $dsbrsl->invoiceDisbursed->disbursal->funded_date ?? NULL,
               'favoring_name' =>  $userName,
-              'remarks' => NULL,
+              'remarks' => '',
               'generated_by' => '1',
               'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
@@ -461,8 +461,8 @@ class ApiController
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
-              'favoring_name' =>  NULL,
-              'remarks' => NULL,
+              'favoring_name' =>  '',
+              'remarks' => '',
               'generated_by' => '1',
               'narration' => 'Being Interest Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
@@ -526,7 +526,7 @@ class ApiController
               'inst_no' =>  $inst_no,
               'inst_date' =>  $inst_date,
               'favoring_name' =>  $userName,
-              'remarks' => NULL,
+              'remarks' => '',
               'generated_by' => '1',
               'narration' => 'Being Repayment towards UserId ' . $user_id . ' & Batch no '. $batch_no,
      ];
@@ -568,8 +568,8 @@ class ApiController
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
-              'favoring_name' =>  NULL,
-              'remarks' => NULL,
+              'favoring_name' =>  '',
+              'remarks' => '',
               'generated_by' => '0',
               'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
           ];

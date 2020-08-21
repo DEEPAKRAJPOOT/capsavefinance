@@ -4348,7 +4348,7 @@ if ($err) {
         $user_id = $request->get('user_id');
         $trans_type = $request->get('trans_type');
         $charges = Transactions::getAllChargesApplied(['user_id' => $user_id,'trans_type'=>$trans_type]);
-        
+        $res = [];
         foreach($charges as $trans){
             $res[] = [
                 'trans_date' => Carbon::parse($trans->trans_date)->format('d-m-Y'),

@@ -328,7 +328,8 @@ class Transactions extends BaseModel {
         ->where('entry_type','1')
         ->get();   
         foreach($tds as $tdsTrans){
-            $amount -= $tdsTrans->settledOutstanding;
+            $waiveOffAmount = $tdsTrans->getWaiveOffAmount();
+            $amount -= ($tdsTrans->settledOutstanding + $waiveOffAmount);
         }
         if($amount < 0 ){
             $amount = 0;
