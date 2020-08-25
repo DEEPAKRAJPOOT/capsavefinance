@@ -493,6 +493,7 @@ cursor: pointer;
                 $('.isloader').show();
             },
             success: function(res) {
+                var action_type = $.trim($("#action_type").val());
                 $('#savePayBtn').show();
                 if (res.status == 'success') {
                     chargeResult = res.result;
@@ -502,7 +503,7 @@ cursor: pointer;
                     $(chargeResult).each(function(i,v){
                         $('#charges').append('<option index="'+ i +'" value="'+ v.trans_id +'">' + v.trans_name +'<small>('+v.trans_date+')</small>'+ '</option>');
                     })
-                }else if(res.status == 'empty'){
+                }else if(res.status == 'empty' && action_type == 3){
                     $('#waiveoff_div').show();
                     $('#charges').html('<option value="">Select Charges/Interest</option>');
                     $('#savePayBtn').hide();
