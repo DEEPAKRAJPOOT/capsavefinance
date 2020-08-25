@@ -317,10 +317,22 @@ class Transactions extends BaseModel {
     }
 
     public function getTDSAmountAttribute(){
-        $amount = 0;
+        $amount = $this->amount;
+        $baseAmt = 0;
+        $tdsAmt = 0;
+        $gstAmt = 0;
+        $gst_per = 0;
         if($this->transType->chrg_master_id || $this->transType == config('lms.TRANS_TYPE.INTEREST')){
             $tdsRate = Tds::getActiveTdsBaseRate($this->trans_date);
-            $amount = $this->amount*$tdsRate/100;
+            if($this->transType->chrg_master_id){
+                $gst_per = $this->transType->charge->gst_percentage;
+            }
+            if($gst_per){
+                $gstAmt = $amount*$gst_per/100;
+            }
+            $baseAmt = $amount-$gstAmt; 
+            $baseAmt -= $this->getWaiveOffAmount();
+            $tdsAmt = $baseAmt*$tdsRate/100;
         }
         
         $tds = self::where('parent_trans_id',$this->trans_id)
@@ -328,13 +340,13 @@ class Transactions extends BaseModel {
         ->where('entry_type','1')
         ->get();   
         foreach($tds as $tdsTrans){
-            $waiveOffAmount = $tdsTrans->getWaiveOffAmount();
-            $amount -= ($tdsTrans->settledOutstanding + $waiveOffAmount);
+            $tdsAmt -= $tdsTrans->settledOutstanding;
         }
-        if($amount < 0 ){
-            $amount = 0;
+
+        if($tdsAmt < 0 ){
+            $tdsAmt = 0;
         }
-        return $amount;
+        return $tdsAmt;
     }
 
     public static function getUnsettledTrans($userId){
