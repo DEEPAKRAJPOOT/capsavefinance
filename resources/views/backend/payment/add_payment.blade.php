@@ -493,6 +493,7 @@ cursor: pointer;
                 $('.isloader').show();
             },
             success: function(res) {
+                $('#savePayBtn').show();
                 if (res.status == 'success') {
                     chargeResult = res.result;
                     userData['charges'] = chargeResult;
@@ -501,6 +502,10 @@ cursor: pointer;
                     $(chargeResult).each(function(i,v){
                         $('#charges').append('<option index="'+ i +'" value="'+ v.trans_id +'">' + v.trans_name +'<small>('+v.trans_date+')</small>'+ '</option>');
                     })
+                }else if(res.status == 'empty'){
+                    $('#waiveoff_div').show();
+                    $('#charges').html('<option value="">Select Charges/Interest</option>');
+                    $('#savePayBtn').hide();
                 }else{
                     $('#waiveoff_div').hide();
                     $('#charges').html('<option value="">Select Transaction</option>');

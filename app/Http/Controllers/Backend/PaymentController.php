@@ -127,6 +127,9 @@ class PaymentController extends Controller {
 				'payment_type' => Rule::requiredIf(function () use ($request) {
 					return ($request->action_type == 1)?true:false;
 				}),
+				'charges' => Rule::requiredIf(function () use ($request) {
+					return ($request->action_type == 3)?true:false;
+				}),
 				'utr_no' => Rule::requiredIf(function () use ($request) {
 					return ($request->action_type == 1)?true:false;
 				}),
@@ -138,6 +141,7 @@ class PaymentController extends Controller {
 				'description' => 'required'
 			],
 			[
+				'charges.required' => 'TDS Submitted on field is required.',
 				'amount.required' => 'Transaction amount is required',
 				'amount.numeric' => 'Transaction amount must be number',
 				'amount.gt' => 'Transaction amount must be greater than zero',
