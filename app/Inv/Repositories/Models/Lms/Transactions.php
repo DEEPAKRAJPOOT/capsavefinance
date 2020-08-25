@@ -324,14 +324,17 @@ class Transactions extends BaseModel {
         $gst_per = 0;
         if($this->transType->chrg_master_id || $this->transType == config('lms.TRANS_TYPE.INTEREST')){
             $tdsRate = Tds::getActiveTdsBaseRate($this->trans_date);
+            $amount -= $this->getWaiveOffAmount();
+            
             if($this->transType->chrg_master_id){
                 $gst_per = $this->transType->charge->gst_percentage;
             }
+            
             if($gst_per){
                 $gstAmt = $amount*$gst_per/100;
             }
+
             $baseAmt = $amount-$gstAmt; 
-            $baseAmt -= $this->getWaiveOffAmount();
             $tdsAmt = $baseAmt*$tdsRate/100;
         }
         
