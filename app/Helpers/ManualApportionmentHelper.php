@@ -263,11 +263,6 @@ class ManualApportionmentHelper{
         $disbTransIds = null;
         $intTransIds = null;
 
-        
-        if($transDate == '2020-08-15' && $invDisbId == '194'){
-            $r = 12;
-        }
-
         $disbTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
         ->whereNull('payment_id') 
         ->whereNull('link_trans_id') 
@@ -318,6 +313,7 @@ class ManualApportionmentHelper{
              $Cr +=  Transactions::whereDate('trans_date','<=',$transDate) 
              ->where('invoice_disbursed_id','=',$invDisbId)
              ->where('entry_type','=','1')
+             ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.CANCEL')]) 
              ->where(function($query) use($intTransIds){
                  $query->whereIn('trans_id',$intTransIds);
                  $query->OrwhereIn('parent_trans_id',$intTransIds);
