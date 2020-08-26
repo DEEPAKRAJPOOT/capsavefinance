@@ -331,10 +331,11 @@ class Transactions extends BaseModel {
             }
             
             if($gst_per){
-                $gstAmt = $amount*$gst_per/100;
+                $baseAmt = $amount*100/(100+$gst_per);
+            }else{
+                $baseAmt = $amount;
             }
-
-            $baseAmt = $amount-$gstAmt; 
+            
             $tdsAmt = $baseAmt*$tdsRate/100;
         }
         
