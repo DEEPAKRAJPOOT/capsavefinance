@@ -91,6 +91,7 @@ class ManualApportionmentHelperTemp{
              $Cr +=  Transactions::whereDate('trans_date','<=',$transDate) 
              ->where('invoice_disbursed_id','=',$invDisbId)
              ->where('entry_type','=','1')
+             ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.CANCEL')]) 
              ->where(function($query) use($intTransIds){
                  $query->whereIn('trans_id',$intTransIds);
                  $query->OrwhereIn('parent_trans_id',$intTransIds);
