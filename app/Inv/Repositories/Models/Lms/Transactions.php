@@ -322,7 +322,7 @@ class Transactions extends BaseModel {
         $tdsAmt = 0;
         $gstAmt = 0;
         $gst_per = 0;
-        if($this->transType->chrg_master_id || $this->transType == config('lms.TRANS_TYPE.INTEREST')){
+        if($this->transType->chrg_master_id || $this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
             $tdsRate = Tds::getActiveTdsBaseRate($this->trans_date);
             $amount -= $this->getWaiveOffAmount();
             
