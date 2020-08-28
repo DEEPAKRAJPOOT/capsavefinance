@@ -1212,7 +1212,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		
 		if($invDisbursed){
 			$response['invoice_id'] = $invDisbursed->invoice_id;
-			$response['payment'] = $invDisbursed->invoice->invoice_margin_amount;
+			$response['payment'] = 0;
 			$response['case'] = $invDisbursed->invoice->program_offer->payment_frequency;
 			$response['is_settled'] = false;
 			$response['receipt'] = 0;
@@ -1221,7 +1221,41 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			->whereNull('payment_id')
 			->where('invoice_disbursed_id','=',$invDisbursed->invoice_disbursed_id)
 			->get();
-			foreach ($transactions as $trans) {
+
+			$response['repayment_amt'] = Transactions::whereNotNull('payment_id')
+			->where('entry_type','1')
+			->where('invoice_disbursed_id','=',$invDisbursed->invoice_disbursed_id)
+			->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED'), config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+			->sum('amount');
+
+			$transactionsRunning = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbursed->invoice_disbursed_id)
+			->get()
+			->filter(function($item) {
+				return $item->outstanding > 0;
+			});
+
+			foreach($transactionsRunning as $transRunning){
+				switch ($transRunning->trans_type) {
+					case config('lms.TRANS_TYPE.INTEREST'):
+						$response['interest'][] = [
+							'trans_running_id' => $transRunning->trans_id,
+							'amount'=> $transRunning->amount,
+							'outstanding'=>$transRunning->amount,
+							'trans_date'=>$transRunning->trans_date
+						];
+						break;
+					case config('lms.TRANS_TYPE.INTEREST_OVERDUE'):
+						$response['overdue'][] = [
+							'trans_running_id' => $transRunning->trans_id,
+							'amount'=> $transRunning->amount,
+							'outstanding'=>$transRunning->amount,
+							'trans_date'=>$transRunning->trans_date
+						];
+						break;
+				}
+			}
+
+			foreach ($transactions as $trans){
 				switch ($trans->trans_type) {
 					case config('lms.TRANS_TYPE.PAYMENT_DISBURSED'):
 						$response['principal'][] = [
@@ -1256,9 +1290,24 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 						];
 						break;
 				}
-
 			}
+
 			foreach($response['principal'] as $val){
+				$response['payment'] += (float) $val['amount'];
+				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
+			}
+			
+			foreach($response['interest'] as $val){
+				$response['payment'] += (float) $val['amount'];
+				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
+			}
+
+			foreach($response['overdue'] as $val){
+				$response['payment'] += (float) $val['amount'];
+				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
+			}
+			
+			foreach($response['margin'] as $val){
 				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
 			}
 
