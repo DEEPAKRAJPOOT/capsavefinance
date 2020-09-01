@@ -25,6 +25,12 @@ tr.border_bottom td {
                             <a class="card-title ">No offer found.</a>
                         </div>
                     </div>
+                    @elseif($is_shown == 0 && $isSalesManager == 1)
+                    <div class="card card-color mb-0">
+                        <div class="card-header">
+                            <a class="card-title ">No offer found.</a>
+                        </div>
+                    </div>
                     @else
                     <div class="row">
                         <div class="col-sm-12">
@@ -39,8 +45,8 @@ tr.border_bottom td {
                                         <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
                                                 <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
-                                                   <th width="5%">Sr. No.</th>
-                                                   <th width="80%" colspan="4">Offer Details</th>
+                                                   <th width="7%">Offer No.</th>
+                                                   <th width="78%" colspan="4">Offer Details</th>
                                                    <th width="15%">Status</th>
                                                 </tr>
                                             </thead>
@@ -52,7 +58,7 @@ tr.border_bottom td {
                                                     <td>{{$supplyOffer->prgm_limit_amt}}</td>
                                                     <td><b>Grace Period (Days): </b></td>
                                                     <td>{{$supplyOffer->grace_period}}</td>
-                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($supplyOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($supplyOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
+                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($supplyOffer->status == 1)? 'badge-success': 'badge-danger'}} current-status">{{($supplyOffer->status == 1)? 'Accepted': (($supplyOffer->status == 2)? 'Rejected': 'Pending')}}</label></td>
                                                 </tr>
                                                 
                                                 <tr>
@@ -74,7 +80,7 @@ tr.border_bottom td {
                                                 <tr>
                                                 <td></td>
                                                     <td><b>Overdue Interest Rate (%): </b></td>
-                                                    <td>{{$supplyOffer->overdue_interest_rate}}</td>
+                                                    <td>{{($supplyOffer->overdue_interest_rate ?? 0) + ($supplyOffer->interest_rate ?? 0)}}</td>
                                                     <td><b>Adhoc Interest Rate (%): </b></td>
                                                     <td>{{$supplyOffer->adhoc_interest_rate}}</td>
                                                     <td></td>
@@ -91,6 +97,18 @@ tr.border_bottom td {
                                                 </tr>
                                                 @endif
                                                 @endforeach
+                                                <tr>
+                                                <td></td>
+                                                    <td><b>Bench Mark Date: </b></td>
+                                                    <td colspan="3">{{getBenchmarkType($supplyOffer->benchmark_date)}}</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                <td></td>
+                                                    <td><b>Investment Payment Frequency: </b></td>
+                                                    <td colspan="3">{{getInvestmentPaymentFrequency($supplyOffer->payment_frequency)}}</td>
+                                                    <td></td>
+                                                </tr>
                                                 <tr>
                                                 <td></td>
                                                     <td><b>Comment: </b></td>
@@ -255,7 +273,7 @@ tr.border_bottom td {
                                         <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
                                                 <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
-                                                   <th width="5%">Sr. No.</th>
+                                                   <th width="5%">Offer No.</th>
                                                    <th width="80%" colspan="4">Offer Details</th>
                                                    <th width="15%">Status</th>
                                                 </tr>
@@ -268,7 +286,7 @@ tr.border_bottom td {
                                                     <td>Lease Loan</td>
                                                     <td><b>Apply Loan Amount: </b> </td>
                                                     <td>{{$termOffer->prgm_limit_amt}}</td>
-                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($termOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($termOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
+                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($termOffer->status == 1)? 'badge-success': 'badge-danger'}} current-status">{{($termOffer->status == 1)? 'Accepted': (($termOffer->status == 2)? 'Rejected': 'Pending')}}</label></td>
                                                 </tr>
                                                 
                                                 <tr>
@@ -344,7 +362,7 @@ tr.border_bottom td {
                                         <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
                                                 <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
-                                                   <th width="5%">Sr. No.</th>
+                                                   <th width="5%">Offer No.</th>
                                                    <th width="80%" colspan="4">Offer Details</th>
                                                    <th width="15%">Status</th>
                                                 </tr>
@@ -357,7 +375,7 @@ tr.border_bottom td {
                                                     <td width="25%">{{($leaseOffer->facility_type_id !='')? config('common.facility_type')[$leaseOffer->facility_type_id]: 'NA'}}</td>
                                                     <td><b>Equipment Type: </b></td>
                                                     <td>{{\Helpers::getEquipmentTypeById($leaseOffer->equipment_type_id)->equipment_name}}</td>
-                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($leaseOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($leaseOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
+                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($leaseOffer->status == 1)? 'badge-success': 'badge-danger'}} current-status">{{($leaseOffer->status == 1)? 'Accepted': (($leaseOffer->status == 2)? 'Rejected': 'Pending')}}</label></td>
                                                 </tr>
                                                 
                                                 <tr>
@@ -452,24 +470,29 @@ tr.border_bottom td {
                     </div>
                     @endif
                     @if($offerStatus != 0 && $isSalesManager == 1)
-                    <form method="POST" action="{{route('accept_offer')}}">
+                    <a data-toggle="modal" class="btn btn-success btn-sm"  style="float: right;" data-target="#rejectOfferFrame" data-url ="{{route('accept_offer_form', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'btn_type' => 'reject'])}}" data-height="250px" data-width="100%" data-placement="top" >Reject Offer</a>
+                    <a data-toggle="modal" class="btn btn-success btn-sm" style="float: right; margin-right: 30px;" data-target="#acceptOfferFrame" data-url ="{{route('accept_offer_form', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'btn_type' => 'accept'])}}" data-height="150px" data-width="100%" data-placement="top" >Accept Offer</a>
+                    @endif
+
+
+                    <!-- <form method="POST" action="{{route('accept_offer')}}">
                         <div class="row">
                         @csrf
                         <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
                         <input type="hidden" name="biz_id" value="{{request()->get('biz_id')}}">
                         <div class="col-md-12">
-                            <!-- <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject</button> -->
+                            <button class="btn btn-danger btn-sm float-right" type="submit" name="btn_reject_offer">Reject Offer</button>
                             <button class="btn btn-success btn-sm float-right" type="submit" name="btn_accept_offer">Accept Offer</button>
                         </div>
                         </div>  
-                    </form>
-                    @endif
+                    </form> -->
                 </div>
             </div>
         </div>
     </div>
 </div>
-
+{!!Helpers::makeIframePopup('acceptOfferFrame','Accept Offer', 'modal-md')!!}
+{!!Helpers::makeIframePopup('rejectOfferFrame','Reject Offer', 'modal-md')!!}
 @endsection
 @section('jscript')
 <script>

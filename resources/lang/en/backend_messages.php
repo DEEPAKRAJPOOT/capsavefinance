@@ -4,7 +4,7 @@ return [
     'change_app_status' => 'Application status updated successfully.',
     'update_assignee' => 'Application is assigned successfully.',
     'add_note' => 'Note saved successfully.',
-    'anchor_registration_success' => 'Anchor registered successfully.',
+    'anchor_registration_success' => 'Anchor lead uploaded successfully.',
     'anchor_lead_created' => 'Anchor Lead Created Successfully',
     'anchor_registration_updated' => 'Anchor information saved successfully.',
     'limit_assessment_success' => 'Limit assigned successfully.',
@@ -32,12 +32,16 @@ return [
     'under_approval' => 'Offer is under approval, can\'t be updated',
     'noBankAccount' => 'No Bank Account Found.',
     'disburseMarked' => 'Successfully disburse marked .',
+    'refundedMarked' => 'Successfully refund marked .',
     'downloadExcel' => 'Successfully download.',
     'lms_eod_process_msg' => 'System is stopped, you can\'t do any transactions.',
     'validate_limit_enhance_amt' => 'Enhancement Limit can\'t be less than or equal to previous utilized limit.',
     'validate_reduce_limit_amt' => 'Reduce Limit can\'t be less than previous utilized limit.',
     'lms_eod_batch_process_msg' => 'System is stopped, you can\'t do any transactions.',
     'offer_rejected' => 'Offer rejected successfully.',
-    'reject_app' => 'Application Status Changed Successfully',
+    'reject_app' => 'Application Status Changed Successfully',    
+    'enhanced_tot_limit_amt_validation' => 'Total credit assessed limit can\'t be less than previous total credit assessed limit',
+    'reduced_tot_limit_amt_validation' => 'Total credit assessed limit can\'t be  more than previous total credit assessed limit',
+    'reduced_utilized_amt_validation' => 'Total credit assessed limit can\'t be less than the Utilized limit.'
 ];
 

@@ -112,9 +112,8 @@
   $(document).on('change','#chrg_name',function(){
     
       $(".chargeTypeGstCal, #charge_amount_gst_new").css("display","inline");
+      $("#chrgMsg").html('');
       $("#chrg_applicable_id").empty();
-      $("#chrg_calculation_type1").attr('disabled',false);
-      $("#chrg_calculation_type2").attr('disabled',false);
       var chrg_name =  $(this).val(); 
       if($("#program_id").val()=='') 
       {    
@@ -124,11 +123,14 @@
       }
       if(chrg_name=='')
       {
-             $("#chrg_calculation_type1").attr('checked',false);
-             $("#chrg_calculation_type2").attr('checked',false);
+             $(".chrgT").prop("checked", false);
              $("#amount").empty();
               return false;
       }
+      $("#chrg_calculation_type1").prop('disabled',false);
+      $("#chrg_calculation_type12").prop('disabled',false);
+      $("#RadioValidation").html('');
+      getpayments(chrg_name);
       var postData =  ({'app_id':$("#app_id").val(),'id':chrg_name,'prog_id':$("#program_id").val(),'user_id':$("#user_id").val(),'_token':messages.token});
        jQuery.ajax({
         url: messages.get_chrg_amount,
@@ -139,11 +141,12 @@
                 alert(errorThrown);
                 },
                 success: function (res) {
-                     
+                      
                       if(res.status==1)
                       {
+                          
                           var gst_percentage =   res.gst_percentage;
-                          $("#limit_amount_new").val(parseInt(res.limit));  
+                          $("#limit_amount_new").val(parseFloat(res.limit));  
                           var  applicable  = res.applicable;  
                           $("#chrg_applicable_id").html(applicable);
                           $("#chrg_applicable_hidden_id").val(res.chrg_applicable_id);
@@ -156,29 +159,32 @@
                         if(res.type==1)
                          {
                              
-                             $("#chrg_calculation_type2").attr('checked',false);
+                            
                              $("#approved_limit_div, .chargeTypeCal").hide();
-                             $("#chrg_calculation_type1").attr('checked',true);
-                             $("#chrg_calculation_type2").attr('disabled','disabled');
+                             $("#chrg_calculation_type1").prop('checked',true);
+                             $("#chrg_calculation_type2").prop('checked',false);
+                             $("#chrg_calculation_type2").prop('disabled',true);
                             if(res.is_gst_applicable==1)
                            { 
                              var limitAmount  =  $("#amount").val();  
                              var limitAmount  =  limitAmount.replace(",", ""); 
-                             var fixedamount  =  parseInt(limitAmount*parseInt(gst_percentage)/100);
-                             var finalTotalAmount  = parseInt(fixedamount)+ parseFloat(limitAmount);
+                             var fixedamount  =  parseFloat(limitAmount*parseFloat(gst_percentage)/100);
+                             var finalTotalAmount  = parseFloat(fixedamount)+ parseFloat(limitAmount);
+                             var finalTotalAmount =  Math.round(finalTotalAmount * 100) / 100;
                              $("#charge_amount_gst_new").val(finalTotalAmount);
                            }
                              
                          }  
                          else if(res.type==2)
                          {
-                             $("#chrg_calculation_type1").attr('checked',false);
+                             $("#chrg_calculation_type1").prop('checked',false);
+                             $("#chrg_calculation_type2").prop('checked',true);
+                              $("#chrg_calculation_type1").prop('disabled',true);
                              $("#approved_limit_div, .chargeTypeCal").show(); 
-                             $("#chrg_calculation_type2").attr('checked',true);
-                             $("#chrg_calculation_type1").attr('disabled','disabled');
                              var limit_amount_new  =  $("#limit_amount_new").val();
                              var limit_amount_new =   limit_amount_new.replace(",", ""); 
-                             var afterPercent = parseInt(limit_amount_new*res.amount/100);
+                             var afterPercent = parseFloat(limit_amount_new*res.amount/100);
+                             var afterPercent =  Math.round(afterPercent * 100) / 100;
                              $("#charge_amount_new").val(afterPercent);
                          } 
                           if(res.is_gst_applicable==1)
@@ -189,9 +195,11 @@
                             $(".chargeTypeGstCal").css({"display":"inline"});
                             if(res.type==2)
                             {
-                            var afterPercentGst = parseInt(afterPercent*parseInt(gst_percentage)/100);
-                            finalTotalAmount  = parseInt(afterPercentGst+afterPercent);
+                            var afterPercentGst = parseFloat(afterPercent*parseFloat(gst_percentage)/100);
+                            finalTotalAmount  = parseFloat(afterPercentGst+afterPercent);
+                            var finalTotalAmount =  Math.round(finalTotalAmount * 100) / 100;
                             $("#charge_amount_gst_new").val(finalTotalAmount);
+                            
                             }
                          }  
                          else if(res.is_gst_applicable==2)
@@ -206,7 +214,7 @@
                       else
                       {
                          $("#chrg_name").val('');
-                         alert('Something went wrong, Please try again');
+                         replaceAlert('Something went wrong, Please try again', 'error');
                       }
                 }
         }); 
@@ -223,7 +231,7 @@
                 alert(errorThrown);
                 },
                 success: function (res) {
-                      alert(res)
+                      //alert(res)
                 }
         }); 
     });      
@@ -237,30 +245,19 @@
       $(document).on('click','#add_charge',function(e){
         var amount = $("#amount").val()
         var amount = amount.replace(",", "");
+         var chrgT = $('.chrgT').val();
         var chrg_calculation_type  =  $("input[name='chrg_calculation_type']:checked"). val();
       
        if ($('form#chargesForm').validate().form()) {
+        $("#msgprogram").html('');
+        $("#chrgMsg").html('');
         $("#user_id" ).rules( "add", {
         required: true,
         messages: {
         required: "Please select user",
         }
         });
-          $("#program_id" ).rules( "add", {
-        required: true,
-     
-        messages: {
-        required: "Please select program name",
-        }
-        });
-          $("#chrg_name" ).rules( "add", {
-        required: true,
-        messages: {
-        required: "Please select charge",
-        }
-        });
-         
-         $("#amount" ).rules( "add", {
+        $("#amount" ).rules( "add", {
         required: true,
         messages: {
         required: "Please enter amount",
@@ -271,19 +268,35 @@
         messages: {
         required: "Please enter date",
         }
-        });   
+        }); 
+        if ($(".chrgT:checked").length == 0)
+        {
+                $('#RadioValidation').text("Charge Type is required.");
+                return false;
+        }
+        if($("#program_id").val()=='')
+        {
+     
+                $('#msgprogram').text("Please select program");
+                return false;
+        }
+        if($("#chrg_name").val()=='')
+        {
+                $('#chrgMsg').text("Please select charge.");
+                return false;
+        }
         if(amount==0)
         {
             if(chrg_calculation_type==1)
             {
               
-                alert('Please Enter Amount');
+                replaceAlert('Please Enter Amount', 'error');
                 
             }
             else
             {
               
-                 alert('Please Enter Percentage');
+                 replaceAlert('Please Enter Percentage', 'error');
             }
             return false;
           }
@@ -291,7 +304,7 @@
           {
               if(chrg_calculation_type==2)
               {    
-               alert('Percentage should not  greater than 100%');
+               replaceAlert('Percentage should not  greater than 100%', 'error');
                return false;
               }
           }
@@ -303,3 +316,59 @@
      
     });   
     });
+
+function getpayments(chrgId) {
+  if($.inArray(chrgId, messages.charges) >=0){
+    $(".unsettledPayment").show();
+    $("#payment").html('<option value="" disabled selected>Choose Paymeny</option>');
+    $.ajax({
+      type: "get",
+      url: messages.get_payments,
+      data: { chrg_id: chrgId },
+      dataType: 'json',
+      success: function (data) {
+        if(data.status == 1){
+          $(data.res).each(function (i, v) {
+            $("#payment").append('<option value="' + v.id + '">Date:-'+v.date_of_payment+' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Amount:- ₹ ' + v.amount +'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Transaction No:-'+v.transactionno+'</option>');
+          });
+        }else{
+          $("#payment").html('<option value="" disabled selected>No Payment found</option>');
+        }
+      }
+    });
+  }else{
+    $(".unsettledPayment").hide();
+  }
+}
+
+
+$(document).on('click','.chrgT',function(){
+    var chargeType =  $(this).val();
+    if(chargeType)
+    {
+        var program_id =   $("#program_id").val();
+        var chrg_name =   $("#chrg_name").val();
+        if(program_id=='')
+        {
+            $("#msgprogram").html('Please select program');
+            $(".chrgT").prop("checked", false);
+            $("#submit").css("pointer-events","none");
+            return false;
+        }
+        else if(chrg_name=='')
+        {
+           
+            $("#chrgMsg").html('Please select charge');
+            $(".chrgT").prop("checked", false);
+            $("#submit").css("pointer-events","none");
+            return false;
+        }
+        else
+        {
+             $("#msgprogram").html('');
+             $("#chrgMsg").html('');
+             $("#submit").css("pointer-events","auto");
+            return true;
+        }
+    }
+});

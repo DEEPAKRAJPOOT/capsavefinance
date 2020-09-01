@@ -2,6 +2,9 @@ try {
     var oTable;
     jQuery(document).ready(function ($) {
         //User Listing code
+        var pdf_perm = messages.check_pdf_perm;
+        var excel_perm = messages.check_excel_perm;
+        
         oTable = $('#lmsSoaList').DataTable({
             processing: true,
             serverSide: true,
@@ -18,6 +21,7 @@ try {
                     d.to_date = $('input[name="to_date"]').val();
                     d.search_keyword = $('input[name=search_keyword]').val();
                     d.customer_id = $('input[name=customer_id]').val();
+                    d.trans_entry_type = $('select[name=trans_entry_type]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -50,12 +54,14 @@ try {
                 
                 {
                     text: 'PDF',
+                    className: "pdf_button",
                     action: function ( e, dt, node, config ) {
                        download('pdf');
                     }
                 },
                 {
                     text: 'Excel',
+                    className: "excel_button",
                     action: function ( e, dt, node, config ) {
                         download('excel');
                     }
@@ -63,7 +69,12 @@ try {
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
         });
-
+        if(pdf_perm != 1){
+            oTable.button(".pdf_button").remove();
+        }
+        if(excel_perm != 1){
+            oTable.button('.excel_button').remove();
+        } 
         //Search
         $('#searchbtn').on('click', function (e) {
             $("#client_details").html('');
@@ -81,6 +92,7 @@ try {
         from_date = $('input[name="from_date"]').val().trim();
         to_date = $('input[name="to_date"]').val().trim();
         customer_id = $('input[name=customer_id]').val().trim();
+        trans_entry_type = $('select[name=trans_entry_type]').val().trim();
         if(action.trim() == 'pdf'){
             url = messages.pdf_soa_url;
         }
@@ -95,6 +107,10 @@ try {
 
         if(to_date){
             url += '&to_date='+to_date;
+        }
+
+        if(trans_entry_type){
+            url += '&trans_entry_type='+trans_entry_type;
         }
         window.open(url, '_blank');
     }

@@ -17,6 +17,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\DisbursalController@uploadPfDf',
             ]);
 
+            Route::get('/cibil_report', [
+                'as' => 'cibil_report',
+                'uses' => 'Lms\CibilReportController@index',
+            ]);
+
+            Route::get('/download_cibil', [
+                'as' => 'download_lms_cibil_reports',
+                'uses' => 'Lms\CibilReportController@downloadCibilReport'
+            ]);
+
             Route::get('/', [
                 'as' => 'lms_get_customer_list',
                 'uses' => 'Lms\CustomerController@list',
@@ -255,6 +265,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::post('create-payment-refund', [
                         'as' => 'create_payment_refund',
                         'uses' => 'Backend\PaymentController@createPaymentRefund',
+                    ]);
+                                        
+                    Route::post('download-cheque', [
+                        'as' => 'download_cheque',
+                        'uses' => 'Backend\PaymentController@downloadCheque',
+                    ]);   
+                    
+                    Route::delete('delete-payment', [
+                        'as' => 'delete_payment',
+                        'uses' => 'Backend\PaymentController@deletePayment',
                     ]);
                 }
             });
@@ -752,6 +772,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::post('/mark/writeOff/save', [
                         'as' => 'apport_mark_writeOff_save',
                         'uses' => 'Lms\ApportionmentController@markWriteOffSave',
+                    ]);
+
+                    Route::delete('/revert',[
+                        'as' => 'undo_apportionment',
+                        'uses' => 'Lms\ApportionmentController@undoApportionment',
                     ]);
                 }
             });

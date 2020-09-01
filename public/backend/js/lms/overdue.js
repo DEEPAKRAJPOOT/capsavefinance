@@ -6,7 +6,6 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 50,
-            dom: 'lBrtip',
             bSort: false,
             responsive: true,
             searching: false,
@@ -16,7 +15,8 @@ try {
                 data: function (d) {
                     d.from_date = $('input[name="from_date"]').val();
                     d.to_date = $('input[name="to_date"]').val();
-                    d.search_keyword = $('input[name=search_keyword]').val();
+                    d.user_id = $('input[name=user_id]').val();
+                    d.customer_id = $('input[name=customer_id]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -25,7 +25,14 @@ try {
                     $("#lmsSoaList_processing").css("display", "none");
                 }
             },
+            "drawCallback": function( settings ) {
+                excelUrl = settings.json.excelUrl;
+                $('#dwnldEXCEL').attr('href', excelUrl)
+                pdfUrl = settings.json.pdfUrl;
+                $('#dwnldPDF').attr('href', pdfUrl)
+            },
             columns: [
+                {data: 'customer_id'},
                 {data: 'batch_no'},
                 {data: 'batch_date'},
                 {data: 'bills_no'},
@@ -35,16 +42,6 @@ try {
                 {data: 'invoice_appr_amount'},
                 {data: 'od'},
                 {data: 'balance'}
-            ],
-            buttons: [
-                
-                {
-                    text: 'PDF',
-                    action: function ( e, dt, node, config ) {
-                       download('pdf');
-                    }
-                }
-               
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
         });

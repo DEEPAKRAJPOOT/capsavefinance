@@ -16,11 +16,13 @@
                             <div class="col-sm-12">
                                 <div class="head-sec">
                                     @if (count($woData) < 1)
-                                        <a href="{{route('generate_write_off',[ 'user_id' => $userInfo->user_id ])}}" >
-                                            <button class="btn  btn-success btn-sm float-right mb-3" type="button">
-                                            <i class="fa fa-plus"></i> Generate Wtite Off
-                                            </button>
-                                        </a>
+                                        @can('generate_write_off')
+                                            <a href="{{route('generate_write_off',[ 'user_id' => $userInfo->user_id ])}}" >
+                                                <button class="btn  btn-success btn-sm float-right mb-3" type="button">
+                                                <i class="fa fa-plus"></i> Generate Write Off
+                                                </button>
+                                            </a>
+                                        @endcan
                                     @endif
                                 </div>
                             </div>
@@ -64,11 +66,12 @@
 
 
                                                         @if(!in_array($wOff->status_id, [config('lms.WRITE_OFF_STATUS.COMPLETED'),config('lms.WRITE_OFF_STATUS.APPROVED')]) && in_array($role_id, [6,8,1]) && $nxtBtnFlag)
-                                                            <a data-toggle="modal"  data-height="250px" 
-                                                            data-width="100%" data-target="#apprDisapprFrame"
-                                                            data-url="{{route('wo_approve_dissapprove', ['user_id' => $wOff->user_id, 'wo_req_id' => $wOff->wo_req_id, 'action_type' => '1', 'status_id'=>$wOff->status_id])}}"  
-                                                            data-placement="top" class="btn btn-action-btn btn-sm" title="Moved to Next Stage"><i class="fa fa-share" aria-hidden="true"></i></a>
-                                                        
+                                                            @can('wo_approve_dissapprove')
+                                                                <a data-toggle="modal"  data-height="250px" 
+                                                                data-width="100%" data-target="#apprDisapprFrame"
+                                                                data-url="{{route('wo_approve_dissapprove', ['user_id' => $wOff->user_id, 'wo_req_id' => $wOff->wo_req_id, 'action_type' => '1', 'status_id'=>$wOff->status_id])}}"  
+                                                                data-placement="top" class="btn btn-action-btn btn-sm" title="Moved to Next Stage"><i class="fa fa-share" aria-hidden="true"></i></a>
+                                                            @endcan
                                                         @endif
                                                     </td>
                                                 </tr>

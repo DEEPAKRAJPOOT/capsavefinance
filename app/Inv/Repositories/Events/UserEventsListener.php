@@ -153,9 +153,10 @@ class UserEventsListener extends BaseEvent
         $user = unserialize($user);
         $email_content = EmailTemplate::getEmailTemplate("USER_REGISTERED");
         if ($email_content) {
+            $link = \Helpers::getServerProtocol() . config('proin.frontend_uri');
             $mail_body = str_replace(
-                ['%name', '%email','%password'],
-                [ucwords($user['name']),$user['email'],$user['password']],
+                ['%name', '%email','%password','%link'],
+                [ucwords($user['name']),$user['email'],$user['password'], $link],
                 $email_content->message
             );
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
@@ -240,7 +241,13 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content, $mail_body) {
-                $email = $user["email"];
+                if( env('SEND_MAIL_ACTIVE') == 1){
+                    $email = explode(',', env('SEND_MAIL'));
+                    $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+                    $message->cc(explode(',', env('SEND_MAIL_CC')));
+                }else{
+                    $email = $user["email"];
+                }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
@@ -723,8 +730,8 @@ class UserEventsListener extends BaseEvent
         $email_content = EmailTemplate::getEmailTemplate("APPLICATION_RENEWAL_MAIL");
         if ($email_content) {
             $mail_body = str_replace(
-                ['%receiver_user_name', '%lead_id' ,'%app_id','%entity_name'],
-                [$user['receiver_user_name'],$user['lead_id'],$user['app_id'],$user['entity_name']],
+                ['%receiver_user_name', '%lead_id' ,'%app_id','%entity_name', '%entity_addr' ,'%customer_id', '%biz_type', '%sales_manager_name', '%prgm_limit_amt', '%app_limit', '%sales_manager_email', '%cmp_name', '%cmp_add', '%year'],
+                [$user['receiver_user_name'],$user['lead_id'],$user['app_id'],$user['entity_name'],$user['entity_addr'],$user['customer_id'],$user['biz_type'],$user['sales_manager_name'],$user['prgm_limit_amt'],$user['app_limit'],$user['sales_manager_email'],$user['cmp_name'],$user['cmp_add'],$user['year']],
                 $email_content->message
             );
             $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
@@ -761,6 +768,41 @@ class UserEventsListener extends BaseEvent
             });
         }
     }
+    
+    public function onRegdWithSamePan($user) {
+        $this->func_name = __FUNCTION__; 
+        $user = unserialize($user);
+        $email_content = EmailTemplate::getEmailTemplate("NOTIFY_EXISTING_USER");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%name'],
+                [ucwords($user['name'])],
+                $email_content->message
+            );
+            Mail::send('email', ['varContent' => $mail_body,
+                ],
+                function ($message) use ($user, $email_content, $mail_body) {
+                    if( env('SEND_MAIL_ACTIVE') == 1){
+                        $email = explode(',', env('SEND_MAIL'));
+                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+                        $message->cc(explode(',', env('SEND_MAIL_CC')));
+                    }else{
+                        $email = $user["email"];
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($email_content->subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_type' => $this->func_name,
+                    'name' => $user['name'],
+                    'subject' => $email_content->subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }    
 
     /**
      * Event subscribers
@@ -873,5 +915,9 @@ class UserEventsListener extends BaseEvent
             'App\Inv\Repositories\Events\UserEventsListener@onRenewApplication'
         );        
 
+        $events->listen(
+            'NOTIFY_EXISTING_USER', 
+            'App\Inv\Repositories\Events\UserEventsListener@onRegdWithSamePan'
+        );          
     }
 }

@@ -73,6 +73,7 @@ use App\Inv\Repositories\Models\WfAppStage;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\BizEntityCin;
+use App\Inv\Repositories\Models\BizInvoice;
 
 /**
  * Application repository class
@@ -1162,6 +1163,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                     });
                 })
                 ->with('anchor')
+                ->with('anchorUser')
                 ->with('program')
                 ->whereHas('programLimit.appLimit.app.acceptedOffer')
                 ->whereHas('programLimit', function ($query) use($curDate) {
@@ -2339,9 +2341,87 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     public function getAllCommentsByAppId($appId){
-        return AppNote::getAllCommentsByAppId($appId);
+        //return AppNote::getAllCommentsByAppId($appId);
+        return AppStatusLog::getAllCommentsByAppId($appId);
+    }   
+    
+    public function getBizDataByPan($pan, $userId=null) {
+        return Business::getBizDataByPan($pan, $userId);
+    }    
+
+     public function checkAppByPan($userId)
+     {
+         return Application::checkAppByPan($userId);
+     }
+     
+    public function getApplicationsByPan($userId)
+    {
+        return Application::getApplicationsByPan($userId);
     }
 
+    public function getPrgmChargeData($where)
+    {
+        return ProgramCharges::getPrgmChargeData($where);
+    }    
+    
+    public function getPrgmDocs($where)
+    {
+        return ProgramDoc::getPrgmDocs($where);
+    }    
+
+    public function getPrgmBalLimit($program_id)
+    {
+        return AppProgramOffer::getPrgmBalLimit($program_id);
+    }    
+    
+    public function getProgramAnchors() 
+    {
+        return Program::getProgramAnchors();
+    }    
+    
+    public function checkProgramOffers($program_id)
+    {
+        return AppProgramOffer::checkProgramOffers($program_id);
+    }
+
+    public function getInvoiceUtilizedAmount($attr)
+    {
+        return BizInvoice::getInvoiceUtilizedAmount($attr);
+    }
+
+    public function getParentsPrograms($program_id, &$prgmIds=[])
+    {
+        $where=[];
+        $where['prgm_id'] = $program_id;
+        $result =  Program::getProgramByWhereCond($where); 
+        $children = array();
+        $i = 0;
+        if (count($result) > 0) {
+            foreach($result as $row) {
+                $children[$i] = array();
+                $children[$i]['prgm_id'] = $row->prgm_id;
+                $prgmIds[] = $row->prgm_id;                
+                $children[$i]['children'] = $this->getParentsPrograms($row->copied_prgm_id, $prgmIds);
+                $i++;            
+            }
+        }
+        return $prgmIds;        
+    }    
+    
+    public function deleteProgram($prgmId)
+    {
+        return Program::deleteProgram($prgmId);
+    }    
+
+    public function getFiAddressData($where)
+    {
+        return FiAddress::getFiAddressData($where);
+    }
+
+    public function getRcuDocumentData($where)
+    {
+        return RcuDocument::getRcuDocumentData($where);
+    }    
 }
 
 

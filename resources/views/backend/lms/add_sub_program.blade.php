@@ -1,5 +1,9 @@
 @extends('layouts.backend.admin-layout')
 @section('content')
+@php
+$dis_element = $copied_prgm_id ? ['readonly' => true] : [];
+$actionUrl = $action != 'view' ? route('save_sub_program') : '#';
+@endphp
 <div class="content-wrapper">
     <section class="content-header">
         <div class="header-icon">
@@ -29,21 +33,43 @@
                                         <div class=" ">
                                             <div class="sub-progrem">
                                                 <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <h4 class="gc"><label>Program Name: </label> {{ isset($programData) ? $programData->prgm_name : null }} <span class="float-right mb-0"> <label>Anchor Name: </label> {{ isset($anchorData) ? $anchorData->f_name : null }}</span> </h4>
-
-                                                        <p class="float-left mr-3 mb-0">
+                                                    <div class="col-sm-12 d-flex">
+                                                        <div>
+                                                            <h6 class="gc"><label>Anchor Name: </label> {{ isset($anchorData) ? $anchorData->f_name : null }} </h6>
+                                                            <h6 class="gc"><label>Program Name: </label> {{ isset($programData) ? $programData->prgm_name : null }} </h6>
+                                                        </div>
+                                                        <p class="ml-auto">
                                                             <b>Total Anchor Limit : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i> 
-                                                            {!! isset($programData->anchor_limit) ?  number_format($programData->anchor_limit )   : null !!}
+                                                            <span id="total-anchor-limit" class="number_format">{!! isset($programData->anchor_limit) ?  number_format($programData->anchor_limit )   : null !!}</span>
                                                         </p>
+                                                        &nbsp;&nbsp;&nbsp;
+                                                        @if ($action == 'view')
 
 
                                                         <p class="float-right mb-0">
                                                             <b>Remaining Anchor Limit : </b>
                                                             <i class="fa fa-inr" aria-hidden="true"></i>
-                                                            {{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }} 
+                                                            <span id="remaining-anchor-limit" class="number_format">{{ isset($programData->anchor_limit) ?  number_format($programData->anchor_limit - $anchorUtilizedBalance)  : null }}</span>
+                                                            <br>
+                                                            <b>Utilized Limit in Offer : </b>
+                                                            <i class="fa fa-inr" aria-hidden="true"></i>
+                                                            {{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}                                                             
+                                                        </p>                                                        
+                                                        @else
+
+
+                                                        <p class="float-right mb-0">
+                                                            <b>Remaining Anchor Limit : </b>
+                                                            <i class="fa fa-inr" aria-hidden="true"></i>
+                                                            <span id="remaining-anchor-limit" class="number_format">{{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }}</span>
+                                                            <br>
+                                                            <b>Utilized Limit in Offer : </b>
+                                                            <i class="fa fa-inr" aria-hidden="true"></i>
+                                                            {{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}                                                             
                                                         </p>
+                                                        @endif
+                                                   
                                                     </div>
                                                     <!--                                                    <div class="col-sm-3 text-right">
                                                        <a class="edit-btn" href="{{route('add_program',['program_id'=> $program_id ,'anchor_id'=>$anchor_id ])}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
@@ -53,51 +79,74 @@
                                             </div>
                                             </br>
 
-
-                                            {{ Form::open(['url'=>route('save_sub_program'),'id'=>'add_sub_program']) }}
+                                            
+                                            {{ Form::open(['url'=>$actionUrl,'id'=>'add_sub_program']) }}
                                             {!! Form::hidden('parent_prgm_id',$program_id) !!}
-                                            {!! Form::hidden('program_id',isset($subProgramData->prgm_id) ? $subProgramData->prgm_id : null) !!}
-                                            {!! Form::hidden('anchor_limit',isset($programData) ? $programData->anchor_limit : null) !!}
+                                            {!! Form::hidden('program_id',isset($subProgramData->prgm_id) ? $subProgramData->prgm_id : null) !!}                                            
                                             {!! Form::hidden('product_id',isset($programData) ? $programData->product_id : null) !!}
-                                            {!! Form::hidden('anchor_limit_re',isset($remaningAmount) ?  number_format($remaningAmount)  : null,['id'=>'anchor_limit'])   !!}
+                                            {!! Form::hidden('anchor_limit_re',isset($remaningAmount) ?  number_format($remaningAmount)  : null,['id'=>'anchor_limit_re'])   !!}
                                             {!! Form::hidden('anchor_id',$anchor_id) !!}
                                             {!! Form::hidden('anchor_user_id',isset($programData->anchor_user_id) ?$programData->anchor_user_id  : null ) !!}
+                                            {!! Form::hidden('copied_prgm_id', $copied_prgm_id) !!}                                            
+                                            {!! Form::hidden('utilized_amount', $utilizedLimit, ['id'=>'utilized_amount']) !!}
+                                            {!! Form::hidden('total_anchor_sub_limit', $anchorSubLimitTotal, ['id'=>'total_anchor_sub_limit']) !!}
+                                            {!! Form::hidden('old_anchor_limit', $pAnchorLimit, ['id'=>'old_anchor_limit']) !!}
+                                            {!! Form::hidden('old_anchor_sub_limit', $pAnchorSubLimit, ['id'=>'old_anchor_sub_limit']) !!}
+                                            {!! Form::hidden('is_reject', 0, ['id'=>'is_reject']) !!}
+                                            {!! Form::hidden('reason_type', $reason_type, ['id'=>'reason_type']) !!}
+                                            
+                                            
                                             <div class="sub-form renew-form " id="subform">
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group INR">
+                                                                    <div class="row">                                                                        
+                                                                        <div class="col-md-6">
+                                                                            <label for="txtCreditPeriod">Total Anchor Limit <span class="error_message_label">*</span> </label>
+                                                                            <div class="relative">
+                                                                            <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                                                            {!! Form::text('anchor_limit',
+                                                                            isset($programData->anchor_limit) ?  number_format($programData->anchor_limit )   : null,
+                                                                            ['class'=>'form-control number_format ', 'id' => 'anchor_limit'])   !!}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>                                                            
                                                             <div class="col-md-12">
                                                                 <div class="form-group">
                                                                     <label for="txtCreditPeriod">
                                                                         {{ trans('backend.add_program.sub_program_detail') }}
                                                                         <span class="error_message_label">*</span>
                                                                     </label>
-                                                                    <div class="block-div clearfix ">
-                                                                        <div class="form-check-inline float-left">
-                                                                            <label class="form-check-label fnt" for="prgm_type">
-                                                                                {!! Form::radio('prgm_type','1',($programData->prgm_type=="1")? "checked" : "", ['class'=>'form-check-input']) !!}
-                                                                                <strong>
-                                                                                    {{ trans('backend.add_program.vendor_finance') }}   
-                                                                                </strong>
-                                                                            </label>
+                                                                    <div class="" style="color:black;">
+                                                                            <div class="form-check-inline">
+                                                                                <label class="form-check-label fnt" for="prgm_type">
+                                                                                    {!! Form::radio('prgm_type','1',($programData->prgm_type=="1")? "checked" : "", ['class'=>'form-check-input'] + $dis_element) !!}
+                                                                                    <strong>
+                                                                                        {{ trans('backend.add_program.vendor_finance') }}   
+                                                                                    </strong>
+                                                                                </label>
+                                                                            </div>
+                                                                            <div class="form-check-inline">
+                                                                                <label class="form-check-label fnt" for="prgm_type">
+                                                                                    {!! Form::radio('prgm_type','2',($programData->prgm_type=="2")? "checked" : "", ['class'=>'form-check-input'] + $dis_element) !!}
+                                                                                    <strong>
+                                                                                        {{ trans('backend.add_program.channel_finance') }}    
+                                                                                    </strong>
+                                                                                </label>
+                                                                            </div>
                                                                         </div>
-                                                                        <div class="form-check-inline float-left">
-                                                                            <label class="form-check-label fnt" for="prgm_type">
-                                                                                {!! Form::radio('prgm_type','2',($programData->prgm_type=="2")? "checked" : "", ['class'=>'form-check-input']) !!}
-                                                                                <strong>
-                                                                                    {{ trans('backend.add_program.channel_finance') }}    
-                                                                                </strong>
-                                                                            </label>
-                                                                        </div>
-                                                                    </div>
                                                                     <label id="prgm_type-error" class="error mb-0" for="prgm_type"></label>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-12" style="margin-top: -40px;">
-                                                        <h5 class="card-title">Terms</h5>
+                                                    <div class="col-md-12">
+                                                        <h5 class="card-title mt-0">Terms</h5>
                                                     </div>
 
                                                     <div class="col-md-12">
@@ -107,7 +156,7 @@
                                                                     <label for="txtCreditPeriod">Product line<span class="error_message_label">*</span> </label>
                                                                     {!! Form::text('product_name',
                                                                     isset($subProgramData->product_name) ? $subProgramData->product_name : null,
-                                                                    ['class'=>'form-control'])   !!}
+                                                                    ['class'=>'form-control']+$dis_element)   !!}
 
                                                                 </div>
                                                                 <div class="col-md-6">
@@ -177,7 +226,7 @@
 
                                                                         <div class="col-md-6 floating" style="display:none; margin-top: -30px;">
                                                                             <label for="interest_linkage" >Base Rate(%)
-                                                                                <span class="error_message_label"></span>
+                                                                                <span class="error_message_label hide"></span>
                                                                             </label>
                                                                             <select id="interest_linkage" class="form-control" name="interest_linkage" tabindex="9">
                                                                                 <option value="">Select Base Rate</option>
@@ -216,7 +265,7 @@
                                                             <label id="prgm_type-error" class="error mb-0" for="interest_rate"></label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-12" style="margin-top: -25px;">
+                                                    <div class="col-md-12">
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <div class="form-group">
@@ -297,7 +346,7 @@
 
                                                                                 {!! Form::text('adhoc_interest_rate',
                                                                                 isset($subProgramData->adhoc_interest_rate) ? $subProgramData->adhoc_interest_rate : null,
-                                                                                ['class'=>'form-control valid_perc percentage','placeholder'=>'Max interset rate',
+                                                                                ['class'=>'form-control  percentage','placeholder'=>'Max interset rate',
                                                                                 'id'=>'employee'])   
                                                                                 !!}
 
@@ -353,7 +402,7 @@
 
                                                                             {!! Form::text('grace_period',
                                                                             isset($subProgramData->grace_period) ? $subProgramData->grace_period : null,
-                                                                            ['class'=>'form-control numberOnly','placeholder'=>'Max interset rate',
+                                                                            ['class'=>'form-control numberOnly','placeholder'=>'Grace Period (In Days)',
                                                                             'id'=>'grace_period'])   
                                                                             !!}
                                                                         </div>
@@ -709,9 +758,17 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="text-right mt-3">
-
+                                            
+                                            <!--<a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>-->
+                                            @if ($reason_type != '' && isset($subProgramData->status) && $subProgramData->status == '0') 
+                                            <input type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program" name="reject_btn" id="reject_btn" value="Reject">
+                                            @else
                                             <a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>
+                                            @endif
+                                            
+                                            @if (\Helpers::checkPermission('save_sub_program') && $action != 'view')
                                             <button type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program"> Save</button>
+                                            @endif
                                         </div>
                                     </div>
 

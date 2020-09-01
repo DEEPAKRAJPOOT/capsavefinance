@@ -31,7 +31,11 @@
                             <small>{{ $financedoc->finc_year }}</small>
                             <ul>
                                <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
-                               <li><a href="{{ Storage::url($financedoc->file_path) }}" download target="_blank">Download Finance Statement</a></li>
+                               <li>
+                               @can('download_fin_stmt_doc')
+                               <a href="{{ route('download_fin_stmt_doc', ['file_id' => $financedoc->file_id]) }}" download="{{$financedoc->file_name}}" target="_blank">Download Finance Statement</a>
+                               @endcan
+                               </li>
                                <li><a href="javascript:void(0)"></a></li>
                             </ul>
                          </div>
@@ -42,9 +46,11 @@
                          @if(!empty($active_json_filename) && !empty($active_xlsx_filename) && file_exists(storage_path("app/public/user/docs/$appId/finance/".$active_xlsx_filename)))
                                <a class="btn btn-success btn-sm" href="{{ Storage::url('user/docs/'.$appId.'/finance/'.$active_xlsx_filename) }}" download>Download</a>
                          @endif 
-                         @can('upload_xlsx_document')
+                         @if(request()->get('view_only'))
+                         @can('upload_xlsx_document_finance')
                                <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document_finance', ['app_id' => request()->get('app_id'),  'file_type' => 'finance']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
                          @endcan
+                         @endif
                          @if(request()->get('view_only') && !empty($pending_rec) && $pending_rec['status'] == 'fail')
                          @php $class_enable="disabled"; @endphp
                                <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
@@ -962,7 +968,11 @@
                                    <div class="clearfix"></div>
                                 <!-- </div> -->
                              </div>
+                             @if (request()->get('view_only'))  
+                             @can('save_finance_detail')
                              <button type="submit" class="btn btn-success btn-sm float-right mt-2 mb-3"> Save</button>
+                             @endcan
+                             @endif
                             </div>
                           </form>
                        </div>

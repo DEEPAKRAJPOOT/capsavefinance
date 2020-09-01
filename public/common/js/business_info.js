@@ -56,9 +56,11 @@ $(document).ready(function(){
 			    }else{
 					$(".span_gst_select").hide();
 					$(".span_gst_text").show();		
+					$("select[name='biz_cin']").hide();
+					$("input[name='biz_cin']").show();
 					setUnsetError(1);
 					$('input[name=is_gst_manual]').val('1');			
-			    	alert('No GST associated with the entered PAN.');
+			    	replaceAlert('No GST associated with the entered PAN.', 'error');
 			    }
 			    $('.isloader').hide();
 			  }
@@ -93,6 +95,7 @@ function fillGSTinput(datas){
 	         active=1;	
             }
 	})
+
     if(active==0){
         alert('PAN is in '+datas[0].authStatus+' mode');            
         return false;         
@@ -105,7 +108,7 @@ function fillGSTinput(datas){
 }
 
 function fillEntity(gstinId){
-	if(gstinId == ''){
+	if(gstinId == '' || messages.configure_api == 0){
 		return false;
 	}
 	$('.isloader').show();
@@ -127,7 +130,7 @@ function fillEntity(gstinId){
 			    	getCIN(res.result.lgnm);
 			    	fillRegisteredAddress(res.result.pradr.adr);
 			    }else{
-			    	alert('No Entity associated with the entered GST.');
+			    	replaceAlert('No Entity associated with the entered GST.', 'error');
 			    	$('.isloader').hide();
 			    }
 			}
@@ -183,7 +186,7 @@ function checkValidation(){
 	unsetError('input[name=biz_pan_number]');
 	unsetError('select[name=biz_gst_number]');
 	unsetError('select[name=biz_cin]');
-	//unsetError('input[name=biz_gst_number_text]');
+	unsetError('input[name=biz_gst_number_text]');
 	unsetError('input[name=biz_entity_name]');
 	unsetError('select[name=biz_type_id]');
 	unsetError('input[name=incorporation_date]');
@@ -264,13 +267,14 @@ function checkValidation(){
 
 	if((biz_gst_number == '' || biz_gst_number == null) && is_gst_manual!=1){
 		setError('select[name=biz_gst_number]', 'Please select GST Number');
-		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
+		flag = false;
+	}else if((biz_gst_number == '' || biz_gst_number == null) && is_gst_manual==1){
+		setError('input[name=biz_gst_number_text]', 'Please enter GST Number');
 		flag = false;
 	}
 
 	/*if($('select[name=biz_cin] option').length > 1 && (biz_cin == '' || biz_cin == null) && is_gst_manual!=1){
 		setError('select[name=biz_cin]', 'Please select CIN Number');
-		//setError('input[name=biz_gst_number_text]', 'Please enter valid GST Number');
 		flag = false;
 	}*/
 	/*else if($('input[name=biz_cin]').val()  == ''){

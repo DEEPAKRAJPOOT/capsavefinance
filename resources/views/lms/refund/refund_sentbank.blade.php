@@ -22,9 +22,14 @@
             <div class="row">
                 <div class="card-body">
                     <div class="row pull-right">
+                    @can('download_sentbank')
                         <div class="col-md-2" id="buttonDiv">
                             <a href="{{ route('download_sentbank') }}" class="btn btn-success btn-sm ml-2" >Download Excel</a>
                         </div>
+                    @endcan
+                    </div>
+                    <div class="row col-6 pull-left">
+                    @include('lms.refund.common.search')
                     </div>
                 </div>
                 <div class="col-12 dataTables_wrapper mt-4">
@@ -39,7 +44,7 @@
                                                     <th>Ref No</th>
                                                     <th>Batch Id</th>
                                                     <th>Customer ID</th>
-                                                    <th>Entity Name</th>     
+                                                    <th>Bussiness Entity Name</th>     
                                                     <th>Bank Detail</th>
                                                     <th>Amount</th>
                                                     <th>Updated At</th>
@@ -51,7 +56,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div id="requestList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                                    <div id="approvedList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>
@@ -62,7 +67,7 @@
     </div>
 </div>
 {!!Helpers::makeIframePopup('lms_view_process_refund','Process Refund', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Trasaction Id', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Transaction Id', 'modal-lg')!!}
 @endsection
 
 @section('jscript')

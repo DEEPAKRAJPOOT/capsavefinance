@@ -109,28 +109,20 @@ class TransactionsRunning extends BaseModel {
 
     public function getOutstandingAttribute(){
         $amount = $this->amount;
-        $settledIntAmt = 0; 
-        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
-            $interestList = Transactions::where('invoice_disbursed_id','=',$this->invoice_disbursed_id)
-            ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
-            ->where('entry_type','=',0)
-            ->whereNotNull('trans_running_id')
-            ->whereYear('trans_date','=',date('y', strtotime($this->trans_date)))
-            ->whereMonth('trans_date','=',date('m', strtotime($this->trans_date)))
-            ->get();
-            foreach ($interestList as $trans) {
-                $canceledAmt = Transactions::where('parent_trans_id','=',$trans->trans_id)
-                ->where('trans_type','=',config('lms.TRANS_TYPE.CANCEL'))
-                ->where('entry_type','=',1)
-                ->sum('amount');
-                if($trans->amount == $trans->outstanding+$canceledAmt)
-                $settledIntAmt += $trans->amount;
-            }
+       
+        $dr = $this->transaction
+            ->where('entry_type','=','0')
+            ->whereNull('payment_id')
+            ->whereNull('link_trans_id')
+            ->whereNull('parent_trans_id')
+            ->sum('amount');
 
-            $amount -= $settledIntAmt;    
-        }
+        $cr = $this->transaction
+            ->where('entry_type','=','1')
+            ->where('trans_type','=',config('lms.TRANS_TYPE.CANCEL'))
+            ->sum('amount');
 
-        return $amount -= $this->transaction->sum('amount');
+        return $amount -= ($dr - $cr); 
     }
 
     /**

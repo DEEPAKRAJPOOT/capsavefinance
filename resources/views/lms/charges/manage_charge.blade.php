@@ -58,8 +58,10 @@
                         </div>
                         <div class="col-md-2">
                              <label>&nbsp;</label><br>
-                       <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addChargesLmsFrame" data-url ="{{route('list_lms_charges',['user_id' => request()->get('user_id')])}}" data-height="500px" data-width="100%" data-placement="top" >
+                        @can('list_lms_charges')
+                            <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addChargesLmsFrame" data-url ="{{route('list_lms_charges',['user_id' => request()->get('user_id')])}}" data-height="500px" data-width="100%" data-placement="top" >
                            <i class="fa fa-plus"></i>Add Manual Charge</a>
+                        @endcan
                       </div>
             </div>
            

@@ -52,7 +52,7 @@ class AdjustmentRequest extends FormRequest
                     $validator->errors()->add("refund.{$key}", 'Field is required against selected transaction');
                 }
                 if ($outstandingAmount < $selectedPayment) {
-                    $validator->errors()->add("refund.{$key}", 'Filed must be less than and equal to the outsanding amount');
+                    $validator->errors()->add("refund.{$key}", 'Filed must be less than and equal to the remaining amount.');
                 }
             }
         });

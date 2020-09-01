@@ -108,7 +108,7 @@ class FinanceController extends Controller {
                         "cr_amount" => ($entry_type == 'credit' ? $fetchedArr['amount'] : ''),
                         "cr_ref_no" => $fetchedArr['ref_no'],
                         "cr_ref_amount" => $fetchedArr['amount'],
-                        "narration" => "Being ".$fetchedArr['trans_type']." booked for ".$voucherDate ." " . $fetchedArr['batch_no'] 
+                        "narration" => $fetchedArr['narration'] 
                     ];
                     if (!$is_first_n_old) {
                         if (!empty($journal[0])) {

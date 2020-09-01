@@ -42,9 +42,13 @@
 											<span class="text-success" id="pan-msg" style="display: none;">
 												<i class="fa fa-check-circle" aria-hidden="true"></i> <i>Verified Successfully</i>
 											</span>
+                                                                                    <div class="relative">
+											@if(config('proin.CONFIGURE_API'))
 											<a href="javascript:void(0);" class="verify-owner-no pan-verify" style="">Verify</a>
-											<input type="text" name="biz_pan_number" value="{{old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10" >
-											@error('biz_pan_number')
+											@endif
+											<input type="text" name="biz_pan_number" value="{{$pan ? $pan : old('biz_pan_number')}}" class="form-control pan-validate" tabindex="1" placeholder="Enter Company Pan" maxlength="10"  @if ($pan) readonly="readonly" @endif >
+                                                                                    </div>
+                                                                                    @error('biz_pan_number')
 												<span class="text-danger error">{{ $message }}</span>
 											@enderror
 										</div>
@@ -53,6 +57,7 @@
 										<div class="form-group password-input">											
 											<!--<a href="javascript:void(0);" class="verify-owner-no">Verify</a>-->
 											<span class="span_gst_select">
+											@if(config('proin.CONFIGURE_API'))
 												<label for="txtPassword">GST Number
 													<span class="mandatory">*</span>
 												</label>
@@ -68,6 +73,15 @@
 												<label for="txtPassword">GST Number</label>
 												<input type="text" name="biz_gst_number_text" value="{{old('biz_gst_number_text')}}" class="form-control" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
 											</span>
+											@else
+											<input type="hidden" name="is_gst_manual" value="1"/>
+											<span class="span_gst_text">
+												<label for="txtPassword">GST Number
+													<span class="mandatory">*</span>
+												</label>
+												<input type="text" name="biz_gst_number_text" value="{{old('biz_gst_number_text')}}" class="form-control" tabindex="2" placeholder="Enter GST Number" maxlength="15" />
+											</span>
+											@endif
 										</div>
 									</div>
 									<div class="col-md-4">
@@ -86,12 +100,14 @@
 								<div class="row">
 									<div class="col-md-4">
 										<div class="form-group password-input" >
-											<label for="txtPassword">Select CIN
-													<span class="mandatory mandatory-biz-cin"></span>
-											</label>
-
-											<select class="form-control" name="biz_cin" tabindex="2">
+											<label for="txtPassword">Select CIN</label>
+											@if(config('proin.CONFIGURE_API'))
+											<select class="form-control" name="biz_cin" tabindex="4">
 											</select>
+											<input type="text" name="biz_cin" value="{{old('biz_cin')}}" class="form-control" style="display: none;" tabindex="4" placeholder="Enter CIN Number" maxlength="21">
+											@else
+											<input type="text" name="biz_cin" value="{{old('biz_cin')}}" class="form-control" tabindex="4" placeholder="Enter CIN Number" maxlength="21">
+											@endif
 										</div>
 									</div>
 									<div class="col-md-4">
@@ -168,9 +184,12 @@
 									<div class="col-md-4">
 										<div class="form-group password-input INR">
 											<label for="txtPassword">Business Turnover
-											</label> <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+											</label> 
+                                                                                    <div class="relative">   
+                                                                                    <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 											<input type="text" name="biz_turnover" value="{{old('biz_turnover')}}" class="form-control number_format" tabindex="9" placeholder="Enter Business Turnover" maxlength="19">
-											@error('biz_turnover')
+                                                                                    </div>	
+                                                                                        @error('biz_turnover')
 												<span class="text-danger error">{{ $message }}</span>
 											@enderror
 										</div>
@@ -201,9 +220,15 @@
 												<label for="txtSupplierName">Product Type <span class="mandatory">*</span>
 												</label><br/>
 												<div id="check_block">
+												@if(array_key_exists(1, $product_types->toArray()))
 												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input  {{ (old('product_id.1.checkbox') == '1')? 'checked': ''}} class="product-type" type="checkbox" value="1" name="product_id[1][checkbox]"> Supply Chain</label>
+												@endif
+												@if(array_key_exists(2, $product_types->toArray()))
 												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input {{ (old('product_id.2.checkbox') == '2')? 'checked': ''}} class="product-type" type="checkbox" value="2" name="product_id[2][checkbox]"> Term Loan</label>
+												@endif
+												@if(array_key_exists(3, $product_types->toArray()))
 												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input {{ (old('product_id.3.checkbox') == '3')? 'checked': ''}} class="product-type" type="checkbox" value="3" name="product_id[3][checkbox]"> Leasing</label>
+												@endif
 												</div>
 												@error('product_id')
 													<span class="text-danger error">{{ $message }}</span>
@@ -215,9 +240,11 @@
 												<label for="txtCreditPeriod">Supply Chain Loan Amount 
 													<span class="mandatory">*</span>
 												</label>
+                                                                                             <div class="relative"> 
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 												<input type="text" name="product_id[1][loan_amount]" value="{{old('product_id.1.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Supply Chain Loan Amount " maxlength="19">
-												<div id="product_type_1_loan"></div>
+                                                                                             </div>	
+                                                                                                <div id="product_type_1_loan"></div>
 												@error('product_id.1.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
@@ -239,9 +266,11 @@
 												<label for="txtCreditPeriod">Term Loan Amount
 													<span class="mandatory">*</span>
 												</label>
+                                                                                             <div class="relative"> 
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 												<input type="text" name="product_id[2][loan_amount]" value="{{old('product_id.2.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Term Loan Amount" maxlength="19">
-												<div id="product_type_2_loan" ></div>
+                                                                                             </div>
+                                                                                            <div id="product_type_2_loan" ></div>
 												@error('product_id.2.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
@@ -263,9 +292,11 @@
 												<label for="txtCreditPeriod">Leasing Loan Amount
 													<span class="mandatory">*</span>
 												</label>
+                                                                                                <div class="relative"> 
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 												<input type="text" name="product_id[3][loan_amount]" value="{{old('product_id.3.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Leasing Loan Amount" maxlength="19">
-												<div id="product_type_3_loan"></div>
+                                                                                                </div>
+                                                                                                <div id="product_type_3_loan"></div>
 												@error('product_id.3.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
 												@enderror
@@ -591,7 +622,8 @@ var messages = {
 	data_not_found: "{{ trans('error_messages.data_not_found') }}",	
 	get_sub_industry: "{{ URL::route('get_sub_industry') }}",
 	please_select: "{{ trans('backend.please_select') }}",
-	token: "{{ csrf_token() }}"
+	token: "{{ csrf_token() }}",
+	configure_api: "{{ config('proin.CONFIGURE_API') }}"
 };
 
 $(document).ready(function () {
@@ -608,5 +640,5 @@ $(document).ready(function () {
 });
 </script>
 <!-- <script src="{{url('common/js/business_information.js?v=1')}}"></script> -->
-<script src="{{url('common/js/business_info.js?v=1.1')}}"></script>
+<script src="{{url('common/js/business_info.js?v=1.2')}}"></script>
 @endsection

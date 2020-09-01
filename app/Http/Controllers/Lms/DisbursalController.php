@@ -164,7 +164,7 @@ class DisbursalController extends Controller
 			        $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
 			        $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenor);
 
-			        if($invoice['program_offer']['payment_frequency'] == 1) {
+			        if($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
 			            $interest = $tInterest;
 			        }
 
@@ -373,14 +373,17 @@ class DisbursalController extends Controller
 			// dd($disbursalData);
 			$intAccrualData = $this->lmsRepo->getAccruedInterestData($whereCond);    
             //dd('rrrrrr', $intAccrualData);
-            return view('lms.disbursal.view_interest_accrual')->with(['data'=> $intAccrualData,'disbursal'=>$disbursalData, 'currentIntRate'=> $curr_int_rate]);
+                        $prgm_data = AppProgramOffer::find($disbursalData->invoice->prgm_offer_id);
+                        $paymentFrequency = $prgm_data ? $prgm_data->payment_frequency : '';
+            return view('lms.disbursal.view_interest_accrual')->with(['data'=> $intAccrualData,'disbursal'=>$disbursalData, 'currentIntRate'=> $curr_int_rate, 'paymentFrequency' => $paymentFrequency]);
         }
 
         public function getCurrentInterestRate($intRate, $prgmOfferId){
         	$prgm_data = AppProgramOffer::find($prgmOfferId);
         	$base_rates = BaseRate::where(['bank_id'=> $prgm_data->bank_id, 'is_active'=> 1])->orderBy('id', 'DESC')->first();
         	$bank_base_rate = ($base_rates)? $base_rates->base_rate: 0;
-            $curr_int_rate = $intRate - $prgm_data->base_rate + $bank_base_rate;
+            // $curr_int_rate = $intRate - $prgm_data->base_rate + $bank_base_rate;
+            $curr_int_rate = $prgm_data->interest_rate - $prgm_data->base_rate + $bank_base_rate;
         	return $curr_int_rate;
         }
 

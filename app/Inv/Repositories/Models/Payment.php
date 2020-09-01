@@ -9,8 +9,12 @@ use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payment extends BaseModel {
+    
+    use SoftDeletes;
+    
     /* The database table used by the model.
      *
      * @var string
@@ -25,6 +29,7 @@ class Payment extends BaseModel {
      */
     protected $primaryKey = 'payment_id';
 
+    protected $softDelete = true;
     /**
      * Maintain created_at and updated_at automatically
      *
@@ -74,6 +79,7 @@ class Payment extends BaseModel {
         'created_by',
         'updated_at',
         'updated_by',
+        'deleted_at',
     ];
     
     public function biz() {
@@ -95,6 +101,10 @@ class Payment extends BaseModel {
     public function creator(){
         return $this->belongsTo('App\Inv\Repositories\Models\User','created_by','user_id');
     }
+    
+    public function userFile(){
+        return $this->hasOne('App\Inv\Repositories\Models\UserFile','file_id','file_id');
+    }    
 
     public function getBusinessName() {
         return $this->belongsTo(Business::class, 'biz_id');
@@ -130,8 +140,14 @@ class Payment extends BaseModel {
      * 
      * @return type mixed
      */
-    public static function getPayments(array $where = []) {
-        $res = self::where($where)->get();
+    public static function getPayments(array $where = [], $orderBy = []) {
+        $res = self::where($where);
+        if(!empty($orderBy)){
+            foreach($orderBy as $key => $val){
+                $res = $res->orderBy($key, $val);
+            }
+        }
+        $res = $res->get();
         return $res->isEmpty() ? [] :  $res;
     }
 
@@ -168,9 +184,13 @@ class Payment extends BaseModel {
     }   
 
     public function getPaymentModeAttribute() {
-        $payment_type = $this->payment_type;
-        $payModes = config('payment.type') ?? [];
-        $mode_of_pay = $payModes[$payment_type] ?? NULL;
+        if($this->action_type == 1){
+            $payment_type = $this->payment_type;
+            $payModes = config('payment.type') ?? [];
+            $mode_of_pay = $payModes[$payment_type] ?? NULL;
+        }else{
+            $mode_of_pay = $this->paymentname;
+        }
         return $mode_of_pay;
     }
 
@@ -184,8 +204,11 @@ class Payment extends BaseModel {
                 $attr = $this->cheque_no;
                 break;
             case '3':
-               $attr = $this->unr_no;
+                $attr = $this->unr_no;
                 break;
+            case '4':
+                $attr = $this->unr_no;
+                break;    
             default:
                $attr = '';
                 break;
@@ -207,5 +230,60 @@ class Payment extends BaseModel {
     public static function getAllManualTransaction()
     {
           return self::with(['biz','user', 'transType', 'transaction'])->where('trans_type','!=',NULL)->orderBy('payment_id','DESC');
+    }
+
+    public function getisApportPayValidAttribute (){
+        $isValid = false;
+        $error = '';
+        $lastSettledPaymentDate = self::where('user_id',$this->user_id)
+        ->where('is_settled','1')->max('date_of_payment');
+        
+        $validPayment = self::where('user_id',$this->user_id)
+        ->where('is_settled','0')
+        ->where('action_type','1');
+
+        if($lastSettledPaymentDate){
+            $validPayment = $validPayment->whereDate('date_of_payment','>=',$lastSettledPaymentDate);
+            if(strtotime($lastSettledPaymentDate) > strtotime($this->date_of_payment)){
+                $error = 'Invalid Payment: The backdated payment from the last settled payment!';
+            }
+        }
+
+        $validPaymentId = $validPayment->orderBy('date_of_payment','asc')
+        ->orderBy('payment_id','asc')
+        ->first();
+
+        if($validPaymentId && $validPaymentId->payment_id == $this->payment_id ){
+            $isValid = true;
+        }
+        return ['isValid' => $isValid, 'error' => $error];
+    }
+    
+    /**
+     * Get all TDS transaction
+     * 
+     * @param type $whereCondition
+     * @param type $whereRawCondition
+     * @return type
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getAllTdsTransaction($whereCondition=[], $whereRawCondition = NULL) {
+        if (!is_array($whereCondition)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+        $query = self::select('payments.user_id', 'trans_type', 'action_type', 'amount', 'date_of_payment', 'tds_certificate_no', 'file_id', 'payments.created_at as trans_date', 'payments.created_by', 'biz.biz_entity_name', 'users.f_name', 'users.l_name', 'mst_trans_type.trans_name')
+                        ->join('biz', 'biz.biz_id', '=', 'payments.biz_id')
+                        ->join('users', 'payments.created_by', '=', 'users.user_id')
+                        ->join('mst_trans_type', 'mst_trans_type.id', '=', 'payments.trans_type')
+                        ->where('action_type', 3)
+                        ->where('file_id', 0);
+                
+        if (!empty($whereCondition)) {
+            $query->where('payments.user_id', $whereCondition['user_id']);
+        }
+        if (!empty($whereRawCondition)) {
+            $query->whereRaw($whereRawCondition);
+        }
+        return $query;
     }
 }

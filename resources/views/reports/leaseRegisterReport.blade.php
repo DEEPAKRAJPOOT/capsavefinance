@@ -30,18 +30,22 @@
                 border-right:#c5c5c5 solid 1px;
                 color:#ffffff;
             }
-            table td{
+            table#style_Req td{
                 border-right:#c5c5c5 solid 1px;
                 border-bottom:#c5c5c5 solid 1px;
             }
             td,th{
-                font-size: 9px !important;
+                font-size: <?php echo count($pdfArr[0]) > 8 ? '8px' : '10px'; ?> !important;
                 padding:5px;
+                text-align: center;
+            }
+            #filterTable td,th{
+                text-align: left;
             }
             .pagenum:before {
                 content: counter(page);
             }
-            div.breakNow { page-break-inside:avoid; page-break-after:always; }
+            /*div.breakNow { page-break-inside:avoid; page-break-after:always; }*/
         </style>
 
     </head>
@@ -58,21 +62,54 @@
             <span class="pagenum"></span><b> |</b> CFPL
         </footer>
         <main>
+            <div  align="center">
+                <p><b>CAPSAVE FINANCE PRIVATE LIMITED</b></p>
+                <br>
+            </div>
+            @if(!empty($filter))
+            <table class="table  table-td-right" id="filterTable">
+                <tbody>
+                    @if(!empty($filter['userInfo']))
+                    <tr>
+                        <td><strong>Business Name</strong></td>
+                        <td> {{$filter['userInfo']->biz->biz_entity_name}}    </td> 
+                        <td><strong>Full Name</strong></td>
+                        <td>{{$filter['userInfo']->f_name}} {{$filter['userInfo']->m_name}} {{$filter['userInfo']->l_name}}</td> 
+
+                    </tr>
+                    <tr>
+                        <td><strong>Email</strong></td>
+                        <td>{{$filter['userInfo']->email}}    </td> 
+                        <td><strong>Mobile</strong></td>
+                        <td>{{$filter['userInfo']->mobile_no}} </td> 
+                    </tr>
+                    @endif
+                    @if($filter['from_date'] && $filter['to_date'])
+                    <tr>
+                        <td><strong>From Date</strong></td>
+                        <td>{{$filter['from_date']}}</td> 
+                        <td><strong>To Date</strong></td>
+                        <td>{{$filter['to_date']}}</td> 
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
+            @endif
             <div class="breakNow">
-                <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
+                <table border="0" id="style_Req" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
                        <tr>
                         @php
-                           $header_cols = array_keys($leaseRegister[0]);
+                           $header_cols = array_keys($pdfArr[0]);
                            foreach($header_cols as $key) {
                              $key = ucwords(str_replace('_', ' ', $key));
                              echo "<th>".$key."</th>";
                            }
                         @endphp
                        </tr>
-                       @foreach($leaseRegister as $lease)
+                       @foreach($pdfArr as $val)
                         <tr>
                         @php
-                           foreach($lease as $rec) {
+                           foreach($val as $rec) {
                              echo "<td>".$rec."</td>";
                            }
                         @endphp

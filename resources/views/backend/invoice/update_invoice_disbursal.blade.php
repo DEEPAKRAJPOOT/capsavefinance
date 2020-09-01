@@ -33,8 +33,8 @@
 <script>
 
 $(document).ready(function () {
-	var date = new Date();
-	date.setDate(date.getDate() - 60);
+	var date = new Date("{{ date('Y-m-d', strtotime($disbursal->disburse_date)) }}");
+	// date.setDate(date.getDate() - 60);
     $('#funded_date').datetimepicker('setStartDate',  date);
 
 	$('#manualDisburse').validate({ // initialize the plugin
@@ -65,7 +65,7 @@ $(document).ready(function () {
 
 	$('#manualDisburse').validate();
 
-	$("#savedocument").click(function() {
+	$("#submitManualDisburse").click(function() {
 		if($('#manualDisburse').valid()) {
 			$('form#manualDisburse').submit();
 			$("#submitManualDisburse").attr("disabled","disabled");

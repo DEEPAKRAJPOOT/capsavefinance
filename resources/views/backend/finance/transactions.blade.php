@@ -24,7 +24,7 @@
                     </div>
                     @if(!empty($latest_batch_no))
                     <div class="col-sm-6" style="text-align: right">
-                        <a href="{{route('export_txns')}}?batch_no={{$latest_batch_no}}" class="btn btn-success col-sm-2" id="export_txns">Export</a>
+                        <a href="{{route('export_txns', ['batch_no' => $latest_batch_no])}}" class="btn btn-success col-sm-2" id="export_txns">Export</a>
                     </div>
                     @endif
                 </div>

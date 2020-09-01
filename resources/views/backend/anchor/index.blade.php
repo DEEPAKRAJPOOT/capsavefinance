@@ -21,6 +21,31 @@
         <div class="card-body">
            
             <div class="row">
+                
+                <div class="col-sm-4">
+                   <!-- 
+                    {!!
+                    Form::select('pan',
+                    [''=>'Select Pan'],
+                    null,
+                    array('id' => 'pan',
+                    'class'=>'form-control'))
+                    !!}
+                    -->
+                   
+                    {!!
+                    Form::text('by_email',                    
+                    null,
+                    array('id' => 'by_email',
+                    'class'=>'form-control', 'placeholder'=>'Search By name and email'))
+                    !!}
+                  
+                </div>
+                
+                <div class="col-sm-2">
+                    <button id="anchUserListSearchB" type="button" class="btn  btn-success btn-sm">Search</button>
+                </div>
+                
                 <div class="col-sm-12">
 
             <div class="head-sec">

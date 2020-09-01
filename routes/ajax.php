@@ -1052,7 +1052,7 @@ Route::group(
         'uses' => 'AjaxController@getRepaymentAmount'
     ]); 
 
-    Route::get('get_remaining_charges', [
+    Route::post('get_remaining_charges', [
         'as' => 'get_remaining_charges',
         'uses' => 'AjaxController@getRemainingCharges'
     ]);  
@@ -1084,7 +1084,7 @@ Route::group(
         'uses' => 'AjaxController@getSoaClientDetails'
     ]);
 
-    Route::get('get_all_unsettled_trans_type',[
+    Route::post('get_all_unsettled_trans_type',[
         'as' => 'get_all_unsettled_trans_type',
         'uses' => 'AjaxController@getAllUnsettledTransType'
     ]);
@@ -1107,8 +1107,23 @@ Route::group(
     Route::post('update-eod-batch-process', [
         'as' => 'update_eod_batch_process',
         'uses' => 'AjaxController@updateEodProcessStatus'
-    ]);        
+    ]);    
+
+    Route::post('get_eod_list', [
+        'as' => 'get_eod_list',
+        'uses' => 'AjaxController@getEodList'
+    ]);
     
+    Route::post('get_eod_process_list', [
+        'as' => 'get_eod_process_list',
+        'uses' => 'AjaxController@getEodProcessList'
+    ]);
+    
+    Route::post('start_system',[
+        'as' => 'start_eod_system',
+        'uses' => 'AjaxController@startEodSystem',
+    ]);
+
     Route::post('check-bank-acc-exist',[
         'as' => 'check_bank_acc_exist',
         'uses' => 'AjaxController@checkBankAccExist'
@@ -1147,5 +1162,42 @@ Route::group(
         ]
     );
 
+    Route::get('get_unsettled_payments',[
+        'as' => 'get_unsettled_payments',
+        'uses' => 'AjaxController@unsettledPayments'
+        ]
+    );
+
+    Route::post('check-exist-anchor-lead',[
+        'as' => 'check_exist_anchor_lead',
+        'uses' => 'AjaxController@checkExistAnchorLead'
+        ]
+    );  
+
+    Route::post('check-bank-acc-ifsc-exist',[
+        'as' => 'check_bank_acc_ifsc_exist',
+        'uses' => 'AjaxController@checkBankAccWithIfscExist'
+    ]);
+
+    Route::post('/get_cibil_report_lms', [
+        'as' => 'get_cibil_report_lms',
+        'uses' => 'AjaxController@getCibilReportLms',
+    ]);
+    
+    Route::post('get_all_tds',[
+        'as' => 'get_all_tds',
+        'uses' => 'AjaxController@tds'
+        ]
+    );
+
+    Route::post('/change_agency_user_status', [
+        'as' => 'change_agency_user_status',
+        'uses' => 'AjaxController@changeUsersAgencyStatus',
+    ]);
+
+    Route::post('/get_ajax_tds_list', [
+        'as' => 'get_ajax_tds_list',
+        'uses' => 'AjaxController@getTDSList',
+    ]);
 
 });

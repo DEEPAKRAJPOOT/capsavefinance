@@ -49,9 +49,11 @@
                                   <input type="hidden" name="capsave_state" id="capsave_state" value="">
                             </div>
                           </div>
+                            @can('save_user_invoice_location')
                              <div class="form-group mb-0 mt-1 d-flex justify-content-between pull-right">
                                  <input type="submit" class="btn btn-success btn-sm" name="user_invoice_location" id="user_invoice_location" value="Submit"/>
                             </div>
+                            @endcan
                     </form>
                 </div>
             </div>

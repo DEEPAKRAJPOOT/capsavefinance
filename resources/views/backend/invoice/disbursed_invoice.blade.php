@@ -38,18 +38,20 @@ $role = (isset($role)) ? $role :     11;
                                 <div class="card-body">
                                     <div class="row">
 
-                                        <div class="col-md-5">
+                                        <div class="col-md-4">
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                         </div>
-                                        <div class="col-md-4">
-                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by business name, Invoice number ">
+                                        <div class="col-md-5">
+                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number">
                                         </div> 
                                         <div class="col-md-1">
                                             <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
                                         </div>  
                                         <div class="col-md-2" id="buttonDiv">
                                             @php if($role!=11) { @endphp
-                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank</a>
+                                            @can('disburse_confirm')
+                                                <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank</a>
+                                            @endcan
                                             @php  } @endphp
                                             <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="560px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;" >Disburse Trigger</a>
                                         </div>

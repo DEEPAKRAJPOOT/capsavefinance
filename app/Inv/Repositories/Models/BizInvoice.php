@@ -166,12 +166,12 @@ public static function saveBulkInvoice($arrInvoice)
         {
             $res  = User::where('user_id',$id)->first();
 
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['bulkUpload', 'business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail'])->orderBy('invoice_id', 'DESC');
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['bulkUpload', 'business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail', 'supplier.apps.disbursed_invoices.invoice_disbursed'])->orderBy('invoice_id', 'DESC');
 
         }
         else
         {
-           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail'])->orderBy('invoice_id', 'DESC');
+           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail', 'supplier.app.disbursed_invoices.invoice_disbursed'])->orderBy('invoice_id', 'DESC');
         }
      } 
      
@@ -414,7 +414,7 @@ public static function saveBulkInvoice($arrInvoice)
 
     public static function getAllUserBatchInvoice($data)
     {
-        return self::with('app.acceptedOffer')->with('invoice_disbursed')
+        return self::with('app.acceptedOffer')->with('invoice_disbursed')->with('program')
             ->whereHas('invoice_disbursed.disbursal', function($query) use ($data) {
                     $query->where($data);
                 })
@@ -486,6 +486,9 @@ public static function saveBulkInvoice($arrInvoice)
      }
      
    
-     
+    public static function getInvoiceUtilizedAmount($attr)
+    {
+        return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id'],'app_id' =>$attr['app_id']])->sum('invoice_margin_amount');       
+    }      
     
 }

@@ -16,12 +16,24 @@ class CheckBackendLeadAccess extends BaseAuthorization
      */
     public function handle($request, Closure $next)
     {
-         if ($this->gate->denies($request->route()->getName())) {
-            return response()->view('errors.403', [], 403);
+        if ($request->ajax()) {
+            if ($this->gate->denies($request->route()->getName())) {
+            //if ($request->route()->getName() == 'update_invoice_approve') {
+                $response = ['access_denied' => 1];
+                return response()->json($response);
+            }
+        } else { 
+            if ($this->gate->denies($request->route()->getName())) {
+                return response()->view('errors.403', [], 403);
+            }
         }
-        if ($request->has('app_id')) {
-            $isViewOnly = \Helpers::isAccessViewOnly($request->get('app_id'));                        
+        
+        if ($request->has('app_id') && !empty($request->get('app_id'))) {
+            $isViewOnly = \Helpers::isAccessViewOnly($request->get('app_id'));             
             $request->request->add(['view_only' => $isViewOnly]);
+            if ($request->method() == "POST" && $isViewOnly != 1) {                
+                return response()->view('errors.403', [], 403);
+            }
         }        
         return $next($request);
     }

@@ -58,6 +58,9 @@ class Company extends BaseModel {
         'charge_prefix',
         'interest_prefix',
         'is_reg',
+        'utility_code',
+        'member_id',
+        'member_branch_code',
         'created_at',
         'updated_at',
         'created_by',
@@ -188,7 +191,7 @@ class Company extends BaseModel {
        $addr = self::select('mst_company.comp_addr_id','company_id','cmp_name','cmp_add','cmp_email','cmp_mobile','pincode','gst_no','pan_no','cin_no','state','city', 'bank_account_id', 'bank_name', 'acc_name', 'acc_no', 'branch_name', 'ifsc_code')
        ->leftjoin('user_bank_account as uba', 'uba.comp_addr_id', '=', 'mst_company.comp_addr_id')
        ->leftjoin('mst_bank as mb', 'uba.bank_id', '=', 'mb.id')
-       ->where(['mst_company.is_active' => 1, 'mst_company.is_reg' => 1])
+       ->where(['mst_company.is_active' => 1, 'mst_company.is_reg' => 1, 'uba.is_default' => 1])
                 ->get();
         return $addr ? : false;
     }

@@ -3,9 +3,14 @@
 namespace App\Http\Requests\Lms;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 
 class BankAccountRequest extends FormRequest {
 
+    public function __construct(InvAppRepoInterface $appRepo){
+        $this->appRepo = $appRepo;
+     }
+   
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -23,15 +28,50 @@ class BankAccountRequest extends FormRequest {
      */
     public function rules()
     {
-        return [
+        // dd($this->request);
+        $rules = [
             'acc_name' => 'required|regex:/^[a-zA-Z ]+$/|max:50',
-            'acc_no' => 'required|numeric|digits_between:9,18',
-            'confim_acc_no' => 'required|numeric|digits_between:9,18|same:acc_no',
+            'acc_no' => 'required|alpha_num|min:6|max:18'
+        ];
+        if (empty(request()->get('bank_account_id')) ) {
+            $rules['confim_acc_no'] = 'required|alpha_num|min:6|max:18|same:acc_no';
+        }
+        $rules += [
             'bank_id' => 'required',
             'ifsc_code' => 'required|alpha_num|max:11',
             'branch_name' => 'required|regex:/^[a-zA-Z0-9 -]+$/|max:30',
             'is_active' => 'required',
         ];
+        
+        return $rules;
+    }
+
+    public function withValidator($validator){
+        $formData = $validator->getData();
+        
+        
+        $validator->after(function ($validator) use ($formData) {
+            $acc_no = $formData['acc_no'];
+            $ifsc_code = $formData['ifsc_code'];
+            $bank_account_id = NULL;
+            if(!empty($formData['bank_account_id'])){
+                $bank_account_id = \Crypt::decrypt($formData['bank_account_id']);
+            }
+            
+            $status = $this->appRepo->getBankAccByCompany(['acc_no' => $acc_no, 'ifsc_code' => $ifsc_code]);
+
+            // dd($bank_account_id,$status);
+
+            if(!empty($status) && ((!empty($bank_account_id) && $status->bank_account_id != $bank_account_id) || $bank_account_id == NULL)){
+                $validator->errors()->add("acc_no", 'This account number is already exists with entered IFSC Code.');
+            }
+ 
+            // if($status){
+            //     $validator->errors()->add("acc_no", 'This account number is already exists with entered IFSC Code.');
+            // }
+            
+        });
+        
     }
 
     public function messages()

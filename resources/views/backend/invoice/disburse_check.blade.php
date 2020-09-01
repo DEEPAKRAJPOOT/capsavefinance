@@ -26,10 +26,14 @@ foreach ($apps as $app) {
 
 		$tMargin = (($invoice['invoice_approve_amount']*$margin)/100);
 		$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
-		if($invoice['program_offer']['payment_frequency'] == 1) {
-			$interest = $fundedAmount * $tenor * (($interestRate/100) / 360) ;                
+		if($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
+			$interest = $fundedAmount * $tenor * (($interestRate/100) / config('common.DCC')) ;                
         }
-		$finalDisburseAmt += round($fundedAmount - $interest, 2);
+            if ($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {		
+                $finalDisburseAmt += round($fundedAmount - $interest, 2);
+            } else {
+                $finalDisburseAmt += round($fundedAmount, 2);
+            }
 	}
 }
 @endphp
@@ -48,7 +52,7 @@ foreach ($apps as $app) {
 		</div>
 		<div class="col-4">
 			<div class="form-group">
-				<label for="nonFactoredAmount"># Amount Disburse</label>
+				<label for="nonFactoredAmount"># Disburse/Principal Amount</label>
 				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ number_format((float)$finalDisburseAmt, 2, '.', '') }}">
 			</div>
 		</div>
@@ -103,10 +107,10 @@ foreach ($apps as $app) {
 									<th width="20%">Bank Detail</th>
 									<th width="15%">Total Invoice</th>
 									<th width="15%">Total Invoice Amt.</th>
-									<th width="15%">Total Disburse Amt.</th>
+									<th width="15%">Total Disburse/Principal Amt</th>
 									<th width="15%">Total Margin</th>
 									<th width="15%">Total Interest</th>
-									<th width="30%">Total Actual Disburse Amt.</th>
+									<th width="30%">Total Actual Disburse/Principal Amt.</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -203,14 +207,18 @@ foreach ($apps as $app) {
 									        $datediff = abs($now - $your_date);
 									        $tenor = round($datediff / (60 * 60 * 24));
 
-
-
+                                                                                       
+                                                                                    
 											$tMargin = (($invoice['invoice_approve_amount']*$margin)/100);
 											$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
-											if($invoice['program_offer']['payment_frequency'] == 1) {
-    											$interest = $fundedAmount * $tenor * (($interestRate/100) / 360) ;                
-						                    }
+											if ($invoice['program_offer']['payment_frequency'] == 1 ) {
+    											$interest = $fundedAmount * $tenor * (($interestRate/100) / config('common.DCC')) ;                
+                                                                                        }
+                                                                                        if ($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
 											$disburseAmount += round($fundedAmount - $interest, 2);
+                                                                                        } else {
+                                                                                        $disburseAmount += round($fundedAmount, 2);
+                                                                                        }
 											$totalMargin += round($tMargin, 2);
 											$totalInterest += round($interest, 2);
 										}

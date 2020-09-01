@@ -48,16 +48,17 @@ class ApplicationController extends Controller
     {
         $userId  = Session::has('userId') ? Session::get('userId') : (\Auth::user() ? \Auth::user()->user_id : 0);
         if (!$request->get('app_id')) {            
-            $where=[];
-            $where['user_id'] = $userId;
-            $where['status'] = [0,1];
-            $appData = $this->appRepo->getApplicationsData($where);
-
+            //$where=[];
+            //$where['user_id'] = $userId;
+            //$where['status'] = [0,1];
+            //$appData = $this->appRepo->getApplicationsData($where);
+            $appData = $this->appRepo->checkAppByPan($userId);
             $userData = $this->userRepo->getfullUserDetail($userId);           
             $isAnchorLead = $userData && !empty($userData->anchor_id);
 
-            if (isset($appData[0])) {
-                Session::flash('message', 'You can\'t create a new application before sanctions.');
+            //if (isset($appData[0])) {
+            if ($appData) {
+                Session::flash('message', trans('error_messages.active_app_check'));
                 return redirect()->back();
             }
         }
@@ -74,6 +75,9 @@ class ApplicationController extends Controller
         $constitutionList = $this->appRepo->getConstitutionDropDown()->toArray();
         $segmentList = $this->appRepo->getSegmentDropDown()->toArray();
 
+        $anchUserData = $this->userRepo->getAnchorUserData(['user_id' => $userId]);        
+        $pan = isset($anchUserData[0]) ? $anchUserData[0]->pan_no : '';
+        
         if($request->has('__signature') && $request->has('biz_id')){
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
             $app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
@@ -92,7 +96,7 @@ class ApplicationController extends Controller
                         ->with('constitutionList',$constitutionList)
                         ->with('segmentList',$segmentList);
         }else{
-            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types','industryList','constitutionList', 'segmentList']));
+            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types','industryList','constitutionList', 'segmentList', 'pan']));
         }
     }
 
@@ -100,7 +104,16 @@ class ApplicationController extends Controller
     {
         try {
             $arrFileData = $request->all();
-
+            
+            $whereCond=[];
+            //$whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];      
+            $whereCond[] = ['user_id', '=', Auth::user()->user_id];            
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);            
+            if (isset($anchUserData[0]) && $anchUserData[0]->pan_no != $arrFileData['biz_pan_number']) {                
+                Session::flash('message', 'You can\'t changed the registered pan number.');
+                return redirect()->back();
+            }
+            
             if(request()->is_gst_manual == 1){
               $arrFileData['biz_gst_number'] = request()->get('biz_gst_number_text');
             }
@@ -110,6 +123,13 @@ class ApplicationController extends Controller
                 $business_info = $this->appRepo->updateCompanyDetail($arrFileData, $bizId, Auth::user()->user_id);
 
                 if ($business_info) {
+                    
+                    //Update Anchor Pan and Biz Id
+                    $arrAnchUser=[];
+                    //$arrAnchUser['pan_no'] = $arrFileData['biz_pan_number'];
+                    $arrAnchUser['biz_id'] = $bizId;           
+                    $this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => Auth::user()->user_id]); 
+                
                     Session::flash('message',trans('success_messages.update_company_detail_successfully'));
                     return redirect()->route('promoter-detail',['app_id' =>  $request->app_id, 'biz_id' => $bizId, 'app_status'=>0]);
                 } else {
@@ -123,6 +143,13 @@ class ApplicationController extends Controller
                 
                             
                 if ($business_info) {
+                    
+                    //Update Anchor Pan and Biz Id
+                    $arrAnchUser=[];
+                    //$arrAnchUser['pan_no'] = $arrFileData['biz_pan_number'];
+                    $arrAnchUser['biz_id'] = $business_info['biz_id'];           
+                    $this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => Auth::user()->user_id]); 
+                    
                     //Add application workflow stages
                     Helpers::updateWfStage('biz_info', $business_info['app_id'], $wf_status = 1);
                     
@@ -158,7 +185,6 @@ class ApplicationController extends Controller
         $attribute['biz_id'] = $bizId;
         $attribute['app_id'] = $appId;
         $getCin = $this->userRepo->getCinByUserId($bizId);
-
         $getProductType  =  $this->userRepo->checkLeasingProduct($appId);
        if($getCin==false)
        {
@@ -278,7 +304,8 @@ class ApplicationController extends Controller
         $bankdata = State::getBankData();
         $gst_no = $gstdata['pan_gst_hash'] ?? '';
         $appData = $this->appRepo->getAppDataByAppId($appId);
-    
+        $userId =  $appData->user_id;
+        
         if ($appId > 0) {
             $requiredDocs = $this->docRepo->findRequiredDocs($userId, $appId);
           
@@ -515,19 +542,26 @@ class ApplicationController extends Controller
             $userId = Auth::user()->user_id;
             // $response = $this->docRepo->isUploadedCheck($userId, $appId);
             // if ($response->count() < 1) {
-                //$appData = $this->appRepo->getAppData($appId);
-                //$curStatus = $appData ? $appData->status : 0;                        
+                $appData = $this->appRepo->getAppData($appId);
+                $curStatus = $appData ? $appData->curr_status_id : 0;                        
                 $currentStage = Helpers::getCurrentWfStage($appId);
-                if ($currentStage && $currentStage->order_no < 4 ) {                                  
+                $appStatusList = [
+                    config('common.mst_status_id.APP_REJECTED'),
+                    config('common.mst_status_id.APP_CANCEL'),
+                    config('common.mst_status_id.APP_HOLD'),
+                    config('common.mst_status_id.APP_DATA_PENDING')
+                ];                
+                if ($currentStage && $currentStage->order_no < 4 && !in_array($curStatus, $appStatusList) ) {                                  
                     $this->appRepo->updateAppData($appId, ['status' => 1]);
+                    Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.COMPLETED'));
                 }                
                 
                 
                 Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
              
                 //Add application workflow stages                
-                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);                
-                
+                Helpers::updateWfStage('app_submitted', $appId, $wf_status = 1);
+                                
                 //Insert Pre Offer Documents
                 $prgmDocsWhere = [];
                 $prgmDocsWhere['stage_code'] = 'pre_offer';
@@ -557,7 +591,25 @@ class ApplicationController extends Controller
      */
     public function index()
     {
-       return view('frontend.application.index');   
+       $appStatus = $this->masterRepo->getAppStatus($status_type=1);
+       $appStatusList = [];       
+                
+       $selStatusList = [
+            config('common.mst_status_id.APP_INCOMPLETE'),
+            config('common.mst_status_id.COMPLETED'),            
+            config('common.mst_status_id.APP_SANCTIONED'),           
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            config('common.mst_status_id.APP_HOLD'),
+            config('common.mst_status_id.APP_DATA_PENDING'),           
+            config('common.mst_status_id.APP_CLOSED')
+        ];
+       foreach($appStatus as $statusId=>$appStatusName) {
+           if (in_array($statusId, $selStatusList)) {
+                $appStatusList[$statusId] = $appStatusName;
+           }
+       }
+       return view('frontend.application.index')->with('appStatusList', $appStatusList);   
               
     }
 

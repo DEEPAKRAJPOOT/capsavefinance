@@ -119,11 +119,12 @@ class RoleUser extends BaseModel
      */
     public static function getAllData()
     {
-         $arr = self::select('users.*','users.is_active as u_active','roles.*', 
+         $arr = self::select('users.*','users.is_active as u_active','users.created_at as   created_on','users.updated_by as updated','roles.*', 
                  DB::raw("CONCAT_WS(' ', rta_rptmgr.f_name, rta_rptmgr.l_name) AS reporting_mgr"))
                  ->join('users', 'role_user.user_id', '=', 'users.user_id')
                 ->join('roles', 'roles.id', '=', 'role_user.role_id')
                  ->leftJoin('users as rptmgr', 'users.parent_id', '=', 'rptmgr.user_id')
+                 ->whereIn('roles.id', [4, 5, 6, 7, 8, 9, 10, 13, 14])
                  ->where('roles.is_editable','!=',0);
                 return $arr;
     }

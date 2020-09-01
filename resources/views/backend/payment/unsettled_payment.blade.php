@@ -27,10 +27,10 @@
                 <div class="row">
                   <div class="col-md-4">
                     <label class="float-left">Search By Business Name / Customer Id </label> 
-                    <input type="text" name="search_bus" id="search_bus" class="form-control form-control-sm searchBusiness" placeholder="Type your Business Name">
+                    <input type="text" name="search_bus" id="search_bus" value="{{ $customer['customer_id'] ?? '' }}" class="form-control form-control-sm searchBusiness" placeholder="Type your Business Name">
                     <span id="search_bus_error" class="error"></span>
-                    <input type="hidden" name="customer_id" id="customer_id" class="form-control form-control-sm">
-                    <input type="hidden" name="user_id" id="user_id" class="form-control form-control-sm">
+                    <input type="hidden" name="customer_id" value="{{ $customer['customer_id']  ?? ''}}" id="customer_id" class="form-control form-control-sm">
+                    <input type="hidden" name="user_id" value="{{ $customer['user_id']  ?? '' }}" id="user_id" class="form-control form-control-sm">
                   </div>
                   <div class="col-md-2">
                     <label>&nbsp;</label><br>
@@ -55,6 +55,7 @@
                                   <th>Business Name</th>
                                   <th>Amount</th>
                                   <th>Txn Type</th>
+                                  <th>Payment Date </th>
                                   <th>Updated By</th>
                                   <th>Action</th> 
                                 </tr>

@@ -109,32 +109,30 @@
                                 <table class="table text-center  table-hover">
                                     <thead class="thead-primary">
                                         <tr>
-                                            <td class="sub-title-bg" colspan="4">Applications</td>
+                                            <td class="sub-title-bg" colspan="6">Applications</td>
                                         </tr>
                                         <tr>
                                             <th class="text-left">Application Id.</th>
                                             <th>Entity Name</th>
+                                            <th>Email</th>
+                                            <th>Pan</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
 
-                                        @if(count($application)>0)
+                                        @if(count($application)>0)                                        
                                         @foreach ($application AS $app)
                                         <tr>
                                             <td class="text-left">@if($app['app_id']) {{ \Helpers::formatIdWithPrefix($app['app_id'], 'APP') }} @endif</td>
                                             <td> {{ isset($app['biz_entity_name']) ? $app['biz_entity_name'] : ''}}</td>
+                                            <td> {{ isset($app['email']) ? $app['email'] : ''}}</td>
+                                            <td> {{ isset($app['pan_no']) ? $app['pan_no'] : ''}}</td>
                                             <td>
-                                                @if($app['status'] == 1)
-                                                <button type="button" class="btn btn-success btn-sm">Complete</button>
-                                                @elseif($app['status'] == 2)
-                                                <button type="button" class="btn btn-success btn-sm">Sanctioned</button>
-                                                @elseif($app['status'] == 3)
-                                                <button type="button" class="btn btn-success btn-sm">Closed</button>                                                
-                                                @else
-                                                <button type="button" class="btn btn-info btn-sm">Not Complete</button>
-                                                @endif 
+                                                @if (isset($app['status_name']) && !empty(isset($app['status_name'])))
+                                                <button type="button" class="btn {{ config('common.APP_STATUS_BTN_CLASS.'.$app['curr_status_id']) ? config('common.APP_STATUS_BTN_CLASS.'.$app['curr_status_id']) : 'btn-success' }} btn-sm">{{ $app['status_name'] }}</button>                                                
+                                                @endif
                                             </td>
                                             <td><div class="d-flex inline-action-btn justify-content-center">
                                              @can('company_details')

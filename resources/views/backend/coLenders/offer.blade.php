@@ -71,7 +71,7 @@ tr.border_bottom td {
                                                     <td>{{$supplyOffer->prgm_limit_amt}}</td>
                                                     <td><b>Grace Period (Days): </b></td>
                                                     <td>{{$supplyOffer->grace_period}}</td>
-                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($supplyOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($supplyOffer->status == 1)? 'Accepted': 'Pending'}}</label></td>
+                                                    <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($supplyOffer->status == 1)? 'badge-success': 'badge-warning'}} current-status">{{($supplyOffer->status == 1)? 'Accepted': (($supplyOffer->status == 2)? 'Rejected': 'Pending')}}</label></td>
                                                 </tr>
                                                 
                                                 <tr>

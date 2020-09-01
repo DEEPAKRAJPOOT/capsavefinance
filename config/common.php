@@ -5,6 +5,7 @@ return [
      * All common config items those we are not keeping in
      * the file level.
      */
+    'DCC' => '365', #Day-Count Convention
     'EDUCATION_FORM_LIMIT' => '5',
     'SOCIAL_MEDIA_LINK' => '5',
     'DOCUMENT_LIMIT' => '5',
@@ -26,7 +27,7 @@ return [
         0 => 'Incomplete',
         1 => 'Completed',
         2 => 'Sanctioned',
-        3 => 'Closed',        
+        3 => 'Closed',
     ],
     //Roles Ids
     'anchor_role' => 11,
@@ -99,12 +100,17 @@ return [
         'PRE_SANCTION_DOC_UPLOADED'=>24,
         'SANCTION_LETTER_GENERATED'=>25,
         'POST_SANCTION_DOC_UPLOADED'=>26,
-        'OFFER_GENERATED'=>28,
+        'OFFER_GENERATED'=>56,
         'DISBURSED'=>27,
         'APP_REJECTED'=>43,
         'APP_CANCEL'=>44,
         'APP_HOLD'=>45,
         'APP_DATA_PENDING'=>46,
+        'APP_INCOMPLETE'=>49,
+        'APP_SANCTIONED'=>50,
+        'APP_CLOSED'=>51,
+        'OFFER_LIMIT_REJECTED'=>55,
+        'NPA' => 48
     ],
     'facility_type' => [
         '1' => 'Rental Facility',
@@ -305,5 +311,49 @@ return [
         '2' => 10
     ],    
     'ck_upload_img_path' => env('CKEDITOR_UPLOAD_IMAGE_PATH', ''),
+    'program_modify_reasons' => [
+        1 => 'Limit Enhancement',
+        2 => 'Reduce Limit'
+    ],
+    'cibil_report' => [
+        'MEMBER_ID' => 'PROLITUSUP',
+        'PREV_MEMBER_ID' => 'PROLITUSDL',
+        'MEMBER_BRANCH_CODE' => 'PROLITUSCG',
+        'PREV_MEMBER_BRANCH_CODE' => 'PROLITUSMP',
+    ],
+    'MSMETYPE' => [
+        '01' => 'MSME',
+        '02' => 'SME',
+        '03' => 'Micro',
+        '04' => 'Small',
+        '05' => 'Medium',
+        '06' => 'Large',
+        '07' => 'Others',
+    ],
+    'CREDIT_TYPE' => [
+        '0100' => 'Cash credit',
+        '0200' => 'Overdraft',
+        '0300' => 'Demand loan',
+    ],
+    'APP_STATUS_BTN_CLASS' => [
+        '20' => 'btn-success',   //COMPLETED
+        '49' => 'btn-info',      //IN COMPLETE
+        '50' => 'btn-success',   //SANCTIONED
+        '51' => 'btn-secondary',   //CLOSED
+        '43' => 'btn-danger',   //APP_REJECTED
+        '44' => 'btn-danger',   //APP_CANCEL
+        '45' => 'btn-warning',   //APP_HOLD
+        '46' => 'btn-warning'    //APP_DATA_PENDING
+    ],
+    'APP_STATUS_LABEL_CLASS' => [
+        '20' => 'badge-primary',   //COMPLETED
+        '49' => 'badge-warning',   //IN COMPLETE
+        '50' => 'badge-primary',   //SANCTIONED
+        '51' => 'badge-warning',   //CLOSED
+        '43' => 'badge-warning',   //APP_REJECTED
+        '44' => 'badge-warning',   //APP_CANCEL
+        '45' => 'badge-warning',   //APP_HOLD
+        '46' => 'badge-warning'    //APP_DATA_PENDING
+    ]    
 ];
  

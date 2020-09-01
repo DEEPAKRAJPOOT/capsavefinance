@@ -37,11 +37,11 @@
                                 <div class="card-body">
                                     <div class="row">
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                         </div>
-                                        <div class="col-md-4">
-                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by business name, Invoice number ">
+                                        <div class="col-md-5">
+                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number">
                                         </div> 
                                         <div class="col-md-1">
                                             <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
@@ -79,7 +79,9 @@
                                         -->
                                         <div class="col-md-2">
                                             @php if($role!=11) { @endphp
+                                            @can('update_disburse_bulk_invoice')
                                             <button type="button" id="bulkDisburseApprove" data-status="9" class="btn btn-primary btn-sm ml-2 btn-app">Send to Disbursement</button>
+                                            @endcan
                                             @php } @endphp 
                                         </div>
 

@@ -14,6 +14,7 @@ use App\Inv\Repositories\Models\OfferCollateralSecurity;
 use App\Inv\Repositories\Models\OfferPersonalGuarantee;
 use App\Inv\Repositories\Models\OfferCorporateGuarantee;
 use App\Inv\Repositories\Models\OfferEscrowMechanism;
+use App\Inv\Repositories\Models\User;
 
 class AppProgramOffer extends BaseModel {
     /* The database table used by the model.
@@ -113,9 +114,30 @@ class AppProgramOffer extends BaseModel {
         
         $whereCondition['is_active'] = isset($whereCondition['is_active']) ? $whereCondition['is_active'] : 1;
         
-        $offerData = self::select('app_prgm_offer.*')
-                ->where($whereCondition)
-                ->first();      
+
+        $offerWhereCond = [];
+        if (isset($whereCondition['status_is_not_null'])) {
+            $offerWhereCond['status_is_not_null'] = $whereCondition['status_is_not_null'];
+            unset($whereCondition['status_is_not_null']);
+        } else if (isset($whereCondition['status_is_null'])) {
+            $offerWhereCond['status_is_null'] = $whereCondition['status_is_null'];
+            unset($whereCondition['status_is_null']);
+        } else if (isset($whereCondition['status']) && is_null(isset($whereCondition['status']))) {            
+            $offerWhereCond['status'] = $whereCondition['status'];
+            unset($whereCondition['status']);
+        }
+                                
+        $query = self::select('app_prgm_offer.*')
+                ->where($whereCondition);
+        if (isset($offerWhereCond['status_is_not_null'])) {
+            $query->whereNotNull('status');
+        } else if (isset($offerWhereCond['status_is_null'])) {
+            $query->whereNull('status');
+        } else if (isset($offerWhereCond['status']) && is_null($offerWhereCond['status'])) {            
+            $query->whereNull('status');            
+        }
+
+        $offerData = $query->first();      
         return $offerData ? $offerData : null;
     }
 
@@ -169,11 +191,19 @@ class AppProgramOffer extends BaseModel {
         // if (!is_int($appId)) {
         //     throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         // }
-
-        if(is_null($product_id) || $product_id == ''){
-            $offers = self::where(['app_id'=>$appId, 'is_active'=>1])->get();
+        
+        $roleData = User::getBackendUser(\Auth::user()->user_id);            
+        $whereCond = [];
+        if (isset($roleData[0]) && $roleData[0]->id == 11) {   
+            $whereCond = ['anchor_id' => \Auth::user()->anchor_id, 'app_id' => $appId, 'is_active' => 1];
+        } else {
+            $whereCond = ['app_id' => $appId, 'is_active' => 1];
+        }
+        
+        if(is_null($product_id) || $product_id == ''){            
+            $offers = self::where($whereCond)->orderBy('prgm_offer_id', 'DESC')->get();
         }else{
-            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where(['app_id'=>$appId, 'is_active'=>1])->with('offerCharges.chargeName')->get();
+            $offers = self::whereHas('programLimit', function(Builder $query) use($product_id){$query->where('product_id', $product_id);})->where($whereCond)->with('offerCharges.chargeName')->orderBy('prgm_offer_id', 'DESC')->get();
         }
         return $offers ? $offers : null;
     }
@@ -262,7 +292,12 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
         }
 
-        $rowUpdate = self::where(['app_id'=>(int) $app_id, 'is_active'=>1])->update($arr);
+        $rowUpdate = self::where(['app_id'=>(int) $app_id, 'is_active'=>1])
+                        ->where(function($q) {
+                            $q->where('status', NULL)
+                                ->orWhere('status', 1);
+                        })
+                        ->update($arr);
 
         return ($rowUpdate ? $rowUpdate : false);
     }
@@ -310,7 +345,9 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        $tot_offered_limit = AppProgramOffer::where(['app_id' => $app_id, 'is_active'=>1])->sum('prgm_limit_amt');
+        $tot_offered_limit = AppProgramOffer::where(['app_id' => $app_id, 'is_active'=>1])->where(function($q) {
+                            $q->where('status', NULL)->orWhere('status', 1);
+                        })->sum('prgm_limit_amt');
         
         return $tot_offered_limit;
     }
@@ -352,7 +389,9 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }
 
-        $tot_offered_limit = AppProgramOffer::where(['app_prgm_limit_id' => $appPrgmLimitId, 'is_active'=>1])->sum('prgm_limit_amt');
+        $tot_offered_limit = AppProgramOffer::where(['app_prgm_limit_id' => $appPrgmLimitId, 'is_active'=>1])->where(function($q) {
+                            $q->where('status', NULL)->orWhere('status', 1);
+                        })->sum('prgm_limit_amt');
         
         return $tot_offered_limit;
     }
@@ -524,5 +563,50 @@ class AppProgramOffer extends BaseModel {
     
     public function chargeName(){
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Charges', 'charge_id', 'id');
+    }   
+    
+    //Anchor Name
+    public function anchorUser(){
+        return $this->hasOne('App\Inv\Repositories\Models\User', 'anchor_id', 'anchor_id')->where('user_type', 2);
+    }    
+    
+    public static function getPrgmBalLimit($program_id)
+    {
+        if(empty($program_id)){
+            throw new BlankDataExceptions(trans('error_messages.data_not_found'));
+        }
+        $appStatusList=[
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            //config('common.mst_status_id.APP_HOLD'),
+            //config('common.mst_status_id.APP_DATA_PENDING')
+        ];
+        $whereCond = [];
+        $whereCond[] = ['app_prgm_offer.is_active', '=', 1];
+        $whereCond[] = ['app_prgm_offer.status', '=', 1];
+        if (is_array($program_id)) {
+            $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+                    ->whereNotIn('app.curr_status_id', $appStatusList)
+                    ->whereIn('app_prgm_offer.prgm_id', $program_id);
+        } else {
+            $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+                    ->whereNotIn('app.curr_status_id', $appStatusList)
+                    ->where('app_prgm_offer.prgm_id', $program_id);
+        }
+        $query->where($whereCond);
+        return $query->sum('prgm_limit_amt');
+    }
+
+    public static function checkProgramOffers($program_id)
+    {
+        $whereCond = [];
+        $whereCond[] = ['is_active', '=', 1];
+        if (is_array($program_id)) {
+            $query = self::whereIn('prgm_id', $program_id);
+        } else {
+            $query = self::where('prgm_id', $program_id);
+        }
+        $query->where($whereCond);
+        return $query->count();
     }    
 }

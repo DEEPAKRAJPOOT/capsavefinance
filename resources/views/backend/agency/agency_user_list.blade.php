@@ -40,7 +40,7 @@
 
             <div class="row" style="margin-bottom: 25px;">
                 <div class="col-md-4">
-                    <input class="form-control" placeholder="Search by User Name, Email Id" id="by_name" name="search_keyword" type="text">
+                    <input class="form-control" placeholder="Search by User Name, Agency Name, Email Id" id="by_name" name="search_keyword" type="text">
                 </div>
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>

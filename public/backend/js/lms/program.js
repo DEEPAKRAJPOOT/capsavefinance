@@ -41,6 +41,43 @@ try {
             return i <= j;
         }, "Max loan size should not be greater than Limit");
 
+        $.validator.addMethod('notLessThan', function (value, element, param) {
+            if ($("#program_id").val() != "" ) {
+                var min = value.replace(/,/g, "");
+                var max = $(param).val().replace(/,/g, "");
+
+                var i = parseInt(min);
+                var j = parseInt(max);
+                return i >= j;
+            } else {
+                return true;
+            }
+        }, "Limit amount should not be less than utilized amount");
+        
+                
+        $.validator.addMethod('validateReason', function (value, element, param) {
+            if ($("#program_id").val() != "" && $("#reason_type").val() != "") {
+                var min = value.replace(/,/g, "");
+                var max = $(param).val().replace(/,/g, "");
+
+                var i = parseInt(min);
+                var j = parseInt(max);
+                if ($("#reason_type").val() == 1) {                    
+                    return i > j;
+                } else {                    
+                    return i < j;
+                }
+            } else {
+                return true;
+            }
+        }, function(params, element){
+            if ($("#reason_type").val() == 1) {                    
+                return "Enhanced limit can't be less than or equal to previous limit";
+            } else {
+                return "Reduced limit can't be more than to previous limit";
+            }
+      });        
+        
         /**
          * handle Industry Change evnet
          * 
@@ -111,6 +148,7 @@ try {
                     },
                     anchor_limit: {
                         required: true,
+                        notLessThan : "#utilized_amount"
                     },
                     is_fldg_applicable: {
                         required: true
@@ -118,7 +156,9 @@ try {
                     anchor_id: {
                         required: true
                     },
-
+                    status: {
+                        required: true
+                    },
                 },
                 messages: {
 
@@ -161,18 +201,17 @@ try {
                 {
                     data: 'anchor_limit'
                 },
-
+                //{
+                //    data: 'reason'
+                //},
                 {
                     data: 'status'
-                },
+                },                
                 {
                     data: 'action'
                 }
             ],
-            aoColumnDefs: [{
-                    'bSortable': false,
-                    'aTargets': []
-                }]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6]}]
 
         });
 
@@ -398,7 +437,8 @@ try {
             serverSide: true,
             pageLength: 10,
             searching: false,
-            bSort: true,
+            bSort: false,
+            order: [[0, "desc"]],
             ajax: {
                 url: messages.get_sub_program_list,
                 method: 'POST',
@@ -419,20 +459,14 @@ try {
                 {data: 'prgm_id'},
                 {data: 'f_name'},
                 {
-                    data: 'product_name'
-                },
-                {
-                    data: 'prgm_type'
-                },
-                {
-                    data: 'anchor_limit'
-                },
-                {
                     data: 'anchor_sub_limit'
                 },
                 {
-                    data: 'loan_size'
-                },
+                    data: 'updated_by'
+                },                
+                {
+                    data: 'reason'
+                },                
                 {
                     data: 'status'
                 },
@@ -440,10 +474,7 @@ try {
                     data: 'action'
                 }
             ],
-            aoColumnDefs: [{
-                    'bSortable': false,
-                    'aTargets': []
-                }]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6]}]
 
         });
 
@@ -474,9 +505,16 @@ try {
                         required: true,
                         lettersonly: true
                     },
+                    anchor_limit: {
+                        required: true,
+                        notLessThan : "#utilized_amount",
+                        //validateReason : "#old_anchor_limit"
+                    },                    
                     anchor_sub_limit: {
                         required: true,
-                        lessThan: "#anchor_limit",
+                        lessThan: "#anchor_limit_re",
+                        notLessThan : "#utilized_amount",
+                        validateReason : "#old_anchor_sub_limit"
                         // min: 1,
                         // number: true
                     },
@@ -701,7 +739,23 @@ try {
         
         $('#searchbtn').on('click', function (e) {
             oTables.draw();
-        }); 
+        });
+        
+        
+        $(document).on('input', '#anchor_limit', function(e) {            
+            var anchor_limit = parseInt($(this).val().replace(/,/g, "")) || 0; 
+            var total_anchor_sub_limit = parseInt($("#total_anchor_sub_limit").val().replace(/,/g, "")) || 0; 
+            var remaining_bal = anchor_limit - total_anchor_sub_limit;
+            $("#total-anchor-limit").html(anchor_limit.toString().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+            var prefix = remaining_bal < 0 ? '-' : '';
+            $("#remaining-anchor-limit").html(prefix + remaining_bal.toString().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));             
+            $("#anchor_limit_re").val(remaining_bal);
+        })
+        
+        
+        $("#reject_btn").on('click', function(){            
+            $("#is_reject").val("1");
+        });
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

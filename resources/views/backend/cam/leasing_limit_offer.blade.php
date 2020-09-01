@@ -26,7 +26,7 @@
 
         <div class="col-md-6">
           <div class="form-group ">
-            <label for="txtPassword" ><b>Facility Type</b></label> 
+            <label for="txtPassword" ><b>Facility Type</b> <span style="color: red;"> *</span></label> 
             <select class="form-control" name="facility_type_id">
                 <option value="">Select Facility Type</option>
                 @foreach($facilityTypeList as $key => $facilityType)
@@ -38,7 +38,7 @@
 
         <div class="col-md-6">
           <div class="form-group INR">
-            <label for="txtPassword" ><b>Limit of the Equipment</b></label>
+            <label for="txtPassword" ><b>Limit of the Equipment</b> <span style="color: red;"> *</span></label>
             <span class="float-right text-success">Balance: <i class="fa fa-inr"></i>{{(int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount}}</span>
             <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a> 
             <input type="text" name="sub_limit" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Limit of the Equipment" maxlength="15">
@@ -47,14 +47,14 @@
 
         <div class="col-md-6">
           <div class="form-group ">
-            <label for="txtPassword" ><b>Tenor (Months)</b></label> 
+            <label for="txtPassword" ><b>Tenor (Months)</b> <span style="color: red;"> *</span></label> 
             <input type="text" name="tenor" class="form-control" value="{{isset($offerData->tenor)? $offerData->tenor: ''}}" placeholder="Tenor" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
           </div>
         </div>
 
         <div class="col-md-6">
           <div class="form-group ">
-            <label for="txtPassword" ><b>Equipment Type</b></label> 
+            <label for="txtPassword" ><b>Equipment Type</b> <span style="color: red;"> *</span></label> 
             <select class="form-control" name="equipment_type_id">
                 <option value="">Select Equipment type</option>
                 @foreach($equips as $key => $equip)
@@ -66,7 +66,7 @@
     
         <div class="col-md-12" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
             <div class="form-group ">
-                <label for="txtPassword" ><b>Security Deposit</b></label> 
+                <label for="txtPassword" ><b>Security Deposit</b> <span style="color: red;"> *</span></label> 
                 <br/>
                 <div id="radio_block">
                     <label class="radio-inline"><input type="radio" name="security_deposit_type" value="1" {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'checked': '') : ''}}> Flat</label>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -77,7 +77,7 @@
 
         <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
             <div class="form-group INR">
-                <label for="txtPassword"><b>Deposit <span id="sdt">{{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></b></label>
+                <label for="txtPassword"><b>Deposit <span id="sdt">{{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></b> <span style="color: red;"> *</span></label>
                 <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa-change fa {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'fa-inr': 'fa-percent') : 'fa-inr'}}" aria-hidden="true"></i></a> 
                 <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? (($offerData->security_deposit_type == 1)? (int)$offerData->security_deposit: $offerData->security_deposit): ''}}" placeholder="Deposit {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}" maxlength="5">
             </div>
@@ -85,14 +85,14 @@
 
         <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id == 3)? 'block': 'none')}};">
           <div class="form-group">
-            <label for="txtPassword"><b>Discounting (%)</b></label>
+            <label for="txtPassword"><b>Discounting (%)</b> <span style="color: red;"> *</span></label>
             <input type="text" name="discounting" class="form-control" value="{{isset($offerData->discounting)? $offerData->discounting: ''}}" placeholder="Discounting" maxlength="6">
           </div>
         </div>
 
         <div class="col-md-6" style="display: {{((isset($offerData->facility_type_id) && $offerData->facility_type_id != 3)? 'block': 'none')}};">
             <div class="form-group">
-                <label for="txtPassword"><b>Deposit Type</b></label> 
+                <label for="txtPassword"><b>Deposit Type</b> <span style="color: red;"> *</span></label> 
                 <select name="security_deposit_of" class="form-control">
                     <option value="">Select Deposit Type</option>
                     <option value="4" {{isset($offerData->security_deposit_of)? (($offerData->security_deposit_of == 4)? 'selected': ''):''}}>Sanction</option>
@@ -105,7 +105,7 @@
 
         <div class="col-md-6">
           <div class="form-group">
-            <label for="txtPassword"><b>Rental Frequency</b></label> 
+            <label for="txtPassword"><b>Rental Frequency</b> <span style="color: red;"> *</span></label> 
                 <select name="rental_frequency" class="form-control">
                     <option value="">Select Rental Frequency</option>
                     <option value="4" {{isset($offerData->rental_frequency)? (($offerData->rental_frequency == 4)? 'selected': ''):''}}>Monthly</option>
@@ -118,7 +118,7 @@
         
         <div class="col-md-6">
             <div class="form-group">
-                <label for="txtPassword" ><b>Frequency Type</b></label> 
+                <label for="txtPassword" ><b>Frequency Type</b> <span style="color: red;"> *</span></label> 
                 <select name="rental_frequency_type" class="form-control">
                     <option value="">Select Frequency Type</option>
                     <option value="1" {{isset($offerData->rental_frequency_type)? (($offerData->rental_frequency_type == 1)? 'selected': ''):''}}>Advance</option>
@@ -136,19 +136,19 @@
                 <div class="row {{($loop->first)? '': 'mt10'}}">
                     <div class="col-md-3">
                         @if($loop->first)
-                            <label for="txtPassword"><b>From Period</b></label>
+                            <label for="txtPassword"><b>From Period</b> <span style="color: red;"> *</span></label>
                         @endif
                         <input type="text" name="ptpq_from[]" class="form-control" value="{{(int)$ptpq->ptpq_from}}" placeholder="From Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-3">
                         @if($loop->first)
-                            <label for="txtPassword"><b>To Period</b></label>
+                            <label for="txtPassword"><b>To Period</b> <span style="color: red;"> *</span></label>
                         @endif
                         <input type="text" name="ptpq_to[]" class="form-control" value="{{(int)$ptpq->ptpq_to}}" placeholder="To Period" maxlength="5" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-4 INR">
                         @if($loop->first)
-                            <label for="txtPassword"><b>Rate</b></label>
+                            <label for="txtPassword"><b>Rate</b> <span style="color: red;"> *</span></label>
                         @endif
                         <a href="javascript:void(0);" class="verify-owner-no" style="top: {{($loop->first)? '29px': 0}};"><i class="fa fa-inr" aria-hidden="true"></i></a>
                         <input type="text" name="ptpq_rate[]" class="form-control" value="{{$ptpq->ptpq_rate}}" placeholder="Rate" maxlength="6">
@@ -165,15 +165,15 @@
                 @else
                 <div class="row">
                     <div class="col-md-3">
-                    <label for="txtPassword"><b>From Period</b></label>
+                    <label for="txtPassword"><b>From Period</b>  <span style="color: red;"> *</span></label>
                         <input type="text" name="ptpq_from[]" class="form-control" value="" placeholder="From Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-3">
-                    <label for="txtPassword"><b>To Period</b></label>
+                    <label for="txtPassword"><b>To Period</b>  <span style="color: red;"> *</span></label>
                         <input type="text" name="ptpq_to[]" class="form-control" value="" placeholder="To Period" maxlength="3" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
                     </div>
                     <div class="col-md-4 INR">
-                    <label for="txtPassword"><b>Rate</b></label>
+                    <label for="txtPassword"><b>Rate</b>  <span style="color: red;"> *</span></label>
                         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
                         <input type="text" name="ptpq_rate[]" class="form-control" value="" placeholder="Rate" maxlength="5">
                     </div>
@@ -190,11 +190,11 @@
           <div class="form-group row">
             <label for="txtPassword" class="col-md-12" style="background-color: #F2F2F2;padding: 5px 0px 5px 20px;"><b>XIRR (%)</b></label> 
             <div class="col-md-6">
-            <label for="txtPassword"><b>Ruby Sheet</b></label>
+            <label for="txtPassword"><b>Ruby Sheet</b> <span style="color: red;"> *</span></label>
             <input type="text" name="ruby_sheet_xirr" class="form-control" value="{{isset($offerData->ruby_sheet_xirr)? $offerData->ruby_sheet_xirr: ''}}" placeholder="Ruby Sheet" maxlength="5">
             </div>
             <div class="col-md-6">
-            <label for="txtPassword"><b>Cash Flow</b></label>
+            <label for="txtPassword"><b>Cash Flow</b> <span style="color: red;"> *</span></label>
             <input type="text" name="cash_flow_xirr" class="form-control" value="{{isset($offerData->cash_flow_xirr)? $offerData->cash_flow_xirr: ''}}" placeholder="Cash Flow" maxlength="5">
             </div>
           </div>
@@ -202,7 +202,7 @@
 
         <div class="col-md-6">
           <div class="form-group">
-            <label for="txtPassword"><b>Processing Fee (%)</b></label>
+            <label for="txtPassword"><b>Processing Fee (%)</b> <span style="color: red;"> *</span></label>
             <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
           </div>
         </div>
@@ -225,9 +225,11 @@
         </div>
     </div>
     <div class="row">
+    @can('update_limit_offer')
       <div class="col-md-12">
         <button type="submit" class="btn btn-success btn-sm float-right">Submit</button>
       </div>
+    @endcan
     </div>   
   </form>
  

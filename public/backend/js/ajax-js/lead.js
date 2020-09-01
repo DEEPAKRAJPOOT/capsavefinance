@@ -20,6 +20,7 @@ try {
                 data: function (d) {
                     d.by_email = $('input[name=by_email]').val();
                     d.is_assign = $('select[name=is_assign]').val();
+                    d.pan = $('select[name=pan]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -37,7 +38,7 @@ try {
                     {data: 'anchor'},
                     {data: 'userType'},
                     {data: 'salesper'},
-                    {data: 'assigned'},
+                    {data: 'active'},
                     //{data: 'biz_name'},
                     {data: 'created_at'},
                     //{data: 'status'},
@@ -58,14 +59,16 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 25,
-            searching: true,
-            bSort: true,
+            searching: false,
+            bSort: true,            
+            order: [[5, "desc"]],
             ajax: {
                "url": messages.get_anch_user_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
                     d.by_email = $('input[name=by_email]').val();
                     d.is_assign = $('select[name=is_assign]').val();
+                    d.pan = $('select[name=pan]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -83,23 +86,30 @@ try {
                     {data: 'created_at'},
                     {data: 'action'}
                 ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,6]}]
 
         });  
       
+        $('#anchUserListSearchB').on('click', function (e) {
+            oTables1.draw();
+
+        });
+        
       //User Listing code
         oTables2 = $('#anchleadList').DataTable({
             processing: true,
             serverSide: true,
             pageLength: 25,
-            searching: true,
+            searching: false,
             bSort: true,
+            order: [[0, "desc"]],
             ajax: {
                "url": messages.get_anch_lead_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
                     d.by_email = $('input[name=by_email]').val();
                     d.is_assign = $('select[name=is_assign]').val();
+                    d.pan = $('select[name=pan]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -112,16 +122,23 @@ try {
                     {data: 'anchor_user_id'},
                     {data: 'name'},
                     {data: 'biz_name'},
+                    {data: 'pan_no'},
                     {data: 'email'},
                     {data: 'phone'},
-//                    {data: 'email'},
+                    {data: 'assoc_anchor'},
                     {data: 'created_at'},
                     {data: 'status'}
                 ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,5,6]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [1,3,4,5,6,8]}]
 
         });
-      
+        
+        //Search
+        $('#anchleadListSearchB').on('click', function (e) {
+            oTables2.draw();
+
+        });
+        
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

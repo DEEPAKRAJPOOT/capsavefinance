@@ -48,6 +48,11 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'uses' => 'Application\DashboardController@index'
                 ]
             );
+
+            Route::get('/frontend-download-file', [
+                'as' => 'frontend_download_storage_file',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            ]);
         });
     });
     

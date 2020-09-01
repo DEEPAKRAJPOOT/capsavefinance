@@ -33,13 +33,13 @@
                                     
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Anchor Name   <span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
+                                            <label for="txtCreditPeriod">Anchor Business Name<span class="error_message_label">*</span><!--<span id="anc_limit" class="error" style="">--></span></label>
                                             <select readonly="readonly" class="form-control changeAnchor" id="anchor_id"  name="anchor_id">
                                              
                                             @if(count($get_anchor) > 0)
                                               @if($anchor==11)
                                                @foreach($get_anchor as $row) 
-                                                    @php if(isset($row->anchorList->anchor_id)) {  @endphp
+                                                    @php if(isset($row->anchorList->anchor_id) && $row->anchorList->anchor_id == \Auth::user()->anchor_id) {  @endphp
                                                     <option value="{{{$row->anchorList->anchor_id}}}">{{{$row->anchorList->comp_name}}}</option>
                                                     @php }  @endphp
                                                     @endforeach

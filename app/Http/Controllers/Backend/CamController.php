@@ -304,7 +304,14 @@ class CamController extends Controller
               }
               $vyear = $v['year'];
               $request_year = $request->get('year');
-              $financeData[$k] = array_replace_recursive($v, $request_year[$vyear]);
+              // dd($request_year, $vyear);
+              // if(!isset($request_year[$vyear])){
+              //   Session::flash('error',trans('Something went wrong with financial year'));
+              //   return redirect()->back();
+              // }
+              if(isset($request_year[$vyear])){
+                $financeData[$k] = array_replace_recursive($v, $request_year[$vyear]);
+              }
             }
           }
           $financeData = arrayValuesToInt($financeData);
@@ -634,12 +641,9 @@ class CamController extends Controller
         $fy = $contents['FinancialStatement']['FY'] ?? array();
         $financeData = [];
         $audited_years = [];
-        $curr_fin_year = ((date('m') > 3) ? date('Y') : (date('Y') - 1));
+        $curr_fin_year = date('Y') - 1;
         if (!empty($fy)) {
           foreach ($fy as $k => $v) {
-            if (!empty($v['year']) && $k == 0) {
-              $curr_fin_year = $v['year'];
-            }
             if ($this->genBlankfinJSON) {
               $v['year'] = empty($v['year']) ? $curr_fin_year : $v['year'];
               $curr_fin_year--;
@@ -1508,13 +1512,15 @@ class CamController extends Controller
         $limitData = $this->appRepo->getAppLimit($appId);
         $prgmLimitTotal = $this->appRepo->getTotalPrgmLimitByAppId($appId);
         $tot_offered_limit = $this->appRepo->getTotalOfferedLimit($appId);
+        $product_types = $this->mstRepo->getProductDataList();
 
         //$offerStatus = $this->appRepo->getOfferStatus(['app_id' => $appId, 'is_approve'=>1, 'is_active'=>1, 'status'=>1]);//to check the offer status
         $offerStatus = $this->appRepo->getAppData($appId)->status;//to check offer is sanctioned or not
 
         $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
         $currStage = Helpers::getCurrentWfStage($appId);                
-        $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';                    
+        $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';   
+        $userRole = $this->userRepo->getBackendUser(Auth::user()->user_id);
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
@@ -1526,7 +1532,9 @@ class CamController extends Controller
                 ->with('termPrgmLimitData', $termPrgmLimitData)
                 ->with('leasingPrgmLimitData', $leasingPrgmLimitData)
                 ->with('currStageCode', $currStageCode)
-                ->with('offerStatus', $offerStatus);
+                ->with('offerStatus', $offerStatus)
+                ->with('userRole', $userRole)
+                ->with('product_types', $product_types);
     }
     
     /**
@@ -1557,11 +1565,26 @@ class CamController extends Controller
             }
 
             //Validate Enchancement Limit  
+            $totLimitAmt = str_replace(',', '', $request->get('tot_limit_amt'));
             $result = \Helpers::checkLimitAmount($appId, $request->product_id, $request->limit_amt);
-            if ($result['status']) {
+                                    
+            if ($result['app_type'] == 2 && isset($result['tot_limit_amt']) 
+                    && $result['tot_limit_amt'] > $totLimitAmt) {
+                Session::flash('error', trans('backend_messages.enhanced_tot_limit_amt_validation'));
+                return redirect()->back()->withInput();                
+            } else if ($result['app_type'] == 3 && isset($result['tot_limit_amt']) 
+                    && ($result['tot_limit_amt'] < $totLimitAmt)) {
+                Session::flash('error', trans('backend_messages.reduced_tot_limit_amt_validation'));
+                return redirect()->back()->withInput();                
+            } else if ($result['app_type'] == 3 && isset($result['parent_inv_utilized_amt']) 
+                    && ($result['parent_inv_utilized_amt'] >= $totLimitAmt)) {
+                Session::flash('error', trans('backend_messages.reduced_utilized_amt_validation'));
+                return redirect()->back()->withInput();                
+            } else if ($result['status']) {
                 Session::flash('error', $result['message']);
                 return redirect()->back()->withInput();
             }
+            
 
             
             $totalLimit = $this->appRepo->getAppLimit($appId);
@@ -1608,19 +1631,35 @@ class CamController extends Controller
         }
     }
 
-    public function approveOffer(Request $request){
-        $appId = $request->get('app_id');
-        $appApprData = [
-            'app_id' => $appId,
-            'approver_user_id' => \Auth::user()->user_id,
-            'status' => 1
-          ];
-        $this->appRepo->saveAppApprovers($appApprData);
+    
+    /**
+     * Save Approve Limit offer
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function approveOffer(Request $request)
+    {
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            $userId = $request->has('user_id') ? $request->get('user_id') : null;
+            
+            $appApprData = [
+                'app_id' => $appId,
+                'approver_user_id' => \Auth::user()->user_id,
+                'status' => 1
+              ];
+            $this->appRepo->saveAppApprovers($appApprData);
 
-        //update approve status in offer table after all approver approve the offer.
-        $this->appRepo->changeOfferApprove((int)$appId);
-        Session::flash('message',trans('backend_messages.offer_approved'));
-        return redirect()->back();
+            //update approve status in offer table after all approver approve the offer.
+            $this->appRepo->changeOfferApprove((int)$appId);
+            Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+            Session::flash('message',trans('backend_messages.offer_approved'));
+            return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
+        }catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
     }
     
     /**
@@ -1667,7 +1706,8 @@ class CamController extends Controller
             $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
             $currStage = Helpers::getCurrentWfStage($appId);
             Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
- 
+            Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_REJECTED'));
+            
             Session::flash('message', trans('backend_messages.offer_rejected'));
             Session::flash('operation_status', 1);
             return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
@@ -1701,11 +1741,12 @@ class CamController extends Controller
         $appType = $appData->app_type;
         $user = $appData->user;
         $user_type = $user->is_buyer;
-        $anchors = $user->anchors;
+        //$anchors = $user->anchors;               
+        $anchors = $this->userRepo->getAnchorsByUserId($user->user_id);
         $anchorArr=[];
         foreach($anchors as $anchor){
           array_push($anchorArr, $anchor->anchor_id);
-        }
+        }                        
         $anchorPrgms = $this->appRepo->getPrgmsByAnchor($anchorArr, $user_type);
       } else {
         $appType = '';
@@ -1767,7 +1808,9 @@ class CamController extends Controller
           Session::flash('message', trans('backend_messages.under_approval'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
-        
+        if (empty($prgmOfferId)) {
+            Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
+        }
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
         $limitData = $this->appRepo->getLimit($aplid);
@@ -1792,7 +1835,18 @@ class CamController extends Controller
           $this->appRepo->addOfferPTPQ($ptpqArr);
         }
 
-        if($offerData){
+        /*
+        if (\Helpers::checkApprPrgm($request->prgm_id)) {
+            $updatePrgmData = [];
+            $updatePrgmData['is_edit_allow'] = 1;
+
+            $whereUpdatePrgmData = [];
+            $whereUpdatePrgmData['prgm_id'] = $request->prgm_id;
+            $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
+        }
+        */
+        
+        if($offerData){                           
           Session::flash('message',trans('backend_messages.limit_offer_success'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }else{
@@ -2300,5 +2354,23 @@ class CamController extends Controller
         }
         $this->appRepo->addOfferCharges($chArr);
       }
+    }
+    
+    /**
+     * Open Approve Limit Pop Up
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function approveLimitForm(Request $request)
+    {
+        try {
+            $appId = $request->get('app_id');
+            $bizId = $request->get('biz_id');
+            return view('backend.cam.approve_limit')
+            ->with(['app_id' => $appId, 'biz_id' => $bizId]);
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
     }
 }

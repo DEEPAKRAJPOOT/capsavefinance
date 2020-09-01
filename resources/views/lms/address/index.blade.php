@@ -19,14 +19,14 @@
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="head-sec">
-
+                                                            @can('add_addr')
 								<a data-toggle="modal" data-target="#addAddressFrame" id="register" data-url ="{{route('add_addr',[ 'user_id' => $userInfo->user_id ])}}" data-height="450px" data-width="100%" data-placement="top" >
 									<button class="btn  btn-success btn-sm float-right mb-3" type="button">
 
 									<i class="fa fa-plus"></i> Add Address
 									</button>
 								</a>
-
+                                                            @endcan
 							</div>
 						</div>
 						<div class="col-sm-12">
@@ -38,7 +38,7 @@
 										<th>City</th>
 										<th>State</th>
 										<th>Pincode</th>
-										<th width="105px">RCU Status</th>
+										<th width="105px">FI Status</th>
 										<th width="105px">Status</th>
 										<th>Action</th>
 									</tr>

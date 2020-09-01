@@ -67,7 +67,9 @@
                                         </select>
                                     </div>
                                     <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
-                                    <button type="submit" class="btn  btn-success btn-sm float-right ml-4">Download Excel</button>
+                                    @can('download_batch_data')
+                                        <button type="submit" class="btn  btn-success btn-sm float-right ml-4">Download Excel</button>
+                                    @endcan
                                 </div>
                             </form>
 
@@ -84,7 +86,7 @@
                                                                 <th width="5%">Cust ID</th>
                                                                 <th width="13%">Ben Name</th>
                                                                 <th width="20%">Bank Detail</th>
-                                                                <th width="15%">Total Disburse Amt.</th>
+                                                                <th width="15%">Total Disburse/ Principal Amt.</th>
                                                                 <th width="8%">Total Invoice </th>
                                                                <th> Updated At</th> 
                                                                 <th width="4%">Action</th>
@@ -111,7 +113,7 @@
 </div>
 </div>
 {!!Helpers::makeIframePopup('viewBatchSendToBankInvoice','View Invoice', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Trasaction Id', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('invoiceDisbursalTxnUpdate','Update Transaction Id', 'modal-lg')!!}
 
 @endsection
 @section('jscript')

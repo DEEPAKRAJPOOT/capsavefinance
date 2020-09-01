@@ -5,7 +5,9 @@ use DB;
 use Helpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Inv\Repositories\Models\Master\Tds;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
@@ -53,6 +55,7 @@ class Transactions extends BaseModel {
         'user_id',
         'trans_date',
         'trans_type',
+        'trans_mode',
         'amount',
         'entry_type',
         'gst',
@@ -73,6 +76,10 @@ class Transactions extends BaseModel {
         'updated_at',
         'updated_by'
     ];
+
+    public function childTransactions(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions', 'trans_id', 'parent_trans_id');
+    }
 
     public function payment(){
         return $this->belongsTo('App\Inv\Repositories\Models\Payment','payment_id','payment_id');
@@ -156,6 +163,26 @@ class Transactions extends BaseModel {
         return round(($this->amount - $this->getsettledAmtAttribute()),2);
     }
 
+    public function getRevertedAmtAttribute(){
+        return self::where('link_trans_id','=',$this->trans_id)
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL')])
+        ->where(function($query){
+            $query->where(function($q){
+                $q->where('entry_type','=','0');
+                $q->where('trans_type','=', config('lms.TRANS_TYPE.REVERSE'));
+            });
+            $query->orWhere(function($q){
+                $q->where('entry_type','=','1');
+                $q->where('trans_type','=', config('lms.TRANS_TYPE.CANCEL'));
+            });
+        })
+        ->sum('amount');
+    }
+
+    public function getSettledOutstandingAttribute(){
+        return round(($this->amount - $this->getRevertedAmtAttribute()),2);
+    }
+
     public function getDpdAttribute(){
         $to = Carbon::createFromFormat('Y-m-d H:i:s', Helpers::getSysStartDate());
         if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
@@ -209,12 +236,14 @@ class Transactions extends BaseModel {
                 }
                 if($this->link_trans_id){
                     $linkTrans = self::find($this->link_trans_id);
-                    if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')]))
-                    if($linkTrans->entry_type == 0){
-                        $name .= ' '.$linkTrans->transType->debit_desc;
-                    }elseif($linkTrans->entry_type == 1){
-                        $name .= ' '.$linkTrans->transType->credit_desc;
-                    }    
+                    if($linkTrans){
+                        if(in_array($linkTrans->trans_type,[config('lms.TRANS_TYPE.WRITE_OFF'),config('lms.TRANS_TYPE.WAVED_OFF'),config('lms.TRANS_TYPE.TDS'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.ADJUSTMENT')]))
+                        if($linkTrans->entry_type == 0){
+                            $name .= ' '.$linkTrans->transType->debit_desc;
+                        }elseif($linkTrans->entry_type == 1){
+                            $name .= ' '.$linkTrans->transType->credit_desc;
+                        }    
+                    }
                 }
             }
         }
@@ -245,8 +274,11 @@ class Transactions extends BaseModel {
             if($this->BatchNo)
             $data .= $this->BatchNo.' ';
             if($this->payment->transactionno)
-            $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.'<br> ';
+            $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.' ' ;
             $data .= ' Payment Allocated as Normal: INR '. number_format($this->payment->amount,2) . ' ';
+        }
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
+            $data .= ' Payment Failed as Normal: INR '. number_format($this->payment->amount,2) . ' ';
         }
         return trim($data);
     }
@@ -273,8 +305,8 @@ class Transactions extends BaseModel {
         if($this->payment_id){
             if($this->trans_type == config('lms.TRANS_TYPE.REPAYMENT'))
             $color = '#f3c714';
-            else
-            $color = '#ffcc0078';
+            elseif(!in_array($this->trans_type, [config('lms.TRANS_TYPE.TDS')]))
+            $color = '#ffe787';
         }
         return $color;
     }
@@ -282,6 +314,43 @@ class Transactions extends BaseModel {
     public  function getBalanceAttribute()
     {
         return self::get_balance($this->user_id.Carbon::parse($this->created_at)->format('ymd').(1000000000+$this->trans_id), $this->user_id);
+    }
+
+    public function getTDSAmountAttribute(){
+        $amount = $this->amount;
+        $baseAmt = 0;
+        $tdsAmt = 0;
+        $gstAmt = 0;
+        $gst_per = 0;
+        if($this->transType->chrg_master_id || $this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+            $tdsRate = Tds::getActiveTdsBaseRate($this->trans_date);
+            $amount -= $this->getWaiveOffAmount();
+            
+            if($this->transType->chrg_master_id){
+                $gst_per = $this->transType->charge->gst_percentage;
+            }
+            
+            if($gst_per){
+                $baseAmt = $amount*100/(100+$gst_per);
+            }else{
+                $baseAmt = $amount;
+            }
+            
+            $tdsAmt = $baseAmt*$tdsRate/100;
+        }
+        
+        $tds = self::where('parent_trans_id',$this->trans_id)
+        ->where('trans_type', config('lms.TRANS_TYPE.TDS'))
+        ->where('entry_type','1')
+        ->get();   
+        foreach($tds as $tdsTrans){
+            $tdsAmt -= $tdsTrans->settledOutstanding;
+        }
+
+        if($tdsAmt < 0 ){
+            $tdsAmt = 0;
+        }
+        return $tdsAmt;
     }
 
     public static function getUnsettledTrans($userId){
@@ -301,7 +370,7 @@ class Transactions extends BaseModel {
     public static function getSettledTrans($userId){
         return self::where('entry_type','1')
                 //->whereNotNull('parent_trans_id')
-                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
+                ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT'),config('lms.TRANS_TYPE.CANCEL')])
                 ->where('user_id','=',$userId)->get()
                 ->filter(function($item){
                     return $item->refundoutstanding > 0;
@@ -386,6 +455,14 @@ class Transactions extends BaseModel {
 
         if(isset($data['user_id'])){
             $query->where('user_id','=',$data['user_id']);
+        }
+
+        if(isset($data['intAccrualStartDateLteSysDate'])){
+            $query->wherehas('invoiceDisbursed',function($q){
+                $start = new \Carbon\Carbon(\Helpers::getSysStartDate());
+                $sysStartDate = $start->format('Y-m-d');
+                $q->whereDate('int_accrual_start_dt','<=',$sysStartDate);
+            });
         }
 
         $transactions = $query->get();
@@ -577,15 +654,19 @@ class Transactions extends BaseModel {
     }
 
     /*** save repayment transaction details for invoice  **/
-    public static function saveRepaymentTrans($attr)
+    public static function saveRepaymentTrans($transactions)
     {
-          return self::create($attr);
+        $transactions['sys_updated_at'] = Helpers::getSysStartDate();
+        $transactions['sys_created_at'] = Helpers::getSysStartDate();
+        return self::create($transactions);
     }
     
     /*** save repayment transaction details for invoice  **/
-    public static function saveCharge($attr)
+    public static function saveCharge($transactions)
     {
-        return self::create($attr);
+        $transactions['sys_updated_at'] = Helpers::getSysStartDate();
+        $transactions['sys_created_at'] = Helpers::getSysStartDate();
+        return self::create($transactions);
     } 
     
     /*** get all transaction  **/
@@ -733,19 +814,12 @@ class Transactions extends BaseModel {
 
     
     public static function getAllChargesApplied(array $where = array()) {
-        $cond = '';
-        if (!empty($where)) {
-            foreach ($where as $key => $value) {
-                $wh[] = "t1.$key = '$value'";
-            }
-           $cond = ' AND ' .implode(' AND ', $wh);
-        }
-        $query = "SELECT DATE_FORMAT(t1.trans_date, '%d/%m/%Y') as trans_date, t1.trans_id, t1.parent_trans_id, t1.trans_name, t1.trans_desc, t1.user_id, t1.entry_type, t1.amount AS debit_amount, IFNULL(SUM(t2.amount), 0) as credit_amount, (t1.amount - IFNULL(SUM(t2.amount), 0)) as remaining 
-        FROM `get_all_charges` t1 
-        LEFT JOIN rta_transactions as t2 ON t1.trans_id = t2.parent_trans_id 
-        WHERE t1.entry_type = 0  ". $cond ." GROUP BY t1.trans_id";
-        $result = \DB::SELECT(\DB::raw($query));
-        return $result;
+        return self::where($where)
+        ->whereNull('parent_trans_id')
+        ->whereNull('link_trans_id')
+        ->whereNull('payment_id')
+        ->where('entry_type',0)
+        ->get();
     }
     
     public static function getTallyTxns(array $where = array()) {
@@ -808,5 +882,116 @@ class Transactions extends BaseModel {
         $result = $query->get();
         
         return $result;
+    }  
+    
+    public static function checkRunningTrans($transStartDate, $transEndDate){
+        return self::whereBetween('trans_date', [$transStartDate, $transEndDate])
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+        ->whereNotNull('trans_running_id')
+        ->get()
+        ->filter(function($item) {
+            return $item->outstanding > 0;
+        });
+
+    }
+
+    public static function getDishonouredTxn($user_id) {
+        return self::where(['user_id' => $user_id, 'trans_type' => config('lms.CHARGE_TYPE.CHEQUE_BOUNCE')])->get();
     }    
+ 
+    
+    public static function getUserLimitOutstanding($attr)
+    {
+        $userId = $attr->user_id;
+        $disbursedList = self::whereNull('parent_trans_id')
+        ->whereNull('payment_id')
+        ->where('entry_type','0')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
+        ->where('user_id',$userId)
+        ->get()
+        ->filter(function($item) {
+            return $item->outstanding > 0;
+        });
+
+        $interestList = self::whereNull('parent_trans_id')
+        ->whereNull('payment_id')
+        ->where('entry_type','0')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST')])
+        ->where('user_id',$userId)
+        ->get()
+        ->filter(function($item) {
+            return $item->outstanding > 0;
+        });
+
+        $outstandingAmt = 0;
+        $outstandingPrincipalAmt = 0;
+
+        foreach($disbursedList as $tran){
+            $outstandingAmt += $tran->outstanding;
+            $outstandingPrincipalAmt += $tran->outstanding;
+        }
+
+        foreach($interestList as $tran){
+            $outstandingAmt += $tran->outstanding;
+        }
+        if($attr->chrg_applicable_id==2)
+        {    
+            return round($outstandingAmt,2);
+        }
+        if($attr->chrg_applicable_id==3)
+        {
+           return round($outstandingPrincipalAmt,2); 
+        }
+    }
+    
+    public function getFromIntDateAttribute(){
+        $fromDate = null;
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+            $fromDate = self::where('invoice_disbursed_id',$this->invoice_disbursed_id)
+            ->whereDate('trans_date','<=',$this->trans_date)
+            ->where('trans_id','<',$this->trans_id)
+            ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+            ->whereNull('link_trans_id')
+            ->whereNull('parent_trans_id')
+            ->where('entry_type','0')
+            ->max('trans_date');
+            
+            if(!$fromDate){
+                $fromDate = $this->disburse->int_accrual_start_dt;
+            }else{
+                $fromDate = date('Y-m-d', strtotime($fromDate . "+ 1 days"));
+            }
+        }
+        return $fromDate;
+    }
+
+    public function getToIntDateAttribute(){
+        $toDate = null;
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+            $toDate = $this->trans_date;
+        }
+        return $toDate;
+    }
+
+    public function getTempInterestAttribute(){
+        $amount = null;
+        $from = self::getFromIntDateAttribute();
+        $to = self::getToIntDateAttribute();
+        $outstanding = self::getOutstandingAttribute();
+        $invoice_disbursed_id = $this->invoice_disbursed_id;
+        if($from && $to && $invoice_disbursed_id && in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+            $amount = InterestAccrualTemp::whereDate('interest_date','>=',$from)
+            ->whereDate('interest_date','<=',$to)
+            ->where('invoice_disbursed_id',$invoice_disbursed_id)
+            ->sum('accrued_interest');   
+            if($amount <= $outstanding){
+                $amount = round($amount,2);
+            }else{
+                $amount = round($outstanding,2);
+            }
+
+        }
+        return $amount;
+    }
+
 }

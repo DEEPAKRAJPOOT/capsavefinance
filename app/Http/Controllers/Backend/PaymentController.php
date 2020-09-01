@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use Auth;
-use Datetime;
+use DateTime;
 use Illuminate\Http\Request;
 use App\Http\Requests\BusinessInformationRequest;
 use Illuminate\Support\Facades\Storage;
@@ -12,7 +12,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
-use  App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Payment;
 use Session;
 use Helpers;
@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Helpers\ApportionmentHelper;
 use Illuminate\Validation\Rule;
+use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 
 class PaymentController extends Controller {
 
@@ -40,6 +41,7 @@ class PaymentController extends Controller {
 		$this->appRepo = $appRepo;
 		$this->middleware('auth');
         $this->middleware('checkEodProcess');
+        $this->middleware('checkBackendLeadAccess');
 
 	}
 
@@ -83,8 +85,16 @@ class PaymentController extends Controller {
 	   return  $d = \DateTime::createFromFormat($format, $date);
 	 }
 
-	public function unsettledPayment() {
-		return view('backend.payment.unsettled_payment');
+	public function unsettledPayment(Request $request) {
+		$customer = [];
+		if($request->has('user_id')){
+			$lmsUser = $this->userRepo->lmsGetCustomer($request->get('user_id'));
+			if($lmsUser){
+				$customer['user_id'] = $lmsUser->user_id; 
+				$customer['customer_id'] = $lmsUser->customer_id;
+			}
+		}
+		return view('backend.payment.unsettled_payment')->with(['customer'=>$customer]);
 	}
 
 	public function settledPayment() {
@@ -92,8 +102,11 @@ class PaymentController extends Controller {
 	}
 
  	public function EditPayment(Request $request) {
- 		$paymentId = $request->payment_id;
-	  	$data  =  $this->invRepo->getPaymentById($paymentId);
+		 $paymentId = $request->payment_id;
+		 $paymentType = $request->payment_type;
+		//  dd($request->all(),$paymentType);
+		  $data  =  $this->invRepo->getPaymentById($paymentId);
+		//   dd($data);
 	   	return view('backend.payment.edit_payment')->with(['data' => $data]);
  	}
 	 
@@ -101,26 +114,40 @@ class PaymentController extends Controller {
 	public function  savePayment(Request $request)
 	{
 		try {
-                        if ($request->get('eod_process')) {
-                            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
-                            return back();
-                        }
-            
+			$transaction = null;
+			// dd($request->all());
+			if ($request->get('eod_process')) {
+				Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+				return back();
+			}
+			$curdate = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
+			$curdateMesg = Carbon::parse(Helpers::getSysStartDate())->format('d/m/Y');
 			$arrFileData = $request->all();
 			$validatedData = $request->validate([
 				'payment_type' => Rule::requiredIf(function () use ($request) {
 					return ($request->action_type == 1)?true:false;
-					}),
+				}),
+				'charges' => Rule::requiredIf(function () use ($request) {
+					return ($request->action_type == 3)?true:false;
+				}),
+				'utr_no' => Rule::requiredIf(function () use ($request) {
+					return ($request->action_type == 1)?true:false;
+				}),
 				'trans_type' => 'required',
 				'customer_id' => 'required', 
 				'virtual_acc' => 'required',  
-				'date_of_payment' => 'required', 
-				'amount' => 'required', 
+				'date_of_payment' => 'required|date_format:d/m/Y|before_or_equal:'.$curdate,
+				'amount' => 'required|numeric|gt:0', 
 				'description' => 'required'
+			],
+			[
+				'charges.required' => 'TDS Submitted on field is required.',
+				'amount.required' => 'Transaction amount is required',
+				'amount.numeric' => 'Transaction amount must be number',
+				'amount.gt' => 'Transaction amount must be greater than zero',
+				'date_of_payment.before_or_equal' => 'The Transaction Date must be a date before or equal to '.$curdateMesg.'.',
 			]);
-			$user_id  = Auth::user()->user_id;
-			$mytime = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d h:i:s');
-
+			
 			$utr ="";
 			$check  ="";
 			$unr  ="";
@@ -130,12 +157,21 @@ class PaymentController extends Controller {
 				$check = $request['utr_no'];
 			} else  if($request['payment_type']==3) {
 				$unr =  $request['utr_no'];
+			} else  if($request['payment_type']==4) {
+				$unr =  $request['utr_no'];
 			}
 			if(isset($arrFileData['doc_file']) && !is_null($arrFileData['doc_file'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
 			}
+                        
+			if(isset($arrFileData['cheque']) && !is_null($arrFileData['cheque'])) {
+				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
+                $arrFileData['doc_file'] = $arrFileData['cheque'];
+			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
+				$userFile = $this->docRepo->saveFile($uploadData);
+			}                        
 
 			$paymentData = [
 				'user_id' => $request->user_id,
@@ -160,14 +196,18 @@ class PaymentController extends Controller {
 				'is_settled' => (in_array($request->action_type, [3])) ? '1':'0',
 				'is_manual' => '1',
 				'sys_date'=>\Helpers::getSysStartDate(),
-				'created_at' => $mytime,
-				'created_by' => $user_id,
 				'generated_by' => 0,
 			];
 			$paymentId = NULL;
 			
 			if($request->has('charges') && $request->action_type == 3){
 				$transaction = Transactions::find($request->charges);
+				if($transaction){
+					if($transaction->TDSAmount < $request->amount){
+						Session::flash('error', 'TDS amount must be less than or equal to '.$transaction->TDSAmount);
+						return back();
+					}
+				}
 				if(isset($transaction) && (float)$transaction->outstanding <= 0){
 					$paymentData['is_refundable'] = '1';
 				}else{
@@ -217,8 +257,9 @@ class PaymentController extends Controller {
 					'parent_trans_id' =>$request->charges,
 					'user_id' => $request['user_id'],
 					'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
-					'trans_type' => (in_array($request->action_type, [3])) ? 7 : $request['trans_type'],
+					'trans_type' => (in_array($request->action_type, [3])) ? config('lms.TRANS_TYPE.TDS') : $request['trans_type'],
 					'amount' => str_replace(',', '', $request['amount']),
+					'invoice_disbursed_id' => $transaction ? $transaction->invoice_disbursed_id : null,
 					'entry_type' => 1,
 					'gst'=> $request['incl_gst'],
 					'tds_per' => 1,
@@ -227,10 +268,7 @@ class PaymentController extends Controller {
 					'trans_by' => 1,
 					'pay_from' => ($udata)?$udata->is_buyer:'',
 					'is_settled' => 1,
-					'is_posted_in_taaly' => 0,
-					'sys_date'=>\Helpers::getSysStartDate(),
-					'created_at' =>  $mytime,
-                    'created_by' =>  $user_id,
+					'is_posted_in_taaly' => 0
                   ];
 			if($request->action_type == 3){
 				$res = $this->invRepo->saveRepaymentTrans($tran);
@@ -259,21 +297,38 @@ class PaymentController extends Controller {
                         }
                         
 			$arrFileData = $request->all();
-			$user_id  = Auth::user()->user_id;
-			$mytime = Carbon::now();
+			// $fileId = '';
 
 			if(isset($arrFileData['doc_file']) && !is_null($arrFileData['doc_file'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
+				// $fileId = $userFile->file_id;
+			}
+
+			// dd($arrFileData);
+			// if(!isset($arrFileData['doc_file'])) {
+			// 	$data  =  $this->invRepo->getPaymentById($request->payment_id);
+			// 	if(!empty($data) && $data->file_id == 0){
+			// 		$fileId = $data->file_id;
+			// 	}
+			// }
+			// dd($userFile, 'kjsafhk');
+
+			if(isset($arrFileData['cheque']) && !is_null($arrFileData['cheque'])) {
+				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
+                $arrFileData['doc_file'] = $arrFileData['cheque'];
+			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
+				$userFile = $this->docRepo->saveFile($uploadData);
+				// $fileId = $userFile->file_id;
 			}
 
 			$paymentData = [
+				'cheque_no' => $request->cheque_no ?? '',
 				'tds_certificate_no' => $request->tds_certificate_no ?? '',
 				'file_id' => $userFile->file_id ?? '',
+				// 'file_id' => $fileId ?? '',
 				'description' => $request->description,
-				'updated_at' => $mytime,
-				'updated_by' => $user_id,
 			];
 			
 			$response =  $this->invRepo->updatePayment($paymentData, $request->payment_id);
@@ -293,8 +348,6 @@ class PaymentController extends Controller {
                         }
                         
 			$data = array();
-			$id  = Auth::user()->user_id;
-			$mytime = Carbon::now(); 
 			$count =  count($request['payment_date']);
 			   for($i=0; $i < $count ;$i++)
 			   {
@@ -305,9 +358,8 @@ class PaymentController extends Controller {
 							'trans_date' => ($request['payment_date'][$i]) ? Carbon::createFromFormat('d/m/Y', $request['payment_date'][$i])->format('Y-m-d') : '',
 							'virtual_acc_id' => $request['virtual_acc_no'][$i],
 							'amount' => $request['amount'][$i],
-							'comment' => $request['remarks'][$i],  
-							'created_by' =>  $id,
-							'created_at' =>  $mytime ];
+							'comment' => $request['remarks'][$i] 
+						];
 				   $res = $this->invRepo->saveRepaymentTrans($arr);
 			   }
 		 
@@ -632,4 +684,40 @@ class PaymentController extends Controller {
 		return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 	}    
   }
+  
+    public function downloadCheque()
+    {
+        $paymentId = $request->get('payment_id');
+        try {
+
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }  
+    }
+	
+	public function deletePayment(Request $request)
+	{
+		try {
+			$paymentId = $request->get('payment_id');
+			if($paymentId){
+				$payment = Payment::find($paymentId);
+				if($payment){
+					if($payment->is_settled == '0' && $payment->action_type == '1' && $payment->trans_type == '17' && 
+					strtotime(\Helpers::convertDateTimeFormat($payment->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d'))
+					){
+						$payment->delete();
+						InterestAccrualTemp::where('payment_id',$paymentId)->delete();
+						return response()->json(['status' => 1,'message' => 'Successfully Deleted Payment']); 
+					}
+					else{
+						return response()->json(['status' => 0,'message' => 'Invalid Request: Payment cannot be deleted']);
+					}
+				}
+				return response()->json(['status' => 0,'message' => 'Record Not Found / Already deleted!']);
+			}
+			return response()->json(['status' => 0,'message' => 'Invalid Request: Payment details missing.']);
+        } catch (Exception $ex) {
+			return response()->json(['status' => 0,'message' => Helpers::getExceptionMessage($ex)]); 
+		}  
+	}
 }

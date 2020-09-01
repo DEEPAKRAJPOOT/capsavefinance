@@ -1,7 +1,7 @@
 try {
     var oTable;
     var reqIds = [];
-    
+
     jQuery(document).ready(function ($) {
         //User Listing code
         if($('#requestList').length){
@@ -16,6 +16,7 @@ try {
                     "method": 'POST',
                     data: function (d) {
                         d.status = messages.status
+                        d.search_keyword = $('input[name=search_keyword]').val();
                         d._token = messages.token;
                     },
                     "error": function () {  // error handling
@@ -23,16 +24,7 @@ try {
                         $("#requestList_processing").css("display", "none");
                     }
                 },
-                columns: [
-                    {data: 'id'},
-                    {data: 'ref_code'},
-                    {data: 'customer_id'},
-                    {data: 'biz_entity_name'},                    
-                    {data: 'amount'},
-                    {data: 'created_at'},
-                    // {data: 'assignee'},
-                    // {data: 'assignedBy'}
-                ],
+                columns: messages.columns,
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });
         }
@@ -48,6 +40,7 @@ try {
                     "method": 'POST',
                     data: function (d) {
                         d.status = messages.status
+                        d.search_keyword = $('input[name=search_keyword]').val();
                         d._token = messages.token;
                     },
                     "error": function () {  // error handling
@@ -67,7 +60,16 @@ try {
                 ],
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });
+
+            if(messages.status == 8){
+                oTable.columns([7]).visible(false);
+            }
         }
+
+        $('#searchbtn').on('click', function (e) {
+            oTable.draw();
+        });
+
     });
 } catch (e) {
     if (typeof console !== 'undefined') {
@@ -89,10 +91,11 @@ try {
 $(document).on('click','#pendingBtn', function(){
     var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
     if(countCheckedCheckboxes <= 0){
-        return alert('Please select at least one record!');
+        replaceAlert('Please select at least one record!', 'error');
+        return false;
     }else{
         $(this).addClass('btn-disabled');
-        if (confirm('Are you sure? You want to Submit it.')){
+        if (confirm('Are you sure you want to generate the refund request?.')){
             $("#refundReqForm").submit();
         }else{
             $(this).removeClass('btn-disabled');
@@ -102,10 +105,11 @@ $(document).on('click','#pendingBtn', function(){
 $(document).on('click','#approveBtn', function(){
     var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
     if(countCheckedCheckboxes <= 0){
-        return alert('Please select at least one record!');
+        replaceAlert('Please select at least one record!', 'error');
+        return false;
     }else{
         $(this).addClass('btn-disabled');
-        if (confirm('Are you sure? You want to approve it.')){
+        if (confirm('Are you sure you want to approve the refund request?')){
             $("#refundReqForm").submit();
         }else{
             $(this).removeClass('btn-disabled');
@@ -115,10 +119,11 @@ $(document).on('click','#approveBtn', function(){
 $(document).on('click','#refundQueueBtn', function(){
     var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
     if(countCheckedCheckboxes <= 0){
-        return alert('Please select at least one record!');
+        replaceAlert('Please select at least one record!', 'error');
+        return false;
     }else{
         $(this).addClass('btn-disabled');
-        if (confirm('Are you sure? You want to Disbursed it.')){
+        if (confirm('Are you sure you want to move the request to refund queue?')){
             $("#refundReqForm").submit();
         }else{
             $(this).removeClass('btn-disabled');
@@ -128,7 +133,8 @@ $(document).on('click','#refundQueueBtn', function(){
 $(document).on('click','#sentToBankBtn', function(){
     var countCheckedCheckboxes = $(".refund-request").filter(':checked').length;
     if(countCheckedCheckboxes <= 0){
-        return alert('Please select at least one record!');
+        replaceAlert('Please select at least one record!');
+        return false;
     }else{
         $(this).addClass('btn-disabled');
         if (confirm('Are you sure? You want to Sent To Bank it.')){
@@ -142,6 +148,10 @@ $(document).on('click','#sentToBankBtn', function(){
     $(document).on('click', '.disburseClickBtn', function(){
         var invoiceIds = $('#transaction_ids').val().trim();
         var dataUrl = $(this).attr('data-url');
+        if (invoiceIds.length == 0) {
+            replaceAlert('Please select atleast one Ref No', 'error');
+            return false;
+        }
         var newUrl = dataUrl+'&transaction_ids='+invoiceIds;
         $('#openDisburseInvoice').attr('data-url', newUrl);
         $('#openDisburseInvoice').trigger('click');
@@ -157,7 +167,7 @@ $(document).on('click','#sentToBankBtn', function(){
             }
             if(allInvIds.length != 0){
                 allInvIds.push(current_id);
-                allInvIds.join();
+                //allInvIds.join();
                 $('#transaction_ids').val(allInvIds.join());
             }else{
                 $('#transaction_ids').val(current_id);

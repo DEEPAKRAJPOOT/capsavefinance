@@ -18,7 +18,7 @@
             @yield('content')
         </section>
     </body>
-    <script src="{{ asset('backend/assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/js/jquery-3.5.1.min.js') }}"></script>
     <script src="{{ asset('backend/assets/js/jquery.validate.js') }}"></script>
     <script src="{{ asset('frontend/outside/js/validation/login.js') }}"></script> 
 </html>

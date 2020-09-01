@@ -57,6 +57,7 @@ class AppStatusLog extends BaseModel
    protected $fillable = [
        'user_id',
        'app_id',
+       'note_id',
        'status_id',
        'note_id',
        'created_by',
@@ -169,5 +170,16 @@ public static function saveAppStatusLog($arrAppStatusLog = [])
 
        return ($rowUpdate ? $rowUpdate : false);
    }
+   
+    public static function getAllCommentsByAppId($app_id){
+        $appNote = self::select('app_status_log.*','note.note_data', 'users.f_name', 'users.m_name', 'users.l_name', 'mst_status.status_name')                
+                ->join('mst_status', 'app_status_log.status_id', '=', 'mst_status.id')
+                ->leftJoin('users', 'users.user_id', '=', 'app_status_log.created_by')
+                ->leftJoin('note', 'app_status_log.note_id', '=', 'note.note_id')                
+                ->where('app_status_log.app_id', $app_id)
+                ->orderBy('app_status_log.app_status_log_id', 'DESC')
+                ->get();      
+        return $appNote;
+    }   
  
 }

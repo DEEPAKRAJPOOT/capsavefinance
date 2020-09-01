@@ -9,6 +9,7 @@ use Session;
 use Hash;
 use Auth;
 use Event;
+use Illuminate\Support\Facades\Validator;
 
 class ChangePasswordController extends Controller
 {
@@ -68,16 +69,28 @@ class ChangePasswordController extends Controller
         
         if (!(Hash::check($request->get('current-password'), Auth::user()->password))) {
             // The passwords matches
-            return redirect()->back()->with("error","Your current password does not matches with the password you provided. Please try again.");
+            return redirect()->back()->with("error","Your old password does not matches with the password you provided. Please try again.");
         }
         if(strcmp($request->get('current-password'), $request->get('new-password')) == 0){
             //Current password and new password are same
-            return redirect()->back()->with("error","New Password cannot be same as your current password. Please choose a different password.");
+            return redirect()->back()->with("error","New Password cannot be same as your old password. Please choose a different password.");
         }
-        $validatedData = $request->validate([
+        $message = [
+            'new-password.required' => 'Please enter your New Password (minimum 8 characters)',
+            'new-password_confirmation.required' => 'Please confirm your Password (minimum 8 characters)',
+            'new-password.regex' => 'Passwords must include 1 uppercase, 1 lowercase, 1 number and 1 special character.',
+            'new-password_confirmation.same' => 'Please enter the same password as New Password.',
+        ];
+        $rules = [
             'current-password' => 'required',
-            'new-password' => 'required|string|min:8|confirmed',
-        ]);
+            'new-password' => 'required|min:8|regex:/^((?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,})$/',
+            'new-password_confirmation' => 'required|same:new-password|regex: /^(?!.*(.)\1\1)(.+)$/'
+            ];
+        $validator = Validator::make($request->all(), $rules, $message);
+        if ($validator->fails()) {
+//            Session::flash('error', $validator->messages()->first());
+                return redirect()->back()->with('error', $validator->messages()->first());
+        }
         //Change Password
         $firstTime = '';
         $user = Auth::user();

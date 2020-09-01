@@ -36,11 +36,11 @@
                                <div class="card">
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                  <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                             </div>
-                                              <div class="col-md-4">
-                                                  <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by business name, Invoice number ">
+                                              <div class="col-md-5">
+                                                  <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number ">
                                               </div> 
                                              <div class="col-md-1">
                                              <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
@@ -72,14 +72,16 @@
 
                                                 </select>
                                             </div>  -->   
-                                            <div class="col-md-2">	
-                                             <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
-                                              
+                                            <div class="col-md-2">
+                                             @can('backend_bulk_invoice')
+                                                <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
+                                             @endcan
                                        
                                             </div>
-                                            <div class="col-md-1">	          
-                                      <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-app">Approve</button>
-
+                                            <div class="col-md-1">
+                                            @can('update_bulk_invoice')
+                                                <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-app">Approve</button>
+                                            @endcan
                                                
                                             
                                             </div>

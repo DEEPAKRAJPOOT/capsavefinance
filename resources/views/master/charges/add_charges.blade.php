@@ -108,7 +108,7 @@
             </div>
             <div class="form-group col-md-3" id="gst_div">
              <label for="chrg_type"></label>
-             <input type="hidden" class="form-control" name="gst_percentage" placeholder="GST Percentage" readonly="readonly" value="{{Config::get('payment.gst')}}" style="height:35px; margin-bottom: -20px">
+             <input type="text" class="form-control" name="gst_percentage" placeholder="GST Percentage" readonly="readonly" value="{{Config::get('payment.gst')}}" style="height:35px; margin-bottom: -20px">
         </div>
         </div>
         <div class="row">
@@ -163,8 +163,10 @@
         $(document).on('click', 'input[name="is_gst_applicable"]', function (e) {
             if ($(this).val() == '1')
                 $('#gst_div').show();
-            else
+            else{
+                $('input[name="gst_percentage"]').val('');
                 $('#gst_div').hide();
+            }
         })
 
 

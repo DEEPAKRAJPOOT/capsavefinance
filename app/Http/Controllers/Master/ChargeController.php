@@ -28,6 +28,7 @@ class ChargeController extends Controller {
     public function editCharges(Request $request){
         $charge_id = preg_replace('#[^0-9]#', '', $request->get('id'));
         $charge_data = $this->masterRepo->findChargeById($charge_id);
+//        dd($charge_data);
     	return view('master.charges.edit_charges',['charge_data' => $charge_data]);
     }
 
@@ -36,6 +37,7 @@ class ChargeController extends Controller {
        
         try {
             $arrChargesData = $request->all();
+//            dd($arrChargesData);
             $arrChargesData['created_at'] = \carbon\Carbon::now();
             $arrChargesData['created_by'] = Auth::user()->user_id;
             $status = false;
@@ -49,15 +51,23 @@ class ChargeController extends Controller {
                     $status = $this->masterRepo->updateCharges($arrChargesData, $charge_id);
                     if($status){
                         $lastChrgGSTData = $this->masterRepo->getLastChargesGSTById($charge_id);
-                        if($lastChrgGSTData->gst_val !== $arrChargesData['gst_percentage']){
-                            $chrgGstData = ([
+                        $chrgGstData = ([
                             'chrg_id' => $charge_id,
                             'gst_val' => $arrChargesData['gst_percentage'],
                             'created_at' => $arrChargesData['created_at'],
                             'created_by' => $arrChargesData['created_by']
-                            ]);
-                            $this->masterRepo->saveChargesGST($chrgGstData);
+                        ]);
+                        
+                        if($lastChrgGSTData){
+                            if($arrChargesData['is_gst_applicable'] == 1 && $chrgGstData['gst_val'] !== null && $lastChrgGSTData->gst_val !== $arrChargesData['gst_percentage']){
+                                 $charge_gst_id = $this->masterRepo->saveChargesGST($chrgGstData);
+                            } 
+                        }else{
+                            if($arrChargesData['is_gst_applicable'] == 1 && $chrgGstData['gst_val'] !== null){
+                                 $charge_gst_id = $this->masterRepo->saveChargesGST($chrgGstData);
+                            }
                         }
+                        
                         
                     }
                      $transUpdateData  =    (['trans_name' =>$request->chrg_name,
@@ -81,6 +91,7 @@ class ChargeController extends Controller {
             else
             {
                 $status = $this->masterRepo->saveCharges($arrChargesData);
+//                dd($status);
                 if($status)
                 {
                     $chrgGstData = ([
@@ -90,7 +101,9 @@ class ChargeController extends Controller {
                         'created_by' => $arrChargesData['created_by']
                         ]);
                     
-                    $charge_gst_id = $this->masterRepo->saveChargesGST($chrgGstData);
+                    if($arrChargesData['is_gst_applicable'] == 1 && $chrgGstData['gst_val'] !== null){
+                        $charge_gst_id = $this->masterRepo->saveChargesGST($chrgGstData);
+                    }
                     
                     $transData  =    (['trans_name' =>$request->chrg_name,
                                      'credit_desc' => $request->credit_desc,

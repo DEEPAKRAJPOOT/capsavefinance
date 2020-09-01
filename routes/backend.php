@@ -15,10 +15,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'backend_dashboard',
                 'uses' => 'Backend\DashboardController@index'
             ]);
-            Route::get('/idfc', [
-                'as' => 'idfc',
-                'uses' => 'Backend\DashboardController@idfc'
+            Route::get('/download-file', [
+                'as' => 'download_storage_file',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
             ]);
+            Route::get('/download-file', [
+                'as' => 'download_storage_file',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            ]);              
         });
 
         Route::group(['prefix' => 'reports'], function () {
@@ -56,6 +60,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
              Route::get('/pdf_invoice_realisation_url', [
                 'as' => 'pdf_invoice_realisation_url',
                 'uses' => 'Backend\ReportController@pdfInvoiceRealisation'
+            ]);
+             
+            Route::get('/tds', [
+                'as' => 'tds',
+                'uses' => 'Backend\ReportController@tdsReport'
+            ]);
+            Route::get('/tds-download', [
+                'as' => 'tds_download_reports',
+                'uses' => 'Backend\ReportController@downloadTdsReport'
             ]);
              
         });
@@ -154,11 +167,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\CamController@saveBankDocument'
             ]);
             
-            
-            Route::get('document-delete/{appDocFileId}',
+            Route::get('document-delete',
                 [
                 'as' => 'document_delete',
-                'uses' => 'Application\ApplicationController@documentDelete'
+                'uses' => 'Backend\ApplicationController@documentDelete'
             ]);
             
             Route::post('promoter-document-save', [
@@ -185,6 +197,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('fircu/fiupload', [
                 'as' => 'fi_upload',
                 'uses' => 'Backend\FiRcuController@FiUpload'
+            ]);
+
+            Route::get('fircu/fi-download', [
+                'as' => 'download_fi_doc',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
             ]);
 
             Route::post('fircu/fiupload', [
@@ -269,18 +286,22 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_app_note',
                 'uses' => 'Backend\ApplicationController@saveAppNote'
             ]); 
+
             Route::get('reject-app', [
                 'as' => 'reject_app',
                 'uses' => 'Backend\ApplicationController@rejectApp'
             ]);
+
             Route::post('save-app-rejection', [
                 'as' => 'save_app_rejection',
                 'uses' => 'Backend\ApplicationController@saveAppRejection'
             ]);
+
             Route::get('view-app-status-list', [
                 'as' => 'view_app_status_list',
                 'uses' => 'Backend\ApplicationController@getAppStatusList'
             ]);
+
             Route::get('send-case-confirmBox', [
                 'as' => 'send_case_confirmBox',
                 'uses' => 'Backend\ApplicationController@sendCaseConfirmbox'
@@ -329,6 +350,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('view-offer', [
                 'as' => 'view_offer',
                 'uses' => 'Backend\ApplicationController@showOffer'
+            ]);
+
+            Route::get('accept-offer', [
+                'as' => 'accept_offer_form',
+                'uses' => 'Backend\ApplicationController@acceptOfferForm'
             ]);
             
             Route::post('accept-offer', [
@@ -646,6 +672,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'reject_offer',
                     'uses' => 'Backend\CamController@rejectOffer'
                 ]);
+                Route::get('/approve-limit-form', [
+                    'as' => 'approve_limit_form',
+                    'uses' => 'Backend\CamController@approveLimitForm'
+                ]);
+                Route::get('/finstmt-download', [
+                'as' => 'download_fin_stmt_doc',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            ]);
             }); //end of cam   
                         
             Route::get('copy-app-confirmBox', [
@@ -666,6 +700,26 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('check-renewal-application', [
                 'as' => 'check_renewal_application',
                 'uses' => 'Backend\RenewalController@checkRenewalApps'
+            ]); 
+                        
+            Route::get('enhance-limit-confirmBox', [
+                'as' => 'enhance_limit_confirmbox',
+                'uses' => 'Backend\RenewalController@copyAppConfirmbox'
+            ]);
+            
+            Route::post('create-enhanced-limit-app', [
+                'as' => 'create_enhanced_limit_app',
+                'uses' => 'Backend\RenewalController@renewApplication'
+            ]);
+
+            Route::get('reduce-limit-confirmBox', [
+                'as' => 'reduce_limit_confirmBox',
+                'uses' => 'Backend\RenewalController@copyAppConfirmbox'
+            ]);
+            
+            Route::post('create_reduced_limit_app', [
+                'as' => 'create_reduced_limit_app',
+                'uses' => 'Backend\RenewalController@renewApplication'
             ]);            
             
         });//end of application
@@ -697,7 +751,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('update-backend-lead', [
                 'as' => 'update_backend_lead',
                 'uses' => 'Backend\LeadController@updateBackendLead'
-            ]);   
+            ]);  
+                        
+            Route::get('download-sample-lead-csv', [
+                'as' => 'download_sample_lead_csv',
+                'uses' => 'Backend\LeadController@downloadSample'
+            ]);
         });
         
         Route::group(['prefix' => 'fircu'], function () {
@@ -822,6 +881,31 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             'as' => 'save_sub_program',
             'uses' => 'Backend\ProgramController@saveSubProgram'
            ]);
+             
+            Route::get('confirm-end-program', [
+            'as' => 'confirm_end_program',
+            'uses' => 'Backend\ProgramController@confirmEndProgram'
+           ]); 
+            
+            Route::post('save-end-program', [
+            'as' => 'save_end_program',
+            'uses' => 'Backend\ProgramController@saveEndProgram'
+           ]); 
+            
+            Route::get('view-sub-program', [
+            'as' => 'view_sub_program',
+            'uses' => 'Backend\ProgramController@addSubProgram'
+           ]); 
+            Route::get('view-end-program-reason', [
+            'as' => 'view_end_program_reason',
+            'uses' => 'Backend\ProgramController@viewEndPrgmReason'
+           ]); 
+
+             Route::get('edit-program', [
+                'as' => 'edit_program',
+                'uses' => 'Backend\ProgramController@addProgram'
+            ]);
+             
         });
             // All master routes
         Route::group(['prefix' => 'manage'], function () {
@@ -1103,7 +1187,28 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_base_rate',
                 'uses' => 'Master\BaseRateController@saveBaseRate'
             ]);
-            
+
+            // Manage TDS
+            Route::get('/get-tds', [
+                'as' => 'get_tds_list',
+                'uses' => 'Master\TdsController@list'
+            ]);
+
+            Route::get('/add-tds', [
+                'as' => 'add_tds',
+                'uses' => 'Master\TdsController@addTds'
+            ]);
+
+            Route::get('/edit_tds', [
+                'as' => 'edit_tds',
+                'uses' => 'Master\TdsController@editTds'
+            ]);
+
+            Route::post('/save-tds', [
+                'as' => 'save_tds',
+                'uses' => 'Master\TdsController@saveTds'
+            ]);
+            // END Manage TDS
             
         });
 

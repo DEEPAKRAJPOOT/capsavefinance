@@ -43,6 +43,7 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Crypt;
 
 class AjaxController extends Controller {
 
@@ -72,9 +73,10 @@ class AjaxController extends Controller {
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->finRepo = $finRepo;
-        $this->UserInvRepo = $UserInvRepo;
-        $this->middleware('checkEodProcess');
+        $this->UserInvRepo = $UserInvRepo;        
         $this->reportsRepo = $reportsRepo;
+        $this->middleware('checkEodProcess');
+        $this->middleware('checkBackendLeadAccess');
     }
 
     /**
@@ -2664,7 +2666,7 @@ if ($err) {
      * @return json user data
      */
     public function getCasePools(DataProviderInterface $dataProvider) {
-        $appList = $this->application->getApplicationPoolData()->get();
+        $appList = $this->application->getApplicationPoolData();
         $apppool = $dataProvider->getAppLicationPool($this->request, $appList);
         return $apppool;
     }
@@ -2693,13 +2695,13 @@ if ($err) {
     
     
     public function getAnchorLists(DataProviderInterface $dataProvider) { 
-     $anchUsersList = $this->userRepo->getAllAnchor();
+     $anchUsersList = $this->userRepo->getAllAnchor($orderBy='anchor_id', $datatable=true);
      $users = $dataProvider->getAnchorList($this->request, $anchUsersList);
      return $users;
     }
     
     public function getAnchorLeadLists(DataProviderInterface $dataProvider){
-      $anchLeadList = $this->userRepo->getAllAnchorUsers();
+      $anchLeadList = $this->userRepo->getAllAnchorUsers(true);
         $users = $dataProvider->getAnchorLeadList($this->request, $anchLeadList);
         return $users; 
     }
@@ -3343,7 +3345,7 @@ if ($err) {
           
              return response()->json(['status' => 1,
                  'chrg_applicable_id' => $getamount->chrg_applicable_id,
-                 'amount' => number_format($getamount->chrg_calculation_amt),
+                 'amount' => $getamount->chrg_calculation_amt,
                  'id' => $getamount->id,
                  'limit' => $limitAmount,
                  'type' => $getamount->chrg_calculation_type,
@@ -3490,9 +3492,13 @@ if ($err) {
     public function getProgramBalanceLimit(Request $request)
     {
         $program_id = (int)$request->program_id;
-        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);
+        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
         $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
-        return json_encode(['prgm_limit' => $prgm_limit, 'prgm_data' => $prgm_data]);
+        $utilizedLimit = 0;
+        if ($prgm_data && $prgm_data->copied_prgm_id) {            
+            $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
+        }
+        return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
     }
     
      public function getProgramSingleList(Request $request)
@@ -3673,9 +3679,16 @@ if ($err) {
                         $attr['status_id'] = $updateInvoice['status_id'];
                         $attr['invoice_margin_amount'] = $updateInvoice['invoice_margin_amount'];
                         $res  =  $this->invRepo->saveFinalInvoice($attr);
-                        InvoiceStatusLog::saveInvoiceStatusLog($res->invoice_id,$attr['status_id']); 
+                        InvoiceStatusLog::saveInvoiceStatusLog($res->invoice_id,$attr['status_id']);
+                         if($res['status_id']==8)
+                        {
+                            $inv_apprv_margin_amount = InvoiceTrait::invoiceMargin($res);
+                            $is_margin_deduct =  1;  
+                            $this->invRepo->updateFileId(['invoice_margin_amount'=>$inv_apprv_margin_amount,'is_margin_deduct' =>1],$res['invoice_id']);
+                        } 
 
                    }
+                  
                   $attribute['invoice_id'] = $invoice_id;
                   $attribute['status'] = 1;
                   $attribute['invoice_bulk_upload_id'] = $attr->invoice_bulk_upload_id;
@@ -3946,10 +3959,24 @@ if ($err) {
    * @return json transaction data
    */
     public function getInvoiceDueList(DataProviderInterface $dataProvider) {
-
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('d/m/Y');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('d/m/Y');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'user_id' => $this->request->get('user_id'),
+            'customer_id' => $this->request->get('customer_id'),
+            'type' => 'excel',
+        ];
         $transactionList = $this->invRepo->getReportAllInvoice();
         $users = $dataProvider->getReportAllInvoice($this->request, $transactionList);
-        return $users;
+        $users     = $users->getData(true);
+        $users['excelUrl'] = route('pdf_invoice_due_url', $condArr);
+        $condArr['type']  = 'pdf';
+        $users['pdfUrl'] = route('pdf_invoice_due_url', $condArr);
+        return new JsonResponse($users);
     }
     
      /**
@@ -3958,16 +3985,45 @@ if ($err) {
    * @return json transaction data
    */
     public function getInvoiceOverDueList(DataProviderInterface $dataProvider) {
-
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('d/m/Y');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('d/m/Y');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'user_id' => $this->request->get('user_id'),
+            'customer_id' => $this->request->get('customer_id'),
+            'type' => 'excel',
+        ];
         $transactionList = $this->invRepo->getReportAllOverdueInvoice();
         $users = $dataProvider->getReportAllOverdueInvoice($this->request, $transactionList);
-        return $users;
+        $users     = $users->getData(true);
+        $users['excelUrl'] = route('pdf_invoice_over_due_url', $condArr);
+        $condArr['type']  = 'pdf';
+        $users['pdfUrl'] = route('pdf_invoice_over_due_url', $condArr);
+        return new JsonResponse($users);
     }
     
    public function getInvoiceRealisationList(DataProviderInterface $dataProvider) {
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('d/m/Y');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('d/m/Y');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'user_id' => $this->request->get('user_id'),
+            'customer_id' => $this->request->get('customer_id'),
+            'type' => 'excel',
+        ];
         $transactionList = $this->invRepo->getInvoiceRealisationList();
         $users = $dataProvider->getInvoiceRealisationList($this->request, $transactionList);
-        return $users;
+        $users     = $users->getData(true);
+        $users['excelUrl'] = route('pdf_invoice_realisation_url', $condArr);
+        $condArr['type']  = 'pdf';
+        $users['pdfUrl'] = route('pdf_invoice_realisation_url', $condArr);
+        return new JsonResponse($users);
     }  
         /**
      * Get all Equipment
@@ -4291,7 +4347,23 @@ if ($err) {
     public function getRemainingCharges(Request $request){
         $user_id = $request->get('user_id');
         $trans_type = $request->get('trans_type');
-        $res = Transactions::getAllChargesApplied(['user_id' => $user_id,'trans_type'=>$trans_type]);
+        $charges = Transactions::getAllChargesApplied(['user_id' => $user_id,'trans_type'=>$trans_type]);
+        $res = [];
+        foreach($charges as $trans){
+            $res[] = [
+                'trans_date' => Carbon::parse($trans->trans_date)->format('d-m-Y'),
+                'trans_id' => $trans->trans_id,
+                'parent_trans_id' => $trans->parent_trans_id,
+                'trans_name' => $trans->transName,
+                'trans_desc' => $trans->transName,
+                'user_id' => $trans->user_id,
+                'entry_type' => $trans->entry_type,
+                'debit_amount' => (float) $trans->amount,
+                'credit_amount' => (float) ($trans->amount - $trans->outstanding),
+                'remaining' => (float) $trans->outstanding,
+                'tds_amount'=> (float) $trans->TDSAmount,
+            ];
+        }
         $data['result'] = $res;
         if (!empty($res)) {
             $data['status'] = 'success';
@@ -4366,7 +4438,9 @@ if ($err) {
         $user_id = $this->request->user_id;
         $this->dataRecords = [];
         if (!empty($user_id)) {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 0, 'user_id' => $user_id]);
+            $this->dataRecords = Payment::getPayments(['is_settled' => 0, 'user_id' => $user_id],['created_at'=>'desc']);
+        } else {
+            $this->dataRecords = Payment::getPayments(['is_settled' => 0],['created_at'=>'desc']);
         }
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
@@ -4376,7 +4450,9 @@ if ($err) {
         $user_id = $this->request->user_id;
         $this->dataRecords = [];
         if (!empty($user_id)) {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id]);
+            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id],['updated_at'=>'desc']);
+        } else {
+            $this->dataRecords = Payment::getPayments(['is_settled' => 1],['updated_at'=>'desc']);
         }
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
@@ -4453,15 +4529,35 @@ if ($err) {
     }
 
     public function updateEodProcessStatus(Request $request)
-    {
-        $waitTime = 10;
-        sleep($waitTime);
-        
-        \App::make('App\Http\Controllers\Lms\EodProcessController')->process();
-         
-        return response()->json(['status' => 1]);
+    { 
+        $eod_process_id = $request->eod_process_id;
+
+        if(!\Helpers::getInterestAccrualCronStatus()){
+            return response()->json(['status' => 3 , 'message'=>'Interest Accrual has not been calculated till date.']);
+        }
+        if(\Helpers::getEodProcessCronStatus()){
+            return response()->json(['status' => 4 , 'message'=>'EOD is already run today.']);
+        }
+        if($eod_process_id){
+            if(\App::make('App\Http\Controllers\Lms\EodProcessController')->process($eod_process_id)){
+                return response()->json(['status' => 1, 'message'=>'Eod completed successfully!']);
+            }
+            return response()->json(['status' => 2, 'message'=>'Eod process failed!']);
+        }
+        return response()->json(['status' => 0, 'message'=>'Eod detail missing! Please try again!']);
     }    
 
+    public function startEodSystem(Request $request){
+        $eod_process_id = $request->eod_process_id;
+
+        if($eod_process_id){
+            if(\App::make('App\Http\Controllers\Lms\EodProcessController')->startSystem($eod_process_id)){
+                return response()->json(['status' => 1, 'message'=>'System Start successfully!']);
+            }
+            return response()->json(['status' => 2, 'message'=>'System Start process failed!']);
+        }
+        return response()->json(['status' => 0, 'message'=>'Eod detail missing! Please try again!']);
+    }
 
     public function getAllCustomers(DataProviderInterface $dataProvider) {
         $usersList = $this->userRepo->getAllUsers();
@@ -4487,6 +4583,167 @@ if ($err) {
         $condArr['type']  = 'pdf';
         $leaseRegisters['pdfUrl'] = route('download_reports', $condArr);
         return new JsonResponse($leaseRegisters);
+    }    
+
+    public function unsettledPayments(Request $request){
+        $userId = $request->user_id;
+        $chrgId = $request->chrg_id;
+        $paymentType = config('lms.CHARGE_PAYMENT_TYPE_MAP.'.$chrgId);
+        $dataRecords = [];
+        if ($userId) {
+            $payments = Payment::getPayments(['is_settled' => 0, 'user_id' => $userId, 'payment_type' => $paymentType]);
+            foreach ($payments as $payment) {
+                $dataRecords[] =[
+                    'id'=>Crypt::encryptString($payment->payment_id),
+                    'amount'=>number_format($payment->amount),
+                    'paymentmode'=>$payment->paymentmode,
+                    'transactionno'=>$payment->transactionno,
+                    'date_of_payment'=>Carbon::parse($payment->date_of_payment)->format('d-m-Y')
+                ];
+            }
+        }
+        if(!empty($dataRecords)){
+            return response()->json(['status' => 1,'res' => $dataRecords]);
+        }else{
+            return response()->json(['status' => 0,'res' => $dataRecords]);
+        }
+        
+    }
+
+    public function getEodList(DataProviderInterface $dataProvider){
+        $eodList = $this->lmsRepo->getEodList();
+        $eod = $dataProvider->getEodList($this->request, $eodList);
+        return $eod;
+    }
+
+    public function getEodProcessList(Request $request){
+        $eod_process_id = $request->eod_process_id;
+        $eodLog = $this->lmsRepo->getEodProcessLog(['eod_process_id'=>$eod_process_id]);
+        if($eodLog){
+            $icon0 = '';
+            $icon1 = '<i class="fa fa-check" title="Pass" style="color:green" aria-hidden="true"></i>';
+            $icon2 = '<i class="fa fa-times" title="Fail" style="color:red" aria-hidden="true"></i>';
+
+            $html = '<table class="table  table-td-right"> <tbody> <tr> <td class="text-left" width="30%"><b>Tally Posting Status</b></td> <td>'.${'icon'.$eodLog->tally_status}.'</td> <td class="text-left" width="30%"><b>Interest Accrual Status</b></td> <td>'.${'icon'.$eodLog->int_accrual_status}.'</td> </tr> <tr> <td class="text-left" width="30%"><b>Repayment Status</b></td> <td>'.${'icon'.$eodLog->repayment_status}.'</td> <td class="text-left" width="30%"><b>Disbursal Status</b></td> <td>'.${'icon'.$eodLog->disbursal_status}.'</td> </tr> <tr> <td class="text-left" width="30%"><b>Charge Posting Status</b></td> <td>'.${'icon'.$eodLog->charge_post_status}.'</td> <td class="text-left" width="30%"><b>Overdue Interest Accrual Status</b></td> <td>'.${'icon'.$eodLog->overdue_int_accrual_status}.'</td> </tr> <tr> <td class="text-left" width="30%"><b>Disbursal Block Status</b></td> <td>'.${'icon'.$eodLog->disbursal_block_status}.'</td> <td class="text-left" width="30%"><b>Manually Posted Running Transaction Status</b></td> <td>'.${'icon'.$eodLog->is_running_trans_settled}.'</td> </tr> </tbody> </table>';
+        }else{
+            $html = "EOD report not Found.";
+        }
+
+        return new JsonResponse(['html'=>$html]);
+    }
+    public function checkExistAnchorLead(Request $request)
+    {
+        $email = $request->get('email');        
+        $assocAnchId = $request->get('anchor_id');
+      
+        $result = [];
+        $result['message'] = '';
+        $result['status'] = true;        
+        
+        //$getAnchorId = $this->userRepo->getUserDetail(Auth::user()->user_id);
+        //if ($getAnchorId && $getAnchorId->anchor_id!=''){
+        if (!empty($assocAnchId)) {
+            $anchorId = $assocAnchId;
+        } else {
+            $anchorId = Auth::user()->anchor_id;
+        }
+        
+        if (!empty($anchorId)) {
+            $whereCond=[];
+            $whereCond[] = ['email', '=', trim($email)];
+            $whereCond[] = ['anchor_id', '=', $anchorId];
+            //$whereCond[] = ['is_registered', '!=', '1'];
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+
+            if (isset($anchUserData[0])) {
+                $result['status'] = false;
+                $result['message'] = trans('success_messages.existing_email');
+            }
+        }
+        
+        return response()->json($result);
+    }    
+
+    public function checkBankAccWithIfscExist(Request $req){
+        
+        $response['status'] = false;
+        $acc_no = trim($req->get('acc_no'));
+        $ifsc_code = trim($req->get('ifsc'));
+        $acc_id = $req->get('acc_id');
+        $status = $this->application->getBankAccByCompany(['acc_no' => $acc_no, 'ifsc_code' => $ifsc_code]);
+       if($status == false){
+                $response['status'] = 'true';
+        }else{
+           $response['status'] = 'false';
+           if($acc_id != null){
+               $response['status'] = 'true';
+           }
+        }
+        
+        return response()->json( $response );
+   }
+
+    public function getCibilReportLms(DataProviderInterface $dataProvider) {
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('Y-m-d 00:00:00');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d 23:59:59');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'search_keyword' => $this->request->get('search_keyword'),
+            'type' => 'excel',
+        ];
+        $cibilReports = $this->lmsRepo->getCibilReports();
+        $reportsList = $dataProvider->getCibilReportLms($this->request, $cibilReports);
+        $reportsList     = $reportsList->getData(true);
+        $reportsList['excelUrl'] = route('download_lms_cibil_reports', $condArr);
+        $condArr['type']  = 'pdf';
+        $reportsList['pdfUrl'] = route('download_lms_cibil_reports', $condArr);
+        return new JsonResponse($reportsList);
+    }
+    
+    /**
+     * Get all TDS
+     * 
+     * @param DataProviderInterface $dataProvider
+     * @return JsonResponse
+     */
+    public function Tds(DataProviderInterface $dataProvider) {
+        $condArr = [
+            'user_id' => $this->request->get('user_id'),
+            'type' => 'excel',
+        ];
+        $tdsList = $this->reportsRepo->tds();
+        $tds = $dataProvider->tds($this->request, $tdsList);
+        $tds = $tds->getData(true);
+        $tds['excelUrl'] = route('tds_download_reports', $condArr);
+        $condArr['type']  = 'pdf';
+        $tds['pdfUrl'] = route('tds_download_reports', $condArr);
+        return new JsonResponse($tds);
+    } 
+
+        
+    /**
+     * change Agency User status
+     * 
+     * @param Request $request
+     * @return type mixed
+     */
+    public function changeUsersAgencyStatus(Request $request)
+    {
+        $user_id = $request->get('user_id');
+        $is_active = $request->get('is_active');
+        $result = $this->userRepo->updateUserStatus(['is_active' => $is_active], ['user_id' => $user_id]);
+        return \Response::json(['success' => $result]);
+    }
+
+    // TDS List in master
+    public function getTDSList(DataProviderInterface $dataProvider) 
+    {
+        $tdsList = $this->masterRepo->getTDSLists();
+        $data = $dataProvider->getTDSLists($this->request, $tdsList);
+        return $data;
     }
 
 }

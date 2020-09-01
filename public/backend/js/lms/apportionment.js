@@ -98,11 +98,11 @@ class Apportionment {
                     parentRef.setTransactionAmt();
                 }
                 var rows = this.fnGetData();
-                if ( rows.length === 0 ) {
-                    $('.action-btn').hide();
-                }else{
-                    $('.action-btn').show();
-                }
+                // if ( rows.length === 0 ) {
+                //     $('.action-btn').hide();
+                // }else{
+                //     $('.action-btn').show();
+                // }
             },
         });
     }
@@ -156,7 +156,7 @@ class Apportionment {
         });
         var unapplied_amt = payment_amt.toFixed(2)-settled_amt.toFixed(2);
         if(unapplied_amt.toFixed(2) < 0 ){
-            alert("Sum of your total entries is Greater than Re-payment amount");
+            replaceAlert("Sum of your total entries is Greater than Re-payment amount", 'error');
         } 
         $('#unappliledAmt').text('₹ '+unapplied_amt.toFixed(2));
     }
@@ -181,7 +181,7 @@ class Apportionment {
         var message = '';
         var paymentAmt = parseFloat(this.data.payment_amt);
         var totalSettledAmt = 0;
-        if(check.filter(':checked').length == 0){
+        if(check.length > 0 &&  check.filter(':checked').length == 0){
             message = "Please Select at least one ";
             status = false;
         }
@@ -247,7 +247,7 @@ class Apportionment {
         }
     
         if(!status){
-            alert(message);
+            replaceAlert(message, 'error');
             return status;
         }
 
@@ -275,7 +275,7 @@ class Apportionment {
         if(!confirm('Are you sure? You want to Mark Posted.'))
         return false;
         if(!status){
-            alert(message);
+            replaceAlert(message, 'error');
             return status;
         }
     }
@@ -287,7 +287,7 @@ class Apportionment {
            var checkedName = $('input:checkbox:checked').attr('name');
            var transtype = $('input:checkbox:checked').attr('transtype');
            if (!transtype && transtype != 'charges' && transtype != 'interest') {
-                 alert('Waived off is not allowed except charges and interests');
+                 replaceAlert('Waived off is not allowed except charges and interests', 'error');
                  return false;
            }
            var transId = checkedName.replace(/[^0-9]/g, '');
@@ -299,7 +299,7 @@ class Apportionment {
            $('.view_detail_transaction').attr('data-url', targetUrl);
            $('.view_detail_transaction').trigger('click');
        }else{
-            alert('Please select only one checkbox');
+            replaceAlert('Please select only one checkbox', 'error');
        }
     }
 
@@ -321,7 +321,7 @@ class Apportionment {
             $('.view_detail_transaction').attr('data-url', targetUrl);
             $('.view_detail_transaction').trigger('click');
         }else{
-            alert('Please select at least one checkbox');
+            replaceAlert('Please select at least one checkbox', 'error');
         }
     }
 
@@ -339,7 +339,7 @@ class Apportionment {
            $('.view_detail_transaction').attr('data-url', targetUrl);
            $('.view_detail_transaction').trigger('click');
        }else{
-            alert('Please select only one checkbox to reverse.');
+            replaceAlert('Please select only one checkbox to reverse.', 'error');
        }
     }
 

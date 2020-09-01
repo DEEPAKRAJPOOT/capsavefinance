@@ -25,9 +25,14 @@
                 @csrf	
                 <div class="card-body">
                     <div class="row pull-right">
+                    @can('lms_refund_request_udate')
                         <div class="col-md-2" id="buttonDiv">
-                            <button type="button" class="btn btn-success btn-sm ml-2" id="refundQueueBtn">Disbursed Queue</button>
+                            <button type="button" class="btn btn-success btn-sm ml-2" id="refundQueueBtn">Refund Queue</button>
                         </div>
+                        @endcan
+                    </div>
+                    <div class="row col-6 pull-left">
+                    @include('lms.refund.common.search')
                     </div>
                 </div>
                 <div class="col-12 dataTables_wrapper mt-4">
@@ -42,7 +47,7 @@
                                                     <th><input type="checkbox" id="chkAll"></th>
                                                     <th>Ref No</th>
                                                     <th>Customer ID</th>
-                                                    <th>Entity Name</th>                                                    
+                                                    <th>Bussiness Entity Name</th>                                                    
 													<th>Amount</th>
                                                     <th>Date</th>
                                                     {{-- <th>Assignee</th>	
@@ -76,6 +81,16 @@
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             token: "{{ csrf_token() }}",
             status:"5",
+            columns: [
+                {data: 'id'},
+                {data: 'ref_code'},
+                {data: 'customer_id'},
+                {data: 'biz_entity_name'},                    
+                {data: 'amount'},
+                {data: 'updated_at'},
+                // {data: 'assignee'},
+                // {data: 'assignedBy'}
+            ]
         };
     </script>
     <script src="{{ asset('backend/js/lms/request.js') }}" type="text/javascript"></script>

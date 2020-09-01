@@ -1,5 +1,5 @@
 try {
-    var oTable;
+    var oTable, oTable1;
     jQuery(document).ready(function ($) {
         
         //User Listing code
@@ -21,6 +21,7 @@ try {
                     d.search_keyword = $('input[name=search_keyword]').val();
                     d.is_assign = $('select[name=is_assign]').val();
                     d.status = $('select[name=status]').val();
+                    d.pan = $('select[name=pan]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -30,13 +31,13 @@ try {
                 }
             },
            columns: [
-                {data: 'app_id'},
+                {data: 'app_code'},
                 {data: 'biz_entity_name'},
                 {data: 'name'},
                 {data: 'contact'},
                 // {data: 'email'},
                // {data: 'mobile_no'},
-                {data: 'assoc_anchor'},
+                // {data: 'assoc_anchor'},
                // {data: 'user_type'},
                 {data: 'assignee'},
                 {data: 'assigned_by'},

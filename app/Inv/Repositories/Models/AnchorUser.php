@@ -57,6 +57,8 @@ class AnchorUser extends BaseModel {
         'name',
         'l_name',
         'biz_name',
+        'pan_no',
+        'biz_id',
         'email',
         'phone',
         'user_type',
@@ -66,7 +68,8 @@ class AnchorUser extends BaseModel {
         'created_by',
         'created_at',
         'updated_at',
-        'updated_by'
+        'updated_by',
+        // 'supplier_code'
     ];
 
     /**
@@ -100,17 +103,19 @@ class AnchorUser extends BaseModel {
      * 
      * @return type
      */
-    public static function getAllAnchorUsers() {
+    public static function getAllAnchorUsers($datatable=false) {
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         
-        $result = self::select('anchor_user.*');
-             //->join('users', 'users.user_id', '=', 'anchor_user.user_id')
+        $result = self::select('anchor_user.*', 'anchor.comp_name')
+             ->join('anchor', 'anchor_user.anchor_id', '=', 'anchor.anchor_id');
         
         if ($roleData[0]->is_superadmin != 1) {        
              $result->where('anchor_user.anchor_id', \Auth::user()->anchor_id);
              //$result->where('anchor_user.created_by', \Auth::user()->user_id);
         }
-        $result =  $result->orderByRaw('anchor_user_id DESC');
+        if (!$datatable) {
+            $result =  $result->orderByRaw('anchor_user_id DESC');
+        }
                 //->where('user_type', 1);
         return ($result ? $result : '');
     }
@@ -179,5 +184,103 @@ class AnchorUser extends BaseModel {
              ->where('email', '=', $email)
             ->first();
            return ($arrEmailUser ? $arrEmailUser : FALSE);
+    }
+    
+
+    public function anchors(){
+        return $this->hasMany('App\Inv\Repositories\Models\Anchor', 'anchor_id', 'anchor_id');               
+    }
+    
+    public static function getAnchorsByUserId($userId) {
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
+                
+        $query = self::select('anchor.*')
+            //self::select('anchor.*', 'users.f_name', 'users.l_name', \DB::raw("CONCAT(rta_users.f_name,' ', IFNULL(rta_users.l_name, '')) AS comp_name"))
+            ->join('anchor', 'anchor_user.anchor_id', '=', 'anchor.anchor_id');
+            /*
+            ->join('users', function ($join) {               
+                $join->on('users.anchor_id', '=', 'anchor_user.anchor_id');
+                $join->on('users.user_type', '=', \DB::raw("2"));
+            })
+             * 
+             */
+        if (isset($roleData[0]) && $roleData[0]->id == 11) {
+            $query->where('anchor_user.anchor_id', \Auth::user()->anchor_id);
+        }
+        
+        $query->where('anchor_user.user_id', $userId);
+        $anchors = $query->get();            
+        return ($anchors ? $anchors : []);
+    }
+    
+    /**
+     * function for get particular anchor detail using pan.
+     * @param type $pan
+     * @return type
+     */
+    public static function getAnchorByPan($pan){
+        $arrAnchorData = self::where('pan_no', '=', $pan)->first();
+        
+        return ($arrAnchorData ? $arrAnchorData : FALSE);
+    }
+    
+    public static function updateAnchorUserData($arrUserData, $whereCond){
+        $rowUpdate = self::where($whereCond)->update($arrUserData);
+        return ($rowUpdate ? true : false); 
+    }
+    
+    public static function getAnchorUserData($whereCond) {
+        $anchors = self::select('anchor_user.*')            
+            ->where($whereCond)            
+            ->get();            
+           return ($anchors ? $anchors : []);
+    }
+    
+    public static function getUsersByPan($userId, $anchorId=null) {
+        $query = self::join(\DB::raw('(SELECT rta_anchor_user.pan_no FROM rta_anchor_user WHERE user_id = ?) AS rta_a'), function( $join ) {
+                    $join->on( 'anchor_user.pan_no', '=', 'a.pan_no' );
+                })
+                ->setBindings([$userId]);
+        if (!is_null($anchorId)) {
+            $query->where('anchor_user.anchor_id', $anchorId); 
+        }
+        $anchorsUsers = $query->pluck('anchor_user.user_id');
+                
+        return $anchorsUsers;
+    }
+    
+    /**
+    * 
+    * @param type $emailId
+    * @param type $arrUserData
+    * @return type
+    * @throws BlankDataExceptions
+    * @throws InvalidDataTypeExceptions
+    */ 
+    public static function updateAnchorUserByEmailId($emailId, $arrUserData = [])
+    {
+        /**
+         * Check Email Id is not blank
+         */
+        if (empty($emailId)) {
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
+        }
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($arrUserData)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($arrUserData)) {
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
+        }
+
+        $rowUpdate = self::where('email', $emailId)->update($arrUserData);
+        return ($rowUpdate ? true : false);
     }
 }

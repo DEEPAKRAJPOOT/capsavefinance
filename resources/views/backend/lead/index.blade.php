@@ -22,27 +22,31 @@
     <div class="card">
         <div class="card-body">       
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     {!!
                     Form::text('by_email',
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by First name, Last name and Email',
+                    'placeholder' => 'Search by name, email and pan',
                     'id'=>'by_name'
                     ])
                     !!}
                 </div>
-                <div class="col-md-4">
+
+               <!--
+                <div class="col-md-3">
 
                     {!!
-                    Form::select('is_assign',
-                    [''=>'Status', '1'=>'Assigned','0'=> 'Pending'],
+                    Form::select('pan',
+                    [''=>'Select Pan'],
                     null,
-                    array('id' => 'is_active',
+                    array('id' => 'pan',
                     'class'=>'form-control'))
                     !!}
                 </div>
+                -->
+
                 <div class="col-md-2">
                     <button id="searchB" type="button" class="btn  btn-success btn-sm">Search</button>
                 </div>
@@ -69,7 +73,7 @@
                                     <table id="leadMaster" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
-                                                <th>Sr.No.</th>
+                                                <th>Lead.ID.</th>
                                                 <th>Name</th>
                                                 <th>Email</th>
                                                 <th>Mobile</th>

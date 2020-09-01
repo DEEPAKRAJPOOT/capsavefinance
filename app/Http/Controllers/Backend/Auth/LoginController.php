@@ -81,19 +81,28 @@ use AuthenticatesUsers;
        
         $userEmail    = $request['email'];
         $userInfo = $this->userRepo->getUserByEmail($userEmail);
-                
+               // dd('dd--', $this->isFrontendUser($userInfo));
         if (!empty($userInfo)) {            
             // Checking User is frontend user            
-            if ($this->isFrontendUser($userInfo)) {                
+            if ($this->isFrontendUser($userInfo)) {
                 Session::flash('messages', trans('error_messages.creadential_not_valid'));                
                 return redirect()->route('get_backend_login_open');
             }
         }
+        
+        //if ($userInfo->is_pwd_changed != 1) {
+//            dd('$userInfo->is_pwd_changed--=====', $userInfo->is_pwd_changed);
+            //dd("redirect()->route('change_password')--", redirect()->route('change_password'));
+//            return redirect()->route('change_password');
+//        }
             
         if ($this->attemptLogin($request)) {
-            return $this->sendLoginResponse($request);
+            if ($userInfo->is_pwd_changed != 1) {
+                return redirect()->route('change_password');
+            } else {
+                return $this->sendLoginResponse($request);
+            }
         }
-
         // If the login attempt was unsuccessful we will increment the number of attempts
         // to login and redirect the user back to the login form. Of course, when this
         // user surpasses their maximum number of attempts they will get locked out.
@@ -136,9 +145,9 @@ use AuthenticatesUsers;
          $domain = $request->route()->domain();
           if (\Auth::check()) {
                $user_type = \Auth::user()->user_type;
-            if (config('proin.frontend_uri') === $domain && $user_type==1) {
+            if (config('proin.frontend_uri') === $domain && $user_type==1 && $user->is_active == "1") {
                 return redirect('front_dashboard');
-            } elseif (config('proin.backend_uri') === $domain && $user_type==2) {
+            } elseif (config('proin.backend_uri') === $domain && $user_type==2 && $user->is_active == "1") {
                 $user = $this->userRepo->getBackendUser(\Auth::user()->user_id);
                 if (isset($user->redirect_path) && $user->redirect_path != '') {
                     return redirect($user->redirect_path);
@@ -153,6 +162,8 @@ use AuthenticatesUsers;
                 }
 
                 return redirect(route('backend_dashboard'));
+            }else{
+                return redirect()->back()->with('messages', trans('auth.active_user'));
             }
         }
    

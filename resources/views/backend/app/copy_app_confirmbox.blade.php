@@ -8,7 +8,7 @@
                     Form::open(
                     array(
                     'method' => 'post',
-                    'route' => 'renew_application',
+                    'route' => $save_route,
                     'id' => 'frmCopyApp',   
                     'target' => '_top'
                     )
@@ -18,7 +18,7 @@
                <div class="col-12">
                     
                    @if (Session::has('error_code') && Session::get('error_code') == 'active_app_found')
-                   <label class='error'>You can't create a new application before sanctions.</label><br>
+                   <label class='error'>{{ trans('error_messages.active_app_check') }}</label><br>
                    @endif                                  
                   
                    @if (Session::has('error_code') && Session::get('error_code') == 'app_data_error')
@@ -26,7 +26,7 @@
                    @endif                      
                    
                   @if ($flag == 1)
-                     You can't create a new application before sanctions.<br>
+                     {{ trans('error_messages.active_app_check') }}<br>
                     @php 
                     $confirmBtn = 'Yes';
                     $closeBtn = 'Close';
@@ -88,7 +88,7 @@
 var messages = {
     is_accept: "{{ Session::get('is_accept') }}",    
     error_code : "{{ Session::has('error_code') }}",
-    redirect_url : "{{ route('copy_app_confirmbox', ['user_id' => $userId,'app_id' => $appId, 'biz_id' => $bizId]) }}"
+    redirect_url : "{{ $redirect_url }}"
  };
      $(document).ready(function(){        
         var targetModel = ''; 

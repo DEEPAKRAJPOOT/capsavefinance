@@ -108,7 +108,7 @@ class LmsUser extends Authenticatable
 
     public static function lmsGetDisbursalCustomer($userIds = [])
     {
-        return self::with(['bank_details.bank', 'app.invoices.program_offer', 'user.anchor_bank_details.bank'])
+        return self::with(['bank_details.bank', 'app.invoices.program_offer', 'user.anchor_bank_details.bank', 'app.invoices.program'])
                 ->whereHas('app')
                 ->whereHas('app.invoices', function($query) use ($userIds) {
                     if (!empty($userIds)) {
@@ -120,7 +120,7 @@ class LmsUser extends Authenticatable
 
     public static function lmsGetSentToBankInvCustomer($userIds = [])
     {
-        return self::with(['bank_details.bank', 'senttb_app.senttb_invoices.program_offer', 'user.anchor_bank_details.bank'])
+        return self::with(['bank_details.bank', 'senttb_app.senttb_invoices.program_offer', 'user.anchor_bank_details.bank', 'senttb_app.senttb_invoices.program'])
                 ->whereHas('senttb_app')
                 ->whereHas('senttb_app.senttb_invoices', function($query) use ($userIds) {
                     if (!empty($userIds)) {
@@ -174,6 +174,11 @@ class LmsUser extends Authenticatable
     {
        
         return self::where(['user_id' => $uid,'is_active' =>1])->count();
+    }
+
+    public function getBusinessId() 
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Business', 'app_id');
     }
     
 }

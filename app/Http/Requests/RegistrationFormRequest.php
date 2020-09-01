@@ -7,7 +7,6 @@ use App\Http\Requests\Request;
 
 class RegistrationFormRequest extends Request
 {
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,17 +24,18 @@ class RegistrationFormRequest extends Request
      */
     public function rules()
     {
-      ///dd($this->request);
         return $rules = [
             //'f_name' => 'required|min:2|max:50|alpha_dash|alpha',
             //'l_name' => 'required|min:2|alpha_dash|alpha',
             'f_name' => 'required|regex:/(^[a-zA-Z ]+$)/u',
             'l_name' => 'required|regex:/(^[a-zA-Z]+$)/u',            
             'business_name' => 'required',
-            'email'  => 'required|email|max:50|unique:users',
+            'pan_no' => 'required|max:10|regex:/(^[A-Z]{5}[0-9]{4}[A-Z]{1}+$)/u',
+            //'email'  => 'required|email|max:50|unique:users',
+            'email'  => 'required|email|max:50',
             'mobile_no' => 'required|digits:10|min:0',
-            'password'   => 'required|min:6',
-            'password_confirm' => 'required|same:password',
+            'password'   => 'required|min:8|regex:/^((?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,})$/',
+            'password_confirm' => 'required|same:password|regex: /^(?!.*(.)\1\1)(.+)$/',
             'g-recaptcha-response' => 'required', 
             ];
     }
@@ -60,6 +60,9 @@ class RegistrationFormRequest extends Request
             'l_name.regex' => trans('error_messages.last_name_regex'),
             //'l_name.max' => trans('error_messages.last_name_max_length'),
             'business_name.required' => trans('error_messages.buis_business'),
+            'pan_no.required' => trans('error_messages.req_pan'),
+            'pan_no.max' => trans('error_messages.pan_max_length'),
+            'pan_no.regex' => trans('error_messages.valid_pan'),
             'email.required' => trans('error_messages.req_email'),
             'email.max' => trans('error_messages.email_max_length'),
             'email.email' => trans('error_messages.invalid_email'),
@@ -67,6 +70,8 @@ class RegistrationFormRequest extends Request
             'mobile_no.required'=>trans('error_messages.req_phone'),
             'password.required'=>trans('error_messages.req_password'),
             'password.min'=>trans('error_messages.minlen_password'),
+            'password.regex' => trans('error_messages.regex'),
+            'password.same' => trans('error_messages.same_password'),
             'password_confirm.required'=>trans('error_messages.req_confirm_password'),
 
             'mobile_no.min'=>trans('error_messages.phone_minlength'),

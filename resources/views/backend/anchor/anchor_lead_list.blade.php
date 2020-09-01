@@ -21,15 +21,39 @@
         <div class="card-body">
            
             <div class="row">
-                <div class="col-sm-12">
+                
+                <div class="col-sm-4">
+                   <!-- 
+                    {!!
+                    Form::select('pan',
+                    [''=>'Select Pan'],
+                    null,
+                    array('id' => 'pan',
+                    'class'=>'form-control'))
+                    !!}
+                    -->
+                   
+                    {!!
+                    Form::text('by_email',                    
+                    null,
+                    array('id' => 'by_email',
+                    'class'=>'form-control', 'placeholder'=>'Search By name or email or pan or anchor'))
+                    !!}
+                  
+                </div>
+                
+                <div class="col-sm-2">
+                    <button id="anchleadListSearchB" type="button" class="btn  btn-success btn-sm">Search</button>
+                </div>                
+                <div class="col-sm-6">
                     <div class="head-sec">
                         <div class="pull-right" style="margin-bottom: 10px;">
                         @can('add_anchor_lead')   
-                        <a  data-toggle="modal" data-target="#uploadAnchLead" data-url ="{{route('add_anchor_lead')}}" data-height="250px"  data-width="100%" data-placement="top" >
+                        <a  data-toggle="modal" data-target="#uploadAnchLead" data-url ="{{route('add_anchor_lead')}}" data-height="260px"  data-width="100%" data-placement="top" >
                                 <button class="btn  btn-success btn-sm" type="button"> <span class="btn-label">
                                         <i class="fa fa-plus"></i>
                                     </span>
-                                    Upload Anchor User
+                                    Upload Anchor Lead
                             </a>
                         @endcan
                         </button>
@@ -61,9 +85,10 @@
                                                 <th>Sr.No.</th>
                                                 <th>Name</th>
                                                 <th>Business Name</th>
+                                                <th>PAN No.</th>
                                                 <th>Email</th>
                                                 <th>Mobile</th>
-<!--                                                <th>Anchor</th>-->
+                                                <th>Anchor</th>
                                                 <th>Created At</th>
                                                  <th>Status</th>
                                             </tr>

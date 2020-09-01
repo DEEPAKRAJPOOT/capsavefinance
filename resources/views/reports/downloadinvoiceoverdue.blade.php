@@ -71,10 +71,14 @@
                 padding:15px;
                 clear: both;
             }
+
+             #filterTable td,th{
+                text-align: left;
+            }
             .pagenum:before {
                 content: counter(page);
             }
-            div.breakNow { page-break-inside:avoid; page-break-after:always; }
+            /*div.breakNow { page-break-inside:avoid; page-break-after:always; }*/
         </style>
 
     </head>
@@ -96,63 +100,43 @@
                 <br>
             </div>
         
-          
+             @if(!empty($filter))
+            <table class="table  table-td-right" id="filterTable">
+                <tbody>
+                    @if(!empty($filter['userInfo']))
+                    <tr>
+                        <td><strong>Business Name</strong></td>
+                        <td> {{$filter['userInfo']->biz->biz_entity_name}}    </td> 
+                        <td><strong>Full Name</strong></td>
+                        <td>{{$filter['userInfo']->f_name}} {{$filter['userInfo']->m_name}} {{$filter['userInfo']->l_name}}</td> 
+
+                    </tr>
+                    <tr>
+                        <td><strong>Email</strong></td>
+                        <td>{{$filter['userInfo']->email}}    </td> 
+                        <td><strong>Mobile</strong></td>
+                        <td>{{$filter['userInfo']->mobile_no}} </td> 
+                    </tr>
+                    @endif
+                    @if($filter['from_date'] && $filter['to_date'])
+                    <tr>
+                        <td><strong>From Date</strong></td>
+                        <td>{{$filter['from_date']}}</td> 
+                        <td><strong>To Date</strong></td>
+                        <td>{{$filter['to_date']}}</td> 
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
+            @endif
+
+
             <div class="breakNow">
-                
-                   <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
-                    <tr>
-                        <td colspan="8">
-                            <span style="font-size: small;"><strong><b>CAPSAVE FINANCE PRIVATE LIMITED</b> </strong></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span style="font-size: small;"><strong>Invoice Over Due From</strong></span>
-                            &nbsp;
-                            
-                            {{($fromdate)? $fromdate : '0000-00-00' }} &nbsp; To &nbsp; {{($todate)? $todate : '0000-00-00'}}
-                        </td>
-                         <td>
-                            <span style="font-size: small;"><strong>Invoice Over Due Report</strong></span>
-                           </td>
-                           <td>
-                            <span style="font-size: small;"><strong></strong></span>
-                           </td>
-                            <td>
-                            <span style="font-size: small;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $date->isoFormat('MMMM D, Y')}}</strong></span>
-                           </td>
-                    </tr>
-                </table>
-                @if(count($user) > 0)
-                   <table border="1" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
-                    <tr>
-                        <td colspan="8">
-                            <span style="font-size: small;"><strong>Client Name: </strong></span>
-                            &nbsp; 
-                        
-                            {{(count($userInfo) > 0) ? $userInfo[0]->invoice->business->biz_entity_name: ''}}
-                            
-                        </td>
-                    </tr>
-                   
-                </table>
-                  <table border="0" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
-                    <tr>
-                        <td colspan="8">
-                            <span style="font-size: small;"><strong>Debtor Name: </strong></span>
-                            &nbsp;{{(count($userInfo) > 0) ? $userInfo[0]->invoice->anchor->comp_name: ''}}
-                        </td>
-                    </tr>
-                   <tr>
-                        <td colspan="8">
-                         ...................................................................................................................................................................................................................................................................................................
-                         
-                        </td>
-                    </tr>
-                </table>
-               @endif
                 <table border="1px" style="width: 100%;clear: both; margin-top: 10px;" align="center" cellspacing="0" cellpadding="1">
                     <tr>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Customer Id</strong></span>
+                        </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Batch No</strong></span>
                         </td>
@@ -174,13 +158,13 @@
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Approve Amount</strong></span>
                         </td>
-                       
-                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                            <span style="font-size: small;"><strong>Balance</strong></span>
-                        </td>
                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Days OD</strong></span>
                         </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Balance</strong></span>
+                        </td>
+                       
                     </tr>
                     @php
                     $invBal = 0;
@@ -193,6 +177,9 @@
                    $invApprBal += $invoice->invoice->invoice_approve_amount;
                    @endphp
                     <tr>
+                        <td>
+                            <span style="font-size: small;">{{$invoice->customer_id}}</span>
+                        </td>
                         <td>
                             <span style="font-size: small;">{{$invoice->disbursal->disbursal_batch->batch_id}}</span>
                         </td>
@@ -216,6 +203,9 @@
                             <span style="font-size: small;">{{number_format($invoice->invoice->invoice_approve_amount)}}</span>
                         </td>
                         <td>
+                            <span style="font-size: small;">{{$invoice->InterestAccrual->count()}}</span>
+                        </td>
+                        <td>
                             <span style="font-size: small;">
                        @php
                        
@@ -226,13 +216,11 @@
                       @endphp
                             </span>
                         </td>
-                          <td>
-                            <span style="font-size: small;">{{$invoice->InterestAccrual->count()}}</span>
-                        </td>
+                          
                     </tr>
                     @endforeach
                        <tr>
-                           <td colspan="5">
+                           <td colspan="6">
                             <span style="font-size: small;"><strong>Grand Total</strong></span>
                         </td>
                           <td>
@@ -241,11 +229,12 @@
                           <td>
                             <span style="font-size: small;"><strong>{{number_format($invApprBal)}}</strong></span>
                         </td>
-                          <td>
-                            <span style="font-size: small;"><strong>{{number_format($subBal)}}</strong></span>
-                        </td>
+                         
                          <td>
                             <span style="font-size: small;"></span>
+                        </td>
+                         <td>
+                            <span style="font-size: small;"><strong>{{number_format($subBal)}}</strong></span>
                         </td>
                     </tr>
                 </table>

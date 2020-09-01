@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Inv\Repositories\Entities\User;
 use Carbon\Carbon;
 use App\Inv\Repositories\Models\Relationship;
@@ -918,9 +917,9 @@ class UserRepository extends BaseRepositories implements UserInterface
       * @return type
       */
      
-        public function getAllAnchorUsers()
+        public function getAllAnchorUsers($datatable=false)
         {
-          $result = AnchorUser::getAllAnchorUsers();
+          $result = AnchorUser::getAllAnchorUsers($datatable);
         
           return $result ?: false;
         }
@@ -994,9 +993,9 @@ class UserRepository extends BaseRepositories implements UserInterface
     * @return type
     */
      
-        public function getAllAnchor($orderBy='anchor_id')
+        public function getAllAnchor($orderBy='anchor_id', $datatable=false)
         {
-          $result = Anchor::getAllAnchor($orderBy);
+          $result = Anchor::getAllAnchor($orderBy, $datatable);
         
           return $result ?: false;
         }
@@ -1360,7 +1359,16 @@ class UserRepository extends BaseRepositories implements UserInterface
     }
 
     public function getAgencyUserLists(){
-        $result = UserModel::orderBy('user_id', 'DESC')->with('agency')->where('agency_id','<>', null);
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
+        $result = UserModel::orderBy('user_id', 'DESC')->with('agency')->where('agency_id','<>', null)->where('users.agency_id', \Auth::user()->agency_id);
+        $resultAdmin = UserModel::orderBy('user_id', 'DESC')->with('agency')->where('agency_id','<>', null);
+
+        if ($roleData[0]->is_superadmin != 1) {
+            return $result;
+        } else {
+            return $resultAdmin;
+        }
+
         return $result ?: false;
 
     }
@@ -1453,7 +1461,7 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function lmsGetCustomers()
     {
 
-        $getAppId  = Application::where(['status' => 2])->pluck('app_id');
+        $getAppId  = Application::getSanctionApp();
         $result = LmsUser::whereIn('app_id',$getAppId)->with('user')->orderBy('lms_user_id','DESC');
         return $result ?: false;
     }
@@ -1666,7 +1674,7 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getBusinessDetails($biz_id){
         return Business::find($biz_id);
     }
-    
+
     /**
      * check leasing product type
      * 
@@ -1679,7 +1687,65 @@ class UserRepository extends BaseRepositories implements UserInterface
            return   DB::table('app_product')->where(['app_id' => $appId,'product_id' =>3])->count();
         } catch (Exception $ex) {
            return $ex;
-        }
-     
+        }     
     }     
+
+    public function getAnchorsByUserId($userId) {
+        return AnchorUser::getAnchorsByUserId($userId);
+    }
+    
+    
+    public function getAnchorByPan($pan){
+        return AnchorUser::getAnchorByPan($pan);
+    }  
+    
+    
+    public function updateAnchorUserData($arrUserData, $whereCond){
+        return AnchorUser::updateAnchorUserData($arrUserData, $whereCond);
+    }    
+    
+    public function getAnchorUserData($whereCond) {
+        return AnchorUser::getAnchorUserData($whereCond);
+    }    
+
+    /**
+     * Get a sales user model by id
+     *
+     * @param integer $userId
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getfullSalesUserDetail($userId)
+    {
+        $result = UserModel::getfullSalesUserDetail((int) $userId);
+
+        return $result ?: false;
+    }
+    
+    /**
+     * 
+     * @param type $emailId
+     * @param type $attributes
+     * @return type
+     */
+    public function updateAnchorUserByEmailId($emailId, $attributes = []) {
+        $result = AnchorUser::updateAnchorUserByEmailId($emailId, $attributes);
+        return $result ?: false;
+    }
+
+    /**
+     * Update User status in agency user list
+     * 
+     * @param type $attributes
+     * @param type $conditions 
+     * @return mixed
+     */
+    public function updateUserStatus($attributes, $conditions)
+    {
+        return User::updateUserStatus($attributes, $conditions);
+    }
+    
 }
+

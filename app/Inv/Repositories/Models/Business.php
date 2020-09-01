@@ -10,6 +10,8 @@ use App\Inv\Repositories\Models\BizPanGstApi;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Master\Industry;
 use Carbon\Carbon;
 use Auth;
 
@@ -251,11 +253,12 @@ class Business extends BaseModel
         return $arrData;
     }
 
-    public static function getAddressByUserId($user_id, array $where = []) {
+    public static function getAddressByUserId($user_id, array $biz_id_arr = [], array $where = []) {
         $arrData = self::select('biz.biz_id','biz.biz_entity_name', 'mst_state.name as state_name', 'biz_addr.*')
         ->join('biz_addr', 'biz_addr.biz_id', '=', 'biz.biz_id')
         ->join('mst_state', 'mst_state.id', '=', 'biz_addr.state_id')
         ->where(['biz.user_id' => $user_id, 'biz_addr.is_default' => 1, 'biz_addr.rcu_status' => 1, 'biz_addr.is_active' => 1])
+        ->whereIn('biz_addr.biz_id', $biz_id_arr)
         ->where($where)
         ->get();
         return $arrData;
@@ -426,13 +429,36 @@ class Business extends BaseModel
         ->first();
         return $arrData;
     }
-    public function  LmsUser()
-    {
+
+    public function  LmsUser() {
          return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
     }
-    public static function searchBusiness($search)
-    {
+
+    public static function searchBusiness($search) {
       return  self::with('LmsUser')->where("biz_entity_name","LIKE","{$search}%")->groupBy('user_id')->get();
+    }
+    
+    public static function getBizDataByPan($pan, $userId=null) {
+        $query = self::select('biz.biz_id','biz.biz_entity_name','biz_pan_gst.pan_gst_hash','biz.cibil_score','biz_pan_gst.cin', 'biz.is_cibil_pulled')
+        ->join('biz_pan_gst', 'biz_pan_gst.biz_pan_gst_id', '=', 'biz.panno_pan_gst_id')                
+        ->where('biz_pan_gst.pan_gst_hash', $pan);
+        if (!is_null($userId)) {
+            $query->where('biz.user_id', $userId);
+        }         
+        $arrData = $query->get();
+        return $arrData;
+    }
+
+    public function constitution() {
+       return $this->belongsTo('App\Inv\Repositories\Models\Master\Constitution', 'biz_constitution', 'id');
+    }
+
+    public function users() {
+       return $this->belongsTo(User::Class, 'user_id', 'user_id');
+    }
+
+    public function industryType() {
+       return $this->belongsTo(Industry::Class, 'nature_of_biz', 'id');
     }
 
 }

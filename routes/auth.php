@@ -132,6 +132,10 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'uses' => 'Auth\RegisterController@verifiedotpUser'
     ]);
 
-   
+    Route::post('check-exist-user-pan',[
+        'as' => 'check_exist_user_pan',
+        'uses' => 'Auth\RegisterController@checkExistUserPan'
+        ]
+    );   
     
 });

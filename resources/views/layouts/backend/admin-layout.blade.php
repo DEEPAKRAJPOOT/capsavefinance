@@ -101,7 +101,7 @@
     </div>
 </body>
 
-    <script src="{{url('backend/assets/js/jquery-3.4.1.min.js')}}"></script>
+    <script src="{{url('backend/assets/js/jquery-3.5.1.min.js')}}"></script>
     <script src="{{url('backend/assets/js/popper.min.js')}}"></script>
     <script src="{{url('backend/assets/js/bootstrap.min.js')}}"></script>
     <script src="{{url('backend/assets/js/perfect-scrollbar.jquery.min.js')}}"></script>
@@ -195,6 +195,66 @@
         function setLimit(ele, msg){
             $(ele).parent('div').find('.limit').html(msg);
         }
+
+        function currentDateTime() {
+            var today = new Date();        
+            var sMonth = padValue(today.getMonth() + 1);
+            var sDay = padValue(today.getDate());
+            var sYear = today.getFullYear();
+            var sHour = today.getHours();
+            var sMinute = padValue(today.getMinutes());
+            var sAMPM = "AM";
+
+            var iHourCheck = parseInt(sHour);
+
+            if (iHourCheck > 12) {
+                sAMPM = "PM";
+                sHour = iHourCheck - 12;
+            }
+            else if (iHourCheck === 0) {
+                sHour = "12";
+            }
+
+            sHour = padValue(sHour);
+
+            dateTime =  sDay + "-" + sMonth + "-" + sYear + " " + sHour + ":" + sMinute + " " + sAMPM;
+            document.getElementById('_current_sys_date').innerHTML = dateTime;
+        }
+        
+        function padValue(value) {
+            return (value < 10) ? "0" + value : value;
+        }
+
+            setInterval('currentDateTime()',1000);
+
+
+        function replaceAlert(msg, type){
+            let alert_class;
+            switch(type){
+                case 'success':
+                    alert_class = 'alert-success';
+                    break;
+                case 'error':
+                    alert_class = 'alert-danger';
+                    break;
+                default:
+                    alert_class = 'alert-primary';
+                    break;
+            }
+
+            let alert_msg = '<div class="content-wrapper-msg" id="custom-alert">\
+                                <div class="'+alert_class+' alert" role="alert">\
+                                    <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>\
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">\
+                                        <span aria-hidden="true">×</span>\
+                                    </button>'
+                                    +msg+
+                                '</div>\
+                            </div>';
+
+            $('#custom-alert').remove();
+            $(alert_msg).insertAfter('#iframeMessage');
+        }
     </script>
     <script>
     var common_vars={
@@ -202,6 +262,7 @@
         token: "{{ csrf_token() }}"
     }
     </script>
-    <script src="{{ asset('backend/js/number-format.js') }}"></script>    
+    <script src="{{ asset('backend/js/number-format.js') }}"></script>
+    <script src="{{ asset('common/js/check_permission.js') }}"></script>
     @yield('jscript')
 </html>

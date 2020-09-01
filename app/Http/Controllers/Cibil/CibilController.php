@@ -24,6 +24,7 @@ class CibilController extends Controller
     public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, CibilApi $CibilApi){
         $this->userRepo = $user_repo;
         $this->appRepo = $app_repo;
+        $this->middleware('checkBackendLeadAccess');
      }
     
     /**

@@ -78,7 +78,7 @@ use RegistersUsers,
      * @return \App\User
      */
     protected function create(array $data) {
-
+//        dd($data);
         $arrData = [];
         $arrAnchUser=[];
         $arrDetailData = [];
@@ -91,6 +91,7 @@ use RegistersUsers,
         //$arrData['m_name'] = $data['m_name'];
         $arrData['l_name'] = $data['l_name'];
         $arrData['biz_name'] = $data['business_name'];
+//        $arrData['pan_no'] = $data['pan_no'];
         $arrData['email'] = $data['email'];
         $arrData['password'] = bcrypt($data['password']);
         $arrData['mobile_no'] = $data['mobile_no'];
@@ -103,17 +104,56 @@ use RegistersUsers,
         $arrData['parent_id'] = 0;
         $arrData['is_active'] = 0;
         $arrData['is_active'] = 0;
+        // $arrData['supplier_code'] = isset($data['supplier_code']) ? $data['supplier_code'] : null;
         $userId = null;
-        $userDataArray = $this->userRepo->save($arrData, $userId);
+        
+        $userData = $this->userRepo->getUserByemail($data['email']);
+        if ($userData && $userData->user_id) {
+            $userDataArray = $userData;
+        } else {
+            $userDataArray = $this->userRepo->save($arrData, $userId);
+            if ($userDataArray) {
+                $detailArr['user_id'] = $userDataArray->user_id;
+                $detailArr['access_token'] = bcrypt($userDataArray->email);
+                $detailArr['created_by'] = $userDataArray->user_id;
+                $this->userRepo->saveUserDetails($detailArr);
+            }
+        }
+        
         if ($userDataArray) {
-            $detailArr['user_id'] = $userDataArray->user_id;
-            $detailArr['access_token'] = bcrypt($userDataArray->email);
-            $detailArr['created_by'] = $userDataArray->user_id;
-            $this->userRepo->saveUserDetails($detailArr);
+
             if (isset($data['anch_user_id']) && !empty($data['anch_user_id'])) {
+                
+                //Associate Business
+                //$bizData = $this->application->getBizDataByPan($data['pan_no']);
+                //if (isset($bizData[0])) {
+                //    $bizId = $bizData[0]->biz_id;
+                //} else {
+                    /*
+                    $insBizData=[];
+                    $insBizData['user_id'] = $userDataArray->user_id;
+                    $newBizData = $this->application->createBusiness($insBizData);
+                    $bizId = $newBizData->biz_id;
+
+                    $bizPanGstArrData=[];
+                    $bizPanGstArrData['user_id']= $userDataArray->user_id;
+                    $bizPanGstArrData['biz_id'] = $bizId;
+                    $bizPanGstArrData['type']   = 1;
+                    $bizPanGstArrData['pan_gst_hash'] = $data['pan_no'];
+                    $this->appRepo->saveBizPanGstData($bizPanGstArrData);
+                     * 
+                     */
+                    //$bizId = null;
+                //}
+            
+            
                 $arrAnchUser['is_registered']=1;
-                $arrAnchUser['token']='';
-                $arrAnchUser['user_id']=$detailArr['user_id'];            
+
+                //$arrAnchUser['token']='';
+                $arrAnchUser['user_id']=$userDataArray->user_id;
+                $arrAnchUser['pan_no']=$data['pan_no'];
+                //$arrAnchUser['biz_id']=$bizId;
+                $arrAnchUser['anchor_id']=$data['h_anchor_id'];                
                 //$anchId=$this->userRepo->getAnchorUsersByEmail($userDataArray->email);            
                 $this->userRepo->updateAnchorUser($data['anch_user_id'], $arrAnchUser);
             }
@@ -131,7 +171,7 @@ use RegistersUsers,
                      $this->userRepo->createLeadAssign($arrLeadAssingData);
             
             //Add application workflow stages
-            Helpers::addWfAppStage('new_case', $userDataArray->user_id);
+            Helpers::addWfAppStage('new_case', $userDataArray->user_id);                          
         }
         return $userDataArray;
     }
@@ -204,7 +244,11 @@ use RegistersUsers,
                     $userArr = $this->userRepo->find($userId);
                 }
                 $anchorLeadInfo = $this->userRepo->getAnchorUsersByToken($anchortoken);
-                if(isset($anchortoken) && $anchorLeadInfo){
+                // dd($anchorLeadInfo);
+                if(!empty($anchorLeadInfo) && $anchorLeadInfo->is_registered == 1){
+                   $email = $anchorLeadInfo->email;
+                   return redirect(route('otp', ['token' => Crypt::encrypt($email)]));
+                } else if(!empty($anchorLeadInfo) && $anchorLeadInfo->is_registered == 0){
                     $anchorDetail = $anchorLeadInfo;
                 }else{
                     $anchorDetail = '';
@@ -247,18 +291,42 @@ use RegistersUsers,
             //dd($arrFileData);
             //echo "ddddssssd"; exit;
             //Saving data into database
+            $AnchorData = $this->userRepo->getAnchorByPan($arrFileData['pan_no']);                        
+//            dd($AnchorData,'fdfjk');
+            if($AnchorData && $AnchorData->pan_no){                    
+                //$arrFileData['h_anchor_id'] = $AnchorData->anchor_id;                
+            }          
+            
             $user = $this->create($arrFileData);
             /// dd($user);
             if ($user) {
                 if (!Session::has('userId')) {
                     Session::put('userId', (int) $user->user_id);
                 }
-                /// $this->sendVerificationLink($user->user_id);
-                $verifyLink = Crypt::encrypt($user['email']);
-                $this->verifyUser($verifyLink);
-                Session::flash('message', trans('success_messages.basic_saved_successfully'));
-                //return redirect(route('education_details'));
-                return redirect()->route('otp', ['token' => Crypt::encrypt($user['email'])]);
+
+                $whereCond=[];
+                $whereCond[] = ['pan_no', '=', $arrFileData['pan_no']];         
+                $whereCond[] = ['email', '=', trim($arrFileData['email'])];
+                $whereCond[] = ['anchor_id', '!=', $arrFileData['h_anchor_id']];
+                $whereCond[] = ['is_registered', '=', '1'];
+                $AnchorData = $this->userRepo->getAnchorUserData($whereCond);        
+                if (isset($AnchorData[0])) {
+                    $userMailArr=[];
+                    $userMailArr['name'] = $user->f_name . ' ' . $user->l_name;
+                    $userMailArr['email'] = $user->email;
+                    Event::dispatch("NOTIFY_EXISTING_USER", serialize($userMailArr));
+
+                    Session::flash('message', trans('success_messages.registration_success'));
+                    return redirect(route('login_open'));             
+                } else {            
+
+                    /// $this->sendVerificationLink($user->user_id);
+                    $verifyLink = Crypt::encrypt($user['email']);
+                    $this->verifyUser($verifyLink);
+                    Session::flash('message', trans('success_messages.basic_saved_successfully'));
+                    //return redirect(route('education_details'));
+                    return redirect()->route('otp', ['token' => Crypt::encrypt($user['email'])]);
+                }                
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
@@ -295,7 +363,7 @@ use RegistersUsers,
                 // echo $user->id; exit;
                 $verifyLink = route('verify_email', ['token' => Crypt::encrypt($user['email'])]);
                 $this->sendVerificationLink($user->user_id);
-                Session::flash('message', trans('success_messages.basic_saved_successfully'));
+                Session::flash('message', trans('Registration is done successfully.'));
                 //return redirect(route('education_details'));
                 return redirect()->route('thanks');
             } else {
@@ -408,6 +476,7 @@ use RegistersUsers,
                     $userId = (int) $userCheckArr->user_id;
                     $userArr = [];
                     $userArr['is_email_verified'] = 1;
+                    $userArr['is_pwd_changed'] = 1;
                     $userArr['email_verified_updatetime'] = $currentDate;
                     $this->userRepo->save($userArr, $userId);
                     //save opt
@@ -423,6 +492,7 @@ use RegistersUsers,
                     $otpArr['is_otp_resent'] = 0;
                     $otpArr['otp_exp_time'] = $formatted_date;
                     $otpArr['is_verified'] = 1;
+                    $otpArr['mobile_no'] = $userCheckArr->mobile_no;
                     $this->userRepo->saveOtp($otpArr);
                     $userMailArr['name'] = $name = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
@@ -474,24 +544,35 @@ use RegistersUsers,
                     /* if ($userCheckArr->status == config('inv_common.USER_STATUS.Active')) {
                       return redirect(route('otp'))->withErrors(trans('error_messages.email_already_verified'));
                       } */
-                    //echo $userCheckArr->user_id; exit;
                     $userId = (int) $userCheckArr->user_id;
                     $userMailArr = [];
                     $userArr = [];
 
-                    /// $string = Helpers::randomPassword();
                     $date = new DateTime;
                     $currentDate = $date->format('Y-m-d H:i:s');
                     $userArr['is_otp_verified'] = 1;
                     $userArr['is_otp_resent'] = 0;
                     $userArr['otp_verified_updatetime'] = $currentDate;
-                    ////  $userArr['password'] = bcrypt($string);
+                    $userArr['is_active'] = 1;
                     $userCheckArr = $this->userRepo->getfullUserDetail($userId);
                     $this->userRepo->save($userArr, $userId);
+                    $arrAnchUser['token']='';                   
+                    $this->userRepo->updateAnchorUserByEmailId($userCheckArr->email, $arrAnchUser);
                     $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
                     if(Auth::loginUsingId($userDetails->user_id)) {
-                        return redirect()->route('business_information_open');
+                        
+                        if ($userDetails->is_pwd_changed != 1) {
+                            return redirect()->route('changepassword');
+                        }
+                        
+                        $appData = $this->application->checkAppByPan($userId); 
+                        if ($appData) {
+                            //Session::flash('message', trans('error_messages.active_app_check'));                            
+                            return redirect()->route('front_application_list');
+                        } else {
+                            return redirect()->route('business_information_open');
+                        }       
                     }
                     //return redirect()->route('login_open');
                 } else {
@@ -540,6 +621,7 @@ use RegistersUsers,
                 $otpArr['is_otp_resent'] = 0;
                 $otpArr['otp_exp_time'] = $currentDate;
                 $otpArr['is_verified'] = 1;
+                $otpArr['mobile_no'] = $userCheckArr->mobile_no;
                 $this->userRepo->saveOtp($otpArr);
                 $userMailArr['name'] = $name =$userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                 $userMailArr['email'] = $userCheckArr->email;
@@ -571,11 +653,17 @@ use RegistersUsers,
                         $otpArr['is_otp_resent'] = 0;
                         $otpArr['otp_exp_time'] = $currentDate;
                         $otpArr['is_verified'] = 1;
+                        $otpArr['mobile_no'] = $userCheckArr->mobile_no;
                         $this->userRepo->saveOtp($otpArr);
                     }
-                    $userMailArr['name'] = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
+                    $userMailArr['name'] = $name = $userCheckArr->f_name . ' ' . $userCheckArr->l_name;
                     $userMailArr['email'] = $userCheckArr->email;
                     $userMailArr['otp'] = $Otpstring;
+                    $gupshup = new Gupshup_lib();
+                    $mobile_no = $userCheckArr->mobile_no;
+                    $otp_msg = "Dear $name,\r\n OTP:$Otpstring is your otp to verify your mobile on Capsave.\r\n Regards";
+
+                    $otp_resp = $gupshup->api_call(['mobile'=>$mobile_no, 'message' => $otp_msg]);
                     Event::dispatch("user.sendotp", serialize($userMailArr));
                     return redirect(route('otp', ['token' => Crypt::encrypt($email)]))->withErrors(trans('success_messages.otp_sent_messages'));
                 }
@@ -615,11 +703,11 @@ use RegistersUsers,
 
         if (!(Hash::check($request->get('current-password'), Auth::user()->password))) {
             // The passwords matches
-            return redirect()->back()->with("error", "Your current password does not matches with the password you provided. Please try again.");
+            return redirect()->back()->with("error", "Your old password does not matches with the password you provided. Please try again.");
         }
         if (strcmp($request->get('current-password'), $request->get('new-password')) == 0) {
             //Current password and new password are same
-            return redirect()->back()->with("error", "New Password cannot be same as your current password. Please choose a different password.");
+            return redirect()->back()->with("error", "New Password cannot be same as your old password. Please choose a different password.");
         }
         $validatedData = $request->validate([
             'current-password' => 'required',
@@ -643,4 +731,53 @@ use RegistersUsers,
         return $userName;
     }
 
+    public function checkExistUserPan(Request $request)
+    {
+        $email = $request->get('email');
+        $pan = $request->get('pan');
+        $assocAnchId = $request->get('anchor_id');
+        $validate = $request->get('validate');
+        $result = [];
+        $result['message'] = '';
+        $result['status'] = true;
+        $result['validate'] = $validate;
+
+        $whereCond=[];
+        $whereCond[] = ['email', '=', $email];
+        $whereCond[] = ['anchor_id', '=', $assocAnchId];
+        $whereCond[] = ['is_registered', '=', '1'];
+        $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+        if (isset($anchUserData[0])) {
+            $result['validate'] = 1;
+            $result['status'] = false;
+            $result['message'] = trans('success_messages.existing_email');
+            return response()->json($result);
+        } else {        
+            $whereCond=[];       
+            $whereCond[] = ['email', '=', $email];
+            $whereCond[] = ['pan_no', '!=', $pan];
+            $whereCond[] = ['is_registered', '=', '1'];
+            $AnchorData = $this->userRepo->getAnchorUserData($whereCond);             
+            if (isset($AnchorData[0])) {                
+                $result['validate'] = 1;
+                $result['status'] = false;
+                $result['message'] = trans('success_messages.existing_email');
+                return response()->json($result);
+            }
+        }
+        
+        $whereCond=[];
+        $whereCond[] = ['pan_no', '=', $pan];         
+        $whereCond[] = ['email', '=', $email];
+        $whereCond[] = ['anchor_id', '!=', $assocAnchId];
+        $whereCond[] = ['is_registered', '=', '1'];
+        $AnchorData = $this->userRepo->getAnchorUserData($whereCond);        
+        if (!empty($pan) && isset($AnchorData[0])) {
+            $result['validate'] = '0';
+            $result['message'] = trans('success_messages.register_different_anchor');
+            return response()->json($result);
+        }
+                
+        return response()->json($result);
+    }
 }

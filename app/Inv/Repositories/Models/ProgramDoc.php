@@ -110,4 +110,16 @@ class ProgramDoc extends BaseModel {
         return self::where($conditions)->delete();
     }
 
+    public static function getPrgmDocs($where)
+    {
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        $res = self::where($where)->get();
+        return $res ?: [];
+    }    
 }

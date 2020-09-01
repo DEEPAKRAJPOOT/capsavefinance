@@ -45,12 +45,12 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by App Id, Name',
+                    'placeholder' => 'Search by App Id, Entity Name and Pan',
                     'id'=>'by_name'
                     ])
                     !!}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
 
                     {!!
                     Form::select('is_assign',
@@ -60,16 +60,28 @@
                     'class'=>'form-control'))
                     !!}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
 
                     {!!
                     Form::select('status',
-                    [''=>'Status', '1'=>'Ready for Renewal','2' => 'Renewed', '3' => 'Limit Enhanced', '4' => 'Limit Reduced', '5' => 'Reject', '6' => 'Cancel', '7' => 'Hold', '8' => 'Data Pending'],
+                    [''=>'Status'] + $appStatusList,
                     null,
                     array('id' => 'status',
                     'class'=>'form-control'))
                     !!}
-                </div>                
+                </div> 
+                <!--
+                <div class="col-md-4">
+
+                    {!!
+                    Form::select('pan',
+                    [''=>'Select Pan'],
+                    null,
+                    array('id' => 'pan',
+                    'class'=>'form-control'))
+                    !!}
+                </div>    
+                -->
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
            </div>
            <div class="row">     
@@ -87,7 +99,7 @@
                                                 <th style="width:9%">{{ trans('backend.app_list_head.contact') }}</th>
                                                 {{-- <th>{{ trans('backend.app_list_head.email') }}</th>
                                                 <th>{{ trans('backend.app_list_head.mobile_no') }}</th> --}}
-                                                <th style="width:12%">{{ trans('backend.app_list_head.anchor') }}</th>
+                                                <!-- <th style="width:12%">{{ trans('backend.app_list_head.anchor') }}</th> -->
                                                 {{-- <th>{{ trans('backend.app_list_head.user_type') }}</th> --}}
                                                 <th style="width:12%">{{ trans('backend.app_list_head.assignee') }}</th>
                                                 <th style="width:12%">{{ trans('backend.app_list_head.assigned_by') }}</th>

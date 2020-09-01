@@ -10,8 +10,8 @@
                         <th>Disbursed Date </th>
                         <th>Invoice Amt.</th>
                         <th>Margin(%) </th>
-                        <th>Disburse Amt.</th>
-                        <th>Actual Funded Amt.</th>
+                        <th>Disburse/Principal Amt.</th>
+                        <th>Actual Disburse /Principal Amt.</th>
                         <th>Type</th>
                         <th>Status</th>
                     </tr>
@@ -20,7 +20,7 @@
 				@if($userIvoices->count() != 0)
 					@foreach($userIvoices as $invoice)
 						@php 
-							$margin = (isset($invoice->app->acceptedOffer->margin))	? $invoice->app->acceptedOffer->margin : 0;
+							$margin = (isset($invoice->app->acceptedOffer->margin))	? $invoice->app->acceptedOffer->margin : 0;                                                        
 						        @endphp
 
 	                    <tr role="row" class="odd">
@@ -38,8 +38,8 @@
 								$datediff = abs($now - $your_date);
 								$tenor = round($datediff / (60 * 60 * 24));
 								$fundedAmount = $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$invoice->program_offer->margin)/100);
-				    			$tInterest = $fundedAmount * $tenor * (($invoice->program_offer->interest_rate/100) / 360) ;     
-				    			if($invoice->program_offer->payment_frequency == 1 || empty($invoice->program_offer->payment_frequency)) {
+				    			$tInterest = $fundedAmount * $tenor * (($invoice->program_offer->interest_rate/100) / config('common.DCC')) ;     
+				    			if( ($invoice->program->interest_borne_by == 2) && ($invoice->program_offer->payment_frequency == 1 || empty($invoice->program_offer->payment_frequency)) ) {
 						            $interest = $tInterest;
 						        }           
 								$disburseAmount = round($fundedAmount - $interest, 5);
@@ -47,7 +47,18 @@
 
 							{{ number_format($disburseAmount, 2) }}
 							</td>
-							<td> <span class="badge badge-primary">{{ ($invoice->program_offer->payment_frequency == 1) ? 'UPFRONT' : 'MONTHLY'  }}</span></td>
+							<td> <span class="badge badge-primary">
+							@switch($invoice->program_offer->payment_frequency)
+								@case(1)
+									UPFRONT
+									@break
+								@case(2)
+									MONTHLY
+									@break
+								@case(3)
+								    REAR END
+									@break
+							@endswitch</span></td>
 							<td> <span class="badge badge-warning">{{ $invoice->mstStatus->status_name }}</span></td>
 						</tr>
 	                @endforeach

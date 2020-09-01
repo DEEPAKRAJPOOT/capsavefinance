@@ -49,7 +49,13 @@
                                                 <label for="anchor_id">
                                                     {{ trans('backend.add_program.anchor_name') }}
                                                     <span class="error_message_label">*</span></label>
-                                                {!! Form::select('anchor_id', $anchorList,'',['class'=>'form-control'])!!}
+                                             
+                                                <select name="anchor_id" class="form-control">
+                                                    <option value="" >Please select</option>                                                
+                                                    @foreach($anchorList as $anchor_id => $anchor)                                             
+                                                    <option value="{{ $anchor_id }}" @if($anchor['used']) disabled="disabled"  @endif >{{ $anchor['name'] }}</option>
+                                                    @endforeach
+                                                </select>
                                                 {!! $errors->first('anchor_id', '<span class="error">:message</span>') !!}
                                             </div>
                                         </div>
@@ -68,7 +74,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="form-group">
+                                            <div class="form-group INR">
                                                 <label for="txtCreditPeriod">
                                                     {{ trans('backend.add_program.anchor_limit') }}
                                                     <span class="error_message_label">*</span> </label>
@@ -89,7 +95,7 @@
                                             <div class="form-group">
                                                 <label for="sub_industry_id">
                                                     {{ trans('backend.add_program.sub_industry') }}
-                                                    <span class="error_message_label"></span> </label>
+                                                    <span class="error_message_label hide"></span> </label>
                                                 {!! Form::select('sub_industry_id', [''=>trans('backend.please_select')], '', ['class'=>'form-control sub_industry']) !!}
                                                 {!! $errors->first('sub_industry_id', '<span class="error">:message</span>') !!}
                                             </div>
@@ -130,7 +136,7 @@
                                     </div>
                                 </div>
                             </div>
-
+                            {!! Form::hidden('program_id', '', ['id' => 'program_id']) !!}
                             {{ Form::close() }}
 
                         </div>

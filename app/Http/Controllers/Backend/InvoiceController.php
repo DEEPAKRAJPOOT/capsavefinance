@@ -25,6 +25,7 @@ use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use App\Libraries\Idfc_lib;
+use App\Helpers\ManualApportionmentHelper;
 
 class InvoiceController extends Controller {
 
@@ -117,7 +118,7 @@ class InvoiceController extends Controller {
         $userInfo->total_limit = number_format($totalLimit);
         $userInfo->consume_limit = number_format($totalCunsumeLimit);
         $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
-        $userInfo->outstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($user_id)->sum('amount'),2);
+        $userInfo->outstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($user_id)->sum('outstanding'),2);
         return view('backend.invoice.user_wise_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo,'status' =>$status]);
     } 
 
@@ -302,10 +303,13 @@ class InvoiceController extends Controller {
         $userId = $request->get('user_id');
         $batchId = $request->get('disbursal_batch_id');
 
+        $disbursal = $this->lmsRepo->getDisbursalByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $batchId]);
+        // dd($disbursal);
         return view('backend.invoice.update_invoice_disbursal')
                 ->with(
                     ['user_id' => $userId, 
-                    'disbursal_batch_id' => $batchId
+                    'disbursal_batch_id' => $batchId,
+                    'disbursal' => $disbursal
                 ]);
     }
 
@@ -356,11 +360,14 @@ class InvoiceController extends Controller {
         $invoiceDisbursed = $this->lmsRepo->getInvoiceDisbursed($disbursalIds)->toArray();
         $selectDate = (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        $Obj = new ManualApportionmentHelper($this->lmsRepo);
         
-        foreach ($invoiceDisbursed as $key => $value) {
+        foreach ($invoiceDisbursed as $key => $value) {            
             $tenor = $value['tenor_days'];
+            $banchMarkDateFlag = $value['invoice']['program_offer']['benchmark_date'];
+
             $updateInvoiceDisbursed = $this->lmsRepo->updateInvoiceDisbursed([
-                        'payment_due_date' => ($value['invoice']['pay_calculation_on'] == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")) : $value['invoice']['invoice_due_date'],
+                        'payment_due_date' => ($banchMarkDateFlag == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")) : date('Y-m-d', strtotime($value['invoice']['invoice_date']. "+ $tenor Days")),
                         'status_id' => 12,
                         'int_accrual_start_dt' => $selectDate,
                         'updated_by' => Auth::user()->user_id,
@@ -381,14 +388,19 @@ class InvoiceController extends Controller {
 
             $transactionData = $this->createTransactionData($userId, ['amount' => $value['disburse_amt'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
             $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
-
+            
+            $prgmWhere=[];
+            $prgmWhere['prgm_id'] = $value['invoice']['program_id'];
+            $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);      
             $intrstAmt = round($interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
             if ($intrstAmt > 0.00) {
                 $intrstDbtTrnsData = $this->createTransactionData($userId, ['amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'));
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                $intrstCdtTrnsData = $this->createTransactionData($userId, ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'), 1);
-                $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
+                if (isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2) {
+                    $intrstCdtTrnsData = $this->createTransactionData($userId, ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'), 1);
+                    $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
+                }
             }
 
             // Margin transaction $tranType = 10 
@@ -397,6 +409,9 @@ class InvoiceController extends Controller {
                 $marginTrnsData = $this->createTransactionData($userId, ['amount' => $marginAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.MARGIN'), 0);
                 $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
             }
+            
+            $Obj->intAccrual($value['invoice_disbursed_id']);
+
         }
         return true;
     }
@@ -463,19 +478,22 @@ class InvoiceController extends Controller {
         if ($attributes['exception']) {
             $statusId = 28;
             $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';
-      
+           
         } else {
           if(in_array($customer, $expl))  
           {
-            $statusId = 8;  
+            $statusId = 8; 
+            
           }
           else if($getPrgm->invoice_approval==4)
           {
               $statusId = 8;   
+             
           }
           else
           {
             $statusId = 7;
+           
           }
         }
        //////* chk the adhoc condition  
@@ -522,6 +540,12 @@ class InvoiceController extends Controller {
             {
            
                InvoiceTrait::getManualInvoiceStatus($result);
+            }
+            if( $statusId==8)
+            {
+               $inv_apprv_margin_amount = InvoiceTrait::invoiceMargin($result);
+               $is_margin_deduct =  1;  
+               $this->invRepo->updateFileId(['invoice_margin_amount'=>$inv_apprv_margin_amount,'is_margin_deduct' =>1],$result['invoice_id']);
             }
             Session::flash('message', 'Invoice successfully saved');
             return back();
@@ -626,7 +650,11 @@ class InvoiceController extends Controller {
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                         $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
 
-                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                        $prgmWhere=[];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);   
+                        
+                        if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 
@@ -731,7 +759,11 @@ class InvoiceController extends Controller {
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                         $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
 
-                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                        $prgmWhere=[];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);  
+
+                        if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 
@@ -824,16 +856,30 @@ class InvoiceController extends Controller {
                 $disburseAmount = 0;
                 foreach ($allinvoices as $invoice) {
                     if($invoice['supplier_id'] == $userid) {
-                        
+                        $str_to_time_date = strtotime(\Carbon\Carbon::createFromFormat('d/m/Y', $disburseDate)->setTimezone(config('common.timezone'))->format('Y-m-d'));
+                        $bankId = $invoice['program_offer']['bank_id'];
+                        $oldIntRate = (float)$invoice['program_offer']['interest_rate'] - $invoice['program_offer']['base_rate'];
+                        $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
+                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                        $bankRatesArr = $Obj->getBankBaseRates($bankId);
+                        if ($bankRatesArr && $invoice['is_adhoc'] != 1) {
+                          $actIntRate = $Obj->getIntRate($oldIntRate, $bankRatesArr, $str_to_time_date);
+                        } else {
+                          $actIntRate = $interestRate;
+                        }
                         $interest= 0;
                         $margin= 0;
 
                         $tenor = $this->calculateTenorDays($invoice);
                         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-                        $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
-                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                        $prgmWhere=[];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);   
+
+                        if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 
@@ -867,7 +913,7 @@ class InvoiceController extends Controller {
 
                 } 
             }
-            $result = $this->export($exportData, $batchId);
+            // $result = $this->export($exportData, $batchId);
             $file['file_path'] = $result['file_path'] ?? '';
             if ($file) {
                 $createBatchFileData = $this->createBatchFileData($file);
@@ -882,6 +928,7 @@ class InvoiceController extends Controller {
                 $disburseAmount = 0;
                 $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
                 $userData['disbursal_batch_id'] =$disbursalBatchId;
+                $userData['disburse_date'] = $disburseDate;
                 $disbursalRequest = $this->createDisbursalData($userData, $disburseAmount, $disburseType);
                 $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disbursalRequest);
                 $this->lmsRepo->createDisbursalStatusLog($createDisbursal->disbursal_id, 10, '', $creatorId);
@@ -902,15 +949,30 @@ class InvoiceController extends Controller {
                         
                         $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
                         $this->invRepo->saveInvoiceStatusLog($invoice['invoice_id'], 10);
+                        $str_to_time_date = strtotime(\Carbon\Carbon::createFromFormat('d/m/Y', $disburseDate)->setTimezone(config('common.timezone'))->format('Y-m-d'));
+                        $bankId = $invoice['program_offer']['bank_id'];
+                        $oldIntRate = (float)$invoice['program_offer']['interest_rate'] - $invoice['program_offer']['base_rate'];
+                        $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
+                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                        $bankRatesArr = $Obj->getBankBaseRates($bankId);
+                        if ($bankRatesArr && $invoice['is_adhoc'] != 1) {
+                          $actIntRate = $Obj->getIntRate($oldIntRate, $bankRatesArr, $str_to_time_date);
+                        } else {
+                          $actIntRate = $interestRate;
+                        }
                         $interest= 0;
                         $margin= 0;
+                        
+                        $prgmWhere=[];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);                          
 
                         $tenor = $this->calculateTenorDays($invoice);
                         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-                        $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
-                        if($invoice['program_offer']['payment_frequency'] == 1) {
+                        if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 

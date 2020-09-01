@@ -120,11 +120,12 @@
                     <div class="col-md-12 mt-4 ">
                          <div class="row">
                             <div class="col-md-2">
-                                <label for="txtPassword"><b>Group Name</b></label>
+                                <label for="txtPassword"><b>Group Name</b></label> <span style="color: red; font-size: 20px"> * </span>
                             </div>
                             <div class="col-md-2">
-                                <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name" autocomplete="off"/ style="padding: -;position:absolute; right: 17px;" >
+                                <input type="text" name="group_company" class="form-control group-company" value="{{isset($arrCamData->group_company) ? $arrCamData->group_company : ''}}" placeholder="Group Name" @if(\Helpers::checkPermission('get_group_company') && request()->get('view_only')) @else readonly="readonly" @endif autocomplete="off" style="padding: -;position:absolute; right: 17px;" >
                             </div>
+                            <label class="error" for="group_company"></label>
                             <span  class="group_nameId" style="color:red;"></span>
                             
                         </div>
@@ -147,15 +148,19 @@
                                     @if($loop->first)
                                         <label for="txtPassword"><b>Sanction Limit (In Mn)</b></label>
                                     @endif
-                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:{{($loop->first) ? '28px;': '1px;' }}"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                     <input type="text" name="sanction_limit[]" class="form-control calTotalExposure float_format" value="{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] :'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                    <div class="relative">
+                                        <a href="javascript:void(0);" class="verify-owner-no" style="top:{{($loop->first) ? '28px;': '1px;' }}"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                        <input type="text" name="sanction_limit[]" class="form-control calTotalExposure float_format" value="{{($arr['sanction_limit'] > 0) ? $arr['sanction_limit'] :'' }}" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                     </div>
                                 </div>
                                 <div class="col-md-3 INR">
                                     @if($loop->first)
                                         <label for="txtPassword"><b>Outstanding Exposure (In Mn)</b></label>
                                     @endif
-                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:{{($loop->first) ? '28px;': '1px;' }}"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                     <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure float_format" value="{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']: '' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                    <div class="relative">
+                                        <a href="javascript:void(0);" class="verify-owner-no" style="top:{{($loop->first) ? '28px;': '1px;' }}"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                        <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure float_format" value="{{($arr['outstanding_exposure'] > 0) ? $arr['outstanding_exposure']: '' }}" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                    </div>
                                 </div>
                                 <div class="col-md-2 center INR">
                                      @if($loop->first)
@@ -189,21 +194,27 @@
                                 </div>
                                 <div class="col-md-3 mt-4 INR">
                                         <label for="txtPassword"><b>Sanction Limit (In Mn)</b></label>
-                                        <a href="javascript:void(0);" class="verify-owner-no" style="top:28px;"><i class="fa fa-inr" aria-hidden="true"></i></a> 
-                                         <input type="text" name="sanction_limit[]" class="form-control float_format" value="" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
-                                </div>
+                                        <div class="relative">
+                                            <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a> 
+                                            <input type="text" name="sanction_limit[]" class="form-control float_format" value="" placeholder="Sanction Limit (In Mn)" autocomplete="off"/>
+                                        </div>
+                                </div>        
                                 <div class="col-md-3 mt-4 INR">
                                      <label for="txtPassword"><b>Outstanding Exposure (In Mn)</b></label>
-                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:28px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                     <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure float_format" value="" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                     <div class="relative">
+                                        <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                        <input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure float_format" value="" placeholder="Outstanding Exposure (In Mn)" autocomplete="off"/>
+                                     </div>
                                 </div>
                                 <div class="col-md-2 mt-4 INR">
                                      <label for="txtPassword"><b>Proposed Limit (In Mn)</b></label>
-                                     <a href="javascript:void(0);" class="verify-owner-no" style="top:28px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                     <div class="d-flex">
-                                          <input type="text" name="proposed_exposure[]" maxlength="20" class="form-control  calTotalExposure float_format proposed_exposureInput"  value="" placeholder="Proposed Limit (In Mn)" />
-                                           <i class="fa fa-2x fa-plus-circle add-ptpq-block ml-2"  style="color: green;"></i>
-                                    </div>
+                                     <div class="relative">
+                                        <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                        <div class="d-flex">
+                                             <input type="text" name="proposed_exposure[]" maxlength="20" class="form-control  calTotalExposure float_format proposed_exposureInput"  value="" placeholder="Proposed Limit (In Mn)" />
+                                              <i class="fa fa-2x fa-plus-circle add-ptpq-block ml-2"  style="color: green;"></i>
+                                        </div>
+                                     </div>
                                 </div>
                             </div>
 
@@ -218,8 +229,10 @@
                             </div>
                             <div class="col-md-6 "></div>
                              <div class="col-md-3 INR">
-                                <a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                  <input type="text" class="form-control " name="total_exposure" value="{{($arrCamData &&  $arrCamData->total_exposure_amount > 0) ? $arrCamData->total_exposure_amount : ''}}" readonly />
+                                <div class="relative">
+                                    <a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                    <input type="text" class="form-control " name="total_exposure" value="{{($arrCamData &&  $arrCamData->total_exposure_amount > 0) ? $arrCamData->total_exposure_amount : ''}}" readonly />
+                                </div>
                             </div>
                         </div>
                     </div>    
@@ -349,7 +362,9 @@
 
                 </div>
                 @if(request()->get('view_only'))
-                <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
+                @can('cam_information_save')
+                    <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
+                @endcan
                 @endif
               </form>
             </div>
@@ -433,13 +448,13 @@
                 '<input type="text" name="group_company_name[]" class="form-control" value="" placeholder="Group Company" required autocomplete="off">'+
             '</div>'+
             '<div class="col-md-3 INR">'+
-                '<a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                '<div class="relative"><a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
                 '<input type="text" name="sanction_limit[]" class="form-control " value="" placeholder="Sanction Limit (In Mn)" required autocomplete="off">'+
-            '</div>'+
+            '</div></div>'+
             '<div class="col-md-3 INR">'+
-                '<a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                '<div class="relative"><a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
                 '<input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure" value="" placeholder="Outstanding Exposure (In Mn)" required autocomplete="off">'+
-            '</div>'+
+            '</div></div>'+
             '<div class="col-md-2 center">'+
                 '<i class="fa fa-2x fa-times-circle remove-ptpq-block" style="color: red;"></i>'+
             '</div>'+
@@ -504,13 +519,13 @@
                                             '<input type="text" name="group_company_name[]" class="form-control" value="'+arr.group_company_name+'" placeholder="Group Company" required autocomplete="off">'+
                                         '</div>'+
                                         '<div class="col-md-3 INR">'+
-                                            '<a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                                            '<div class="relative"><a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
                                             '<input type="text" name="sanction_limit[]" class="form-control float_format" value="'+arr.sanction_limit+'" placeholder="Sanction Limit (In Mn)" required autocomplete="off">'+
-                                        '</div>'+
+                                        '</div></div>'+
                                         '<div class="col-md-3 INR">'+
-                                            '<a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+                                            '<div class="relative"><a href="javascript:void(0);" class="verify-owner-no" style="top:1px;"><i class="fa fa-inr" aria-hidden="true"></i></a>'+
                                             '<input type="text" name="outstanding_exposure[]" class="form-control  calTotalExposure float_format" value="'+arr.outstanding_exposure+'" placeholder="Outstanding Exposure (In Mn)" required autocomplete="off">'+
-                                        '</div>'+
+                                        '</div></div>'+
 
                                         '<div class="col-md-2 center INR">'
                                              +symbol_rs+ 
@@ -549,6 +564,7 @@ return false;
 $(document).on('submit', '#camForm', function(e) {
    $('.group_nameId').text(" ");
    $filledInput = 0;
+   
    $('#ptpq-block input').each(function () {
       if ($(this).val()) $filledInput++;
    })
@@ -558,7 +574,25 @@ $(document).on('submit', '#camForm', function(e) {
        $('input[name="group_company"]').focus();
        return false;
    }
+   
    return true;
+});
+
+$(document).ready(function () {
+
+
+$('#camForm').validate({ // initialize the plugin
+    rules: {
+        'group_company' : {
+            required : true,
+        },
+    },
+    messages: {
+        'group_company': {
+            required: "Please enter Group Name",
+        },
+    }
+});
 });
 </script>
 @endsection

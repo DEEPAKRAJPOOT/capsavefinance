@@ -31,11 +31,12 @@ try {
             columns: [
                 {data: 'state'},
                 {data: 'gstn'},
+                {data: 'user_id'},
                 {data: 'customer_name'},
                 {data: 'customer_address', width:'200px'},
                 {data: 'customer_gstn'},
                 {data: 'sac_code'},
-                {data: 'contract_no'},
+                // {data: 'contract_no'},
                 {data: 'invoice_no'},
                 {data: 'invoice_date'},
                 {data: 'base_amount'},
@@ -48,6 +49,8 @@ try {
                 {data: 'total_amt'},
                 {data: 'total_rate'},
                 {data: 'total_tax'},
+                {data: 'cash_flow'},
+                {data: 'considered_in'},
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [1,2,3]}]
         });

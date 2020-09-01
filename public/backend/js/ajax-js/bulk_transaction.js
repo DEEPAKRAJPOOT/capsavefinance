@@ -7,7 +7,7 @@ try {
             serverSide: true,
             pageLength: 10,
             searching: false,
-            bSort: true,
+            bSort: false,
             ajax: {
                 "url": messages.backend_get_bulk_transaction, // json datasource
                 "method": 'POST',
@@ -40,6 +40,33 @@ try {
             oTable.draw();
         });                   
     });
+
+    function delete_payment(url, ele) {
+        var ele = $(ele);
+        var oldHtml = ele.html();
+        $.ajax({
+            type: "delete",
+            url: url,
+            beforeSend: function(res){
+                ele.html('<i class="fa fa-spinner" aria-hidden="true"></i>');
+                ele.prop('disabled', true);
+            },
+            success: function(res){
+                if(res.status == '1'){
+                    ele.remove();
+                    oTable.draw();
+                    $("#iframeMessage").html('<div class="alert alert-success" role="alert">'+res.message+'</div>');
+                }else{
+                    ele.html(oldHtml);
+                    $("#iframeMessage").html('<div class="alert alert-danger" role="alert">'+res.message+'</div>');
+                }
+            },
+            error: function(res){
+                ele.html(oldHtml);
+                $("#iframeMessage").html('<div class="alert alert-danger" role="alert">Please try after some time.</div>');
+            }
+        });
+    }
 } catch (e) {
     if (typeof console !== 'undefined') {
         console.log(e);

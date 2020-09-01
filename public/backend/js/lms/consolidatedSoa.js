@@ -24,15 +24,8 @@ try {
                 }
             },
             fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-                var iscolor = 1; 
-                if (aData.trans_type.indexOf('TDS') > -1 || aData.trans_type.indexOf('Refunded') > -1 || aData.trans_type.indexOf('Non Factored Amount') > -1)
-                { iscolor = null; }
-                if(aData.payment_id && iscolor){
-                    $(nRow).css('background', '#ffcc0078');
-                    $(nRow).css('line-height', '1');
-                }
-                if(aData.trans_type==' Repayment'){
-                    $(nRow).css('background', '#f3c714');
+                if(aData.backgroundColor){
+                    $(nRow).css('background', aData.backgroundColor);
                 }
             },
             columns: [
@@ -89,6 +82,7 @@ try {
 
         from_date = $('input[name="from_date"]').val().trim();
         to_date = $('input[name="to_date"]').val().trim();
+        trans_entry_type = $('select[name=trans_entry_type]').val().trim();
         if(action.trim() == 'pdf'){
             url = messages.pdf_soa_url;
         }
@@ -104,9 +98,32 @@ try {
         if(to_date){
             url += '&to_date='+to_date;
         }
+
+        if(trans_entry_type){
+            url += '&trans_entry_type='+trans_entry_type;
+        }
         window.open(url, '_blank');
     }
 
+    function validate(){
+        var res = true;
+        var searchKeyword = $("#search_keyword").val();
+        var userId = $("#user_id").val();
+
+        if(searchKeyword){
+            if(!userId){
+                $('#search_keyword').focus();
+                alert('Please select record from list!');
+                res = false;
+            }
+        }else{
+            $('#search_keyword').focus();
+            alert('Client Id required');
+            res = false;
+        }
+
+        return res;
+    }
 
 } catch (e) {
     if (typeof console !== 'undefined') {

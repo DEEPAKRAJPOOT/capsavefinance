@@ -44,9 +44,9 @@
                                     <label class="mb-21">Select Product Type</label>
                                     <select class="form-control" name="product_id" id="product_id">
                                         <option value="">Select Product</option>
-                                        <option value="1" {{(old('product_id') == 1)?'selected': ''}}>Supply Chain</option>
-                                        <option value="2" {{(old('product_id') == 2)?'selected': ''}}>Term Loan</option>
-                                        <option value="3" {{(old('product_id') == 3)?'selected': ''}}>Leasing</option>
+                                        @foreach($product_types as $key => $product_type)
+                                        <option value="{{$key}}" {{(old('product_id') == $key)?'selected': ''}}>{{$product_type}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -70,13 +70,20 @@
                             </div>
                             <div class="col-md-1">
                                 <div class="form-group">
+				    @if (request()->get('view_only'))
+                    @can('save_limit_assessment')
                                     <button class="btn btn-success btn-sm mt-44" type="submit" name="program_submit">Submit</button>
+                                    @endcan
+                                    @endif
                                 </div>
                             </div>
                         </div>
                         </form>
 
                         <!-- To show suply chain data -->
+                        <!-- @php
+                            $offer_no = 1;
+                        @endphp -->
                         @foreach($supplyPrgmLimitData as $key=>$prgmLimit)
                         @if($loop->first)
                         <div class="row">
@@ -108,11 +115,19 @@
                                                        <td width="20%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
                                                        <td width="20%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
                                                        <td width="24%">
+                                                       @can('show_limit')
                                                        <button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}"  title="Edit Limit"><i class="fa fa-edit"></i></button>
+                                                       @endcan
+                                                       @can('show_limit_offer')
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
+                                                       @endcan
                                                        @if($offerStatus == 2)
+                                                       @can('share_to_colender')
                                                        <a data-toggle="modal" data-target="#shareColenderFrame" data-url ="{{route('share_to_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 13px;" title="Share with Co-Lender"><i class="fa fa-share"></i></a>
+                                                       @endcan
+                                                       @can('view_shared_colender')
                                                        <a data-toggle="modal" data-target="#viewSharedColenderFrame" data-url ="{{route('view_shared_colender', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" data-height="500px" data-width="100%" data-placement="top" class="btn btn-success btn-sm" style="font-size: 13px;" title="View Shared Co-Lender"><i class="fa fa-eye"></i></a>
+                                                       @endcan
                                                        @endif
                                                        </td>
                                                     </tr>
@@ -122,23 +137,24 @@
                                         <div id="scollapse{{$key+1}}" class="card-body bdr collapse" style="padding: 0; border: 1px solid #e9ecef;">
                                             <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                             <thead>
-                                            <tr>
-                                                <td width="20%" style="background: #e9ecef;"><b>Overdue Interest Rate (%)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Interest Rate (%)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Program Limit</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (In Days)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Payment Frequency</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Margin (%)</b></td>
-                                                <td width="18%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Grace Period (In Days)</b></td>
-                                                <td width="12%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Adhoc Interest Rate (%)</b></td>
-                                                <td width="5%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Action</b></td>
+                                            <tr class="sub-heading">
+                                                <td width="20%" >Overdue Interest Rate (%)</td>
+                                                <td width="10%" >Interest Rate (%)</td>
+                                                <td width="10%" >Program Limit</td>
+                                                <td width="10%" >Tenor (In Days)</td>
+                                                <td width="10%" >Payment Frequency</td>
+                                                <td width="10%" >Margin (%)</td>
+                                                <td width="18%" >Grace Period (In Days)</td>
+                                                <td width="12%" >Adhoc Interest Rate (%)</td>
+                                                <td width="5%" >Action</td>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             @if($prgmLimit->offer->count() != 0)
-                                            @foreach($prgmLimit->offer as $k=>$prgmOffer)
+                                            @foreach($prgmLimit->offer as $k=>$prgmOffer)					    
+					    @if ( ($userRole && $userRole->id == 11 && \Auth::user()->anchor_id == $prgmOffer->anchor_id) || (!$userRole || ($userRole && $userRole->id != 11)) )
                                             </tr>
-                                                <td>{{$prgmOffer->overdue_interest_rate}}%</td>
+                                                <td>{{($prgmOffer->overdue_interest_rate ?? 0) + ($prgmOffer->interest_rate ?? 0)}}%</td>
                                                 <td>{{$prgmOffer->interest_rate}}%</td>
                                                 <td>&#8377; {{number_format($prgmOffer->prgm_limit_amt)}}</td>
                                                 <td>{{$prgmOffer->tenor}}</td>
@@ -146,8 +162,17 @@
                                                 <td>{{$prgmOffer->margin}}%</td>
                                                 <td>{{$prgmOffer->grace_period}}</td>
                                                 <td>{{$prgmOffer->adhoc_interest_rate}}%</td>
-                                                <td><a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a></td>
+                                                <td>
+                                                    @if($prgmOffer->status == 2)
+                                                    <label class="badge badge-danger">Rejected</label>
+                                                    @else
+                                                    @can('show_limit_offer')
+                                                    <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
+                                                    @endcan
+                                                    @endif
+                                                </td>
                                             </tr>
+					    @endif
                                             @endforeach
                                             @else
                                                 <tr style="text-align: center;">
@@ -196,8 +221,13 @@
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
-                                                       <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Edit Limit"><i class="fa fa-edit"></i></button>
+                                                       <td width="25%">
+                                                       @can('show_limit')
+                                                       <button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Edit Limit"><i class="fa fa-edit"></i></button>
+                                                       @endcan
+                                                       @can('show_limit_offer')
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
+                                                       @endcan
                                                        </td>
                                                     </tr>
                                                 </tbody>
@@ -206,15 +236,15 @@
                                         <div id="tcollapse{{$key+1}}" class="card-body bdr collapse" style="padding: 0; border: 1px solid #e9ecef;">
                                             <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                             <thead>
-                                            <tr>
-                                                <td width="10%" style="background: #e9ecef;"><b>Facility Type</b></td>
-                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Equipment Type</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Limit of the Equipment</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (Months)</b></td>
-                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>PTP Frequency</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>XIRR (%)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
-                                                <td width="5%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Action</b></td>
+                                            <tr class="sub-heading">
+                                                <td width="10%" >Facility Type</td>
+                                                <td width="20%" >Equipment Type</td>
+                                                <td width="10%" >Limit of the Equipment</td>
+                                                <td width="10%" >Tenor (Months)</td>
+                                                <td width="20%" >PTP Frequency</td>
+                                                <td width="10%" >XIRR (%)</td>
+                                                <td width="10%" >Processing Fee (%)</td>
+                                                <td width="5%" >Action</td>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -249,7 +279,15 @@
                                                 </td>
                                                 <td><b>Ruby Sheet</b>: {{$prgmOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$prgmOffer->cash_flow_xirr}}%</td>
                                                 <td>{{$prgmOffer->processing_fee}}%</td>
-                                                <td><a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a></td>
+                                                <td>
+                                                    @if($prgmOffer->status == 2)
+                                                    <label class="badge badge-success">Rejected</label>
+                                                    @else
+                                                    @can('show_limit_offer')
+                                                    <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
+                                                    @endcan
+                                                    @endif
+                                                </td>
                                             </tr>
                                             @endforeach
                                             @else
@@ -299,8 +337,13 @@
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt)}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->getTotalByPrgmLimitId())}}</td>
                                                        <td width="18%">&#8377; {{number_format($prgmLimit->limit_amt - $prgmLimit->getTotalByPrgmLimitId())}}</td>
-                                                       <td width="25%"><button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Edit Limit"><i class="fa fa-edit"></i></button>
+                                                       <td width="25%">
+                                                       @can('show_limit')
+                                                       <button class="btn btn-success btn-sm edit-limit" data-url="{{route('show_limit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Edit Limit"><i class="fa fa-edit"></i></button>
+                                                       @endcan
+                                                       @can('show_limit_offer')
                                                        <button class="btn btn-success btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id])}}" title="Add Offer"><i class="fa fa-plus"></i></button>
+                                                       @endcan
                                                        </td>
                                                     </tr>
                                                 </tbody>
@@ -309,15 +352,15 @@
                                         <div id="lcollapse{{$key+1}}" class="card-body bdr collapse" style="padding: 0; border: 1px solid #e9ecef;">
                                             <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
                                             <thead>
-                                            <tr>
-                                                <td width="10%" style="background: #e9ecef;"><b>Facility Type</b></td>
-                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Equipment Type</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Limit of the Equipment</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Tenor (Months)</b></td>
-                                                <td width="20%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>PTP Frequency</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>XIRR/Discounting (%)</b></td>
-                                                <td width="10%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Processing Fee (%)</b></td>
-                                                <td width="5%" style="background: #e9ecef; border-left: 1px solid #c6cfd8;"><b>Action</b></td>
+                                            <tr class="sub-heading">
+                                                <td width="10%" >Facility Type</td>
+                                                <td width="20%" >Equipment Type</td>
+                                                <td width="10%" >Limit of the Equipment</td>
+                                                <td width="10%" >Tenor (Months)</td>
+                                                <td width="20%" >PTP Frequency</td>
+                                                <td width="10%" >XIRR/Discounting (%)</td>
+                                                <td width="10%" >Processing Fee (%)</td>
+                                                <td width="5%" >Action</td>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -362,7 +405,15 @@
                                                 @endif
                                                 </td>
                                                 <td>{{$prgmOffer->processing_fee}}%</td>
-                                                <td><a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a></td>
+                                                <td>
+                                                    @if($prgmOffer->status == 2)
+                                                    <label class="badge badge-success">Rejected</label>
+                                                    @else
+                                                    @can('show_limit_offer')
+                                                    <a class="btn btn-action-btn btn-sm add-offer" data-url="{{route('show_limit_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'app_prgm_limit_id'=>$prgmLimit->app_prgm_limit_id, 'prgm_offer_id'=>$prgmOffer->prgm_offer_id])}}" title="Edit Offer"><i class="fa fa-edit"></i></a>
+                                                    @endcan
+                                                    @endif
+                                                </td>
                                             </tr>
                                             @endforeach
                                             @else
@@ -386,8 +437,10 @@
                             @if((request()->get('view_only') || $currStageCode == 'approver') && ($approveStatus && $approveStatus->status == 0))
                                 <form method="POST" action="{{route('approve_offer')}}">
                                 @csrf
-                                <input type="hidden" name="app_id" value="{{request()->get('app_id')}}">
+                                <input type="hidden" name="app_id" value="{{request()->get('app_id')}}"><input type="hidden" name="user_id" value="{{$limitData->user_id}}">
+                                @can('approve_offer')
                                 <input name="btn_save_offer" class="btn btn-success btn-sm float-right mt-3 ml-3" type="submit" value="Approve Limit">
+                                @endcan
                                 </form>
                             @endif
                         </div>
@@ -401,8 +454,8 @@
 
 {!!Helpers::makeIframePopup('shareColenderFrame','Share with Co-Lender', 'modal-md')!!}
 {!!Helpers::makeIframePopup('viewSharedColenderFrame','View shared Co-Lender', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('limitOfferFrame','Add Offer', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('editLimitFrame','Edit Limit', 'modal-md')!!}
+{!!Helpers::makeIframePopup('limitOfferFrame','Add/Update Offer', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('editLimitFrame','Update Limit', 'modal-md')!!}
 
 @endsection
 @section('jscript')

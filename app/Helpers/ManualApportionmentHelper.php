@@ -2,12 +2,15 @@
 
 namespace App\Helpers;
 use DB;
-use Carbon\Carbon;
 use Helpers;
+use Carbon\Carbon;
+use App\Helpers\Helper;
 use InvalidArgumentException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Lms\Disbursal;
+use App\Inv\Repositories\Models\Master\BaseRate;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
@@ -20,7 +23,7 @@ class ManualApportionmentHelper{
     }
 
     private function calInterest($principalAmt, $interestRate, $tenorDays){
-        $interest = $principalAmt * $tenorDays * ($interestRate / 360) ;                
+        $interest = $principalAmt * $tenorDays * ($interestRate / config('common.DCC')) ;                
         return $interest/100;        
     }  
     
@@ -34,35 +37,113 @@ class ManualApportionmentHelper{
         return $calDate;
     }
 
-    Private function setMonthlyInterestSoaFlag($invDisbId, $intAccrualDate, $invdueDate, $soaFlag){
-        TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
-        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
-        ->where('entry_type','=',0)
-        ->where('soa_flag','=',0)
-        ->whereDate('trans_date','<=',$intAccrualDate)
-        ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDate)))
-        ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
-        
-        TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
-        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
-        ->where('entry_type','=',0)
-        ->where('soa_flag','=',0)
-        ->whereDate('trans_date','=',$this->subDays($invdueDate,1))
-        ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
-    }
+    public function transactionPostingAdjustment($invDisbId, $startDate, $payFreq, $paymentId = null){
+        $transactionList = [];
+        $amount = 0;
 
-    Private function setRearendInterestSoaFlag($invDisbId, $intAccrualDate, $invdueDate, $soaFlag){
-        TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
-        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
-        ->where('entry_type','=',0)
-        ->where('soa_flag','=',0)
-        ->whereDate('trans_date','=',$this->subDays($invdueDate,1))
-        ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
+        $transactions = Transactions::where('invoice_disbursed_id','=',$invDisbId)
+            ->where('entry_type','=',0)
+            ->whereNull('link_trans_id')
+            ->whereNull('parent_trans_id')
+            ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+            ->whereNotNull('trans_running_id')
+            ->get();
+        
+        foreach($transactions as $trans){
+            
+            $amount = $trans->amount;
+
+            $actualAmount = InterestAccrual::where('interest_date', '>=',$trans->fromIntDate)
+            ->where('interest_date','<=',$trans->toIntDate)
+            ->where('invoice_disbursed_id', $trans->invoice_disbursed_id)
+            ->sum('accrued_interest');
+            
+            $cTransactions = Transactions::where('link_trans_id','=',$trans->trans_id)
+            ->where('invoice_disbursed_id','=',$invDisbId)
+            ->where('entry_type','=',1)
+            ->where('trans_type','=',config('lms.TRANS_TYPE.CANCEL'))
+            ->whereNotNull('trans_running_id')
+            ->get();
+            
+            foreach($cTransactions as $cTrans){
+                $amount -= $cTrans->amount;
+            }
+
+            $amount = $actualAmount - $amount;
+            if($amount > 0){
+
+            }
+            elseif($amount < 0){
+                $amount = abs($amount);
+                // Interest cancelation Process
+                
+                if($amount > 0){
+                    if($amount >= $trans->outstanding){
+                        $cAmt = $trans->outstanding;
+                    }else{
+                        $cAmt = $amount;
+                    }
+                    $amount -= $cAmt;
+                    
+                    if(round($cAmt, 2) > 0){
+                        $transactionList[] = [
+                            'payment_id' => null,
+                            'link_trans_id' => $trans->trans_id,
+                            'parent_trans_id' => $trans->trans_id,
+                            'trans_running_id'=> $trans->trans_running_id,
+                            'invoice_disbursed_id' => $trans->invoice_disbursed_id,
+                            'user_id' => $trans->user_id,
+                            'trans_date' => $trans->trans_date,
+                            'amount' => $cAmt,
+                            'entry_type' => 1,
+                            'soa_flag' => 1,
+                            'trans_type' => config('lms.TRANS_TYPE.CANCEL')
+                        ];
+                    }
+                }
+                // Interest Refund Process
+                
+                if($amount > 0){
+                    $irpAmt = ($trans->amount - $trans->outstanding) - $trans->revertedAmt;
+                    if($irpAmt > 0){
+                        if($amount >= $irpAmt){
+                            $rAmt = $irpAmt;
+                        }else{
+                            $rAmt = $amount;
+                        }
+                        $amount -= $rAmt;
+                        
+                        if(round($rAmt,2) > 0){
+                            $transactionList[] = [
+                                'payment_id' => null,
+                                'link_trans_id' => $trans->trans_id,
+                                'parent_trans_id' => $trans->trans_id,
+                                'trans_running_id'=> $trans->trans_running_id,
+                                'invoice_disbursed_id' => $trans->invoice_disbursed_id,
+                                'user_id' => $trans->user_id,
+                                'trans_date' => $trans->trans_date,
+                                'amount' => $rAmt,
+                                'entry_type' => 1,
+                                'soa_flag' => 1,
+                                'trans_type' => config('lms.TRANS_TYPE.REFUND')
+                            ];
+                        }
+                    }
+                }  
+            }
+        }
+
+        if(!empty($transactionList)){
+            foreach ($transactionList as $key => $newTrans) {
+                $this->lmsRepo->saveTransaction($newTrans);
+            }
+        }
     }
 
     private function runningToTransPosting($invDisbId, $intAccrualDt, $payFreq, $invdueDate, $odStartDate){
         $intAccrualDate = $this->subDays($intAccrualDt,1);
-        $graceStartDate = $this->addDays($invdueDate,1);
+        $invdueDate = $this->subDays($invdueDate,1);
+        $graceStartDate = $invdueDate;
         $graceEndDate = $this->subDays($odStartDate,1);
         $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $intAccrualDate)->endOfMonth()->format('Y-m-d');
         $intTransactions = new collection();
@@ -105,14 +186,16 @@ class ManualApportionmentHelper{
                 });
             }
         }
-        
+        /*
         //Roll back interest
-        if(strtotime($odStartDate) == strtotime($intAccrualDate)){
+
+        if($payFreq == 2 && strtotime($odStartDate) == strtotime($intAccrualDate)){
             $interestList = Transactions::where('invoice_disbursed_id','=',$invDisbId)
             ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
             ->where('entry_type','=',0)
             ->whereNotNull('trans_running_id')
-            ->whereBetween('trans_date',[$graceStartDate,$graceEndDate])
+            ->whereDate('trans_date','>',$graceStartDate)
+            ->whereDate('trans_date','<=',$graceEndDate)
             ->get();
             foreach ($interestList as $trans) {
                 $canceledAmt = Transactions::where('parent_trans_id','=',$trans->trans_id)
@@ -134,7 +217,7 @@ class ManualApportionmentHelper{
                     'trans_type' => config('lms.TRANS_TYPE.CANCEL')
                 ];
             }
-        }
+        }*/
 
         //Overdue Posting
         if( (strtotime($endOfMonthDate) == strtotime($intAccrualDate) || strtotime($intAccrualDate) == strtotime($odStartDate)) && strtotime($intAccrualDate) >= strtotime($odStartDate)){
@@ -175,65 +258,68 @@ class ManualApportionmentHelper{
         }
     }
 
-    Private function setOverdueSoaFlag($invDisbId, $intAccrualDate, $soaFlag){
-        TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
-        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
-        ->where('entry_type','=',0)
-        ->where('soa_flag','=',0)
-        ->whereDate('trans_date','<=',$intAccrualDate)
-        ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDate)))
-        ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
-    }
-
-    private function getpaymentSettled($transDate, $invDisbId, $payFreq){
+    private function getpaymentSettled($transDate, $invDisbId, $payFreq, $odStartDate){
         $intrest = 0;
+        $disbTransIds = null;
+        $intTransIds = null;
+
+        $disbTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
+        ->whereNull('payment_id') 
+        ->whereNull('link_trans_id') 
+        ->whereNull('parent_trans_id')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
+        ->pluck('trans_id')->toArray();
+
+        $Dr = Transactions::whereDate('trans_date','<=',$transDate)
+        ->where('invoice_disbursed_id','=',$invDisbId)
+        ->where('entry_type','=','0')
+        ->where(function($query) use($disbTransIds){
+            $query->whereIn('trans_id',$disbTransIds);
+            $query->OrwhereIn('parent_trans_id',$disbTransIds);
+        })
+        ->sum('amount');
+
+        $Cr =  Transactions::whereDate('trans_date','<=',$transDate) 
+        ->where('invoice_disbursed_id','=',$invDisbId)
+        ->where('entry_type','=','1')
+        ->where(function($query) use($disbTransIds){
+            $query->whereIn('trans_id',$disbTransIds);
+            $query->OrwhereIn('parent_trans_id',$disbTransIds);
+        })
+        ->sum('amount');
+
         if($payFreq == 2){
-            $disbTransIds = Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
-            ->where('invoice_disbursed_id','=',$invDisbId) 
-            ->whereNull('payment_id') 
-            ->whereNull('link_trans_id') 
-            ->whereNull('parent_trans_id')
-            ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
-            ->pluck('trans_id')->toArray();
-        
-            $intTransIds2 = Transactions::whereRaw("Month(trans_date) <?",[date('m', strtotime($transDate))]) 
-            ->where('invoice_disbursed_id','=',$invDisbId) 
+            $mIntrest = InterestAccrual::where('invoice_disbursed_id','=',$invDisbId)
+            ->whereNotNull('interest_rate')
+            ->where(function($query) use($odStartDate,$transDate){
+                $query->whereMonth('interest_date','<', date('m', strtotime($transDate)));
+                if($odStartDate <= $transDate){
+                    $query->orWhere('interest_date','<',$odStartDate);
+                }
+            })
+            ->sum('accrued_interest');
+            $Dr += round($mIntrest,2);
+
+            $intTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
             ->whereNull('link_trans_id') 
             ->whereNull('parent_trans_id')
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST')]) 
             ->pluck('trans_id')->toArray();
-
-            $transIds = array_merge($disbTransIds,$intTransIds2);
         }
-        else{
-            $transIds = Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
-            ->where('invoice_disbursed_id','=',$invDisbId) 
-            ->whereNull('payment_id') 
-            ->whereNull('link_trans_id') 
-            ->whereNull('parent_trans_id')
-            ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
-            ->pluck('trans_id')->toArray();
+
+        if($intTransIds){
+  
+             $Cr +=  Transactions::whereDate('trans_date','<=',$transDate) 
+             ->where('invoice_disbursed_id','=',$invDisbId)
+             ->where('entry_type','=','1')
+             ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.CANCEL')]) 
+             ->where(function($query) use($intTransIds){
+                 $query->whereIn('trans_id',$intTransIds);
+                 $query->OrwhereIn('parent_trans_id',$intTransIds);
+             })
+             ->sum('amount');
         }
-        
-        $Dr = Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
-        ->where('invoice_disbursed_id','=',$invDisbId)
-        ->where('entry_type','=','0')
-        ->where(function($query) use($transIds){
-            $query->whereIn('trans_id',$transIds);
-            $query->OrwhereIn('parent_trans_id',$transIds);
-        })
-        ->sum('amount');
-
-        $Cr =  Transactions::whereRaw("Date(trans_date) <=?",[$transDate]) 
-        ->where('invoice_disbursed_id','=',$invDisbId)
-        ->where('entry_type','=','1')
-        ->where(function($query) use($transIds){
-            $query->whereIn('trans_id',$transIds);
-            $query->OrwhereIn('parent_trans_id',$transIds);
-        })
-        ->sum('amount');
-
         return $Dr-$Cr;
     }
     
@@ -284,53 +370,52 @@ class ManualApportionmentHelper{
         }
     }
 
-    private function interestPosting($invDisbId, $userId, $payFreq, $transDate){
+    private function interestPosting($invDisbId, $userId, $payFreq, $transDate, $gStartDate, $gEndDate){
         $interests = new Collection();
         
-        //Monthly Case
-        if($payFreq == '2'){
-            $interests = InterestAccrual::select(\DB::raw("sum(accrued_interest) as totalInt,max(interest_date) as interestDate"))
-            ->where('invoice_disbursed_id','=',$invDisbId)
-            ->whereNull('overdue_interest_rate')
-            ->whereDate('interest_date', '<=', $transDate)
-            ->groupByRaw('YEAR(interest_date), MONTH(interest_date)')
-            ->get();
+        $interestData = InterestAccrual::select(\DB::raw("sum(accrued_interest) as totalInt,max(interest_date) as interestDate"))
+                        ->where('invoice_disbursed_id','=',$invDisbId)
+                        ->whereNull('overdue_interest_rate')
+                        ->whereDate('interest_date', '<=', $transDate);
+    
+        //Upfront
+        if($payFreq == 1){
+            $interests = $interestData->whereDate('interest_date', '>=', $gStartDate)->get();
+        }
+        
+        //Monthly
+        elseif($payFreq == 2){
+            $interests = $interestData->groupByRaw('YEAR(interest_date), MONTH(interest_date)')->get();
         }
 
         //Rear End Case
-        elseif($payFreq == '3'){
-            $interests = InterestAccrual::select(\DB::raw("sum(accrued_interest) as totalInt, max(interest_date) as interestDate"))
-            ->where('invoice_disbursed_id','=',$invDisbId)
-            ->whereNull('overdue_interest_rate')
-            ->whereDate('interest_date', '<=', $transDate)
-            ->groupBy('invoice_disbursed_id')
-            ->get();
+        elseif($payFreq == 3){
+            $interests = $interestData->get();
         }
 
         foreach ($interests as $interest) {
-           if($payFreq == 3){
-               $transId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
-               ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
-               ->where('entry_type','=',0)
-               //->where('is_posted','=',0)
-               ->whereDate('trans_date',$interest->interestDate)
-               ->value('trans_running_id');
-            }
-            elseif($payFreq == 2){
+            if($payFreq == 2){
                 $transId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
-                //->where('is_posted','=',0)
                 ->whereMonth('trans_date', date('m', strtotime($interest->interestDate)))
                 ->value('trans_running_id');
                 
                 TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
-                ->where(\DB::raw('MONTH(trans_date)'),'>',date('m', strtotime($interest->interestDate)))
+                ->whereMonth('trans_date','>', date('m', strtotime($interest->interestDate)))
                 ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
             }
 
+            //Rear End Case
+            elseif($payFreq == 3 || $payFreq == 1){
+               $transId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+               ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+               ->where('entry_type','=',0)
+               ->value('trans_running_id');
+            }
+          
             if($transId){
                 $whereCond = ['trans_running_id' => $transId];
                 $intTransData = [
@@ -357,8 +442,9 @@ class ManualApportionmentHelper{
     }
     
     private function updateGracePeriodInt($invDisbId, $gStartDate, $gEndDate, $odIntRate, $payFreq, $userId){
+        $odStartDate = $gStartDate;
         while(strtotime($gEndDate) >= strtotime($gStartDate)){
-            $balancePrincipal = $this->getpaymentSettled($gStartDate, $invDisbId, $payFreq);
+            $balancePrincipal = $this->getpaymentSettled($gStartDate, $invDisbId, $payFreq, $odStartDate);
             $interestAmt = round($this->calInterest($balancePrincipal, $odIntRate, 1),config('lms.DECIMAL_TYPE.AMOUNT'));
             
             $interest_accrual_id = InterestAccrual::whereDate('interest_date',$gStartDate)
@@ -386,28 +472,33 @@ class ManualApportionmentHelper{
 
     public function intAccrual(int $invDisbId, $startDate = null){
         try{
-            $curdate = Helpers::getSysStartDate();
+            $curdate =  Helpers::getSysStartDate();
+            $curdate = Carbon::parse($curdate)->format('Y-m-d');
             
             $invDisbDetail = InvoiceDisbursed::find($invDisbId);
             $offerDetails = $invDisbDetail->invoice->program_offer;
             $userId = $invDisbDetail->disbursal->user_id;
+            $funded_date = $invDisbDetail->disbursal->funded_date;
             $intRate = $invDisbDetail->interest_rate;
             $odIntRate = $invDisbDetail->overdue_interest_rate;
             $gPeriod = $invDisbDetail->grace_period;
             $tDays = $invDisbDetail->tenor_days;
+            $tDays = $this->subDays($tDays,1);
             $payFreq = $offerDetails->payment_frequency;
             
             $intAccrualStartDate = $invDisbDetail->int_accrual_start_dt;
             $invDueDate =  $invDisbDetail->inv_due_date;
             $payDueDate = $invDisbDetail->payment_due_date;
-            $gStartDate = ($gPeriod>0)?$this->addDays($payDueDate,1):$payDueDate;
+            $gStartDate = $payDueDate;
             $gEndDate = $this->addDays($payDueDate,$gPeriod);
             $odStartDate = $this->addDays($gEndDate,1);
             $maxAccrualDate = $invDisbDetail->interests->max('interest_date');
-            
+            if($maxAccrualDate){
+                $maxAccrualDate = $this->addDays($maxAccrualDate,1);
+            } 
             $intType = 1;
             
-            $loopStratDate = $startDate ?? $intAccrualStartDate;
+            $loopStratDate = $startDate ?? $maxAccrualDate ?? $intAccrualStartDate;
              
             if (is_null($invDisbDetail->int_accrual_start_dt)) {
                 throw new InvalidArgumentException('Interest Accrual Start Date is missing for invoice Disbursed Id: ' . $invDisbId);
@@ -422,13 +513,19 @@ class ManualApportionmentHelper{
 
             while(strtotime($curdate) > strtotime($loopStratDate)){
                 if($bankRatesArr){
-                    $intRate = $this->getIntRate($oldIntRate, $bankRatesArr, strtotime($loopStratDate));//$str_to_time_date is the time at that point of time you want to get interest rate
+                    if(isset($payFreq) && $payFreq == 1){
+                        $intRate = $this->getIntRate($oldIntRate, $bankRatesArr, strtotime($funded_date));//$str_to_time_date is the time at that point of time you want to get interest rate
+                    }else{
+                        $intRate = $this->getIntRate($oldIntRate, $bankRatesArr, strtotime($loopStratDate));//$str_to_time_date is the time at that point of time you want to get interest rate
+                    }
                     $currentIntRate = $intRate;
                 }else{
                     $currentIntRate = $intRate;
                 }
                 
-                $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq);
+                $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq, $gStartDate);
+                
+
                 if($balancePrincipal > 0){
                     if(strtotime($loopStratDate) >= strtotime($odStartDate)){
                         $currentIntRate = $odIntRate;
@@ -466,7 +563,7 @@ class ManualApportionmentHelper{
                 }
                 
                 if(strtotime($loopStratDate) <= strtotime($odStartDate))
-                $this->interestPosting($invDisbId, $userId, $payFreq, $loopStratDate);
+                $this->interestPosting($invDisbId, $userId, $payFreq, $loopStratDate, $gStartDate, $gEndDate);
                 
                 if(strtotime($loopStratDate) >= strtotime($odStartDate))
                 $this->overDuePosting($invDisbId, $userId);
@@ -483,10 +580,17 @@ class ManualApportionmentHelper{
     }
     
     public function dailyIntAccrual(){
+        $cLogDetails = Helper::cronLogBegin(1);
+
         $curdate = Helpers::getSysStartDate();
-        $invoiceList = $this->lmsRepo->getUnsettledInvoices([]);
+        $invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true]);
         foreach ($invoiceList as $invId => $trans) {
             $this->intAccrual($invId);
+            $this->transactionPostingAdjustment($invId, NULL, NULL, NULL);
+        }
+        
+        if($cLogDetails){
+            Helper::cronLogEnd('1',$cLogDetails->cron_log_id);
         }
     }
     
@@ -520,4 +624,179 @@ class ManualApportionmentHelper{
         }
         return $actIntRate;
     }
+
+    private function sugOverDuePosting($invDisbId, $userId, $transDate){
+        $overdues = InterestAccrual::select(\DB::raw("sum(accrued_interest) as totalInt,max(interest_date) as interestDate"))
+        ->where('invoice_disbursed_id','=',$invDisbId)
+        ->whereNull('interest_rate')
+        ->whereDate('interest_date','<=',$transDate)
+        ->groupByRaw('YEAR(interest_date), MONTH(interest_date)')
+        ->get();
+
+        foreach ($overdues as $odue) {
+            $transRunningId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+            ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+            ->where('entry_type','=',0)
+            //->where('is_posted','=',0)
+            ->whereMonth('trans_date', date('m', strtotime($odue->interestDate)))
+            ->value('trans_running_id');
+            
+            TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+            ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+            ->where('entry_type','=',0)
+            ->where(\DB::raw('MONTH(trans_date)'),'>',date('m', strtotime($odue->interestDate)))
+            ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
+        
+
+            if($transRunningId){
+                $whereCond = ['trans_running_id' => $transRunningId];
+                $intTransData = [
+                    'invoice_disbursed_id' => $invDisbId,
+                    'user_id' => $userId,
+                    'trans_date' => $odue->interestDate,
+                    'amount' => $odue->totalInt,
+                    'entry_type' => 0,
+                    'trans_type' => config('lms.TRANS_TYPE.INTEREST_OVERDUE')
+                ];
+                $this->lmsRepo->saveTransactionRunning($intTransData,$whereCond);
+            }else{
+                $intTransData = [
+                    'invoice_disbursed_id' => $invDisbId,
+                    'user_id' => $userId,
+                    'trans_date' => $odue->interestDate,
+                    'amount' => $odue->totalInt,
+                    'entry_type' => 0,
+                    'trans_type' => config('lms.TRANS_TYPE.INTEREST_OVERDUE')
+                ];
+                $this->lmsRepo->saveTransactionRunning($intTransData);
+            }
+        }
+    }
+
+    private function sugInterestPosting($invDisbId, $userId, $payFreq, $transDate, $gStartDate, $gEndDate){
+        $interests = new Collection();
+        
+        $interestData = InterestAccrual::select(\DB::raw("sum(accrued_interest) as totalInt,max(interest_date) as interestDate"))
+                        ->where('invoice_disbursed_id','=',$invDisbId)
+                        ->whereNull('overdue_interest_rate')
+                        ->whereDate('interest_date', '<=', $transDate);
+    
+        //Upfront
+        if($payFreq == 1){
+            $interests = $interestData->whereDate('interest_date', '>=', $gStartDate)->get();
+        }
+        
+        //Monthly
+        elseif($payFreq == 2){
+            $interests = $interestData->groupByRaw('YEAR(interest_date), MONTH(interest_date)')->get();
+        }
+
+        //Rear End Case
+        elseif($payFreq == 3){
+            $interests = $interestData->get();
+        }
+
+        foreach ($interests as $interest) {
+            if($payFreq == 2){
+                $transId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+                ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+                ->where('entry_type','=',0)
+                ->whereMonth('trans_date', date('m', strtotime($interest->interestDate)))
+                ->value('trans_running_id');
+                
+                TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+                ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+                ->where('entry_type','=',0)
+                ->where(\DB::raw('MONTH(trans_date)'),'>',date('m', strtotime($interest->interestDate)))
+                ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
+            }
+
+            //Rear End Case
+            elseif($payFreq == 3 || $payFreq == 1){
+               $transId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+               ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+               ->where('entry_type','=',0)
+               ->value('trans_running_id');
+            }
+          
+            if($transId){
+                $whereCond = ['trans_running_id' => $transId];
+                $intTransData = [
+                    'invoice_disbursed_id' => $invDisbId,
+                    'user_id' => $userId,
+                    'trans_date' => $interest->interestDate,
+                    'amount' => $interest->totalInt,
+                    'entry_type' => 0,
+                    'trans_type' => config('lms.TRANS_TYPE.INTEREST')
+                ];
+                $this->lmsRepo->saveTransactionRunning($intTransData,$whereCond);
+            }else{
+                $intTransData = [
+                    'invoice_disbursed_id' => $invDisbId,
+                    'user_id' => $userId,
+                    'trans_date' => $interest->interestDate,
+                    'amount' => $interest->totalInt,
+                    'entry_type' => 0,
+                    'trans_type' => config('lms.TRANS_TYPE.INTEREST')
+                ];
+                $this->lmsRepo->saveTransactionRunning($intTransData);
+            }
+        }
+    }
+
+    public function getSugTransactions($payment_id){
+        if($payment_id){
+            $payment = Payment::find($payment_id);
+            if($payment){
+                $paymentDate = $payment->date_of_payment;
+                $user_id = $payment->user_id;
+                $invoiceList = InvoiceDisbursed::where('user_id',$user_id)->get();
+                foreach ($invoiceList as $invId => $trans) {
+                    $this->sugOverDuePosting($invDisbId, $userId);
+                    $this->sugInterestPosting($invDisbId, $userId, $payFreq, $transDate, $gStartDate, $gEndDate);
+                }
+            }
+        }
+    }
+
+    /*
+    // Not in use
+    Private function setMonthlyInterestSoaFlag($invDisbId, $intAccrualDate, $invdueDate, $soaFlag){
+        TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+        ->where('entry_type','=',0)
+        ->where('soa_flag','=',0)
+        ->whereDate('trans_date','<=',$intAccrualDate)
+        ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDate)))
+        ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
+        
+        TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+        ->where('entry_type','=',0)
+        ->where('soa_flag','=',0)
+        ->whereDate('trans_date','=',$this->subDays($invdueDate,1))
+        ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
+    }
+
+    //Not in use
+    Private function setRearendInterestSoaFlag($invDisbId, $intAccrualDate, $invdueDate, $soaFlag){
+        TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
+        ->where('entry_type','=',0)
+        ->where('soa_flag','=',0)
+        ->whereDate('trans_date','=',$this->subDays($invdueDate,1))
+        ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
+    }
+
+    //Not in use
+    Private function setOverdueSoaFlag($invDisbId, $intAccrualDate, $soaFlag){
+        TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
+        ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+        ->where('entry_type','=',0)
+        ->where('soa_flag','=',0)
+        ->whereDate('trans_date','<=',$intAccrualDate)
+        ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDate)))
+        ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
+    }
+    */
 }

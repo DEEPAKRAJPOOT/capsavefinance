@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
-use Event;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Collection;
 use App\Inv\Repositories\Models\FinanceModel;
@@ -11,6 +10,7 @@ use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Lms\Refund\RefundReq;
 use App\Libraries\Bsa_lib;
 use App\Libraries\Perfios_lib;
+use App\Helpers\Helper;
 use Storage;
 
 /**
@@ -39,6 +39,7 @@ class ApiController
       if ($jrnls->transType->id == config('lms.TRANS_TYPE.INTEREST') || $jrnls->transType->chrg_master_id != 0) {
         $is_interest_or_charge = true;
       }
+      $user_id = Helper::formatIdWithPrefix($jrnls->user_id, 'CUSTID');
       $userName = $jrnls->user->biz_name;
       $trans_type_name = $jrnls->getTransNameAttribute();
       $invoice_no = $jrnls->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
@@ -100,10 +101,10 @@ class ApiController
           'mode_of_pay' => '',
           'inst_no' =>  NULL,
           'inst_date' =>  NULL,
-          'favoring_name' =>  NULL,
-          'remarks' => NULL,
+          'favoring_name' =>  '',
+          'remarks' => '',
           'generated_by' => '0',
-          'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+          'narration' => 'Being '.$trans_type_name.' Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $gstData = [];
      if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
@@ -196,7 +197,7 @@ class ApiController
       }else{
         $journalPayments[] = $JournalRow;
       }
-     if ($jrnls->trans_type == config('lms.TRANS_TYPE.REVERSE')) {
+     if (in_array($jrnls->trans_type, [config('lms.TRANS_TYPE.REVERSE'), config('lms.TRANS_TYPE.ADJUSTMENT')])) {
         $reversalPayment = $this->createReversalData($jrnls, $batch_no);
         $journalPayments = array_merge($journalPayments, $reversalPayment);
      }
@@ -213,6 +214,7 @@ class ApiController
         if (empty($accountDetails)) {
           continue;
         }
+        $user_id = Helper::formatIdWithPrefix($rvrsl->user_id, 'CUSTID');
         $bizName = $rvrsl->user->biz_name;
         $trans_type_name = $rvrsl->getTransNameAttribute();
         $invoice_no = $rvrsl->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
@@ -262,10 +264,10 @@ class ApiController
             'mode_of_pay' => '',
             'inst_no' =>  NULL,
             'inst_date' =>  NULL,
-            'favoring_name' =>  NULL,
-            'remarks' => NULL,
+            'favoring_name' =>  '',
+            'remarks' => '',
             'generated_by' => '0',
-            'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+            'narration' => 'Being '.$trans_type_name.' Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
        ];
        $reversalPayment[] = $reversalRow;
       }
@@ -281,6 +283,7 @@ class ApiController
       if (empty($accountDetails)) {
         continue;
       }
+      $user_id = Helper::formatIdWithPrefix($rfnd->user_id, 'CUSTID');
       $userName = $rfnd->user->biz_name;
       $trans_type_name = $rfnd->getTransNameAttribute();
       $invoice_no = $rfnd->userinvoicetrans->getUserInvoice->invoice_no ?? NULL;
@@ -325,10 +328,10 @@ class ApiController
           'mode_of_pay' => '',
           'inst_no' =>  NULL,
           'inst_date' =>  NULL,
-          'favoring_name' =>  NULL,
-          'remarks' => NULL,
+          'favoring_name' =>  '',
+          'remarks' => '',
           'generated_by' => '0',
-          'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+          'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $refundPayment[] = $CustomerRow;
      $BankRow = [
@@ -354,9 +357,9 @@ class ApiController
           'inst_no' =>  $inst_no,
           'inst_date' =>  $inst_date,
           'favoring_name' =>  $userName,
-          'remarks' => NULL,
+          'remarks' => '',
           'generated_by' => '1',
-          'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+          'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $refundPayment[] = $BankRow;
     }
@@ -371,6 +374,7 @@ class ApiController
       if (empty($accountDetails)) {
         continue;
       }
+      $user_id = Helper::formatIdWithPrefix($dsbrsl->user_id, 'CUSTID');
       $userName = $dsbrsl->user->biz_name;
       $invoice_no = $dsbrsl->invoiceDisbursed->invoice->invoice_no ?? NULL;
       $invoice_date = $dsbrsl->invoiceDisbursed->invoice->invoice_date ?? NULL;
@@ -400,10 +404,10 @@ class ApiController
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
-              'favoring_name' =>  NULL,
-              'remarks' => NULL,
+              'favoring_name' =>  '',
+              'remarks' => '',
               'generated_by' => '0',
-              'narration' => 'Being  Payment Disbursed towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+              'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $disbursalPayment[] = $CustomerRow;
      $BankRow = [
@@ -429,9 +433,9 @@ class ApiController
               'inst_no' =>  $dsbrsl->invoiceDisbursed->disbursal->tran_id ?? NULL,
               'inst_date' =>  $dsbrsl->invoiceDisbursed->disbursal->funded_date ?? NULL,
               'favoring_name' =>  $userName,
-              'remarks' => NULL,
+              'remarks' => '',
               'generated_by' => '1',
-              'narration' => 'Being  Payment Disbursed towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+              'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $disbursalPayment[] = $BankRow;
      if (!empty($total_interest) && $total_interest > 0) {
@@ -457,10 +461,10 @@ class ApiController
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
-              'favoring_name' =>  NULL,
-              'remarks' => NULL,
+              'favoring_name' =>  '',
+              'remarks' => '',
               'generated_by' => '1',
-              'narration' => 'Being Interest Booked towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+              'narration' => 'Being Interest Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
      ];
      $disbursalPayment[] = $InterestRow;
      }
@@ -473,6 +477,7 @@ class ApiController
     foreach($receiptData as $rcpt){
      $this->voucherNo = $this->voucherNo + 1;
      $settledTransactoions =  $rcpt->getSettledTxns;
+     $user_id = Helper::formatIdWithPrefix($rcpt->user_id, 'CUSTID');
      $userName = $rcpt->user->biz_name;
      $accountDetails = $rcpt->userRelation->companyBankDetails ?? NULL;
      if (empty($accountDetails)) {
@@ -486,13 +491,13 @@ class ApiController
          $mode_of_pay = 'e-Fund-Transfer';
          break;
       case '2':
-         $mode_of_pay = 'Cheque';
+         $mode_of_pay = 'Cheque No : ' . $rcpt->cheque_no;
          break;
       case '3':
          $mode_of_pay = 'Nach';
          break; 
       case '4':
-         $mode_of_pay = 'Cash';
+         $mode_of_pay = 'Other : ' . $rcpt->unr_no;
          break; 
       default:
          $mode_of_pay = 'e-Fund-Transfer';
@@ -521,9 +526,9 @@ class ApiController
               'inst_no' =>  $inst_no,
               'inst_date' =>  $inst_date,
               'favoring_name' =>  $userName,
-              'remarks' => NULL,
+              'remarks' => '',
               'generated_by' => '1',
-              'narration' => 'Being Repayment towards Batch no '. $batch_no,
+              'narration' => 'Being Repayment towards UserId ' . $user_id . ' & Batch no '. $batch_no,
      ];
      $receiptPayment[] = $BankRow;
      if (!empty($settledTransactoions)) {
@@ -563,10 +568,10 @@ class ApiController
               'mode_of_pay' => '',
               'inst_no' =>  NULL,
               'inst_date' =>  NULL,
-              'favoring_name' =>  NULL,
-              'remarks' => NULL,
+              'favoring_name' =>  '',
+              'remarks' => '',
               'generated_by' => '0',
-              'narration' => 'Being '.$trans_type_name.' towards Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+              'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
           ];
           if (in_array($stldTxn->trans_type, [config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.NON_FACTORED_AMT')])) {
             $settledRow['generated_by'] = 1; 

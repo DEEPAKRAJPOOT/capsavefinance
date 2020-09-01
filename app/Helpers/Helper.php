@@ -28,10 +28,13 @@ use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\Lms\CronLog;
 use Illuminate\Http\File;
 use App\Inv\Repositories\Models\Lms\ApprovalRequest;
 use Illuminate\Contracts\Support\Renderable;
 use ZanySoft\Zip\Zip;
+use App\Inv\Repositories\Models\AnchorUser;
+use App\Inv\Repositories\Models\Anchor;
 
 class Helper extends PaypalHelper
 {
@@ -166,6 +169,7 @@ class Helper extends PaypalHelper
             if ($wf_stage_code == 'new_case') {
                 $updateData['biz_app_id'] = $app_id;
                 $result = WfAppStage::updateWfStageByUserId($wf_stage_id, $user_id, $updateData);
+                self::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_INCOMPLETE'));
             } else {
                 $result = WfAppStage::updateWfStage($wf_stage_id, $app_id, $updateData);
             }
@@ -1017,17 +1021,82 @@ class Helper extends PaypalHelper
     public static function isAccessViewOnly($app_id, $to_id = null)
     {
         try {
+            $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');        
             if (is_null($to_id)) {
                 $to_id = \Auth::user()->user_id;
             }
+            
+            $appData = $appRepo->getAppData($app_id);
+            $appStatusList = [
+                config('common.mst_status_id.APP_REJECTED'),
+                config('common.mst_status_id.APP_CANCEL'),
+            ];
+            if ($appData && in_array($appData->curr_status_id, $appStatusList)) {
+                return 0;
+            }            
             $roleData = self::getUserRole();
-            if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;
+            if (isset($roleData[0]) && $roleData[0]->is_superadmin == 1) return 1;            
+            
+            if (isset($roleData[0]) && $roleData[0]->id == 12) {
+                $where=[];
+                $where['fi_addr.to_id'] = $to_id;
+                $where['app.app_id'] = $app_id;
+                $where['fi_addr.is_active'] = 1;
+                $fiData = $appRepo->getFiAddressData($where);
+                
+                $where=[];
+                $where['to_id'] = $to_id;
+                $where['app_id'] = $app_id;
+                $where['is_active'] = 1;         
+                $rcuData = $appRepo->getRcuDocumentData($where);
+                if (isset($fiData[0]) || isset($rcuData[0])) {
+                    return 1;
+                }
+            }
+            
+            if (isset($roleData[0]) && $roleData[0]->id == 15) {
+                $where=[];
+                $where['app_id'] = $app_id;
+                $where['co_lender_id'] = \Auth::user()->co_lender_id;
+                $coLender = $appRepo->getSharedColender($where);
+                if (isset($coLender[0])) {
+                    return 1;
+                }
+            }
+            
             $isWfStageCompleted = self::isWfStageCompleted('app_submitted', $app_id);
             if (!$isWfStageCompleted) {
                 $isViewOnly = 1;
             } else {
                 $userArr = self::getChildUsersWithParent($to_id);
-                $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr);
+                $curStage = WfAppStage::getCurrentWfStage($app_id);
+                if ($curStage && $curStage->stage_code == 'approver') {
+                    //$whereCond=[];
+                    //$whereCond['to_id'] = $to_id;
+                    //$whereCond['app_id'] = $app_id;
+                    //$assignData = AppAssignment::getAppAssignmentData($whereCond);
+                    //$isViewOnly = $assignData && isset($assignData->app_assign_id) ? 1 : 0;
+                    
+                      $appApprData = AppApprover::getAppApprovers($app_id);
+                      $apprUsers = [];
+                      if (isset($appApprData[0])) {
+                          foreach($appApprData as $appr) {
+                              $apprUsers[] = $appr->approver_user_id;
+                          }
+                      }
+                      $isViewOnly = count($apprUsers) > 0 && in_array($to_id, $apprUsers) ? 1 : 0;
+                    
+                } else {
+                    if (isset($roleData[0]) && $roleData[0]->id == 6 && in_array(request()->route()->getName(), ['share_to_colender', 'save_share_to_colender'])) {
+                        $isViewOnly = 1;
+                    } else if (isset($roleData[0]) && $roleData[0]->id == 11 && in_array(request()->route()->getName(), ['reject_app', 'save_app_rejection'])) {
+                        $isViewOnly = 1;
+                    } else if (in_array(request()->route()->getName(), ['renew_application', 'create_enhanced_limit_app', 'create_reduced_limit_app'])) {
+                        $isViewOnly = 1;
+                    } else {
+                        $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
+                    }
+                }
             }
             return $isViewOnly ? 1 : 0;
         } catch (Exception $e) {
@@ -1291,7 +1360,7 @@ class Helper extends PaypalHelper
         $formatedId = null;
         
         if ($type == 'APP') {            
-            $formatedId = $prefix . sprintf('%08d', $idValue);
+            $formatedId = $prefix . $idValue; /* sprintf('%08d', $idValue); */
         } else if ($type == 'VA') {
             $prefix = config('common.idprefix.'.$type);
             $formatedId = $prefix . sprintf('%08d', $idValue);            
@@ -1436,20 +1505,21 @@ class Helper extends PaypalHelper
     {
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         $whereCond=[];
-        $whereCond['status'] =  [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.COMPLETED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
+        $whereCond['status'] =  [config('lms.EOD_PROCESS_STATUS.RUNNING')];
         //$whereCond['eod_process_start_date_eq'] = \Carbon\Carbon::now()->toDateString();
         //$whereCond['eod_process_start_date_tz_eq'] = \Carbon\Carbon::now()->toDateString();
+        $whereCond['sys_start_date_lte'] = \Carbon\Carbon::now()->toDateTimeString();
         $whereCond['is_active'] = 1;
         $eodProcess = $lmsRepo->getEodProcess($whereCond);
         if ($eodProcess) {            
-            return true;
-        } else {
             return false;
+        } else {
+            return true;
         }
     }
     
 
-    public static function updateEodProcess($eodProcessCheckType, $status)
+    public static function updateEodProcess($eodProcessCheckType, $status, $eod_process_id)
     {
         $eodProcessCheckTypeList = config('lms.EOD_PROCESS_CHECK_TYPE');
        
@@ -1462,10 +1532,7 @@ class Helper extends PaypalHelper
         $sys_start_date_eq = $today->format('Y-m-d');
         
         $whereCond=[];
-        //$whereCond['status'] = [config('lms.EOD_PROCESS_STATUS.STOPPED'), config('lms.EOD_PROCESS_STATUS.FAILED')];
-        //$whereCond['eod_process_start_date_eq'] = $sys_start_date_eq;
-        //$whereCond['eod_process_start_date_tz_eq'] = $sys_start_date_eq;
-        $whereCond['is_active'] = 1;
+        $whereCond['eod_process_id'] = $eod_process_id;
         $eodProcess = $lmsRepo->getEodProcess($whereCond);
         if ($eodProcess) {
             $eod_process_id = $eodProcess->eod_process_id;
@@ -1488,16 +1555,15 @@ class Helper extends PaypalHelper
                     $statusArr[] = $eodLog->charge_post_status;
                     $statusArr[] = $eodLog->overdue_int_accrual_status;
                     $statusArr[] = $eodLog->disbursal_block_status;
+                    $statusArr[] = $eodLog->is_running_trans_settled;
                     $eod_status = in_array(2, $statusArr) ? config('lms.EOD_PROCESS_STATUS.FAILED') : (in_array(0, $statusArr) ? '' : config('lms.EOD_PROCESS_STATUS.COMPLETED'));
                 }
             }
             
-            
             if ($eod_status) {
                 $eodData = [];
                 $eodData['status'] = $eod_status;
-                //$eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
-                $eodData['eod_process_end'] = date('Y-m-d', strtotime($sys_start_date)) . " " . date('H:i:s');
+                $eodData['eod_process_end'] = $today->format('Y-m-d H:i:s');
                 $lmsRepo->saveEodProcess($eodData, $eod_process_id);
             }
            
@@ -1519,14 +1585,15 @@ class Helper extends PaypalHelper
                 $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id'],'status' =>2])->count();  
                 if($is_enhance==1)
                 { 
-                  return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_margin_amount');
-        
+                    $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_margin_amount');
+                    $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('repayment_amt');
+                    return $marginApprAmt-$marginReypayAmt;
                  }
                 else
                 {
-                     return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_margin_amount');
-        
-                 
+                     $marginApprAmt   =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_margin_amount');
+                     $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('repayment_amt');
+                     return $marginApprAmt-$marginReypayAmt;
                 }
         }      
         
@@ -1547,43 +1614,62 @@ class Helper extends PaypalHelper
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
         
         //Validate Enchancement Limit                        
-        $appData = $appRepo->getAppData($appId);
+        $appData = $appRepo->getAppData($appId);        
         $result = [
             'status' => false,
             'app_type' => $appData ? $appData->app_type : 0,
-            'message' => '',
+            'message' => '',            
         ];
-        if ($productId == 1 && $appData && in_array($appData->app_type, [2,3]) ) {
+        if ($appData && in_array($appData->app_type, [2,3]) ) {
             $parentAppId = $appData->parent_app_id;
+            $parentUserId = $appData->user_id;
+            
+            $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 1]);
+            $result['tot_limit_amt'] = isset($appLimitData[0]) ? $appLimitData[0]->tot_limit_amt : 0;            
+            $result['parent_inv_utilized_amt'] = 0;
+            
+            if ($productId == 1) {
+                $pTotalCunsumeLimit = 0;
+                $invUtilizedAmt = 0;        
+                $pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
+                foreach ($pAppPrgmLimit as $value) {
+                    $pTotalCunsumeLimit += $value->utilize_limit;
 
-            $pTotalCunsumeLimit = 0;
-            $pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
-            foreach ($pAppPrgmLimit as $value) {
-                $pTotalCunsumeLimit += $value->utilize_limit;
-            }
+                    $attr=[];
+                    $attr['user_id'] = $parentUserId;
+                    $attr['app_id'] = $parentAppId;
+                    $attr['anchor_id'] = $value->anchor_id;
+                    $attr['prgm_id'] = $value->prgm_id;                     
+                    $invUtilizedAmt += $appRepo->getInvoiceUtilizedAmount($attr);                
+                }
 
-            $totalCunsumeLimit = $inputLimitAmt > 0 ? str_replace(',', '', $inputLimitAmt) : 0;
-            $appPrgmLimit = $appRepo->getUtilizeLimit($appId, 1, $checkApprLimit=false);
-            foreach ($appPrgmLimit as $value) {
-                if (count($excludeId) > 0) {
-                    if (isset($excludeId['app_prgm_limit_id']) && !empty($excludeId['app_prgm_limit_id']) && $excludeId['app_prgm_limit_id'] != $value->app_prgm_limit_id) {                                            
-                        $totalCunsumeLimit += $value->utilize_limit;
-                    } else if (isset($excludeId['prgm_offer_id']) && !empty($excludeId['prgm_offer_id']) && $excludeId['prgm_offer_id'] != $value->prgm_offer_id) {
-                        $totalCunsumeLimit += $value->utilize_limit;
+                $result['parent_inv_utilized_amt'] = $invUtilizedAmt;
+
+                $totalCunsumeLimit = $inputLimitAmt > 0 ? str_replace(',', '', $inputLimitAmt) : 0;
+                $appPrgmLimit = $appRepo->getUtilizeLimit($appId, 1, $checkApprLimit=false);
+                foreach ($appPrgmLimit as $value) {
+                    if (count($excludeId) > 0) {
+                        if (isset($excludeId['app_prgm_limit_id']) && !empty($excludeId['app_prgm_limit_id']) && $excludeId['app_prgm_limit_id'] != $value->app_prgm_limit_id) {                                            
+                            $totalCunsumeLimit += $value->utilize_limit;
+                        } else if (isset($excludeId['prgm_offer_id']) && !empty($excludeId['prgm_offer_id']) && $excludeId['prgm_offer_id'] != $value->prgm_offer_id) {
+                            $totalCunsumeLimit += $value->utilize_limit;
+                        } else {
+                            $totalCunsumeLimit += $value->utilize_limit;
+                        }
                     } else {
                         $totalCunsumeLimit += $value->utilize_limit;
-                    }
-                } else {
-                    $totalCunsumeLimit += $value->utilize_limit;
+                    }                                
                 }
-            }
-            
-            if ($appData->app_type == 2) {
-                $result['status'] = $totalCunsumeLimit <= $pTotalCunsumeLimit;    
-                $result['message'] = trans('backend_messages.validate_limit_enhance_amt'); 
-            } else if ($appData->app_type == 3) {
-                $result['status'] = $totalCunsumeLimit < $pTotalCunsumeLimit;    
-                $result['message'] = trans('backend_messages.validate_reduce_limit_amt');
+
+                if ($appData->app_type == 2) {
+                    $result['status'] = $totalCunsumeLimit <= $pTotalCunsumeLimit;    
+                    $result['message'] = trans('backend_messages.validate_limit_enhance_amt');
+                    $result['parent_consumed_limit'] = $pTotalCunsumeLimit; 
+                } else if ($appData->app_type == 3) {
+                    $result['status'] = $invUtilizedAmt > $totalCunsumeLimit;    
+                    $result['message'] = trans('backend_messages.validate_reduce_limit_amt');
+                    $result['parent_consumed_limit'] = $pTotalCunsumeLimit; 
+                }
             }
         }
         
@@ -1621,15 +1707,28 @@ class Helper extends PaypalHelper
      */
     public static function getSysStartDate()
     {
-        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
-        $sys_start_date = $lmsRepo->getSysStartDate();
-        if (is_null($sys_start_date)) {
+        /*$lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        $eodDetails = $lmsRepo->getEodProcess(['is_active'=>1]);
+        if($eodDetails){
+            if($eodDetails->status == config('lms.EOD_PROCESS_STATUS.RUNNING')){
+                $startTime = Carbon::parse($eodDetails->sys_start_date);
+                $finishTime = Carbon::parse($eodDetails->created_at);
+                $totalDuration = strtotime($startTime) - strtotime($finishTime);
+                if($totalDuration < 0){
+                    $sys_start_date = Carbon::now()->subSeconds(abs($totalDuration))->format('Y-m-d H:i:s');
+                }elseif($totalDuration == 0){
+                    $sys_start_date = Carbon::now()->format('Y-m-d H:i:s');
+                }elseif($totalDuration > 0){
+                    $sys_start_date = Carbon::now()->addSeconds($totalDuration)->format('Y-m-d H:i:s');
+                }
+            }else{
+                $sys_start_date = Carbon::parse($eodDetails->sys_end_date)->format('Y-m-d H:i:s');
+            }
+        }else{
             $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
-        }
-        else{
-            $start = new \Carbon\Carbon($sys_start_date);
-            $sys_start_date = $start->format('Y-m-d') . " " . date('H:i:s');
-        }
+        }*/
+
+        $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
         return $sys_start_date;
     }     
 
@@ -1652,6 +1751,90 @@ class Helper extends PaypalHelper
      {
         return  Application::getDoAUsersByAppId($app_id);
      }
+
+    public static function getInterestAccrualCronStatus(){
+        $currentTimestamp = Carbon::now()->format('Y-m-d');
+        $cronLogDetails = CronLog::where('cron_id','1')->whereDate('exec_start_at',$currentTimestamp)
+        ->orderBy('cron_log_id','DESC')->first();
+        if($cronLogDetails){
+            return true;
+        } 
+        return false;
+    }
+
+    public static function getEodProcessCronStatus(){
+        $currentTimestamp = Carbon::now()->format('Y-m-d');
+        $cronLogDetails = CronLog::where('cron_id','2')->whereDate('exec_start_at',$currentTimestamp)
+        ->orderBy('cron_log_id','DESC')->first();
+
+        if($cronLogDetails){
+            return true;
+        } 
+        return false;
+    }
+
+    public static function cronLogBegin(int $cronId){
+        $cLog = [];
+        $cLog['cron_id'] = $cronId;
+        $cLog['exec_start_at'] = \Carbon\Carbon::now()->toDateTimeString();
+        return CronLog::createCronLog($cLog);
+    }
+
+    public static function cronLogEnd(int $status, int $cronLogId){
+        $cLog = [];
+        $cLog['exec_end_at'] = \Carbon\Carbon::now()->toDateTimeString();
+        $cLog['status'] = $status;
+        return CronLog::updateCronLog($cLog,$cronLogId);
+    }
+
+    
+    /**
+     * Get Associated Anchors By User Id
+     * 
+     * @param int $userId
+     * @return string
+     */
+    public static function getAnchorsByUserId($userId) 
+    {
+        $anchors = AnchorUser::getAnchorsByUserId($userId);        
+        $anchorsInfo = '';
+        if (count($anchors) == 1) {            
+            foreach($anchors as $anchor) {                
+                $anchorsInfo = ucwords($anchor->comp_name);                
+            }
+        } else if (count($anchors) > 1) {
+            $anchorsInfo .= '<ul class="anchor-list" style="list-style-type: disc;padding: 10px;">';
+            foreach($anchors as $anchor) {
+                $anchorsInfo .= '<li>';
+                $anchorsInfo .= ucwords($anchor->comp_name);
+                $anchorsInfo .= '</li>';
+            }
+            $anchorsInfo .= '</ul>';
+        } else {
+            $anchorsInfo = 'NA';
+        }
+        
+        return $anchorsInfo;
+    }
+    
+    /**
+     * Get Anchor Detail By Anchor Id
+     * 
+     * @param int $anchorId
+     * @return string
+     */
+    public static function getAnchorById($anchorId) 
+    {
+        $anchor = Anchor::getAnchorById($anchorId);
+        $anchorInfo = '';
+        if ($anchor) {
+            $anchorInfo = ucwords($anchor->comp_name);
+        } else {
+            $anchorInfo = 'NA';
+        }
+        
+        return $anchorInfo;
+    }    
      
      public static function replaceImagePath($variable)
      {
@@ -1663,8 +1846,153 @@ class Helper extends PaypalHelper
         } else {
             return $variable;
         }
+     }     
+
+     public static function checkApprPrgm($prgmId, $isOfferAcceptedOrRejected=true)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
+        $offerCond=[];
+        $offerCond['prgm_id'] = $prgmId;        
+        $offerCond['is_active'] = 1;
+        if ($isOfferAcceptedOrRejected) {
+            $offerCond['status_is_not_null'] = 1;
+        } else {
+            $offerCond['status_is_null'] = 1;
+        }
+        $appPrgmOffer = $appRepo->getOfferData($offerCond);
+        $res = false;
+        
+        if ($appPrgmOffer && $appPrgmOffer->prgm_offer_id) {            
+            $res = true;
+        }
+        
+        return $res;
      }
      
+     public static function getPrgmBalLimit($programId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');  
+        
+        $programs = $appRepo->getParentsPrograms($programId);        
+        $utilizedLimit = 0;
+        foreach($programs as $prgmId) {
+            $utilizedLimit += $appRepo->getPrgmBalLimit($prgmId);
+        }
+        return $utilizedLimit;
+     }
+     
+     public static function getAnchorUtilizedLimit($anchorPrgmId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
+        $anchorSubLimitTotal = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId, 'status' => 1], ['anchor_sub_limit'])->sum('anchor_sub_limit');
+        //$subPrgms = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId], ['prgm_id'])->pluck('prgm_id');
+        //$prgmIds = $subPrgms ? $subPrgms->toArray() : [];
+        //$utilizedLimit = count($prgmIds) > 0 ? $appRepo->getPrgmBalLimit($prgmIds) : 0; 
+        $utilizedLimit = 0;
+        $totalUtilizedAmount = $anchorSubLimitTotal + $utilizedLimit;
+        return $totalUtilizedAmount;
+     }
+     
+     public static function isProgamEditAllowed($anchorPrgmId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
+        $subPrgms = $appRepo->getSelectedProgramData(['parent_prgm_id' => $anchorPrgmId], ['parent_prgm_id','is_edit_allow', 'prgm_id']);
+        $isProgamEditAllowed = 0;
+        
+        $prgmIds =   $subPrgms  ? $subPrgms->pluck('prgm_id')->toArray() : [];
+        $appPrgmOffer = $appRepo->checkProgramOffers($prgmIds);        
+                     
+        if (count($subPrgms) == 0 || $appPrgmOffer == 0) {
+            $isProgamEditAllowed = 1;
+        } else {            
+            foreach($subPrgms as $prgm) {   
+                if ($prgm->is_edit_allow && !self::checkApprPrgm($prgm->prgm_id, $isOfferAcceptedOrRejected=false) )  {
+                    $isProgamEditAllowed = 2;               
+                    break;
+                }
+            }       
+        }
+        return $isProgamEditAllowed;
+     }
+     
+     public static function getParentsPrograms($prgmId)
+     {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');        
+        $programs = $appRepo->getParentsPrograms($prgmId);
+        return $programs;
+     }
+
+    public static function updateAppCurrentStatus($appId, $curStatus, $data=[])
+    {
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
+        $curDate = \Carbon\Carbon::now();
+        $appData = $appRepo->getAppData($appId);
+        
+        if ($appData && $appData->curr_status_id != $curStatus) {
+            $userId = $appData->user_id;
+            if (isset($data['note_data']) && !empty($data['note_data'])) {
+                $noteData = [
+                    'app_id'     => $appId, 
+                    'note_data'  => $data['note_data'],
+                    'created_at' => $curDate,
+                    'created_by' => \Auth::user()->user_id
+                ];
+                $result = $appRepo->saveAppNote($noteData)->latest()->first()->toArray();
+            }
+        
+            $appStatusData = [
+                'app_id'    => $appId,
+                'user_id'   => $userId,
+                'note_id'   => isset($result['note_id']) ? $result['note_id'] : null,
+                'status_id' => (int) $curStatus,
+                'created_at'=> $curDate,
+                'created_by'=> \Auth::user()->user_id
+            ];
+            $appRepo->saveAppStatusLog($appStatusData);
+
+            $arrUpdateApp=[
+                'curr_status_id' => (int) $curStatus,
+                'curr_status_updated_at' => $curDate
+            ];
+
+            $appStatusList = self::getAppStatusList();
+            $arrActivity = [];
+            $arrActivity['activity_code'] = 'app_status_changed';
+            $arrActivity['activity_desc'] = 'Application status is modified from ' . (isset($appStatusList[$appData->curr_status_id]) ? $appStatusList[$appData->curr_status_id] : '' ) . ' to ' . (isset($appStatusList[$curStatus]) ? $appStatusList[$curStatus] : '' );
+            $arrActivity['user_id'] = $userId;
+            $arrActivity['app_id'] = $appId;
+            \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));
+
+            return $appRepo->updateAppDetails($appId, $arrUpdateApp);
+        }
+
+    }
+    
+    public static function isChangeAppStatusAllowed ($curStatusId) 
+    {
+        $appStatusList = [
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            //config('common.mst_status_id.OFFER_LIMIT_APPROVED'),
+            //config('common.mst_status_id.OFFER_LIMIT_REJECTED'),            
+            //config('common.mst_status_id.OFFER_GENERATED'),
+            //config('common.mst_status_id.OFFER_ACCEPTED'),
+            //config('common.mst_status_id.OFFER_REJECTED'),
+            //config('common.mst_status_id.SANCTION_LETTER_GENERATED'),
+            config('common.mst_status_id.APP_SANCTIONED'),
+            config('common.mst_status_id.APP_CLOSED'),
+            config('common.mst_status_id.DISBURSED'),
+            config('common.mst_status_id.NPA'),
+        ];
+        $isChangeAppStatusAllowed = !in_array($curStatusId, $appStatusList);
+        return $isChangeAppStatusAllowed;
+    }
+    
+    public static function getAppStatusList()
+    {
+        return \App\Inv\Repositories\Models\Master\Status::getStatusList($status_type=1);
+    }
+
     /**
      * Get workflow deatail by workflow id
      * 
@@ -1679,4 +2007,5 @@ class Helper extends PaypalHelper
         $wfData = WfAppStage::getAppWfStage($wf_stage_code, $user_id, $app_id);
         return $wfData;
     }     
+        
 }

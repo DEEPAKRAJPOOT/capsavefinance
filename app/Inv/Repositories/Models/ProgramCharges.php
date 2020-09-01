@@ -157,4 +157,16 @@ class ProgramCharges extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\Charges', 'charge_id', 'id');
     }
 
+    public static function getPrgmChargeData($where)
+    {
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        $res = self::where($where)->get();
+        return $res ?: [];
+    }    
 }

@@ -44,7 +44,7 @@
                                             <thead>
                                                 <tr role="row">                                                   
                                                     {{-- <th>Trans Date</th> --}}
-                                                    <th>Vlaue Date</th>       
+                                                    <th>Value Date</th>       
                                                     <th>Invoice No</th>       
                                                     <th>Trans Type</th>		
                                                     <th>Total Repay Amt</th>
@@ -84,17 +84,15 @@
             
             <form action="{{ route('apport_mark_settle_save',[ 'user_id' => $userId , 'payment_id' => $paymentId,'sanctionPageView'=>$sanctionPageView]) }}" method="post" >
              @csrf	
-                <div class="row pull-left">
-                    <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-10">
                     <label>
                         <input type="checkbox" name="confirm" required>
-                        <span>The system will only treat rows that are marked (<i class="fa fa-check" aria-hidden="true"></i>) in the Validated column. Click on the Confirm button for further processing. </span>
+                        <span>The system will treat all rows that are marked (<i class="fa fa-check" aria-hidden="true"></i>) in the Validated column and if the value of the unapplied amount is greater than zero, it will be converted to Non-factored amount. Click on the Confirm button for further processing. </span>
                     </label>
                     </div>
-                </div>
-                <div class="row pull-right">
-                    <div class="col-md-12" >
-                        <input type="submit" value="Confirm" class="btn btn-success btn-sm">
+                    <div class="col-md-2" >
+                        <input type="submit" value="Confirm" class="btn btn-success btn-sm pull-right">
                     </div>
                 </div>
             </form>

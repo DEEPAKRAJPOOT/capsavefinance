@@ -23,9 +23,15 @@
                      <small>{{ $bankdoc->doc_name }}</small>
                      <ul>
                         <li><span class="icon"><i class="fa fa-file-pdf-o"></i></span></li>
-                        <li><a href="{{ Storage::url($bankdoc->file_path) }}" download target="_blank">Download Bank Statement</a></li>
                         <li>
+                        @can('download_storage_file')
+                        <a href="{{ route('download_storage_file', ['file_id' => $bankdoc->file_id ]) }}" target="_blank">Download Bank Statement</a>
+                        @endcan
+                        </li>
+                        <li>
+                        @can('upload_bank_document')
                              <a href="javascript:void(0)" data-toggle="modal" data-target="#uploadBankDocument" data-url ="{{route('upload_bank_document', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'app_doc_file_id' => $bankdoc->app_doc_file_id,'doc_id' => $bankdoc->doc_id]) }}" data-height="300px" data-width="100%" class="hide" id="reprocess_{{$bankdoc->app_doc_file_id}}">Re-Process</a>
+                        @endcan
                         </li>
                      </ul>
                   </div>
@@ -42,9 +48,13 @@
                   @endif 
                   @if(!empty($pending_rec) && $pending_rec['status'] == 'fail')
                      @php $class_enable="disabled"; @endphp
+                     @can('process_banking_statement')
                      <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
+                     @endcan
                   @endif
+                  @can('process_banking_statement')
                   <a href="javascript:void(0)" class="btn btn-success btn-sm hide" biz_perfios_id="" id="getReport">Get Report</a>
+                  @endcan
                   @if(request()->get('view_only') && $bankdocs->count() > 0)
                     @can('getAnalysis')
                      <a href="javascript:void(0)" class="btn btn-success btn-sm <?php echo $class_enable ?>">Get Analysis</a>
@@ -336,7 +346,11 @@
                      </div>
                  </div>
                  <br/>
+                 @if (request()->get('view_only'))
+                 @can('save_bank_detail')
                  <button type="submit" class="btn btn-success btn-sm float-right mt-2 mb-3"> Save</button>
+                 @endcan
+                 @endif
               </form>
             </div>
          </div>

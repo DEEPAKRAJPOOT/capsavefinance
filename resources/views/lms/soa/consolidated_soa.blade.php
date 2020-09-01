@@ -34,11 +34,11 @@
             @endif
             <div class="row" id="client_details"></div> 
             
-            <form action="{{ route('soa_consolidated_view') }}" method="post" >
+            <form action="{{ route('soa_consolidated_view') }}" method="post" onsubmit="return validate()">
                 @csrf
             <div class="row mt-4">
-            	
-                <div class="col-md-3">
+             
+                <div class="col-md-2">
                     {!!
                     Form::text('from_date',
                     request()->get('from_date') ?? null,
@@ -49,7 +49,7 @@
                     ])
                     !!} 
                 </div>
-                 <div class="col-md-3">
+                <div class="col-md-2">
                     {!!
                     Form::text('to_date',
                     request()->get('to_date') ?? null,
@@ -59,6 +59,13 @@
                     'id'=>'to_date'
                     ])
                     !!} 
+                </div>
+                <div class="col-md-3">
+                    {!! Form::select('trans_entry_type',$transTypes, request()->get('trans_entry_type') ?? null, [
+                        'class' => 'form-control',
+                        'placeholder' => 'Select Transaction Type',
+                        'id'=>'to_date'
+                        ]) !!}
                 </div>
                 <div class="col-md-3" id="prefetch">
                     {!!
@@ -72,7 +79,9 @@
                     ])
                     !!}
                 </div>
-                <button id="searchbtn" type="submit" class="btn  btn-success btn-sm float-right">Search</button>
+                <div class="col-md-1">
+                    <button id="searchbtn" type="submit" class="btn  btn-success btn-sm float-right">Search</button>
+                </div>
                 {!! Form::hidden('biz_id', 
                     isset($user['biz_id'])?$user['biz_id']:null, 
                     [ 'id'=>'biz_id']) 
@@ -141,7 +150,7 @@
 <script>
 
     var messages = {
-        lms_get_soa_list: "{{ URL::route('lms_get_consolidated_soa_list',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'], 'from_date'=>request()->get('from_date'), 'to_date'=>request()->get('to_date') ] ) }}",
+        lms_get_soa_list: "{{ URL::route('lms_get_consolidated_soa_list',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'], 'from_date'=>request()->get('from_date'), 'to_date'=>request()->get('to_date'), 'trans_entry_type'=>request()->get('trans_entry_type') ] ) }}",
         get_soa_client_details:"{{ URL::route('get_soa_client_details') }}",
         pdf_soa_url:"{{ URL::route('soa_pdf_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'],'soaType'=>'consolidatedSoa']) }}",
         excel_soa_url:"{{ URL::route('soa_excel_download',['user_id'=>$user['user_id'],'customer_id'=>$user['customer_id'],'soaType'=>'consolidatedSoa']) }}",
