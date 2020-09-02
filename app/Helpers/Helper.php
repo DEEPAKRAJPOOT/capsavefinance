@@ -153,7 +153,7 @@ class Helper extends PaypalHelper
      * @param integer $wf_status
      * @return boolean
      */
-    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0, $assign_role = false, $addl_data = [])
+    public static function updateWfStage($wf_stage_code, $app_id, $wf_status = 0, $assign_role = false, $addl_data = [], $sendEmail = true)
     {
         $wfData = WfStage::getWfDetailById($wf_stage_code);
         if ($wfData) {
@@ -223,7 +223,7 @@ class Helper extends PaypalHelper
                     $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';
                     $dataArr['is_owner'] = 1;
 
-                    AppAssignment::saveData($dataArr);
+                    AppAssignment::saveData($dataArr, $sendEmail);
 
                     return $data;
                 } else {

@@ -40,7 +40,9 @@ class ProcessMails implements ShouldQueue
             $event = '';
             $to_users = [];
             $to_all = false;
-            
+            if (!is_null($assignmentData->to_id)) {
+                $userRoleData = $userRepo->getRoleDataById($assignmentData->to_id);
+            }
             if($assignmentData->count()){
                 switch ($assignmentData->assign_type) {
                     case '0': //New
@@ -53,7 +55,9 @@ class ProcessMails implements ShouldQueue
                         if(is_null($assignmentData->to_id) && $assignmentData->role_id){
                             $event = "APPLICATION_MOVE_NEXT_POOL";
                             $to_all = true;
-                        }else{
+                        } else if (($assignmentData->to_id == $assignmentData->from_id) && $userRoleData->role_id == 10){
+                            $event = "APPLICATION_MOVE_LMS";
+                        } else {
                             $event = "APPLICATION_MOVE_NEXT_USER";
                         }
                     break;
@@ -62,7 +66,6 @@ class ProcessMails implements ShouldQueue
                         
                     break;
                 }
-
                 if($assignmentData->assign_type == '1'){
                     $from_user = $userRepo->getfullUserDetail($assignmentData->to_id);
                 }else{
@@ -72,20 +75,27 @@ class ProcessMails implements ShouldQueue
                 $application = $appRepo->getAppDataByAppId($assignmentData->app_id);
                 //$reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$application->business->biz_id)->where('app_id','=',$assignmentData->app_id)->first(); 
                 //$emailData['cover_note'] = $reviewerSummaryData->cover_note;
-                $emailData['lead_id'] = '000'.$application->user_id;
+                $emailData['lead_id'] = \Helpers::formatIdWithPrefix($application->user_id, 'LEADID');
                 $emailData['entity_name'] = (isset($application->business->biz_entity_name))?$application->business->biz_entity_name:'';
                 $emailData['app_id'] = \Helpers::formatIdWithPrefix($assignmentData->app_id, 'APP');
                 $emailData['comment'] = $assignmentData->sharing_comment;
                 $emailData['sender_user_name'] = $from_user->f_name .' '. $from_user->m_name .' '. $from_user->l_name ;
                 $emailData['sender_role_name'] = '';//$from_user->roles[0]->name;
-                
                 if($to_all){
                     if(is_null($assignmentData->role_id)){
                         $to_user = $userRepo->getfullUserDetail($assignmentData->to_id);
                         $to_users = $userRepo->getBackendUsersByRoleId($to_user->roles[0]->id);
-                    }else{
+                        if ($event == "APPLICATION_PICKUP") {
+                            $to_user = $userRepo->getfullUserDetail($assignmentData->to_id);
+                            $to_users = $userRepo->getBackendUsersByRoleId($to_user->roles[0]->id, [$assignmentData->to_id], [$assignmentData->from_id]);
+                        }
+                    } else {
                         $to_users = $userRepo->getBackendUsersByRoleId($assignmentData->role_id);
+                        if ($event == "APPLICATION_PICKUP") {
+                            $to_users = $userRepo->getBackendUsersByRoleId($assignmentData->role_id, [$assignmentData->to_id], [$assignmentData->from_id]);
+                        }
                     }
+                    // dd($to_users);
                     foreach($to_users as $user) {
                         $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                         $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
@@ -94,13 +104,18 @@ class ProcessMails implements ShouldQueue
                         \Event::dispatch($event, serialize($emailData));
                     }
                 }else{
-                    $user = $userRepo->getfullUserDetail($assignmentData->to_id);
+                    if ($event == 'APPLICATION_MOVE_LMS') {
+                        $user = $application->user;
+                    } else {
+                        $user = $userRepo->getfullUserDetail($assignmentData->to_id);
+                    }
                     $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                     $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
                     $emailData['receiver_email'] = $user->email;
                     //$event = ($user->roles[0]->id =='8')?'APPLICATION_APPROVER_MAIL':$event;
                     \Event::dispatch($event, serialize($emailData));
                 }
+                // die("here");
             }
         }
         catch(Exception $e) {
@@ -111,5 +126,15 @@ class ProcessMails implements ShouldQueue
     public function failed($exception)
     {
         $exception->getMessage();
+    }
+
+    /**
+     * Determine the time at which the job should timeout.
+     *
+     * @return \DateTime
+     */
+    public function retryUntil()
+    {
+        return now()->addSeconds(5);
     }
 }
