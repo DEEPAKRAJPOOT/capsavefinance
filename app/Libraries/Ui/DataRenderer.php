@@ -3985,70 +3985,47 @@ class DataRenderer implements DataProviderInterface
         return DataTables::of($data)
                         ->rawColumns(['action', 'is_active', 'email', 'action', 'status'])
                         ->editColumn(
-                                'disburse_date',
+                                'batch_id',
                                 function ($data) {
-                            return ($data->disburse_date) ? date('d-M-Y', strtotime($data->disburse_date)) : '---';
+                            return ($data->batch_id) ? ($data->batch_id) : '';
                         })
                         ->editColumn(
-                                'invoice_no',
+                                'type',
                                 function ($data) {
-                            return $data->invoice_no;
-                        })
-                        ->editColumn(
-                                'inv_due_date',
-                                function ($data) {
-                            return ($data->inv_due_date) ? date('d-M-Y', strtotime($data->inv_due_date)) : '---';
-                        })
-                        ->editColumn(
-                                'payment_due_date',
-                                function ($data) {
-                            return ($data->payment_due_date) ? date('d-M-Y', strtotime($data->payment_due_date)) : '---';
-                        })
-                        ->editColumn(
-                                'invoice_approve_amount',
-                                function ($data) {
-                            return $data->invoice_approve_amount ? number_format($data->invoice_approve_amount) : '';
-                        })
-                        ->editColumn(
-                                'principal_amount',
-                                function ($data) {
-                            //s dd($data->principal_amount);
-                            return $data->principal_amount ? number_format($data->principal_amount) : '';
-                        })
-                        ->editColumn(
-                                'status_name',
-                                function ($data) {
-                            return $data->status_name;
+                            return ($data->type) ? ($data->type) : '';
                         })
                         ->editColumn(
                                 'disburse_amount',
                                 function ($data) {
-                            return $data->disburse_amount;
+                                    $data = $data->toArray();
+                                    $disAmt = 0;
+                                    $disAmt += array_sum(array_column($data['disbursal'], 'disburse_amount'));
+                                    return ($disAmt) ?? $disAmt;
                         })
                         ->editColumn(
-                                'total_interest',
+                                'approver',
                                 function ($data) {
-                            return $data->total_interest;
-                        })
-                        ->addColumn(
-                                'settlement_date',
-                                function ($data) {
-                            return isset($data->settlement_date) ? $data->settlement_date : '-';
-                        })
-                        ->addColumn(
-                                'settlement_amount',
-                                function ($data) {
-                            return isset($data->total_repaid_amt) ? $data->total_repaid_amt : '-';
+                            return ($data->approver) ? ($data->approver) : '';
                         })
                         ->editColumn(
-                                'accured_interest',
+                                'value_date',
                                 function ($data) {
-                            return isset($data->accured_interest) ? $data->accured_interest : '-';
+                            return ($data->value_date) ? ($data->value_date) : '';
                         })
-                        ->addColumn(
-                                'surplus_amount',
+                        ->editColumn(
+                                'created_at',
                                 function ($data) {
-                            return isset($data->surplus_amount) ? $data->surplus_amount : '-';
+                            return ($data->created_at) ? ($data->created_at) : '';
+                        })
+                        ->editColumn(
+                                'download_batch_excel',
+                                function ($data) {
+                            return '';
+                        })
+                        ->editColumn(
+                                'download_bank_resp',
+                                function ($data) {
+                            return '';
                         })
                         ->addColumn(
                                 'action',
@@ -4065,12 +4042,6 @@ class DataRenderer implements DataProviderInterface
                                 $query->where(function ($query) use ($request) {
                                     $search_keyword = trim($request->get('search_keyword'));
                                     $query->where('invoice.invoice_no', 'like', "%$search_keyword%");
-                                });
-                            }
-                            if ($request->get('is_status') != '') {
-                                $query->where(function ($query) use ($request) {
-                                    $is_status = trim($request->get('is_status'));
-                                    $query->where('disbursal.status_id', $is_status);
                                 });
                             }
                             if ($request->get('from_date') != '') {
@@ -5898,10 +5869,11 @@ class DataRenderer implements DataProviderInterface
                         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
                         $act = '';
+
                         if(Helpers::checkPermission('view_batch_user_invoice') ){
                             $act = '<a  data-toggle="modal" data-target="#viewBatchSendToBankInvoice" data-url ="' . route('view_batch_user_invoice', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Invoices"><i class="fa fa-eye"></i></a>';
                         }
-                        if( $chkUser->id!=11)
+                        if( $chkUser->id!=11 && $disbursal->disburse_type == 2)
                         {  
                             if(Helpers::checkPermission('invoice_udpate_disbursal') ){
                                 $act .= '<a  data-toggle="modal" data-target="#invoiceDisbursalTxnUpdate" data-url ="' . route('invoice_udpate_disbursal', ['user_id' => $disbursal->user_id, 'disbursal_batch_id' => $disbursal->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Update Transaction"><i class="fa fa-plus-square"></i></a>';
@@ -6834,6 +6806,90 @@ class DataRenderer implements DataProviderInterface
                     }
                  })
               ->make(true);
+    }
+
+    /*
+     * 
+     * get all disbursal batch request
+     */
+    public function lmsGetDisbursalBatchRequest(Request $request, $disbursalBatchRequest)
+    {
+        return DataTables::of($disbursalBatchRequest)
+                ->rawColumns(['total_disburse_amount','status', 'action'])
+                ->editColumn(
+                    'batch_id',
+                    function ($disbursalBatchRequest) {
+                        return (isset($disbursalBatchRequest->batch_id)) ? $disbursalBatchRequest->batch_id : '';
+                    }
+                )
+                ->editColumn(
+                    'total_customer',
+                    function ($disbursalBatchRequest) {   
+                        return $disbursalBatchRequest->disbursal->count();
+                }) 
+                ->editColumn(
+                    'total_disburse_amount',
+                    function ($disbursalBatchRequest) {
+
+                        return '<i class="fa fa-inr"></i> '.number_format($disbursalBatchRequest->disbursal->sum('disburse_amount'), 2);
+                })
+                ->addColumn(
+                    'action',
+                    function ($disbursalBatchRequest) {
+                        $act = '<a   href="' . route('disbursal_payment_enquiry', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';
+                        
+                        return $act;
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('batch_id') != '') {
+                        if ($request->has('batch_id')) {
+                            $batch_id = trim($request->get('batch_id'));
+                            $query->where('batch_id', 'like',"%$batch_id%");
+                        }
+                    }
+                })
+                ->make(true);
+    }/*
+     * 
+     * get all refund batch request
+     */
+    public function lmsGetRefundBatchRequest(Request $request, $refundBatchRequest)
+    {
+        return DataTables::of($refundBatchRequest)
+                ->rawColumns(['total_disburse_amount','status', 'action'])
+                ->editColumn(
+                    'batch_id',
+                    function ($refundBatchRequest) {
+                        return (isset($refundBatchRequest->batch_no)) ? $refundBatchRequest->batch_no : '';
+                    }
+                )
+                ->editColumn(
+                    'total_customer',
+                    function ($refundBatchRequest) {   
+                        return $refundBatchRequest->refund->count();
+                }) 
+                ->editColumn(
+                    'total_disburse_amount',
+                    function ($refundBatchRequest) {
+
+                        return '<i class="fa fa-inr"></i> '.number_format($refundBatchRequest->refund->sum('refund_amount'), 2);
+                })
+                ->addColumn(
+                    'action',
+                    function ($refundBatchRequest) {
+                        $act = '<a   href="' . route('refund_payment_enquiry', ['refund_req_batch_id' => $refundBatchRequest->refund_req_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';
+                        
+                        return $act;
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('batch_id') != '') {
+                        if ($request->has('batch_id')) {
+                            $batch_id = trim($request->get('batch_id'));
+                            $query->where('batch_no', 'like',"%$batch_id%");
+                        }
+                    }
+                })
+                ->make(true);
     }   
 
     public function getEodList(Request $request,$eod)

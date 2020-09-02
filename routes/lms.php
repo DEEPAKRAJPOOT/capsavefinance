@@ -440,6 +440,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'account_closure',
                         'uses' => 'Backend\InvoiceController@accountClosure',
                     ]);
+
+                    Route::get('disbursal-batch-request', [
+                        'as' => 'backend_get_disbursal_batch_request',
+                        'uses' => 'Backend\InvoiceController@disbursalBatchRequest',
+                    ]);
+
+                    Route::get('disbursal-payment-enquiry', [
+                        'as' => 'disbursal_payment_enquiry',
+                        'uses' => 'Backend\InvoiceController@disbursalPaymentEnquiry',
+                    ]);
                 }
             });
 
@@ -542,6 +552,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'uses' => 'Lms\RefundController@refundListQueue',
                     ]);
 
+                    Route::get('/refund-request', [
+                        'as' => 'refund_request',
+                        'uses' => 'Lms\RefundController@refundRequest',
+                    ]);
+
                     Route::get('/sentbank', [
                         'as' => 'lms_refund_sentbank',
                         'uses' => 'Lms\RefundController@refundListSentBank',
@@ -570,6 +585,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::post('/refund-offline', [
                         'as' => 'refund_offline',
                         'uses' => 'Lms\RefundController@refundOffline',
+                    ]);
+
+                    Route::post('/refund-online', [
+                        'as' => 'refund_online',
+                        'uses' => 'Lms\RefundController@refundOnline',
                     ]);
 
                     Route::get('/refund-update-disbursal', [
@@ -644,6 +664,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::post('process-refund', [
                         'as' => 'lms_process_refund',
                         'uses' => 'Lms\RefundController@processRefund',
+                    ]);
+
+                    Route::get('refund-payment-enquiry', [
+                        'as' => 'refund_payment_enquiry',
+                        'uses' => 'Lms\RefundController@refundPaymentEnquiry',
                     ]);
                 }
             });

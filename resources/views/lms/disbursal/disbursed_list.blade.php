@@ -53,19 +53,9 @@
                     null,
                     [
                     'class' => 'form-control',
-                    'placeholder' => 'Search by Inv. Ref. No.',
-                    'id'=>'by_email'
+                    'placeholder' => 'Search by Batch No.',
+                    'id'=>'batch_no'
                     ])
-                    !!}
-                </div>
-                <div class="col-md-2">
-
-                    {!!
-                    Form::select('is_status',
-                    $getAppStatus,
-                    null,
-                    array('id' => 'is_active',
-                    'class'=>'form-control'))
                     !!}
                 </div>
                 <button id="searchB" type="button" class="btn  btn-success btn-sm float-right mr-4">Search</button>
@@ -80,20 +70,14 @@
 	                              		<table id="disbursalList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
 	                                        	<tr role="row">
-													<th>Disb. Date</th>
-													<th>Inv. Ref. No.</th>
-                                                    <th>Due Date</th>
-													<th>Payment Due Date</th>
-													<th>Inv. Amount</th>
-													<th>Disbursed Amount</th>
-													<th>Disb. Status</th>
-                                                    <th>Actual Funded Amount</th>
-													<th>Interest Amount</th>
-													<th>Collection Date</th>
-													<th>Collection Amount</th>
-													<th>Accured Intrest</th>
-													<th>Surplus Amount</th>
-                                                    <th>Action</th>
+													<th>Batch Id</th>
+													<th>Type</th>
+                                                    <th>Disbursed Amount</th>
+													<th>Approver</th>
+                                                    <th>Value Date</th>
+                                                    <th>Created At</th>
+                                                    <th>Download Excel</th>
+                                                    <th>Bank Response File</th>
 												</tr>
 	                                        </thead>
 	                                        <tbody>
@@ -101,7 +85,7 @@
 	                                        </tbody>
                                     	</table>
 							  		</div>
-                            		<div id="disbursalCustomerList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                            		<div id="disbursalList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>
@@ -129,7 +113,3 @@
 <script src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script src="{{ asset('backend/js/lms/disbursal.js') }}" type="text/javascript"></script>
 @endsection
-
-
-
-

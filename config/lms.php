@@ -155,7 +155,8 @@ return [
     ],    
     'DECIMAL_TYPE' => [
         'PERCENTAGE' => '2',
-        'AMOUNT'=>'5'
+        'AMOUNT'=>'5',
+        'AMOUNT_TWO_DECIMAL'=>'2'
     ],
     'STATUS' => [
         'PENDING' => '0',
@@ -181,5 +182,36 @@ return [
     'CHARGE_PAYMENT_TYPE_MAP'=>[
         '3'=>'2',  // CHEQUE BOUNCE 3
         '4'=>'3'  // NACH 4
+    ],
+    'BANK_TYPE' => [
+        'IDFC' => '1'
+    ],
+    'DISBURSAL_TIME_VALIDATE' => '17',
+    'DISBURSAL_STATUS' => [    
+       'PENDING' => '7',
+       'APPROVED'=>'8',
+       'DISBURSMENT_QUE'=>'9',
+       'SENT_TO_BANK'=>'10',
+       'FAILED_DISBURSMENT'=>'11',
+       'DISBURSED' =>'12',
+       'PARTIALLY_PAYMENT_SETTLED '=> '13',
+       'REJECT'=>'14',
+       'PAYMENT_SETTLED'=>'15',
+    ],
+    'BATCH_STATUS' => [    
+       'SENT_TO_BANK' => '1',
+       'SUCCESS'=>'2',
+       'FAILED'=>'3',
+    ],
+    'REFUND_STATUS' => [    
+       'NEW' => '1',
+       'DELETED' => '2',
+       'PENDING' => '3',
+       'REJECTED'=>'4',
+       'APPROVED'=>'5',
+       'REFUND_QUE'=>'6',
+       'SENT_TO_BANK'=>'7',
+       'DISBURSED' =>'8',
+       'FAILED_REFUND'=>'9',
     ],
 ];

@@ -38,7 +38,7 @@ $role = (isset($role)) ? $role :     11;
                                 <div class="card-body">
                                     <div class="row">
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                         </div>
                                         <div class="col-md-5">
@@ -47,14 +47,20 @@ $role = (isset($role)) ? $role :     11;
                                         <div class="col-md-1">
                                             <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
                                         </div>  
+                                        @php if($role!=11) { @endphp
                                         <div class="col-md-2" id="buttonDiv">
-                                            @php if($role!=11) { @endphp
-                                            @can('disburse_confirm')
-                                                <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank</a>
+
+                                           @can('disburse_confirm')
+                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank (Offline)</a>
                                             @endcan
-                                            @php  } @endphp
-                                            <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="560px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;" >Disburse Trigger</a>
                                         </div>
+                                        <div class="col-md-2" id="buttonDiv">
+                                            @can('disburse_confirm')
+                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 1 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank (Online)</a>
+                                            @endcan                                        
+                                        </div>
+                                        @php  } @endphp
+                                            <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="560px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;" >Disburse Trigger</a>
                                         <input type="hidden" value="" name="invoice_ids" id="invoice_ids"> 
                                     </div>
                                 </div>

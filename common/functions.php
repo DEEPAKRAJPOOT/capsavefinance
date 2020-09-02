@@ -851,6 +851,17 @@ function getMechanism($id){
 	return $mechanismType[$id] ?? '';
 }
 
+function getPathByTxnId($txn_id, $common_path = '/user/logs'){
+	if (!empty($txn_id)) {
+		$reverseTime = _getRandReverse($txn_id, false);
+		$folderTime = strtolower(date('Y-M-dmy-H', strtotime($reverseTime)));
+	  	list($year, $month, $date, $hour) = explode('-', $folderTime);
+      	$main_dir = "$common_path/$year/$month/$date/$hour/$date.log";
+
+  	}
+	return $main_dir ?? '';
+}
+
 function logFile($data, $w_mode = 'D', $w_filename = '', $w_folder = '', $txn_id = '') {
 	  $folderTime = strtolower(date('Y-M-dmy-H'));
 	  if (!empty($txn_id)) {

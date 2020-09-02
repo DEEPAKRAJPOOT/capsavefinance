@@ -88,7 +88,7 @@ class DisbursalController extends Controller
 		return view('lms.disbursal.confirm_disburse');              
 	}
 	/**
-	 * Display a listing of the customer.
+	 * Display a listing of the customer. -- not using
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
@@ -293,8 +293,7 @@ class DisbursalController extends Controller
      */
     public function disbursedList()
     {
-        $getAppStatus = ['' => 'Please select'] + $this->masterRepo->getAppStatus(4)->toArray();
-        return view('lms.disbursal.disbursed_list')->with(['getAppStatus'=> $getAppStatus]);
+        return view('lms.disbursal.disbursed_list');
     }
 
     function _apiData($id = 1) {

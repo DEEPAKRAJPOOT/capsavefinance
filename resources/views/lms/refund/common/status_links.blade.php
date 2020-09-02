@@ -19,6 +19,11 @@
         <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='request_list') active @endif"  href="{{Route('request_list')}}">Refund Queue</a>
     </li>
     @endcan
+    @can('refund_request')    
+    <li class="nav-item itemBackground">
+        <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='refund_request') active @endif"  href="{{Route('refund_request')}}">Refund Request</a>
+    </li>
+    @endcan
     @can('lms_refund_sentbank')
     <li class="nav-item itemBackground">
         <a class="itemBackgroundColor invoiceLinkHover nav-link @if(Route::currentRouteName()=='lms_refund_sentbank') active @endif" href="{{Route('lms_refund_sentbank')}}">Sent to Bank</a>

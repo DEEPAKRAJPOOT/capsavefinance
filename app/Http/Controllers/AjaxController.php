@@ -3848,8 +3848,7 @@ if ($err) {
      */
     public function getDisbursalList(DataProviderInterface $dataProvider)
     {
-     $getDisList = $this->userRepo->getDisbursalList();
-     //dd($getDisList->get());
+     $getDisList = $this->lmsRepo->getBatchDisbursalList();
      return $dataProvider->getDisbursalList($this->request , $getDisList);   
     }
 
@@ -4746,4 +4745,15 @@ if ($err) {
         return $data;
     }
 
+    public function getBackendDisbursalBatchRequest(DataProviderInterface $dataProvider) {
+        $disbursalBatchRequest = $this->lmsRepo->lmsGetDisbursalBatchRequest();
+        $data = $dataProvider->lmsGetDisbursalBatchRequest($this->request, $disbursalBatchRequest);
+        return $data;
+    } 
+    
+    public function getBackendRefundBatchRequest(DataProviderInterface $dataProvider) {
+        $disbursalBatchRequest = $this->lmsRepo->lmsGetRefundBatchRequest();
+        $data = $dataProvider->lmsGetRefundBatchRequest($this->request, $disbursalBatchRequest);
+        return $data;
+    } 
 }

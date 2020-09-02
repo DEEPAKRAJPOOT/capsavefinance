@@ -64,6 +64,12 @@ use App\Inv\Repositories\Models\Lms\InvoiceRepaymentTrail;
 use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
+use App\Inv\Repositories\Models\AppOfferAdhocLimit;
+use App\Inv\Repositories\Models\ColenderShare;
+use App\Inv\Repositories\Models\Master\TallyEntry;
+use App\Inv\Repositories\Models\Lms\DisbursalApiLog;
+use BlankDataExceptions;
+use InvalidDataTypeExceptions;
 
 /**
  * Lms Repository class
@@ -400,9 +406,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		}
 	}
 	 /**
-	 * Get Repayments
+	 * update disbursaal
 	 *      
-	 * @param array $whereCondition | optional
+	 * @param array $whereCondition | required
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
 	 */
@@ -684,7 +690,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getDisbursals($disburseIds)
    {
-	  return Disbursal::whereIn('disbursal_id', $disburseIds)
+	  return Disbursal::whereIn('disbursal_id', $disburseIds)->with('user.anchor')
 			->get();
    }
 
@@ -762,11 +768,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     /**
      * create Disburse Api Log
      */
-    public static function createDisbursalBatch($file, $batchId = null)
+    public static function createDisbursalBatch($file, $batchId = null, $disbursalApiLogId = null)
     {   
         if (!empty($batchId)) {
-            $disburseBatch['batch_id'] = ($batchId) ?? $batchId;
+            $disburseBatch['batch_id'] = $batchId ?? null;
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
+            $disburseBatch['disbursal_api_log_id'] = $disbursalApiLogId ?? null;
+            $disburseBatch['batch_status'] = 1;
         }
         return DisbursalBatch::create($disburseBatch);
     }
@@ -1086,6 +1094,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         if ($data) {
             $disburseBatch['batch_no'] = ($data['batch_no']) ?? null;
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
+            $disburseBatch['batch_status'] = config('lms.BATCH_STATUS')['SENT_TO_BANK'];
+            $disburseBatch['refund_type'] = $data['refund_type'] ?? 0;
+            $disburseBatch['disbursal_api_log_id'] = $data['disbursal_api_log_id'] ?? null;
         }
         return RefundReqBatch::create($disburseBatch);
     }
@@ -1325,7 +1336,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function getMaxDpdTransaction($userId, $transType){
 		return Transactions::getMaxDpdTransaction($userId, $transType);
 	}
-
+	
+	public static function getBatchDisbursalList(){
+		return DisbursalBatch::with('disbursal')
+				->orderBy('created_at', 'DESC');
+	}
         
     /**
      * Get System Start Date
@@ -1548,4 +1563,125 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         }
         return $isValid;
     }
+
+    public function getAprvlRqUserByIds($ids = [])
+    {	
+    	if (empty($ids)) {
+	        return "No record found.";
+    	} else {
+    		return RefundReq::getAprvlRqUserByIds($ids);
+    	}
+    }
+
+    /**
+	 * Save or Update Disbursal Api Log
+	 * 
+	 * @param array $data
+	 * @param array $whereCondition | optional
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public function saveUpdateDisbursalApiLog($data, $whereCondition=[])
+	{
+		return DisbursalApiLog::saveUpdateDisbursalApiLog($data, $whereCondition);
+	}
+
+	/**
+     * Get disbursal batch
+     * 
+     * @param integer $batchId
+     * @return array
+     */
+	public function lmsGetDisbursalBatchRequest()
+	{
+		return DisbursalBatch::lmsGetDisbursalBatchRequest();
+	}
+
+	/**
+     * Get disbursal batch
+     * 
+     * @param integer $batchId
+     * @return array
+     */
+	public function getdisbursalBatchByDBId($disbursalBatchId)
+	{
+		return DisbursalBatch::with('disbursal_api_log')
+				->where('disbursal_batch_id', $disbursalBatchId)
+				->first();
+	}
+
+	/**
+	 * update disbursal batch
+	 *      
+	 * @param array $whereCondition | required
+	 * @return mixed
+	 * @throws InvalidDataTypeExceptions
+	 */
+	public static function updateDisbursalBatchById($data, $updatingId = [])
+	{
+		if (is_array($updatingId)) {
+			$response =  DisbursalBatch::whereIn('disbursal_batch_id', $updatingId)
+				->update($data);
+		} else {
+			$response =  DisbursalBatch::where('disbursal_batch_id', $updatingId)
+				->update($data);
+		}
+		return $response ?? false;
+	}
+
+	public static function updateDisbursalByTranId($data = [], $updatingId = null)
+	{
+		$response =  Disbursal::where('tran_id', $updatingId)
+			->update($data);
+		return ($response) ?? $response;
+	}
+
+	/**
+     * Get refund batch
+     * 
+     * @param integer $batchId
+     * @return array
+     */
+	public function lmsGetRefundBatchRequest()
+	{
+		return RefundReqBatch::lmsGetRefundBatchRequest();
+	}
+
+	public function lmsGetCustomerRefundById($id = null)
+    {
+        return RefundReq::where('refund_req_id', $id)
+			   ->first();
+    }
+
+    public function getrefundBatchByDBId($efundrBatchId)
+	{
+		return RefundReqBatch::with('disbursal_api_log')
+				->where('refund_req_batch_id', $efundrBatchId)
+				->first();
+	}
+
+	public static function updateRefundBatchById($data, $updatingId = [])
+	{
+		if (is_array($updatingId)) {
+			$response =  RefundReqBatch::whereIn('refund_req_batch_id', $updatingId)
+				->update($data);
+		} else {
+			$response =  RefundReqBatch::where('refund_req_batch_id', $updatingId)
+				->update($data);
+		}
+		return $response ?? false;
+	}
+
+	public function lmsGetRefundReqById($id = null)
+    {
+        return RefundReq::where('refund_req_id', $id)
+			   ->first();
+    }
+
+    public static function updateRefundByTranId($data = [], $updatingId = null)
+	{
+		$response =  RefundReq::updateOrCreate(['tran_no' => $updatingId],$data);
+		return ($response) ?? $response;
+	}
+
 }
