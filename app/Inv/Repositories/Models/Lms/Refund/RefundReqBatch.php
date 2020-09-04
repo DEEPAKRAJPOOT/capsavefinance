@@ -44,6 +44,9 @@ class RefundReqBatch extends BaseModel {
     protected $fillable = [
         'batch_no',
         'file_id',
+        'disbursal_api_log_id',
+        'batch_status',
+        'refund_type',
         'created_by',
         'created_at',
         'updated_by',
@@ -63,5 +66,19 @@ class RefundReqBatch extends BaseModel {
         }
     }
 
-}
+    public static function lmsGetRefundBatchRequest()
+    {
+        return self::where('batch_status', 1)
+                ->where('refund_type', 1)
+                ->orderBy('refund_req_batch_id', 'DESC');
+    }
+
+    public function refund() { 
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\Refund\RefundReq', 'refund_req_batch_id', 'refund_req_batch_id'); 
+    }
+
+    public function disbursal_api_log() { 
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\DisburseApiLog', 'disbursal_api_log_id', 'disbursal_api_log_id'); 
+    }
+}   
 

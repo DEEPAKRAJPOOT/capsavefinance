@@ -49,6 +49,25 @@
 			</div>
 		</form>
 	</div>
+	<div class="col-6 right">
+		<form id="onlineDisburse" method="POST" action="{{ Route('refund_online') }}" target="_top">
+			<input type="hidden" value="{{ $transIds }}" name="transaction_ids">
+			@csrf
+			<div class="col-6">
+				<!-- <div class="form-group">
+					<label for="txtCreditPeriod">Value Date <span class="error_message_label">*</span> </label>
+					<input type="text" id="value_date" name="value_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
+					 @if(Session::has('error'))
+					 <div class="error">{{ Session::get('error') }}</div>
+					  
+					@endif
+				</div> -->
+			</div>
+			<div class="col-6">
+				<input type="submit" id="submitOnlineDisburse" value="Disburse Online" class="btn btn-success btn-sm ml-2">
+			</div>
+		</form>
+	</div>
 </div>
 @endsection
 @section('jscript')

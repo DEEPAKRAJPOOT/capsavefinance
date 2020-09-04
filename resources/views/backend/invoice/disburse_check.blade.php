@@ -42,56 +42,69 @@ foreach ($apps as $app) {
 @endforeach
 
 <div class="row">
-	<div class="col-12 row">
+	<div class="col-11 row">
 
-		<div class="col-4">
+		<div class="col-3">
 			<div class="form-group">
 				<label for="marginAmount"># No of Cust.</label>
 				<input type="text" name="" class="form-control" readonly="true" value="{{ $customersDisbursalList->count() }}">
 			</div>
 		</div>
-		<div class="col-4">
+		<div class="col-3">
 			<div class="form-group">
 				<label for="nonFactoredAmount"># Disburse/Principal Amount</label>
 				<input type="text" name="" id="nonFactoredAmt" class="form-control" readonly="true" value="{{ number_format((float)$finalDisburseAmt, 2, '.', '') }}">
 			</div>
 		</div>
-	</div>
-</div>
-
-<div class="row">
-	<div class="col-6">
-		<form id="manualDisburse" method="POST" action="{{ Route('disburse_offline') }}" target="_top">
-			<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
-			@csrf
-			<div class="col-6">
-				<div class="form-group">
-					<label for="txtCreditPeriod">Disburse Date <span class="error_message_label">*</span> </label>
-					<input type="text" id="disburse_date" name="disburse_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
-					 @if(Session::has('error'))
-					 <div class="error">{{ Session::get('error') }}</div>
-					  
-					@endif
-				</div>
-			</div>
-			<div class="col-6">
-				<input type="submit" id="submitManualDisburse" value="Disburse Offline" class="btn btn-success btn-sm ml-2">
-			</div>
-		</form>
-	</div>
-	<!-- <div class="col-6 row">
-		<div class="col-6"></div>
-		<div class="col-3">
-			<form id="manualDisburse" method="POST" action="{{ Route('disburse_online') }}">
-				@csrf
+		@if($disburseType == 2)
+		<div class="col-6">
+			<form id="manualDisburse" method="POST" action="{{ Route('disburse_offline') }}" target="_top">
 				<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
-				
-				<input type="submit" id="submitManualDisburse" value="Disburse Online" class="btn btn-success btn-sm ml-2 disabled">
+				@csrf
+				<div class="row">
+					<div class="col-6">
+						<div class="form-group">
+							<label for="txtCreditPeriod">Disburse Date <span class="error_message_label">*</span> </label>
+							<input type="text" id="disburse_date" name="disburse_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
+							 @if(Session::has('error'))
+							 <div class="error">{{ Session::get('error') }}</div>
+							@endif
+						</div>
+					</div>
+					<div class="col-3">
+						<label for="txtCreditPeriod">&nbsp; </label>
+						<input type="submit" id="submitManualDisburse" value="Disburse Offline" class="btn btn-success btn-sm ml-2">
+					</div>
+				</div>
 			</form>
 		</div>
-	</div> -->
+		@else
+		<div class="col-6">
+			<form id="onlineDisburse" method="POST" action="{{ Route('disburse_online') }}" target="_top">
+			<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
+			@csrf
+			<div class="row">
+				<div class="col-6">
+					<div class="form-group">
+						<label for="txtCreditPeriod">Value Date <span class="error_message_label">*</span> </label>
+						<input type="text" id="value_date" name="value_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
+						 @if(Session::has('error'))
+						 <div class="error">{{ Session::get('error') }}</div>
+						@endif
+					</div>
+				</div>
+				<div class="col-3">
+					<label for="txtCreditPeriod">&nbsp; </label>
+					<input type="submit" id="submitOnlineDisburse" value="Disburse Online" class="btn btn-success btn-sm ml-2">
+				</div>
+			</div>
+		</form>
+		</div>
+		@endif
+	</div>
 
 </div>
+
 <div class="col-12 dataTables_wrapper mt-4">
 	<div class="overflow">
 		<div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -102,7 +115,7 @@ foreach ($apps as $app) {
 							<thead>
 								<tr role="row">
 									<th width="4%">Cust ID</th>
-									<th width="4%">App ID</th>
+									<!-- <th width="4%">App ID</th> -->
 									<th width="10%">Ben Name</th>
 									<th width="20%">Bank Detail</th>
 									<th width="15%">Total Invoice</th>
@@ -120,7 +133,7 @@ foreach ($apps as $app) {
 								@foreach($customersDisbursalList as $customer)
 								<tr role="row" class="odd">
 									<td> {{ $customer->customer_id }}</td>
-									<td> CAPS000{{ $customer->app_id }} </td>
+									<!-- <td> CAPS000{{ $customer->app_id }} </td> -->
 									@php
 									if ($customer->user->is_buyer == 2) {
 										$benName = (isset($customer->user->anchor_bank_details->acc_name)) ? $customer->user->anchor_bank_details->acc_name : '';
@@ -247,6 +260,13 @@ foreach ($apps as $app) {
 
 <script type="text/javascript">
 	$(document).ready(function () {
+		var date = new Date();
+		date.setDate(date.getDate());
+	    $('#value_date').datetimepicker('setStartDate',  date);
+		var date2 = new Date();
+		date2.setDate(date2.getDate() + 7);
+	    $('#value_date').datetimepicker('setEndDate',  date2);
+
 	    parent.$('.modal-dialog').addClass('viewCiblReportModal .modal-lg').removeClass('modal-dialog modal-lg');
 	});
 	$(document).ready(function () {
@@ -270,6 +290,31 @@ foreach ($apps as $app) {
             if($('#manualDisburse').valid()){
                 $('form#manualDisburse').submit();
                 $("#submitManualDisburse").attr("disabled","disabled");
+            }  
+        });            
+
+    });
+    $(document).ready(function () {
+        $('#onlineDisburse').validate({ // initialize the plugin
+            
+            rules: {
+                'disburse_date' : {
+                    required : true,
+                }
+            },
+            messages: {
+                'disburse_date': {
+                    required: "Disburse date is required.",
+                }
+            }
+        });
+
+        $('#onlineDisburse').validate();
+
+        $("#submitOnlineDisburse").click(function(){
+            if($('#onlineDisburse').valid()){
+                $('form#onlineDisburse').submit();
+                $("#submitOnlineDisburse").attr("disabled","disabled");
             }  
         });            
 

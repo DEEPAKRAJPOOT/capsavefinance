@@ -42,6 +42,8 @@ return [
     'reject_app' => 'Application Status Changed Successfully',    
     'enhanced_tot_limit_amt_validation' => 'Total credit assessed limit can\'t be less than previous total credit assessed limit',
     'reduced_tot_limit_amt_validation' => 'Total credit assessed limit can\'t be  more than previous total credit assessed limit',
-    'reduced_utilized_amt_validation' => 'Total credit assessed limit can\'t be less than the Utilized limit.'
+    'reduced_utilized_amt_validation' => 'Total credit assessed limit can\'t be less than the Utilized limit.',
+    'disbursed_error' => 'Some error occured, Please try again.',
+    'reject_app' => 'Application Status Changed Successfully',
 ];
 

@@ -1161,6 +1161,11 @@ Route::group(
         'uses' => 'AjaxController@leaseRegister'
         ]
     );
+    Route::post('backend_ajax_get_disbursal_batch_request',[
+        'as' => 'backend_ajax_get_disbursal_batch_request',
+        'uses' => 'AjaxController@getBackendDisbursalBatchRequest'
+        ]
+    );
 
     Route::get('get_unsettled_payments',[
         'as' => 'get_unsettled_payments',
@@ -1199,5 +1204,11 @@ Route::group(
         'as' => 'get_ajax_tds_list',
         'uses' => 'AjaxController@getTDSList',
     ]);
+
+    Route::post('backend_ajax_get_refund_batch_request',[
+        'as' => 'backend_ajax_get_refund_batch_request',
+        'uses' => 'AjaxController@getBackendRefundBatchRequest'
+        ]
+    );
 
 });

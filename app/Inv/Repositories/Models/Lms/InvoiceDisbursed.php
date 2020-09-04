@@ -115,7 +115,7 @@ class InvoiceDisbursed extends BaseModel {
 
 	public static function getInvoiceDisbursed($disbursalIds){
 		return self::whereIn('disbursal_id', $disbursalIds)
-				->with('invoice.program_offer')->get();
+				->with('invoice.program_offer', 'disbursal')->get();
 	}
 
 	public function accruedInterestNotNull(){

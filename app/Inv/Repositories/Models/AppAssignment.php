@@ -75,7 +75,7 @@ class AppAssignment extends BaseModel
      *
      * @since 0.1
      */
-    public static function saveData($attributes = [])
+    public static function saveData($attributes = [], $sendEmail = true)
     {
         /**
          * Check Data is Array
@@ -92,7 +92,8 @@ class AppAssignment extends BaseModel
         }
 
         $status =  self::create($attributes);
-       // dispatch(new ProcessMails($status));
+        if($sendEmail)
+        dispatch(new ProcessMails($status));
         return true;
     }
     

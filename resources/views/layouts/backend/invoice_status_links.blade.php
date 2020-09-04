@@ -26,6 +26,15 @@
         @endif
     </li>
     @endcan
+    @can('backend_get_disbursal_batch_request')
+    <li class="nav-item">
+        @if($flag == 1)
+        <a class="invoiceLinkHover nav-link @if(Route::currentRouteName()=='backend_get_disbursal_batch_request') active @endif"  href="{{Route('backend_get_disbursal_batch_request',[ 'user_id' => $userInfo->user_id, 'app_id' => $userInfo->app->app_id, 'flag' => 1 ])}}">Disbursal Request</a>
+        @else
+        <a class="invoiceLinkHover nav-link @if(Route::currentRouteName()=='backend_get_disbursal_batch_request') active @endif"  href="{{Route('backend_get_disbursal_batch_request')}}">Disbursal Request</a>
+        @endif
+    </li>
+    @endcan
     @can('backend_get_sent_to_bank')
     <li class="nav-item">
         @if($flag == 1)

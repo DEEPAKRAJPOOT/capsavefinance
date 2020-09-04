@@ -33,3 +33,4 @@ Homestead.json
 /app/Inv/Repositories/config/common.php
 /bootstrap/cache/config.php
 .vscode
+worker.log

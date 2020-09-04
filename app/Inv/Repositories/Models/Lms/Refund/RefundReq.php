@@ -106,5 +106,13 @@ class RefundReq extends BaseModel {
         }
     }
 
+    public static function getAprvlRqUserByIds($ids = []) {
+        return self::select('payments.user_id')
+            ->join('payments', 'payments.payment_id', '=', 'lms_refund_req.payment_id')
+            ->whereIn('refund_req_id', $ids)
+            ->groupBy('payments.user_id')
+            ->get();
+    }
+
 }
 

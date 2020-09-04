@@ -53,16 +53,6 @@ class Idfc_lib{
      	if ($getApiResponse) {
      		return [$url, $txn_id, $payload, $http_header, $response['result']];
      	}
-     	logFile($url, 'D', '', '', $txn_id);
-		logFile($payload, 'D', '', '', $txn_id);
-		logFile($http_header, 'D', '', '', $txn_id);
-		logFile($response['result'], 'D', '', '', $txn_id);
-
-		// $file_name = md5($txn_id).'.txt';
-		// $this->_saveLogFile($payload, $file_name, 'Outgoing');
-		// die("here");
-     	// $this->_saveLogFile($response, $file_name, 'Incoming');
-
 		if (!empty($response['error_no'])) {
 			$resp['code'] 	 = "CurlError : " . $response['error_no'];
 			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
@@ -74,6 +64,12 @@ class Idfc_lib{
 			return $resp;
 		}
 		$result = $this->_parseResult($response['result'], $method);
+		$result['result']['url'] = $url;
+		$result['result']['payload'] = $payload;
+		$result['result']['http_header'] = $http_header;
+		$result['result']['response'] = $response['result'];
+		$result['http_code'] = $response['curl_info']['http_code'];
+
 		return $result;
     }
 
@@ -189,14 +185,16 @@ class Idfc_lib{
     	}
     	$header = $response['doMultiPaymentCorpRes']['Header'];
     	$body = $response['doMultiPaymentCorpRes']['Body'] ?? [];
-
 	    if (strtolower($header['Status']) != 'success' ) {
 	    	$result['code'] = $header['Error_Cde'] ?? 'CAP001'; //change to Error_Code if response changes
 	    	$result['message'] = $header['Error_Desc'] ?? 'Some error occured';
 	    }else{
 	    	$result['status'] = 'success';
 	    	$result['message'] = 'success';
-	    	$result['result'] = ['header'=> $header,'body'=> $body];
+	    	$result['result'] = [
+	    		'header'=> $header,
+	    		'body'=> $body
+	    		];
 	    }
 	    return $result;
     }

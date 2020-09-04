@@ -170,8 +170,8 @@ trait LmsTrait
         if($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
             $interest = $tInterest;
         }
-        //$disburseAmount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT']);
-        $disburseAmount = round($fundedAmount, config('lms.DECIMAL_TYPE')['AMOUNT']);
+        //$disburseAmount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
+        $disburseAmount = round($fundedAmount, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
 
         $disbursalData['disbursal_id'] = $invoice['disbursal_id'] ?? null;
         $disbursalData['invoice_id'] = $invoice['invoice_id'] ?? null;
@@ -1002,6 +1002,39 @@ trait LmsTrait
         
         $result = $this->lmsRepo->saveRefundData($saveRefundData);
         return $result;
+    }
+
+    /**
+     * Prepare Disbursal Data
+     * 
+     * @param array $data
+     * @return mixed
+     */
+    protected function createDisbusalApiLogData($fileData, $response = [], $data = [])
+    {
+        /**
+        * disburseType = 1 for online and 2 for manually
+        */
+        $disbursalData = [];
+        
+        $disbursalData['disbursal_batch_id'] = $data['disbursal_batch_id'] ?? null;
+
+        $disbursalData['bank_type'] = $data['bank_type'] ?? null;
+        $disbursalData['txn_id'] = $response['result']['header']['Tran_ID'] ?? null;
+        $disbursalData['enq_txn_id'] = $data['enq_txn_id'] ?? null;
+        $disbursalData['url'] = $response['result']['url'] ?? null;
+        
+        $disbursalData['header'] = $response['result']['http_header'] ?? null;
+        $disbursalData['req_text'] = $response['result']['payload'] ?? null ;
+        $disbursalData['res_text'] = $response['result']['response'] ?? null;
+        $disbursalData['file_id'] = $fileData['file_id'] ?? null;            
+        $disbursalData['status'] = ($response['status'] == 'success') ? 1 : 0;
+
+        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                        
+        $disbursalData['created_by'] = Auth::user()->user_id;
+        $disbursalData['created_at'] = $curData;
+        return $disbursalData;
     }
     
 }
