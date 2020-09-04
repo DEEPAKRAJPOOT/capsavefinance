@@ -55,9 +55,9 @@ $role = (isset($role)) ? $role :     11;
                                             @endcan
                                         </div>
                                         <div class="col-md-2" id="buttonDiv">
-                                            @can('disburse_confirm')
+                                            {{--@can('disburse_confirm')
                                             <a data-url="{{ route('disburse_confirm', ['disburse_type' => 1 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank (Online)</a>
-                                            @endcan                                        
+                                            @endcan--}}                                       
                                         </div>
                                         @php  } @endphp
                                             <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="560px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;" >Disburse Trigger</a>
