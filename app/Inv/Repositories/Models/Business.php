@@ -75,6 +75,8 @@ class Business extends BaseModel
         'gstno_pan_gst_id',
         'share_holding_date',
         'org_id',        
+        'msme_type',
+        'msme_no',
         'created_by',
         'created_at',
         'updated_at',
@@ -95,7 +97,9 @@ class Business extends BaseModel
         'share_holding_date'=>Carbon::createFromFormat('d/m/Y', $attributes['share_holding_date'])->format('Y-m-d'),
         'org_id'=>1,
         'created_by'=>Auth::user()->user_id,
-        'is_gst_manual'=>$attributes['is_gst_manual']
+        'is_gst_manual'=>$attributes['is_gst_manual'],
+        'msme_type' => $attributes['msme_type'],
+        'msme_no' => $attributes['msme_no'],            
         ]);
 
         $bpga = BizPanGstApi::create([
@@ -280,6 +284,8 @@ class Business extends BaseModel
         'biz_segment'=>$attributes['segment'],
         'share_holding_date'=>Carbon::createFromFormat('d/m/Y', $attributes['share_holding_date'])->format('Y-m-d'),
         'org_id'=>1,
+        'msme_type' => $attributes['msme_type'],
+        'msme_no' => $attributes['msme_no'],
         'updated_by'=>Auth::user()->user_id,
         ]);
 

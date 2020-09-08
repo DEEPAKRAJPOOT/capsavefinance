@@ -210,9 +210,10 @@ function checkValidation(){
 	unsetError('#product_type_3_loan');
 	unsetError('#product_type_1_tenor');
 	unsetError('#product_type_2_tenor');
-	unsetError('#product_type_3_tenor');
-
-	
+	unsetError('#product_type_3_tenor');	
+	unsetError('select[name=msme_type]');
+	unsetError('input[name=msme_no]');
+        
 	let flag = true;
 	let is_gst_manual = $('input[name=is_gst_manual]').val().trim();
 	let biz_pan_number = $('input[name=biz_pan_number]').val().trim();
@@ -253,6 +254,8 @@ function checkValidation(){
 	let biz_pin = $('input[name=biz_pin]').val().trim();
 	
 	let share_holding_date = $('input[name=share_holding_date]').val();
+	let msme_type = $('select[name=msme_type]').val();
+	let msme_number = $('input[name=msme_no]').val().trim();
 
 	if(biz_pan_number.length != 10){
 		setError('input[name=biz_pan_number]', 'Enter valid PAN Number');
@@ -311,6 +314,16 @@ function checkValidation(){
 	// 	setError('select[name=entity_type_id]', 'Plese select Sub Industry');
 	// 	flag = false;
 	// }
+        
+        if(msme_type == ''){
+	 	setError('select[name=msme_type]', 'Plese select MSME Type');
+	 	flag = false;
+        }
+        
+        if(msme_number == ''){
+	 	setError('input[name=msme_no]', 'MSME Number is required');
+	 	flag = false;
+        }         
 
 	if(segment== ''){
 		setError('select[name=segment]', 'Segment is required');
