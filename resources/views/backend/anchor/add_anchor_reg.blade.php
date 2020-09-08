@@ -334,9 +334,9 @@
     if(stateID){
       //  var image_id =  $(this).data('city-error');
         $.ajax({
-           type:"GET",
-           data: { "approved": "True"},
-           url:"{{url('/anchor/get-city-list')}}?state_id="+stateID,
+           type:"POST",
+           data: { "approved": "True", 'state_id': stateID, '_token': messages.token},
+           url:"{{url('/anchor/get-city-list')}}",
            success:function(data){
             if(data){
                 $("#city").empty();
