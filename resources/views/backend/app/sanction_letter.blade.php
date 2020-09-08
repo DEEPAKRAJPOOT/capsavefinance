@@ -94,6 +94,24 @@
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
          <div class="card">
             <div class="card-body">
+               <!-- add limit validity date -->
+               <div class="card mt-3">
+                  <div class="card-body pt-3 pb-3">
+                        <ul class="float-left mb-0 pl-0">
+                           <li style="font-family: calibri !important;font-size: 0.917rem !important;"><b class="bold">Application ID: {{request()->get('app_id')? \Helpers::formatIdWithPrefix(request()->get('app_id'), 'APP') :''}}</b> </li>
+                           <!--  <li style="font-family: calibri !important;font-size: 0.917rem !important;"><b class="bold">Credit Head Status :</b> Reject</li> -->
+                        </ul>
+                        @php 
+                           $limitValidityEndDate = $appLimit->actual_end_date ?? $appLimit->end_date;
+                        @endphp
+                        <span class="badge badge-info float-right">
+                           Limit Validity: From Date 
+                           {{ isset($appLimit->start_date)? Carbon\Carbon::parse($appLimit->start_date)->format('d/m/Y'):'N/A' }} - To Date 
+                           {{ isset($limitValidityEndDate)? Carbon\Carbon::parse($limitValidityEndDate)->format('d/m/Y'):'N/A' }}
+                        </span>
+                  </div>
+               </div>
+               <!-- add limit validity date -->
                <div class="tab-content">
                   <div id="sanctionSupplyChain" class="tab-pane fadein active">
                      <form action="{{route('save_sanction_letter_supplychain')}}" id="frmSanctionLetter" method="POST">

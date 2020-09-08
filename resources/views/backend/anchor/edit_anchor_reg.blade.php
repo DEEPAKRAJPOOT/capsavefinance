@@ -393,8 +393,9 @@ $('#email').keyup(function() {
     var stateID = $(this).val();
     if(stateID){
         $.ajax({
-           type:"GET",
-           url:"{{url('/anchor/get-city-list')}}?state_id="+stateID,
+           type:"POST",
+           url:"{{url('/anchor/get-city-list')}}",
+           data:{'state_id': stateID, '_token': messages.token},
            success:function(res){
             if(res){
                 $("#city").empty();

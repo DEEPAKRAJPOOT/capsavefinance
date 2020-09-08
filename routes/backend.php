@@ -833,7 +833,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@acceptApplicationPool'
             ]); 
             
-            Route::get('get-city-list', [
+            Route::post('get-city-list', [
                 'as' => 'get-city-list',
                 'uses' => 'Backend\LeadController@getCityList'
             ]);
