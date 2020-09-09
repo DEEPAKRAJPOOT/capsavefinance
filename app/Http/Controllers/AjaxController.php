@@ -3545,7 +3545,7 @@ if ($err) {
         if($chkUser)
         {     
             //if( $chkUser->id==1)
-            if(in_array($chkUser->id, $rolesDataArray))
+            if($chkUser->id==1 || in_array($chkUser->id, $rolesDataArray))
             {
                  $customer  = 1;
             }
