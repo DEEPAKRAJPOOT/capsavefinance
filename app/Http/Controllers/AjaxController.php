@@ -3534,11 +3534,18 @@ if ($err) {
            $get_supplier = $this->invRepo->getProgramOfferByPrgmId($request['program_id']);
          
         }
+        $roles = $this->userRepo->getRolesByType(2);
+        $rolesDataArray = [];
+        foreach($roles as $role) {
+            $rolesDataArray[] = $role->id;
+        }
+        
         $getPrgm  = $this->application->getProgram($request['program_id']);
         $chkUser  = $this->application->chkUser();
         if($chkUser)
         {     
-            if( $chkUser->id==1)
+            //if( $chkUser->id==1)
+            if(in_array($chkUser->id, $rolesDataArray))
             {
                  $customer  = 1;
             }
