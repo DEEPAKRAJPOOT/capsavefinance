@@ -331,7 +331,7 @@ trait ApplicationTrait
             
             //Get and save Application data
             $appData  = $this->appRepo->getAppDataByAppId($appId);
-            $appData = $appData ? $this->arrayExcept($appData->toArray(), array_merge($excludeKeys, ['app_id'])) : [];                
+            $appData = $appData ? $this->arrayExcept($appData->toArray(), array_merge($excludeKeys, ['app_id', 'curr_status_id', 'curr_status_updated_at'])) : [];                
             $appData['biz_id'] = $newBizId;
             $appData['parent_app_id'] = $appId;
             $appData['status'] = 0;
@@ -339,6 +339,10 @@ trait ApplicationTrait
             $appData['app_type'] = $appType;
             $newAppData = $this->appRepo->createApplication($appData);
             $newAppId = $newAppData->app_id;
+            
+            $appCode = \Helpers::formatIdWithPrefix($newAppId, 'APP');
+            $this->appRepo->updateAppDetails($newAppId, ['app_code' => $appCode]);  
+            \Helpers::updateAppCurrentStatus($newAppId, config('common.mst_status_id.APP_INCOMPLETE'));
             
             $newBizOwnersArr=[];
             //Get and save Biz Owner with Address Data
