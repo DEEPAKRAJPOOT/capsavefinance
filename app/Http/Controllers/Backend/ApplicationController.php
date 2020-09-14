@@ -906,7 +906,7 @@ class ApplicationController extends Controller
 				  );
 
 			  	$curDate = \Carbon\Carbon::now()->format('Y-m-d');
-			  	$endDate = date('Y-m-d', strtotime('+1 years'));
+			  	$endDate = date('Y-m-d', strtotime('+1 years -1 day'));
 			  	$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($user_id, $app_id);
                                 
                                 $appData = $this->appRepo->getAppData($app_id);
@@ -918,10 +918,13 @@ class ApplicationController extends Controller
                                         $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
                                         $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
                                     }
+                                    /*
                                     $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
                                     $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
                                     $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
                                     \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                    
+                                     * 
+                                     */
                                 }
                                 
         		if (!is_null($appLimitId)) {
