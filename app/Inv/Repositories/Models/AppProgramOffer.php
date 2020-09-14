@@ -583,7 +583,7 @@ class AppProgramOffer extends BaseModel {
         ];
         $whereCond = [];
         $whereCond[] = ['app_prgm_offer.is_active', '=', 1];
-        $whereCond[] = ['app_prgm_offer.status', '=', 1];
+        //$whereCond[] = ['app_prgm_offer.status', '=', 1];
         if (is_array($program_id)) {
             $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
                     ->whereNotIn('app.curr_status_id', $appStatusList)
@@ -594,6 +594,9 @@ class AppProgramOffer extends BaseModel {
                     ->where('app_prgm_offer.prgm_id', $program_id);
         }
         $query->where($whereCond);
+        $query->where(function($q) {
+            $q->where('app_prgm_offer.status', NULL)->orWhere('app_prgm_offer.status', 1);
+        });
         return $query->sum('prgm_limit_amt');
     }
 
