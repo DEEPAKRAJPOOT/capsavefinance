@@ -316,7 +316,7 @@ class CamController extends Controller
           }
           $financeData = arrayValuesToInt($financeData);
           $json_files = $this->getLatestFileName($appId,'finance', 'json');
-          $contents['FinancialStatement']['FY'] = $financeData;         
+          $contents['FinancialStatement']['FY'] = $financeData;     
           $new_file_name = $json_files['new_file'];
           \File::put($this->getToUploadPath($appId, 'finance') .'/'.$new_file_name, base64_encode(json_encode($contents)));
         }
@@ -641,7 +641,7 @@ class CamController extends Controller
         $fy = $contents['FinancialStatement']['FY'] ?? array();
         $financeData = [];
         $audited_years = [];
-        $curr_fin_year = date('Y') - 1;
+        $curr_fin_year = ((date('m') > 3) ? date('Y') : (date('Y') - 1));
         if (!empty($fy)) {
           foreach ($fy as $k => $v) {
             if ($this->genBlankfinJSON) {
