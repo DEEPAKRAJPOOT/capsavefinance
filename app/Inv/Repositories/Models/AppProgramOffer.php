@@ -580,7 +580,8 @@ class AppProgramOffer extends BaseModel {
             config('common.mst_status_id.APP_CANCEL'),
             //config('common.mst_status_id.APP_HOLD'),
             //config('common.mst_status_id.APP_DATA_PENDING'),
-            config('common.mst_status_id.APP_CLOSED')
+            config('common.mst_status_id.APP_CLOSED'),
+            config('common.mst_status_id.OFFER_LIMIT_REJECTED')
         ];
         $whereCond = [];
         $whereCond[] = ['app_prgm_offer.is_active', '=', 1];

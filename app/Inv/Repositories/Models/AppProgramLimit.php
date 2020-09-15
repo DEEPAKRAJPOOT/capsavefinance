@@ -251,11 +251,15 @@ class AppProgramLimit extends BaseModel {
             config('common.mst_status_id.APP_REJECTED'),
             config('common.mst_status_id.APP_CANCEL'),
             //config('common.mst_status_id.APP_HOLD'),
-            //config('common.mst_status_id.APP_DATA_PENDING')
+            //config('common.mst_status_id.APP_DATA_PENDING'),
+            config('common.mst_status_id.APP_CLOSED'),
+            config('common.mst_status_id.OFFER_LIMIT_REJECTED')
         ];
-                return AppProgramOffer::select('app_prgm_offer.*')->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')->where(['app_prgm_offer.prgm_id' => $program_id, 'app_prgm_offer.is_active' => '1'])->whereIn('app.status', [1,2])->whereNotIn('app.curr_status_id', $appStatusList)->where(function($q) {
+                return AppProgramOffer::select('app_prgm_offer.*')->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')->where(['app_prgm_offer.prgm_id' => $program_id, 'app_prgm_offer.is_active' => '1'])->whereIn('app.status', [1,2])->whereNotIn('app.curr_status_id', $appStatusList)
+                        ->where(function($q) {
                             $q->where('app_prgm_offer.status', NULL)->orWhere('app_prgm_offer.status', 1);
-                        })->sum('app_prgm_offer.prgm_limit_amt');
+                        })
+                        ->sum('app_prgm_offer.prgm_limit_amt');
      }
 
     public function appLimit(){
