@@ -924,6 +924,7 @@
     
     $(document).ready(function(){
         fillPrograms(anchor_id, anchorPrgms, program_id);
+        $('#program_id').trigger('change');
     })
 
     $('#anchor_id').on('change',function(){
@@ -1022,8 +1023,7 @@
                         $('input[name="document_fee"]').val(prgm_data.document_fee_amt);
                     }
                 }*/
-                prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;
-                max_prgm_limit = res.prgm_data ? res.prgm_data.anchor_sub_limit : 0;
+                prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;                  
                 $('.isloader').hide();
             }
         })
@@ -1089,9 +1089,10 @@
             setError('input[name=prgm_limit_amt]', 'Limit amount should be ('+parseInt(limitObj.prgm_min_limit)+'-'+parseInt(limitObj.prgm_max_limit)+') program range');
             flag = false;
         }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_balance_limit)){
-            setError('input[name=prgm_limit_amt]', 'Limit amount should be less than ('+limitObj.prgm_balance_limit+') program balance limit');
+            //setError('input[name=prgm_limit_amt]', 'Limit amount should be less than ('+limitObj.prgm_balance_limit+') program balance limit');
+            setError('input[name=prgm_limit_amt]', 'Limit amount should be less than program balance limit. (Remaining Program Balance: '+limitObj.prgm_balance_limit+')');
             flag = false;
-        }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limit_balance) || parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(max_prgm_limit)){
+        }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limit_balance)){
             setError('input[name=prgm_limit_amt]', 'Limit amount should not greater than balance limit');
             flag = false;
         }else{
