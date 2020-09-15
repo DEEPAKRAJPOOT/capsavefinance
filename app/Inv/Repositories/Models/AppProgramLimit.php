@@ -247,6 +247,14 @@ class AppProgramLimit extends BaseModel {
         if(!is_int($program_id)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
+        $curDate = \Carbon\Carbon::now()->format('Y-m-d');
+        $app_prgm_limit_ids = AppProgramOffer::join('app_prgm_limit', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
+                ->where('app_prgm_offer.prgm_id', $program_id)
+                ->where('app_prgm_limit.status', 1)
+                ->where('app_prgm_limit.end_date', '<', $curDate)
+                ->pluck('app_prgm_offer.app_prgm_limit_id')
+                ->toArray();                
+        
         $appStatusList=[
             config('common.mst_status_id.APP_REJECTED'),
             config('common.mst_status_id.APP_CANCEL'),
@@ -255,11 +263,14 @@ class AppProgramLimit extends BaseModel {
             config('common.mst_status_id.APP_CLOSED'),
             config('common.mst_status_id.OFFER_LIMIT_REJECTED')
         ];
-                return AppProgramOffer::select('app_prgm_offer.*')->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')->where(['app_prgm_offer.prgm_id' => $program_id, 'app_prgm_offer.is_active' => '1'])->whereIn('app.status', [1,2])->whereNotIn('app.curr_status_id', $appStatusList)
+                $query = AppProgramOffer::select('app_prgm_offer.*')->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')->where(['app_prgm_offer.prgm_id' => $program_id, 'app_prgm_offer.is_active' => '1'])->whereIn('app.status', [1,2])->whereNotIn('app.curr_status_id', $appStatusList)
                         ->where(function($q) {
                             $q->where('app_prgm_offer.status', NULL)->orWhere('app_prgm_offer.status', 1);
-                        })
-                        ->sum('app_prgm_offer.prgm_limit_amt');
+                        });
+                if (count($app_prgm_limit_ids) > 0) {
+                    $query->whereNotIn('app_prgm_limit_id', $app_prgm_limit_ids);
+                }
+                return $query->sum('app_prgm_offer.prgm_limit_amt');
      }
 
     public function appLimit(){
