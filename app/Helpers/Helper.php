@@ -1625,7 +1625,7 @@ class Helper extends PaypalHelper
             $parentAppId = $appData->parent_app_id;
             $parentUserId = $appData->user_id;
             
-            $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 3]);
+            $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 2]);
             $result['tot_limit_amt'] = isset($appLimitData[0]) ? $appLimitData[0]->tot_limit_amt : 0;            
             $result['parent_inv_utilized_amt'] = 0;
             
