@@ -85,7 +85,7 @@
                        </label>
                        <textarea type="text" name="sharing_comment" value="" class="form-control" tabindex="1" placeholder="Add Comment" required=""></textarea>
                     </div>
-                    @if($nextStage && $nextStage->stage_code=='approver')  
+                    @if(!$assign_case && $nextStage && $nextStage->stage_code=='approver')  
                     @if(count($approvers) > 0)
                       <div class="form-group">
                        <label for="txtCreditPeriod">Approver List
