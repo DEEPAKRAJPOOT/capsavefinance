@@ -920,6 +920,8 @@
     var anchor_id = {{$offerData->anchor_id ?? 0}};
     var program_id = {{$offerData->prgm_id ?? 0}};
     var limit_balance = {{$limitBalance}};
+    var max_prgm_limit=0;
+    
     $(document).ready(function(){
         fillPrograms(anchor_id, anchorPrgms, program_id);
     })
@@ -1021,6 +1023,7 @@
                     }
                 }*/
                 prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;
+                max_prgm_limit = res.prgm_data ? res.prgm_data.anchor_sub_limit : 0;
                 $('.isloader').hide();
             }
         })
@@ -1088,7 +1091,7 @@
         }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_balance_limit)){
             setError('input[name=prgm_limit_amt]', 'Limit amount should be less than ('+limitObj.prgm_balance_limit+') program balance limit');
             flag = false;
-        }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limit_balance)){
+        }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limit_balance) || parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(max_prgm_limit)){
             setError('input[name=prgm_limit_amt]', 'Limit amount should not greater than balance limit');
             flag = false;
         }else{
