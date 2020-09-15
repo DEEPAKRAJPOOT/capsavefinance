@@ -575,6 +575,14 @@ class AppProgramOffer extends BaseModel {
         if(empty($program_id)){
             throw new BlankDataExceptions(trans('error_messages.data_not_found'));
         }
+        $curDate = \Carbon\Carbon::now()->format('Y-m-d');
+        $app_prgm_limit_ids = self::join('app_prgm_limit', 'app_prgm_limit.app_prgm_limit_id', '=', 'app_prgm_offer.app_prgm_limit_id')
+                ->where('app_prgm_offer.prgm_id', $program_id)   
+                ->where('app_prgm_limit.status', 1)               
+                ->where('app_prgm_limit.end_date', '<', $curDate)
+                ->pluck('app_prgm_offer.app_prgm_limit_id')
+                ->toArray();
+
         $appStatusList=[
             config('common.mst_status_id.APP_REJECTED'),
             config('common.mst_status_id.APP_CANCEL'),
@@ -583,22 +591,26 @@ class AppProgramOffer extends BaseModel {
             config('common.mst_status_id.APP_CLOSED'),
             config('common.mst_status_id.OFFER_LIMIT_REJECTED')
         ];
+        
         $whereCond = [];
         $whereCond[] = ['app_prgm_offer.is_active', '=', 1];
         //$whereCond[] = ['app_prgm_offer.status', '=', 1];
         if (is_array($program_id)) {
             $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
                     ->whereNotIn('app.curr_status_id', $appStatusList)                    
-                    ->whereIn('app_prgm_offer.prgm_id', $program_id);
+                    ->whereIn('app_prgm_offer.prgm_id', $program_id);                    
         } else {
             $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
                     ->whereNotIn('app.curr_status_id', $appStatusList)
-                    ->where('app_prgm_offer.prgm_id', $program_id);
+                    ->where('app_prgm_offer.prgm_id', $program_id);                    
         }
         $query->where($whereCond);
         $query->where(function($q) {
             $q->where('app_prgm_offer.status', NULL)->orWhere('app_prgm_offer.status', 1);
         });
+        if (count($app_prgm_limit_ids) > 0) {
+            $query->whereNotIn('app_prgm_offer.app_prgm_limit_id', $app_prgm_limit_ids);
+        }
         return $query->sum('prgm_limit_amt');
     }
 
