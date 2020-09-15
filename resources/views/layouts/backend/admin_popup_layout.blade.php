@@ -16,11 +16,11 @@
         <link rel="stylesheet" href="{{url('backend/assets/css/uploadfile.css')}}" >
         <link rel="stylesheet" href="{{url('backend/assets/css/data-table.css')}}" />
         <link rel="stylesheet" href="{{url('backend/assets/plugins/datatables/css/datatables.min.css')}}" />
-        <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}" />
-        <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
         <link rel="stylesheet" href="{{ url('common/js/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" />
         <link href="{{url('common/js/summernote/dist/summernote.css')}}" rel="stylesheet">
         <link rel="stylesheet" href="{{url('backend/assets/css/bootstrap.min.css')}}">
+        <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}" />
+        <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />        
         <!-- <link rel="stylesheet" href="http://www.codermen.com/css/bootstrap.min.css"> -->
         <!-- <script src="http://www.codermen.com/js/jquery.js"></script> -->
         @yield('additional_css')

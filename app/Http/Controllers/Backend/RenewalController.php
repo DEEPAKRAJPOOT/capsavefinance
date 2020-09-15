@@ -132,38 +132,7 @@ class RenewalController extends Controller {
             }                        
             $arrActivity['user_id'] = $userId;
             $arrActivity['app_id'] = $appId;
-                        
-            $curDate = \Carbon\Carbon::now()->format('Y-m-d');
-            $endDate = date('Y-m-d', strtotime('+1 years -1 day'));
-            //$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($userId, $appId);
-                        
-            if (in_array($appType, [1,2,3]) ) {
-                $parentAppId = $appId;
-                $actualEndDate = $curDate;
-                //$appLimitData = $this->appRepo->getAppLimitData(['user_id' => $userId, 'app_id' => $parentAppId]);
-                //if (in_array($appType, [2,3])) {
-                //    $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
-                //    $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
-                //}
-                $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
-                $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
-                $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
-                \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                    
-            }            
-            /*
-            if (!is_null($appLimitId)) {
-                $this->appRepo->saveAppLimit([
-                        'status' => 1,
-                        'start_date' => $curDate,
-                        'end_date' => $endDate], $appLimitId);
-                $this->appRepo->updatePrgmLimitByLimitId([
-                        'status' => 1,
-                        'start_date' => $curDate,
-                        'end_date' => $endDate], $appLimitId);
-            }
-             * 
-             */            
-
+                                   
             \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));
         
             //Session::flash('message', 'Application is copied successfully');

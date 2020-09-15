@@ -554,6 +554,24 @@ class ApplicationController extends Controller
                 if ($currentStage && $currentStage->order_no < 4 && !in_array($curStatus, $appStatusList) ) {                                  
                     $this->appRepo->updateAppData($appId, ['status' => 1]);
                     Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.COMPLETED'));
+                    
+                    $curDate = \Carbon\Carbon::now()->format('Y-m-d');
+                    $endDate = date('Y-m-d', strtotime('+1 years -1 day'));
+                    //$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($userId, $appId);
+
+                    if ($appData && in_array($appData->app_type, [1,2,3]) ) {
+                        $parentAppId = $appData->parent_app_id;
+                        $actualEndDate = $curDate;
+                        //$appLimitData = $this->appRepo->getAppLimitData(['user_id' => $userId, 'app_id' => $parentAppId]);
+                        //if (in_array($appType, [2,3])) {
+                        //    $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
+                        //    $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
+                        //}
+                        $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
+                        $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
+                        $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
+                        \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                    
+                    }                      
                 }                
                 
                 
@@ -568,7 +586,7 @@ class ApplicationController extends Controller
                 //$appData = $this->appRepo->getAppDataByAppId($appId);
                 //$userId = $appData ? $appData->user_id : null;
                 $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
-                
+
                 return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
             // } else {
             //     //Add application workflow stages                
