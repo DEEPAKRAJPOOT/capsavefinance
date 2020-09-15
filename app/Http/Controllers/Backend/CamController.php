@@ -1700,7 +1700,7 @@ class CamController extends Controller
             $this->appRepo->saveAppApprovers($appApprData);
             $addl_data = [];
             $addl_data['sharing_comment'] = $cmntText;
-            $selRoleId = 7;
+            $selRoleId = 6;
             $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
             $selUserId = $roles[0]->user_id;
             $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
