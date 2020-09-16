@@ -36,6 +36,29 @@ Route::any(
         'uses' => 'Backend\Auth\LoginController@logout'
         ]
     );
+    Route::any('api/perfios/fsa-callback',[
+        'as' => 'api_perfios_fsa_callback',
+        'uses' => 'Auth\ApiController@fsa_callback'
+        ]
+    );
+
+    Route::any('api/perfios/bsa-callback',[
+        'as' => 'api_perfios_bsa_callback',
+        'uses' => 'Auth\ApiController@bsa_callback'
+        ]
+    );
+
+    Route::any('api/karza/webhook',[
+        'as' => 'api_karza_webhook',
+        'uses' => 'Auth\ApiController@karza_webhook'
+        ]
+    );
+
+    Route::any('api/tally/entries',[
+        'as' => 'api_tally_entries',
+        'uses' => 'Auth\ApiController@tally_entry'
+        ]
+    );
 
 
 
