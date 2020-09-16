@@ -3038,10 +3038,44 @@ if ($err) {
            if($request->status==8)
            {
               return  InvoiceTrait::updateApproveStatus($request);
+              /*
+              if ($result == 2) {
+                    $invoice_id = $request->invoice_id;
+                    $attr=[];
+                    $attr['invoice_id'] = $invoice_id;
+                    $attr['status'] = 28;
+                    $attr['remark'] = 'Limit Exceed';
+                    $attr['invoice_id'] = $invoice_id;
+                    InvoiceTrait::updateInvoiceData($attr);
+              }
+               * 
+               */              
            }
            else
            {
-              $res =   $this->invRepo->updateInvoice($request->invoice_id,$request->status);   
+                $invoice_id = $request->invoice_id;
+                $invData = $this->invRepo->getInvoiceData(['invoice_id' => $invoice_id],['supplier_id']);        
+                $supplier_id = isset($invData[0]) ? $invData[0]->supplier_id : null;                                
+                $isLimitExpired = InvoiceTrait::limitExpire($supplier_id);
+                $isLimitExceed = InvoiceTrait::isLimitExceed($invoice_id);                                
+                if ($isLimitExpired || $isLimitExceed) {
+                    if ($isLimitExpired) {
+                        $remark = 'Customer limit has been expired';
+                        $res = 4;
+                    } else {                        
+                        $remark = 'Limit Exceed';
+                        $res = 2;
+                    }
+                    $attr=[];
+                    $attr['invoice_id'] = $invoice_id;
+                    $attr['status'] = 28;
+                    $attr['remark'] = $remark;
+                    $attr['invoice_id'] = $invoice_id;
+                    InvoiceTrait::updateInvoiceData($attr);
+                    
+                } else {               
+                    $res =   $this->invRepo->updateInvoice($request->invoice_id,$request->status);   
+                }
               return \Response::json(['status' => $res]);
            }
    }
@@ -3781,7 +3815,29 @@ if ($err) {
           }
           else
           {
-             $this->invRepo->updateInvoice($row,$request->status);
+             //$this->invRepo->updateInvoice($row,$request->status);
+            //$result = '';
+            $invoice_id = $row;
+            $invData = $this->invRepo->getInvoiceData(['invoice_id' => $invoice_id],['supplier_id']);        
+            $supplier_id = isset($invData[0]) ? $invData[0]->supplier_id : null;
+            $isLimitExpired = InvoiceTrait::limitExpire($supplier_id);
+            $isLimitExceed = InvoiceTrait::isLimitExceed($invoice_id);
+            if ($isLimitExpired || $isLimitExceed) {
+                if ($isLimitExpired) {
+                    $remark = 'Customer limit has been expired';
+                } else {
+                    $remark = 'Limit Exceed';
+                }
+                $attr=[];
+                $attr['invoice_id'] = $invoice_id;
+                $attr['status'] = 28;
+                $attr['remark'] = $remark;
+                $attr['invoice_id'] = $invoice_id;
+                InvoiceTrait::updateInvoiceData($attr);
+            } else {
+                $this->invRepo->updateInvoice($row,$request->status);
+            }
+                         
            }
        }
        
