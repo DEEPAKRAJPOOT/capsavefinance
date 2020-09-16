@@ -13,7 +13,13 @@
               
                 $obj =  new \App\Helpers\Helper;
                 $credit_limit =  $obj->ProgramProductLimit($uLimit->app_limit_id);
-              
+                $mytime = \Carbon\Carbon::now();
+                $limitCurDt =  $mytime->format('Y-m-d');
+                $isLimitExpired = false;
+                if ($uLimit->status==1 && !empty($uLimit->end_date)) {
+                $limitEndDt   =  $uLimit->actual_end_date ? $uLimit->actual_end_date : $uLimit->end_date;
+                $isLimitExpired = strtotime($limitCurDt) > strtotime($limitEndDt);
+                }
                 @endphp          
                 <div class="card-body limit-management"> 
                     
@@ -26,7 +32,7 @@
                                     @if($uLimit->status==1 && $uLimit->actual_end_date==Null) 
                                     <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
                                     @elseif($uLimit->status==1 && $uLimit->actual_end_date!=Null) 
-                                   <button type="button" class="badge badge-success btn-sm float-right">Active </button>
+                                   <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }}</button>
                                     @else
                                    <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
                                     @endif
@@ -34,7 +40,7 @@
                                      @if($uLimit->status==0) 
                                     <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
                                     @elseif($uLimit->status==1) 
-                                    <button type="button" class="badge badge-success btn-sm float-right">Active </button>
+                                    <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
                                     @else
                                     <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
                                     @endif
@@ -79,7 +85,7 @@
                             @endif
                         </div>
                     </div>
-                    @foreach($uLimit->programLimit as $limit)                         
+                    @foreach($uLimit->programLimit as $limit)                      
                     <div class="limit-odd">  
                         <div class="row" style="margin-top:20px;">
                             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
@@ -89,7 +95,7 @@
                                     @if($limit->status==1 && $limit->actual_end_date==Null) 
                                     <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
                                     @elseif($limit->status==1 && $limit->actual_end_date!=Null) 
-                                    <button type="button" class="badge badge-success btn-sm float-right">Active </button>
+                                    <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
                                     @else
                                     <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
                                     @endif
@@ -97,7 +103,7 @@
                                      @if($limit->status==0) 
                                     <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
                                     @elseif($limit->status==1) 
-                                    <button type="button" class="badge badge-success btn-sm float-right">Active </button>
+                                    <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
                                     @else
                                     <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
                                     @endif
@@ -117,6 +123,7 @@
                         $inv_limit =  $obj->invoiceAnchorLimitApprove($val);
                         $getAdhoc   = $obj->getAdhoc($val);
                         @endphp  
+                        @if ($val->status !=2 )
                         <div class="row" style="margin-top:20px;">
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Anchor </label>
@@ -144,15 +151,22 @@
                                 @if($limit->status==1 && $getAccountClosure > 0)  
                        
                                 @can('add_adhoc_limit')
-                                @if($val->program->is_adhoc_facility == 1)
+                                @if($val->program->is_adhoc_facility == 1 && !$isLimitExpired)
                                 <a data-toggle="modal" style='color:white' data-target="#addAdhocLimit" data-url ="{{ route('add_adhoc_limit', ['user_id' => request()->get('user_id'),'prgm_offer_id' => $val->prgm_offer_id ]) }}" data-height="350px" data-width="100%" data-placement="top" class="btn-sm btn btn-success btn-sm ml-2" >Add Adhoc Limit</a>
                                 @endif
                                 @endcan
                                @endif
                             </div>
                         </div>
-                       
+                        
                         @foreach($getAdhoc as $adc) 
+                        @php 
+                        $mytime = \Carbon\Carbon::now();
+                        $adhocLimitCurDt =  $mytime->format('Y-m-d');                                  
+                        $adhocLimitEndDt   =  $limit->end_date;
+                        $isAdhocLimitExpired = strtotime($adhocLimitCurDt) > strtotime($adhocLimitEndDt);
+                        @endphp 
+                        
                         <div class="row" style="margin-top:20px;"> 
                             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                                 <label>Available Limit </label>
@@ -175,13 +189,13 @@
                                 @if($adc->status==0) 
                                 <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
                                 @elseif($adc->status==1) 
-                                <button type="button" class="badge badge-success btn-sm float-right">Active </button>
+                                <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
                                 @else
                                 <button type="button" class="badge badge-danger btn-sm float-right">Reject </button>
                                 @endif
 
                                 @can('approve_adhoc_limit')
-                                    @if(isset($adc->status) && $adc->status == 0)
+                                    @if(isset($adc->status) && $adc->status == 0 && !$isLimitExpired)
                                     <a data-toggle="modal" data-target="#approveAdhocLimit" data-url ="{{ route('approve_adhoc_limit', ['user_id' => request()->get('user_id'), 'app_offer_adhoc_limit_id' => $adc->app_offer_adhoc_limit_id ]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2">Approve</a>
                                     @endif
                                 @endcan
@@ -191,7 +205,7 @@
                         </div>
                         @endforeach 
 
-
+                        @endif
                         @endforeach 
                     </div>
 

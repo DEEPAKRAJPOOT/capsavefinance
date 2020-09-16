@@ -132,6 +132,7 @@ class RenewalController extends Controller {
             }                        
             $arrActivity['user_id'] = $userId;
             $arrActivity['app_id'] = $appId;
+                                   
             \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));
         
             //Session::flash('message', 'Application is copied successfully');
