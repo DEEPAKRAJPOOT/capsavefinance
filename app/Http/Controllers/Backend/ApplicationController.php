@@ -1000,8 +1000,16 @@ class ApplicationController extends Controller
 				$wf_order_no = $currStage->order_no;
 				$nextStage = Helpers::getNextWfStage($wf_order_no);
 				$roleArr = [$nextStage->role_id];
-                               
+                                $roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
+                                $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
+                                $assign = true;
+                                $wf_status = 1;
+
 				if ($nextStage->stage_code == 'approver') {
+                                    $whereCondition = ['app_id' => $app_id, 'is_approve' => 1];
+                                    $offerData = $this->appRepo->getOfferData($whereCondition);
+
+                                    if (!$offerData) {                                        
 					$apprAuthUsers = Helpers::saveApprAuthorityUsers($app_id,$approver_list);
                                 	if (count($apprAuthUsers) == 0) {
 						Session::flash('error_code', 'no_approval_users_found');
@@ -1022,11 +1030,7 @@ class ApplicationController extends Controller
 					}
 					$assign = false;
 					$wf_status = 1;
-				} else {
-					$roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
-					$addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
-					$assign = true;
-					$wf_status = 1;
+                                    }
 				}
 
 				if ($nextStage->stage_code == 'upload_post_sanction_doc') {
