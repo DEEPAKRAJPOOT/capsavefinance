@@ -840,7 +840,7 @@ class ApplicationController extends Controller
                                
 				//Validate the stage
 				if ($currStage->stage_code == 'credit_mgr') {
-					$whereCondition = ['app_id' => $app_id, 'status' => null];                                        
+					$whereCondition = ['app_id' => $app_id, 'status_is_null_or_accepted' =>1];                                        
 					$offerData = $this->appRepo->getOfferData($whereCondition);
 					if (!$offerData) {
 						Session::flash('error_code', 'no_offer_found');
