@@ -1703,8 +1703,9 @@ class CamController extends Controller
             $selRoleId = 7;
             $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
             $selUserId = $roles[0]->user_id;
-            $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
             $currStage = Helpers::getCurrentWfStage($appId);
+            //$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                            
+            $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
             Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_REJECTED'));
             

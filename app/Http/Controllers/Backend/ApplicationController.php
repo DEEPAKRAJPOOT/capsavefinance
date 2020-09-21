@@ -831,8 +831,8 @@ class ApplicationController extends Controller
 			if ($curr_role_id && $assign_case) {
 				$selData = explode('-', $sel_assign_role);
 				$selRoleId = $selData[0];
-				$selUserId = $selData[1];                
-				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
+				$selUserId = $selData[1];				
+                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');                                
 				$currStage = Helpers::getCurrentWfStage($app_id);
 				Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
 			} else {
@@ -1244,30 +1244,14 @@ class ApplicationController extends Controller
                                 $selRoleId = 6;
                                 $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
                                 $selUserId = $roles[0]->user_id;
-                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
                                 $currStage = Helpers::getCurrentWfStage($appId);
+                                //$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                                                
+                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
                                 Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
                                 Session::flash('operation_status', 1);
 	 
                                 Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_REJECTED'));
-                                
-				/*$addl_data = [];
-                                $addl_data['sharing_comment'] = 'Reject comment goes here';
-                                $message = trans('backend_messages.reject_offer_success');*/
-
-				
-				//Update workflow stage
-				//Helpers::updateWfStage('approver', $appId, $wf_status = 2);
-				//Helpers::updateWfStage('sales_queue', $appId, $wf_status = 2);
-				//Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 2);
-				//Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 2);
-
-				/*$selRoleId = 6;
-				$roles = $this->appRepo->getBackStageUsers($app_id, [$selRoleId]);
-				$selUserId = $roles[0]->user_id;
-				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
-				$currStage = Helpers::getCurrentWfStage($appId);
-				Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);*/
+                                				
 			}
 			
 			// $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);

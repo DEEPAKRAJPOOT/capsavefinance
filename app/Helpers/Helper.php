@@ -614,9 +614,9 @@ class Helper extends PaypalHelper
      * 
      * @param integer $app_id
      */
-    public static function getCurrentWfStagebyRole($roleId)
+    public static function getCurrentWfStagebyRole($roleId, $user_journey=2, $wf_start_order_no=0, $orderBy='ASC')
     {
-        return WfStage::getCurrentWfStagebyRole($roleId);
+        return WfStage::getCurrentWfStagebyRole($roleId, $user_journey, $wf_start_order_no, $orderBy);
     }
 
     /**
