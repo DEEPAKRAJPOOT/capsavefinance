@@ -832,8 +832,8 @@ class ApplicationController extends Controller
 				$selData = explode('-', $sel_assign_role);
 				$selRoleId = $selData[0];
 				$selUserId = $selData[1];				
-                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');                                
-				$currStage = Helpers::getCurrentWfStage($app_id);
+                                $currStage = Helpers::getCurrentWfStage($app_id);
+                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');                                				
 				Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
 			} else {
 				$currStage = Helpers::getCurrentWfStage($app_id);
@@ -846,6 +846,12 @@ class ApplicationController extends Controller
 						Session::flash('error_code', 'no_offer_found');
 						return redirect()->back();
 					}
+                                        
+                                        $appData = $this->appRepo->getAppData($app_id);
+                                        if ($appData && in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_LIMIT_REJECTED')]) ) {
+                                            Session::flash('error_code', 'limit_rejected');
+                                            return redirect()->back();
+                                        }                                        
 				} else if ($currStage->stage_code == 'approver') {
 					$whereCondition = ['app_id' => $app_id, 'status' => null];
 					$offerData = $this->appRepo->getOfferData($whereCondition);

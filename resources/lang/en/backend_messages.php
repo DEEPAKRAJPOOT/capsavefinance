@@ -45,5 +45,6 @@ return [
     'reduced_utilized_amt_validation' => 'Total credit assessed limit can\'t be less than the Utilized limit.',
     'disbursed_error' => 'Some error occured, Please try again.',
     'reject_app' => 'Application Status Changed Successfully',
+    'validate_limit_rejected' => 'In case of limit rejected you cannot move the case to reviewer until the offer detail is updated or modified.',
 ];
 
