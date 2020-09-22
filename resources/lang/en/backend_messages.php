@@ -29,7 +29,7 @@ return [
     'limit_offer_success' => 'Offer generated successfully.',
     'add_payment_manual' => 'Payment add successfully.',
     'proccessed' => 'Successfully proccessed.',
-    'under_approval' => 'Offer is under approval, can\'t be updated',
+    'under_approval' => 'You cannot create/modify the offer as the offer has been approved by approver.',
     'noBankAccount' => 'No Bank Account Found.',
     'disburseMarked' => 'Successfully disburse marked .',
     'refundedMarked' => 'Successfully refund marked .',

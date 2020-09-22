@@ -1803,9 +1803,11 @@ class CamController extends Controller
           $request['security_deposit_of'] = null;
         }
         
-        $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
-
-        if($checkApprovalStatus->count()){
+        //$checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
+        //if($checkApprovalStatus->count()){
+        $whereCondition = ['app_id' => $appId, 'is_approve' => 1, 'status_is_null_or_accepted' =>1];        
+        $offerData = $this->appRepo->getOfferData($whereCondition);
+        if ($offerData && isset($offerData->prgm_offer_id) ) {             
           Session::flash('message', trans('backend_messages.under_approval'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
@@ -1880,9 +1882,11 @@ class CamController extends Controller
         $aplid = (int)$request->get('app_prgm_limit_id');
         $request['limit_amt'] = str_replace(',', '', $request->limit_amt);
 
-        $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
-
-        if($checkApprovalStatus->count()){
+        //$checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
+        //if($checkApprovalStatus->count()){
+        $whereCondition = ['app_id' => $appId, 'is_approve' => 1, 'status_is_null_or_accepted' =>1];        
+        $offerData = $this->appRepo->getOfferData($whereCondition);
+        if ($offerData && isset($offerData->prgm_offer_id) ) {          
           Session::flash('message', trans('backend_messages.under_approval'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
