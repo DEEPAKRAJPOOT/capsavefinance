@@ -1651,7 +1651,10 @@ class CamController extends Controller
                 'status' => 1
               ];
             $this->appRepo->saveAppApprovers($appApprData);
-
+            
+            $this->appRepo->updateAppLimit(['is_approve' => 1], ['app_id' => $appId, 'is_approve' => 0]);
+            $this->appRepo->updatePrgmLimit(['is_approve' => 1], ['app_id' => $appId, 'is_approve' => 0]);
+            
             //update approve status in offer table after all approver approve the offer.
             $this->appRepo->changeOfferApprove((int)$appId);
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
@@ -1698,6 +1701,10 @@ class CamController extends Controller
                 'status' => 2
               ];
             $this->appRepo->saveAppApprovers($appApprData);
+            
+            $this->appRepo->updateAppLimit(['is_approve' => 2], ['app_id' => $appId, 'is_approve' => 0]);
+            $this->appRepo->updatePrgmLimit(['is_approve' => 2], ['app_id' => $appId, 'is_approve' => 0]);
+            
             $addl_data = [];
             $addl_data['sharing_comment'] = $cmntText;
             $selRoleId = 7;
