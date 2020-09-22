@@ -55,7 +55,6 @@ class AppLimit extends BaseModel {
         'start_date',
         'end_date',
         'actual_end_date',
-        'is_approve',
         'created_at',
         'created_by',
         'updated_at',        
