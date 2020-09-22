@@ -125,6 +125,9 @@ class AppProgramOffer extends BaseModel {
         } else if (isset($whereCondition['status']) && is_null(isset($whereCondition['status']))) {            
             $offerWhereCond['status'] = $whereCondition['status'];
             unset($whereCondition['status']);
+        } else if (isset($whereCondition['status_is_null_or_accepted'])) { 
+            $offerWhereCond['status_is_null_or_accepted'] = $whereCondition['status_is_null_or_accepted'];
+            unset($whereCondition['status_is_null_or_accepted']);            
         }
                                 
         $query = self::select('app_prgm_offer.*')
@@ -135,6 +138,11 @@ class AppProgramOffer extends BaseModel {
             $query->whereNull('status');
         } else if (isset($offerWhereCond['status']) && is_null($offerWhereCond['status'])) {            
             $query->whereNull('status');            
+        } else if (isset($offerWhereCond['status_is_null_or_accepted'])) {            
+            $query->where(function ($query) {
+                $query->where('status', null)
+                      ->orWhere('status', '=', 1);
+            });
         }
 
         $offerData = $query->first();      
