@@ -993,5 +993,8 @@ class Transactions extends BaseModel {
         }
         return $amount;
     }
-
+    
+    public function getInterestForDisbursal(array $where = []) {
+      return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions', 'invoice_disbursed_id', 'invoice_disbursed_id')->where($where)->first();
+    }
 }
