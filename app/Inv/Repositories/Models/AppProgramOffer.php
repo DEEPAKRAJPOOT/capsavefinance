@@ -329,6 +329,10 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }else{
             $prgmOffer = AppProgramOffer::where('prgm_offer_id', $prgm_offer_id)->where('is_active', 1)->first();
+            $rejectPrgmOffer = AppProgramOffer::where('app_id', $data['app_id'])->where('is_active', 1)->orderBy('prgm_offer_id', 'DESC')->first();
+            if($rejectPrgmOffer && $rejectPrgmOffer->status == 2) {
+                $prgmOffer = $rejectPrgmOffer;
+            }
             if($prgmOffer){
                 $prgmOffer->update(['is_active'=>0]);
             }
