@@ -1902,7 +1902,7 @@ class CamController extends Controller
         $limitData= $this->appRepo->saveProgramLimit($request->all(), $aplid);
 
         if($limitData){
-          Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));   
+          //Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));   
           Session::flash('message',trans('backend_messages.limit_assessment_success'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }else{
