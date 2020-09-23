@@ -15,6 +15,7 @@ use App\Inv\Repositories\Models\OfferPersonalGuarantee;
 use App\Inv\Repositories\Models\OfferCorporateGuarantee;
 use App\Inv\Repositories\Models\OfferEscrowMechanism;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\LmsUsersLog;
 
 class AppProgramOffer extends BaseModel {
     /* The database table used by the model.
@@ -590,7 +591,8 @@ class AppProgramOffer extends BaseModel {
                 ->where('app_prgm_limit.end_date', '<', $curDate)
                 ->pluck('app_prgm_offer.app_prgm_limit_id')
                 ->toArray();
-
+        $account_clousers = LmsUsersLog::where('status_id', 35)->pluck('user_id')->toArray();
+        
         $appStatusList=[
             config('common.mst_status_id.APP_REJECTED'),
             config('common.mst_status_id.APP_CANCEL'),
@@ -604,13 +606,15 @@ class AppProgramOffer extends BaseModel {
         $whereCond[] = ['app_prgm_offer.is_active', '=', 1];
         //$whereCond[] = ['app_prgm_offer.status', '=', 1];
         if (is_array($program_id)) {
-            $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+            $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')                    
                     ->whereNotIn('app.curr_status_id', $appStatusList)                    
-                    ->whereIn('app_prgm_offer.prgm_id', $program_id);                    
+                    ->whereIn('app_prgm_offer.prgm_id', $program_id)
+                    ->whereNotIn('app.user_id', $account_clousers);
         } else {
             $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
                     ->whereNotIn('app.curr_status_id', $appStatusList)
-                    ->where('app_prgm_offer.prgm_id', $program_id);                    
+                    ->where('app_prgm_offer.prgm_id', $program_id)
+                    ->whereNotIn('app.user_id', $account_clousers);
         }
         $query->where($whereCond);
         $query->where(function($q) {
