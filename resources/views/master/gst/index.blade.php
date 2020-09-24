@@ -41,10 +41,12 @@
                                 <tr role="row">
                                     <th>ID. No.</th>
                                     <th>Tax Type</th>
-                                    <th>TAX %</th>
+                                    <th>GST %</th>
                                     <th>CGST %</th>
                                     <th>SGST %</th>
                                     <th>IGST %</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>

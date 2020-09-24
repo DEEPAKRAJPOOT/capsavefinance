@@ -4089,6 +4089,16 @@ class DataRenderer implements DataProviderInterface
                     return $data->tax_value."%";
                 })
                 ->addColumn(
+                'tax_from', 
+                function ($data) {
+                    return ($data->tax_from) ? date('d-M-Y', strtotime($data->tax_from)) : '---';
+                })
+                ->addColumn(
+                'tax_to', 
+                function ($data) {
+                    return ($data->tax_to) ? date('d-M-Y', strtotime($data->tax_to)) : '---';
+                })
+                ->addColumn(
                     'is_active',
                     function ($data) {
                     $act = $data->is_active;

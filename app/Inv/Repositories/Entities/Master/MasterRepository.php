@@ -522,6 +522,11 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         $status = GstTax::updateGST($attributes, $tax_id);
         return $status ?: false;
     }
+    
+    public function updateGstEndDate($id, $date)
+    {
+        return GstTax::updateGstEndDate($id, $date);
+    } 
 
     /**
      * master Segments list
