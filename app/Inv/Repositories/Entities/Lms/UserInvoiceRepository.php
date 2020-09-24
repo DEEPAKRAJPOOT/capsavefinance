@@ -56,6 +56,10 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return Application::getUpdatedApp($userId);
 	}
 
+	public function getAllAppData(array $where, $order_by = 'DESC') {
+		return Application::getAppDataByOrder($where, $order_by);
+	}
+	
 	public function getAddressByUserId(int $userId, array $bizId = [] , array $where = []) {
 		$address = Business::getAddressByUserId($userId, $bizId, $where);
 		return $address->isEmpty() ? [] : $address;
@@ -114,8 +118,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return Transactions::find($trans_id);
 	}
 
-	public function updateIsInvoiceGenerated($transDataArray){
-		$data = ['is_invoice_generated' => 1];
+	public function updateIsInvoiceGenerated($transDataArray, $data){
 		return Transactions::updateIsInvoiceGenerated($transDataArray, $data);
 	}
 
