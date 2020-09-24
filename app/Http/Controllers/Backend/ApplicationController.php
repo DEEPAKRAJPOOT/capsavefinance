@@ -862,21 +862,27 @@ class ApplicationController extends Controller
 			if ($curr_role_id && $assign_case) {
 				$selData = explode('-', $sel_assign_role);
 				$selRoleId = $selData[0];
-				$selUserId = $selData[1];                
-				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
-				$currStage = Helpers::getCurrentWfStage($app_id);
+				$selUserId = $selData[1];				
+                                $currStage = Helpers::getCurrentWfStage($app_id);
+                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');                                				
 				Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
 			} else {
 				$currStage = Helpers::getCurrentWfStage($app_id);
                                
 				//Validate the stage
 				if ($currStage->stage_code == 'credit_mgr') {
-					$whereCondition = ['app_id' => $app_id, 'status' => null];                                        
+					$whereCondition = ['app_id' => $app_id, 'status_is_null_or_accepted' =>1];                                        
 					$offerData = $this->appRepo->getOfferData($whereCondition);
 					if (!$offerData) {
 						Session::flash('error_code', 'no_offer_found');
 						return redirect()->back();
 					}
+                                        
+                                        $appData = $this->appRepo->getAppData($app_id);
+                                        if ($appData && in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_LIMIT_REJECTED')]) ) {
+                                            Session::flash('error_code', 'limit_rejected');
+                                            return redirect()->back();
+                                        }                                        
 				} else if ($currStage->stage_code == 'approver') {
 					$whereCondition = ['app_id' => $app_id, 'status' => null];
 					$offerData = $this->appRepo->getOfferData($whereCondition);
@@ -1034,8 +1040,16 @@ class ApplicationController extends Controller
 				$wf_order_no = $currStage->order_no;
 				$nextStage = Helpers::getNextWfStage($wf_order_no);
 				$roleArr = [$nextStage->role_id];
-                               
+                                $roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
+                                $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
+                                $assign = true;
+                                $wf_status = 1;
+
 				if ($nextStage->stage_code == 'approver') {
+                                    $whereCondition = ['app_id' => $app_id, 'is_approve' => 1];
+                                    $offerData = $this->appRepo->getOfferData($whereCondition);
+
+                                    if (!$offerData) {                                        
 					$apprAuthUsers = Helpers::saveApprAuthorityUsers($app_id,$approver_list);
                                 	if (count($apprAuthUsers) == 0) {
 						Session::flash('error_code', 'no_approval_users_found');
@@ -1056,11 +1070,7 @@ class ApplicationController extends Controller
 					}
 					$assign = false;
 					$wf_status = 1;
-				} else {
-					$roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
-					$addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
-					$assign = true;
-					$wf_status = 1;
+                                    }
 				}
 
 				if ($nextStage->stage_code == 'upload_post_sanction_doc') {
@@ -1278,30 +1288,14 @@ class ApplicationController extends Controller
                                 $selRoleId = 6;
                                 $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
                                 $selUserId = $roles[0]->user_id;
-                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
                                 $currStage = Helpers::getCurrentWfStage($appId);
+                                //$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                                                
+                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
                                 Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
                                 Session::flash('operation_status', 1);
 	 
                                 Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_REJECTED'));
-                                
-				/*$addl_data = [];
-                                $addl_data['sharing_comment'] = 'Reject comment goes here';
-                                $message = trans('backend_messages.reject_offer_success');*/
-
-				
-				//Update workflow stage
-				//Helpers::updateWfStage('approver', $appId, $wf_status = 2);
-				//Helpers::updateWfStage('sales_queue', $appId, $wf_status = 2);
-				//Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 2);
-				//Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 2);
-
-				/*$selRoleId = 6;
-				$roles = $this->appRepo->getBackStageUsers($app_id, [$selRoleId]);
-				$selUserId = $roles[0]->user_id;
-				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
-				$currStage = Helpers::getCurrentWfStage($appId);
-				Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);*/
+                                				
 			}
 			
 			// $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);

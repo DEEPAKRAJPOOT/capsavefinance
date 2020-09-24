@@ -126,6 +126,9 @@ class AppProgramOffer extends BaseModel {
         } else if (isset($whereCondition['status']) && is_null(isset($whereCondition['status']))) {            
             $offerWhereCond['status'] = $whereCondition['status'];
             unset($whereCondition['status']);
+        } else if (isset($whereCondition['status_is_null_or_accepted'])) { 
+            $offerWhereCond['status_is_null_or_accepted'] = $whereCondition['status_is_null_or_accepted'];
+            unset($whereCondition['status_is_null_or_accepted']);            
         }
                                 
         $query = self::select('app_prgm_offer.*')
@@ -136,6 +139,11 @@ class AppProgramOffer extends BaseModel {
             $query->whereNull('status');
         } else if (isset($offerWhereCond['status']) && is_null($offerWhereCond['status'])) {            
             $query->whereNull('status');            
+        } else if (isset($offerWhereCond['status_is_null_or_accepted'])) {            
+            $query->where(function ($query) {
+                $query->where('status', null)
+                      ->orWhere('status', '=', 1);
+            });
         }
 
         $offerData = $query->first();      
@@ -322,6 +330,10 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }else{
             $prgmOffer = AppProgramOffer::where('prgm_offer_id', $prgm_offer_id)->where('is_active', 1)->first();
+            $rejectPrgmOffer = AppProgramOffer::where('app_id', $data['app_id'])->where('is_active', 1)->orderBy('prgm_offer_id', 'DESC')->first();
+            if($rejectPrgmOffer && $rejectPrgmOffer->status == 2) {
+                $prgmOffer = $rejectPrgmOffer;
+            }
             if($prgmOffer){
                 $prgmOffer->update(['is_active'=>0]);
             }

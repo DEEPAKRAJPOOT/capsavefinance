@@ -62,7 +62,7 @@ class AppProgramLimit extends BaseModel {
         'limit_amt',
         'start_date',
         'end_date',
-        'actual_end_date',
+        'actual_end_date',        
         'created_at',
         'created_by',
         'updated_at',        

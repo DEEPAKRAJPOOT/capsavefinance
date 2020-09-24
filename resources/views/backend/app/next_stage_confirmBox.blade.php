@@ -51,7 +51,11 @@
                    
                    @if (Session::has('error_code') && Session::get('error_code') == 'validate_reduce_limit_amt')
                    <label class='error'>{{ trans('backend_messages.validate_reduce_limit_amt') }}</label><br>                   
-                   @endif                     
+                   @endif                         
+                   
+                   @if (Session::has('error_code') && Session::get('error_code') == 'limit_rejected')
+                   <label class='error'>{{ trans('backend_messages.validate_limit_rejected') }}</label><br>                   
+                   @endif                      
                    
                    @if ($assign_case)
                         <label for="txtCreditPeriod">Please select Assignee <span class="mandatory">*</span> </label>
@@ -132,6 +136,7 @@
 var messages = {
     is_accept: "{{ Session::get('is_accept') }}",    
     error_code : "{{ Session::has('error_code') }}",
+    assign_case : "{{ $assign_case ? 1 : 0 }}"
  };
      $(document).ready(function(){
         var assign_case = $("input[name=assign_case]").val(); 
@@ -179,7 +184,7 @@ var messages = {
    
    $(document).on("click","#submit",function(){
         var len = $(".approver_list:checked").length;
-       if ( len === 0 )
+       if ( messages.assign_case == '0' && len === 0)
        {
           parent.$('.isloader').hide();
           alert('Please select at least one Approver.');
