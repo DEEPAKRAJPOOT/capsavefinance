@@ -27,6 +27,8 @@ try {
                 {data: 'cgst'},
                 {data: 'sgst'},
                 {data: 'igst'},
+                {data: 'tax_from'},
+                {data: 'tax_to'},
                 {data: 'is_active'},
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1]}]

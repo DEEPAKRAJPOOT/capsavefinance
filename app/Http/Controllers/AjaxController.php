@@ -3332,6 +3332,17 @@ if ($err) {
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
           if($getamount)
           {
+            $getPercentage  = $this->masterRepo->getLastGSTRecord();
+            if($getPercentage)
+            {
+              $tax_value  = $getPercentage['tax_value'];
+              $chid  = $getPercentage['tax_id'];
+            }
+            else
+            {
+               $tax_value  =0; 
+               $chid  = 0;
+            }
                $request['chrg_applicable_id']  = $getamount->chrg_applicable_id; 
                $gst_percentage                 = $getamount->charge->gst_percentage;
                $app = "";
@@ -3384,7 +3395,7 @@ if ($err) {
                  'limit' => $limitAmount,
                  'type' => $getamount->chrg_calculation_type,
                  'is_gst_applicable' => $getamount->charge->is_gst_applicable,
-                 'gst_percentage'  =>  $gst_percentage,
+                 'gst_percentage'  =>  $tax_value,
                  'applicable' =>$app]); 
           }
           else
