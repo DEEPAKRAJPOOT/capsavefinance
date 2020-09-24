@@ -60,6 +60,12 @@ Route::any(
         ]
     );
 
+    Route::any('api/tally/recover',[
+        'as' => 'api_tally_recover',
+        'uses' => 'Auth\ApiController@tally_recover'
+        ]
+    );
+
 
 
     Route::group(['middleware' => []],

@@ -122,6 +122,14 @@ class TallyEntry extends BaseModel
       public static function getActualPostedAmount() {
           return self::select('is_debit_credit', DB::raw("SUM(amount) as amount"))->where('generated_by', '=', '0')->groupBy('is_debit_credit')->get();
       }
+
+      public function getDisbursedInterest() {
+          return $this->belongsTo('App\Inv\Repositories\Models\Master\TallyEntry', 'voucher_no', 'voucher_no')->where(['trans_type' => 'Interest'])->whereNull('transactions_id');
+      }
+
+      public function getTransaction() {
+         return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions', 'transactions_id', 'trans_id');
+      }
     
     
 }
