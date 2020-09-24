@@ -24,6 +24,7 @@ use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
+use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -1215,8 +1216,12 @@ class DataRenderer implements DataProviderInterface
                                 }
                             }
                         }
+                        $isLimitExpired = InvoiceTrait::limitExpire($invoice->supplier_id);
+                        $isLimitExceed = InvoiceTrait::isLimitExceed($invoice->invoice_id);
+                        $this->isLimitExpired = $isLimitExpired;  
+                        $this->isLimitExceed  = $isLimitExceed;                          
                        // return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
-                        return ($this->overDueFlag == 1 || $chkUser->id == 11 ) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
+                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
 
                      })
                 ->addColumn(
@@ -1251,7 +1256,14 @@ class DataRenderer implements DataProviderInterface
                         $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
                         $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
-                        return $inv_date;
+                        if ($this->isLimitExpired) {
+                            $remark = '<br><span class="badge badge-danger">Limit Expired</span>';
+                        } else if ($this->isLimitExceed) {
+                            $remark = '<br><span class="badge badge-danger">Limit Exceed</span>';
+                        } else {
+                            $remark = '';
+                        }                        
+                        return $inv_date.$remark;
                 })  
               ->addColumn(            
                     'invoice_amount',

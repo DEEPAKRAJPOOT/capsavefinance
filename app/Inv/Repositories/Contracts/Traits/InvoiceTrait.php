@@ -972,4 +972,44 @@ trait InvoiceTrait
          return  $inv_details['invoice_approve_amount']; 
       }
    }
+   
+    public static function isLimitExceed($invoice_id) {
+        $invData = BizInvoice::getInvoiceData(['invoice_id' => $invoice_id]);
+        if (isset($invData[0])) {
+            $invData   = $invData[0];
+            $user_id   = $invData->supplier_id;
+            $anchor_id = $invData->anchor_id;
+            $prgm_id   = $invData->program_id;
+            //$is_po     = $invData->is_po;
+            $app_id    = $invData->app_id;
+            //$margin =  self::invoiceMargin($res);
+            //$po_inv_amount = $invData->invoice_approve_amount;
+            $po_inv_amount = $invData->invoice_margin_amount;
+            
+            $attribute['user_id'] = $user_id;
+            $attribute['anchor_id'] = $anchor_id;
+            $attribute['prgm_id'] = $prgm_id;
+            $attribute['program_id'] = $prgm_id;
+            //$attribute['is_po'] = $is_po;
+            $attribute['app_id'] = $app_id;            
+            $sum   = self::invoiceApproveLimit($attribute);
+            $limit = self::ProgramLimit($attribute);
+            $finalsum = $sum - $po_inv_amount;
+            if ($limit  >= $finalsum) {
+                $remain_amount = $limit - $finalsum;
+                if ($remain_amount < $po_inv_amount) { 
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public static function updateInvoiceData($attr) {
+        InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'], $attr['status']); 
+        BizInvoice::where(['invoice_id' => $attr['invoice_id']])->update(['remark' => $attr['remark'],'status_id' => $attr['status'],'status_update_time' => \Carbon\Carbon::now(),'updated_by' => \Auth::user()->user_id]); 
+        return true;
+    }   
 }
