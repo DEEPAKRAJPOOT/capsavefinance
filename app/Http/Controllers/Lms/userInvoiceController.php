@@ -11,6 +11,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
+use App\Inv\Repositories\Models\Master\GstTax;
 use DB;
 use Carbon\Carbon;
 use PDF;
@@ -441,7 +442,7 @@ class userInvoiceController extends Controller
             if(!empty($invoiceResp->user_invoice_id)){
                 $userInvoice_id = $invoiceResp->user_invoice_id;
                 foreach ($intrest_charges as $key => $txnsRec) {
-                   $update_transactions[] = $txnsRec['trans_id'];
+                    $update_transactions[0] = $txnsRec['trans_id'];
                    $user_invoice_trans_data[] = [
                         'user_invoice_id' => $userInvoice_id,
                         'trans_id' => $txnsRec['trans_id'],
@@ -454,9 +455,13 @@ class userInvoiceController extends Controller
                         'igst_rate' => $txnsRec['igst_rate'],
                         'igst_amount' => $txnsRec['igst_amt'],
                    ]; 
+                   $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
+                   $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
+                   $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'amount' => ($txnsRec['base_amt'] + $totalGst), 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
+                   $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
-                $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions);
+                // $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions);
                 if ($UserInvoiceTxns == true) {
                    return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('message', 'Invoice generated Successfully');
                 }
@@ -588,6 +593,12 @@ class userInvoiceController extends Controller
            return [array(), 0];
         }
         $total_sum_of_rental = 0;
+        $where = [];
+        $activeGst = GstTax::getActiveGST($where);
+        $totalGST = 0;
+        if (!$activeGst->isEmpty()) {
+            $totalGST = $activeGst[0]->tax_value ?? 0;
+        }
         foreach ($txnsData as  $key => $txn) {
             $totalamount = $txn->amount;
             $igst_amt = 0;
@@ -597,9 +608,8 @@ class userInvoiceController extends Controller
             $sgst_amt = 0;
             $sgst_rate = 0;
             $base_amt = $totalamount;
-            $totalGST = 18;
             if ($txn->gst == 1) {
-                $base_amt = $totalamount * 100/(100 + $totalGST);
+                $base_amt = (!is_null($txn->base_amt) ? $txn->base_amt : $totalamount * 100/(100 + $totalGST));
                 if(!$is_state_diffrent) {
                     $cgst_rate = ($totalGST/2);
                     $cgst_amt = round((($base_amt * $cgst_rate)/100),2);
@@ -649,13 +659,18 @@ class userInvoiceController extends Controller
     public function userInvoiceLocation(Request $request) {
         try {
             $user_id = $request->get('user_id');
-            $latestApp = $this->UserInvRepo->getUsersLatestApp($user_id);
-            $latestBizId = $latestApp->biz_id ? $latestApp->biz_id : null;
+            $where = ['user_id' => $user_id];
+            $allApps = $this->UserInvRepo->getAllAppData($where);
+            $bizIds = [];
+            foreach ($allApps as $key => $application) {
+               $bizIds[$application->biz_id] = $application->biz_id;
+            }
+            /*$latestApp = $this->UserInvRepo->getUsersLatestApp($user_id);
+            $latestBizId = $latestApp->biz_id ? $latestApp->biz_id : null;            
             $userAddresswithbiz = $this->UserInvRepo->getAddressByUserId($user_id, [$latestBizId]);
+            $bizIds = [$latestBizId];*/
+            $userAddresswithbiz = $this->UserInvRepo->getAddressByUserId($user_id, $bizIds);
             $capsave_addr = $this->UserInvRepo->getCapsavAddr();
-            /*if (empty($userAddresswithbiz) || $userAddresswithbiz->count() != 1) {
-               return redirect()->back()->with(['user_id' => $user_id])->with('error', 'Multiple / No default addresses found.');
-            }*/
             $result = $this->getUserLimitDetais($user_id);
             return view('lms.invoice.user_invoice_location')->with(['user_id'=> $user_id, 'capsave_addr' => $capsave_addr, 'user_addr' => $userAddresswithbiz,'userInfo' =>  $result['userInfo'], 'application' => $result['application'], 'anchors' =>  $result['anchors']]);
         } catch (Exception $ex) {
