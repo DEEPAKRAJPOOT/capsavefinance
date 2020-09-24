@@ -14,6 +14,7 @@ use App\Inv\Repositories\Models\Lms\UserInvoice;
 use App\Inv\Repositories\Models\Lms\UserInvoiceTrans;
 use App\Inv\Repositories\Models\User as UserModel;
 use App\Inv\Repositories\Models\Payment;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 
 /**
@@ -47,6 +48,18 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		return UserInvoiceTrans::leaseRegisters($whereCondition, $whereRawCondition);
 	}
 
+	public function getInterestBreakupReport($whereCondition=[], $whereRawCondition = NULL) {
+		return Transactions::getInterestBreakupReport($whereCondition, $whereRawCondition);
+	}
+
+	public function getChargeBreakupReport($whereCondition=[], $whereRawCondition = NULL) {
+		return Transactions::getchargeBreakupReport($whereCondition, $whereRawCondition);
+	}
+
+	public function gettdsBreakupReport($whereCondition=[], $whereRawCondition = NULL) {
+		return Transactions::gettdsBreakupReport($whereCondition, $whereRawCondition);
+	}
+	
 	public function getCustomerDetail($userId) {
         $result = UserModel::getCustomerDetail((int) $userId);
         return $result ?: false;

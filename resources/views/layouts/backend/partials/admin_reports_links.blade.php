@@ -29,9 +29,24 @@
         <a class=" {{( $active=='cibil_report') ? 'active': null }} " href="{{route('cibil_report')}}">Cibil UserData </a>
     </li>
     @endcan
-    @can('lease_register')
+    @can('tds')
     <li>
         <a class=" {{ ($active=='tds')? 'active': null }} " href="{{ route('tds') }}">TDS Report</a>
+    </li>
+    @endcan
+    @can('interest_breakup')
+    <li>
+        <a class=" {{ ($active=='interest_breakup')? 'active': null }} " href="{{ route('interest_breakup') }}">Interest Breakup</a>
+    </li>
+    @endcan
+    @can('charge_breakup')
+    <li>
+        <a class=" {{ ($active=='charge_breakup')? 'active': null }} " href="{{ route('charge_breakup') }}">Processing Fee</a>
+    </li>
+    @endcan
+    @can('tds_breakup')
+    <li>
+        <a class=" {{ ($active=='tds_breakup')? 'active': null }} " href="{{ route('tds_breakup') }}">TDS Breakup</a>
     </li>
     @endcan
 </ul>

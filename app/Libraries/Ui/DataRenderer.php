@@ -6458,7 +6458,7 @@ class DataRenderer implements DataProviderInterface
            
            ->make(true);
    }
-   public function leaseRegister(Request $request, $data) {
+    public function leaseRegister(Request $request, $data) {
        $this->sr_no = 1;
        return DataTables::of($data)
            ->editColumn('state', function ($invoiceRec) {
@@ -6548,9 +6548,132 @@ class DataRenderer implements DataProviderInterface
             })
            
            ->make(true);
-   }
+    }
    
-   
+    public function interestBreakup(Request $request, $data) {
+        return DataTables::of($data)
+        ->editColumn('loan', function($trans) {
+            return $trans['loan'];
+        })
+        ->editColumn('client_name', function($trans) {
+            return $trans['client_name'];
+        })
+        ->editColumn('disbursed_amt', function($trans) {
+            return $trans['disbursed_amt']?number_format($trans['disbursed_amt'],2):'';
+        })
+        ->editColumn('from_date', function($trans) {
+            return $trans['from_date']?Carbon::parse($trans['from_date'])->format('d-m-Y'):'';
+        })
+        ->editColumn('to_date', function($trans) {
+            return $trans['to_date']?Carbon::parse($trans['to_date'])->format('d-m-Y'):'';
+        })
+        ->editColumn('days', function($trans) {
+            return $trans['days']?number_format($trans['days'],2):'';
+        })
+        ->editColumn('int_rate', function($trans) {
+            return $trans['int_rate']?number_format($trans['int_rate'],2):'';
+        })
+        ->editColumn('int_amt', function($trans) {
+            return $trans['int_amt']?number_format($trans['int_amt'],2):'';
+        })
+        ->editColumn('collection_date', function($trans) {
+            return $trans['collection_date']?Carbon::parse($trans['collection_date'])->format('d-m-Y'):'';
+        })
+        ->editColumn('tds_rate', function($trans) {
+            return $trans['tds_rate']?number_format($trans['tds_rate'],2):'';
+        })
+        ->editColumn('tds_amt', function($trans) {
+            return $trans['tds_amt']?number_format($trans['tds_amt'],2):'';
+        })
+        ->editColumn('net_int', function($trans) {
+            return $trans['net_int']?number_format($trans['net_int'],2):'';
+        })
+        ->editColumn('tally_batch', function($trans) {
+            return $trans['tally_batch'];
+        })
+        ->filter(function ($query) use ($request) {
+            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $query->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
+                    $query->WhereBetween('invoice_date', [$from_date, $to_date]);
+                });
+            }
+        })
+        ->make(true);
+    }
+
+    public function chargeBreakup(Request $request, $data) {
+        return DataTables::of($data)
+        ->editColumn('loan', function($trans) { 
+            return $trans['loan']?$trans['loan']:'';
+        })
+        ->editColumn('client_name', function($trans) { 
+            return $trans['client_name']?$trans['client_name']:'';
+        })
+        ->editColumn('chrg_rate', function($trans) { 
+            return $trans['chrg_rate']?$trans['chrg_rate']:'';
+        })
+        ->editColumn('chrg_amt', function($trans) { 
+            return $trans['chrg_amt']?$trans['chrg_amt']:'';
+        })
+        ->editColumn('gst', function($trans) { 
+            return $trans['gst']?$trans['gst']:'';
+        })
+        ->editColumn('net_amt', function($trans) { 
+            return $trans['net_amt']?$trans['net_amt']:'';
+        })
+        ->editColumn('tally_batch', function($trans) { 
+            return $trans['tally_batch']?$trans['tally_batch']:'';
+        })
+        ->filter(function ($query) use ($request) {
+            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $query->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
+                    $query->WhereBetween('invoice_date', [$from_date, $to_date]);
+                });
+            }
+        })
+        ->make(true);
+    }
+
+    public function tdsBreakup(Request $request, $data) {
+        return DataTables::of($data)
+        ->editColumn('loan', function($trans) { 
+            return $trans['loan']?$trans['loan']:'';
+        })
+        ->editColumn('client_name', function($trans) { 
+            return $trans['client_name']?$trans['client_name']:'';
+        })
+        ->editColumn('int_amt', function($trans) { 
+            return $trans['int_amt']?$trans['int_amt']:'';
+        })
+        ->editColumn('deduction_date', function($trans) { 
+            return $trans['deduction_date']?$trans['deduction_date']:'';
+        })
+        ->editColumn('tds_amt', function($trans) { 
+            return $trans['tds_amt']?$trans['tds_amt']:'';
+        })
+        ->editColumn('tds_certificate', function($trans) { 
+            return $trans['tds_certificate']?$trans['tds_certificate']:'';
+        })
+        ->editColumn('tally_batch', function($trans) { 
+            return $trans['tally_batch']?$trans['tally_batch']:'';
+        })       
+        ->filter(function ($query) use ($request) {
+            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $query->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
+                    $query->WhereBetween('invoice_date', [$from_date, $to_date]);
+                });
+            }
+        })
+        ->make(true);
+    }
+    
+
     public function getReportAllInvoice(Request $request,$invoice)
     {  
         

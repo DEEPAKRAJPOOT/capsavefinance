@@ -4647,6 +4647,67 @@ if ($err) {
         return new JsonResponse($leaseRegisters);
     }    
 
+    public function interestBreakup(DataProviderInterface $dataProvider){
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('Y-m-d 00:00:00');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d 23:59:59');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+        ];
+        
+        $interestBreakupList = $this->reportsRepo->getInterestBreakupReport();
+        $interestBreakup = $dataProvider->interestBreakup($this->request, $interestBreakupList);
+        $interestBreakup = $interestBreakup->getData(true);
+
+        $condArr['type']  = 'excel';
+        $interestBreakup['excelUrl'] = route('download_interest_breakup', $condArr);
+        
+        return new JsonResponse($interestBreakup);
+    }
+
+    public function chargeBreakup(DataProviderInterface $dataProvider){
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('Y-m-d 00:00:00');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d 23:59:59');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+        ];
+        
+        $interestBreakupList = $this->reportsRepo->getChargeBreakupReport();
+
+        $interestBreakup = $dataProvider->chargeBreakup($this->request, $interestBreakupList);
+        $interestBreakup = $interestBreakup->getData(true);
+
+        $condArr['type']  = 'excel';
+        $interestBreakup['excelUrl'] = route('download_charge_breakup', $condArr);
+        
+        return new JsonResponse($interestBreakup);
+    }
+
+    public function tdsBreakup(DataProviderInterface $dataProvider){
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('Y-m-d 00:00:00');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d 23:59:59');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+        ];
+        
+        $interestBreakupList = $this->reportsRepo->gettdsBreakupReport();
+        $interestBreakup = $dataProvider->tdsBreakup($this->request, $interestBreakupList);
+        $interestBreakup = $interestBreakup->getData(true);
+
+        $condArr['type']  = 'excel';
+        $interestBreakup['excelUrl'] = route('download_tds_breakup', $condArr);
+        
+        return new JsonResponse($interestBreakup);
+    }
+
     public function unsettledPayments(Request $request){
         $userId = $request->user_id;
         $chrgId = $request->chrg_id;

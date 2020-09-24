@@ -133,6 +133,10 @@ class Transactions extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransactionsRunning','trans_running_id','trans_running_id');
     }
 
+    public function tallyEntry(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\TallyEntry','trans_id','transactions_id');
+    }
+
     public function getInvoiceNoAttribute(){
         $data = '';
         if($this->userInvTrans){
@@ -968,7 +972,11 @@ class Transactions extends BaseModel {
     public function getToIntDateAttribute(){
         $toDate = null;
         if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
-            $toDate = $this->trans_date;
+            if($this->invoiceDisbursed->invoice->program_offer->payment_frequency == 1){
+                $toDate = $this->invoiceDisbursed->payment_due_date;
+            }else{
+                $toDate = $this->trans_date;
+            }
         }
         return $toDate;
     }
@@ -994,4 +1002,66 @@ class Transactions extends BaseModel {
         return $amount;
     }
 
+    public static function getchargeBreakupReport($whereCondition=[], $whereRawCondition = NULL){
+        $data = [];
+
+        $unIntTrans = self::whereHas('transType', function($query){
+            $query->where('chrg_master_id','>','0');
+        })
+        ->whereNull('parent_trans_id')
+        ->where('entry_type','0')
+        ->get();
+        foreach($unIntTrans as $uITrans){
+
+            $data[$uITrans->trans_id] = 
+            [
+                'loan' => '', //config('common.idprefix.APP').$uITrans->invoiceDisbursed->invoice->app_id,
+                'client_name' =>$uITrans->user->f_name.' '.$uITrans->user->l_name,
+                'chrg_rate' => '',
+                'chrg_amt' => '',
+                'gst' => '',
+                'net_amt' => $uITrans->amount, 
+                'tally_batch' => $uITrans->tallyEntry?$uITrans->tallyEntry->batch_no:''
+            ];
+            if($uITrans->userInvTrans){
+                $data[$uITrans->trans_id]['chrg_amt'] = $uITrans->userInvTrans->base_amount;
+                $data[$uITrans->trans_id]['chrg_rate'] = $uITrans->userInvTrans->sgst_rate + $uITrans->userInvTrans->cgst_rate + 
+                $uITrans->userInvTrans->igst_rate;
+                $data[$uITrans->trans_id]['gst'] = $uITrans->userInvTrans->sgst_amount + $uITrans->userInvTrans->cgst_amount + $uITrans->userInvTrans->igst_amount;
+            }
+        }
+        return $data;
+    }
+    
+    public static function gettdsBreakupReport($whereCondition=[], $whereRawCondition = NULL){
+        $data = [];
+
+        $unIntTrans = self::whereHas('transType', function($query){
+            $query->where('chrg_master_id','>','0');
+        })
+        ->whereNull('parent_trans_id')
+        ->where('entry_type','0')
+        ->get();
+        foreach($unIntTrans as $uITrans){
+
+            $data[$uITrans->trans_id] = 
+            [
+                'loan' => '', //config('common.idprefix.APP').$uITrans->invoiceDisbursed->invoice->app_id,
+                'client_name' =>$uITrans->user->f_name.' '.$uITrans->user->l_name,
+                'chrg_name' => $uITrans->transName,
+                'chrg_rate' => '',
+                'chrg_amt' => '',
+                'gst' => '',
+                'net_amt' => $uITrans->amount, 
+                'tally_batch' => $uITrans->tallyEntry?$uITrans->tallyEntry->batch_no:''
+            ];
+            if($uITrans->userInvTrans){
+                $data[$uITrans->trans_id]['chrg_amt'] = $uITrans->userInvTrans->base_amount;
+                $data[$uITrans->trans_id]['chrg_rate'] = $uITrans->userInvTrans->sgst_rate + $uITrans->userInvTrans->cgst_rate + 
+                $uITrans->userInvTrans->igst_rate;
+                $data[$uITrans->trans_id]['gst'] = $uITrans->userInvTrans->sgst_amount + $uITrans->userInvTrans->cgst_amount + $uITrans->userInvTrans->igst_amount;
+            }
+        }
+        return $data;
+    }
 }
