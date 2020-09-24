@@ -36,7 +36,6 @@ use App\Inv\Repositories\Models\Master\ChargeGST;
 use App\Inv\Repositories\Models\Master\Tds;
 
 
-
 /**
  * 
  */
@@ -805,6 +804,10 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return Tds::updateTdsEndDate($id, $date);
     }   
     // END TDS
+    public function getLastGSTRecord()
+    {
+        return GstTax::getLastGSTRecord();
+    }
     
 
 }

@@ -3092,22 +3092,21 @@ class DataRenderer implements DataProviderInterface
                     function ($charges) {
                     return ($charges->created_at) ? date('d-m-Y',strtotime($charges->created_at)) : '---';
                 })
-               
-                 ->filter(function ($query) use ($request) {
-                   if ($request->get('user_id') != '') {
+                ->filter(function ($query) use ($request) {
+                    if($request->get('user_id') != '') {
                             $query->whereHas('transaction', function ($query) use ($request) {
                             $search_keyword = trim($request->get('user_id'));
                             $query->where('user_id',$search_keyword);
                         });
                     }
-                      if ($request->get('from_date') != '') {
+                    if($request->get('from_date') != '') {
                         $query->where(function ($query) use ($request) {
                             $from = str_replace('/', '-', $request->get('from_date'));
                             $converedDate = date("Y-m-d H:i:s", strtotime($from));
                             $query->whereDate('created_at','>=' , $converedDate);
                         });
                     }
-                    if ($request->get('to_date') != '') {
+                    if($request->get('to_date') != '') {
                         $query->where(function ($query) use ($request) {
                             $to_date = str_replace('/', '-', $request->get('to_date'));
                             $query->whereDate('created_at','<=' , date('Y-m-d H:i:s', strtotime($to_date)) );
@@ -4381,34 +4380,6 @@ class DataRenderer implements DataProviderInterface
                 }
             )
             ->filter(function ($query) use ($request) {
-
-                if($request->get('from_date')!= '' && $request->get('to_date')!=''){
-                    $query->where(function ($query) use ($request) {
-                        $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
-                        $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
-                    });
-                }
-                if($request->has('trans_entry_type')){
-                    if($request->trans_entry_type != ''){
-                        $trans_entry_type = explode('_',$request->trans_entry_type);
-                        $trans_type = $trans_entry_type[0];
-                        $entry_type = $trans_entry_type[1];
-                        if($trans_type){
-                            $query->where('trans_type',$trans_type);
-                        }
-                        if($entry_type != ''){
-                            $query->where('entry_type',$entry_type);
-                        }
-                    }
-                }
-
-                $query->whereHas('lmsUser',function ($query) use ($request) {
-                    $customer_id = trim($request->get('customer_id')) ?? null ;
-                    $query->where('customer_id', '=', "$customer_id");
-                });
-                
-              
             })
             ->make(true);
     }
