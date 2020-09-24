@@ -118,12 +118,13 @@ class WfStage extends BaseModel
      * @param type $app_id
      * @return type
      */    
-    protected static function getCurrentWfStagebyRole($roleId, $user_journey=2)
+    protected static function getCurrentWfStagebyRole($roleId, $user_journey=2, $wf_start_order_no=0, $orderBy='ASC')
     {
         $appData = self::select('wf_stage.*')
                 ->where('wf_stage.role_id', $roleId)
                 ->where('wf_stage.user_journey', $user_journey)
-                ->orderBy('wf_stage.order_no')
+                ->where('wf_stage.order_no', '<=', $wf_start_order_no)
+                ->orderBy('wf_stage.order_no', $orderBy)
                 ->limit(1)
                 ->first();
         return $appData ? $appData : null;

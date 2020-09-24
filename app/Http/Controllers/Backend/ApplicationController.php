@@ -601,6 +601,37 @@ class ApplicationController extends Controller
                                 if ($currentStage && $currentStage->order_no < 4 && !in_array($curStatus, $appStatusList) ) {                                  
                                     $this->appRepo->updateAppData($appId, ['status' => 1]);
                                     Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.COMPLETED'));
+                                    
+                                    $curDate = \Carbon\Carbon::now()->format('Y-m-d');
+                                    $endDate = date('Y-m-d', strtotime('+1 years -1 day'));
+                                    //$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($userId, $appId);
+
+                                    if ($appData && in_array($appData->app_type, [1,2,3]) ) {
+                                        $parentAppId = $appData->parent_app_id;
+                                        $actualEndDate = $curDate;
+                                        //$appLimitData = $this->appRepo->getAppLimitData(['user_id' => $userId, 'app_id' => $parentAppId]);
+                                        //if (in_array($appType, [2,3])) {
+                                        //    $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
+                                        //    $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
+                                        //}
+                                        $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
+                                        $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
+                                        $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
+                                        \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                    
+                                    }            
+                                    /*
+                                    if (!is_null($appLimitId)) {
+                                        $this->appRepo->saveAppLimit([
+                                                'status' => 1,
+                                                'start_date' => $curDate,
+                                                'end_date' => $endDate], $appLimitId);
+                                        $this->appRepo->updatePrgmLimitByLimitId([
+                                                'status' => 1,
+                                                'start_date' => $curDate,
+                                                'end_date' => $endDate], $appLimitId);
+                                    }
+                                     * 
+                                     */                                      
                                 }				  
 				Helpers::updateWfStage('doc_upload', $appId, $wf_status = 1);
 			 
@@ -618,7 +649,7 @@ class ApplicationController extends Controller
 				//$appData = $this->appRepo->getAppDataByAppId($appId);
 				//$userId = $appData ? $appData->user_id : null;
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
-			
+			                                                                                              
 				return redirect()->route('application_list')->with('message', trans('success_messages.app.saved'));
 			// } else {
 			//     //Add application workflow stages                
@@ -837,20 +868,27 @@ class ApplicationController extends Controller
 				$currStage = Helpers::getCurrentWfStage($app_id);
 				$selData = explode('-', $sel_assign_role);
 				$selRoleId = $selData[0];
-				$selUserId = $selData[1];                
-				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
+				$selUserId = $selData[1];				
+                                $currStage = Helpers::getCurrentWfStage($app_id);
+                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');                                				
 				Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
 			} else {
 				$currStage = Helpers::getCurrentWfStage($app_id);
                                
 				//Validate the stage
 				if ($currStage->stage_code == 'credit_mgr') {
-					$whereCondition = ['app_id' => $app_id, 'status' => null];                                        
+					$whereCondition = ['app_id' => $app_id, 'status_is_null_or_accepted' =>1];                                        
 					$offerData = $this->appRepo->getOfferData($whereCondition);
 					if (!$offerData) {
 						Session::flash('error_code', 'no_offer_found');
 						return redirect()->back();
 					}
+                                        
+                                        $appData = $this->appRepo->getAppData($app_id);
+                                        if ($appData && in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_LIMIT_REJECTED')]) ) {
+                                            Session::flash('error_code', 'limit_rejected');
+                                            return redirect()->back();
+                                        }                                        
 				} else if ($currStage->stage_code == 'approver') {
 					$whereCondition = ['app_id' => $app_id, 'status' => null];
 					$offerData = $this->appRepo->getOfferData($whereCondition);
@@ -921,10 +959,13 @@ class ApplicationController extends Controller
                                         $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
                                         $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
                                     }
+                                    /*
                                     $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
                                     $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
                                     $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
                                     \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                    
+                                     * 
+                                     */
                                 }
                                 
         		if (!is_null($appLimitId)) {
@@ -1038,8 +1079,16 @@ class ApplicationController extends Controller
 				$wf_order_no = $currStage->order_no;
 				$nextStage = Helpers::getNextWfStage($wf_order_no);
 				$roleArr = [$nextStage->role_id];
-                               
+                                $roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
+                                $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
+                                $assign = true;
+                                $wf_status = 1;
+
 				if ($nextStage->stage_code == 'approver') {
+                                    $whereCondition = ['app_id' => $app_id, 'is_approve' => 1];
+                                    $offerData = $this->appRepo->getOfferData($whereCondition);
+
+                                    if (!$offerData) {                                        
 					$apprAuthUsers = Helpers::saveApprAuthorityUsers($app_id,$approver_list);
                                 	if (count($apprAuthUsers) == 0) {
 						Session::flash('error_code', 'no_approval_users_found');
@@ -1059,11 +1108,7 @@ class ApplicationController extends Controller
 					}
 					$assign = false;
 					$wf_status = 1;
-				} else {
-					$roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
-					$addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
-					$assign = true;
-					$wf_status = 1;
+                                    }
 				}
 
 				if ($nextStage->stage_code == 'upload_post_sanction_doc') {
@@ -1281,30 +1326,14 @@ class ApplicationController extends Controller
                                 $selRoleId = 6;
                                 $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
                                 $selUserId = $roles[0]->user_id;
-                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
                                 $currStage = Helpers::getCurrentWfStage($appId);
+                                //$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                                                
+                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
                                 Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
                                 Session::flash('operation_status', 1);
 	 
                                 Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_REJECTED'));
-                                
-				/*$addl_data = [];
-                                $addl_data['sharing_comment'] = 'Reject comment goes here';
-                                $message = trans('backend_messages.reject_offer_success');*/
-
-				
-				//Update workflow stage
-				//Helpers::updateWfStage('approver', $appId, $wf_status = 2);
-				//Helpers::updateWfStage('sales_queue', $appId, $wf_status = 2);
-				//Helpers::updateWfStage('sanction_letter', $appId, $wf_status = 2);
-				//Helpers::updateWfStage('upload_exe_doc', $appId, $wf_status = 2);
-
-				/*$selRoleId = 6;
-				$roles = $this->appRepo->getBackStageUsers($app_id, [$selRoleId]);
-				$selUserId = $roles[0]->user_id;
-				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
-				$currStage = Helpers::getCurrentWfStage($appId);
-				Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);*/
+                                				
 			}
 			
 			// $savedOfferData = $this->appRepo->saveOfferData($offerData, $offerId);

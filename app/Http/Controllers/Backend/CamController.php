@@ -1650,8 +1650,8 @@ class CamController extends Controller
                 'approver_user_id' => \Auth::user()->user_id,
                 'status' => 1
               ];
-            $this->appRepo->saveAppApprovers($appApprData);
-
+            $this->appRepo->saveAppApprovers($appApprData);           
+            
             //update approve status in offer table after all approver approve the offer.
             $this->appRepo->changeOfferApprove((int)$appId);
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
@@ -1697,14 +1697,16 @@ class CamController extends Controller
                 'approver_user_id' => \Auth::user()->user_id,
                 'status' => 2
               ];
-            $this->appRepo->saveAppApprovers($appApprData);
+            $this->appRepo->saveAppApprovers($appApprData);            
+            
             $addl_data = [];
             $addl_data['sharing_comment'] = $cmntText;
-            $selRoleId = 7;
+            $selRoleId = 6;
             $roles = $this->appRepo->getBackStageUsers($appId, [$selRoleId]);
             $selUserId = $roles[0]->user_id;
-            $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                
             $currStage = Helpers::getCurrentWfStage($appId);
+            //$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId);                            
+            $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
             Helpers::updateWfStageManual($appId, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_REJECTED'));
             
@@ -1802,15 +1804,17 @@ class CamController extends Controller
           $request['security_deposit_of'] = null;
         }
         
-        $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
-
-        if($checkApprovalStatus->count()){
+        //$checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
+        //if($checkApprovalStatus->count()){
+        $whereCondition = ['app_id' => $appId, 'is_approve' => 1, 'status_is_null_or_accepted' =>1];        
+        $offerData = $this->appRepo->getOfferData($whereCondition);
+        if ($offerData && isset($offerData->prgm_offer_id) ) {             
           Session::flash('message', trans('backend_messages.under_approval'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
-        if (empty($prgmOfferId)) {
+        //if (empty($prgmOfferId)) {
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
-        }
+        //}
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
         $limitData = $this->appRepo->getLimit($aplid);
@@ -1879,9 +1883,11 @@ class CamController extends Controller
         $aplid = (int)$request->get('app_prgm_limit_id');
         $request['limit_amt'] = str_replace(',', '', $request->limit_amt);
 
-        $checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
-
-        if($checkApprovalStatus->count()){
+        //$checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
+        //if($checkApprovalStatus->count()){
+        $whereCondition = ['app_id' => $appId, 'is_approve' => 1, 'status_is_null_or_accepted' =>1];        
+        $offerData = $this->appRepo->getOfferData($whereCondition);
+        if ($offerData && isset($offerData->prgm_offer_id) ) {          
           Session::flash('message', trans('backend_messages.under_approval'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
@@ -1896,6 +1902,7 @@ class CamController extends Controller
         $limitData= $this->appRepo->saveProgramLimit($request->all(), $aplid);
 
         if($limitData){
+          //Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));   
           Session::flash('message',trans('backend_messages.limit_assessment_success'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }else{
