@@ -179,7 +179,7 @@
         $("#supplier_bulk_id").empty();
         $("#pro_limit").empty();
         $("#pro_limit_hide").empty();
-        var postData = ({'bulk': 1, 'app_id': anchor_id, 'program_id': program_id, '_token': messages.token});
+        var postData = ({'bulk': 1, 'anchor_id': anchor_id, 'program_id': program_id, '_token': messages.token});
         jQuery.ajax({
             url: messages.front_supplier_list,
             method: 'post',
