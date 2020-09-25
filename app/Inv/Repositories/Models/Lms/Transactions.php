@@ -1173,14 +1173,12 @@ class Transactions extends BaseModel {
     public static function gettdsBreakupReport($whereCondition=[], $whereRawCondition = NULL){
         $data = [];
 
-        $chargTrans = self::whereHas('transType', function($query){
-            $query->where('chrg_master_id','>','0');
-        })
+        $chargTrans = self::where('trans_type', config('lms.TRANS_TYPE.INTEREST'))
         ->whereNull('parent_trans_id')
         ->where('entry_type','0')
         ->get();
 
-
+        
         foreach($chargTrans as $cTrans){
 
             $tdsTrans = self::where('trans_type', config('lms.TRANS_TYPE.TDS'))
