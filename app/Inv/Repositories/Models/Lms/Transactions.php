@@ -1145,12 +1145,19 @@ class Transactions extends BaseModel {
                 'tally_batch' => ''
             ];
 
-            $charge = $cTrans->chargesTransactions;
-            if($charge){
-                $data[$cTrans->trans_id]['loan'] = $charge->app_id?config('common.idprefix.APP').$charge->app_id:'';
-                $data[$cTrans->trans_id]['chrg_amt'] = $charge->amount;
-                $data[$cTrans->trans_id]['chrg_rate'] = ($charge->chargeMaster->chrg_calculation_type == 2)?$charge->percent:'N/A';
+            if($cTrans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                $data[$cTrans->trans_id]['loan'] = config('common.idprefix.APP').$cTrans->invoiceDisbursed->invoice->app_id;
+                $data[$cTrans->trans_id]['chrg_amt'] = $cTrans->amount;
+                $data[$cTrans->trans_id]['chrg_rate'] = $cTrans->invoiceDisbursed->interest_rate;
+            }else{
+                $charge = $cTrans->chargesTransactions;
+                if($charge){
+                    $data[$cTrans->trans_id]['loan'] = $charge->app_id?config('common.idprefix.APP').$charge->app_id:'';
+                    $data[$cTrans->trans_id]['chrg_amt'] = $charge->amount;
+                    $data[$cTrans->trans_id]['chrg_rate'] = ($charge->chargeMaster->chrg_calculation_type == 2)?$charge->percent:'';
+                }
             }
+
             if($cTrans->userInvTrans){
                 $data[$cTrans->trans_id]['gst'] = $cTrans->userInvTrans->sgst_amount + $cTrans->userInvTrans->cgst_amount + $cTrans->userInvTrans->igst_amount;
             }
@@ -1166,30 +1173,48 @@ class Transactions extends BaseModel {
     public static function gettdsBreakupReport($whereCondition=[], $whereRawCondition = NULL){
         $data = [];
 
-        $unIntTrans = self::whereHas('transType', function($query){
+        $chargTrans = self::whereHas('transType', function($query){
             $query->where('chrg_master_id','>','0');
         })
         ->whereNull('parent_trans_id')
         ->where('entry_type','0')
         ->get();
-        foreach($unIntTrans as $uITrans){
 
-            $data[$uITrans->trans_id] = 
-            [
-                'loan' => '', //config('common.idprefix.APP').$uITrans->invoiceDisbursed->invoice->app_id,
-                'client_name' =>$uITrans->user->f_name.' '.$uITrans->user->l_name,
-                'chrg_name' => $uITrans->transName,
-                'chrg_rate' => '',
-                'chrg_amt' => '',
-                'gst' => '',
-                'net_amt' => $uITrans->amount, 
-                'tally_batch' => $uITrans->tallyEntry?$uITrans->tallyEntry->batch_no:''
-            ];
-            if($uITrans->userInvTrans){
-                $data[$uITrans->trans_id]['chrg_amt'] = $uITrans->userInvTrans->base_amount;
-                $data[$uITrans->trans_id]['chrg_rate'] = $uITrans->userInvTrans->sgst_rate + $uITrans->userInvTrans->cgst_rate + 
-                $uITrans->userInvTrans->igst_rate;
-                $data[$uITrans->trans_id]['gst'] = $uITrans->userInvTrans->sgst_amount + $uITrans->userInvTrans->cgst_amount + $uITrans->userInvTrans->igst_amount;
+
+        foreach($chargTrans as $cTrans){
+
+            $tdsTrans = self::where('trans_type', config('lms.TRANS_TYPE.TDS'))
+            ->whereNotNull('payment_id')
+            ->where('invoice_disbursed_id', $cTrans->invoice_disbursed_id)
+            ->where('parent_trans_id', $cTrans->trans_id)
+            ->where('entry_type','1')
+            ->get();
+
+            foreach($tdsTrans as $tds){
+
+                $data[$tds->trans_id] = 
+                [
+                    'loan' => '',
+                    'client_name' => $tds->user->f_name.' '.$tds->user->l_name,
+                    'int_amt' => $cTrans->amount,
+                    'deduction_date' => $cTrans->trans_date,
+                    'tds_amt' => $tds->amount,
+                    'tds_certificate' => $tds->payment->tds_certificate_no,
+                    'tally_batch' => ''
+                ];
+                if($cTrans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                    $data[$cTrans->trans_id]['loan'] = config('common.idprefix.APP').$cTrans->invoiceDisbursed->invoice->app_id;
+                }else{
+                    $charge = $cTrans->chargesTransactions;
+                    if($charge){
+                        $data[$cTrans->trans_id]['loan'] = $charge->app_id?config('common.idprefix.APP').$charge->app_id:'';
+                    }
+                }
+                $tallyEntries =  $tds->tallyEntry;
+                if($tallyEntries){
+                    $tallyEntries = $tallyEntries->first();
+                    $data[$tds->trans_id]['tally_batch'] = $tallyEntries->batch_no;
+                }
             }
         }
         return $data;

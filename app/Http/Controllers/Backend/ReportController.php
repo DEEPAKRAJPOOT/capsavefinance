@@ -102,7 +102,7 @@ class ReportController extends Controller
                 ->setCellValue('G' . $rows, number_format($rowData['int_rate'],2))
                 ->setCellValue('H' . $rows, number_format($rowData['int_amt'],2))
                 ->setCellValue('I' . $rows, Carbon::parse($rowData['collection_date'])->format('d-m-Y'))
-                ->setCellValue('J' . $rows, number_format($rowData['tds_rate'],2))
+                ->setCellValue('J' . $rows, $rowData['tds_rate'])
                 ->setCellValue('K' . $rows, $rowData['tds_amt']?number_format($rowData['tds_amt'],2):'')
                 ->setCellValue('L' . $rows, number_format($rowData['net_int'],2))
                 ->setCellValue('M' . $rows, $rowData['tally_batch']);
@@ -131,30 +131,28 @@ class ReportController extends Controller
     public function downloadChargeBreakup(Request $request){
         $rows = 1;
         $sheet =  new PHPExcel();
-        $sheet->getActiveSheet()->getStyle('A1:I1')->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->getActiveSheet()->getStyle('A1:H1')->applyFromArray(['font' => ['bold'  => true]]);
         $sheet->setActiveSheetIndex(0)
-                ->setCelValue('A'.$rows, 'Loan #')
-                ->setCelValue('B'.$rows, 'Client Name')
-                ->setCelValue('C'.$rows, 'Disbursed amount')
-                ->setCelValue('D'.$rows, 'Disbursed Date')
-                ->setCelValue('E'.$rows, 'Processing Fee%')
-                ->setCelValue('F'.$rows, 'Processing Fee Amount')
-                ->setCelValue('G'.$rows, 'GST Amount')
-                ->setCelValue('H'.$rows, 'Total Amount')
-                ->setCelValue('I'.$rows, 'Tally Batch #');
+                ->setCellValue('A'.$rows, 'Loan #')
+                ->setCellValue('B'.$rows, 'Client Name')
+                ->setCellValue('C'.$rows, 'Charge Name')
+                ->setCellValue('D'.$rows, 'Charge %')
+                ->setCellValue('E'.$rows, 'Charge Amount')
+                ->setCellValue('F'.$rows, 'GST Amount')
+                ->setCellValue('G'.$rows, 'Total Amount')
+                ->setCellValue('H'.$rows, 'Tally Batch #');
         $rows++;
         $exceldata = $this->reportsRepo->getChargeBreakupReport([], NULL);
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
-            ->setCelValue('A'. $rows, $rowData['loan'])
-            ->setCelValue('B'. $rows, $rowData['client_name'])
-            ->setCelValue('C'. $rows, number_format($rowData['disbursed_amt'],2))
-            ->setCelValue('D'. $rows, Carbon::parse($rowData['disbursed_date'])->format('d-m-Y'))
-            ->setCelValue('E'. $rows, number_format($rowData['chrg_rate'],2))
-            ->setCelValue('F'. $rows, number_format($rowData['chrg_amt'],2))
-            ->setCelValue('G'. $rows, number_format($rowData['gst'],2))
-            ->setCelValue('H'. $rows, number_format($rowData['net_amt'],2))
-            ->setCelValue('I'. $rows, $rowData['tally_batch']);
+            ->setCellValue('A'. $rows, $rowData['loan'])
+            ->setCellValue('B'. $rows, $rowData['client_name'])
+            ->setCellValue('C'. $rows, $rowData['chrg_name'])
+            ->setCellValue('D'. $rows, $rowData['chrg_rate'] ? number_format($rowData['chrg_rate'],2):'')
+            ->setCellValue('E'. $rows, $rowData['chrg_amt'] ? number_format($rowData['chrg_amt'],2):'')
+            ->setCellValue('F'. $rows, $rowData['gst'] ? number_format($rowData['gst'],2):'')
+            ->setCellValue('G'. $rows, $rowData['net_amt'] ? number_format($rowData['net_amt'],2):'')
+            ->setCellValue('H'. $rows, $rowData['tally_batch']);
             $rows++;
         }
         
@@ -183,14 +181,13 @@ class ReportController extends Controller
         $sheet =  new PHPExcel();
         $sheet->getActiveSheet()->getStyle('A1:M1')->applyFromArray(['font' => ['bold'  => true]]);
         $sheet->setActiveSheetIndex(0)
-
-        ->setCelValue('A'.$rows, 'Loan #')
-        ->setCelValue('B'.$rows, 'Client Name')
-        ->setCelValue('C'.$rows, 'Interest Amount')
-        ->setCelValue('D'.$rows, 'Date of Interest Deduction')
-        ->setCelValue('E'.$rows, 'TDS Amount')
-        ->setCelValue('F'.$rows, 'TDS certificate #')
-        ->setCelValue('G'.$rows, 'Tally Batch #');
+            ->setCellValue('A'.$rows, 'Loan #')
+            ->setCellValue('B'.$rows, 'Client Name')
+            ->setCellValue('C'.$rows, 'Interest Amount')
+            ->setCellValue('D'.$rows, 'Date of Interest Deduction')
+            ->setCellValue('E'.$rows, 'TDS Amount')
+            ->setCellValue('F'.$rows, 'TDS certificate #')
+            ->setCellValue('G'.$rows, 'Tally Batch #');
         $rows++;
         $exceldata = $this->reportsRepo->getTdsBreakupReport([], NULL);
         foreach($exceldata as $rowData){

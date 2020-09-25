@@ -6596,16 +6596,16 @@ class DataRenderer implements DataProviderInterface
             return $trans['chrg_name']?$trans['chrg_name']:'';
         })
         ->editColumn('chrg_rate', function($trans) { 
-            return $trans['chrg_rate']?$trans['chrg_rate']:'';
+            return $trans['chrg_rate']?number_format($trans['chrg_rate'],2):'';
         })
         ->editColumn('chrg_amt', function($trans) { 
-            return $trans['chrg_amt']?$trans['chrg_amt']:'';
+            return $trans['chrg_amt']?number_format($trans['chrg_amt'],2):'';
         })
         ->editColumn('gst', function($trans) { 
-            return $trans['gst']?$trans['gst']:'';
+            return $trans['gst']?number_format($trans['gst'],2):'';
         })
         ->editColumn('net_amt', function($trans) { 
-            return $trans['net_amt']?$trans['net_amt']:'';
+            return $trans['net_amt']?number_format($trans['net_amt'],2):'';
         })
         ->editColumn('tally_batch', function($trans) { 
             return $trans['tally_batch']?$trans['tally_batch']:'';
@@ -6631,13 +6631,13 @@ class DataRenderer implements DataProviderInterface
             return $trans['client_name']?$trans['client_name']:'';
         })
         ->editColumn('int_amt', function($trans) { 
-            return $trans['int_amt']?$trans['int_amt']:'';
+            return $trans['int_amt']?number_format($trans['int_amt'],2):'';
         })
         ->editColumn('deduction_date', function($trans) { 
-            return $trans['deduction_date']?$trans['deduction_date']:'';
+            return $trans['deduction_date']?Carbon::parse($trans['deduction_date'])->format('d-m-Y'):'';
         })
         ->editColumn('tds_amt', function($trans) { 
-            return $trans['tds_amt']?$trans['tds_amt']:'';
+            return $trans['tds_amt']?number_format($trans['tds_amt'],2):'';
         })
         ->editColumn('tds_certificate', function($trans) { 
             return $trans['tds_certificate']?$trans['tds_certificate']:'';
