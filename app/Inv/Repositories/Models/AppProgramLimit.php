@@ -15,6 +15,7 @@ use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\AnchorUser;
+use App\Inv\Repositories\Models\LmsUsersLog;
 
 class AppProgramLimit extends BaseModel {
     /* The database table used by the model.
@@ -61,7 +62,7 @@ class AppProgramLimit extends BaseModel {
         'limit_amt',
         'start_date',
         'end_date',
-        'actual_end_date',
+        'actual_end_date',        
         'created_at',
         'created_by',
         'updated_at',        
@@ -254,6 +255,7 @@ class AppProgramLimit extends BaseModel {
                 ->where('app_prgm_limit.end_date', '<', $curDate)
                 ->pluck('app_prgm_offer.app_prgm_limit_id')
                 ->toArray();                
+        $account_clousers = LmsUsersLog::where('status_id', 35)->pluck('user_id')->toArray();
         
         $appStatusList=[
             config('common.mst_status_id.APP_REJECTED'),
@@ -270,6 +272,7 @@ class AppProgramLimit extends BaseModel {
                 if (count($app_prgm_limit_ids) > 0) {
                     $query->whereNotIn('app_prgm_limit_id', $app_prgm_limit_ids);
                 }
+                $query->whereNotIn('app.user_id', $account_clousers);
                 return $query->sum('app_prgm_offer.prgm_limit_amt');
      }
 

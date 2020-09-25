@@ -1173,6 +1173,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                         $query->where('end_date', '>=', $curDate);
                 })
                 ->where('is_active', 1)
+                ->where(function($q) {
+                    $q->where('status', NULL)
+                        ->orWhere('status', 1);
+                })                        
                 ->get();
 	}   
 

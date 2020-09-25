@@ -8,17 +8,25 @@
         <input type="hidden" class="form-control" id="id" name="id" maxlength="5" value="{{$gst_data->tax_id}}">
         <div class="row">
             <div class="form-group col-6">
+                <label for="tax_value">GST %</label>
+                <input type="text" class="form-control" id="tax_value" name="tax_value" value="{{$gst_data->tax_value}}" placeholder="Range 1 to 100">
+            </div>
+            <div class="form-group col-6">
+                <label for="tax_from">Start Date <span class="mandatory">*</span></label>
+                <input type="text" name="tax_from" id="tax_from" readonly="readonly" class="form-control" value="{{$gst_data->tax_from}}">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-6">
                 <label for="tax_name">TAX Type</label>
                 <select class="form-control tax_name" name="tax_name" id="tax_name">
                     <option disabled value="" selected>Select TAX</option>
-                    <option value="GST" id="gst" {{$gst_data->tax_name == "GST" ? 'selected' : ''}}>GST</option>
-                    <option value="IGST" id="igst" {{$gst_data->tax_name == "IGST" ? 'selected' : ''}}>IGST</option>
-
+                    <option value="GST/IGST" id="gst" {{$gst_data->tax_name == "GST/IGST" ? 'selected' : ''}}>GST/IGST</option>
                 </select>
             </div>
-            <div class="form-group col-6">
-                <label for="tax_value">Tax %</label>
-                <input type="text" class="form-control" id="tax_value" name="tax_value" value="{{$gst_data->tax_value}}" placeholder="Range 1 to 100">
+            <div class="form-group col-6" id="igst_val">
+                <label for="igst_">IGST %</label>
+                <input type="text" class="form-control" id="igst_" name="igst" value="{{$gst_data->igst}}" placeholder="Range 1 to 100" >
             </div>
         </div>
         <div class="row">
@@ -33,11 +41,7 @@
         </div>
 
         <div class="row">
-            <div class="form-group col-6" id="igst_val">
-                <label for="igst_">IGST %</label>
-                <input type="text" class="form-control" id="igst_" name="igst" value="{{$gst_data->igst}}" placeholder="Range 1 to 100" >
-            </div>
-            <div class="form-group col-md-6">
+            <div class="form-group col-6">
                 <label for="address_type">Status</label><br />
                 <select class="form-control" name="is_active" id="is_active">
                     <option disabled selected>Select</option>
@@ -48,7 +52,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="form-group col-md-12 mb-0">
+            <div class="form-group col-md-12 mb-0 text-right">
                 <input type="submit" class="btn btn-success btn-sm" name="add_gst" id="add_address" value="Submit" />
             </div>
         </div>
@@ -62,6 +66,9 @@
          
         $('#addressForm').validate({ // initialize the plugin
             rules: {
+                'tax_from': {
+                    required: true,
+                },
                 'tax_name': {
                     required: true,
                 },
@@ -80,6 +87,9 @@
                 },
             },
             messages: {
+                'tax_from': {
+                    required: "Please select tax from date",
+                },
                 'tax_name': {
                     required: "Please select TAX type",
                 },
@@ -107,9 +117,6 @@
     document.getElementById('cgst').readOnly = true;
     document.getElementById('sgst').readOnly = true;
     document.getElementById('igst_').readOnly = true;
-    document.getElementById('igst_val').style.display = 'none';
-    document.getElementById('cgst').value = taxval
-    document.getElementById('sgst').value = taxval
     document.getElementById('igst_').value = taxval
     
     
@@ -124,43 +131,15 @@
     // function for display or remove input
     function selectFun() {
         taxValue.addEventListener('keyup', valueFun);
-        let val = document.getElementById('tax_value').value
-        if (document.getElementById('tax_name').value === 'IGST') {
-            document.getElementById('cgst2').style.display = 'none';
-            document.getElementById('sgst2').style.display = 'none';
-            document.getElementById('cgst').value = 0;
-            document.getElementById('sgst').value = 0;
-            document.getElementById('igst_val').style.display = 'block';
-
-            
-            document.getElementById('igst_').value = val || 0;
-        } else {
-            document.getElementById('cgst2').style.display = 'block';
-            document.getElementById('sgst2').style.display = 'block';
-            document.getElementById('igst_val').style.display = 'none';
-
-            document.getElementById('cgst').value = val / 2 || 0;
-            document.getElementById('sgst').value = val / 2 || 0;
-            document.getElementById('igst_').value = 0;
-
-        }
-
+    
     }
 
     // function for divide value
     function valueFun() {
         let val = document.getElementById('tax_value').value;
-        console.log(val)
-        if(document.getElementById('tax_name').value === 'IGST') {
-            document.getElementById('cgst').value = 0;
-            document.getElementById('sgst').value = 0;
-            document.getElementById('igst_').value = val || 0;
-        }
-        else {
             document.getElementById('cgst').value = val / 2 || 0;
             document.getElementById('sgst').value = val / 2 || 0;
-            document.getElementById('igst_').value = 0;
-        }
+            document.getElementById('igst_').value = val || 0;
     }
 
     document.getElementById('tax_value').addEventListener('input', event =>{

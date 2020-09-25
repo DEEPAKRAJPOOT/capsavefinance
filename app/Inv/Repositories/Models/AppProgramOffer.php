@@ -15,6 +15,7 @@ use App\Inv\Repositories\Models\OfferPersonalGuarantee;
 use App\Inv\Repositories\Models\OfferCorporateGuarantee;
 use App\Inv\Repositories\Models\OfferEscrowMechanism;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\LmsUsersLog;
 
 class AppProgramOffer extends BaseModel {
     /* The database table used by the model.
@@ -125,6 +126,9 @@ class AppProgramOffer extends BaseModel {
         } else if (isset($whereCondition['status']) && is_null(isset($whereCondition['status']))) {            
             $offerWhereCond['status'] = $whereCondition['status'];
             unset($whereCondition['status']);
+        } else if (isset($whereCondition['status_is_null_or_accepted'])) { 
+            $offerWhereCond['status_is_null_or_accepted'] = $whereCondition['status_is_null_or_accepted'];
+            unset($whereCondition['status_is_null_or_accepted']);            
         }
                                 
         $query = self::select('app_prgm_offer.*')
@@ -135,6 +139,11 @@ class AppProgramOffer extends BaseModel {
             $query->whereNull('status');
         } else if (isset($offerWhereCond['status']) && is_null($offerWhereCond['status'])) {            
             $query->whereNull('status');            
+        } else if (isset($offerWhereCond['status_is_null_or_accepted'])) {            
+            $query->where(function ($query) {
+                $query->where('status', null)
+                      ->orWhere('status', '=', 1);
+            });
         }
 
         $offerData = $query->first();      
@@ -321,6 +330,10 @@ class AppProgramOffer extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
         }else{
             $prgmOffer = AppProgramOffer::where('prgm_offer_id', $prgm_offer_id)->where('is_active', 1)->first();
+            $rejectPrgmOffer = AppProgramOffer::where('app_id', $data['app_id'])->where('is_active', 1)->orderBy('prgm_offer_id', 'DESC')->first();
+            if($rejectPrgmOffer && $rejectPrgmOffer->status == 2) {
+                $prgmOffer = $rejectPrgmOffer;
+            }
             if($prgmOffer){
                 $prgmOffer->update(['is_active'=>0]);
             }
@@ -544,7 +557,7 @@ class AppProgramOffer extends BaseModel {
 
     public static function getProgramOfferByAppId($appId, $prgm_offer_id = null)
     {
-        $query = self::select('app_prgm_offer.app_id', 'app_prgm_offer.prgm_offer_id', 'app_prgm_offer.prgm_limit_amt', 'offer_chrg.charge_id', 'offer_chrg.chrg_value', 'offer_chrg.chrg_type', 'mst_chrg.chrg_name', 'mst_chrg.is_gst_applicable', 'mst_chrg.gst_percentage')
+        $query = self::select('app_prgm_offer.app_id', 'app_prgm_offer.prgm_offer_id', 'app_prgm_offer.prgm_limit_amt', 'offer_chrg.charge_id', 'offer_chrg.chrg_value', 'offer_chrg.chrg_type', 'mst_chrg.chrg_name', 'mst_chrg.is_gst_applicable', 'mst_chrg.gst_percentage', 'mst_chrg.chrg_applicable_id')
                 ->join('offer_chrg', 'app_prgm_offer.prgm_offer_id', '=', 'offer_chrg.prgm_offer_id')
                 ->join('mst_chrg', 'offer_chrg.charge_id', '=', 'mst_chrg.id')                
                 ->where('app_prgm_offer.is_active', '1')
@@ -582,7 +595,8 @@ class AppProgramOffer extends BaseModel {
                 ->where('app_prgm_limit.end_date', '<', $curDate)
                 ->pluck('app_prgm_offer.app_prgm_limit_id')
                 ->toArray();
-
+        $account_clousers = LmsUsersLog::where('status_id', 35)->pluck('user_id')->toArray();
+        
         $appStatusList=[
             config('common.mst_status_id.APP_REJECTED'),
             config('common.mst_status_id.APP_CANCEL'),
@@ -596,13 +610,15 @@ class AppProgramOffer extends BaseModel {
         $whereCond[] = ['app_prgm_offer.is_active', '=', 1];
         //$whereCond[] = ['app_prgm_offer.status', '=', 1];
         if (is_array($program_id)) {
-            $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+            $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')                    
                     ->whereNotIn('app.curr_status_id', $appStatusList)                    
-                    ->whereIn('app_prgm_offer.prgm_id', $program_id);                    
+                    ->whereIn('app_prgm_offer.prgm_id', $program_id)
+                    ->whereNotIn('app.user_id', $account_clousers);
         } else {
             $query = self::join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
                     ->whereNotIn('app.curr_status_id', $appStatusList)
-                    ->where('app_prgm_offer.prgm_id', $program_id);                    
+                    ->where('app_prgm_offer.prgm_id', $program_id)
+                    ->whereNotIn('app.user_id', $account_clousers);
         }
         $query->where($whereCond);
         $query->where(function($q) {
