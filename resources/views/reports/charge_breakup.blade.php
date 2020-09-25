@@ -9,7 +9,7 @@
         </div>
         <div class="header-title">
             <h3>Reports</h3>
-            <small>Processing Fee Report</small>
+            <small>Charge Report</small>
         </div>
     </section>
 
@@ -59,8 +59,9 @@
                                                 <tr role="row">
                                                     <th>Loan #</th>
                                                     <th>Client Name</th>
-                                                    <th>Processing Fee%</th>
-                                                    <th>Processing Fee Amount</th>
+                                                    <th>Charge Name</th>
+                                                    <th>Charge %</th>
+                                                    <th>Charge Amount</th>
                                                     <th>GST Amount</th>
                                                     <th>Total Amount</th>
                                                     <th>Tally Batch #</th>

@@ -6592,6 +6592,9 @@ class DataRenderer implements DataProviderInterface
         ->editColumn('client_name', function($trans) { 
             return $trans['client_name']?$trans['client_name']:'';
         })
+        ->editColumn('chrg_name', function($trans) { 
+            return $trans['chrg_name']?$trans['chrg_name']:'';
+        })
         ->editColumn('chrg_rate', function($trans) { 
             return $trans['chrg_rate']?$trans['chrg_rate']:'';
         })

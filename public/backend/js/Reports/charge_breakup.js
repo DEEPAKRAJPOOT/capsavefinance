@@ -30,6 +30,7 @@ try {
             columns: [
                 { data: 'loan' },
                 { data: 'client_name' },
+                { data: 'chrg_name' },
                 { data: 'chrg_rate' },
                 { data: 'chrg_amt' },
                 { data: 'gst' },

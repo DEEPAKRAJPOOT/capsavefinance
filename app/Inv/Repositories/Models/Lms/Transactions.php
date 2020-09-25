@@ -141,6 +141,11 @@ class Transactions extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Master\TallyEntry','trans_id','transactions_id');
     }
 
+    public function ChargesTransactions(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\ChargesTransactions','trans_id','trans_id');
+    }
+    
+
     public function getInvoiceNoAttribute(){
         $data = '';
         if($this->userInvTrans){
@@ -1047,33 +1052,112 @@ class Transactions extends BaseModel {
         }
         return $amount;
     }
+    
+    public static function getInterestBreakupReport($whereCondition=[], $whereRawCondition = NULL){
+        $data = [];
+
+        $disbTrans = self::where('trans_type', config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))
+        ->whereNull('parent_trans_id')
+        ->where('entry_type','0')
+        ->get();
+
+        foreach($disbTrans as $dTrans){
+            $unIntTrans = self::where('trans_type', config('lms.TRANS_TYPE.INTEREST'))
+            ->where('invoice_disbursed_id', $dTrans->invoice_disbursed_id)
+            ->whereNull('parent_trans_id')
+            ->where('entry_type','0')
+            ->get();
+
+            foreach($unIntTrans as $uITrans){
+                $data[$uITrans->trans_id] = 
+                [
+                    'loan' => config('common.idprefix.APP').$uITrans->invoiceDisbursed->invoice->app_id,
+                    'client_name' => $uITrans->user->f_name.' '.$uITrans->user->l_name,
+                    'disbursed_amt' => $dTrans->amount,
+                    'from_date' => $uITrans->fromIntDate,
+                    'to_date' => $uITrans->toIntDate,
+                    'days' => abs(round((strtotime($uITrans->toIntDate) - strtotime($uITrans->fromIntDate)) / 86400)),
+                    'int_rate' => $uITrans->invoiceDisbursed->interest_rate,
+                    'int_amt' => $uITrans->amount,
+                    'collection_date' => null,
+                    'tds_rate' => null,
+                    'tds_amt' => 0,
+                    'net_int' => 0,
+                    'tally_batch' => ''
+                ];
+                $data[$uITrans->trans_id]['collection_date'] = self::where('trans_type', config('lms.TRANS_TYPE.INTEREST'))
+                ->where('invoice_disbursed_id', $uITrans->invoice_disbursed_id)
+                ->where('parent_trans_id', $uITrans->trans_id)
+                ->where('entry_type','1')
+                ->max('trans_date');
+
+                $data[$uITrans->trans_id]['tds_amt'] = self::where('trans_type', config('lms.TRANS_TYPE.TDS'))
+                ->whereNotNull('payment_id')
+                ->where('invoice_disbursed_id', $uITrans->invoice_disbursed_id)
+                ->where('parent_trans_id', $uITrans->trans_id)
+                ->where('entry_type','1')
+                ->sum('amount');
+
+                $tdsRates = self::where('trans_type', config('lms.TRANS_TYPE.TDS'))
+                ->whereNotNull('payment_id')
+                ->where('invoice_disbursed_id', $uITrans->invoice_disbursed_id)
+                ->where('parent_trans_id', $uITrans->trans_id)
+                ->where('entry_type','1')
+                ->whereNotNull('tds_per')
+                ->pluck('tds_per')
+                ->toArray();
+                
+                $data[$uITrans->trans_id]['tds_rate'] = implode(',', $tdsRates);
+
+                $data[$uITrans->trans_id]['net_int'] = $data[$uITrans->trans_id]['int_amt'] - $data[$uITrans->trans_id]['tds_amt'];
+
+                $tallyEntries =  $uITrans->tallyEntry;
+
+                if($tallyEntries){
+                    $tallyEntries = $tallyEntries->first();
+                    $data[$uITrans->trans_id]['tally_batch'] = $tallyEntries->batch_no;
+                }
+            }
+        }
+        return $data;
+    }
 
     public static function getchargeBreakupReport($whereCondition=[], $whereRawCondition = NULL){
         $data = [];
 
-        $unIntTrans = self::whereHas('transType', function($query){
+        $chargTrans = self::whereHas('transType', function($query){
             $query->where('chrg_master_id','>','0');
         })
         ->whereNull('parent_trans_id')
         ->where('entry_type','0')
         ->get();
-        foreach($unIntTrans as $uITrans){
-
-            $data[$uITrans->trans_id] = 
+        foreach($chargTrans as $cTrans){
+            
+            $data[$cTrans->trans_id] = 
             [
-                'loan' => '', //config('common.idprefix.APP').$uITrans->invoiceDisbursed->invoice->app_id,
-                'client_name' =>$uITrans->user->f_name.' '.$uITrans->user->l_name,
+                'loan' => '',
+                'client_name' =>$cTrans->user->f_name.' '.$cTrans->user->l_name,
+                'chrg_name' => $cTrans->transName,
                 'chrg_rate' => '',
                 'chrg_amt' => '',
                 'gst' => '',
-                'net_amt' => $uITrans->amount, 
-                'tally_batch' => $uITrans->tallyEntry?$uITrans->tallyEntry->batch_no:''
+                'net_amt' => $cTrans->amount, 
+                'tally_batch' => ''
             ];
-            if($uITrans->userInvTrans){
-                $data[$uITrans->trans_id]['chrg_amt'] = $uITrans->userInvTrans->base_amount;
-                $data[$uITrans->trans_id]['chrg_rate'] = $uITrans->userInvTrans->sgst_rate + $uITrans->userInvTrans->cgst_rate + 
-                $uITrans->userInvTrans->igst_rate;
-                $data[$uITrans->trans_id]['gst'] = $uITrans->userInvTrans->sgst_amount + $uITrans->userInvTrans->cgst_amount + $uITrans->userInvTrans->igst_amount;
+
+            $charge = $cTrans->chargesTransactions;
+            if($charge){
+                $data[$cTrans->trans_id]['loan'] = $charge->app_id?config('common.idprefix.APP').$charge->app_id:'';
+                $data[$cTrans->trans_id]['chrg_amt'] = $charge->amount;
+                $data[$cTrans->trans_id]['chrg_rate'] = ($charge->chargeMaster->chrg_calculation_type == 2)?$charge->percent:'N/A';
+            }
+            if($cTrans->userInvTrans){
+                $data[$cTrans->trans_id]['gst'] = $cTrans->userInvTrans->sgst_amount + $cTrans->userInvTrans->cgst_amount + $cTrans->userInvTrans->igst_amount;
+            }
+            $tallyEntries =  $cTrans->tallyEntry;
+            if($tallyEntries){
+                $tallyEntries = $tallyEntries->first();
+                $data[$cTrans->trans_id]['tally_batch'] = $tallyEntries->batch_no;
             }
         }
         return $data;

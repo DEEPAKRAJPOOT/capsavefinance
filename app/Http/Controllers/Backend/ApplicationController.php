@@ -1057,6 +1057,7 @@ class ApplicationController extends Controller
 								$id  = Auth::user()->user_id;
 								$mytime = Carbon::now();    
 								$arr  = [   
+									'app_id'=> $app_id,
 									"prgm_id" => $offer->prgm_id,
 									'trans_id' => $fDebitCreate->trans_id,
 									"chrg_master_id" => $chrgs->charge_id,

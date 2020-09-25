@@ -51,6 +51,7 @@ class ChargesTransactions extends BaseModel
     protected $fillable = [
         'chrg_trans_id',
         'trans_id',
+        'app_id',
         'prgm_id',
         'chrg_master_id',
         'percent',

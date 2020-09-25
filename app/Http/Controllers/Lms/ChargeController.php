@@ -228,33 +228,37 @@ class ChargeController extends Controller
                         $chrg_gst_id =  Null; 
                         $gst_val     =  Null;
                     }
-                    $arr  = [ 
-                            "user_id" =>  $request->user_id,
-                            "payment_id"=>null,
-                            "amount" =>   $totalSumAmount,
-                            "soa_flag" =>1,
-                            "gst"   => 1,
-                            'gst_per' => $gst_val,
-                            'chrg_gst_id' => $chrg_gst_id,
-                            'entry_type' =>0,
-                            "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
-                            "trans_type" => $getTransType->id,
-                            "pay_from" => $request['pay_from'] 
-                        ];
-                       $res =   $this->lmsRepo->saveCharge($arr);
                     
+                    $arr = [ 
+                        "user_id" => $request->user_id,
+                        "payment_id" => null,
+                        "amount" => $totalSumAmount,
+                        "soa_flag" => 1,
+                        "gst" => 1,
+                        'gst_per' => $gst_val,
+                        'chrg_gst_id' => $chrg_gst_id,
+                        'entry_type' => 0,
+                        "trans_date" => ($request['charge_date']) ? Carbon::createFromFormat('d/m/Y', $request['charge_date'])->format('Y-m-d') : '',
+                        "trans_type" => $getTransType->id,
+                        "pay_from" => $request['pay_from']
+                    ];
                     
-                    $arr  = [   "prgm_id" => $request->program_id,
-                                'trans_id' => $res['trans_id'],
-                                "chrg_master_id" =>$request->chrg_name,
-                                "percent" => $percent,
-                                "chrg_applicable_id" =>  $chrg_applicable_id,
-                                "amount" =>   $totalSumAmount,
-                                "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
-                                'created_by' =>  $id,
-                                'created_at' =>  $mytime ];
+                    $res =   $this->lmsRepo->saveCharge($arr);
+                    
+                    $arr = [   
+                        'app_id' => $request->app_id,
+                        "prgm_id" => $request->program_id,
+                        'trans_id' => $res['trans_id'],
+                        "chrg_master_id" =>$request->chrg_name,
+                        "percent" => $percent,
+                        "chrg_applicable_id" =>  $chrg_applicable_id,
+                        "amount" =>   $totalSumAmount,
+                        "virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($request->user_id),
+                        'created_by' =>  $id,
+                        'created_at' =>  $mytime
+                    ];
                 
-                  $chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);  
+                    $chrgTransId = $this->lmsRepo->saveChargeTrans($arr);  
               
                   if( $chrgTransId)
                   {
