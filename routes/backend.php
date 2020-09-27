@@ -810,7 +810,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'edit_anchor_reg',
                 'uses' => 'Backend\LeadController@editAnchorReg'
             ]);
-                Route::post('update-anchor', [
+
+            Route::get('view-uploaded-file', [
+                'as' => 'view_uploaded_file',
+                'uses' => 'Backend\LeadController@viewUploadedFile'
+            ]);
+
+            Route::post('update-anchor', [
                 'as' => 'update_anchor_reg',
                 'uses' => 'Backend\LeadController@updateAnchorReg'
             ]); 

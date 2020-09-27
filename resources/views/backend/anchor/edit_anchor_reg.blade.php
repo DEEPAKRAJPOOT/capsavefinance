@@ -158,9 +158,12 @@
                                     <label class="custom-file-label" for="customFile">Choose file</label>
                                  </div>
                              </div>
-                           </div>  
-                       
-                        </div>  
+                           </div> 
+                        </div> 
+
+                        <div class="custom-file mb-3 mt-2">
+                           <a href="{{ route('view_uploaded_file',['userId' => $anchorUserData->user_id, 'anchorId' => $anchorUserData->anchor_id, 'fileId' => $anchorUserData->file_id]) }}" title="Download Template"><i style="color:green" class="fa fa-file-excel-o" target="_blank"> View Uploaded File</i></a>
+                        </div> 
                 
                 
                 {!! Form::hidden('anchor_id', $anchor_id) !!}
