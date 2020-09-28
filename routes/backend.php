@@ -100,7 +100,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'promoter_details',
                 'uses' => 'Backend\ApplicationController@showPromoterDetails'
             ]);
-             Route::post('promoter-save',
+
+            Route::get('view-uploaded-doc',[
+                'as' => 'view_uploaded_doc',
+                'uses' => 'Backend\DocumentController@seeUploadFile'
+            ]);
+
+            Route::post('promoter-save',
                 [
                     'as' => 'promoter_save',
                     'uses' => 'Backend\ApplicationController@savePromoter'
