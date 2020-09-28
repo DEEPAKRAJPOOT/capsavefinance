@@ -232,6 +232,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'uses' => 'Backend\PaymentController@EditPayment',
                     ]);
 
+                    Route::get('view-file', [
+                        'as' => 'see_repayment_file',
+                        'uses' => 'Backend\PaymentController@viewUploadedFile',
+                    ]);
+
                     Route::post('update_payment', [
                         'as' => 'update_payment',
                         'uses' => 'Backend\PaymentController@updatePayment',

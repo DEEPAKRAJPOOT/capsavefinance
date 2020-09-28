@@ -2086,6 +2086,9 @@ class DataRenderer implements DataProviderInterface
                             if(Helpers::checkPermission('download_storage_file') ){
                                 $act .= '<a title="Download" href="'. route('download_storage_file', ['file_id' => $trans->userFile->file_id ]) .'" class="btn btn-action-btn btn-sm" ><i class="fa fa-download"></i></a>';
                             }
+                            if(Helpers::checkPermission('see_repayment_file') ){
+                                $act .= '<a title="Download" target="_blank" href="'. route('see_repayment_file', ['file_id' => $trans->userFile->file_id ]) .'" class="btn btn-action-btn btn-sm" ><i class="fa fa-eye"></i></a>';
+                            }
                         }
                         if (Helpers::checkPermission('edit_payment') && ($trans->action_type == 3 || ($trans->action_type == 1 && $trans->payment_type == 2))) {
                             $act .= "<a  data-toggle=\"modal\" data-target=\"#editPaymentFrm\" data-url =\"" . route('edit_payment', ['payment_id' => $trans->payment_id, 'payment_type' => $trans->payment_type]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Payment\"><i class=\"fa fa-edit\"></i></a>";
