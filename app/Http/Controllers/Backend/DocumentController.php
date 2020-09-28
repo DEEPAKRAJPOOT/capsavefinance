@@ -198,7 +198,7 @@ class DocumentController extends Controller
     }
 
     /**
-     * This method is used for see upload file in Onboarding documents  
+     * This method is used for see upload file in Onboarding and prepost sanction documents  
      */
     public function seeUploadFile(Request $request) {
 
@@ -208,8 +208,9 @@ class DocumentController extends Controller
         $filePath = 'app/public/'.$fileData->file_path;
         $path = storage_path($filePath);
         
-         if (file_exists($path)) {
+        if (file_exists($path)) {
             return response()->file($path);
         }
     }
+
 }

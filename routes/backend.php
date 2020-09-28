@@ -23,10 +23,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'download_storage_file',
                 'uses' => 'Backend\DocumentController@downloadStorageFile'
             ]);
-            Route::get('/view-file', [
-                'as' => 'view_onboarding_documents',
-                'uses' => 'Backend\DocumentController@seeUploadFile'
-            ]);
 
         });
 
@@ -130,6 +126,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('documents/upload-document', [
                 'as' => 'show_upload_document',
                 'uses' => 'Backend\ApplicationController@uploadDocument'
+            ]);
+
+            Route::get('/see-onboarding-file', [
+                'as' => 'view_onboarding_documents',
+                'uses' => 'Backend\DocumentController@seeUploadFile'
             ]);
 
             Route::get('documents/edit-upload-document', [
@@ -1290,6 +1291,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/upload-document', [
                 'as' => 'pp_upload_document',
                 'uses' => 'Backend\DocumentController@uploadDocument'
+            ]);
+            Route::get('/see-prepost-file',[
+                'as' => 'view_prepost_documents',
+                'uses' => 'Backend\DocumentController@seeUploadFile'
             ]);
 
             Route::post('/documents-save', [
