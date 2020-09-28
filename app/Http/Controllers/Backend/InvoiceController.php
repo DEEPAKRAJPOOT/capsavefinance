@@ -1649,4 +1649,24 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }             
     }
+
+    public function viewUploadedFile(Request $request){
+        try {
+            
+            $file_id = $request->get('file_id');
+            $fileData = $this->docRepo->getFileByFileId($file_id);
+            // dd($fileData);
+            $filePath = 'app/public/'.$fileData->file_path;
+            $path = storage_path($filePath);
+           
+            if (file_exists($path)) {
+                return response()->file($path);
+            }else{
+                exit('Requested file does not exist on our server!');
+            }
+        } catch (Exception $ex) {                
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+
+    }
 }

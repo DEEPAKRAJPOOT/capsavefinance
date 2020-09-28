@@ -921,7 +921,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {
                      $action ="";
                       if(($invoice->file_id != 0)) {
-                          $action .='<a href="'.route('download_storage_file', ['file_id' => $invoice->userFile->file_id ]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                          $action .='<a href="'.route('download_storage_file', ['file_id' => $invoice->userFile->file_id ]).'" title=" Download"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                          $action .='&nbsp;<a href="'.route('see_invoice_file', ['file_id' => $invoice->userFile->file_id ]).'" title="View Document" target="_blank" class="btn btn-action-btn btn-sm"><i class="fa fa-eye" aria-hidden="true"></i></a>';
                          } else  {
                             /// return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
                            $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>

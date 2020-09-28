@@ -302,6 +302,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'uses' => 'Backend\InvoiceController@viewInvoice',
                     ]);
 
+                    Route::get('view-invoice-file', [
+                        'as' => 'see_invoice_file',
+                        'uses' => 'Backend\InvoiceController@viewUploadedFile',
+                    ]);
+
                     Route::get('user_wise_invoice', [
                         'as' => 'user_wise_invoice',
                         'uses' => 'Backend\InvoiceController@UserWiseInvoice',
