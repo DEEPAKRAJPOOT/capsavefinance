@@ -4700,8 +4700,8 @@ if ($err) {
             'from_date' => $from_date ?? NULL,
             'to_date' => $to_date ?? NULL,
         ];
-        
-        $interestBreakupList = $this->reportsRepo->getInterestBreakupReport();
+
+        $interestBreakupList = $this->reportsRepo->getInterestBreakupReport($condArr);
         $interestBreakup = $dataProvider->interestBreakup($this->request, $interestBreakupList);
         $interestBreakup = $interestBreakup->getData(true);
 
@@ -4712,17 +4712,18 @@ if ($err) {
     }
 
     public function chargeBreakup(DataProviderInterface $dataProvider){
+        $rowWhere = null;
         if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
             $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('Y-m-d 00:00:00');
             $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d 23:59:59');
+            $rowWhere = "trans_date between '".$from_date."' AND '". $to_date."'";
         }
         $condArr = [
             'from_date' => $from_date ?? NULL,
             'to_date' => $to_date ?? NULL,
         ];
         
-        $interestBreakupList = $this->reportsRepo->getChargeBreakupReport();
-
+        $interestBreakupList = $this->reportsRepo->getChargeBreakupReport([], $rowWhere);
         $interestBreakup = $dataProvider->chargeBreakup($this->request, $interestBreakupList);
         $interestBreakup = $interestBreakup->getData(true);
 
@@ -4733,16 +4734,18 @@ if ($err) {
     }
 
     public function tdsBreakup(DataProviderInterface $dataProvider){
+        $rowWhere = null;
         if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
             $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('Y-m-d 00:00:00');
             $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d 23:59:59');
+            $rowWhere = "trans_date between '".$from_date."' AND '". $to_date."'";
         }
         $condArr = [
             'from_date' => $from_date ?? NULL,
             'to_date' => $to_date ?? NULL,
         ];
         
-        $interestBreakupList = $this->reportsRepo->gettdsBreakupReport();
+        $interestBreakupList = $this->reportsRepo->gettdsBreakupReport([], $rowWhere);
         $interestBreakup = $dataProvider->tdsBreakup($this->request, $interestBreakupList);
         $interestBreakup = $interestBreakup->getData(true);
 

@@ -16,7 +16,7 @@
     <div class="card">
         <div class="card-body">
             <div class="row mt-4">
-                {{-- <div class="col-md-3">
+                <div class="col-md-3">
                     {!!
                     Form::text('from_date',
                     null,
@@ -41,7 +41,7 @@
                     !!}
                 </div>
                 <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button> &nbsp; &nbsp; 
-                <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldPDF">Pdf</a> &nbsp; &nbsp;  --}}
+                {{-- <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldPDF">Pdf</a> &nbsp; &nbsp;  --}}
                 <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldEXCEL">Excel</a>
                
                 <div class="col-12 dataTables_wrapper mt-4">
@@ -59,6 +59,7 @@
                                                 <tr role="row">
                                                     <th>Loan #</th>
                                                     <th>Client Name</th>
+                                                    <th>TDS Date</th>
                                                     <th>Interest Amount</th>
                                                     <th>Date of Interest Deduction</th>
                                                     <th>TDS Amount</th>

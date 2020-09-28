@@ -72,6 +72,14 @@ class ReportController extends Controller
     }
 
     public function downloadInterestBreakup(Request $request) {
+        if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+            $from_date = $request->get('from_date');
+            $to_date = $request->get('to_date');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+        ];
         $rows = 1;
         $sheet =  new PHPExcel();
         $sheet->getActiveSheet()->getStyle('A1:M1')->applyFromArray(['font' => ['bold'  => true]]);
@@ -90,7 +98,7 @@ class ReportController extends Controller
                 ->setCellValue('L'.$rows, 'Net Interest')
                 ->setCellValue('M'.$rows, 'Tally Batch');
         $rows++;
-        $exceldata = $this->reportsRepo->getInterestBreakupReport([], NULL);
+        $exceldata = $this->reportsRepo->getInterestBreakupReport($condArr, NULL);
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
                 ->setCellValue('A' . $rows, $rowData['loan'])
@@ -129,30 +137,38 @@ class ReportController extends Controller
     }
 
     public function downloadChargeBreakup(Request $request){
+        $rowWhere = null;
+        if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+            $from_date = $request->get('from_date');
+            $to_date = $request->get('to_date');
+            $rowWhere = "trans_date between '".$from_date."' AND '". $to_date."'";
+        }
         $rows = 1;
         $sheet =  new PHPExcel();
         $sheet->getActiveSheet()->getStyle('A1:H1')->applyFromArray(['font' => ['bold'  => true]]);
         $sheet->setActiveSheetIndex(0)
                 ->setCellValue('A'.$rows, 'Loan #')
                 ->setCellValue('B'.$rows, 'Client Name')
-                ->setCellValue('C'.$rows, 'Charge Name')
-                ->setCellValue('D'.$rows, 'Charge %')
-                ->setCellValue('E'.$rows, 'Charge Amount')
-                ->setCellValue('F'.$rows, 'GST Amount')
-                ->setCellValue('G'.$rows, 'Total Amount')
-                ->setCellValue('H'.$rows, 'Tally Batch #');
+                ->setCellValue('C'.$rows, 'Charge Date')
+                ->setCellValue('D'.$rows, 'Charge Name')
+                ->setCellValue('E'.$rows, 'Charge %')
+                ->setCellValue('F'.$rows, 'Charge Amount')
+                ->setCellValue('G'.$rows, 'GST Amount')
+                ->setCellValue('H'.$rows, 'Total Amount')
+                ->setCellValue('I'.$rows, 'Tally Batch #');
         $rows++;
-        $exceldata = $this->reportsRepo->getChargeBreakupReport([], NULL);
+        $exceldata = $this->reportsRepo->getChargeBreakupReport([], $rowWhere);
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'. $rows, $rowData['loan'])
             ->setCellValue('B'. $rows, $rowData['client_name'])
-            ->setCellValue('C'. $rows, $rowData['chrg_name'])
-            ->setCellValue('D'. $rows, $rowData['chrg_rate'] ? number_format($rowData['chrg_rate'],2):'')
-            ->setCellValue('E'. $rows, $rowData['chrg_amt'] ? number_format($rowData['chrg_amt'],2):'')
-            ->setCellValue('F'. $rows, $rowData['gst'] ? number_format($rowData['gst'],2):'')
-            ->setCellValue('G'. $rows, $rowData['net_amt'] ? number_format($rowData['net_amt'],2):'')
-            ->setCellValue('H'. $rows, $rowData['tally_batch']);
+            ->setCellValue('C'. $rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
+            ->setCellValue('D'. $rows, $rowData['chrg_name'])
+            ->setCellValue('E'. $rows, $rowData['chrg_rate'] ? number_format($rowData['chrg_rate'],2):'')
+            ->setCellValue('F'. $rows, $rowData['chrg_amt'] ? number_format($rowData['chrg_amt'],2):'')
+            ->setCellValue('G'. $rows, $rowData['gst'] ? number_format($rowData['gst'],2):'')
+            ->setCellValue('H'. $rows, $rowData['net_amt'] ? number_format($rowData['net_amt'],2):'')
+            ->setCellValue('I'. $rows, $rowData['tally_batch']);
             $rows++;
         }
         
@@ -176,29 +192,36 @@ class ReportController extends Controller
     }
 
     public function downloadTdsBreakup(Request $request){
+        $rowWhere = null;
+        if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+            $from_date = $request->get('from_date');
+            $to_date = $request->get('to_date');
+            $rowWhere = "trans_date between '".$from_date."' AND '". $to_date."'";
+        }
         $rows = 1;
-        
         $sheet =  new PHPExcel();
         $sheet->getActiveSheet()->getStyle('A1:M1')->applyFromArray(['font' => ['bold'  => true]]);
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Loan #')
             ->setCellValue('B'.$rows, 'Client Name')
-            ->setCellValue('C'.$rows, 'Interest Amount')
-            ->setCellValue('D'.$rows, 'Date of Interest Deduction')
-            ->setCellValue('E'.$rows, 'TDS Amount')
-            ->setCellValue('F'.$rows, 'TDS certificate #')
-            ->setCellValue('G'.$rows, 'Tally Batch #');
+            ->setCellValue('C'.$rows, 'TDS Date')
+            ->setCellValue('D'.$rows, 'Interest Amount')
+            ->setCellValue('E'.$rows, 'Date of Interest Deduction')
+            ->setCellValue('F'.$rows, 'TDS Amount')
+            ->setCellValue('G'.$rows, 'TDS certificate #')
+            ->setCellValue('H'.$rows, 'Tally Batch #');
         $rows++;
-        $exceldata = $this->reportsRepo->getTdsBreakupReport([], NULL);
+        $exceldata = $this->reportsRepo->getTdsBreakupReport([], $rowWhere);
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
                 ->setCellValue('A' . $rows, $rowData['loan'])
                 ->setCellValue('B' . $rows, $rowData['client_name'])
-                ->setCellValue('C' . $rows, number_format($rowData['int_amt'],2))
-                ->setCellValue('D' . $rows, Carbon::parse($rowData['deduction_date'])->format('d-m-Y'))
-                ->setCellValue('E' . $rows, number_format($rowData['tds_amt'],2))
-                ->setCellValue('F' . $rows, $rowData['tds_certificate'])
-                ->setCellValue('G' . $rows, $rowData['tally_batch']);
+                ->setCellValue('C' . $rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
+                ->setCellValue('D' . $rows, number_format($rowData['int_amt'],2))
+                ->setCellValue('E' . $rows, Carbon::parse($rowData['deduction_date'])->format('d-m-Y'))
+                ->setCellValue('F' . $rows, number_format($rowData['tds_amt'],2))
+                ->setCellValue('G' . $rows, $rowData['tds_certificate'])
+                ->setCellValue('H' . $rows, $rowData['tally_batch']);
             $rows++;
         }
         

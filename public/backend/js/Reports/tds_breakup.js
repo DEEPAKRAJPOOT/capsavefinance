@@ -30,6 +30,7 @@ try {
             columns: [
                 { data: 'loan' },
                 { data: 'client_name' },
+                { data: 'trans_date' },
                 { data: 'int_amt' },
                 { data: 'deduction_date' },
                 { data: 'tds_amt' },

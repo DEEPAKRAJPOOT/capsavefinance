@@ -6572,15 +6572,6 @@ class DataRenderer implements DataProviderInterface
         ->editColumn('tally_batch', function($trans) {
             return $trans['tally_batch'];
         })
-        ->filter(function ($query) use ($request) {
-            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
-                $query->where(function ($query) use ($request) {
-                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
-                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
-                    $query->WhereBetween('invoice_date', [$from_date, $to_date]);
-                });
-            }
-        })
         ->make(true);
     }
 
@@ -6601,6 +6592,9 @@ class DataRenderer implements DataProviderInterface
         ->editColumn('chrg_amt', function($trans) { 
             return $trans['chrg_amt']?number_format($trans['chrg_amt'],2):'';
         })
+        ->editColumn('trans_date', function($trans) { 
+            return $trans['trans_date']?Carbon::parse($trans['trans_date'])->format('d-m-Y'):'';
+        })
         ->editColumn('gst', function($trans) { 
             return $trans['gst']?number_format($trans['gst'],2):'';
         })
@@ -6609,15 +6603,6 @@ class DataRenderer implements DataProviderInterface
         })
         ->editColumn('tally_batch', function($trans) { 
             return $trans['tally_batch']?$trans['tally_batch']:'';
-        })
-        ->filter(function ($query) use ($request) {
-            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
-                $query->where(function ($query) use ($request) {
-                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
-                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
-                    $query->WhereBetween('invoice_date', [$from_date, $to_date]);
-                });
-            }
         })
         ->make(true);
     }
@@ -6629,6 +6614,9 @@ class DataRenderer implements DataProviderInterface
         })
         ->editColumn('client_name', function($trans) { 
             return $trans['client_name']?$trans['client_name']:'';
+        })
+        ->editColumn('trans_date', function($trans) { 
+            return $trans['trans_date']?Carbon::parse($trans['trans_date'])->format('d-m-Y'):'';
         })
         ->editColumn('int_amt', function($trans) { 
             return $trans['int_amt']?number_format($trans['int_amt'],2):'';
@@ -6644,15 +6632,6 @@ class DataRenderer implements DataProviderInterface
         })
         ->editColumn('tally_batch', function($trans) { 
             return $trans['tally_batch']?$trans['tally_batch']:'';
-        })       
-        ->filter(function ($query) use ($request) {
-            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
-                $query->where(function ($query) use ($request) {
-                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
-                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
-                    $query->WhereBetween('invoice_date', [$from_date, $to_date]);
-                });
-            }
         })
         ->make(true);
     }

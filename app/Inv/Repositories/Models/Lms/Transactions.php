@@ -1066,7 +1066,16 @@ class Transactions extends BaseModel {
             ->where('invoice_disbursed_id', $dTrans->invoice_disbursed_id)
             ->whereNull('parent_trans_id')
             ->where('entry_type','0')
-            ->get();
+            ->get()
+            ->filter(function($item) use($whereCondition) {
+                $result = false;
+                if($whereCondition){
+                    if($whereCondition['from_date'] && $whereCondition['to_date']){
+                        $result = (strtotime($item->fromIntDate) >= strtotime($whereCondition['from_date']) && strtotime($item->fromIntDate) <= strtotime($whereCondition['to_date']));
+                    }
+                }
+                return $result; 
+            });
 
             foreach($unIntTrans as $uITrans){
                 $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id] = 
@@ -1130,8 +1139,13 @@ class Transactions extends BaseModel {
             $query->where('chrg_master_id','>','0');
         })
         ->whereNull('parent_trans_id')
-        ->where('entry_type','0')
-        ->get();
+        ->where('entry_type','0');
+        
+        if (!empty($whereRawCondition)) {
+            $chargTrans = $chargTrans->whereRaw($whereRawCondition);
+        }
+
+        $chargTrans = $chargTrans->get();
         foreach($chargTrans as $cTrans){
             
             $data[$cTrans->trans_id] = 
@@ -1139,6 +1153,7 @@ class Transactions extends BaseModel {
                 'loan' => '',
                 'client_name' =>$cTrans->user->f_name.' '.$cTrans->user->l_name,
                 'chrg_name' => $cTrans->transName,
+                'trans_date' => $cTrans->trans_date,
                 'chrg_rate' => '',
                 'chrg_amt' => '',
                 'gst' => '',
@@ -1177,8 +1192,12 @@ class Transactions extends BaseModel {
 
         $chargTrans = self::where('trans_type', config('lms.TRANS_TYPE.INTEREST'))
         ->whereNull('parent_trans_id')
-        ->where('entry_type','0')
-        ->get();
+        ->where('entry_type','0');
+
+        if (!empty($whereRawCondition)) {
+            $chargTrans = $chargTrans->whereRaw($whereRawCondition);
+        }
+        $chargTrans = $chargTrans->get();
 
         
         foreach($chargTrans as $cTrans){
@@ -1196,6 +1215,7 @@ class Transactions extends BaseModel {
                 [
                     'loan' => '',
                     'client_name' => $tds->user->f_name.' '.$tds->user->l_name,
+                    'trans_date' => $cTrans->trans_date,
                     'int_amt' => $cTrans->amount,
                     'deduction_date' => $cTrans->trans_date,
                     'tds_amt' => $tds->amount,
