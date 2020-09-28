@@ -22,7 +22,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/download-file', [
                 'as' => 'download_storage_file',
                 'uses' => 'Backend\DocumentController@downloadStorageFile'
-            ]);              
+            ]);
+            Route::get('/view-file', [
+                'as' => 'view_onboarding_documents',
+                'uses' => 'Backend\DocumentController@seeUploadFile'
+            ]);
+
         });
 
         Route::group(['prefix' => 'reports'], function () {

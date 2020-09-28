@@ -196,4 +196,20 @@ class DocumentController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+    /**
+     * This method is used for see upload file in Onboarding documents  
+     */
+    public function seeUploadFile(Request $request) {
+
+        $fileId = $request->get('file_id');
+        $fileData = $this->docRepo->getFileByFileId($fileId);
+
+        $filePath = 'app/public/'.$fileData->file_path;
+        $path = storage_path($filePath);
+        
+         if (file_exists($path)) {
+            return response()->file($path);
+        }
+    }
 }
