@@ -161,10 +161,13 @@
                            </div> 
                         </div> 
 
+                        @if(isset($anchorUserData->file_id) && !empty($anchorUserData->file_id))
+                        @can(view_uploaded_file)
                         <div class="custom-file mb-3 mt-2">
                            <a data-toggle="modal" data-target="#EdituploadDocument" data-url = "{{ route('view_uploaded_file',['fileId' => $anchorUserData->file_id]) }}" data-height="300px" data-width="100%" data-placement="top" title="View File"><i style="color:green" class="fa fa-file-pdf-o"> View Uploaded File</i></a>
                         </div> 
-                
+                        @endcan
+                        @endif
                 
                 {!! Form::hidden('anchor_id', $anchor_id) !!}
                 <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
