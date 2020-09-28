@@ -1072,7 +1072,11 @@ class Transactions extends BaseModel {
                 if($whereCondition){
                     if($whereCondition['from_date'] && $whereCondition['to_date']){
                         $result = (strtotime($item->fromIntDate) >= strtotime($whereCondition['from_date']) && strtotime($item->fromIntDate) <= strtotime($whereCondition['to_date']));
+                    }else{
+                        $result = true;    
                     }
+                }else{
+                    $result = true;
                 }
                 return $result; 
             });
