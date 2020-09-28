@@ -41,7 +41,7 @@
     @endcan
     @can('charge_breakup')
     <li>
-        <a class=" {{ ($active=='charge_breakup')? 'active': null }} " href="{{ route('charge_breakup') }}">Processing Fee</a>
+        <a class=" {{ ($active=='charge_breakup')? 'active': null }} " href="{{ route('charge_breakup') }}">Charge Breakup</a>
     </li>
     @endcan
     @can('tds_breakup')

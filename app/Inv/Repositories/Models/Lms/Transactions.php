@@ -1069,7 +1069,7 @@ class Transactions extends BaseModel {
             ->get();
 
             foreach($unIntTrans as $uITrans){
-                $data[$uITrans->trans_id] = 
+                $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id] = 
                 [
                     'loan' => config('common.idprefix.APP').$uITrans->invoiceDisbursed->invoice->app_id,
                     'client_name' => $uITrans->user->f_name.' '.$uITrans->user->l_name,
@@ -1085,13 +1085,13 @@ class Transactions extends BaseModel {
                     'net_int' => 0,
                     'tally_batch' => ''
                 ];
-                $data[$uITrans->trans_id]['collection_date'] = self::where('trans_type', config('lms.TRANS_TYPE.INTEREST'))
+                $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['collection_date'] = self::where('trans_type', config('lms.TRANS_TYPE.INTEREST'))
                 ->where('invoice_disbursed_id', $uITrans->invoice_disbursed_id)
                 ->where('parent_trans_id', $uITrans->trans_id)
                 ->where('entry_type','1')
                 ->max('trans_date');
 
-                $data[$uITrans->trans_id]['tds_amt'] = self::where('trans_type', config('lms.TRANS_TYPE.TDS'))
+                $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['tds_amt'] = self::where('trans_type', config('lms.TRANS_TYPE.TDS'))
                 ->whereNotNull('payment_id')
                 ->where('invoice_disbursed_id', $uITrans->invoice_disbursed_id)
                 ->where('parent_trans_id', $uITrans->trans_id)
@@ -1107,18 +1107,19 @@ class Transactions extends BaseModel {
                 ->pluck('tds_per')
                 ->toArray();
                 
-                $data[$uITrans->trans_id]['tds_rate'] = implode(',', $tdsRates);
+                $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['tds_rate'] = implode(',', $tdsRates);
 
-                $data[$uITrans->trans_id]['net_int'] = $data[$uITrans->trans_id]['int_amt'] - $data[$uITrans->trans_id]['tds_amt'];
+                $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['net_int'] = $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['int_amt'] - $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['tds_amt'];
 
                 $tallyEntries =  $uITrans->tallyEntry;
 
                 if($tallyEntries){
                     $tallyEntries = $tallyEntries->first();
-                    $data[$uITrans->trans_id]['tally_batch'] = $tallyEntries->batch_no;
+                    $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['tally_batch'] = $tallyEntries->batch_no;
                 }
             }
         }
+        krsort($data);
         return $data;
     }
 
@@ -1160,6 +1161,7 @@ class Transactions extends BaseModel {
 
             if($cTrans->userInvTrans){
                 $data[$cTrans->trans_id]['gst'] = $cTrans->userInvTrans->sgst_amount + $cTrans->userInvTrans->cgst_amount + $cTrans->userInvTrans->igst_amount;
+                $data[$cTrans->trans_id]['chrg_amt'] = $cTrans->userInvTrans->base_amount;
             }
             $tallyEntries =  $cTrans->tallyEntry;
             if($tallyEntries){
