@@ -210,6 +210,8 @@ class DocumentController extends Controller
         
         if (file_exists($path)) {
             return response()->file($path);
+        }else{
+            exit('Requested file does not exist on our server!');
         }
     }
 

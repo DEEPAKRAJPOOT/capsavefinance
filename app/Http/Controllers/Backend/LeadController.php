@@ -836,30 +836,18 @@ class LeadController extends Controller {
 
     public function viewUploadedFile(Request $request){
         try {
-            $anchor_id = $request->get('anchorId');
-            $user_id = $request->get('userId');
+            
             $file_id = $request->get('fileId');
             $fileData = $this->docRepo->getFileByFileId($file_id);
             // dd($fileData);
-            if (!empty($fileData->file_path )) {
-                $file = Storage::disk('public')->exists($fileData->file_path);
-                // dd($file);
-                if ($file) {
-                    $file_name = explode('/',$fileData->file_path)[2];
-                    // $path = storage_path('/app/public/anchor/'.$anchor_id,$file_name);
-                    // $filePath = 'app/public/anchor/' . auth()->user()->user_id . '/' . $file->doc_name;
-                    // dd($fileData->file_path);
-                    $path = storage_path($fileData->file_path);
-
-                    if (file_exists($path)) {
-                        
-                        return response()->file($path);
-                    }
-                } else {
-                    return redirect()->back()->withErrors(trans('error_messages.documentNotFound'));
-                }
-            } else {
-                return redirect()->back()->withErrors(trans('error_messages.documentNotFound'));
+            $filePath = 'app/public/'.$fileData->file_path;
+            $path = storage_path($filePath);
+            // dd($path);
+            if (file_exists($path)) {
+                return response()->file($path);
+                // return "<iframe src=".url($path)."></iframe>";
+            }else{
+                exit('Requested file does not exist on our server!');
             }
         } catch (Exception $ex) {                
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

@@ -162,7 +162,7 @@
                         </div> 
 
                         <div class="custom-file mb-3 mt-2">
-                           <a href="{{ route('view_uploaded_file',['userId' => $anchorUserData->user_id, 'anchorId' => $anchorUserData->anchor_id, 'fileId' => $anchorUserData->file_id]) }}" title="Download Template"><i style="color:green" class="fa fa-file-excel-o" target="_blank"> View Uploaded File</i></a>
+                           <a data-toggle="modal" data-target="#EdituploadDocument" data-url = "{{ route('view_uploaded_file',['fileId' => $anchorUserData->file_id]) }}" data-height="300px" data-width="100%" data-placement="top" title="View File"><i style="color:green" class="fa fa-file-pdf-o"> View Uploaded File</i></a>
                         </div> 
                 
                 
@@ -174,8 +174,7 @@
          </div>
      
 
-
-
+{!!Helpers::makeIframePopup('EdituploadDocument','View Uploaded File', 'modal-md')!!}
 @endsection
 
 @section('jscript')
