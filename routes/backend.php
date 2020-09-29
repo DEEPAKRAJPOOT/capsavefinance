@@ -539,7 +539,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'show_qms_details',
                 'uses' => 'Backend\QmsController@showQmsDetails'
 
-            ]);   
+            ]);
+            
+            Route::get('see-qms-file', [
+                'as' => 'view_qms_doc',
+                'uses' => 'Backend\DocumentController@seeUploadFile'
+
+            ]);
 
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
