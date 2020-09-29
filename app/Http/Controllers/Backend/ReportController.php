@@ -86,16 +86,16 @@ class ReportController extends Controller
         $sheet->setActiveSheetIndex(0)
                 ->setCellValue('A'.$rows, 'Loan #')
                 ->setCellValue('B'.$rows, 'Client Name')
-                ->setCellValue('C'.$rows, 'Amount Disbrused')
+                ->setCellValue('C'.$rows, 'Amount Disbrused (₹)')
                 ->setCellValue('D'.$rows, 'From Date')
                 ->setCellValue('E'.$rows, 'To date')
                 ->setCellValue('F'.$rows, 'Days')
-                ->setCellValue('G'.$rows, 'Interest Rate')
-                ->setCellValue('H'.$rows, 'Interest Amount')
+                ->setCellValue('G'.$rows, 'Interest Rate (%)')
+                ->setCellValue('H'.$rows, 'Interest Amount (₹)')
                 ->setCellValue('I'.$rows, 'Date of Interest Collection')
-                ->setCellValue('J'.$rows, 'TDS Rate')
-                ->setCellValue('K'.$rows, 'TDS Amount')
-                ->setCellValue('L'.$rows, 'Net Interest')
+                ->setCellValue('J'.$rows, 'TDS Rate (%)')
+                ->setCellValue('K'.$rows, 'TDS Amount (₹)')
+                ->setCellValue('L'.$rows, 'Net Interest (₹)')
                 ->setCellValue('M'.$rows, 'Tally Batch');
         $rows++;
         $exceldata = $this->reportsRepo->getInterestBreakupReport($condArr, NULL);
@@ -151,10 +151,10 @@ class ReportController extends Controller
                 ->setCellValue('B'.$rows, 'Client Name')
                 ->setCellValue('C'.$rows, 'Charge Date')
                 ->setCellValue('D'.$rows, 'Charge Name')
-                ->setCellValue('E'.$rows, 'Charge %')
-                ->setCellValue('F'.$rows, 'Charge Amount')
-                ->setCellValue('G'.$rows, 'GST Amount')
-                ->setCellValue('H'.$rows, 'Total Amount')
+                ->setCellValue('E'.$rows, 'Charge (%)')
+                ->setCellValue('F'.$rows, 'Charge Amount (₹)')
+                ->setCellValue('G'.$rows, 'GST Amount (₹)')
+                ->setCellValue('H'.$rows, 'Total Amount (₹)')
                 ->setCellValue('I'.$rows, 'Tally Batch #');
         $rows++;
         $exceldata = $this->reportsRepo->getChargeBreakupReport([], $rowWhere);
@@ -204,10 +204,10 @@ class ReportController extends Controller
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Loan #')
             ->setCellValue('B'.$rows, 'Client Name')
-            ->setCellValue('C'.$rows, 'TDS Date')
-            ->setCellValue('D'.$rows, 'Interest Amount')
+            ->setCellValue('D'.$rows, 'Interest Amount (₹)')
             ->setCellValue('E'.$rows, 'Date of Interest Deduction')
-            ->setCellValue('F'.$rows, 'TDS Amount')
+            ->setCellValue('C'.$rows, 'TDS Date')
+            ->setCellValue('F'.$rows, 'TDS Amount (₹)')
             ->setCellValue('G'.$rows, 'TDS certificate #')
             ->setCellValue('H'.$rows, 'Tally Batch #');
         $rows++;
@@ -216,9 +216,9 @@ class ReportController extends Controller
             $sheet->setActiveSheetIndex(0)
                 ->setCellValue('A' . $rows, $rowData['loan'])
                 ->setCellValue('B' . $rows, $rowData['client_name'])
-                ->setCellValue('C' . $rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
                 ->setCellValue('D' . $rows, number_format($rowData['int_amt'],2))
                 ->setCellValue('E' . $rows, Carbon::parse($rowData['deduction_date'])->format('d-m-Y'))
+                ->setCellValue('C' . $rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
                 ->setCellValue('F' . $rows, number_format($rowData['tds_amt'],2))
                 ->setCellValue('G' . $rows, $rowData['tds_certificate'])
                 ->setCellValue('H' . $rows, $rowData['tally_batch']);

@@ -61,10 +61,10 @@
                                                     <th>Client Name</th>
                                                     <th>Charge Date</th>
                                                     <th>Charge Name</th>
-                                                    <th>Charge %</th>
-                                                    <th>Charge Amount</th>
-                                                    <th>GST Amount</th>
-                                                    <th>Total Amount</th>
+                                                    <th>Charge (%)</th>
+                                                    <th>Charge Amount (₹)</th>
+                                                    <th>GST Amount (₹)</th>
+                                                    <th>Total Amount (₹)</th>
                                                     <th>Tally Batch #</th>
                                                 </tr>
                                             </thead>

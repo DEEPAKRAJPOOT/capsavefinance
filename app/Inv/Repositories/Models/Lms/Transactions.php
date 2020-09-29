@@ -1143,7 +1143,8 @@ class Transactions extends BaseModel {
             $query->where('chrg_master_id','>','0');
         })
         ->whereNull('parent_trans_id')
-        ->where('entry_type','0');
+        ->where('entry_type','0')
+        ->orderBy('trans_date', 'desc');
         
         if (!empty($whereRawCondition)) {
             $chargTrans = $chargTrans->whereRaw($whereRawCondition);
@@ -1215,11 +1216,11 @@ class Transactions extends BaseModel {
 
             foreach($tdsTrans as $tds){
 
-                $data[$tds->trans_id] = 
+                $data[strtotime($tds->trans_date).'-'.$tds->trans_id] = 
                 [
                     'loan' => '',
                     'client_name' => $tds->user->f_name.' '.$tds->user->l_name,
-                    'trans_date' => $cTrans->trans_date,
+                    'trans_date' => $tds->trans_date,
                     'int_amt' => $cTrans->amount,
                     'deduction_date' => $cTrans->trans_date,
                     'tds_amt' => $tds->amount,
@@ -1227,20 +1228,21 @@ class Transactions extends BaseModel {
                     'tally_batch' => ''
                 ];
                 if($cTrans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                    $data[$cTrans->trans_id]['loan'] = config('common.idprefix.APP').$cTrans->invoiceDisbursed->invoice->app_id;
+                    $data[strtotime($tds->trans_date).'-'.$tds->trans_id]['loan'] = config('common.idprefix.APP').$cTrans->invoiceDisbursed->invoice->app_id;
                 }else{
                     $charge = $cTrans->chargesTransactions;
                     if($charge){
-                        $data[$cTrans->trans_id]['loan'] = $charge->app_id?config('common.idprefix.APP').$charge->app_id:'';
+                        $data[strtotime($tds->trans_date).'-'.$tds->trans_id]['loan'] = $charge->app_id?config('common.idprefix.APP').$charge->app_id:'';
                     }
                 }
                 $tallyEntries =  $tds->tallyEntry;
                 if($tallyEntries){
                     $tallyEntries = $tallyEntries->first();
-                    $data[$tds->trans_id]['tally_batch'] = $tallyEntries->batch_no;
+                    $data[strtotime($tds->trans_date).'-'.$tds->trans_id]['tally_batch'] = $tallyEntries->batch_no;
                 }
             }
         }
+        krsort($data);
         return $data;
     }
     

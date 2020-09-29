@@ -59,16 +59,16 @@
                                                 <tr role="row">
                                                     <th>Loan #</th>
                                                     <th>Client Name</th>
-                                                    <th>Amount Disbrused</th>
+                                                    <th>Amount Disbursed (₹)</th>
                                                     <th>From Date</th>
                                                     <th>To date</th>
                                                     <th>Days</th>
-                                                    <th>Interest Rate</th>
-                                                    <th>Interest Amount</th>
+                                                    <th>Interest Rate (%)</th>
+                                                    <th>Interest Amount (₹)</th>
                                                     <th>Date of Interest Collection</th>
-                                                    <th>TDS Rate</th>
-                                                    <th>TDS Amount</th>
-                                                    <th>Net Interest</th>
+                                                    <th>TDS Rate (%)</th>
+                                                    <th>TDS Amount (₹)</th>
+                                                    <th>Net Interest (₹)</th>
                                                     <th>Tally Batch #</th>
                                                 </tr>
                                             </thead>
