@@ -119,7 +119,10 @@ class InvoiceController extends Controller {
         $userInfo->total_limit = number_format($totalLimit);
         $userInfo->consume_limit = number_format($totalCunsumeLimit);
         $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
-        $userInfo->outstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($user_id)->sum('outstanding'),2);
+        $userInfo->outstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding'),2);
+        $userInfo->marginOutstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($user_id, ['trans_type_in' => [config('lms.TRANS_TYPE.MARGIN')] ])->sum('outstanding'),2);
+        $userInfo->nonfactoredOutstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($user_id, ['trans_type_in' => [config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding'),2);
+        $userInfo->unsettledPaymentAmt = number_format($this->lmsRepo->getUnsettledPayments($user_id)->sum('amount'),2);
         return view('backend.invoice.user_wise_invoice')->with(['get_bus' => $get_bus, 'anchor_list' => $getAllInvoice, 'flag' => $flag, 'user_id' => $user_id, 'app_id' => $app_id, 'userInfo' => $userInfo,'status' =>$status]);
     } 
 
