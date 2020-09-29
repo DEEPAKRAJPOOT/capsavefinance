@@ -365,7 +365,7 @@ class Transactions extends BaseModel {
         }
         return $query->get()
                 ->filter(function($item) {
-                    return $item->outstanding > 0;
+                    return ($item->outstanding > 0 && $item->isTransaction);
                 });
     }
 
