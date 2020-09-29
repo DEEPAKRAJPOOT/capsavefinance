@@ -1227,7 +1227,7 @@ class Transactions extends BaseModel {
                     'tds_certificate' => $tds->payment->tds_certificate_no,
                     'tally_batch' => ''
                 ];
-                if($cTrans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                if(in_array($cTrans->trans_type, [config('lms.TRANS_TYPE.INTEREST_OVERDUE'),config('lms.TRANS_TYPE.INTEREST')])){
                     $data[strtotime($tds->trans_date).'-'.$tds->trans_id]['loan'] = config('common.idprefix.APP').$cTrans->invoiceDisbursed->invoice->app_id;
                 }else{
                     $charge = $cTrans->chargesTransactions;
