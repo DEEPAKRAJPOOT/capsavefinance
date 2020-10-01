@@ -354,7 +354,7 @@ class ReportController extends Controller
          $tds_certificate_no = $tds->tds_certificate_no;
          $file_id = $tds->file_id == 0 ? 'N' : '';
          $tdsArr[] = [
-            'user_id' => $user_id,
+            'customer_id' => $user_id,
             'customer_name' => $customer_name,
             'transaction_type' => $trans_name,
             'date_of_payment' => $date_of_payment,

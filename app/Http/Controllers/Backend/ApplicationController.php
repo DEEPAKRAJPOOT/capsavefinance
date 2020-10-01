@@ -1223,6 +1223,11 @@ class ApplicationController extends Controller
 		}
 		/*code for getting the sales manager*/
 
+		foreach($supplyOfferData as $key=>$data) {
+			$supplyOfferData[$key]['anchorData'] = $this->userRepo->getAnchorDataById($data->anchor_id)->pluck('f_name')->first();
+			$supplyOfferData[$key]['programData'] = $this->appRepo->getSelectedProgramData(['prgm_id' => $data->prgm_id])->first();
+		}
+
 		return view('backend.app.offer')
 				->with('appId', $appId)
 				->with('bizId', $bizId)                

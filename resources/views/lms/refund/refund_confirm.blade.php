@@ -37,7 +37,7 @@
 			<div class="col-6">
 				<div class="form-group">
 					<label for="txtCreditPeriod">Refund Date <span class="error_message_label">*</span> </label>
-					<input type="text" id="disburse_date" name="disburse_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
+					<input type="text" id="disburse_date" name="disburse_date" class="form-control date_of_birth datepicker-dis-fdate" required="">
 					 @if(Session::has('error'))
 					 <div class="error">{{ Session::get('error') }}</div>
 					  

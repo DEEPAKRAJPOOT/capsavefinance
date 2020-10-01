@@ -54,8 +54,8 @@ tr.border_bottom td {
                                             @endif
                                                 <tr>
                                                     <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
-                                                    <td><b>Apply Loan Amount: </b> </td>
-                                                    <td>{{$supplyOffer->prgm_limit_amt}}</td>
+                                                    <td><b>Anchor Name: </b> </td>
+                                                    <td>{{$supplyOffer->anchorData}}</td>
                                                     <td><b>Grace Period (Days): </b></td>
                                                     <td>{{$supplyOffer->grace_period}}</td>
                                                     <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($supplyOffer->status == 1)? 'badge-success': 'badge-danger'}} current-status">{{($supplyOffer->status == 1)? 'Accepted': (($supplyOffer->status == 2)? 'Rejected': 'Pending')}}</label></td>
@@ -63,24 +63,24 @@ tr.border_bottom td {
                                                 
                                                 <tr>
                                                     <td></td>
-                                                   <td><b>Interest Rate(%): </b></td>
-                                                   <td>{{$supplyOffer->interest_rate}}</td>
+                                                   <td><b>Anchor Program Name: </b> </td>
+                                                    <td>{{$supplyOffer->programData->prgm_name}}</td>
                                                    <td><b>Tenor (Days) : </b></td>
                                                    <td>{{$supplyOffer->tenor}}</td>
                                                    <td><b>Created By: &nbsp;&nbsp;&nbsp;</b>{{\Helpers::getUserName($supplyOffer->created_by)}}</td>
                                                 </tr>
                                                 <tr>
                                                 <td></td>
-                                                   <td><b>Tenor for old invoice (Days): </b></td>
-                                                   <td>{{$supplyOffer->tenor_old_invoice}}</td>
+                                                   <td><b>Apply Loan Amount: </b> </td>
+                                                    <td>{{$supplyOffer->prgm_limit_amt}}</td>
                                                    <td><b>Margin (%): </b></td>
                                                    <td>{{$supplyOffer->margin}}</td>
                                                    <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Carbon\Carbon::parse($supplyOffer->created_at)->format('d-m-Y')}}</td>
                                                 </tr>
                                                 <tr>
                                                 <td></td>
-                                                    <td><b>Overdue Interest Rate (%): </b></td>
-                                                    <td>{{($supplyOffer->overdue_interest_rate ?? 0) + ($supplyOffer->interest_rate ?? 0)}}</td>
+                                                    <td><b>Interest Rate(%): </b></td>
+                                                    <td>{{$supplyOffer->interest_rate}}</td>
                                                     <td><b>Adhoc Interest Rate (%): </b></td>
                                                     <td>{{$supplyOffer->adhoc_interest_rate}}</td>
                                                     <td></td>
@@ -99,15 +99,17 @@ tr.border_bottom td {
                                                 @endforeach
                                                 <tr>
                                                 <td></td>
+                                                    <td><b>Tenor for old invoice (Days): </b></td>
+                                                    <td>{{$supplyOffer->tenor_old_invoice}}</td>
                                                     <td><b>Bench Mark Date: </b></td>
                                                     <td colspan="3">{{getBenchmarkType($supplyOffer->benchmark_date)}}</td>
-                                                    <td></td>
                                                 </tr>
                                                 <tr>
                                                 <td></td>
+                                                    <td><b>Overdue Interest Rate (%): </b></td>
+                                                    <td>{{($supplyOffer->overdue_interest_rate ?? 0) + ($supplyOffer->interest_rate ?? 0)}}</td>
                                                     <td><b>Investment Payment Frequency: </b></td>
                                                     <td colspan="3">{{getInvestmentPaymentFrequency($supplyOffer->payment_frequency)}}</td>
-                                                    <td></td>
                                                 </tr>
                                                 <tr>
                                                 <td></td>
