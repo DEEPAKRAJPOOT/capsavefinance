@@ -59,8 +59,8 @@
                                                 <tr role="row">
                                                     <th>Loan #</th>
                                                     <th>Client Name</th>
-                                                    <th>Interest Amount (₹)</th>
-                                                    <th>Date of Interest Deduction</th>
+                                                    <th>Interest/Charge Amount (₹)</th>
+                                                    <th>Date of Deduction</th>
                                                     <th>TDS Date</th>
                                                     <th>TDS Amount (₹)</th>
                                                     <th>TDS certificate #</th>

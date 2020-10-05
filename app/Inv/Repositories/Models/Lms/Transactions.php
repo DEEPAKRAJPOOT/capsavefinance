@@ -1195,7 +1195,12 @@ class Transactions extends BaseModel {
     public static function gettdsBreakupReport($whereCondition=[], $whereRawCondition = NULL){
         $data = [];
 
-        $chargTrans = self::where('trans_type', config('lms.TRANS_TYPE.INTEREST'))
+        $chargTrans = self::
+        where(function ($query) {
+            $query->whereHas('transType', function($q) { 
+                $q->where('id', '=', config('lms.TRANS_TYPE.INTEREST'))->orWhere('chrg_master_id','!=','0');
+            });
+        })
         ->whereNull('parent_trans_id')
         ->where('entry_type','0');
 
@@ -1209,7 +1214,6 @@ class Transactions extends BaseModel {
 
             $tdsTrans = self::where('trans_type', config('lms.TRANS_TYPE.TDS'))
             ->whereNotNull('payment_id')
-            ->where('invoice_disbursed_id', $cTrans->invoice_disbursed_id)
             ->where('parent_trans_id', $cTrans->trans_id)
             ->where('entry_type','1')
             ->get();
@@ -1227,6 +1231,7 @@ class Transactions extends BaseModel {
                     'tds_certificate' => $tds->payment->tds_certificate_no,
                     'tally_batch' => ''
                 ];
+                
                 if(in_array($cTrans->trans_type, [config('lms.TRANS_TYPE.INTEREST_OVERDUE'),config('lms.TRANS_TYPE.INTEREST')])){
                     $data[strtotime($tds->trans_date).'-'.$tds->trans_id]['loan'] = config('common.idprefix.APP').$cTrans->invoiceDisbursed->invoice->app_id;
                 }else{
