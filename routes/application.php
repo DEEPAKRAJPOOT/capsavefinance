@@ -25,6 +25,11 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
                 'as' => 'frontend_download_storage_file',
                 'uses' => 'Backend\DocumentController@downloadStorageFile'
             ]);
+
+            Route::get('frontend-view-uploaded-doc',[
+                'as' => 'frontend_view_uploaded_doc',
+                'uses' => 'Backend\DocumentController@seeUploadFile'
+            ]);
         });
     });
     
