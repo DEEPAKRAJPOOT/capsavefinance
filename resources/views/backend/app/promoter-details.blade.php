@@ -577,6 +577,9 @@
                                                                 @can('download_storage_file')
                                                                     <a  href="{{ isset($main1[$j]['photoFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['photoFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                 @endcan
+                                                                @can('view_uploaded_doc')
+                                                                    <a  href="{{ isset($main1[$j]['photoFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['photoFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                @endcan
                                                                 @can('protmoter_document_delete')
                                                                     <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}"  name="photofiles[]" id="photofiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['photoFileID']) ? $main1[$key]['photoFileID'] : 'null' }}, 22)" ><i class="fa fa-times-circle-o error"></i></button>
                                                                 @endcan
@@ -612,6 +615,9 @@
                                                                 @can('download_storage_file')
                                                                     <a  href="{{ isset($main1[$j]['aadharFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['aadharFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
                                                                 @endcan
+                                                                @can('view_uploaded_doc')
+                                                                    <a  href="{{ isset($main1[$j]['aadharFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['aadharFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
+                                                                @endcan
                                                                 @can('protmoter_document_delete')
                                                                     <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" name="downloadaadhars[]" id="downloadaadhars{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['aadharFileID']) ? $main1[$key]['aadharFileID'] : 'null' }}, 34)" ><i class="fa fa-times-circle-o error"></i></button>
                                                                 @endcan
@@ -644,6 +650,9 @@
                                                                 @if($main1[$key]['electricityFileStatus'] == 1)
                                                                 @can('download_storage_file')
                                                                     <a  href="{{ isset($main1[$j]['electricityFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['electricityFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                @endcan
+                                                                @can('view_uploaded_doc')
+                                                                    <a  href="{{ isset($main1[$j]['electricityFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['electricityFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
                                                                 @endcan
                                                                 @can('protmoter_document_delete')
                                                                     <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" name="downloadelectricitys[]" id="downloadelectricitys{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['electricityFileID']) ? $main1[$key]['electricityFileID'] : 'null' }}, 37)" ><i class="fa fa-times-circle-o error"></i></button>
@@ -678,6 +687,9 @@
                                                                 @if($main1[$key]['telephoneFileStatus'] == 1)
                                                                 @can('download_storage_file')
                                                                     <a  href="{{ isset($main1[$j]['telephoneFileID']) ? route('download_storage_file', ['file_id' => $main1[$j]['telephoneFileID'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" download> <i class="fa fa-download"></i></a>
+                                                                @endcan
+                                                                @can('view_uploaded_doc')
+                                                                    <a  href="{{ isset($main1[$j]['telephoneFileID']) ? route('view_uploaded_doc', ['file_id' => $main1[$j]['telephoneFileID'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
                                                                 @endcan
                                                                 @can('protmoter_document_delete')
                                                                     <button type="button"  class="btn-upload   btn-sm" title="Delete Document" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" name="downloadtelephones[]" id="downloadtelephones{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['telephoneFileID']) ? $main1[$key]['telephoneFileID'] : 'null' }}, 38)" ><i class="fa fa-times-circle-o error"></i></button>
