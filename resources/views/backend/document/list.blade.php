@@ -96,11 +96,11 @@
                                         @can('download_storage_file')
                                         <a title="Download Document" href="{{ route('download_storage_file', ['file_id' => $value->userFile->file_id ]) }}" ><i class="fa fa-download"></i></a>
                                         @endcan
-                                        @can('view_upload_file')
-                                        <a title="View Document" target="_blank" href="{{ route('view_prepost_documents', ['file_id' => $value->userFile->file_id ]) }}" ><i class="fa fa-eye"></i></a>
-                                        @endcan
                                         </td>
                                         <td align="center" width="20%">
+                                        @can('view_upload_file')
+                                        <a title="View Document" target="_blank" href="{{ route('view_prepost_documents', ['file_id' => $value->userFile->file_id ]) }}" class="float-left"><i class="fa fa-eye"></i></a>
+                                        @endcan
                                             @if( (request()->get('view_only') && in_array($data->ppDocument->doc_type_id, [2,3])) || ($data->ppDocument->doc_type_id == 4) )
                                             @can('document_delete')
                                             <a title="Delete Document" onclick="return confirm('Are you sure you want to delete this file?')" href="{{ route('document_delete', ['app_doc_file_id' => $value->app_doc_file_id, 'app_id' => request()->get('app_id')]) }}" ><i class="fa fa-times-circle-o error"></i></a>
