@@ -715,94 +715,125 @@ class ApiController
     }
   }
 
-
 	public function fsa_callback(Request $request){
-		$response = array(
-			'status' => 'fail',
-			'message' => 'Request method not allowed',
-		);
-		$headers = getallheaders();
-		if ($request->isMethod('post')) {
-			$content_type = $headers['Content-Type'];
-			if ($content_type != 'application/x-www-form-urlencoded') {
-				$response['message'] =  'Content Type is not valid';
-				return print(json_encode($response));
-			}
-    		$postdata = $request->all();
+    $response = array(
+      'status' => 'fail',
+      'message' => 'Request method not allowed',
+    );
+    $headers = getallheaders();
+    if ($request->isMethod('post')) {
+      $content_type = $headers['Content-Type'];
+      if ($content_type != 'application/x-www-form-urlencoded') {
+        $response['message'] =  'Content Type is not valid';
+        return print(json_encode($response));
+      }
+        $postdata = $request->all();
 
-    		$perfiostransactionid = $postdata['perfiosTransactionId'];
-    		$prolitustxnid = $postdata['clientTransactionId'];
-    		$status = $postdata['status'];
-    		$err_code = $postdata['errorCode'];
-    		$err_msg = $postdata['errorMessage'];
-    		if (strtolower($status) != 'completed') {
-          //$err_detail = $postdata['financialYearErrorDetails'] ?? $postdata['errorDetailsForFinancialYear'];
-    			$response['message'] =  $err_msg ?? "Some error occured. While Parsing errorMessage";
-    			return print(json_encode($response));
-    		}
-    		$perfios_data = FinanceModel::getPerfiosData($perfiostransactionid);
-    		if (empty($perfios_data)) {
-    			$response['message'] = "Perfios Transaction Id is not valid.";
-    			return print(json_encode($response));
-    		}
-    		$appId = $perfios_data['app_id'];
-    		$final = $this->_getFinanceReport($perfiostransactionid, $prolitustxnid, $appId);
-    		if ($final['status'] != 'success') {
-    			$response['message'] = $final['message'] ?? "Some error occured.";
-    		}else{
-    			$response['status'] = "success";
-    			$response['message'] = "success";
-    		}
-    		return print(json_encode($response));
-		}else{
-			return print(json_encode($response));
-		}
-		
-	}
+        $perfiostransactionid = $postdata['perfiosTransactionId'];
+        $prolitustxnid = $postdata['clientTransactionId'];
+        $status = $postdata['status'];
+        $err_code = $postdata['errorCode'];
+        $err_msg = $postdata['errorMessage'];
+        if (strtolower($status) != 'completed') {
+          $err_detail = $postdata['financialYearErrorDetails'] ?? ($postdata['errorDetailsForFinancialYear'] ?? $err_msg);
+          $logError = array(
+            'perfios_log_id' => $perfiostransactionid,
+            'req_file' => '',
+            'res_file' => base64_encode($err_detail),
+            'url' => '',
+            'status' => 'fail'
+          );
+          FinanceModel::insertPerfios($logError,'biz_perfios_log');
+          $response['message'] =  $err_msg ?? "Some error occured. While Parsing errorMessage";
+          return print(json_encode($response));
+        }
+        $perfios_data = FinanceModel::getPerfiosData($perfiostransactionid);
+        if (empty($perfios_data)) {
+          $response['message'] = "Perfios Transaction Id is not valid.";
+          return print(json_encode($response));
+        }
+        $appId = $perfios_data['app_id'];
+        $final = $this->_getFinanceReport($perfiostransactionid, $prolitustxnid, $appId);
+        if ($final['status'] != 'success') {
+          $logError = array(
+            'perfios_log_id' => $perfiostransactionid,
+            'req_file' => '',
+            'res_file' => base64_encode($final['message']),
+            'url' => '',
+            'status' => 'fail'
+          );
+          FinanceModel::insertPerfios($logError,'biz_perfios_log');
+          $response['message'] = $final['message'] ?? "Some error occured.";
+        }else{
+          $response['status'] = "success";
+          $response['message'] = "success";
+        }
+        return print(json_encode($response));
+    }else{
+      return print(json_encode($response));
+    }
+    
+  }
 
-	public function bsa_callback(Request $request){
-		$response = array(
-			'status' => 'fail',
-			'message' => 'Request method not allowed',
-		);
-		$headers = getallheaders();
-		if ($request->isMethod('post')) {
-			$content_type = $headers['Content-Type'];
-			if ($content_type != 'application/x-www-form-urlencoded') {
-				$response['message'] =  'Content Type is not valid';
-				return print(json_encode($response));
-			}
-    		$postdata = $request->all();
+  public function bsa_callback(Request $request){
+    $response = array(
+      'status' => 'fail',
+      'message' => 'Request method not allowed',
+    );
+    $headers = getallheaders();
+    if ($request->isMethod('post')) {
+      $content_type = $headers['Content-Type'];
+      if ($content_type != 'application/x-www-form-urlencoded') {
+        $response['message'] =  'Content Type is not valid';
+        return print(json_encode($response));
+      }
+        $postdata = $request->all();
 
-    		$perfiostransactionid = $postdata['perfiosTransactionId'];
-    		$prolitustxnid = $postdata['clientTransactionId'];
-    		$status = $postdata['status'];
-    		$err_code = $postdata['errorCode'];
-    		$err_msg = $postdata['errorMessage'];
-    		if (strtolower($status) != 'completed') {
-    			$response['message'] =  $err_msg ?? "Some error occured.";
-    			return print(json_encode($response));
-    		}
+        $perfiostransactionid = $postdata['perfiosTransactionId'];
+        $prolitustxnid = $postdata['clientTransactionId'];
+        $status = $postdata['status'];
+        $err_code = $postdata['errorCode'];
+        $err_msg = $postdata['errorMessage'];
+        if (strtolower($status) != 'completed') {
+          $response['message'] =  $err_msg ?? "Some error occured.";
+          $logError = array(
+            'perfios_log_id' => $perfiostransactionid,
+            'req_file' => '',
+            'res_file' => base64_encode($response['message']),
+            'url' => '',
+            'status' => 'fail'
+          );
+          FinanceModel::insertPerfios($logError,'biz_perfios_log');
+          return print(json_encode($response));
+        }
 
-    		$perfios_data = FinanceModel::getPerfiosData($perfiostransactionid);
-    		if (empty($perfios_data)) {
-    			$response['message'] = "Perfios Transaction Id is not valid.";
-    			return print(json_encode($response));
-    		}
-    		$appId = $perfios_data['app_id'];
-    		$final = $this->_getBankReport($perfiostransactionid, $prolitustxnid, $appId);
-    		if ($final['status'] != 'success') {
-    			$response['message'] = $final['message'] ?? "Some error occured.";
-    		}else{
-    			$response['status'] = "success";
-    			$response['message'] = "success";
-    		}
-    		return print(json_encode($response));
-		}else{
-			return print(json_encode($response));
-		}
-		
-	}
+        $perfios_data = FinanceModel::getPerfiosData($perfiostransactionid);
+        if (empty($perfios_data)) {
+          $response['message'] = "Perfios Transaction Id is not valid.";
+          return print(json_encode($response));
+        }
+        $appId = $perfios_data['app_id'];
+        $final = $this->_getBankReport($perfiostransactionid, $prolitustxnid, $appId);
+        if ($final['status'] != 'success') {
+          $logError = array(
+            'perfios_log_id' => $perfiostransactionid,
+            'req_file' => '',
+            'res_file' => base64_encode($final['message']),
+            'url' => '',
+            'status' => 'fail'
+          );
+          FinanceModel::insertPerfios($logError,'biz_perfios_log');
+          $response['message'] = $final['message'] ?? "Some error occured.";
+        }else{
+          $response['status'] = "success";
+          $response['message'] = "success";
+        }
+        return print(json_encode($response));
+    }else{
+      return print(json_encode($response));
+    }
+    
+  }
 
   private function getToUploadPath($appId, $type = 'banking'){
       $touploadpath = storage_path('app/public/user/docs/'.$appId);

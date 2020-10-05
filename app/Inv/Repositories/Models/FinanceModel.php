@@ -319,6 +319,14 @@ class FinanceModel extends BaseModel
         return ($result ?? null);
     }
 
+    public static function getCallBackResponse($perfiosLogId){
+       $result = self::select('*')
+                ->from('biz_perfios_log')
+                ->where('perfios_log_id', $perfiosLogId)
+                ->latest()->first();
+        return ($result ?? null);
+    }
+
     public static function getPendingBankStatement($app_id){
        $result = self::select('*')
                 ->from('biz_perfios')

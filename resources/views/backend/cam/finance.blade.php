@@ -22,7 +22,10 @@
                  <div class="card-body ">
                     <div class="row">
                        <div class="col-sm-12">
-                         <div id="pullMsg"></div>
+                         @php
+                        $message = (!empty($callBackMessage) ? "<span style='color:red'>$callBackMessage</span>" : '');
+                        @endphp
+                         <div id="pullMsg">@php echo $message @endphp</div>
                          <h2 class="sub-title bg mb-4">Uploaded Finance statement-</h2>
                          <div class="clearfix"></div>
                          @if($financedocs->count() > 0)
@@ -51,7 +54,7 @@
                                <a class="btn btn-success btn-sm" href="javascript:void(0)"  data-toggle="modal" data-target="#uploadXLSXdoc" data-url ="{{route('upload_xlsx_document_finance', ['app_id' => request()->get('app_id'),  'file_type' => 'finance']) }}" data-height="150px" data-width="100%">Upload XLSX</a>
                          @endcan
                          @endif
-                         @if(request()->get('view_only') && !empty($pending_rec) && $pending_rec['status'] == 'fail')
+                         @if(request()->get('view_only') && empty($message) && !empty($pending_rec) && $pending_rec['status'] == 'fail')
                          @php $class_enable="disabled"; @endphp
                                <a class="btn btn-success btn-sm process_stmt" pending="{{ $pending_rec['biz_perfios_id'] }}" href="javascript:void(0)">Process</a>
                          @endif 
@@ -1066,6 +1069,33 @@
          },
       })
    })
+
+
+    function getresult(pageNo) {
+      getExcel(pageNo);
+    }
+
+    function getExcel(page = 1) {
+       var fileType = 'finance';
+       data = {appId, page, _token, fileType};
+       $.ajax({
+          url  : '{{URL::route("getExcelSheet") }}',
+          type :'POST',
+          data : data,
+          dataType : 'json',
+          success:function(result) {
+             $('#gridView').html(result.response.data);
+             $('#paginate').html(result.response.paginate);
+          },
+          error:function(error) {
+
+          },
+          complete: function() {
+
+          },
+       })
+    }
+
 </script>
 <script>
       var ckeditorOptions =  {
