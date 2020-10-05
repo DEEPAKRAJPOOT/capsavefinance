@@ -839,13 +839,12 @@ class LeadController extends Controller {
             
             $file_id = $request->get('fileId');
             $fileData = $this->docRepo->getFileByFileId($file_id);
-            // dd($fileData);
+
             $filePath = 'app/public/'.$fileData->file_path;
             $path = storage_path($filePath);
-            // dd($path);
+            
             if (file_exists($path)) {
                 return response()->file($path);
-                // return "<iframe src=".url($path)."></iframe>";
             }else{
                 exit('Requested file does not exist on our server!');
             }
