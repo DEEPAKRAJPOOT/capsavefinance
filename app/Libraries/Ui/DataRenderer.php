@@ -2088,7 +2088,7 @@ class DataRenderer implements DataProviderInterface
                                 $act .= '<a title="Download" href="'. route('download_storage_file', ['file_id' => $trans->userFile->file_id ]) .'" class="btn btn-action-btn btn-sm" ><i class="fa fa-download"></i></a>';
                             }
                             if(Helpers::checkPermission('see_repayment_file') ){
-                                $act .= '<a title="Download" target="_blank" href="'. route('see_repayment_file', ['file_id' => $trans->userFile->file_id ]) .'" class="btn btn-action-btn btn-sm" ><i class="fa fa-eye"></i></a>';
+                                $act .= '<a title="View File" target="_blank" href="'. route('see_repayment_file', ['file_id' => $trans->userFile->file_id ]) .'" class="btn btn-action-btn btn-sm" ><i class="fa fa-eye"></i></a>';
                             }
                         }
                         if (Helpers::checkPermission('edit_payment') && ($trans->action_type == 3 || ($trans->action_type == 1 && $trans->payment_type == 2))) {
