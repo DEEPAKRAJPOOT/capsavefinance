@@ -1085,11 +1085,11 @@ class Transactions extends BaseModel {
                 $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id] = 
                 [
                     'loan' => config('common.idprefix.APP').$uITrans->invoiceDisbursed->invoice->app_id,
-                    'client_name' => $uITrans->user->f_name.' '.$uITrans->user->l_name,
+                    'client_name' => $uITrans->user->biz->biz_entity_name,
                     'disbursed_amt' => $dTrans->amount,
                     'from_date' => $uITrans->fromIntDate,
                     'to_date' => $uITrans->toIntDate,
-                    'days' => abs(round((strtotime($uITrans->toIntDate) - strtotime($uITrans->fromIntDate)) / 86400)),
+                    'days' => abs(round((strtotime($uITrans->toIntDate) - strtotime($uITrans->fromIntDate)) / 86400))+1,
                     'int_rate' => $uITrans->invoiceDisbursed->interest_rate,
                     'int_amt' => $uITrans->amount,
                     'collection_date' => null,
@@ -1156,7 +1156,7 @@ class Transactions extends BaseModel {
             $data[$cTrans->trans_id] = 
             [
                 'loan' => '',
-                'client_name' =>$cTrans->user->f_name.' '.$cTrans->user->l_name,
+                'client_name' =>$cTrans->user->biz->biz_entity_name,
                 'chrg_name' => $cTrans->transName,
                 'trans_date' => $cTrans->trans_date,
                 'chrg_rate' => '',
@@ -1219,7 +1219,7 @@ class Transactions extends BaseModel {
                 $data[strtotime($tds->trans_date).'-'.$tds->trans_id] = 
                 [
                     'loan' => '',
-                    'client_name' => $tds->user->f_name.' '.$tds->user->l_name,
+                    'client_name' => $tds->user->biz->biz_entity_name,
                     'trans_date' => $tds->trans_date,
                     'int_amt' => $cTrans->amount,
                     'deduction_date' => $cTrans->trans_date,
