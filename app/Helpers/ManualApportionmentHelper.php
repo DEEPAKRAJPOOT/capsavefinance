@@ -69,7 +69,7 @@ class ManualApportionmentHelper{
                 $amount -= $cTrans->amount;
             }
 
-            $amount = $actualAmount - $amount;
+            $amount = round($actualAmount,2) - $amount;
             if($amount > 0){
 
             }
@@ -161,7 +161,7 @@ class ManualApportionmentHelper{
                 ->where('entry_type','=',0)
                 ->whereDate('trans_date','<=',$intAccrualDate)
                 ->where(function($query)use($invdueDate,$intAccrualDt){
-                    $query->whereMonth('trans_date','<',date('m', strtotime($intAccrualDt)));
+                    $query->whereMonth('trans_date','<',date('n', strtotime($intAccrualDt)));
                     $query->OrwhereDate('trans_date','=',$invdueDate);
                 })
                 ->get()
@@ -226,7 +226,7 @@ class ManualApportionmentHelper{
             ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
             ->where('entry_type','=',0)
             ->whereDate('trans_date','<=',$intAccrualDate)
-            ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDt)))
+            ->where(\DB::raw('MONTH(trans_date)'),'<',date('n', strtotime($intAccrualDt)))
             ->get()
             ->filter(function($item){
                 return $item->outstanding > 0;
@@ -262,6 +262,13 @@ class ManualApportionmentHelper{
         $intrest = 0;
         $disbTransIds = null;
         $intTransIds = null;
+        $Dr = 0 ;
+        
+        $invDisbDetails = InvoiceDisbursed::find($invDisbId);
+        if($invDisbDetails){
+            $margin = ($invDisbDetails->invoice->invoice_approve_amount*$invDisbDetails->margin)/100;
+            $Dr = $invDisbDetails->invoice->invoice_approve_amount - $margin;
+        }
 
         $disbTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
         ->whereNull('payment_id') 
@@ -270,14 +277,22 @@ class ManualApportionmentHelper{
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
         ->pluck('trans_id')->toArray();
 
-        $Dr = Transactions::whereDate('trans_date','<=',$transDate)
-        ->where('invoice_disbursed_id','=',$invDisbId)
-        ->where('entry_type','=','0')
-        ->where(function($query) use($disbTransIds){
-            $query->whereIn('trans_id',$disbTransIds);
-            $query->OrwhereIn('parent_trans_id',$disbTransIds);
-        })
-        ->sum('amount');
+        if($disbTransIds){
+            $disbIntTransIds = [];
+            $disbDetails = Transactions::find($disbTransIds[0]);
+            $intBornBy = $disbDetails->invoiceDisbursed->invoice->program->interest_borne_by;
+            $disTransDate = $disbDetails->trans_date;
+            if((int) $intBornBy == 2){
+                $disbIntTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
+                ->whereNull('payment_id') 
+                ->whereNull('link_trans_id') 
+                ->whereNull('parent_trans_id')
+                ->where('trans_date',$disTransDate)
+                ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST')]) 
+                ->pluck('trans_id')->toArray();
+            }
+            $disbTransIds = array_merge($disbIntTransIds,$disbTransIds);
+        }
 
         $Cr =  Transactions::whereDate('trans_date','<=',$transDate) 
         ->where('invoice_disbursed_id','=',$invDisbId)
@@ -292,7 +307,7 @@ class ManualApportionmentHelper{
             $mIntrest = InterestAccrual::where('invoice_disbursed_id','=',$invDisbId)
             ->whereNotNull('interest_rate')
             ->where(function($query) use($odStartDate,$transDate){
-                $query->whereMonth('interest_date','<', date('m', strtotime($transDate)));
+                $query->whereMonth('interest_date','<', date('n', strtotime($transDate)));
                 if($odStartDate <= $transDate){
                     $query->orWhere('interest_date','<',$odStartDate);
                 }
@@ -335,13 +350,13 @@ class ManualApportionmentHelper{
             ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
             ->where('entry_type','=',0)
             //->where('is_posted','=',0)
-            ->whereMonth('trans_date', date('m', strtotime($odue->interestDate)))
+            ->whereMonth('trans_date', date('n', strtotime($odue->interestDate)))
             ->value('trans_running_id');
             
             TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
             ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
             ->where('entry_type','=',0)
-            ->where(\DB::raw('MONTH(trans_date)'),'>',date('m', strtotime($odue->interestDate)))
+            ->where(\DB::raw('MONTH(trans_date)'),'>',date('n', strtotime($odue->interestDate)))
             ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
         
 
@@ -398,13 +413,13 @@ class ManualApportionmentHelper{
                 $transId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
-                ->whereMonth('trans_date', date('m', strtotime($interest->interestDate)))
+                ->whereMonth('trans_date', date('n', strtotime($interest->interestDate)))
                 ->value('trans_running_id');
                 
                 TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
-                ->whereMonth('trans_date','>', date('m', strtotime($interest->interestDate)))
+                ->whereMonth('trans_date','>', date('n', strtotime($interest->interestDate)))
                 ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
             }
 
@@ -638,13 +653,13 @@ class ManualApportionmentHelper{
             ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
             ->where('entry_type','=',0)
             //->where('is_posted','=',0)
-            ->whereMonth('trans_date', date('m', strtotime($odue->interestDate)))
+            ->whereMonth('trans_date', date('n', strtotime($odue->interestDate)))
             ->value('trans_running_id');
             
             TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
             ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
             ->where('entry_type','=',0)
-            ->where(\DB::raw('MONTH(trans_date)'),'>',date('m', strtotime($odue->interestDate)))
+            ->where(\DB::raw('MONTH(trans_date)'),'>',date('n', strtotime($odue->interestDate)))
             ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
         
 
@@ -701,13 +716,13 @@ class ManualApportionmentHelper{
                 $transId = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
-                ->whereMonth('trans_date', date('m', strtotime($interest->interestDate)))
+                ->whereMonth('trans_date', date('n', strtotime($interest->interestDate)))
                 ->value('trans_running_id');
                 
                 TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
-                ->where(\DB::raw('MONTH(trans_date)'),'>',date('m', strtotime($interest->interestDate)))
+                ->where(\DB::raw('MONTH(trans_date)'),'>',date('n', strtotime($interest->interestDate)))
                 ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
             }
 
@@ -752,7 +767,7 @@ class ManualApportionmentHelper{
                 $user_id = $payment->user_id;
                 $invoiceList = InvoiceDisbursed::where('user_id',$user_id)->get();
                 foreach ($invoiceList as $invId => $trans) {
-                    $this->sugOverDuePosting($invDisbId, $userId);
+                    //$this->sugOverDuePosting($invDisbId, $userId);
                     $this->sugInterestPosting($invDisbId, $userId, $payFreq, $transDate, $gStartDate, $gEndDate);
                 }
             }
@@ -767,7 +782,7 @@ class ManualApportionmentHelper{
         ->where('entry_type','=',0)
         ->where('soa_flag','=',0)
         ->whereDate('trans_date','<=',$intAccrualDate)
-        ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDate)))
+        ->where(\DB::raw('MONTH(trans_date)'),'<',date('n', strtotime($intAccrualDate)))
         ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
         
         TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
@@ -795,7 +810,7 @@ class ManualApportionmentHelper{
         ->where('entry_type','=',0)
         ->where('soa_flag','=',0)
         ->whereDate('trans_date','<=',$intAccrualDate)
-        ->where(\DB::raw('MONTH(trans_date)'),'<',date('m', strtotime($intAccrualDate)))
+        ->where(\DB::raw('MONTH(trans_date)'),'<',date('n', strtotime($intAccrualDate)))
         ->update(['soa_flag'=>$soaFlag,'sys_updated_at' => Helpers::getSysStartDate()]);
     }
     */

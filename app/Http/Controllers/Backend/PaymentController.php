@@ -262,7 +262,7 @@ class PaymentController extends Controller {
 					'invoice_disbursed_id' => $transaction ? $transaction->invoice_disbursed_id : null,
 					'entry_type' => 1,
 					'gst'=> $request['incl_gst'],
-					'tds_per' => 1,
+					'tds_per' => $transaction ? $transaction->TDSRate : null,
 					'gl_flag' => 1,
 					'soa_flag' => 1,
 					'trans_by' => 1,

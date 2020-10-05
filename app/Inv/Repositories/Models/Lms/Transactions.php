@@ -316,6 +316,25 @@ class Transactions extends BaseModel {
         return self::get_balance($this->user_id.Carbon::parse($this->created_at)->format('ymd').(1000000000+$this->trans_id), $this->user_id);
     }
 
+    public  function getPaymentDueDateAttribute()
+    {
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.MARGIN')])){
+            return Carbon::parse($this->invoiceDisbursed->payment_due_date)->format('Y-m-d');
+        }elseif($this->invoiceDisbursed && $this->invoiceDisbursed->invoice->program_offer->payment_frequency == 1  && $this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+            return Carbon::parse($this->invoiceDisbursed->payment_due_date)->format('Y-m-d');
+        }else{
+            return Carbon::parse($this->trans_date)->format('Y-m-d');
+        }
+    }
+
+    public function getTDSRateAttribute(){
+        if($this->transType->chrg_master_id || $this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+            return Tds::getActiveTdsBaseRate($this->trans_date);
+        }else{
+            return null;
+        }
+    }
+
     public function getTDSAmountAttribute(){
         $amount = $this->amount;
         $baseAmt = 0;
@@ -323,7 +342,7 @@ class Transactions extends BaseModel {
         $gstAmt = 0;
         $gst_per = 0;
         if($this->transType->chrg_master_id || $this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-            $tdsRate = Tds::getActiveTdsBaseRate($this->trans_date);
+            $tdsRate = $this->tDSRate;
             $amount -= $this->getWaiveOffAmount();
             
             if($this->transType->chrg_master_id){
@@ -962,7 +981,7 @@ class Transactions extends BaseModel {
                 $fromDate = date('Y-m-d', strtotime($fromDate . "+ 1 days"));
             }
         }
-        return $fromDate;
+        return date('Y-m-d', strtotime($fromDate));
     }
 
     public function getToIntDateAttribute(){
@@ -970,7 +989,7 @@ class Transactions extends BaseModel {
         if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
             $toDate = $this->trans_date;
         }
-        return $toDate;
+        return date('Y-m-d', strtotime($toDate));
     }
 
     public function getTempInterestAttribute(){
