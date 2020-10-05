@@ -108,7 +108,7 @@
                                         <a title="Download Document" href="{{ route('download_storage_file', ['file_id' => $value->userFile->file_id ]) }}" ><i class="fa fa-download"></i></a>
                                         @endcan
                                         @can('view_onboarding_documents')
-                                        <a title="View Document" target="_blank" href="{{ route('view_onboarding_documents', ['file_id' => $value->userFile->file_id ]) }}" ><i class="fa fa-eye"></i></a>
+                                        <a title="View Document" target="_blank" href="{{ route('view_onboarding_documents', ['file_id' => $value->userFile->file_id ]) }}" class="float-right" ><i class="fa fa-eye"></i></a>
                                         @endcan
                                         </td>
                                         <td align="center" width="20%">
