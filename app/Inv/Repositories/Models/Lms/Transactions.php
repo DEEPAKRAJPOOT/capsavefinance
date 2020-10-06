@@ -393,13 +393,19 @@ class Transactions extends BaseModel {
         return $tdsAmt;
     }
 
-    public static function getUnsettledTrans($userId){
-        return self::whereNull('parent_trans_id')
+    public static function getUnsettledTrans($userId, $where = []){
+        $query = self::whereNull('parent_trans_id')
                 ->whereNull('payment_id')
-                ->where('user_id',$userId)
-                ->get()
+                ->where('user_id',$userId);
+        if(!empty($where['trans_type_not_in'])){
+            $query = $query->whereNotIn('trans_type',$where['trans_type_not_in']); 
+        }
+        if(!empty($where['trans_type_in'])){
+            $query = $query->whereIn('trans_type',$where['trans_type_in']); 
+        }
+        return $query->get()
                 ->filter(function($item) {
-                    return $item->outstanding > 0;
+                    return ($item->outstanding > 0 && $item->isTransaction);
                 });
     }
 

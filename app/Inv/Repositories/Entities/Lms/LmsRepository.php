@@ -1138,8 +1138,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return TransactionsRunning::getRunningTrans($userId);
 	}
 	
-	public static function getUnsettledTrans($userId){
-		return Transactions::getUnsettledTrans($userId);
+	public static function getUnsettledTrans($userId, $where = []){
+		return Transactions::getUnsettledTrans($userId, $where);
 	}
 
 	public static function getSettledTrans($userId){

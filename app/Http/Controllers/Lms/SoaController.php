@@ -55,7 +55,9 @@ class SoaController extends Controller
 		if($request->has('user_id')){
             $result = $this->getUserLimitDetais($request->user_id);
             if(isset($result['userInfo'])){
-                $result['userInfo']->outstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($request->user_id)->sum('outstanding'),2);
+                $result['userInfo']->outstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($request->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding'),2);
+                $result['userInfo']->marginOutstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($request->user_id, ['trans_type_in' => [config('lms.TRANS_TYPE.MARGIN')] ])->sum('outstanding'),2);
+                $result['userInfo']->nonfactoredOutstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($request->user_id, ['trans_type_in' => [config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding'),2);
                 $result['userInfo']->unsettledPaymentAmt = number_format($this->lmsRepo->getUnsettledPayments($request->user_id)->sum('amount'),2);
             }
             $user = $this->userRepo->lmsGetCustomer($request->user_id);

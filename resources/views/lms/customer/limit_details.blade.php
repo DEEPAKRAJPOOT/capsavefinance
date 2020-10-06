@@ -34,12 +34,26 @@
             <td>@if($maxInterestDPD){{$maxInterestDPD->dpd}} @if($maxInterestDPD->dpd>1) Days @else Day @endif @else 0 Day @endif </td>
         </tr>
         @endif
-        @if($userInfo->outstandingAmt || $userInfo->unsettledPaymentAmt)
+        @if($userInfo->outstandingAmt || $userInfo->marginOutstandingAmt || $userInfo->nonfactoredOutstandingAmt || $userInfo->unsettledPaymentAmt)
         <tr>
             <td class="text-left" width="30%"><b>@if($userInfo->outstandingAmt) Outstanding Amt @endif</b></td>
             <td>
                 @if($userInfo->outstandingAmt)
-                <a href="{{route('apport_unsettled_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">{{ $userInfo->outstandingAmt }}</a>
+                <a href="{{route('apport_unsettled_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}"> {{ $userInfo->outstandingAmt }} </a>
+                @endif
+            </td>
+            <td class="text-left" width="30%"><b>@if($userInfo->marginOutstandingAmt) Margin Outstanding Amt @endif</b></td>
+            <td>
+                @if($userInfo->marginOutstandingAmt)
+                <a href="{{route('apport_unsettled_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">{{ $userInfo->marginOutstandingAmt }}</a>
+                @endif
+            </td>
+        </tr>
+        <tr>
+            <td class="text-left" width="30%"><b>@if($userInfo->nonfactoredOutstandingAmt) Non-Factored Outstanding Amt @endif</b></td>
+            <td>
+                @if($userInfo->nonfactoredOutstandingAmt)
+                <a href="{{route('apport_unsettled_view', ['user_id' => request()->get('user_id'), 'sanctionPageView' => true])}}">{{ $userInfo->nonfactoredOutstandingAmt }}</a>
                 @endif
             </td>
             <td class="text-left" width="30%"><b> @if($userInfo->unsettledPaymentAmt) Unallocated Payment Amt @endif</b></td>
