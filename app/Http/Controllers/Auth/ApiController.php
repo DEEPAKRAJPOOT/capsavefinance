@@ -420,7 +420,7 @@ class ApiController
               'trans_type' =>  $dsbrsl->getTransNameAttribute(),
               'invoice_no' =>   $invoice_no,
               'invoice_date' =>  $invoice_date,
-              'ledger_name' =>  $accountDetails->bank->bank_name,
+              'ledger_name' =>  $accountDetails->bank->bank_name ?? '',
               'amount' =>  $cheque_amount,
               'ref_no' =>  $invoice_no,
               'ref_amount' =>  $cheque_amount,
@@ -439,9 +439,13 @@ class ApiController
      ];
      $disbursalPayment[] = $BankRow;
      if (!empty($total_interest) && $total_interest > 0) {
+      $disbursalDate = $dsbrsl->trans_date;
+      $where = ['trans_date' => $disbursalDate, 'trans_type' => config('lms.TRANS_TYPE.INTEREST'), 'entry_type' => 0];
+      $interestBooked = $dsbrsl->getInterestForDisbursal($where);
+      $interestTransId = $interestBooked->trans_id;
        $InterestRow = [
               'batch_no' =>  $batch_no,
-              'transactions_id' =>  NULL,
+              'transactions_id' =>  $interestTransId,
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Payment',
               'voucher_date' => NULL,

@@ -1161,6 +1161,21 @@ Route::group(
         'uses' => 'AjaxController@leaseRegister'
         ]
     );
+    Route::post('get_all_interest_breakups',[
+        'as' => 'get_all_interest_breakups',
+        'uses' => 'AjaxController@interestBreakup'
+        ]
+    );
+    Route::post('get_all_charge_breakups',[
+        'as' => 'get_all_charge_breakups',
+        'uses' => 'AjaxController@chargeBreakup'
+        ]
+    );
+    Route::post('get_all_tds_breakups',[
+        'as' => 'get_all_tds_breakups',
+        'uses' => 'AjaxController@tdsBreakup'
+        ]
+    );
     Route::post('backend_ajax_get_disbursal_batch_request',[
         'as' => 'backend_ajax_get_disbursal_batch_request',
         'uses' => 'AjaxController@getBackendDisbursalBatchRequest'

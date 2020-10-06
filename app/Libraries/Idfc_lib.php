@@ -51,7 +51,7 @@ class Idfc_lib{
 		list($payload, $http_header, $txn_id) = $request;
      	$response = $this->_curlCall($url, $payload, $http_header);
      	if ($getApiResponse) {
-     		return [$url, $txn_id, $payload, $http_header, $response['result']];
+     		return [$url, $txn_id, $payload, $http_header, $response];
      	}
 		if (!empty($response['error_no'])) {
 			$resp['code'] 	 = "CurlError : " . $response['error_no'];

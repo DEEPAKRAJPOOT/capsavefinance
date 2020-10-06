@@ -869,8 +869,8 @@ class ApplicationController extends Controller
 				$selData = explode('-', $sel_assign_role);
 				$selRoleId = $selData[0];
 				$selUserId = $selData[1];				
-                                $currStage = Helpers::getCurrentWfStage($app_id);
-                                $selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');                                				
+				$currStage = Helpers::getCurrentWfStage($app_id);
+				$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey=2, $wf_start_order_no=$currStage->order_no, $orderBy='DESC');
 				Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
 			} else {
 				$currStage = Helpers::getCurrentWfStage($app_id);
@@ -949,7 +949,7 @@ class ApplicationController extends Controller
 				  );
 			  	$curDate = \Carbon\Carbon::now()->format('Y-m-d');
 			  	$endDate = date('Y-m-d', strtotime('+1 years -1 day'));
-			  	$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($user_id, $app_id);            
+			  	$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($user_id, $app_id);
                                 $appData = $this->appRepo->getAppData($app_id);
                                 if ($appData && in_array($appData->app_type, [1,2,3]) ) {
                                     $parentAppId = $appData->parent_app_id;
@@ -1057,6 +1057,7 @@ class ApplicationController extends Controller
 								$id  = Auth::user()->user_id;
 								$mytime = Carbon::now();    
 								$arr  = [   
+									'app_id'=> $app_id,
 									"prgm_id" => $offer->prgm_id,
 									'trans_id' => $fDebitCreate->trans_id,
 									"chrg_master_id" => $chrgs->charge_id,

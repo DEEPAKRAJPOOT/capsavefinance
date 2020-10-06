@@ -31,6 +31,34 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'lease_register',
                 'uses' => 'Backend\ReportController@leaseRegister'
             ]);
+            Route::get('/interest-breakup', [
+                'as' => 'interest_breakup',
+                'uses' => 'Backend\ReportController@interestBreakup'
+            ]);
+            Route::get('/download/interest-breakup', [
+                'as' => 'download_interest_breakup',
+                'uses' => 'Backend\ReportController@downloadInterestBreakup'
+            ]);
+            Route::get('/charge-breakup', [
+                'as' => 'charge_breakup',
+                'uses' => 'Backend\ReportController@chargeBreakup'
+            ]);
+
+            Route::get('/download/charge-breakup', [
+                'as' => 'download_charge_breakup',
+                'uses' => 'Backend\ReportController@downloadChargeBreakup'
+            ]);
+
+            Route::get('/tds-breakup', [
+                'as' => 'tds_breakup',
+                'uses' => 'Backend\ReportController@tdsBreakup'
+            ]);
+            
+            Route::get('/download/tds-breakup', [
+                'as' => 'download_tds_breakup',
+                'uses' => 'Backend\ReportController@downloadTdsBreakup'
+            ]);
+            
             Route::get('/download', [
                 'as' => 'download_reports',
                 'uses' => 'Backend\ReportController@downloadLeaseReport'

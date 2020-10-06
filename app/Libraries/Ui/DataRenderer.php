@@ -6443,7 +6443,7 @@ class DataRenderer implements DataProviderInterface
            
            ->make(true);
    }
-   public function leaseRegister(Request $request, $data) {
+    public function leaseRegister(Request $request, $data) {
        $this->sr_no = 1;
        return DataTables::of($data)
            ->editColumn('state', function ($invoiceRec) {
@@ -6533,9 +6533,114 @@ class DataRenderer implements DataProviderInterface
             })
            
            ->make(true);
-   }
+    }
    
-   
+    public function interestBreakup(Request $request, $data) {
+        return DataTables::of($data)
+        ->editColumn('loan', function($trans) {
+            return $trans['loan'];
+        })
+        ->editColumn('client_name', function($trans) {
+            return $trans['client_name'];
+        })
+        ->editColumn('disbursed_amt', function($trans) {
+            return $trans['disbursed_amt']?number_format($trans['disbursed_amt'],2):'';
+        })
+        ->editColumn('from_date', function($trans) {
+            return $trans['from_date']?Carbon::parse($trans['from_date'])->format('d-m-Y'):'';
+        })
+        ->editColumn('to_date', function($trans) {
+            return $trans['to_date']?Carbon::parse($trans['to_date'])->format('d-m-Y'):'';
+        })
+        ->editColumn('days', function($trans) {
+            return $trans['days']?number_format($trans['days'],2):'';
+        })
+        ->editColumn('int_rate', function($trans) {
+            return $trans['int_rate']?number_format($trans['int_rate'],2):'';
+        })
+        ->editColumn('int_amt', function($trans) {
+            return $trans['int_amt']?number_format($trans['int_amt'],2):'';
+        })
+        ->editColumn('collection_date', function($trans) {
+            return $trans['collection_date']?Carbon::parse($trans['collection_date'])->format('d-m-Y'):'';
+        })
+        ->editColumn('tds_rate', function($trans) {
+            return $trans['tds_rate']?number_format($trans['tds_rate'],2):'';
+        })
+        ->editColumn('tds_amt', function($trans) {
+            return $trans['tds_amt']?number_format($trans['tds_amt'],2):'';
+        })
+        ->editColumn('net_int', function($trans) {
+            return $trans['net_int']?number_format($trans['net_int'],2):'';
+        })
+        ->editColumn('tally_batch', function($trans) {
+            return $trans['tally_batch'];
+        })
+        ->make(true);
+    }
+
+    public function chargeBreakup(Request $request, $data) {
+        return DataTables::of($data)
+        ->editColumn('loan', function($trans) { 
+            return $trans['loan']?$trans['loan']:'';
+        })
+        ->editColumn('client_name', function($trans) { 
+            return $trans['client_name']?$trans['client_name']:'';
+        })
+        ->editColumn('chrg_name', function($trans) { 
+            return $trans['chrg_name']?$trans['chrg_name']:'';
+        })
+        ->editColumn('chrg_rate', function($trans) { 
+            return $trans['chrg_rate']?number_format($trans['chrg_rate'],2):'';
+        })
+        ->editColumn('chrg_amt', function($trans) { 
+            return $trans['chrg_amt']?number_format($trans['chrg_amt'],2):'';
+        })
+        ->editColumn('trans_date', function($trans) { 
+            return $trans['trans_date']?Carbon::parse($trans['trans_date'])->format('d-m-Y'):'';
+        })
+        ->editColumn('gst', function($trans) { 
+            return $trans['gst']?number_format($trans['gst'],2):'';
+        })
+        ->editColumn('net_amt', function($trans) { 
+            return $trans['net_amt']?number_format($trans['net_amt'],2):'';
+        })
+        ->editColumn('tally_batch', function($trans) { 
+            return $trans['tally_batch']?$trans['tally_batch']:'';
+        })
+        ->make(true);
+    }
+
+    public function tdsBreakup(Request $request, $data) {
+        return DataTables::of($data)
+        ->editColumn('loan', function($trans) { 
+            return $trans['loan']?$trans['loan']:'';
+        })
+        ->editColumn('client_name', function($trans) { 
+            return $trans['client_name']?$trans['client_name']:'';
+        })
+        ->editColumn('trans_date', function($trans) { 
+            return $trans['trans_date']?Carbon::parse($trans['trans_date'])->format('d-m-Y'):'';
+        })
+        ->editColumn('int_amt', function($trans) { 
+            return $trans['int_amt']?number_format($trans['int_amt'],2):'';
+        })
+        ->editColumn('deduction_date', function($trans) { 
+            return $trans['deduction_date']?Carbon::parse($trans['deduction_date'])->format('d-m-Y'):'';
+        })
+        ->editColumn('tds_amt', function($trans) { 
+            return $trans['tds_amt']?number_format($trans['tds_amt'],2):'';
+        })
+        ->editColumn('tds_certificate', function($trans) { 
+            return $trans['tds_certificate']?$trans['tds_certificate']:'';
+        })
+        ->editColumn('tally_batch', function($trans) { 
+            return $trans['tally_batch']?$trans['tally_batch']:'';
+        })
+        ->make(true);
+    }
+    
+
     public function getReportAllInvoice(Request $request,$invoice)
     {  
         

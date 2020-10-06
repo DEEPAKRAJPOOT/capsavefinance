@@ -137,6 +137,15 @@ class Transactions extends BaseModel {
         return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransactionsRunning','trans_running_id','trans_running_id');
     }
 
+    public function tallyEntry(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\TallyEntry','trans_id','transactions_id');
+    }
+
+    public function ChargesTransactions(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\ChargesTransactions','trans_id','trans_id');
+    }
+    
+
     public function getInvoiceNoAttribute(){
         $data = '';
         if($this->userInvTrans){
@@ -1014,7 +1023,11 @@ class Transactions extends BaseModel {
     public function getToIntDateAttribute(){
         $toDate = null;
         if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
-            $toDate = $this->trans_date;
+            if($this->invoiceDisbursed->invoice->program_offer->payment_frequency == 1){
+                $toDate = $this->invoiceDisbursed->payment_due_date;
+            }else{
+                $toDate = $this->trans_date;
+            }
         }
         return date('Y-m-d', strtotime($toDate));
     }
@@ -1039,5 +1052,206 @@ class Transactions extends BaseModel {
         }
         return $amount;
     }
+    
+    public static function getInterestBreakupReport($whereCondition=[], $whereRawCondition = NULL){
+        $data = [];
 
+        $disbTrans = self::where('trans_type', config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))
+        ->whereNull('parent_trans_id')
+        ->where('entry_type','0')
+        ->get();
+
+        foreach($disbTrans as $dTrans){
+            $unIntTrans = self::where('trans_type', config('lms.TRANS_TYPE.INTEREST'))
+            ->where('invoice_disbursed_id', $dTrans->invoice_disbursed_id)
+            ->whereNull('parent_trans_id')
+            ->where('entry_type','0')
+            ->get()
+            ->filter(function($item) use($whereCondition) {
+                $result = false;
+                if($whereCondition){
+                    if($whereCondition['from_date'] && $whereCondition['to_date']){
+                        $result = (strtotime($item->fromIntDate) >= strtotime($whereCondition['from_date']) && strtotime($item->fromIntDate) <= strtotime($whereCondition['to_date']));
+                    }else{
+                        $result = true;    
+                    }
+                }else{
+                    $result = true;
+                }
+                return $result; 
+            });
+
+            foreach($unIntTrans as $uITrans){
+                $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id] = 
+                [
+                    'loan' => config('common.idprefix.APP').$uITrans->invoiceDisbursed->invoice->app_id,
+                    'client_name' => $uITrans->user->biz->biz_entity_name,
+                    'disbursed_amt' => $dTrans->amount,
+                    'from_date' => $uITrans->fromIntDate,
+                    'to_date' => $uITrans->toIntDate,
+                    'days' => abs(round((strtotime($uITrans->toIntDate) - strtotime($uITrans->fromIntDate)) / 86400))+1,
+                    'int_rate' => $uITrans->invoiceDisbursed->interest_rate,
+                    'int_amt' => $uITrans->amount,
+                    'collection_date' => null,
+                    'tds_rate' => null,
+                    'tds_amt' => 0,
+                    'net_int' => 0,
+                    'tally_batch' => ''
+                ];
+                $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['collection_date'] = self::where('trans_type', config('lms.TRANS_TYPE.INTEREST'))
+                ->where('invoice_disbursed_id', $uITrans->invoice_disbursed_id)
+                ->where('parent_trans_id', $uITrans->trans_id)
+                ->where('entry_type','1')
+                ->max('trans_date');
+
+                $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['tds_amt'] = self::where('trans_type', config('lms.TRANS_TYPE.TDS'))
+                ->whereNotNull('payment_id')
+                ->where('invoice_disbursed_id', $uITrans->invoice_disbursed_id)
+                ->where('parent_trans_id', $uITrans->trans_id)
+                ->where('entry_type','1')
+                ->sum('amount');
+
+                $tdsRates = self::where('trans_type', config('lms.TRANS_TYPE.TDS'))
+                ->whereNotNull('payment_id')
+                ->where('invoice_disbursed_id', $uITrans->invoice_disbursed_id)
+                ->where('parent_trans_id', $uITrans->trans_id)
+                ->where('entry_type','1')
+                ->whereNotNull('tds_per')
+                ->pluck('tds_per')
+                ->toArray();
+                
+                $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['tds_rate'] = implode(',', $tdsRates);
+
+                $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['net_int'] = $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['int_amt'] - $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['tds_amt'];
+
+                $tallyEntries =  $uITrans->tallyEntry;
+
+                if($tallyEntries){
+                    $tallyEntries = $tallyEntries->first();
+                    $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id]['tally_batch'] = $tallyEntries->batch_no;
+                }
+            }
+        }
+        krsort($data);
+        return $data;
+    }
+
+    public static function getchargeBreakupReport($whereCondition=[], $whereRawCondition = NULL){
+        $data = [];
+
+        $chargTrans = self::whereHas('transType', function($query){
+            $query->where('chrg_master_id','>','0');
+        })
+        ->whereNull('parent_trans_id')
+        ->where('entry_type','0')
+        ->orderBy('trans_date', 'desc');
+        
+        if (!empty($whereRawCondition)) {
+            $chargTrans = $chargTrans->whereRaw($whereRawCondition);
+        }
+
+        $chargTrans = $chargTrans->get();
+        foreach($chargTrans as $cTrans){
+            
+            $data[$cTrans->trans_id] = 
+            [
+                'loan' => '',
+                'client_name' =>$cTrans->user->biz->biz_entity_name,
+                'chrg_name' => $cTrans->transName,
+                'trans_date' => $cTrans->trans_date,
+                'chrg_rate' => '',
+                'chrg_amt' => '',
+                'gst' => '',
+                'net_amt' => $cTrans->amount, 
+                'tally_batch' => ''
+            ];
+
+            if($cTrans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                $data[$cTrans->trans_id]['loan'] = config('common.idprefix.APP').$cTrans->invoiceDisbursed->invoice->app_id;
+                $data[$cTrans->trans_id]['chrg_amt'] = $cTrans->amount;
+                $data[$cTrans->trans_id]['chrg_rate'] = $cTrans->invoiceDisbursed->interest_rate;
+            }else{
+                $charge = $cTrans->chargesTransactions;
+                if($charge){
+                    $data[$cTrans->trans_id]['loan'] = $charge->app_id?config('common.idprefix.APP').$charge->app_id:'';
+                    $data[$cTrans->trans_id]['chrg_amt'] = $charge->amount;
+                    $data[$cTrans->trans_id]['chrg_rate'] = ($charge->chargeMaster->chrg_calculation_type == 2)?$charge->percent:'';
+                }
+            }
+
+            if($cTrans->userInvTrans){
+                $data[$cTrans->trans_id]['gst'] = $cTrans->userInvTrans->sgst_amount + $cTrans->userInvTrans->cgst_amount + $cTrans->userInvTrans->igst_amount;
+                $data[$cTrans->trans_id]['chrg_amt'] = $cTrans->userInvTrans->base_amount;
+            }
+            $tallyEntries =  $cTrans->tallyEntry;
+            if($tallyEntries){
+                $tallyEntries = $tallyEntries->first();
+                $data[$cTrans->trans_id]['tally_batch'] = $tallyEntries->batch_no;
+            }
+        }
+        return $data;
+    }
+    
+    public static function gettdsBreakupReport($whereCondition=[], $whereRawCondition = NULL){
+        $data = [];
+
+        $chargTrans = self::
+        where(function ($query) {
+            $query->whereHas('transType', function($q) { 
+                $q->where('id', '=', config('lms.TRANS_TYPE.INTEREST'))->orWhere('chrg_master_id','!=','0');
+            });
+        })
+        ->whereNull('parent_trans_id')
+        ->where('entry_type','0');
+
+        if (!empty($whereRawCondition)) {
+            $chargTrans = $chargTrans->whereRaw($whereRawCondition);
+        }
+        $chargTrans = $chargTrans->get();
+
+        
+        foreach($chargTrans as $cTrans){
+
+            $tdsTrans = self::where('trans_type', config('lms.TRANS_TYPE.TDS'))
+            ->whereNotNull('payment_id')
+            ->where('parent_trans_id', $cTrans->trans_id)
+            ->where('entry_type','1')
+            ->get();
+
+            foreach($tdsTrans as $tds){
+
+                $data[strtotime($tds->trans_date).'-'.$tds->trans_id] = 
+                [
+                    'loan' => '',
+                    'client_name' => $tds->user->biz->biz_entity_name,
+                    'trans_date' => $tds->trans_date,
+                    'int_amt' => $cTrans->amount,
+                    'deduction_date' => $cTrans->trans_date,
+                    'tds_amt' => $tds->amount,
+                    'tds_certificate' => $tds->payment->tds_certificate_no,
+                    'tally_batch' => ''
+                ];
+                
+                if(in_array($cTrans->trans_type, [config('lms.TRANS_TYPE.INTEREST_OVERDUE'),config('lms.TRANS_TYPE.INTEREST')])){
+                    $data[strtotime($tds->trans_date).'-'.$tds->trans_id]['loan'] = config('common.idprefix.APP').$cTrans->invoiceDisbursed->invoice->app_id;
+                }else{
+                    $charge = $cTrans->chargesTransactions;
+                    if($charge){
+                        $data[strtotime($tds->trans_date).'-'.$tds->trans_id]['loan'] = $charge->app_id?config('common.idprefix.APP').$charge->app_id:'';
+                    }
+                }
+                $tallyEntries =  $tds->tallyEntry;
+                if($tallyEntries){
+                    $tallyEntries = $tallyEntries->first();
+                    $data[strtotime($tds->trans_date).'-'.$tds->trans_id]['tally_batch'] = $tallyEntries->batch_no;
+                }
+            }
+        }
+        krsort($data);
+        return $data;
+    }
+    
+    public function getInterestForDisbursal(array $where = []) {
+      return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions', 'invoice_disbursed_id', 'invoice_disbursed_id')->where($where)->first();
+    }
 }

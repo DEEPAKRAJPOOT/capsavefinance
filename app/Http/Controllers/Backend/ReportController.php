@@ -4,6 +4,11 @@ namespace App\Http\Controllers\Backend;
 use Auth;
 use Session;
 use Helpers;
+use PHPExcel;
+use PHPExcel_IOFactory;
+use PHPExcel_Style_Fill;
+use PHPExcel_Cell_DataType;
+use PHPExcel_Style_Alignment;
 use PDF as DPDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -58,6 +63,179 @@ class ReportController extends Controller
         }
     }
 
+    public function interestBreakup(Request $request) {
+        try {
+            return view('reports.interest_breakup');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    public function downloadInterestBreakup(Request $request) {
+        if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+            $from_date = $request->get('from_date');
+            $to_date = $request->get('to_date');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+        ];
+        $rows = 1;
+        $sheet =  new PHPExcel();
+        $sheet->getActiveSheet()->getStyle('A1:M1')->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A'.$rows, 'Loan #')
+                ->setCellValue('B'.$rows, 'Client Name')
+                ->setCellValue('C'.$rows, 'Amount Disbrused (₹)')
+                ->setCellValue('D'.$rows, 'From Date')
+                ->setCellValue('E'.$rows, 'To date')
+                ->setCellValue('F'.$rows, 'Days')
+                ->setCellValue('G'.$rows, 'Interest Rate (%)')
+                ->setCellValue('H'.$rows, 'Interest Amount (₹)')
+                ->setCellValue('I'.$rows, 'Date of Interest Collection')
+                ->setCellValue('J'.$rows, 'TDS Rate (%)')
+                ->setCellValue('K'.$rows, 'TDS Amount (₹)')
+                ->setCellValue('L'.$rows, 'Net Interest (₹)')
+                ->setCellValue('M'.$rows, 'Tally Batch');
+        $rows++;
+        $exceldata = $this->reportsRepo->getInterestBreakupReport($condArr, NULL);
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $rows, $rowData['loan'])
+                ->setCellValue('B' . $rows, $rowData['client_name'])
+                ->setCellValue('C' . $rows, number_format($rowData['disbursed_amt'],2))
+                ->setCellValue('D' . $rows, Carbon::parse($rowData['from_date'])->format('d-m-Y'))
+                ->setCellValue('E' . $rows, Carbon::parse($rowData['to_date'])->format('d-m-Y'))
+                ->setCellValue('F' . $rows, number_format($rowData['days'],2))
+                ->setCellValue('G' . $rows, number_format($rowData['int_rate'],2))
+                ->setCellValue('H' . $rows, number_format($rowData['int_amt'],2))
+                ->setCellValue('I' . $rows, Carbon::parse($rowData['collection_date'])->format('d-m-Y'))
+                ->setCellValue('J' . $rows, $rowData['tds_rate'])
+                ->setCellValue('K' . $rows, $rowData['tds_amt']?number_format($rowData['tds_amt'],2):'')
+                ->setCellValue('L' . $rows, number_format($rowData['net_int'],2))
+                ->setCellValue('M' . $rows, $rowData['tally_batch']);
+            $rows++;
+        }
+        
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Interest Breakup Report.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save('php://output');     
+    }
+
+    public function chargeBreakup(Request $request){
+        try {
+            return view('reports.charge_breakup');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    public function downloadChargeBreakup(Request $request){
+        $rowWhere = null;
+        if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+            $from_date = $request->get('from_date');
+            $to_date = $request->get('to_date');
+            $rowWhere = "trans_date between '".$from_date."' AND '". $to_date."'";
+        }
+        $rows = 1;
+        $sheet =  new PHPExcel();
+        $sheet->getActiveSheet()->getStyle('A1:H1')->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A'.$rows, 'Loan #')
+                ->setCellValue('B'.$rows, 'Client Name')
+                ->setCellValue('C'.$rows, 'Charge Date')
+                ->setCellValue('D'.$rows, 'Charge Name')
+                ->setCellValue('E'.$rows, 'Charge (%)')
+                ->setCellValue('F'.$rows, 'Charge Amount (₹)')
+                ->setCellValue('G'.$rows, 'GST Amount (₹)')
+                ->setCellValue('H'.$rows, 'Total Amount (₹)')
+                ->setCellValue('I'.$rows, 'Tally Batch #');
+        $rows++;
+        $exceldata = $this->reportsRepo->getChargeBreakupReport([], $rowWhere);
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'. $rows, $rowData['loan'])
+            ->setCellValue('B'. $rows, $rowData['client_name'])
+            ->setCellValue('C'. $rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
+            ->setCellValue('D'. $rows, $rowData['chrg_name'])
+            ->setCellValue('E'. $rows, $rowData['chrg_rate'] ? number_format($rowData['chrg_rate'],2):'')
+            ->setCellValue('F'. $rows, $rowData['chrg_amt'] ? number_format($rowData['chrg_amt'],2):'')
+            ->setCellValue('G'. $rows, $rowData['gst'] ? number_format($rowData['gst'],2):'')
+            ->setCellValue('H'. $rows, $rowData['net_amt'] ? number_format($rowData['net_amt'],2):'')
+            ->setCellValue('I'. $rows, $rowData['tally_batch']);
+            $rows++;
+        }
+        
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Charge Breakup Report.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save('php://output');
+    }
+
+    public function tdsBreakup(Request $request){
+        try {
+            return view('reports.tds_breakup');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    public function downloadTdsBreakup(Request $request){
+        $rowWhere = null;
+        if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+            $from_date = $request->get('from_date');
+            $to_date = $request->get('to_date');
+            $rowWhere = "trans_date between '".$from_date."' AND '". $to_date."'";
+        }
+        $rows = 1;
+        $sheet =  new PHPExcel();
+        $sheet->getActiveSheet()->getStyle('A1:M1')->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, 'Loan #')
+            ->setCellValue('B'.$rows, 'Client Name')
+            ->setCellValue('D'.$rows, 'Interest Amount (₹)')
+            ->setCellValue('E'.$rows, 'Date of Interest Deduction')
+            ->setCellValue('C'.$rows, 'TDS Date')
+            ->setCellValue('F'.$rows, 'TDS Amount (₹)')
+            ->setCellValue('G'.$rows, 'TDS certificate #')
+            ->setCellValue('H'.$rows, 'Tally Batch #');
+        $rows++;
+        $exceldata = $this->reportsRepo->getTdsBreakupReport([], $rowWhere);
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $rows, $rowData['loan'])
+                ->setCellValue('B' . $rows, $rowData['client_name'])
+                ->setCellValue('D' . $rows, number_format($rowData['int_amt'],2))
+                ->setCellValue('E' . $rows, Carbon::parse($rowData['deduction_date'])->format('d-m-Y'))
+                ->setCellValue('C' . $rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
+                ->setCellValue('F' . $rows, number_format($rowData['tds_amt'],2))
+                ->setCellValue('G' . $rows, $rowData['tds_certificate'])
+                ->setCellValue('H' . $rows, $rowData['tally_batch']);
+            $rows++;
+        }
+        
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Tds Breakup Report.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save('php://output');
+    }
+    
     public function downloadLeaseReport(Request $request) {
        $whereRaw = '';
        $userInfo = '';
