@@ -75,7 +75,7 @@
 <script type="text/javascript">
 	$('.datepicker-dis-fdate').datetimepicker({
         useCurrent:true,
-        format: 'yyyy-mm-dd',
+        format: 'dd-mm-yyyy',
         autoclose: true,
         minView: 2, 
         defaultDate:new Date(),
