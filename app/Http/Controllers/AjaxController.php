@@ -3332,6 +3332,17 @@ if ($err) {
           $getamount  =   $this->lmsRepo->getSingleChargeAmount($res);
           if($getamount)
           {
+            $getPercentage  = $this->masterRepo->getLastGSTRecord();
+            if($getPercentage)
+            {
+              $tax_value  = $getPercentage['tax_value'];
+              $chid  = $getPercentage['tax_id'];
+            }
+            else
+            {
+               $tax_value  =0; 
+               $chid  = 0;
+            }
                $request['chrg_applicable_id']  = $getamount->chrg_applicable_id; 
                $gst_percentage                 = $getamount->charge->gst_percentage;
                $app = "";
@@ -3384,7 +3395,7 @@ if ($err) {
                  'limit' => $limitAmount,
                  'type' => $getamount->chrg_calculation_type,
                  'is_gst_applicable' => $getamount->charge->is_gst_applicable,
-                 'gst_percentage'  =>  $gst_percentage,
+                 'gst_percentage'  =>  $tax_value,
                  'applicable' =>$app]); 
           }
           else
@@ -3997,7 +4008,40 @@ if ($err) {
    */
     public function lmsGetSoaList(DataProviderInterface $dataProvider) {
 
+        $request = $this->request;
         $transactionList = $this->lmsRepo->getSoaList();
+        
+        if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+            $transactionList = $transactionList->where(function ($query) use ($request) {
+                $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
+            });
+        }
+
+        if($request->has('trans_entry_type')){
+            if($request->trans_entry_type != ''){
+                $trans_entry_type = explode('_',$request->trans_entry_type);
+                $trans_type = $trans_entry_type[0];
+                $entry_type = $trans_entry_type[1];
+                if($trans_type){
+                    $transactionList = $transactionList->where('trans_type',$trans_type);
+                }
+                if($entry_type != ''){
+                    $transactionList = $transactionList->where('entry_type',$entry_type);
+                }
+            }
+        }
+
+        $transactionList = $transactionList->whereHas('lmsUser',function ($query) use ($request) {
+            $customer_id = trim($request->get('customer_id')) ?? null ;
+            $query->where('customer_id', '=', "$customer_id");
+        })
+        ->get()
+        ->filter(function($item){
+            return $item->IsTransaction;
+        });
+
         $users = $dataProvider->getSoaList($this->request, $transactionList);
         return $users;
     }

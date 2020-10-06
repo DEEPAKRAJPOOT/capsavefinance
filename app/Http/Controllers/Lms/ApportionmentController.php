@@ -231,7 +231,7 @@ class ApportionmentController extends Controller
             if (empty($TransDetail)) {
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Selected Transaction to be waived off is not valid']);
             }
-            $is_interest_charges = ($TransDetail->transType->chrg_master_id > 0 || $TransDetail->transType->id == 9);
+            $is_interest_charges = ($TransDetail->transType->chrg_master_id > 0 || in_array($TransDetail->trans_type, [config('lms.TRANS_TYPE.INTEREST')]));
             if(!$is_interest_charges){
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Waived off is possible only Interest and Charges.']);
             }
@@ -426,40 +426,12 @@ class ApportionmentController extends Controller
         $invoiceList = $this->lmsRepo->getUnsettledInvoices(['user_id','=',$userId]);
 
         $transactionList = new Collection();
-        foreach ($invoiceList as $invId => $invoice) {
-            $invoiceTrans = $this->lmsRepo->getUnsettledInvoiceTransactions([
-                'invoice_disbursed_id'=>$invId,
-                'user_id'=>$userId,
-                'trans_type'=>[
-                    config('lms.TRANS_TYPE.INTEREST'),
-                    config('lms.TRANS_TYPE.PAYMENT_DISBURSED')
-                    ]
-                ]);
-            foreach($invoiceTrans as $trans){
-                $transactionList->push($trans);
-            }
-        }
+        
+        $invoiceTrans = $this->lmsRepo->getUnsettledInvoiceTransactions([ 'user_id'=>$userId ]);   
+        $invoiceTrans = $invoiceTrans->sortBy('paymentDueDate');
 
-        $chargeTrans = $this->lmsRepo->getUnsettledChargeTransactions([
-            'user_id'=>$userId,
-            'trans_type_not_in'=>[
-                config('lms.TRANS_TYPE.INTEREST'),
-                config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),
-                config('lms.TRANS_TYPE.MARGIN')
-            ]
-        ]);
-
-        foreach ($chargeTrans as $key => $charge) {
-            $transactionList->push($charge);
-        }
-
-        $marginTrans = $this->lmsRepo->getUnsettledInvoiceTransactions([
-            'user_id'=>$userId,
-            'trans_type'=>[config('lms.TRANS_TYPE.MARGIN')]
-        ]);
-
-        foreach ($marginTrans as $key => $margin) {
-            $transactionList->push($margin);
+        foreach($invoiceTrans as $trans){
+            $transactionList->push($trans);
         }
 
         return $transactionList; 
@@ -575,7 +547,7 @@ class ApportionmentController extends Controller
         $paymentId = null;
         $payment_date = null;
         $payment = null;
-
+        $transactions = null;
         if($request->has('payment_id')){
             $paymentId = $request->payment_id;
             $payment = $this->lmsRepo->getPaymentDetail($paymentId,$userId);    

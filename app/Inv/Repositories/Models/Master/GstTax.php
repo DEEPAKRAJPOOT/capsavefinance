@@ -48,6 +48,8 @@ class GstTax extends BaseModel
         'cgst',
         'sgst',
         'igst',
+        'tax_from',
+        'tax_to',
         'created_at',
         'is_active'
     ];
@@ -89,11 +91,30 @@ class GstTax extends BaseModel
      * @Date: 2020-02-17 17:12:17 
      * @Desc:  
      */    
-    public static function getActiveGST(){
+    public static function getActiveGST($where = []){
         $result=self::select("*")
         ->where("is_active","=",1)
+        ->where($where)
         ->get();
         return $result?$result:false;
+    }
+
+    public static function getLastGSTRecord() 
+    {
+        $result = self::select('mst_gst_tax_slab.tax_id', 'mst_gst_tax_slab.tax_name', 'mst_gst_tax_slab.tax_value', 'mst_gst_tax_slab.cgst', 'mst_gst_tax_slab.sgst', 'mst_gst_tax_slab.igst', 'mst_gst_tax_slab.tax_from', 'mst_gst_tax_slab.tax_to', 'mst_gst_tax_slab.is_active')
+        ->where("is_active","=",1)->orderBy('mst_gst_tax_slab.tax_id', 'DESC')->first();
+    return $result;
+    }
+
+    // update tax_to means end date in gst table
+    public static function updateGstEndDate($id, $date)
+    {
+        $query = self::where('tax_id','<>',$id)->orderBy('tax_id', 'DESC')->first();
+        if($query){
+            return $query->update(['tax_to'=>$date, 'is_active'=>1]);
+        }else{
+            return true;
+        }    
     }
 
      

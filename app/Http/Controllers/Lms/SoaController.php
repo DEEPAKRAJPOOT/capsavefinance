@@ -223,6 +223,7 @@ class SoaController extends Controller
                 if($request->user_id){
                     $result = $this->getUserLimitDetais($request->user_id);
                     $userInfo = $result['userInfo'];
+                    $customerId = $this->lmsRepo->getCustomerIdByUserId($request->user_id);
                 }
 
                 if($request->has('soaType')){
@@ -256,12 +257,14 @@ class SoaController extends Controller
                     $query->where('customer_id', '=', "$customer_id");
                 });
 
-                $soaRecord = $this->prepareDataForRendering($transactionList->get()->chunk(25));
+                $soaRecord = $this->prepareDataForRendering($transactionList->get()->filter(function($item){
+                    return $item->IsTransaction;
+                })->chunk(25));
             } 
 
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
             $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
-                    ->loadView('lms.soa.downloadSoaReport', ['userInfo' => $userInfo, 'soaRecord' => $soaRecord, 'fromdate' => $request->get('from_date'), 'todate' => $request->get('to_date')],[],'UTF-8');
+                    ->loadView('lms.soa.downloadSoaReport', ['userInfo' => $userInfo, 'soaRecord' => $soaRecord, 'fromdate' => $request->get('from_date'), 'todate' => $request->get('to_date'),'customerId' => $customerId],[],'UTF-8');
             return $pdf->download('SoaReport.pdf');          
         }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -307,7 +310,9 @@ class SoaController extends Controller
             });
         
         }
-        $exceldata = $this->prepareDataForRendering($transactionList->get()->chunk(25));
+        $exceldata = $this->prepareDataForRendering($transactionList->get()->filter(function($item){
+            return $item->IsTransaction;
+        })->chunk(25));
         $sheet =  new PHPExcel();
         $sheet->getActiveSheet()->mergeCells('A2:K2');
         $sheet->getActiveSheet()->mergeCells('A3:K3');
@@ -417,8 +422,9 @@ class SoaController extends Controller
         header('Cache-Control: max-age=1');
         
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        ob_end_clean();
         $objWriter->save('php://output');
-        
+        exit;
     }
 
 }
