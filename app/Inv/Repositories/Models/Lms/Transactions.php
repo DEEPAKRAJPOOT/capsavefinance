@@ -355,6 +355,14 @@ class Transactions extends BaseModel {
             return Carbon::parse($this->trans_date)->format('Y-m-d');
         }
     }
+    
+    public function getTDSRateAttribute(){
+        if($this->transType->chrg_master_id || $this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+            return Tds::getActiveTdsBaseRate($this->trans_date);
+        }else{
+            return null;
+        }
+    }
 
     public function getTDSAmountAttribute(){
         $amount = $this->amount;
