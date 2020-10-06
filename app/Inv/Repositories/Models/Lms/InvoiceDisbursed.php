@@ -186,7 +186,7 @@ class InvoiceDisbursed extends BaseModel {
            
           } 
           */
-         return self::where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['invoice','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC');
+         return self::where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)/*->with(['invoice','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])*/->orderBy('invoice_id', 'DESC');
             
       }  
     

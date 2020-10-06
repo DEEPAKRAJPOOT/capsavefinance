@@ -6593,7 +6593,7 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
-                        return   number_format($invoice->invoice->invoice_amount);
+                        return number_format($invoice->invoice->invoice_amount);
                        
                       
                 })
@@ -6605,8 +6605,10 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'balance',
                     function ($invoice) {
-                       
-                           return   number_format($invoice->invoice->invoice_approve_amount);   
+
+                        $balance = $invoice->disburse_amt - $invoice->invoice->repayment_amt;
+                        $balance = ($balance > 0)?$balance:0;
+                        return number_format($balance);
                        
                     })
                    ->filter(function ($query) use ($request) {
@@ -6678,8 +6680,10 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'balance',
                     function ($invoice) {
-                       
-                           return   number_format($invoice->invoice->invoice_approve_amount);   
+
+                        $balance = $invoice->disburse_amt - $invoice->invoice->repayment_amt;
+                        $balance = ($balance > 0)?$balance:0;
+                        return number_format($balance);
                        
                     })
                    ->addColumn(
@@ -6733,7 +6737,9 @@ class DataRenderer implements DataProviderInterface
                      ->addColumn(
                     'invoice_due_amount',
                     function ($invoice) {  
-                        return  number_format($invoice->invoice->invoice_approve_amount);
+                        $approveAmt = $invoice->invoice->invoice_approve_amount;                      
+                        $margin = round(($invoice->invoice->invoice_approve_amount*$invoice->margin)/100,2);
+                        return number_format($approveAmt - $margin);
                    })
                 ->addColumn(
                     'invoice_due_amount_date',
@@ -6764,8 +6770,14 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(            
                     'relisation_amount',
                     function ($invoice) {                        
-                          return number_format($invoice->invoice->invoice_approve_amount);  
-                         })
+                        $approveAmt = $invoice->invoice->invoice_approve_amount;                      
+                        $margin = round(($invoice->invoice->invoice_approve_amount*$invoice->margin)/100,2);
+                        $discountedAmt = $approveAmt - $margin;
+                        if($discountedAmt <= $invoice->invoice->repayment_amt){
+                            return number_format($discountedAmt);
+                        }
+                        return number_format($invoice->invoice->repayment_amt);  
+                })
                 ->addColumn(
                     'cheque',
                     function ($invoice) {
@@ -6824,6 +6836,7 @@ class DataRenderer implements DataProviderInterface
               ->make(true);
     }
 
+    
     /*
      * 
      * get all disbursal batch request
