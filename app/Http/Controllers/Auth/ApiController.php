@@ -59,9 +59,9 @@ class ApiController
       if (empty($accountDetails)) {
         continue;
       }
-      $is_interest_or_charge = false;
-      if ($jrnls->transType->id == config('lms.TRANS_TYPE.INTEREST') || $jrnls->transType->chrg_master_id != 0) {
-        $is_interest_or_charge = true;
+      $is_charge = false;
+      if ($jrnls->transType->chrg_master_id != 0) {
+        $is_charge = true;
       }
       $user_id = Helper::formatIdWithPrefix($jrnls->user_id, 'CUSTID');
       $userName = $jrnls->user->biz_name;
@@ -97,7 +97,7 @@ class ApiController
           }
         }
       }
-      if (is_null($jrnls->parent_trans_id) && $jrnls->entry_type == 0 && $jrnls->getOutstandingAttribute() > 0 && $is_interest_or_charge) {
+      if (is_null($jrnls->parent_trans_id) && $jrnls->entry_type == 0 && $jrnls->outstanding > 0 && $is_charge) {
        continue;
       }
       $this->voucherNo = $this->voucherNo + 1;
