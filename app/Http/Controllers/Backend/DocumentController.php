@@ -196,4 +196,23 @@ class DocumentController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+    /**
+     * This method is used for see upload file in Onboarding and prepost sanction documents  
+     */
+    public function seeUploadFile(Request $request) {
+
+        $fileId = $request->get('file_id');
+        $fileData = $this->docRepo->getFileByFileId($fileId);
+
+        $filePath = 'app/public/'.$fileData->file_path;
+        $path = storage_path($filePath);
+        
+        if (file_exists($path)) {
+            return response()->file($path);
+        }else{
+            exit('Requested file does not exist on our server!');
+        }
+    }
+
 }

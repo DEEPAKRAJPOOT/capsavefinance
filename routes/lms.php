@@ -232,6 +232,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'uses' => 'Backend\PaymentController@EditPayment',
                     ]);
 
+                    Route::get('view-file', [
+                        'as' => 'see_repayment_file',
+                        'uses' => 'Backend\PaymentController@viewUploadedFile',
+                    ]);
+
                     Route::post('update_payment', [
                         'as' => 'update_payment',
                         'uses' => 'Backend\PaymentController@updatePayment',
@@ -295,6 +300,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::get('backend_get_invoice', [
                         'as' => 'backend_get_invoice',
                         'uses' => 'Backend\InvoiceController@viewInvoice',
+                    ]);
+
+                    Route::get('view-invoice-file', [
+                        'as' => 'see_invoice_file',
+                        'uses' => 'Backend\InvoiceController@viewUploadedFile',
                     ]);
 
                     Route::get('user_wise_invoice', [

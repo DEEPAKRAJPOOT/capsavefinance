@@ -563,7 +563,10 @@ class User extends Authenticatable
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        $arrAnchUser = self::select('users.*')
+        $arrAnchUser = self::select('users.*', 'user_app_doc.file_id')
+            ->join('user_app_doc', 'users.user_id', '=', 'user_app_doc.user_id')
+            ->where('user_app_doc.is_active', 1)
+            ->where('user_app_doc.file_type', 1)
             ->where('users.anchor_id', (int) $anchId)
             ->first();
 

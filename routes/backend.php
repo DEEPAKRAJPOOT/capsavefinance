@@ -22,7 +22,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/download-file', [
                 'as' => 'download_storage_file',
                 'uses' => 'Backend\DocumentController@downloadStorageFile'
-            ]);              
+            ]);
+
         });
 
         Route::group(['prefix' => 'reports'], function () {
@@ -99,7 +100,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'promoter_details',
                 'uses' => 'Backend\ApplicationController@showPromoterDetails'
             ]);
-             Route::post('promoter-save',
+
+            Route::get('view-uploaded-doc',[
+                'as' => 'view_uploaded_doc',
+                'uses' => 'Backend\DocumentController@seeUploadFile'
+            ]);
+
+            Route::post('promoter-save',
                 [
                     'as' => 'promoter_save',
                     'uses' => 'Backend\ApplicationController@savePromoter'
@@ -125,6 +132,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('documents/upload-document', [
                 'as' => 'show_upload_document',
                 'uses' => 'Backend\ApplicationController@uploadDocument'
+            ]);
+
+            Route::get('/see-onboarding-file', [
+                'as' => 'view_onboarding_documents',
+                'uses' => 'Backend\DocumentController@seeUploadFile'
             ]);
 
             Route::get('documents/edit-upload-document', [
@@ -527,7 +539,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'show_qms_details',
                 'uses' => 'Backend\QmsController@showQmsDetails'
 
-            ]);   
+            ]);
+            
+            Route::get('see-qms-file', [
+                'as' => 'view_qms_doc',
+                'uses' => 'Backend\DocumentController@seeUploadFile'
+
+            ]);
 
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
@@ -810,7 +828,13 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'edit_anchor_reg',
                 'uses' => 'Backend\LeadController@editAnchorReg'
             ]);
-                Route::post('update-anchor', [
+
+            Route::get('view-uploaded-file', [
+                'as' => 'view_uploaded_file',
+                'uses' => 'Backend\LeadController@viewUploadedFile'
+            ]);
+
+            Route::post('update-anchor', [
                 'as' => 'update_anchor_reg',
                 'uses' => 'Backend\LeadController@updateAnchorReg'
             ]); 
@@ -1279,6 +1303,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('/upload-document', [
                 'as' => 'pp_upload_document',
                 'uses' => 'Backend\DocumentController@uploadDocument'
+            ]);
+            Route::get('/see-prepost-file',[
+                'as' => 'view_prepost_documents',
+                'uses' => 'Backend\DocumentController@seeUploadFile'
             ]);
 
             Route::post('/documents-save', [

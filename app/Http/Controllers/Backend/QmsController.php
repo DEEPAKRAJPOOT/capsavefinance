@@ -54,6 +54,7 @@ class QmsController extends Controller {
     public function saveQueryManagement(QueryManagementRequest $request)
     {
         try {
+            // dd($request->all());
             $app_id = $request->get('app_id');
             $assignRoleId = $request->get('assignRoleId');
             $qms_cmnt = $request->get('qms_cmnt');
@@ -99,9 +100,7 @@ class QmsController extends Controller {
             $qms_req_id = $request->get('qms_req_id');
             $arrData = $this->qmsRepo->getQueryData($qms_req_id);
             $arrFileId = explode(',', $arrData->file_id);
-            
             $arrFileData = $this->docRepo->getMultipleFileByFileId($arrFileId);
-
 
             return view('backend.qms.queryDetails', compact('arrData','arrFileData'));
         } catch (Exception $ex) {

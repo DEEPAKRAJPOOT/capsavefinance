@@ -158,10 +158,16 @@
                                     <label class="custom-file-label" for="customFile">Choose file</label>
                                  </div>
                              </div>
-                           </div>  
-                       
-                        </div>  
-                
+                           </div> 
+                        </div> 
+
+                        @if(isset($anchorUserData->file_id) && !empty($anchorUserData->file_id))
+                        @can('view_uploaded_file')
+                        <div class="custom-file mb-3 mt-2">
+                           <a target="_blank" href = "{{ route('view_uploaded_file',['fileId' => $anchorUserData->file_id]) }}" title="View File"><i style="color:green" class="fa fa-file-pdf-o"> View Uploaded File</i></a>
+                        </div> 
+                        @endcan
+                        @endif
                 
                 {!! Form::hidden('anchor_id', $anchor_id) !!}
                 <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
@@ -171,8 +177,7 @@
          </div>
      
 
-
-
+{!!Helpers::makeIframePopup('EdituploadDocument','View Uploaded File', 'modal-md')!!}
 @endsection
 
 @section('jscript')

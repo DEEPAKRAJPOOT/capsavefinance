@@ -6,6 +6,7 @@ use Auth;
 use Session;
 use Crypt;
 use Helpers;
+use Response;
 use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface
 use Event;
 use PHPExcel;
 use PHPExcel_IOFactory;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Backend\CreateLeadRequest;
 use App\Inv\Repositories\Models\UserAppDoc;
 use Illuminate\Support\Facades\Validator;
@@ -568,6 +570,7 @@ class LeadController extends Controller {
                 $anchorUserInfo = $this->userRepo->getUserByAnchorId($anchorId);
                 $anchorVal = $this->userRepo->getAnchorById($anchorId);
             }
+            // dd($anchorUserInfo);
              $states = State::getStateList()->get();
             return view('backend.anchor.edit_anchor_reg')
                             ->with('anchor_id', $anchorId)
@@ -829,6 +832,26 @@ class LeadController extends Controller {
         header('Content-Disposition: attachment; filename="anchoruserlist.csv"');
         readfile($filePath);
         exit;
+    }
+
+    public function viewUploadedFile(Request $request){
+        try {
+            
+            $file_id = $request->get('fileId');
+            $fileData = $this->docRepo->getFileByFileId($file_id);
+
+            $filePath = 'app/public/'.$fileData->file_path;
+            $path = storage_path($filePath);
+            
+            if (file_exists($path)) {
+                return response()->file($path);
+            }else{
+                exit('Requested file does not exist on our server!');
+            }
+        } catch (Exception $ex) {                
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+
     }
     
 }
