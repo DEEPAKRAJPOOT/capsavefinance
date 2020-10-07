@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Lms\Refund\RefundReq;
 use App\Libraries\Bsa_lib;
 use App\Libraries\Perfios_lib;
+use App\Inv\Repositories\Models\Master\TallyEntry;
 use App\Helpers\Helper;
 use Storage;
 
@@ -27,6 +28,29 @@ class ApiController
 	function __construct(){
 		
 	}
+
+
+  public function tally_recover() {
+    $disbursedRec= TallyEntry::where(['trans_type' => 'Payment Disbursed'])->whereNotNull('transactions_id')->get();
+    $count = 0;
+    foreach ($disbursedRec as $key => $value) {
+       $disbursedRow = $value;
+       $interestRow = $value->getDisbursedInterest;
+       $disbursalDate = $disbursedRow->voucher_date;
+       $where = ['trans_date' => $disbursalDate, 'trans_type' => config('lms.TRANS_TYPE.INTEREST'), 'entry_type' => 0];
+       $interestBooked = $disbursedRow->getTransaction->getInterestForDisbursal($where);
+       if (isset($interestRow) && isset($interestBooked->trans_id)) {
+         $count++;
+         $interestTransId = $interestBooked->trans_id ?? NULL;
+         $interestRow->update(['transactions_id' => $interestTransId]);
+       }
+    }
+    $response = array(
+      'status' => 'success',
+      'message' => $count . ' Record(s) updated successfully.',
+    );
+   return $response;
+  }
 
   private function createJournalData($journalData, $batch_no) {
     $journalPayments = [];
