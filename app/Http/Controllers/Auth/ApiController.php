@@ -44,12 +44,12 @@ class ApiController
          $interestTransId = $interestBooked->trans_id ?? NULL;
          $interestRow->update(['transactions_id' => $interestTransId]);
        }
-       $response = array(
-        'status' => 'success',
-        'message' => $count . ' Record(s) updated successfully.',
-       );
-       return $response;
     }
+    $response = array(
+      'status' => 'success',
+      'message' => $count . ' Record(s) updated successfully.',
+    );
+   return $response;
   }
 
   private function createJournalData($journalData, $batch_no) {
