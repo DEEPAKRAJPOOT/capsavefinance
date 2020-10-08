@@ -1492,7 +1492,7 @@ ul.custom-check-label #frequency-error {
 
 /*14-08-2020*/
 
-.table{
+#nachList.table{
     display: block;
     width: 100%;
     overflow-x: auto;
