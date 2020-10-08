@@ -7214,5 +7214,73 @@ class DataRenderer implements DataProviderInterface
                 )
                 ->make(true);
     }
+    
+    /**
+    * Nach Data table listing
+    * 
+    * @param Request $request
+    * @param type $data
+    * @return type
+    */
+   public function getNach(Request $request, $data) {
+       $this->sr_no = 1;
+       return DataTables::of($data)
+           ->rawColumns(['users_nach_id','nach_date','sponsor_bank_code','acc_name','acc_no','ifsc_code',
+               'branch_name','amount','phone_no','email_id','period_from', 'period_to', 'debit_type', 'created_at', 'uploaded_file_id'])
+           ->addColumn('users_nach_id', function ($nachData) {
+               $cBox = '';
+               if($nachData->status == 4) {
+                   $cBox = '<input type="checkbox" data-id="'.$nachData->users_nach_id.'" name="chkstatus[]" value="'.(($nachData->users_nach_id) ? $nachData->users_nach_id : '' ).'" class="chkstatus">';
+               }
+               return $cBox;
+           })
+           ->editColumn('nach_date', function ($nachData) {
+               return date('d-m-Y', strtotime($nachData->nach_date));
+           })
+           ->editColumn('sponsor_bank_code', function ($nachData) {
+               return $nachData->sponsor_bank_code;
+           })  
+           ->editColumn('acc_name', function ($nachData) {
+               return $nachData->acc_name ;
+           })
+           ->editColumn('acc_no', function ($nachData) {
+               return $nachData->acc_no ;
+           })
+           ->editColumn('ifsc_code', function ($nachData) {
+               return $nachData->ifsc_code ? $nachData->ifsc_code : $nachData->micr ;
+           })
+           ->editColumn('branch_name', function ($nachData) {
+               return $nachData->branch_name ;
+           })
+           ->editColumn('amount', function ($nachData) {
+               return $nachData->amount ;
+           })
+           ->editColumn('phone_no', function ($nachData) {
+               return $nachData->phone_no ;
+           })
+           ->editColumn('email_id', function ($nachData) {
+               return $nachData->email_id ;
+           })
+           ->editColumn('period_from', function ($nachData) {
+               return date('d-m-Y', strtotime($nachData->period_from));
+           })
+           ->editColumn('period_to', function ($nachData) {
+               return $nachData->period_to ? date('d-m-Y', strtotime($nachData->period_to)) : 'Until Cancelled';
+           })
+           ->editColumn('debit_type',  function ($nachData) {
+               $full_name = $nachData->debit_type == 1 ? 'Fixed Amount' : 'Maximum Amount' ;
+               return $full_name;
+           })
+           ->editColumn('created_at', function ($nachData) {
+               return $nachData->created_at ? date('d-m-Y', strtotime($nachData->created_at)) : '';
+           })
+           ->editColumn('uploaded_file_id',  function ($nachData) {
+               if(($nachData->uploaded_file_id != 0)) {
+                   return '<a href="'.route('download_storage_file', ['file_id' => $nachData->uploaded_file_id ]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+               }
+           }) 
+           
+           ->make(true);
+   }
    
 }

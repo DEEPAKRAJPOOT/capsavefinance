@@ -74,6 +74,7 @@ use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\BizEntityCin;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\UserNach;
 
 /**
  * Application repository class
@@ -2425,7 +2426,58 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getRcuDocumentData($where)
     {
         return RcuDocument::getRcuDocumentData($where);
-    }    
+    }
+
+    /**
+     * Save Nach
+     * 
+     * @param type $arr
+     * @return type
+     */
+    public function saveNach($arr){
+        return UserNach::saveNach($arr);
+    }
+    
+    /**
+     * Get Nach Data
+     * 
+     * @param type $whereCond
+     * @return type
+     */
+    public function getNachData($whereCond){
+        return UserNach::getNachData($whereCond);
+    }
+    
+    /**
+     * Get Nach Data
+     * 
+     * @param type $whereCond
+     * @return type
+     */
+    public function getNachDataInNachId($nachIds){
+        return UserNach::getNachDataInNachId($nachIds);
+    }
+    
+    /**
+     * Update Nach Data By Nach Id
+     * 
+     * @param type $attr
+     * @param type $users_nach_id
+     * @return type
+     */
+    public function updateNach($attr, $users_nach_id){
+        return UserNach::updateNach($attr, $users_nach_id);
+    }
+    
+    /**
+     * Get Company Detail
+     * 
+     * @param type $whereCond
+     * @return type
+     */
+    public function getCompAddByCompanyName($whereCond) {
+        return Company::getCompAddByCompanyName($whereCond);
+    }
 }
 
 

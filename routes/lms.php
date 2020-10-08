@@ -141,6 +141,45 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_user_invoice_unpublished',
                 'uses' => 'Lms\userInvoiceController@unpublishUsereAddr',
             ]);
+            
+            Route::get('/add-nach-detail', [
+                'as' => 'add_nach_detail',
+                'uses' => 'Lms\NachController@addNachDetail',
+            ]);
+            
+            Route::post('/save-nach-detail', [
+                'as' => 'save_nach_detail',
+                'uses' => 'Lms\NachController@saveNachDetail',
+            ]);
+            
+            Route::get('/nach-detail-preview', [
+                'as' => 'nach_detail_preview',
+                'uses' => 'Lms\BankAccountController@nachDetailPreview',
+            ]);
+            
+            Route::get('generate-nach', [
+                'as' => 'generate_nach',
+                'uses' => 'Lms\NachController@generateNach'
+            ]);
+            
+            Route::get('/upload-nach-document', [
+                'as' => 'upload_nach_document',
+                'uses' => 'Lms\NachController@uploadNachDocument'
+            ]);
+
+            Route::post('/nach_document-save', [
+                'as' => 'nach_document_save',
+                'uses' => 'Lms\NachController@saveNachDocument'
+            ]);
+            
+            Route::get('/users-nach-list', [
+                'as' => 'users_nach_list',
+                'uses' => 'Lms\NachController@getNachList'
+            ]);
+            Route::post('/nach-download_sheet', [
+                'as' => 'nach_download_reports_sheet',
+                'uses' => 'Lms\NachController@downloadNachReport'
+            ]);
 
             Route::group(['prefix' => 'charges'], function () {
                 if (config('lms.LMS_STATUS')) {

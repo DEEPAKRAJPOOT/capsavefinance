@@ -136,7 +136,23 @@
             </div>
         </li>
     @endcan
-
+    @if(config('lms.LMS_STATUS'))
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu6" aria-expanded="false"
+            aria-controls="collapseExample">
+            <i class="fa fa-user-plus" aria-hidden="true"></i>
+            <span class="menu-title">Manage Nach</span>
+            <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </a>
+        <div class="collapse" id="layoutsSubmenu6" style="">
+            <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('users_nach_list') }}">Manage Nach List</a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    @endif
     @if(config('lms.LMS_STATUS'))
         @can('lms_get_customer_list')
         <li class="nav-item">

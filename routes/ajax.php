@@ -1225,5 +1225,9 @@ Route::group(
         'uses' => 'AjaxController@getBackendRefundBatchRequest'
         ]
     );
-
+    
+    Route::post('get-all-nach',[
+        'as' => 'get_all_nach',
+        'uses' => 'AjaxController@getAllNach'
+    ]);
 });

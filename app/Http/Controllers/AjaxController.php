@@ -4926,5 +4926,18 @@ if ($err) {
         $disbursalBatchRequest = $this->lmsRepo->lmsGetRefundBatchRequest();
         $data = $dataProvider->lmsGetRefundBatchRequest($this->request, $disbursalBatchRequest);
         return $data;
-    } 
+    }
+    
+    /**
+     * Get all NACH Request
+     * 
+     * @param DataProviderInterface $dataProvider
+     * @return JsonResponse
+     */
+    public function getAllNach(DataProviderInterface $dataProvider) {
+        $nachList = $this->lmsRepo->getAllNach();
+        $nach = $dataProvider->getNach($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
 }
