@@ -76,7 +76,7 @@
                                             <span class="mandatory">*</span>
                                         </label>
                                         <input type="hidden" name="send_otp" id="send-otp" value="">
-                                        <input type="text" name="email" id="email" value="@if($anchorDetail){{$anchorDetail->email}}@else{{old('email')}}@endif" class="form-control" tabindex="4" placeholder="Email"  @if($anchorDetail)  @else @endif>
+                                        <input type="text" name="email" id="email" value="@if($anchorDetail){{$anchorDetail->email}}@else{{old('email')}}@endif" class="form-control" tabindex="4" placeholder="Email"  @if($anchorDetail) readonly @else @endif>
 
                                         <span class="text-danger error"> {{$errors->first('email')}} </span>
                                     </div>
