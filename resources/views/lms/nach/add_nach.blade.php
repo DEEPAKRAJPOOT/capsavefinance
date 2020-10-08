@@ -258,6 +258,12 @@
             nach_date:{
                 required:true
             },
+            debit_tick:{
+                required:true
+            },
+            amount:{
+                required:true
+            },
            phone_no:{
                 required:true,
                 minlength:9,
@@ -268,10 +274,10 @@
                 required:true,
                 email:true
             },
-            refference_1:{
+            reference_1:{
                 required:true
             },
-            refference_2:{
+            reference_2:{
                 required:true
             },
             debit_type:{

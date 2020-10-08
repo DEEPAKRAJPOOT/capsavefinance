@@ -1460,6 +1460,11 @@ ul.custom-check-label #debit_type-error {
     width: 130px;
     top: 22px;
 }
+ul.custom-check-label #debit_tick-error {
+    position: absolute;
+    width: 130px;
+    top: 22px;
+}
 ul.custom-check-label #period_until_cancelled-error {
     position: absolute;
     width: 130px;

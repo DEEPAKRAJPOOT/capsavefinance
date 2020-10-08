@@ -65,6 +65,7 @@ use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\Lms\DisbursalApiLog;
+use App\Inv\Repositories\Models\UserNach;
 
 /**
  * Lms Repository class
@@ -1678,5 +1679,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		$response =  RefundReq::updateOrCreate(['tran_no' => $updatingId],$data);
 		return ($response) ?? $response;
 	}
-
+    
+    public function getAllNach(){
+        return UserNach::getNach();
+    }
 }

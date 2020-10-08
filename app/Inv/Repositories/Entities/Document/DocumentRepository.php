@@ -410,5 +410,22 @@ class DocumentRepository implements DocumentInterface
         
         return UserFile::deleteFile($fileId);
     }
-
+    
+    /**
+     * Save Nach document method
+     *
+     * @param mixed $ids
+     */
+    public function saveNachDocument($attributes = [], $userId){
+        /**
+         * Check Valid Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        return UserFile::saveNachFile($attributes, $userId);
+    }
 }

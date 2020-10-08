@@ -154,7 +154,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             
             Route::get('/nach-detail-preview', [
                 'as' => 'nach_detail_preview',
-                'uses' => 'Lms\BankAccountController@nachDetailPreview',
+                'uses' => 'Lms\NachController@nachDetailPreview',
             ]);
             
             Route::get('generate-nach', [
