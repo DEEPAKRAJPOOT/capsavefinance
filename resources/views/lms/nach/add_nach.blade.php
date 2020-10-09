@@ -266,7 +266,7 @@
             },
            phone_no:{
                 required:true,
-                minlength:9,
+                minlength:10,
                 maxlength:10,
                 number: true
             },
