@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Lms;
 
+use Auth;
 use File;
 use Session;
 use Helpers;
@@ -55,7 +56,7 @@ class NachController extends Controller {
     }
     
     /**
-     * Download TDS report pdf/xlxs
+     * Download NACH report xlxs
      * 
      * @param Request $request
      * @return type
@@ -87,9 +88,15 @@ class NachController extends Controller {
                     'period_to' => !empty($nach->period_to) ? date('d-m-Y', strtotime($nach->period_to)) : '',
                     'period_until_cancelled' => $nach->period_until_cancelled,
               ];
-                $nachData = ['status' => 5];
-                $this->appRepo->updateNach($nachData, $nach->users_nach_id);
+//                $nachData = ['status' => 5];
+//                $this->appRepo->updateNach($nachData, $nach->users_nach_id);
             }
+//                $user_id = Auth::user()->user_id;
+//                $document_info = $this->docRepo->saveNachDocument($arrFileData, $user_id);
+//                if ($document_info) {
+//                    $nachData = ['uploaded_file_id' =>  $document_info->file_id];
+//                    $this->appRepo->updateNach($nachData, $users_nach_id);
+//                }
                 $toExportData['Nach Sheet'] = $nachArr;
                 return $this->fileHelper->array_to_excel($toExportData, 'nach.xlsx');
            } catch (\Exception $ex) {

@@ -272,6 +272,14 @@ class FileHelper {
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $file_name . '"');
         header('Cache-Control: max-age=0');
+        if (!Storage::exists('/public/nach')) {
+           Storage::makeDirectory('/public/nach');
+       }
+       $storage_path = storage_path('app/public/nach');
+       $filePath = $storage_path.'/'.$filename.'.xlsx';
+
+       $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+       $objWriter->save($filePath);
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
         ob_end_flush();
