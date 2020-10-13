@@ -551,4 +551,8 @@ class ReportController extends Controller
        $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.tdsReport');
        return $pdf->download('tdsReport.pdf');        
     }
+
+    public function maturityReport(Request $request){
+        dd($this->reportsRepo->generateMaturityReport(['anchor_id'=>'20']));   
+    }
 }
