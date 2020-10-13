@@ -1230,4 +1230,9 @@ Route::group(
         'as' => 'get_all_nach',
         'uses' => 'AjaxController@getAllNach'
     ]);
+
+    Route::post('front-ajax-user-nach-listh',[
+        'as' => 'front_ajax_user_nach_list',
+        'uses' => 'AjaxController@frontAjaxUserNachList'
+    ]);
 });

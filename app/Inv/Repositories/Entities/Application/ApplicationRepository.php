@@ -2478,6 +2478,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getCompAddByCompanyName($whereCond) {
         return Company::getCompAddByCompanyName($whereCond);
     }
+
+    public function getUserBankNACH($where)
+    {
+        return UserBankAccount::with('user_nach','bank')
+                ->where($where)
+                // ->whereDoesntHave('user_nach')
+                ->get();
+    }
 }
 
 

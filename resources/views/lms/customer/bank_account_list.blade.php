@@ -85,7 +85,6 @@
                                                                                             $act .= '<a href="' . route('add_nach_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '" class="btn btn-success btn-sm" title="Add Nach">Add Nach</a>';
                                                                                         }
 											@endphp
-											@endphp
 											<td>{!! $act !!}</td>
 										</tr>
 									@endforeach

@@ -256,5 +256,10 @@ class UserBankAccount extends BaseModel {
         
         return $res ?: false;
     }
+
+    public function user_nach()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\UserNach', 'bank_account_id', 'bank_acc_id');
+    }
 }
 

@@ -140,15 +140,22 @@
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu6" aria-expanded="false"
             aria-controls="collapseExample">
-            <i class="fa fa-user-plus" aria-hidden="true"></i>
+            <i class="fa fa-bank" aria-hidden="true"></i>
             <span class="menu-title">Manage Nach</span>
             <i class="fa fa-angle-right" aria-hidden="true"></i>
         </a>
         <div class="collapse" id="layoutsSubmenu6" style="">
             <ul class="nav flex-column sub-menu">
+                @can('user_nach_register')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('user_nach_register') }}">Register Request</a>
+                </li>
+                @endcan
+                @can('users_nach_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('users_nach_list') }}">Manage Nach List</a>
                 </li>
+                @endcan
             </ul>
         </div>
     </li>
