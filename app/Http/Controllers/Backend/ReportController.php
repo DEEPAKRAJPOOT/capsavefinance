@@ -553,6 +553,6 @@ class ReportController extends Controller
     }
 
     public function maturityReport(Request $request){
-        dd($this->reportsRepo->generateMaturityReport(['anchor_id'=>'20']));   
+        dd($this->reportsRepo->getDisbursalReport( /* ['anchor_id'=>'20'] */ ));   
     }
 }
