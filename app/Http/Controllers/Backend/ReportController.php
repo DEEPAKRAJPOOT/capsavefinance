@@ -492,7 +492,7 @@ class ReportController extends Controller
     * @param Request $request
     * @return type
     */
-   public function tdsReport(Request $request) {
+    public function tdsReport(Request $request) {
         try {
             return view('reports.tds');
         } catch (Exception $ex) {
@@ -553,8 +553,120 @@ class ReportController extends Controller
     }
 
     public function maturityReport(Request $request){
-    $data = $this->reportsRepo->getUtilizationReport( ['anchor_id'=>'1']  );
-        $this->downloadUtilizationExcel($data);   
+        //$data = $this->reportsRepo->getUtilizationReport( ['anchor_id'=>'1']  );
+        //$this->downloadUtilizationExcel($data);   
+        
+        //$data = $this->reportsRepo->getDisbursalReport(/*['anchor_id'=>'1']*/);
+        //$this->downloadDailyDisbursalReport($data);
+
+        //$data = $this->reportsRepo->getMaturityReport(/*['anchor_id'=>'1']*/);
+        //$this->downloadMaturityReport($data);
+
+        //$data = $this->reportsRepo->getOverdueReport(/*['anchor_id'=>'1']*/);
+        //$this->downloadOverdueReport($data);
+
+        $data = $this->reportsRepo->getAccountDisbursalReport(/*['anchor_id'=>'1']*/);
+        $this->downloadAccountDailyDisbursalReport($data);
+    }
+
+    public function downloadMaturityReport($exceldata){
+        $rows = 5;
+        $sheet =  new PHPExcel();
+        $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, 'Customer Name')
+            ->setCellValue('B'.$rows, 'Loan Account #')
+            ->setCellValue('C'.$rows, 'Virtual Account #')
+            ->setCellValue('D'.$rows, 'Transction Date')
+            ->setCellValue('E'.$rows, 'Tranction #')
+            ->setCellValue('F'.$rows, 'Invoice #')
+            ->setCellValue('G'.$rows, 'Invoice Date')
+            ->setCellValue('H'.$rows, 'Invoice Amount')
+            ->setCellValue('I'.$rows, 'Margin Amount')
+            ->setCellValue('J'.$rows, 'Amount Disbrused')
+            ->setCellValue('K'.$rows, 'O/s Amount')
+            ->setCellValue('L'.$rows, 'O/s Days')
+            ->setCellValue('M'.$rows, 'Credit Period')
+            ->setCellValue('N'.$rows, 'Maturity Date (Due Date)')
+            ->setCellValue('O'.$rows, 'Maturity Amount')
+            ->setCellValue('P'.$rows, 'Over Due Days')
+            ->setCellValue('Q'.$rows, 'Overdue Amount')
+            ->setCellValue('R'.$rows, 'Remark while uploading Invoice');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':R'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $rows++;
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, $rowData['cust_name'])
+            ->setCellValue('B'.$rows, $rowData['loan_ac'])
+            ->setCellValue('C'.$rows, $rowData['virtual_ac'])
+            ->setCellValue('D'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
+            ->setCellValue('E'.$rows, $rowData['trans_no'])
+            ->setCellValue('F'.$rows, $rowData['invoice_no'])
+            ->setCellValue('G'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'))
+            ->setCellValue('H'.$rows, number_format($rowData['invoice_amt'],2))
+            ->setCellValue('I'.$rows, number_format($rowData['margin_amt'],2))
+            ->setCellValue('J'.$rows, number_format($rowData['disb_amt'],2))
+            ->setCellValue('K'.$rows, number_format($rowData['out_amt'],2))
+            ->setCellValue('L'.$rows, $rowData['out_days'])
+            ->setCellValue('M'.$rows, $rowData['tenor'])
+            ->setCellValue('N'.$rows, Carbon::parse($rowData['due_date'])->format('d-m-Y'))
+            ->setCellValue('O'.$rows, number_format($rowData['due_amt'],2))
+            ->setCellValue('P'.$rows, $rowData['od_days'])
+            ->setCellValue('Q'.$rows, number_format($rowData['od_amt'],2))
+            ->setCellValue('R'.$rows, $rowData['remark']); 
+            $rows++;
+        }
+        
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Maturity Report.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save('php://output');
+    }
+
+    public function downloadDailyDisbursalReport($exceldata){
+        $rows = 5;
+        $sheet =  new PHPExcel();
+        $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, 'Customer Name')
+            ->setCellValue('B'.$rows, 'Loan Account #')
+            ->setCellValue('C'.$rows, 'Transction Date')
+            ->setCellValue('D'.$rows, 'tranction #')
+            ->setCellValue('E'.$rows, 'Invoice #')
+            ->setCellValue('F'.$rows, 'Invoice Date')
+            ->setCellValue('G'.$rows, 'Invoice Amount')
+            ->setCellValue('H'.$rows, 'Margin Amount')
+            ->setCellValue('I'.$rows, 'Amount Disbrused')
+            ->setCellValue('J'.$rows, 'UTR')
+            ->setCellValue('K'.$rows, 'Remark while uploading Invoice');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $rows++;
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, $rowData['cust_name'])
+            ->setCellValue('B'.$rows, $rowData['loan_ac'])
+            ->setCellValue('C'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
+            ->setCellValue('D'.$rows, $rowData['trans_no'])
+            ->setCellValue('E'.$rows, $rowData['invoice_no'])
+            ->setCellValue('F'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'))
+            ->setCellValue('G'.$rows, number_format($rowData['invoice_amt'],2))
+            ->setCellValue('H'.$rows, number_format($rowData['margin_amt'],2))
+            ->setCellValue('I'.$rows, number_format($rowData['disb_amt'],2))
+            ->setCellValue('J'.$rows, $rowData['trans_utr'])
+            ->setCellValue('K'.$rows, $rowData['remark']);
+            $rows++;
+        }
+        
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Daily Disbursal Report.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save('php://output');
     }
 
     public function downloadUtilizationExcel($exceldata) {
@@ -562,7 +674,6 @@ class ReportController extends Controller
         $rows = 5;
 
         $sheet =  new PHPExcel();
-       
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Anchor Name')
@@ -580,7 +691,7 @@ class ReportController extends Controller
             ->setCellValue('C' . $rows, $rowData['sub_prgm_name'])
             ->setCellValue('D' . $rows, $rowData['client_sanction'])
             ->setCellValue('E' . $rows, $rowData['ttl_od_customer'])
-            ->setCellValue('F' . $rows, $rowData['ttl_od_amt']); 
+            ->setCellValue('F' . $rows, number_format($rowData['ttl_od_amt'],2)); 
             $rows++;
             $rows++;
             if(!empty($rowData['disbursement'])){
@@ -591,8 +702,8 @@ class ReportController extends Controller
                     ->setCellValue('B'.$rows, 'Loan #')
                     ->setCellValue('C'.$rows, 'Virtual Account #')
                     ->setCellValue('D'.$rows, 'Client Sanction Limit')
-                    ->setCellValue('E'.$rows, 'Limit Utilized	Limit')
-                    ->setCellValue('F'.$rows, 'Available	Limit')
+                    ->setCellValue('E'.$rows, 'Limit Utilized Limit')
+                    ->setCellValue('F'.$rows, 'Available Limit')
                     ->setCellValue('G'.$rows, 'Expiry Date')
                     ->setCellValue('H'.$rows, 'Sales Person Name')
                     ->setCellValue('I'.$rows, 'Sub Program Name');
@@ -602,11 +713,11 @@ class ReportController extends Controller
                     ->setCellValue('A'.$rows, $disb['client_name'])
                     ->setCellValue('B'.$rows, $disb['loan_ac'])
                     ->setCellValue('C'.$rows, $disb['virtual_ac'])
-                    ->setCellValue('D'.$rows, $disb['client_sanction_limit'])
-                    ->setCellValue('E'.$rows, $disb['limit_utilize'])
-                    ->setCellValue('F'.$rows, $disb['limit_available'])
-                    ->setCellValue('G'.$rows, $disb['end_date'])
-                    ->setCellValue('H'.$rows, $disb['end_date'])
+                    ->setCellValue('D'.$rows, number_format($disb['client_sanction_limit'],2))
+                    ->setCellValue('E'.$rows, number_format($disb['limit_utilize'],2))
+                    ->setCellValue('F'.$rows, number_format($disb['limit_available'],2))
+                    ->setCellValue('G'.$rows, Carbon::parse($disb['end_date'])->format('d/m/Y') ?? NULL)
+                    ->setCellValue('H'.$rows, '')
                     ->setCellValue('I'.$rows, $disb['sub_prgm_name']);
                     $rows++;
                     $rows++;
@@ -625,12 +736,12 @@ class ReportController extends Controller
                         foreach($disb['invoice'] as $inv){
                             $sheet->setActiveSheetIndex(0)
                             ->setCellValue('B'.$rows,$inv['invoice_no'])
-                            ->setCellValue('C'.$rows,$inv['invoice_date'])
-                            ->setCellValue('D'.$rows,$inv['invoice_amt'])
-                            ->setCellValue('E'.$rows,$inv['margin_amt'])
-                            ->setCellValue('F'.$rows,$inv['disb_amt'])
+                            ->setCellValue('C'.$rows,Carbon::parse($inv['invoice_date'])->format('d/m/Y') ?? NULL)
+                            ->setCellValue('D'.$rows,number_format($inv['invoice_amt'],2))
+                            ->setCellValue('E'.$rows,number_format($inv['margin_amt'],2))
+                            ->setCellValue('F'.$rows,number_format($inv['disb_amt'],2))
                             ->setCellValue('G'.$rows,$inv['od_days'])
-                            ->setCellValue('H'.$rows,$inv['od_amt']);
+                            ->setCellValue('H'.$rows,number_format($inv['od_amt'],2));
                             $rows++;
                         }
                     }
@@ -648,5 +759,96 @@ class ReportController extends Controller
         
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
         $objWriter->save('php://output');     
+    }
+
+    public function downloadOverdueReport($exceldata){
+        $rows = 5;
+        $sheet =  new PHPExcel();
+        $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, 'Customer Name')
+            ->setCellValue('B'.$rows, 'Loan Account #')
+            ->setCellValue('C'.$rows, 'Virtual Account #')
+            ->setCellValue('D'.$rows, 'Sanction Limit')
+            ->setCellValue('E'.$rows, 'Limit Available')
+            ->setCellValue('F'.$rows, 'O/s Amount')
+            ->setCellValue('G'.$rows, 'Over Due Days')
+            ->setCellValue('H'.$rows, 'Overdue Amount')
+            ->setCellValue('I'.$rows, 'Sales Person Name');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':I'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $rows++;
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, $rowData['cust_name'])
+            ->setCellValue('B'.$rows, $rowData['loan_ac'])
+            ->setCellValue('C'.$rows, $rowData['virtual_ac'])
+            ->setCellValue('D'.$rows, number_format($rowData['client_sanction_limit'],2))
+            ->setCellValue('E'.$rows, number_format($rowData['limit_available'],2))
+            ->setCellValue('F'.$rows, number_format($rowData['out_amt'],2))
+            ->setCellValue('G'.$rows, $rowData['od_days'])
+            ->setCellValue('H'.$rows, number_format($rowData['od_amt'],2))
+            ->setCellValue('I'.$rows, $rowData['sales_person_name']);
+            $rows++;
+        }
+        
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Overdue Report.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save('php://output');
+    }
+
+    public function downloadAccountDailyDisbursalReport($exceldata){
+        $rows = 5;
+        $sheet =  new PHPExcel();
+        $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, 'Customer Name')
+            ->setCellValue('B'.$rows, 'Loan Account #')
+            ->setCellValue('C'.$rows, 'Transction Date')
+            ->setCellValue('D'.$rows, 'tranction #')
+            ->setCellValue('E'.$rows, 'Invoice #')
+            ->setCellValue('F'.$rows, 'Invoice Date')
+            ->setCellValue('G'.$rows, 'Invoice Amount')
+            ->setCellValue('H'.$rows, 'Margin Amount')
+            ->setCellValue('I'.$rows, 'Amount Disbrused')
+            ->setCellValue('J'.$rows, 'UTR')
+            ->setCellValue('K'.$rows, 'Remark while uploading Invoice')
+            ->setCellValue('L'.$rows, 'Beneficiary Credit Account No.')	
+            ->setCellValue('M'.$rows, 'Beneficiary IFSC Code')
+            ->setCellValue('N'.$rows, 'Status')	
+            ->setCellValue('O'.$rows, 'Status Description');
+
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':O'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $rows++;
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, $rowData['cust_name'])
+            ->setCellValue('B'.$rows, $rowData['loan_ac'])
+            ->setCellValue('C'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
+            ->setCellValue('D'.$rows, $rowData['trans_no'])
+            ->setCellValue('E'.$rows, $rowData['invoice_no'])
+            ->setCellValue('F'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'))
+            ->setCellValue('G'.$rows, number_format($rowData['invoice_amt'],2))
+            ->setCellValue('H'.$rows, number_format($rowData['margin_amt'],2))
+            ->setCellValue('I'.$rows, number_format($rowData['disb_amt'],2))
+            ->setCellValue('J'.$rows, $rowData['trans_utr'])
+            ->setCellValue('K'.$rows, $rowData['remark'])
+            ->setCellValue('L'.$rows, $rowData['bank_ac'])
+            ->setCellValue('M'.$rows, $rowData['ifsc'])
+            ->setCellValue('N'.$rows, $rowData['status'])
+            ->setCellValue('O'.$rows, $rowData['status_des']);
+            $rows++;
+        }
+        
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Account Daily Disbursal Report.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save('php://output');
     }
 }
