@@ -556,7 +556,7 @@ class ReportController extends Controller
     }
 
     public function maturityReport(Request $request){
-        
+        dump('start....');
         $emailTo = ['sudesh.kumar@prolitus.com','varun.dudani@zuron.in','gaurav.agarwal@prolitus.com'];
         $anchorList = Anchor::where('is_active','1')->get();
         
@@ -668,7 +668,7 @@ class ReportController extends Controller
             $emailData['subject'] ="Disbursal Report";
             \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
         }
-
+        dump('end....');
     }
 
     public function downloadMaturityReport($exceldata){
