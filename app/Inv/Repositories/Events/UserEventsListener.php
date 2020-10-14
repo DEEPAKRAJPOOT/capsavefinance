@@ -873,7 +873,7 @@ class UserEventsListener extends BaseEvent
         function ($message) use ($data) {
             if(!empty($data['attachment'])){
                 $att_name = 'Maturity Report.xlsx';
-                $message->attachData($data['attachment'] , $att_name);
+                $message->attach($data['attachment'] ,['as' => $att_name]);
             }
             
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
@@ -901,7 +901,7 @@ class UserEventsListener extends BaseEvent
         function ($message) use ($data) {
             if(!empty($data['attachment'])){
                 $att_name = 'Utilization Report.xlsx';
-                $message->attachData($data['attachment'] , $att_name);
+                $message->attach($data['attachment'] ,['as' => $att_name]);
             }
             
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
@@ -929,7 +929,7 @@ class UserEventsListener extends BaseEvent
         function ($message) use ($data) {
             if(!empty($data['attachment'])){
                 $att_name = 'Disbursal Report.xlsx';
-                $message->attachData($data['attachment'] , $att_name);
+                $message->attach($data['attachment'] ,['as' => $att_name]);
             }
             
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
@@ -957,7 +957,7 @@ class UserEventsListener extends BaseEvent
         function ($message) use ($data) {
             if(!empty($data['attachment'])){
                 $att_name = 'Overdue Report';
-                $message->attachData($data['attachment'], $att_name);
+                $message->attach($data['attachment'] ,['as' => $att_name]);
             }
             
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
@@ -985,7 +985,7 @@ class UserEventsListener extends BaseEvent
         function ($message) use ($data) {
             if(!empty($data['attachment'])){
                 $att_name = 'Disbursal Report';
-                $message->attachData($data['attachment'], $att_name);
+                $message->attach($data['attachment'] ,['as' => $att_name]);
             }
             
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
