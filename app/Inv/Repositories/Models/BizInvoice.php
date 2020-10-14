@@ -151,6 +151,11 @@ public static function saveBulkInvoice($arrInvoice)
      
      }
     
+    function invoiceStatusLog()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\InvoiceStatusLog','invoice_id','invoice_id');
+    }
+    
     /* get anchor */    
     public static function getInvoice()
     {
