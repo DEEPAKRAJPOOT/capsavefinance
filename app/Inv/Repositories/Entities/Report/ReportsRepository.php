@@ -72,7 +72,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		return Payment::getAllTdsTransaction($whereCondition, $whereRawCondition);
 	}
 
-	public function getMaturityReport($whereCondition=[]){
+	public function getMaturityReport($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
 
@@ -97,7 +97,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		})
 		->whereDate('payment_due_date','>',$curdate)
 		->get();
-
+		
+		$sendMail = ($invDisbList->count() > 0)?true:false;
+		
 		$result = [];
 		foreach($invDisbList as $invDisb){
 			$result[] = [
@@ -124,7 +126,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		return $result;
 	}
 
-	public function getDisbursalReport($whereCondition=[]){
+	public function getDisbursalReport($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
 
@@ -153,6 +155,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		})
 		->get();
 
+		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
 		foreach($invDisbList as $invDisb){
 			$result[] = [
@@ -177,7 +180,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		return $result;
 	}
 
-	public function getUtilizationReport($whereCondition=[]){
+	public function getUtilizationReport($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
 
@@ -205,6 +208,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 		})
 		->get();
+
+		$sendMail = ($invDisbList->count() > 0)?true:false;
 
 		$result = [];
 		foreach($invDisbList as $invDisb){
@@ -248,7 +253,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		return $result;
 	}
 
-	public function getOverdueReport($whereCondition=[]){
+	public function getOverdueReport($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
 
@@ -280,6 +285,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		})
 		->get();
 
+		$sendMail = ($invDisbList->count() > 0)?true:false;
+
 		$result = [];
 		foreach($invDisbList as $invDisb){
 			$limit = AppProgramLimit::getProductLimit($invDisb->invoice->lms_user->app_id, 1)->sum('product_limit');
@@ -299,7 +306,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		return $result;
 	}
 
-	public function getAccountDisbursalReport($whereCondition=[]){
+	public function getAccountDisbursalReport($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
 
@@ -327,6 +334,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			});*/
 		})
 		->get();
+
+		$sendMail = ($invDisbList->count() > 0)?true:false;
 
 		$result = [];
 		foreach($invDisbList as $invDisb){

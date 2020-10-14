@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers\Backend;
 use Auth;
-use Session;
 use Helpers;
+use Session;
 use PHPExcel;
-use PHPExcel_IOFactory;
-use PHPExcel_Style_Fill;
-use PHPExcel_Cell_DataType;
-use PHPExcel_Style_Alignment;
 use PDF as DPDF;
 use Carbon\Carbon;
+use App\Events\Event;
+use PHPExcel_IOFactory;
+use PHPExcel_Style_Fill;
+use App\Helpers\FileHelper;
+use PHPExcel_Cell_DataType;
 use Illuminate\Http\Request;
+use PHPExcel_Style_Alignment;
 use App\Http\Controllers\Controller;
-use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
+use App\Inv\Repositories\Models\Anchor;
+use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Contracts\ReportInterface;
-use App\Helpers\FileHelper;
+use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 
 
 class ReportController extends Controller
@@ -553,20 +556,119 @@ class ReportController extends Controller
     }
 
     public function maturityReport(Request $request){
-        //$data = $this->reportsRepo->getUtilizationReport( ['anchor_id'=>'1']  );
-        //$this->downloadUtilizationExcel($data);   
         
-        //$data = $this->reportsRepo->getDisbursalReport(/*['anchor_id'=>'1']*/);
-        //$this->downloadDailyDisbursalReport($data);
+        $emailTo = ['sudesh.kumar@prolitus.com','varun.dudani@zuron.in','gaurav.agarwal@prolitus.com'];
+        $anchorList = Anchor::where('is_active','1')->get();
+        
+        $sendMail = false;
+        $data = $this->reportsRepo->getMaturityReport([],$sendMail);
+        if($sendMail){
+            $filePath = $this->downloadMaturityReport($data);
+            $emailData['email'] = $emailTo;
+            $emailData['name'] = 'Sudesh Kumar';
+            $emailData['body'] = 'PFA';
+            $emailData['attachment'] = $filePath;
+            $emailData['subject'] ="Maturity Report";
+            \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
+            
+            foreach($anchorList as $anchor){
+                $sendMail = false;
+                $data = $this->reportsRepo->getMaturityReport(['anchor_id'=>$anchor->anchor_id],$sendMail);
+                if($sendMail && $anchor->comp_email){
+                    $filePath = $this->downloadMaturityReport($data);
+                    //$emailData['email'] = $anchor->comp_email;
+                    $emailData['email'] = $emailTo;
+                    $emailData['name'] = $anchor->comp_name;
+                    $emailData['body'] = 'PFA';
+                    $emailData['attachment'] = $filePath;
+                    $emailData['subject'] ="Maturity Report (".$anchor->comp_name.")";
+                    \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
+                }
+            }
+        }
 
-        //$data = $this->reportsRepo->getMaturityReport(/*['anchor_id'=>'1']*/);
-        //$this->downloadMaturityReport($data);
+        $sendMail = false;
+        $data = $this->reportsRepo->getUtilizationReport( [],$sendMail);
+        if($sendMail){
+            $filePath = $this->downloadUtilizationExcel($data);
+            //$emailData['email'] = $anchor->comp_email;
+            $emailData['email'] = $emailTo;
+            $emailData['name'] = 'Sudesh Kumar';
+            $emailData['body'] = 'PFA';
+            $emailData['attachment'] = $filePath;
+            $emailData['subject'] ="Utilization Report";
+            \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
+            
+            foreach($anchorList as $anchor){
+                $sendMail = false;
+                $data = $this->reportsRepo->getUtilizationReport( ['anchor_id'=>$anchor->anchor_id],$sendMail);
+                if($sendMail && $anchor->comp_email){
+                    $filePath = $this->downloadUtilizationExcel($data);
+                    //$emailData['email'] = $anchor->comp_email;
+                    $emailData['email'] = $emailTo;
+                    $emailData['name'] = $anchor->comp_name;
+                    $emailData['body'] = 'PFA';
+                    $emailData['attachment'] = $filePath;
+                    $emailData['subject'] ="Utilization Report (".$anchor->comp_name.")";
+                    \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
+                }
+            }
+        }        
 
-        //$data = $this->reportsRepo->getOverdueReport(/*['anchor_id'=>'1']*/);
-        //$this->downloadOverdueReport($data);
+        $sendMail = false;
+        $data = $this->reportsRepo->getDisbursalReport([],$sendMail);
+        if($sendMail){
+            $filePath = $this->downloadDailyDisbursalReport($data);
+            //$emailData['email'] = $anchor->comp_email;
+            $emailData['email'] = $emailTo;
+            $emailData['name'] = 'Sudesh Kumar';
+            $emailData['body'] = 'PFA';
+            $emailData['attachment'] = $filePath;
+            $emailData['subject'] ="Disbursal Report";
+            \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
+            
+            foreach($anchorList as $anchor){
+                $sendMail = false;
+                $data = $this->reportsRepo->getDisbursalReport(['anchor_id'=>$anchor->anchor_id],$sendMail);
+                if($sendMail && $anchor->comp_email){
+                    $filePath = $this->downloadDailyDisbursalReport($data);
+                    //$emailData['email'] = $anchor->comp_email;
+                    $emailData['email'] = $emailTo;
+                    $emailData['name'] = $anchor->comp_name;
+                    $emailData['body'] = 'PFA';
+                    $emailData['attachment'] = $filePath;
+                    $emailData['subject'] ="Disbursal Report (".$anchor->comp_name.")";
+                    \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
+                }
+            }
+        }
 
-        $data = $this->reportsRepo->getAccountDisbursalReport(/*['anchor_id'=>'1']*/);
-        $this->downloadAccountDailyDisbursalReport($data);
+        $sendMail = false;
+        $data = $this->reportsRepo->getOverdueReport([],$sendMail);
+        if($sendMail){
+            $filePath = $this->downloadOverdueReport($data);
+            //$emailData['email'] = $anchor->comp_email;
+            $emailData['email'] = $emailTo;
+            $emailData['name'] = 'Sudesh Kumar';
+            $emailData['body'] = 'PFA';
+            $emailData['attachment'] = $filePath;
+            $emailData['subject'] ="Overdue Report";
+            \Event::dispatch("NOTIFY_OVERDUE_REPORT", serialize($emailData));
+        }
+        
+        $sendMail = false;
+        $data = $this->reportsRepo->getAccountDisbursalReport([],$sendMail);
+        if($sendMail){
+            $filePath = $this->downloadAccountDailyDisbursalReport($data);
+            //$emailData['email'] = $anchor->comp_email;
+            $emailData['email'] = $emailTo;
+            $emailData['name'] = 'Sudesh Kumar';
+            $emailData['body'] = 'PFA';
+            $emailData['attachment'] = $filePath;
+            $emailData['subject'] ="Disbursal Report";
+            \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
+        }
+
     }
 
     public function downloadMaturityReport($exceldata){
@@ -616,14 +718,16 @@ class ReportController extends Controller
             $rows++;
         }
         
-        // Redirect output to a client’s web browser (Excel2007)
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Maturity Report.xlsx"');
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=1');
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        $objWriter->save('php://output');
+        
+        $dirPath = 'public/report/temp/maturityReport/'.date('Ymd');
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
+        }
+        $storage_path = storage_path('app/'.$dirPath);
+        $filePath = $storage_path.'/Maturity Report'.time().'.xlsx';
+        $objWriter->save($filePath);
+        return $filePath;
     }
 
     public function downloadDailyDisbursalReport($exceldata){
@@ -659,14 +763,16 @@ class ReportController extends Controller
             $rows++;
         }
         
-        // Redirect output to a client’s web browser (Excel2007)
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Daily Disbursal Report.xlsx"');
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=1');
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        $objWriter->save('php://output');
+
+        $dirPath = 'public/report/temp/dailyDisbursalReport/'.date('Ymd');
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
+        }
+        $storage_path = storage_path('app/'.$dirPath);
+        $filePath = $storage_path.'/Daily Disbursal Report'.time().'.xlsx';
+        $objWriter->save($filePath);
+        return $filePath;
     }
 
     public function downloadUtilizationExcel($exceldata) {
@@ -750,15 +856,16 @@ class ReportController extends Controller
             $rows++;
         }
         
-        // Redirect output to a client’s web browser (Excel2007)
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Utilization Report.xlsx"');
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=1');
-        
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        $objWriter->save('php://output');     
+        
+        $dirPath = 'public/report/temp/utilizationReport/'.date('Ymd');
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
+        }
+        $storage_path = storage_path('app/'.$dirPath);
+        $filePath = $storage_path.'/Utilization Report'.time().'.xlsx';
+        $objWriter->save($filePath);
+        return $filePath;
     }
 
     public function downloadOverdueReport($exceldata){
@@ -790,14 +897,16 @@ class ReportController extends Controller
             $rows++;
         }
         
-        // Redirect output to a client’s web browser (Excel2007)
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Overdue Report.xlsx"');
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=1');
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        $objWriter->save('php://output');
+        
+        $dirPath = 'public/report/temp/overdueReport/'.date('Ymd');
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
+        }
+        $storage_path = storage_path('app/'.$dirPath);
+        $filePath = $storage_path.'/Overdue Report'.time().'.xlsx';
+        $objWriter->save($filePath);
+        return $filePath;
     }
 
     public function downloadAccountDailyDisbursalReport($exceldata){
@@ -842,13 +951,15 @@ class ReportController extends Controller
             $rows++;
         }
         
-        // Redirect output to a client’s web browser (Excel2007)
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Account Daily Disbursal Report.xlsx"');
-        header('Cache-Control: max-age=0');
-        // If you're serving to IE 9, then the following may be needed
-        header('Cache-Control: max-age=1');
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        $objWriter->save('php://output');
+
+        $dirPath = 'public/report/temp/accountDailyDisbursalReport/'.date('Ymd');
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
+        }
+        $storage_path = storage_path('app/'.$dirPath);
+        $filePath = $storage_path.'/Account Daily Disbursal Report'.time().'.xlsx';
+        $objWriter->save($filePath);
+        return $filePath;
     }
 }
