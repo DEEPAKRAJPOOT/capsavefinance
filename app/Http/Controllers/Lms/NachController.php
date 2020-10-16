@@ -6,6 +6,7 @@ use Auth;
 use File;
 use Session;
 use Helpers;
+use DateTime;
 use PDF as DPDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -91,14 +92,16 @@ class NachController extends Controller {
 //                $nachData = ['status' => 5];
 //                $this->appRepo->updateNach($nachData, $nach->users_nach_id);
             }
-//                $user_id = Auth::user()->user_id;
+                $currentDate = $date->format('Y-m-d H:i:s');
+                $user_id = Auth::user()->user_id;
 //                $document_info = $this->docRepo->saveNachDocument($arrFileData, $user_id);
 //                if ($document_info) {
 //                    $nachData = ['uploaded_file_id' =>  $document_info->file_id];
 //                    $this->appRepo->updateNach($nachData, $users_nach_id);
 //                }
                 $toExportData['Nach Sheet'] = $nachArr;
-                return $this->fileHelper->array_to_excel($toExportData, 'nach.xlsx');
+                $isFileSave = true;
+                return $this->fileHelper->array_to_excel($toExportData, $user_id.$currentDate.'_nach.xlsx', $isFileSave);
            } catch (\Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
