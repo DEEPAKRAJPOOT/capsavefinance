@@ -862,8 +862,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'uses' => 'Backend\ReportController@pdfInvoiceRealisation',
                     ]);
 
-                    Route::get('/sudesh', [
-                        'as' => 'sudesh',
+                    Route::get('/test', [
+                        'as' => 'test',
                         'uses' => 'Backend\ReportController@maturityReport',
                     ]);
                 }
