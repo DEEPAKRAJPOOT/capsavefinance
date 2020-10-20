@@ -7,12 +7,20 @@
 
 			<div class="col-12">
 			   <div class="form-group">
-				  <label for="bank">Select Customer</label>
+				  <label for="bank">Select Nach User Type</label>
+				  <select class="form-control" name="role_type" id="role_type">
+					 	<option selected diabled value=''>Select Nach User Type</option>
+						<option value="1"> User</option>
+						<option value="3"> Anchor</option>
+				  </select>
+			   </div>
+			</div>
+			<div class="col-12">
+			   <div class="form-group">
+				  <label for="bank">Select User</label>
 				  <select class="form-control" name="customer_id" id="customer_id">
-					 <option selected diabled value=''>Select Bank</option>
-						@foreach($users as $key => $value)
-						  <option value="{{ $value->user_id }}">{{ $value->f_name.' '.$value->l_name }} ( {{ $value->lms_user->customer_id }} )</option>
-						@endforeach
+					 <option selected diabled value=''>Select User</option>
+						
 				  </select>
 			   </div>
 			</div>
@@ -42,6 +50,7 @@
 var messages = {
 	token: "{{ csrf_token() }}",
 	backend_ajax_nach_user: "{{ URL::route('backend_ajax_nach_user') }}",
+	backend_ajax_nach_user_bank: "{{ URL::route('backend_ajax_nach_user_bank') }}",
 		  
    };
  $(document).ready(function () {
@@ -75,13 +84,57 @@ var messages = {
 		}  
 	});       
   
-  //////////////////// onchange anchor  id get data /////////////////
+ 	
+ 	$(document).on('change','#role_type',function(){
+	  	var role_type =  $(this).val(); 
+	  	$("#customer_id").empty();
+	  	var postData =  ({'role_type':role_type, '_token':messages.token});
+	   	jQuery.ajax({
+		url: messages.backend_ajax_nach_user,
+				method: 'post',
+				dataType: 'json',
+				data: postData,
+				error: function (xhr, status, errorThrown) {
+				alert(errorThrown);
+				
+				},
+				success: function (data) {
+					if(data.status==1)
+					{
+						var obj1  = data.users;
+						if(obj1.length > 0)
+						{
+							if(role_type == 1) {
+								$(obj1).each(function(i,v){
+									$("#customer_id").append("<option value='"+v.user_id+"' >"+v.f_name+" "+v.l_name+" ( "+ v.lms_user.customer_id+")</option>");  
+								});
+							}
+							else {
+								$(obj1).each(function(i,v){
+									$("#customer_id").append("<option value='"+v.user_id+"' >"+v.f_name+"</option>");  
+								});
+							}
+						}
+						else
+						{
+							$("#customer_id").append("<option value=''>No data found</option>");  
+						}
+					}
+					else
+					{
+						console.log("some error occured.");
+					}
+				  
+				}
+		});  
+  	});
+
   	$(document).on('change','#customer_id',function(){
 	  	var customer_id =  $(this).val(); 
 	  	$("#bank_account_id").empty();
 	  	var postData =  ({'customer_id':customer_id, '_token':messages.token});
 	   	jQuery.ajax({
-		url: messages.backend_ajax_nach_user,
+		url: messages.backend_ajax_nach_user_bank,
 				method: 'post',
 				dataType: 'json',
 				data: postData,

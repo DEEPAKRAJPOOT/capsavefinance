@@ -1251,4 +1251,10 @@ Route::group(
         'uses' => 'AjaxController@backendNachUserList'
         ]
     );
+
+    Route::post('backend_ajax_nach_user_bank',[
+        'as' => 'backend_ajax_nach_user_bank',
+        'uses' => 'AjaxController@backendNachUserBankList'
+        ]
+    );
 });

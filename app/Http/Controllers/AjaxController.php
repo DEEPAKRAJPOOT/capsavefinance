@@ -4942,7 +4942,7 @@ if ($err) {
     }
 
     public function frontAjaxUserNachList(DataProviderInterface $dataProvider) {
-        $whereCondition = ['anchor_id' => Auth::user()->anchor_id];
+        $whereCondition = ['user_id' => Auth::user()->user_id];
         $nachList = $this->application->getUserNACH($whereCondition);
         $nach = $dataProvider->getAnchorUserNACH($this->request, $nachList);
         $nach = $nach->getData(true);
@@ -4958,9 +4958,23 @@ if ($err) {
     }
 
     public function backendNachUserList(Request $request){
+        $roleType = $request->role_type;
+        if ($roleType) {
+            $users = $this->application->getNachUserList($roleType);
+            
+        }
+        if(!empty($users)){
+            return response()->json(['status' => 1,'users' => $users]);
+        }else{
+            return response()->json(['status' => 0,'users' => $users]);
+        }
+        
+    }
+
+    public function backendNachUserBankList(Request $request){
         $userId = $request->customer_id;
         if ($userId) {
-            $BankList = $this->application->getUserBankNACH(['user_id' => $userId]);;
+            $BankList = $this->application->getUserBankNACH(['user_id' => $userId]);
         }
         if(!empty($BankList)){
             return response()->json(['status' => 1,'BankList' => $BankList]);

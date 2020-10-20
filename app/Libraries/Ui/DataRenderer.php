@@ -7463,13 +7463,13 @@ class DataRenderer implements DataProviderInterface
                 function ($nachData) {
                     $action= '';
                     if ($nachData->nach_status < 2 ) {
-                        $action .= '<a class="btn btn-action-btn btn-sm" title="Edit NACH Detail" href ="'.route('anchor_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-edit"></i></a>';
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Edit NACH Detail" href ="'.route('backend_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-edit"></i></a>';
                     }
                     if ($nachData->nach_status == 4 && empty($nachData->child_nach)) {
-                        $action .= '<a class="btn btn-action-btn btn-sm" title="Modify or Cancel" href ="'.route('anchor_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-arrow-right"></i></a>';
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Modify or Cancel" href ="'.route('backend_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-arrow-right"></i></a>';
                     }
                     if ($nachData->nach_status < 3 ) {
-                        $action .= '<a class="btn btn-action-btn btn-sm" title="Preview PDF" href ="'.route('anchor_nach_detail_preview', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-eye"></i></a>';
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Preview PDF" href ="'.route('backend_nach_detail_preview', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-eye"></i></a>';
                     }
                     return $action;
                 }

@@ -41,10 +41,7 @@ class NACHController extends Controller {
 	public function createNACH(Request $request) {
 		try {
 
-			$users = $this->appRepo->getNachUserList();
-
-			return view('backend.nach.create_nach')
-				->with([ 'users' => $users ]);
+			return view('backend.nach.create_nach');
 				
 		} catch (\Exception $ex) {
 			return Helpers::getExceptionMessage($ex);
@@ -95,6 +92,7 @@ class NACHController extends Controller {
 			return view('backend.nach.add_nach')
 					->with([
 						'acc_id' => $nachDetail->bank_account_id, 
+						'user_id' => $nachDetail->user_id, 
 						'nachDetail' => $nachDetail
 					]);
 
@@ -113,7 +111,7 @@ class NACHController extends Controller {
 		try {
 			$acc_id = $request->get('acc_id');
 			$user_id = $request->get('user_id');
-			$anchor_id = $request->get('anchor_id');
+			$roleType = $request->get('role_type');
 			$users_nach_id = $request->get('users_nach_id');
 			$bankAccount = $this->appRepo->getBankAccountData(['bank_account_id' => $acc_id])->first();
 			$compDetail = '';
@@ -133,7 +131,7 @@ class NACHController extends Controller {
 			$nachData = [
 				'bank_account_id' => $acc_id ? $acc_id : '',
 				'user_id' => $user_id,
-				'anchor_id' => $anchor_id ?? null,
+				'user_type' => ($roleType == 3) ? 2 : 1,
 				'acc_name' => $bankAccount['acc_name'] ? $bankAccount['acc_name'] : '',
 				'acc_no' => $bankAccount['acc_no'] ? $bankAccount['acc_no'] : '',
 				'ifsc_code' => $bankAccount['ifsc_code'] ? $bankAccount['ifsc_code'] : '',

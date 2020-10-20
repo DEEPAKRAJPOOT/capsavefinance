@@ -43,8 +43,8 @@ class UserNach extends BaseModel {
      */
     protected $fillable = [
         'parent_users_nach_id',
+        'user_type',
         'user_id',
-        'anchor_id',
         'bank_account_id',
         'umrn',
         'nach_date',
