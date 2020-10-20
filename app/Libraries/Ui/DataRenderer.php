@@ -7321,7 +7321,8 @@ class DataRenderer implements DataProviderInterface
                        2 => 'PDF_UPLOADED',
                        3 => 'SENT_TO_APPROVAL',
                        4 => 'ACTIVE',
-                       5 => 'FAILED'
+                       5 => 'FAILED',
+                       6 => 'ClOSED'
                     ];
                     $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
                     return $status ? $status : 'NA' ;
@@ -7384,7 +7385,8 @@ class DataRenderer implements DataProviderInterface
                        2 => 'PDF_UPLOADED',
                        3 => 'SENT_TO_APPROVAL',
                        4 => 'ACTIVE',
-                       5 => 'FAILED'
+                       5 => 'FAILED',
+                       6 => 'ClOSED'
                     ];
                     $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
                     return $status ? $status : 'NA' ;
@@ -7419,6 +7421,11 @@ class DataRenderer implements DataProviderInterface
             ->rawColumns(['status', 'action'])
 
             ->editColumn(
+                'user_type', 
+                function ($nachData) {
+                    return ($nachData->user_type == 1) ? 'Customer' : 'Anchor' ;
+            }) 
+            ->editColumn(
                 'customer_name', 
                 function ($nachData) {
                     return $nachData->user->f_name.' '.$nachData->user->l_name;
@@ -7447,7 +7454,8 @@ class DataRenderer implements DataProviderInterface
                        2 => 'PDF_UPLOADED',
                        3 => 'SENT_TO_APPROVAL',
                        4 => 'ACTIVE',
-                       5 => 'FAILED'
+                       5 => 'FAILED',
+                       6 => 'ClOSED'
                     ];
                     $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
                     return $status ? $status : 'NA' ;
