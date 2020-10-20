@@ -100,7 +100,7 @@ class FileHelper {
         return $fileContent;
     }
 
-    public function array_to_excel($toExportData, $file_name = "", $moreDetails = [], $isFileSave = false) {
+    public function array_to_excel($toExportData, $file_name = "", $moreDetails = [], $path = null, $isFileSave = false) {
         // dd($moreDetails);
         $moreDetails = array_chunk(array_filter($moreDetails), 2, true);
         $requiredRowsForDetails = ceil(count($moreDetails) / 2);

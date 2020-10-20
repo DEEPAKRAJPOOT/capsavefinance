@@ -128,7 +128,8 @@ var iframe_ids = [
     'editProgram' ,   
     'addTDSFrame',    
     'editTDSFrame',
-    'uploadNachDocument'
+    'uploadNachDocument',
+    'createNachFrame'
 ];
 
 iframe_ids.forEach(function (id) {

@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Entities\Application;
 
 use DB;
 use Session;
+use Auth;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\AppDocument;
 use App\Inv\Repositories\Models\AppDocumentFile;
@@ -76,6 +77,7 @@ use App\Inv\Repositories\Models\BizEntityCin;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\UserNach;
 use App\Inv\Repositories\Models\Lms\NachBatch;
+use App\Inv\Repositories\Models\NachStatusLog;
 
 /**
  * Application repository class
@@ -2489,6 +2491,40 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function saveNachBatch($arr, $nach_batch_id = null){
         return NachBatch::saveNachBatch($arr, $nach_batch_id);
+    }
+
+    public function getUserBankNACH($where)
+    {
+        return UserBankAccount::with('user_nach','bank')
+                ->where($where)
+                ->whereDoesntHave('user_nach')
+                ->get();
+    }
+
+    public function getUserNACH($whereCondition){
+        return UserNach::where($whereCondition);
+    }
+
+    public static function  createNachStatusLog($nachId, $status_id)
+    {
+        $created_at  = \Carbon\Carbon::now()->toDateTimeString();
+        $created_by = Auth::user()->user_id;
+
+        $arr  =  [
+            'users_nach_id' => $nachId,
+            'status' => $status_id,
+            'created_at' => $created_at,
+            'created_by' => $created_by
+            ]; 
+        return  NachStatusLog::create($arr);  
+    }
+
+    public function getNachUserList($where = [])
+    {
+        return User::with('lms_user')
+                ->where($where)
+                ->whereHas('lms_user')
+                ->get();
     }
 }
 

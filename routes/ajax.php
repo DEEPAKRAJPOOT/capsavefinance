@@ -1230,4 +1230,25 @@ Route::group(
         'as' => 'get_all_nach',
         'uses' => 'AjaxController@getAllNach'
     ]);
+
+    Route::post('front-ajax-user-nach-list',[
+        'as' => 'front_ajax_user_nach_list',
+        'uses' => 'AjaxController@frontAjaxUserNachList'
+    ]);
+
+    Route::post('anchor-ajax-user-nach-list',[
+        'as' => 'anchor_ajax_user_nach_list',
+        'uses' => 'AjaxController@frontAjaxUserNachList'
+    ]);
+
+    Route::post('backend-ajax-user-nach-list',[
+        'as' => 'backend_ajax_user_nach_list',
+        'uses' => 'AjaxController@backendAjaxUserNachList'
+    ]);
+
+    Route::post('backend_ajax_nach_user',[
+        'as' => 'backend_ajax_nach_user',
+        'uses' => 'AjaxController@backendNachUserList'
+        ]
+    );
 });
