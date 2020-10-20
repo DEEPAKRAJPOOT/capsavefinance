@@ -89,19 +89,14 @@ class NachController extends Controller {
                     'period_to' => !empty($nach->period_to) ? date('d-m-Y', strtotime($nach->period_to)) : '',
                     'period_until_cancelled' => $nach->period_until_cancelled,
               ];
-//                $nachData = ['status' => 5];
-//                $this->appRepo->updateNach($nachData, $nach->users_nach_id);
+                $nachData = ['status' => 5];
+                $this->appRepo->updateNach($nachData, $nach->users_nach_id);
             }
+                $date = new DateTime;
                 $currentDate = $date->format('Y-m-d H:i:s');
-                $user_id = Auth::user()->user_id;
-//                $document_info = $this->docRepo->saveNachDocument($arrFileData, $user_id);
-//                if ($document_info) {
-//                    $nachData = ['uploaded_file_id' =>  $document_info->file_id];
-//                    $this->appRepo->updateNach($nachData, $users_nach_id);
-//                }
                 $toExportData['Nach Sheet'] = $nachArr;
                 $isFileSave = true;
-                return $this->fileHelper->array_to_excel($toExportData, $user_id.$currentDate.'_nach.xlsx', $isFileSave);
+                return $this->fileHelper->array_to_excel($toExportData, $currentDate.'_nach.xlsx', [], $isFileSave);
            } catch (\Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }

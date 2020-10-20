@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use Auth;
 use Illuminate\Support\Facades\Storage;
 use PDF as DPDF;
 use PHPExcel;
@@ -10,13 +11,17 @@ use PHPExcel_Style_Fill;
 use PHPExcel_Cell_DataType;
 use PHPExcel_Style_Alignment;
 use PHPExcel_Style_Border;
+use App\Inv\Repositories\Models\UserFile;
+use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 
 class FileHelper {
 
     protected $diskStoragePath;
+    protected $appRepo;
 
-    public function __construct() {
+    public function __construct(InvAppRepoInterface $app_repo) {
        $this->diskStoragePath = Storage::disk('public');
+       $this->appRepo = $app_repo;
     }
 
     public function getLatestFileName($appId, $fileType='banking', $extType='json'){
@@ -272,20 +277,27 @@ class FileHelper {
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $file_name . '"');
         header('Cache-Control: max-age=0');
-        $filePath = '';
         if ($isFileSave == true) {
            if (!Storage::exists('/public/nach')) {
                 Storage::makeDirectory('/public/nach');
             }
+            $filePath = '';
+            $fileData = [];
             $storage_path = storage_path('app/public/nach');
             $filePath = $storage_path.'/'.$file_name;
-            $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
             $objWriter->save($filePath); 
+            $fileContent = $this->readFileContent($filePath);
+            $fileData = $this->uploadFileWithContent($filePath, $fileContent);
+            $file = UserFile::create($fileData);
+            $batchId = _getRand(12);
+            $nachBatchData['req_file_id'] = $file->file_id;
+            $nachBatchData['batch_id'] = $batchId;
+            $this->appRepo->saveNachBatch($nachBatchData, null);
         }
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
         ob_end_flush();
-        return $filePath;
         exit; 
     } 
 

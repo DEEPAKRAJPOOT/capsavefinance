@@ -75,6 +75,7 @@ use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\BizEntityCin;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\UserNach;
+use App\Inv\Repositories\Models\Lms\NachBatch;
 
 /**
  * Application repository class
@@ -2477,6 +2478,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
      */
     public function getCompAddByCompanyName($whereCond) {
         return Company::getCompAddByCompanyName($whereCond);
+    }
+    
+    /**
+     * Save Nach batch details
+     * 
+     * @param type $arr
+     * @param type $nach_batch_id
+     * @return type
+     */
+    public function saveNachBatch($arr, $nach_batch_id = null){
+        return NachBatch::saveNachBatch($arr, $nach_batch_id);
     }
 }
 
