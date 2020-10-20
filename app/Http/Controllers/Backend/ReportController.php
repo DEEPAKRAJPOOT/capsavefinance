@@ -557,7 +557,7 @@ class ReportController extends Controller
 
     public function maturityReport(Request $request){
         dump('start....');
-        $emailTo = ['sudesh.kumar@prolitus.com','varun.dudani@zuron.in','gaurav.agarwal@prolitus.com'];
+        $emailTo = ['vilesh.modi@rentalpha.com', 'gaurav.agarwal@zuron.in', 'varun.dudani@zuron.in'];
         $anchorList = Anchor::where('is_active','1')->get();
         
         $sendMail = false;
