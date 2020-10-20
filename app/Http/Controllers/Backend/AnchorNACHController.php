@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Application;
+namespace App\Http\Controllers\Backend;
 
 use DB;
 use Auth;
@@ -18,7 +18,7 @@ use App\Http\Requests\DocumentRequest;
 use App\Inv\Repositories\Contracts\ApplicationInterface as AppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 
-class NACHController extends Controller {
+class AnchorNACHController extends Controller {
 
 	protected $appRepo;
 	protected $docRepo;
@@ -27,13 +27,13 @@ class NACHController extends Controller {
 		$this->appRepo  =  $appRepo;
 		$this->docRepo  =  $docRepo;
 		$this->middleware('auth');
-		//$this->middleware('checkBackendLeadAccess');
+		// $this->middleware('checkBackendLeadAccess');
 	}
 
 	/* nach Listing  */
 
 	public function nachList(Request $request) {
-		 return view('frontend.nach.list');
+		return view('backend.anchor_nach.list');
 	}
 
 	/* nach Listing  */
@@ -41,9 +41,10 @@ class NACHController extends Controller {
 	public function createNACH(Request $request) {
 		try {
 			$userId = Auth::user()->user_id;
-			$userBankData = $this->appRepo->getUserBankNACH(['user_id' => $userId]);
+			$anchorId = Auth::user()->anchor_id;
+			$userBankData = $this->appRepo->getUserBankNACH(['anchor_id' => $anchorId]);
 
-			return view('frontend.nach.create_nach')
+			return view('backend.anchor_nach.create_nach')
 				->with([ 'userBankData' => $userBankData ]);
 				
 		} catch (\Exception $ex) {
@@ -62,13 +63,16 @@ class NACHController extends Controller {
 		try {
 			$acc_id = $request->get('bank_account_id');
 			$userId = Auth::user()->user_id;
+			$anchorId = Auth::user()->anchor_id;
 
 			$whereCondition = ['bank_account_id' => $acc_id, 'user_id' => $userId];
 			$nachDetail = $this->appRepo->getNachData($whereCondition);
-			return view('frontend.nach.add_nach')
+
+			return view('backend.anchor_nach.add_nach')
 					->with([
 						'acc_id' => $acc_id, 
 						'user_id' => $userId, 
+						'anchor_id' => $anchorId,
 						'nachDetail' => $nachDetail
 					]);
 
@@ -88,14 +92,16 @@ class NACHController extends Controller {
 		try {
 			$usersNachId = $request->get('users_nach_id');
 			$userId = Auth::user()->user_id;
+			$anchorId = Auth::user()->anchor_id;
 
 			$whereCondition = ['users_nach_id' => $usersNachId];
 			$nachDetail = $this->appRepo->getNachData($whereCondition);
-			// dd($nachDetail);
-			return view('frontend.nach.add_nach')
+
+			return view('backend.anchor_nach.add_nach')
 					->with([
 						'acc_id' => $nachDetail->bank_account_id, 
 						'user_id' => $userId, 
+						'anchor_id' => $anchorId, 
 						'nachDetail' => $nachDetail
 					]);
 
@@ -114,6 +120,7 @@ class NACHController extends Controller {
 		try {
 			$acc_id = $request->get('acc_id');
 			$user_id = $request->get('user_id');
+			$anchor_id = $request->get('anchor_id');
 			$users_nach_id = $request->get('users_nach_id');
 			$bankAccount = $this->appRepo->getBankAccountData(['bank_account_id' => $acc_id])->first();
 			$compDetail = '';
@@ -133,6 +140,7 @@ class NACHController extends Controller {
 			$nachData = [
 				'bank_account_id' => $acc_id ? $acc_id : '',
 				'user_id' => $user_id,
+				'anchor_id' => $anchor_id ?? null,
 				'acc_name' => $bankAccount['acc_name'] ? $bankAccount['acc_name'] : '',
 				'acc_no' => $bankAccount['acc_no'] ? $bankAccount['acc_no'] : '',
 				'ifsc_code' => $bankAccount['ifsc_code'] ? $bankAccount['ifsc_code'] : '',
@@ -156,14 +164,32 @@ class NACHController extends Controller {
 				'request_for' => $status,
 				'nach_status' => config('lms.NACH_STATUS')['PENDING'],
 			];
-			// dd($users_nach_id);
 			if ($users_nach_id != null) {
-				$this->appRepo->updateNach($nachData, $users_nach_id);
+				$whereCondition = ['users_nach_id' => $users_nach_id];
+				$nachDetail = $this->appRepo->getNachData($whereCondition);
+				if ($nachDetail->nach_status == 4) {
+					$nachData += [
+                		'parent_users_nach_id' => $users_nach_id
+                	];
+					$users_nach_id = $this->appRepo->saveNach($nachData);
+					$logData = $this->appRepo->createNachStatusLog($users_nach_id, config('lms.NACH_STATUS')['PENDING']);
+					$updateNachData = [
+                		'nach_status_log_id' => $logData->nach_status_log_id
+                	];
+                	$this->appRepo->updateNach($updateNachData, $users_nach_id);
+                } else {
+					$this->appRepo->updateNach($nachData, $users_nach_id);
+				}
 			} else {
 				$users_nach_id = $this->appRepo->saveNach($nachData);
-				$this->appRepo->createNachStatusLog($users_nach_id, config('lms.NACH_STATUS')['PENDING']);
+				$logData = $this->appRepo->createNachStatusLog($users_nach_id, config('lms.NACH_STATUS')['PENDING']);
+				$updateNachData = [
+            		'nach_status_log_id' => $logData->nach_status_log_id
+            	];
+            	$this->appRepo->updateNach($updateNachData, $users_nach_id);
 			}
-			return redirect()->route('front_nach_list');
+			Session::flash('message',trans('success_messages.nach_updated'));
+			return redirect()->route('anchor_nach_list');
 		} catch (\Exception $ex) {
 			return Helpers::getExceptionMessage($ex);
 		}
@@ -181,7 +207,7 @@ class NACHController extends Controller {
 			$whereCondition = ['users_nach_id' => $users_nach_id];
 			$nachDetail = $this->appRepo->getNachData($whereCondition);
 			
-			return view('frontend.nach.nach_preview')
+			return view('backend.anchor_nach.nach_preview')
 					->with(['nachDetail' => $nachDetail]);
 		} catch (\Exception $ex) {
 			return Helpers::getExceptionMessage($ex);
@@ -202,7 +228,7 @@ class NACHController extends Controller {
 
 			ob_start();
 			DPDF::setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled', true]);               
-			$pdf = DPDF::loadView('frontend.nach.download_nach', ['nachDetail' => $nachDetail]);
+			$pdf = DPDF::loadView('backend.anchor_nach.download_nach', ['nachDetail' => $nachDetail]);
 			return $pdf->download('Nach.pdf');          
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -221,7 +247,7 @@ class NACHController extends Controller {
 		    $user_id = $request->get('user_id');
 		    $users_nach_id = $request->get('users_nach_id');
 
-		    return view('frontend.nach.upload_nach_document')
+		    return view('backend.anchor_nach.upload_nach_document')
 		        	->with(['user_id' => $user_id, 'users_nach_id' => $users_nach_id]);
 
         } catch (\Exception $ex) {
@@ -259,7 +285,7 @@ class NACHController extends Controller {
 
                 Session::flash('message',trans('success_messages.uploaded'));
                 Session::flash('operation_status', 1);
-                return redirect()->route('front_nach_detail_preview', ['users_nach_id' => $users_nach_id, 'user_id' => $user_id]);
+                return redirect()->route('anchor_nach_detail_preview', ['users_nach_id' => $users_nach_id, 'user_id' => $user_id]);
             }
 
         } catch (\Exception $ex) {

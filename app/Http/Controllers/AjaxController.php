@@ -4940,4 +4940,33 @@ if ($err) {
         $nach = $nach->getData(true);
         return new JsonResponse($nach);
     }
+
+    public function frontAjaxUserNachList(DataProviderInterface $dataProvider) {
+        $whereCondition = ['anchor_id' => Auth::user()->anchor_id];
+        $nachList = $this->application->getUserNACH($whereCondition);
+        $nach = $dataProvider->getAnchorUserNACH($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
+
+    public function backendAjaxUserNachList(DataProviderInterface $dataProvider) {
+        $whereCondition = [];
+        $nachList = $this->application->getUserNACH($whereCondition);
+        $nach = $dataProvider->getBackendUserNACH($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
+
+    public function backendNachUserList(Request $request){
+        $userId = $request->customer_id;
+        if ($userId) {
+            $BankList = $this->application->getUserBankNACH(['user_id' => $userId]);;
+        }
+        if(!empty($BankList)){
+            return response()->json(['status' => 1,'BankList' => $BankList]);
+        }else{
+            return response()->json(['status' => 0,'BankList' => $BankList]);
+        }
+        
+    }
 }

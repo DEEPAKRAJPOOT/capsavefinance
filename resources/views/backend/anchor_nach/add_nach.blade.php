@@ -1,16 +1,17 @@
-@extends('layouts.app')
+@extends('layouts.backend.admin-layout')
 @section('content')
 
 
 <div class="content-wrapper">
+@include('backend.nach.common.section')
 	<div class="row grid-margin mt-3">
 		<div class="  col-md-12  ">
                      <div class="card">
                         @php
                             $users_nach_id = isset($nachDetail) ? $nachDetail['users_nach_id'] : null;
                         @endphp
-			<div class="card">
-                                <form id='nach_form' method="post" action="{{route('front_save_nach_detail', ['acc_id' => $acc_id, 'user_id' => $user_id, 'users_nach_id' => $users_nach_id])}}">
+                        <div class="card">
+                                <form id='nach_form' method="post" action="{{route('anchor_save_nach_detail', ['acc_id' => $acc_id, 'user_id' => $user_id, 'anchor_id' => $anchor_id, 'users_nach_id' => $users_nach_id])}}">
 				                @csrf
                                 <div class="card-body">
                                     <div class="row">

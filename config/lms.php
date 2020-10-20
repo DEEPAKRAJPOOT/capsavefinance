@@ -214,4 +214,11 @@ return [
        'DISBURSED' =>'8',
        'FAILED_REFUND'=>'9',
     ],
+    'NACH_STATUS' => [    
+       'PENDING' => '1',
+       'PDF_UPLOADED' => '2',
+       'SENT_TO_APPROVAL' => '3',
+       'ACTIVE'=>'4',
+       'FAILED'=>'5',
+    ],
 ];

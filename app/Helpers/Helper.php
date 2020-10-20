@@ -2085,5 +2085,31 @@ class Helper extends PaypalHelper
          "." . $words[$point / 10] . " " . 
                $words[$point = $point % 10] : '';
        return $result;
+    }
+
+    public static function uploadDirectoryFile($attributes, $pathDirectory = 'user')
+    {
+        $inputArr = [];
+        if ($attributes['doc_file']) {
+            if (!Storage::exists('/public/'.$pathDirectory)) {
+                Storage::makeDirectory('/public/' . $pathDirectory, 0777, true);
+            }
+            // $extension = $attributes['doc_file']->getClientOriginalExtension();
+            // $name   = $attributes['doc_file']->getClientOriginalName();
+            // $name  =  explode('.',$name);
+            // $filename =  $name[0].'.'.$extension;
+            // dd($filename);
+            $path = Storage::disk('public')->put($pathDirectory, $attributes['doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+
+        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+
+        return $inputArr;
     }      
 }

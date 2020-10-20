@@ -241,10 +241,36 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
 				'uses' => 'Application\NACHController@addNachDetail',
 			]);
 			
+			Route::get('/edit-nach-detail', [
+				'as' => 'front_edit_nach_detail',
+				'uses' => 'Application\NACHController@EditNachDetail',
+			]);
+			
 			Route::post('/save-nach-detail', [
 				'as' => 'front_save_nach_detail',
 				'uses' => 'Application\NACHController@saveNachDetail',
+			]);
+
+			Route::get('/nach-detail-preview', [
+				'as' => 'front_nach_detail_preview',
+				'uses' => 'Application\NACHController@nachDetailPreview',
 			]); 
+					
+			Route::get('generate-nach', [
+				'as' => 'front_generate_nach',
+				'uses' => 'Application\NACHController@generateNach'
+			]);
+			
+			Route::get('/upload-nach-document', [
+				'as' => 'front_upload_nach_document',
+				'uses' => 'Application\NACHController@uploadNachDocument'
+			]);
+
+			Route::post('/nach_document-save', [
+				'as' => 'front_nach_document_save',
+				'uses' => 'Application\NACHController@saveNachDocument'
+			]);
+			
 		});
 		  
 	 

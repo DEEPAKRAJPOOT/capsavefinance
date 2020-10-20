@@ -42,8 +42,10 @@ class UserNach extends BaseModel {
      * @var array
      */
     protected $fillable = [
+        'parent_users_nach_id',
         'user_id',
-        'bank_acc_id',
+        'anchor_id',
+        'bank_account_id',
         'umrn',
         'nach_date',
         'sponsor_bank_code',
@@ -67,7 +69,9 @@ class UserNach extends BaseModel {
         'period_until_cancelled',
         'uploaded_file_id',
         'is_active',
-        'status',
+        'request_for',
+        'nach_status_log_id',
+        'nach_status',
         'created_by',
         'created_at',
         'updated_at',
@@ -75,8 +79,26 @@ class UserNach extends BaseModel {
     ];
 
 
-    
+    public function  user()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\User','user_id','user_id');
+    }
 
+    public function  lms_user()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
+    }
+    
+    public function  user_bank()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\UserBankAccount','bank_account_id','bank_account_id');
+    }
+
+    public function  child_nach()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\UserNach','users_nach_id','parent_users_nach_id');
+    }
+    
     /**
      * Save Nach
      * 
@@ -96,7 +118,7 @@ class UserNach extends BaseModel {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
         $query = self::updateOrCreate(['users_nach_id' => $users_nach_id], $attributes);
-        return $query ? $query->users_nach_id : $id;
+        return $query ? $query->users_nach_id : $users_nach_id;
     }
 
     /**
@@ -150,7 +172,7 @@ class UserNach extends BaseModel {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
 
-        $res = self::where($whereCond)->get();
+        $res = self::where($whereCond)->first();
         return $res ?: false;
     }
     
