@@ -929,6 +929,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'nach_download_reports_sheet',
                         'uses' => 'Lms\NachController@downloadNachReport'
                     ]);
+                    
+                    Route::get('/upload-nach-response', [
+                        'as' => 'upload_nach_response',
+                        'uses' => 'Lms\NachController@uploadNachResponse'
+                    ]);
+                    
+                    Route::post('/import-nach-response', [
+                        'as' => 'import_nach_response',
+                        'uses' => 'Lms\NachController@importNachResponse'
+                    ]);
                 }
             });
         });

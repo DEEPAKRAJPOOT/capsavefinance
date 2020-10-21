@@ -128,7 +128,7 @@ class UserNach extends BaseModel {
      */
     public static function getNach()
     {
-        $res = self::select('*')->where('status', 4)->orWhere('status', 5)->get();
+        $res = self::select('*')->get();
         return ($res ?: false);
     }
 

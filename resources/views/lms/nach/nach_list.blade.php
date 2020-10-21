@@ -28,6 +28,7 @@
                                 <div class="row">
                                     <div class="col-md-12">	          
                                         <input type="button" id="exportExcel" name="Submmit" class="btn btn-primary btn-sm ml-2 btn-app filter-abs-btn" value="Export Excel">
+                                        <a data-toggle="modal" data-target="#importNachExcelResponse" data-url ="{{route('upload_nach_response') }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ">Import Response Excel</a>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -76,6 +77,7 @@
     </div>
 </div>
 </div>
+{!!Helpers::makeIframePopup('importNachExcelResponse','Upload Nach Document', 'modal-md')!!}
 @endsection
 @section('jscript')
 <script>

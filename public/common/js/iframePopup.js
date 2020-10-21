@@ -129,7 +129,8 @@ var iframe_ids = [
     'addTDSFrame',    
     'editTDSFrame',
     'uploadNachDocument',
-    'createNachFrame'
+    'createNachFrame',
+    'importNachExcelResponse'
 ];
 
 iframe_ids.forEach(function (id) {

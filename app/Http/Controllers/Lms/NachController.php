@@ -67,36 +67,67 @@ class NachController extends Controller {
             $nachIds = $request->get('chkstatus');
             $nachRecords = $this->appRepo->getNachDataInNachId($nachIds);
             $nachArr = [];
+            $debitTick = [1 => 'SB', 2 => 'CA', 3 => 'CC', 4=> 'Other'];
             foreach ($nachRecords as $nach) {
               $nachArr[] = [
-                    'acc_name' => $nach->acc_name ? $nach->acc_name : '',
-                    'acc_no' => $nach->acc_no ? $nach->acc_no : '',
-                    'ifsc_code' => $nach->ifsc_code ? $nach->ifsc_code : '',
-                    'branch_name' => $nach->branch_name ? $nach->branch_name : '',
-                    'sponsor_bank_code' => $nach->sponsor_bank_code ? $nach->sponsor_bank_code : '',
-                    'utility_code' => $nach->utility_code ? $nach->utility_code : '',
-                    'here_by_authorize' => $nach->here_by_authorize ? $nach->here_by_authorize : '',
-                    'frequency' => $nach->frequency,
-                    'nach_date' => !empty($nach->nach_date) ? date('d-m-Y', strtotime($nach->nach_date)) : '',
-                    'debit_tick' => $nach->debit_tick,
-                    'amount' => $nach->amount,
-                    'debit_type' => $nach->debit_type,
-                    'phone_no' => $nach->phone_no,
-                    'email_id' => $nach->email_id,
-                    'reference_one' => $nach->reference_1,
-                    'reference_two' => $nach->reference_2,
-                    'period_from' => !empty($nach->period_from) ? date('d-m-Y', strtotime($nach->period_from)) : '',
-                    'period_to' => !empty($nach->period_to) ? date('d-m-Y', strtotime($nach->period_to)) : '',
-                    'period_until_cancelled' => $nach->period_until_cancelled,
+                    'MessageID' => '',
+                    'ConstDestBankIFSCCode' => $nach->ifsc_code ? $nach->ifsc_code : '',
+                  'ConstDestBankName' => $nach->branch_name ? $nach->branch_name : '',
+                  'MndtRequestID' => '',
+                  'CustCategoryCode' => '',
+                  'MndtType' => $nach->debit_type == 1 ? 'Fixed Amount' : ($nach->debit_type == 2 ? 'Maximum Amount' : ''),
+                  'MndtFreq' => $nach->frequency,
+                  'MndtStartDt' => !empty($nach->period_from) ? date('d-m-Y', strtotime($nach->period_from)) : '',
+                  'MndtEndDt' => !empty($nach->period_to) ? date('d-m-Y', strtotime($nach->period_to)) : '',
+                  'MndtCollAmnt' => $nach->amount,
+                  'MndtMaxAmnt' => $nach->amount,
+                  'CustName' => $nach->acc_name ? $nach->acc_name : '',
+                  'CustUtilityCd' => $nach->utility_code ? $nach->utility_code : '',
+                  'DebtorName' => $nach->acc_name ? $nach->acc_name : '',
+                  'ConsumerRefNum' => $nach->reference_1,
+                  'SchemeRefNum' => $nach->reference_2,
+                  'PhoneNum' => '',
+                  'MobileNum' => $nach->phone_no,
+                  'Email' => $nach->email_id,
+                  'AdditionalDtl' => '',
+                  'DebtorAccNum' => $nach->acc_no ? $nach->acc_no : '',
+                  'DebtorAccType' => '',
+                  'DestBankIFSCCode' => $nach->ifsc_code ? $nach->ifsc_code : '',
+                  'DestBankName' => $nach->branch_name ? $nach->branch_name : '',
+                  'MndtReqType' => $nach->debit_tick ? $debitTick[$nach->debit_tick] : '',
+                  'AmdmntRsn' => '',
+                  'CxlRsn' => '',
+                  'MndtId' => '',
+                  'OrgnlMndtId' => '',
+//                    'acc_name' => $nach->acc_name ? $nach->acc_name : '',
+//                    'acc_no' => $nach->acc_no ? $nach->acc_no : '',
+//                    'ifsc_code' => $nach->ifsc_code ? $nach->ifsc_code : '',
+//                    'branch_name' => $nach->branch_name ? $nach->branch_name : '',
+//                    'sponsor_bank_code' => $nach->sponsor_bank_code ? $nach->sponsor_bank_code : '',
+//                    'utility_code' => $nach->utility_code ? $nach->utility_code : '',
+//                    'here_by_authorize' => $nach->here_by_authorize ? $nach->here_by_authorize : '',
+//                    'frequency' => $nach->frequency,
+//                    'nach_date' => !empty($nach->nach_date) ? date('d-m-Y', strtotime($nach->nach_date)) : '',
+//                    'debit_tick' => $nach->debit_tick,
+//                    'amount' => $nach->amount,
+//                    'debit_type' => $nach->debit_type,
+//                    'phone_no' => $nach->phone_no,
+//                    'email_id' => $nach->email_id,
+//                    'reference_one' => $nach->reference_1,
+//                    'reference_two' => $nach->reference_2,
+//                    'period_from' => !empty($nach->period_from) ? date('d-m-Y', strtotime($nach->period_from)) : '',
+//                    'period_to' => !empty($nach->period_to) ? date('d-m-Y', strtotime($nach->period_to)) : '',
+//                    'period_until_cancelled' => $nach->period_until_cancelled,
               ];
                 $nachData = ['status' => 5];
                 $this->appRepo->updateNach($nachData, $nach->users_nach_id);
             }
+//            dd('$nachArr--', $nachArr);
                 $date = new DateTime;
                 $currentDate = $date->format('Y-m-d H:i:s');
                 $toExportData['Nach Sheet'] = $nachArr;
                 $isFileSave = true;
-                return $this->fileHelper->array_to_excel($toExportData, $currentDate.'_nach.xlsx', [], $isFileSave);
+                return $this->fileHelper->array_to_excel($toExportData, $currentDate.'_nach.xlsx', [], null, $isFileSave);
            } catch (\Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
@@ -261,6 +292,67 @@ class NachController extends Controller {
         } catch (\Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
+    }
+    
+    function importNachResponse(DocumentRequest $request)
+    {
+        $arrFileData = $request->all();
+//     $this->validate($request, [
+//      'nach_file'  => 'required|mimes:xls,xlsx'
+//     ]);
+        try {
+            $user_id = $request->get('user_id');
+            $document_info = $this->docRepo->saveNachDocument($arrFileData, $user_id);
+            if ($document_info) {
+                $nachBatchData['res_file_id'] = $document_info->file_id;
+//                $nachBatchData['batch_id'] = $batchId;
+                $this->appRepo->saveNachBatch($nachBatchData, null);
+            }
+            
+            $path = $request->file('nach_file')->getRealPath();
+            $data = [];
+//            $data = Excel::load($path)->get();
+
+            if($data->count() > 0)
+            {
+             foreach($data->toArray() as $key => $value)
+             {
+              foreach($value as $row)
+              {
+               $insert_data[] = array(
+                'CustomerName'  => $row['customer_name'],
+                'Gender'   => $row['gender'],
+                'Address'   => $row['address'],
+                'City'    => $row['city'],
+                'PostalCode'  => $row['postal_code'],
+                'Country'   => $row['country']
+               );
+              }
+             }
+
+       //      if(!empty($insert_data))
+       //      {
+       //       DB::table('tbl_customer')->insert($insert_data);
+       //      }
+            }
+            return back()->with('success', 'Excel Data Imported successfully.');
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
+    
+    /**
+     * Upload Signed Nach Pdf
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function uploadNachResponse(Request $request)
+    {
+        $user_id = $request->get('user_id');
+        $users_nach_id = $request->get('users_nach_id');
+        return view('lms.nach.upload_nach_xlsx_res')
+                    ->with(['user_id' => $user_id]);
     }
 
 }

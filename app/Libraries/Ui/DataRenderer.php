@@ -7229,9 +7229,9 @@ class DataRenderer implements DataProviderInterface
                'branch_name','amount','phone_no','email_id','period_from', 'period_to', 'debit_type', 'created_at', 'uploaded_file_id'])
            ->addColumn('users_nach_id', function ($nachData) {
                $cBox = '';
-               if($nachData->status == 4) {
+//               if($nachData->status == 4) {
                    $cBox = '<input type="checkbox" data-id="'.$nachData->users_nach_id.'" name="chkstatus[]" value="'.(($nachData->users_nach_id) ? $nachData->users_nach_id : '' ).'" class="chkstatus">';
-               }
+//               }
                return $cBox;
            })
            ->editColumn('nach_date', function ($nachData) {
