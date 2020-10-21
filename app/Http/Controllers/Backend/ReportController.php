@@ -557,8 +557,14 @@ class ReportController extends Controller
 
     public function maturityReport(Request $request){
         dump('start....');
+
+        $anchor_id = $request->anchor_id ?? null;
         $emailTo = ['vilesh.modi@rentalpha.com', 'gaurav.agarwal@zuron.in', 'varun.dudani@zuron.in'];
-        $anchorList = Anchor::where('is_active','1')->get();
+        $anchorList = Anchor::where('is_active','1');
+        if($anchor_id){
+            $anchorList->where('anchor_id',$anchor_id);
+        }
+        $anchorList = $anchorList->get();
         
         $sendMail = false;
         $data = $this->reportsRepo->getMaturityReport([],$sendMail);
@@ -668,6 +674,7 @@ class ReportController extends Controller
             $emailData['subject'] ="Disbursal Report";
             \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
         }
+        
         dump('end....');
     }
 
