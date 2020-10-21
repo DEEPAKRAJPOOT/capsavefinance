@@ -559,8 +559,8 @@ class ReportController extends Controller
         dump('start....');
 
         $anchor_id = $request->anchor_id ?? null;
-        //$emailTo = ['vilesh.modi@rentalpha.com', 'gaurav.agarwal@zuron.in', 'varun.dudani@zuron.in'];
-        $emailTo = ['sudesh.kumar@prolitus.com'];
+        $emailTo = ['vilesh.modi@rentalpha.com', 'gaurav.agarwal@zuron.in', 'varun.dudani@zuron.in'];
+        //$emailTo = ['sudesh.kumar@prolitus.com'];
         
         $anchorList = Anchor::where('is_active','1');
         if($anchor_id){
