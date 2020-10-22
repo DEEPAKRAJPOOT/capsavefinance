@@ -9,17 +9,18 @@ use Helpers;
 use DateTime;
 use PDF as DPDF;
 use Carbon\Carbon;
+use App\Helpers\FileHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DocumentRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Inv\Repositories\Models\UserFile;
 use App\Http\Requests\Lms\BankAccountRequest;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Libraries\Storage\Contract\StorageManagerInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
-use App\Helpers\FileHelper;
 
 class NachController extends Controller {
 
@@ -323,9 +324,18 @@ class NachController extends Controller {
             $uploadedFile = $request->file('doc_file');
             $destinationPath = storage_path() . '/app/public/nach/response';
 //            dd('$destinationPath--', $destinationPath);
-            $fileName = time();
+            $date = new DateTime;
+            $currentDate = $date->format('Y-m-d H:i:s');
+            $fileName = $currentDate.'_nach.xlsx';
             if ($uploadedFile->isValid()) {
                 $uploadedFile->move($destinationPath, $fileName);
+                $filePath = $destinationPath.'/'.$fileName;
+                $fileContent = $this->fileHelper->readFileContent($filePath);
+                $fileData = $this->fileHelper->uploadFileWithContent($filePath, $fileContent);
+                $file = UserFile::create($fileData);
+                $nachBatchData['res_file_id'] = $file->file_id;
+                $this->appRepo->saveNachBatch($nachBatchData, null);
+                
             }
             $fullFilePath  = $destinationPath . '/' . $fileName;
 //            dd('$fullFilePath', $fullFilePath);
