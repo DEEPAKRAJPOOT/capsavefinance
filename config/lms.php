@@ -220,5 +220,8 @@ return [
        'SENT_TO_APPROVAL' => '3',
        'ACTIVE'=>'4',
        'FAILED'=>'5',
+       'ACK'=>'6',
+       'REJECT'=>'7',
+       'CLOSED'=>'8'
     ],
 ];

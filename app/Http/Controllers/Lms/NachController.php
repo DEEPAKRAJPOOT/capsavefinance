@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DocumentRequest;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Lms\BankAccountRequest;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
@@ -66,60 +67,47 @@ class NachController extends Controller {
         try {
             $nachIds = $request->get('chkstatus');
             $nachRecords = $this->appRepo->getNachDataInNachId($nachIds);
+//            dd('$nachRecords--', $nachRecords);
             $nachArr = [];
-            $debitTick = [1 => 'SB', 2 => 'CA', 3 => 'CC', 4=> 'Other'];
+            $reqFor = [1 => 'Create', 2 => 'Modify', 3 => 'Cancel'];
+            $mndtFreq = [1 => 'Monthly', 2 => 'Quarterly', 3 => 'Half Yearly', 4 => 'Yearly', 5 => 'As & When Presented'];
             foreach ($nachRecords as $nach) {
               $nachArr[] = [
-                    'MessageID' => '',
+                    'MessageID' => $nach->request_id,
                     'ConstDestBankIFSCCode' => $nach->ifsc_code ? $nach->ifsc_code : '',
-                  'ConstDestBankName' => $nach->branch_name ? $nach->branch_name : '',
-                  'MndtRequestID' => '',
-                  'CustCategoryCode' => '',
-                  'MndtType' => $nach->debit_type == 1 ? 'Fixed Amount' : ($nach->debit_type == 2 ? 'Maximum Amount' : ''),
-                  'MndtFreq' => $nach->frequency,
-                  'MndtStartDt' => !empty($nach->period_from) ? date('d-m-Y', strtotime($nach->period_from)) : '',
-                  'MndtEndDt' => !empty($nach->period_to) ? date('d-m-Y', strtotime($nach->period_to)) : '',
-                  'MndtCollAmnt' => $nach->amount,
-                  'MndtMaxAmnt' => $nach->amount,
-                  'CustName' => $nach->acc_name ? $nach->acc_name : '',
-                  'CustUtilityCd' => $nach->utility_code ? $nach->utility_code : '',
-                  'DebtorName' => $nach->acc_name ? $nach->acc_name : '',
-                  'ConsumerRefNum' => $nach->reference_1,
-                  'SchemeRefNum' => $nach->reference_2,
-                  'PhoneNum' => '',
-                  'MobileNum' => $nach->phone_no,
-                  'Email' => $nach->email_id,
-                  'AdditionalDtl' => '',
-                  'DebtorAccNum' => $nach->acc_no ? $nach->acc_no : '',
-                  'DebtorAccType' => '',
-                  'DestBankIFSCCode' => $nach->ifsc_code ? $nach->ifsc_code : '',
-                  'DestBankName' => $nach->branch_name ? $nach->branch_name : '',
-                  'MndtReqType' => $nach->debit_tick ? $debitTick[$nach->debit_tick] : '',
-                  'AmdmntRsn' => '',
-                  'CxlRsn' => '',
-                  'MndtId' => '',
-                  'OrgnlMndtId' => '',
-//                    'acc_name' => $nach->acc_name ? $nach->acc_name : '',
-//                    'acc_no' => $nach->acc_no ? $nach->acc_no : '',
-//                    'ifsc_code' => $nach->ifsc_code ? $nach->ifsc_code : '',
-//                    'branch_name' => $nach->branch_name ? $nach->branch_name : '',
-//                    'sponsor_bank_code' => $nach->sponsor_bank_code ? $nach->sponsor_bank_code : '',
-//                    'utility_code' => $nach->utility_code ? $nach->utility_code : '',
-//                    'here_by_authorize' => $nach->here_by_authorize ? $nach->here_by_authorize : '',
-//                    'frequency' => $nach->frequency,
-//                    'nach_date' => !empty($nach->nach_date) ? date('d-m-Y', strtotime($nach->nach_date)) : '',
-//                    'debit_tick' => $nach->debit_tick,
-//                    'amount' => $nach->amount,
-//                    'debit_type' => $nach->debit_type,
-//                    'phone_no' => $nach->phone_no,
-//                    'email_id' => $nach->email_id,
-//                    'reference_one' => $nach->reference_1,
-//                    'reference_two' => $nach->reference_2,
-//                    'period_from' => !empty($nach->period_from) ? date('d-m-Y', strtotime($nach->period_from)) : '',
-//                    'period_to' => !empty($nach->period_to) ? date('d-m-Y', strtotime($nach->period_to)) : '',
-//                    'period_until_cancelled' => $nach->period_until_cancelled,
+                    'ConstDestBankName' => $nach->user_bank->bank ? $nach->user_bank->bank->bank_name : '',
+                    'MndtRequestID' => $nach->request_id,
+                    'CustCategoryCode' => 'U099',
+                    'MndtType' => 'RCUR',
+                    'MndtFreq' => $nach->frequency ? $mndtFreq[$nach->frequency] : '',
+                    'MndtStartDt' => !empty($nach->period_from) ? date('d-m-Y', strtotime($nach->period_from)) : '',
+                    'MndtEndDt' => !empty($nach->period_to) ? date('d-m-Y', strtotime($nach->period_to)) : '',
+                    'MndtCollAmnt' => '',
+                    'MndtMaxAmnt' => $nach->amount,
+                    'CustName' => $nach->user->f_name ? $nach->user->f_name .' '. $nach->user->l_name : '',
+                    'CustUtilityCd' => $nach->utility_code ? $nach->utility_code : '',
+                    'DebtorName' => $nach->acc_name ? $nach->acc_name : '',
+                    'ConsumerRefNum' => $nach->lms_user ? $nach->lms_user->customer_id : '',
+                    'SchemeRefNum' => $nach->lms_user ? $nach->lms_user->customer_id : '',
+                    'PhoneNum' => '',
+                    'MobileNum' => $nach->phone_no,
+                    'Email' => $nach->email_id,
+                    'AdditionalDtl' => '',
+                    'DebtorAccNum' => $nach->acc_no ? $nach->acc_no : '',
+                    'DebtorAccType' => '',
+                    'DestBankIFSCCode' => $nach->ifsc_code ? $nach->ifsc_code : '',
+                    'DestBankName' => $nach->user_bank->bank ? $nach->user_bank->bank->bank_name : '',
+                    'MndtReqType' => $nach->request_for ? $reqFor[$nach->request_for] : '',
+                    'AmdmntRsn' => '',
+                    'CxlRsn' => '',
+                    'MndtId' => '',
+                    'OrgnlMndtId' => ''
               ];
-                $nachData = ['status' => 5];
+                $logData = $this->appRepo->createNachStatusLog($nach->users_nach_id, config('lms.NACH_STATUS')['SENT_TO_APPROVAL']);
+                $nachData = [
+                            'nach_status' => config('lms.NACH_STATUS')['SENT_TO_APPROVAL'],
+                            'nach_status_log_id' => $logData->nach_status_log_id
+                            ];
                 $this->appRepo->updateNach($nachData, $nach->users_nach_id);
             }
 //            dd('$nachArr--', $nachArr);
@@ -294,55 +282,8 @@ class NachController extends Controller {
         }
     }
     
-    function importNachResponse(DocumentRequest $request)
-    {
-        $arrFileData = $request->all();
-//     $this->validate($request, [
-//      'nach_file'  => 'required|mimes:xls,xlsx'
-//     ]);
-        try {
-            $user_id = $request->get('user_id');
-            $document_info = $this->docRepo->saveNachDocument($arrFileData, $user_id);
-            if ($document_info) {
-                $nachBatchData['res_file_id'] = $document_info->file_id;
-//                $nachBatchData['batch_id'] = $batchId;
-                $this->appRepo->saveNachBatch($nachBatchData, null);
-            }
-            
-            $path = $request->file('nach_file')->getRealPath();
-            $data = [];
-//            $data = Excel::load($path)->get();
-
-            if($data->count() > 0)
-            {
-             foreach($data->toArray() as $key => $value)
-             {
-              foreach($value as $row)
-              {
-               $insert_data[] = array(
-                'CustomerName'  => $row['customer_name'],
-                'Gender'   => $row['gender'],
-                'Address'   => $row['address'],
-                'City'    => $row['city'],
-                'PostalCode'  => $row['postal_code'],
-                'Country'   => $row['country']
-               );
-              }
-             }
-
-       //      if(!empty($insert_data))
-       //      {
-       //       DB::table('tbl_customer')->insert($insert_data);
-       //      }
-            }
-            return back()->with('success', 'Excel Data Imported successfully.');
-        } catch (\Exception $ex) {
-            return Helpers::getExceptionMessage($ex);
-        }
-    }
-    
     /**
-     * Upload Signed Nach Pdf
+     * Upload excel file for import
      * 
      * @param Request $request
      * @return type
@@ -354,7 +295,102 @@ class NachController extends Controller {
         return view('lms.nach.upload_nach_xlsx_res')
                     ->with(['user_id' => $user_id]);
     }
-
+    
+    /**
+     * Import uploaded excel file
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function importNachResponse(Request $request)
+    {
+        try {
+            //dd('$request--', $request->files);
+            $arrFileData = $request->files;
+//            dd('$arrFileData--', $arrFileData);           
+            $user_id = $request->get('user_id');
+            $inputArr = [];
+            $path = '';
+            $userId = Auth::user()->user_id;
+//            dd('$request--', $request['doc_file']);
+            if ($request['doc_file']) {
+                if (!Storage::exists('/public/nach/response')) {
+                    Storage::makeDirectory('/public/nach/response');
+                }
+                $path = Storage::disk('public')->put('/nach/response', $request['doc_file'], null);
+//                dd('$path--', $path);
+            }
+            $uploadedFile = $request->file('doc_file');
+            $destinationPath = storage_path() . '/app/public/nach/response';
+//            dd('$destinationPath--', $destinationPath);
+            $fileName = time();
+            if ($uploadedFile->isValid()) {
+                $uploadedFile->move($destinationPath, $fileName);
+            }
+            $fullFilePath  = $destinationPath . '/' . $fileName;
+//            dd('$fullFilePath', $fullFilePath);
+            $header = [
+                0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28
+            ];
+            $fileArrayData = $this->fileHelper->excelNcsv_to_array($fullFilePath, $header);
+//            dd('$fileArrayData--', $fileArrayData);
+            if($fileArrayData['status'] != 'success'){
+                Session::flash('message', 'Please import correct format sheet,');
+                return redirect()->back();
+            }
+            $rowData = $fileArrayData['data'];
+            if (empty($rowData)) {
+                Session::flash('message', 'File does not contain any record');
+                return redirect()->back();                     
+            }
+            foreach ($rowData as $key => $value) { 
+//                dd('$value--', $value);
+                if(!empty($value[0])){
+                    $nachStatus = '';
+                    if (trim($value[18]) == 'Active') {
+                        $nachStatus = config('lms.NACH_STATUS')['ACTIVE'];
+                    } elseif (trim($value[18]) == 'Failed') {
+                        $nachStatus = config('lms.NACH_STATUS')['FAILED'];
+                    } elseif (trim($value[18]) == 'ACK') {
+                        $nachStatus = config('lms.NACH_STATUS')['ACK'];
+                    } elseif (trim($value[18]) == 'Reject') {
+                        $nachStatus = config('lms.NACH_STATUS')['REJECT'];
+                    }
+                    $customer_id = trim($value[0]);
+//                    dd('$customer_id--', $customer_id);
+                    if (!empty($customer_id) && $customer_id != null) {
+                        $wherCond['customer_id'] = $customer_id;
+                        $lmsData = $this->appRepo->getLmsUsers($wherCond)->first();
+//                        dd('$lmsData--', $lmsData->user_id);
+                        if ($lmsData){
+                            $arrUpdatePre = [
+                                'nach_status' => config('lms.NACH_STATUS')['CLOSED']
+                            ];
+                            $whereCon = [];
+                            $whereCon[] = ['user_id', '=', $lmsData->user_id];
+                            $whereCon[] = ['nach_status', '>', config('lms.NACH_STATUS')['SENT_TO_APPROVAL']];
+                            $resPreUp = $this->appRepo->updateNachByUserId($arrUpdatePre, $whereCon);
+//                            dd('$resPreUp-->>', $resPreUp);
+                            $arrUpdateData = [
+                                'nach_status' => $nachStatus,
+                                'umrn' =>  trim($value[5]),
+                                'ack_date' => !empty($value[19]) ? date('Y-m-d', strtotime($value[19])) : '',
+                                'response_date' =>  !empty($value[20]) ? date('Y-m-d', strtotime($value[20])) : ''
+                            ];
+                            $whereCondition = [];
+                            $whereCondition[] = ['user_id', '=', $lmsData->user_id];
+                            $whereCondition[] = ['nach_status', '=', config('lms.NACH_STATUS')['SENT_TO_APPROVAL']];
+                            $resUpdate = $this->appRepo->updateNachByUserId($arrUpdateData, $whereCondition);
+//                            dd('$resUpdate--', $resUpdate);
+                        }
+                    }
+                }
+            }
+            Session::flash('message',trans('Excel Data Imported successfully.'));
+            Session::flash('operation_status', 1);
+            return redirect()->route('users_nach_list');
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
 }
-
-

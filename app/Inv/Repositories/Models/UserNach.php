@@ -68,6 +68,7 @@ class UserNach extends BaseModel {
         'period_to',
         'period_until_cancelled',
         'uploaded_file_id',
+        'request_id',
         'is_active',
         'request_for',
         'nach_status_log_id',
@@ -192,8 +193,38 @@ class UserNach extends BaseModel {
         if (empty($nachIds)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
-        $res = self::whereIn('users_nach_id',$nachIds)->get();
+        $res = self::whereIn('users_nach_id',$nachIds)
+                ->with('user')
+                ->with('lms_user')
+                ->with('user_bank.bank')
+                ->get();
         return $res ?: false;
+    }
+    
+    /**
+     * Update Nach by condition
+     * 
+     * @param arr $whereCond
+     * @param arr $whereCond
+     * @return type
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions
+     */
+    public static function updateNachByUserId($attributes, $whereCond)
+    { //dd('$whereCond--', $whereCond);
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        
+        if (!is_array($whereCond)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        
+        if (empty($attributes)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        $result = self::where($whereCond)->update($attributes);
+        return $result ? $result : false;
     }
 
 }

@@ -2526,6 +2526,17 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
                 ->whereHas('lms_user')
                 ->get();
     }
+    
+    /**
+     * Update Nach Data By Condition
+     * 
+     * @param arr $attr
+     * @param arr $whereCond
+     * @return type
+     */
+    public function updateNachByUserId($attr, $whereCond){
+        return UserNach::updateNachByUserId($attr, $whereCond);
+    }
 }
 
 

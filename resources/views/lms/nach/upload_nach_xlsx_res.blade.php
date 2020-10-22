@@ -1,10 +1,10 @@
 @extends('layouts.popup_layout')
 @section('content')
-<form id="documentForm" style="width: 100%" method="POST" action="{{ Route('import_nach_response') }}" enctype="multipart/form-data" target="_top">       
+<form id="documentForm" style="width: 100%" method="POST" action="{{ Route('import_nach_response', ['user_id' => $user_id]) }}" enctype="multipart/form-data" target="_top">       
     @csrf
     <div class="modal-body text-left">
         <div class="custom-file upload-btn-cls mb-3 mt-2">
-            <input type="file" class="custom-file-input getFileName doc_file" id="nach_file" name="nach_file" >
+            <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file" >
             <label class="custom-file-label" for="customFile">Choose file</label>
         </div>
         <button type="submit" class="btn btn-success float-right btn-sm" id="savedocument" >Submit</button>  
@@ -48,7 +48,7 @@ $messages = session()->get('message', false);
             rules: {
                 'doc_file': {
                     required: true,
-                    extension: "jpg,png,pdf",
+                    extension: "xls,xlsx",
                     filesize : 200000000,
                 }
             },

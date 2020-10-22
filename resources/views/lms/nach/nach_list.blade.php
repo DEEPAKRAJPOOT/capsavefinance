@@ -26,9 +26,13 @@
                             <form id="excelExportForm" action="{{Route('nach_download_reports_sheet')}}" method="post">
                                 @csrf
                                 <div class="row">
-                                    <div class="col-md-12">	          
+                                    <div class="col-md-8">
+                                    </div>
+                                    <div class="col-md-2">	          
                                         <input type="button" id="exportExcel" name="Submmit" class="btn btn-primary btn-sm ml-2 btn-app filter-abs-btn" value="Export Excel">
-                                        <a data-toggle="modal" data-target="#importNachExcelResponse" data-url ="{{route('upload_nach_response') }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ">Import Response Excel</a>
+                                    </div>
+                                    <div class="col-md-2">   
+                                        <a data-toggle="modal" data-target="#importNachExcelResponse" data-url ="{{route('upload_nach_response') }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm ml-2 btn-app filter-abs-btn">Import Response Excel</a>
                                     </div>
                                 </div>
                                 <div class="row">

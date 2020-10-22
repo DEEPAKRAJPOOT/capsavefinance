@@ -278,12 +278,12 @@ class FileHelper {
         header('Content-Disposition: attachment;filename="' . $file_name . '"');
         header('Cache-Control: max-age=0');
         if ($isFileSave == true) {
-           if (!Storage::exists('/public/nach')) {
-                Storage::makeDirectory('/public/nach');
+           if (!Storage::exists('/public/nach/request')) {
+                Storage::makeDirectory('/public/nach/request');
             }
             $filePath = '';
             $fileData = [];
-            $storage_path = storage_path('app/public/nach');
+            $storage_path = storage_path('app/public/nach/request');
             $filePath = $storage_path.'/'.$file_name;
             $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
             $objWriter->save($filePath); 
@@ -342,7 +342,7 @@ class FileHelper {
           $inputFileType  =   PHPExcel_IOFactory::identify($inputFileName);
           $objReader      =   PHPExcel_IOFactory::createReader($inputFileType);
           $objPHPExcel    =   $objReader->load($inputFileName);
-          $sheet = $objPHPExcel->getActiveSheet(); 
+          $sheet = $objPHPExcel->getActiveSheet();
           // $sheet = $sheet->removeColumnByIndex(15);
           $highestRow = $sheet->getHighestRow(); 
           $highestColumn = $sheet->getHighestDataColumn();
