@@ -4997,4 +4997,12 @@ if ($err) {
         $nach = $nach->getData(true);
         return new JsonResponse($nach);
     }
+    
+    public function lmsGetNachRepaymentTransList(DataProviderInterface $dataProvider) {
+        $whereCondition = ['is_active' => 1, 'nach_status' => 7];
+        $nachList = $this->application->getUserNACH($whereCondition);
+        $nach = $dataProvider->getNachRepaymentTransList($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
 }

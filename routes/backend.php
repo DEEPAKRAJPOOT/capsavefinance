@@ -1530,6 +1530,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'create_nach_repayment_req',
                     'uses' => 'Backend\NACHController@createNachRepaymentReq'
                 ]);
+                
+                Route::get('repayment_trans_list', [
+                    'as' => 'nach_repayment_trans_list',
+                    'uses' => 'Backend\NACHController@repaymentTransList'
+                ]);
+                
             });                     
         });
 

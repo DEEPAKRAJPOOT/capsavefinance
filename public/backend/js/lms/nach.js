@@ -29,6 +29,30 @@ try {
                 aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
             });
         }
+        
+        if($('#nachRepayTransResList').length){
+            oTable = $('#nachRepayTransResList').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: 10,
+                searching: false,
+                bSort: true,
+                ajax: {
+                    "url": messages.url, // json datasource
+                    "method": 'POST',
+                    data: function (d) {
+                        d.status = messages.status
+                        d.search_keyword = $('input[name=search_keyword]').val();
+                        d._token = messages.token;
+                    },
+                    "error": function () {  // error handling
+                        $("#nachRepayTransResList_processing").css("display", "none");
+                    }
+                },
+                columns: messages.columns,
+                aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}]
+            });
+        }
 
         $('#searchbtn').on('click', function (e) {
             oTable.draw();

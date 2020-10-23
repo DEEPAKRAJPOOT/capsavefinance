@@ -7517,4 +7517,30 @@ class DataRenderer implements DataProviderInterface
            ->make(true);
    }
    
+   public function getNachRepaymentTransList(Request $request, $data) {
+       return DataTables::of($data)
+            ->rawColumns(['action'])
+            ->editColumn(
+                'customer_id', 
+                function ($nachData) {
+                    return $nachData->lms_user->customer_id;
+            })
+            ->editColumn(
+                'Reference', 
+                function ($nachData) {
+                    return $nachData->ref_no;
+            })
+            ->editColumn(
+                'req_date',
+                function ($nachData) {
+                    return $nachData->req_date;
+            })
+            ->editColumn(
+                'amount', 
+                function ($nachData) {
+                    return $nachData->amount;
+            })
+           ->make(true);
+   }
+   
 }

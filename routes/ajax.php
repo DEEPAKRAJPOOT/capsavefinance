@@ -1262,4 +1262,10 @@ Route::group(
         'as' => 'lms_get_nach_repayment_list',
         'uses' => 'AjaxController@lmsGetNachRepaymentList'
     ]);
+    
+    Route::post('lms-get-nach-repayment-trans-list',[
+        'as' => 'lms_get_nach_repayment_trans_list',
+        'uses' => 'AjaxController@lmsGetNachRepaymentTransList'
+    ]);
+    
 });

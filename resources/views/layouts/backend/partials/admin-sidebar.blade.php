@@ -177,12 +177,12 @@
                 @endcan
                 @can('users_nach_list')
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('nach_repayment_list') }}">Nach Repayment</a>
+                    <a class="nav-link" href="{{ route('users_nach_list') }}">Manage Nach List</a>
                 </li>
                 @endcan
                 @can('users_nach_list')
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('users_nach_list') }}">Manage Nach List</a>
+                    <a class="nav-link" href="{{ route('nach_repayment_list') }}">Nach Repayment</a>
                 </li>
                 @endcan
             </ul>

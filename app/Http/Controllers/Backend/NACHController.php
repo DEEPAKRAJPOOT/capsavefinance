@@ -429,4 +429,14 @@ class NACHController extends Controller {
                 'objWriter' => $objWriter
                 ];
     }
+    
+    /**
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function repaymentTransList(Request $request) {
+        return view('backend.nach.repayment.transaction_list');
+    }
+    
 }
