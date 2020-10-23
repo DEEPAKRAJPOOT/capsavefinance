@@ -56,6 +56,33 @@ class NachRepaymentReq extends BaseModel {
 
     public function user(){
         return $this->belongsTo('App\Inv\Repositories\Models\Payment','payment_id','payment_id');
-    } 
+    }
+    
+    /**
+     * Update repayment request
+     * 
+     * @param arr $attributes
+     * @param arr $whereCond
+     * @return type
+     * @throws InvalidDataTypeExceptions
+     * @throws BlankDataExceptions
+     */
+    public static function updateRepaymentReq($attributes, $whereCond) {
+        
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        
+        if (!is_array($whereCond)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        
+        if (empty($attributes)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        $result = self::where($whereCond)->update($attributes);
+        return $result ? $result : false;
+    
+    }
 }   
 

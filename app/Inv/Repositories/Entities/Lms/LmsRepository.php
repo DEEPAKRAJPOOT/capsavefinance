@@ -1705,5 +1705,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return NachRepaymentReq::create($data);
     }
+    
+    /**
+     * Update Nach repayment Data By Condition
+     * 
+     * @param arr $attr
+     * @param arr $whereCond
+     * @return type
+     */
+    public function updateRepaymentReq($attr, $whereCond){
+        return NachRepaymentReq::updateRepaymentReq($attr, $whereCond);
+    }
 
 }

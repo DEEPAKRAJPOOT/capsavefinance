@@ -1536,6 +1536,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'uses' => 'Backend\NACHController@repaymentTransList'
                 ]);
                 
+                Route::get('/upload-nach-trans-response', [
+                        'as' => 'upload_nach_trans_response',
+                        'uses' => 'Backend\NACHController@uploadNachTransResponse'
+                    ]);
+                    
+                Route::post('/import-nach-trans-response', [
+                    'as' => 'import_nach_trans_response',
+                    'uses' => 'Backend\NACHController@importNachTransResponse'
+                ]);
+                
             });                     
         });
 

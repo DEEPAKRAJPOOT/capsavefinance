@@ -23,8 +23,8 @@
                 @csrf	
                 <div class="col-md-12 mt-4">
                     <div class="row pull-right">
-                        <div class="col-md-2" id="buttonDiv">
-                            <button type="button" class="btn btn-success btn-sm ml-2" id="nachExpBtn">Import Transaction Response</button>
+                        <div class="col-md-2" id="buttonDiv"> 
+                            <a data-toggle="modal" data-target="#importNachTransResponse" data-url ="{{route('upload_nach_trans_response') }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm ml-2 btn-app filter-abs-btn">Import Response Excel</a>
                         </div>
                     </div>
                     <div class="row col-6 pull-left">
@@ -61,6 +61,7 @@
         </div>
     </div>
 </div>
+{!!Helpers::makeIframePopup('importNachTransResponse','Upload Nach Transaction Document', 'modal-md')!!}
 @endsection
 
 @section('jscript')

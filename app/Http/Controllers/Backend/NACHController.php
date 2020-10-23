@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DocumentRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as AppRepoInterface;
@@ -30,10 +31,11 @@ class NACHController extends Controller {
 	protected $docRepo;
     protected $lmsRepo;
 
-	public function __construct(AppRepoInterface $appRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
+	public function __construct(AppRepoInterface $appRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo, FileHelper $file_helper) {
 		$this->appRepo  =  $appRepo;
 		$this->docRepo  =  $docRepo;
-        $this->lmsRepo = $lms_repo;
+                $this->lmsRepo = $lms_repo;
+                $this->fileHelper = $file_helper;
 		$this->middleware('auth');
 		// $this->middleware('checkBackendLeadAccess');
 	}
@@ -437,6 +439,98 @@ class NACHController extends Controller {
      */
     public function repaymentTransList(Request $request) {
         return view('backend.nach.repayment.transaction_list');
+    }
+    
+    /**
+     * Upload excel file for import
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function uploadNachTransResponse(Request $request)
+    {
+        return view('backend.nach.repayment.upload_nach_trans_res');
+    }
+    
+    /**
+     * Import NACH Transaction response excel file
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function importNachTransResponse(Request $request)
+    {
+        try {
+            //dd('$request--', $request->files);
+            $arrFileData = $request->files;
+//            dd('$arrFileData--', $arrFileData);
+            $inputArr = [];
+            $path = '';
+            $userId = Auth::user()->user_id;
+//            dd('$request--', $request['doc_file']);
+            if ($request['doc_file']) {
+                if (!Storage::exists('/public/nach/transaction/response')) {
+                    Storage::makeDirectory('/public/nach/transaction/response');
+                }
+                $path = Storage::disk('public')->put('/nach/transaction/response', $request['doc_file'], null);
+//                dd('$path--', $path);
+            }
+            $uploadedFile = $request->file('doc_file');
+            $destinationPath = storage_path() . '/app/public/nach/transaction/response';
+//            dd('$destinationPath--', $destinationPath);
+            $date = new DateTime;
+            $currentDate = $date->format('Y-m-d H:i:s');
+            $fileName = $currentDate.'_nach.xlsx';
+            if ($uploadedFile->isValid()) {
+                $uploadedFile->move($destinationPath, $fileName);
+                $filePath = $destinationPath.'/'.$fileName;
+                $fileContent = $this->fileHelper->readFileContent($filePath);
+                $fileData = $this->fileHelper->uploadFileWithContent($filePath, $fileContent);
+                $file = UserFile::create($fileData);
+                $nachBatchData['res_file_id'] = $file->file_id;
+                $this->appRepo->saveNachBatch($nachBatchData, null);
+                
+            }
+            $fullFilePath  = $destinationPath . '/' . $fileName;
+//            dd('$fullFilePath', $fullFilePath);
+            $header = [
+                0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21
+            ];
+            $fileArrayData = $this->fileHelper->excelNcsv_to_array($fullFilePath, $header);
+//            dd('$fileArrayData--', $fileArrayData);
+            if($fileArrayData['status'] != 'success'){
+                Session::flash('message', 'Please import correct format sheet,');
+                return redirect()->back();
+            }
+            $rowData = $fileArrayData['data'];
+            if (empty($rowData)) {
+                Session::flash('message', 'File does not contain any record');
+                return redirect()->back();                     
+            }
+            foreach ($rowData as $key => $value) {
+//                dd('$value--', $value);
+                $customerRefNo = trim($value[4]);
+                if (!empty($customerRefNo) && $customerRefNo != null) {
+//                        $nachReqStatus = '';
+                    if (trim($value[7]) == 'S') {
+                        $nachReqStatus = 2;
+                    } elseif (trim($value[7]) == 'F') {
+                        $nachReqStatus = 3;
+                    } 
+                    $arrUpdateData = [
+                        'status' => $nachReqStatus,
+                    ];                           
+                    $whereCondition[] = ['ref_no', '=',  $customerRefNo];
+                    $resUpdate = $this->lmsRepo->updateRepaymentReq($arrUpdateData, $whereCondition);
+                }
+            }
+            Session::flash('message',trans('Excel Data Imported successfully.'));
+            Session::flash('operation_status', 1);
+            return redirect()->route('nach_repayment_trans_list');
+        } catch (\Exception $ex) {
+            dd('$ex--->', $ex);
+            return Helpers::getExceptionMessage($ex);
+        }
     }
     
 }
