@@ -59,6 +59,7 @@ try {
                 }
             },
             columns: [
+                {data: 'user_type'},
                 {data: 'customer_name'},
                 {data: 'bank_name'},
                 {data: 'start_date'},
@@ -72,7 +73,7 @@ try {
 
         //Search
         $('#searchbtn').on('click', function (e) {
-            oTable.draw();
+            oTable2.draw();
         });                   
 } catch (e) {
     if (typeof console !== 'undefined') {

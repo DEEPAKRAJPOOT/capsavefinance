@@ -66,6 +66,8 @@ use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\Lms\DisbursalApiLog;
 use App\Inv\Repositories\Models\UserNach;
+use App\Inv\Repositories\Models\Lms\NachRepaymentReq;
+use App\Inv\Repositories\Models\Lms\NachRepaymentReqBatch;
 
 /**
  * Lms Repository class
@@ -1683,4 +1685,25 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getAllNach(){
         return UserNach::getNach();
     }
+
+	public function getUserNaches($nachIds)
+	{
+		return UserNach::whereIn('users_nach_id', $nachIds)
+			   ->get();
+	}
+
+	public static function createNachReqBatch($file, $batchNo = null)
+    {   
+        if (!empty($batchNo)) {
+            $disburseBatch['batch_no'] = $batchNo ?? null;
+            $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
+            $disburseBatch['batch_status'] = 1;
+        }
+        return NachRepaymentReqBatch::create($disburseBatch);
+    }
+    public static function saveNachReq($data)
+    {
+        return NachRepaymentReq::create($data);
+    }
+
 }

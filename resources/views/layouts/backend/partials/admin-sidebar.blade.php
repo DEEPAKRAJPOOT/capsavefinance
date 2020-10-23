@@ -160,7 +160,7 @@
     @endcan
     @endif
 
-    @can('anchor_nach_list', 'users_nach_list')
+    @can('backend_nach_list', 'users_nach_list')
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu6" aria-expanded="false"
             aria-controls="collapseExample">
@@ -170,9 +170,14 @@
         </a>
         <div class="collapse" id="layoutsSubmenu6" style="">
             <ul class="nav flex-column sub-menu">
-                @can('anchor_nach_list')
+                @can('backend_nach_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('backend_nach_list') }}">Register Request</a>
+                </li>
+                @endcan
+                @can('users_nach_list')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('nach_repayment_list') }}">Nach Repayment</a>
                 </li>
                 @endcan
                 @can('users_nach_list')

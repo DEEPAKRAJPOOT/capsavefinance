@@ -2502,7 +2502,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     public function getUserNACH($whereCondition){
-        return UserNach::where($whereCondition);
+        return UserNach::where($whereCondition)->get();
     }
 
     public static function  createNachStatusLog($nachId, $status_id)
@@ -2519,12 +2519,19 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return  NachStatusLog::create($arr);  
     }
 
-    public function getNachUserList($where = [])
+    public function getNachUserList($roleType = false)
     {
-        return User::with('lms_user')
-                ->where($where)
-                ->whereHas('lms_user')
-                ->get();
+        $query =  User::with('lms_user', 'roles');
+        
+        if($roleType == 1) {
+            $data = $query->whereHas('lms_user')->get();
+        } else {
+            $data = $query->whereHas('roles', function($query) use ($roleType) {
+                        $query->where('role_type', $roleType);
+                    })->get();
+
+        }
+        return $data ?? null;
     }
     
     /**

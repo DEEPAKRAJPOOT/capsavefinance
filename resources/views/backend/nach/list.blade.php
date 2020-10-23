@@ -24,6 +24,7 @@
                                     <table id="backendUserNachList" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">
+                                                <th>User Type</th>
                                                 <th>Name</th>
                                                 <th>Bank Name</th>
                                                 <th>Start Date</th>

@@ -9,6 +9,7 @@
                      <div class="card">
                         @php
                             $users_nach_id = isset($nachDetail) ? $nachDetail['users_nach_id'] : null;
+                            $anchor_id = $anchor_id ?? null;
                         @endphp
                         <div class="card">
                                 <form id='nach_form' method="post" action="{{route('backend_save_nach_detail', ['acc_id' => $acc_id, 'user_id' => $user_id, 'anchor_id' => $anchor_id, 'users_nach_id' => $users_nach_id])}}">

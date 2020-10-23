@@ -7321,7 +7321,8 @@ class DataRenderer implements DataProviderInterface
                        2 => 'PDF_UPLOADED',
                        3 => 'SENT_TO_APPROVAL',
                        4 => 'ACTIVE',
-                       5 => 'FAILED'
+                       5 => 'FAILED',
+                       6 => 'ClOSED'
                     ];
                     $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
                     return $status ? $status : 'NA' ;
@@ -7384,7 +7385,8 @@ class DataRenderer implements DataProviderInterface
                        2 => 'PDF_UPLOADED',
                        3 => 'SENT_TO_APPROVAL',
                        4 => 'ACTIVE',
-                       5 => 'FAILED'
+                       5 => 'FAILED',
+                       6 => 'ClOSED'
                     ];
                     $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
                     return $status ? $status : 'NA' ;
@@ -7419,6 +7421,11 @@ class DataRenderer implements DataProviderInterface
             ->rawColumns(['status', 'action'])
 
             ->editColumn(
+                'user_type', 
+                function ($nachData) {
+                    return ($nachData->user_type == 1) ? 'Customer' : 'Anchor' ;
+            }) 
+            ->editColumn(
                 'customer_name', 
                 function ($nachData) {
                     return $nachData->user->f_name.' '.$nachData->user->l_name;
@@ -7447,7 +7454,8 @@ class DataRenderer implements DataProviderInterface
                        2 => 'PDF_UPLOADED',
                        3 => 'SENT_TO_APPROVAL',
                        4 => 'ACTIVE',
-                       5 => 'FAILED'
+                       5 => 'FAILED',
+                       6 => 'ClOSED'
                     ];
                     $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
                     return $status ? $status : 'NA' ;
@@ -7463,17 +7471,49 @@ class DataRenderer implements DataProviderInterface
                 function ($nachData) {
                     $action= '';
                     if ($nachData->nach_status < 2 ) {
-                        $action .= '<a class="btn btn-action-btn btn-sm" title="Edit NACH Detail" href ="'.route('anchor_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-edit"></i></a>';
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Edit NACH Detail" href ="'.route('backend_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-edit"></i></a>';
                     }
                     if ($nachData->nach_status == 4 && empty($nachData->child_nach)) {
-                        $action .= '<a class="btn btn-action-btn btn-sm" title="Modify or Cancel" href ="'.route('anchor_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-arrow-right"></i></a>';
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Modify or Cancel" href ="'.route('backend_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-arrow-right"></i></a>';
                     }
                     if ($nachData->nach_status < 3 ) {
-                        $action .= '<a class="btn btn-action-btn btn-sm" title="Preview PDF" href ="'.route('anchor_nach_detail_preview', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-eye"></i></a>';
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Preview PDF" href ="'.route('backend_nach_detail_preview', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-eye"></i></a>';
                     }
                     return $action;
                 }
             )
+           ->make(true);
+   }
+
+   public function getNachRepaymentList(Request $request, $data) {
+       return DataTables::of($data)
+            ->rawColumns(['id', 'action'])
+            ->editColumn(
+                'id',
+                function ($nachData) {
+                    return '<input class="nach-request" type="checkbox" name="nachRequest[]" value="'.$nachData->users_nach_id.'">';
+                }
+            )
+            ->editColumn(
+                'customer_id', 
+                function ($nachData) {
+                    return $nachData->lms_user->customer_id;
+            })
+            ->editColumn(
+                'umr_no', 
+                function ($nachData) {
+                    return $nachData->umrn;
+            })
+            ->editColumn(
+                'nach_amount', 
+                function ($nachData) {
+                    return $nachData->amount;
+            })
+            ->editColumn(
+                'amount', 
+                function ($nachData) {
+                    return $nachData->outstandingAmt;
+            })
            ->make(true);
    }
    
