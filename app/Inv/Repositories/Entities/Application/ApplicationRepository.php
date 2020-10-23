@@ -2490,7 +2490,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     public function getUserNACH($whereCondition){
-        return UserNach::where($whereCondition);
+        return UserNach::where($whereCondition)->get();
     }
 
     public static function  createNachStatusLog($nachId, $status_id)

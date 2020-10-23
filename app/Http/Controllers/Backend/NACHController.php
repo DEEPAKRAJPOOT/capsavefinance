@@ -7,25 +7,33 @@ use Auth;
 use Session;
 use Helpers;
 use DateTime;
+use PHPExcel; 
 use PDF as DPDF;
 use Carbon\Carbon;
 use App\Libraries\Pdf;
+use PHPExcel_IOFactory;
 use App\Helpers\FileHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\DocumentRequest;
+use Illuminate\Support\Facades\Storage;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as AppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 
 class NACHController extends Controller {
 
+    use LmsTrait;
+
 	protected $appRepo;
 	protected $docRepo;
+    protected $lmsRepo;
 
-	public function __construct(AppRepoInterface $appRepo, InvDocumentRepoInterface $docRepo) {
+	public function __construct(AppRepoInterface $appRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
 		$this->appRepo  =  $appRepo;
 		$this->docRepo  =  $docRepo;
+        $this->lmsRepo = $lms_repo;
 		$this->middleware('auth');
 		// $this->middleware('checkBackendLeadAccess');
 	}
@@ -282,5 +290,143 @@ class NACHController extends Controller {
         } catch (\Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
+    }
+
+	public function repaymentList(Request $request) {
+		return view('backend.nach.repayment.list');
+	}
+
+	public function createNachRepaymentReq(Request $request)
+    {
+        try {
+
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            
+            $nachReqIds = $request->get('nachRequest');
+            $creatorId = Auth::user()->user_id;
+            
+            if(empty($nachReqIds)){
+                return redirect()->route('nach_repayment_list')->withErrors(trans('backend_messages.noSelectedInvoice'));
+            }
+
+            $allrecords = array_unique($nachReqIds);
+            $allrecords = array_map('intval', $allrecords);
+            $nachData = $this->lmsRepo->getUserNaches($allrecords);
+
+
+            foreach ($nachData as $nach) {
+        		 	$nach->outstanding_amt = $this->lmsRepo->getUnsettledTrans($nach->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding');
+        		 	if($nach->outstanding_amt > $nach->amount) {
+                    	return redirect()->route('nach_repayment_list')->withErrors(trans('backend_messages.noBankAccount'));
+        		 	}
+            }
+
+            $batchNo= _getRand(12);
+            $nachData = $nachData->toArray();
+
+            foreach ($nachData as $nach) {
+            		$refNo = _getRand(18);
+
+                    $exportData[$nach['user_id']]['user_id'] = $nach['user_id'];
+                    $exportData[$nach['user_id']]['Client_code'] = 'CAPSAVE';
+                    $exportData[$nach['user_id']]['Batch_Reference_Number'] = $batchNo ?? '';
+                    $exportData[$nach['user_id']]['Settlement_date'] = date('Y-m-d');
+                    $exportData[$nach['user_id']]['Amount'] = $nach['outstanding_amt'] ?? 0.00;
+                    $exportData[$nach['user_id']]['Customer_Transaction_ref_Number'] = $refNo ?? '';
+                    $exportData[$nach['user_id']]['UMRN'] = $nach['umrn'] ?? '';
+
+            }
+            $result = $this->export($exportData, 'ACH_Debit_Transaction_'.$batchNo);
+            $file['file_path'] = $result['file_path'] ?? '';
+            if ($file) {
+                $createBatchFileData = $this->createBatchFileData($file);
+                $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
+                if ($createBatchFile) {
+                    $createDisbursalBatch = $this->lmsRepo->createNachReqBatch($createBatchFile, $batchNo);
+                    $nachBatchId = $createDisbursalBatch->req_batch_id;
+                    foreach ($exportData as $key => $value) {
+                		$createNachReqData = $this->createNachReqData($value, $nachBatchId);
+                		$createNachReq = $this->lmsRepo->saveNachReq($createNachReqData);
+                    }
+                }
+            }
+
+            Session::flash('message',trans('backend_messages.disbursed'));
+            return redirect()->route('nach_repayment_list');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        } 
+    }
+
+	public function export($data, $filename = 'nach_demo') {
+        ob_start();
+        $sheet =  new PHPExcel();
+        $sheet->getProperties()
+                ->setCreator("Capsave")
+                ->setLastModifiedBy("Capsave")
+                ->setTitle("NACH Repayment Batch Request")
+                ->setSubject("NACH Repayment Batch Request")
+                ->setDescription("NACH Repayment Batch Request")
+                ->setKeywords("NACH Repayment Batch Request")
+                ->setCategory("NACH Repayment Batch Request");
+    
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'Client code')
+                ->setCellValue('B1', 'Batch Reference Number')
+                ->setCellValue('C1', 'Settlement date')
+                ->setCellValue('D1', 'Transaction Amount')
+                ->setCellValue('E1', 'Customer Transaction ref Number')
+                ->setCellValue('F1', 'UMRN');
+        $rows = 2;
+
+        foreach($data as $rowData){
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A' . $rows, $rowData['Client_Code'] ?? 'XYZ')
+                ->setCellValue('B' . $rows, $rowData['Batch_Reference_Number'] ?? '')
+                ->setCellValue('C' . $rows, $rowData['Settlement_date'] ?? '')
+                ->setCellValue('D' . $rows, $rowData['Amount'] ?? '')
+                ->setCellValue('E' . $rows, $rowData['Customer_Transaction_ref_Number'] ?? '')
+                ->setCellValue('F' . $rows, $rowData['UMRN'] ?? '');
+
+            $rows++;
+        }
+        // dd($sheet);
+
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        // header('Cache-Control: max-age=1');
+
+        // // If you're serving to IE over SSL, then the following may be needed
+        // header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        // header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        // header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        // header ('Pragma: public'); // HTTP/1.0
+        if (!Storage::exists('/public/docs/nachRequest')) {
+            Storage::makeDirectory('/public/docs/nachRequest');
+        }
+        $commonUrl = 'docs/nachRequest'.'/'.$filename.'.xlsx';
+        $filePath = storage_path('app/public/'.$commonUrl);
+        // $filePath = $storage_path.'/'.$filename.'.xlsx';
+        $fileUrl = Storage::url($commonUrl);
+
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->save($filePath);
+        $objWriter->save("php://output");
+        
+        // $objReader = PHPExcel_IOFactory::createReader($fileType); 
+        // $objPHPExcel = $objReader->load($fileName);
+        ob_end_flush();
+
+        return [ 'status' => 1,
+                'file_path' => $filePath,
+                'file_url' => $fileUrl,
+                'objWriter' => $objWriter
+                ];
     }
 }

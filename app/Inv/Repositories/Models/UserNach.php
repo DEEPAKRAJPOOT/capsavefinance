@@ -2,6 +2,7 @@
 
 namespace App\Inv\Repositories\Models;
 
+use Illuminate\Support\Facades\Auth;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
@@ -98,7 +99,7 @@ class UserNach extends BaseModel {
     {
         return $this->belongsTo('App\Inv\Repositories\Models\UserNach','users_nach_id','parent_users_nach_id');
     }
-    
+
     /**
      * Save Nach
      * 

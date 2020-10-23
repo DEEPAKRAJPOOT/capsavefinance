@@ -1257,4 +1257,9 @@ Route::group(
         'uses' => 'AjaxController@backendNachUserBankList'
         ]
     );
+
+    Route::post('lms-get-nach-repayment-list',[
+        'as' => 'lms_get_nach_repayment_list',
+        'uses' => 'AjaxController@lmsGetNachRepaymentList'
+    ]);
 });

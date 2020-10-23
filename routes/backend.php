@@ -1518,7 +1518,19 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('/nach_document-save', [
                 'as' => 'backend_nach_document_save',
                 'uses' => 'Backend\NACHController@saveNachDocument'
-            ]);                      
+            ]); 
+            Route::group(['prefix' => 'repayment'], function () {
+                
+                Route::get('list', [
+                    'as' => 'nach_repayment_list',
+                    'uses' => 'Backend\NACHController@repaymentList'
+                ]);
+                
+                Route::post('create-nach-repayment-req', [
+                    'as' => 'create_nach_repayment_req',
+                    'uses' => 'Backend\NACHController@createNachRepaymentReq'
+                ]);
+            });                     
         });
 
         Route::post('ckeditor/image_upload', 'CKEditorController@upload')->name('upload_ckeditor_image');

@@ -7484,5 +7484,37 @@ class DataRenderer implements DataProviderInterface
             )
            ->make(true);
    }
+
+   public function getNachRepaymentList(Request $request, $data) {
+       return DataTables::of($data)
+            ->rawColumns(['id', 'action'])
+            ->editColumn(
+                'id',
+                function ($nachData) {
+                    return '<input class="nach-request" type="checkbox" name="nachRequest[]" value="'.$nachData->users_nach_id.'">';
+                }
+            )
+            ->editColumn(
+                'customer_id', 
+                function ($nachData) {
+                    return $nachData->lms_user->customer_id;
+            })
+            ->editColumn(
+                'umr_no', 
+                function ($nachData) {
+                    return $nachData->umrn;
+            })
+            ->editColumn(
+                'nach_amount', 
+                function ($nachData) {
+                    return $nachData->amount;
+            })
+            ->editColumn(
+                'amount', 
+                function ($nachData) {
+                    return $nachData->outstandingAmt;
+            })
+           ->make(true);
+   }
    
 }

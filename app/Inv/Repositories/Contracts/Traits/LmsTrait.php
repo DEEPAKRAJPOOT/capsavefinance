@@ -1040,5 +1040,29 @@ trait LmsTrait
         $disbursalData['created_at'] = $curData;
         return $disbursalData;
     }
+    /**
+     * Prepare Nach Req Data
+     * 
+     * @param array $data
+     * @return mixed
+     */
+    protected function createNachReqData($data = [], $nachBatchId = false)
+    {
+        $reqData = [];
+        
+        $reqData['req_batch_id'] = $nachBatchId ?? null;
+        $reqData['user_id'] = $data['user_id'] ?? null;
+        $reqData['ref_no'] = $data['Batch_Reference_Number'] ?? null ;
+        $reqData['req_date'] = $data['Settlement_date'] ?? null;
+        $reqData['amount'] = $data['Amount'] ?? null;            
+        $reqData['status'] = 1;
+        $reqData['comment'] = '';
+
+        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                        
+        $reqData['created_by'] = Auth::user()->user_id;
+        $reqData['created_at'] = $curData;
+        return $reqData;
+    }
     
 }
