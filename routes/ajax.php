@@ -1267,5 +1267,9 @@ Route::group(
         'as' => 'lms_get_nach_repayment_trans_list',
         'uses' => 'AjaxController@lmsGetNachRepaymentTransList'
     ]);
+    Route::post('backend-ajax-nach-stb-list',[
+        'as' => 'backend_ajax_nach_stb_list',
+        'uses' => 'AjaxController@backendAjaxNachSTBList'
+    ]);
     
 });

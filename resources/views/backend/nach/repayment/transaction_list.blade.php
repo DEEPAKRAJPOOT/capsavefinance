@@ -41,9 +41,11 @@
 	                                        <thead>
                                                     <tr role="row">
                                                         <th>Customer ID</th>
+                                                        <th>Customer Ref No</th>
                                                         <th>UMR No</th>
-                                                        <th>NACH Max Amount</th>
                                                         <th>Outstanding Amount</th>
+                                                        <th>Status</th>
+                                                        <th>Request Date</th>
                                                     </tr>
 	                                        </thead>
 	                                        <tbody>
@@ -68,17 +70,17 @@
 <script>
 
     var messages = {
-        url: "{{ URL::route('lms_get_nach_repayment_trans_list') }}",
+        url: "{{ URL::route('backend_ajax_nach_stb_list') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
         status:"3",
         columns: [
             {data: 'customer_id'},
+            {data: 'ref_no'},
             {data: 'umr_no'},
-            {data: 'nach_amount'},
-            {data: 'amount'},                    
-            // {data: 'assignee'},
-            // {data: 'assignedBy'}
+            {data: 'outstanding_amount'},
+            {data: 'status'},
+            {data: 'req_date'}
         ]
     };
 </script>

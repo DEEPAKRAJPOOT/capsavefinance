@@ -7543,4 +7543,48 @@ class DataRenderer implements DataProviderInterface
            ->make(true);
    }
    
+   public function getNachRepaymentReq(Request $request, $data) {
+       return DataTables::of($data)
+            ->rawColumns(['status', 'action'])
+
+            ->editColumn(
+                'customer_id', 
+                function ($nachReq) {
+                    return $nachReq->lms_user->customer_id ?? '';
+            }) 
+            ->editColumn(
+                'ref_no', 
+                function ($nachReq) {
+                    return $nachReq->ref_no ?? '';
+            })  
+            ->editColumn(
+                'umr_no', 
+                function ($nachReq) {
+                    return $nachReq->user_nach->umrn ;
+            })
+            ->editColumn(
+                'outstanding_amount', 
+                function ($nachReq) {
+                    return ($nachReq->amount ?? '0.00') ;
+            })
+            ->editColumn(
+                'status', 
+                function ($nachReq) {
+
+                    $statusArray =  [    
+                       1 => 'Sent to Bank',
+                       2 => 'Done',
+                       3 => 'Failed'
+                    ];
+                    $status = '<label class="badge badge-'.($nachReq->status == 3 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachReq->status]).'&nbsp; &nbsp;</label>';
+                    return $status ? $status : 'NA' ;
+            })
+            ->editColumn(
+                'req_date', 
+                function ($nachReq) {
+                    return ($nachReq->req_date) ? date('d-m-Y',strtotime($nachReq->req_date)) : '---' ;
+            })
+           ->make(true);
+   }
+
 }

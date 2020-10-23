@@ -5005,4 +5005,12 @@ if ($err) {
         $nach = $nach->getData(true);
         return new JsonResponse($nach);
     }
+
+    public function backendAjaxNachSTBList(DataProviderInterface $dataProvider) {
+        $whereCondition = [];
+        $nachList = $this->lmsRepo->getNachRepaymentReq($whereCondition);
+        $nach = $dataProvider->getNachRepaymentReq($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
 }

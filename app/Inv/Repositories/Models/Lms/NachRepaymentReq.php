@@ -41,6 +41,7 @@ class NachRepaymentReq extends BaseModel {
      * @var array
      */
     protected $fillable = [ 
+        'users_nach_id',  
         'req_batch_id',  
         'user_id',  
         'ref_no',
@@ -56,6 +57,17 @@ class NachRepaymentReq extends BaseModel {
 
     public function user(){
         return $this->belongsTo('App\Inv\Repositories\Models\Payment','payment_id','payment_id');
+    }
+    
+    public function  lms_user()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\LmsUser','user_id','user_id');
+    }
+    
+    
+    public function  user_nach()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\UserNach','users_nach_id','users_nach_id');
     }
     
     /**
