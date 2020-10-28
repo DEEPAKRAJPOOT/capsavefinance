@@ -219,7 +219,7 @@ class Transactions extends BaseModel {
         }
         elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
             $inv = $this->invoiceDisbursed->invoice;
-            if($inv->program_offer->payment_frequency == 1 && $inv->program->interest_borne_by == '2'){
+            if($inv->program_offer->payment_frequency == 1 && $inv->program->interest_borne_by == '1'){
                 $from = Carbon::parse($this->invoiceDisbursed->disbursal->disburse_date)->format('Y-m-d');
             }else{
                 $from = Carbon::parse($this->trans_date)->format('Y-m-d');
