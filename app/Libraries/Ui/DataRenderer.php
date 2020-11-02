@@ -7324,7 +7324,11 @@ class DataRenderer implements DataProviderInterface
                        5 => 'FAILED',
                        6 => 'ClOSED'
                     ];
-                    $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
+                    if (strtotime(date("Y-m-d")) > strtotime($nachData->period_to)) {
+                        $status = '<label class="badge badge-danger current-status" style="margin-bottom: 13px">NACH Expired &nbsp; &nbsp;</label>';
+                    } else {
+                        $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
+                    }
                     return $status ? $status : 'NA' ;
             })
             ->editColumn(
@@ -7391,7 +7395,13 @@ class DataRenderer implements DataProviderInterface
                        5 => 'FAILED',
                        6 => 'ClOSED'
                     ];
-                    $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
+
+                    if (strtotime(date("Y-m-d")) > strtotime($nachData->period_to)) {
+                        $status = '<label class="badge badge-danger current-status" style="margin-bottom: 13px">NACH Expired &nbsp; &nbsp;</label>';
+                    } else {
+                        $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
+                    }
+                    
                     return $status ? $status : 'NA' ;
             })
             ->editColumn(
@@ -7464,7 +7474,12 @@ class DataRenderer implements DataProviderInterface
                        5 => 'FAILED',
                        6 => 'ClOSED'
                     ];
-                    $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
+                    if (strtotime(date("Y-m-d")) > strtotime($nachData->period_to)) {
+                        $status = '<label class="badge badge-danger current-status" style="margin-bottom: 13px">NACH Expired &nbsp; &nbsp;</label>';
+                    } else {
+                        $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
+                    }
+
                     return $status ? $status : 'NA' ;
             })
             ->editColumn(
@@ -7520,6 +7535,12 @@ class DataRenderer implements DataProviderInterface
                 'amount', 
                 function ($nachData) {
                     return $nachData->outstandingAmt;
+            })
+           ->filter(function ($query) use ($request) {
+                    $query->where('period_to', '>',date("Y-m-d"));
+                // $query->where(function ($query) use ($request) {
+                // });
+              
             })
            ->make(true);
    }
