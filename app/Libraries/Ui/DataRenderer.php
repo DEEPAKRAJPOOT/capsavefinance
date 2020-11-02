@@ -7560,7 +7560,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'umr_no', 
                 function ($nachReq) {
-                    return $nachReq->user_nach->umrn ;
+                    return $nachReq->user_nach ? $nachReq->user_nach->umrn : '' ;
             })
             ->editColumn(
                 'outstanding_amount', 
@@ -7571,12 +7571,17 @@ class DataRenderer implements DataProviderInterface
                 'status', 
                 function ($nachReq) {
 
-                    $statusArray =  [    
-                       1 => 'Sent to Bank',
-                       2 => 'Done',
-                       3 => 'Failed'
-                    ];
-                    $status = '<label class="badge badge-'.($nachReq->status == 3 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachReq->status]).'&nbsp; &nbsp;</label>';
+                    $statusArray =  [
+                        1 => 'New Request',
+                        2 => 'Deleted',
+                        3 => 'Pending',
+                        4 => 'Rejected',
+                        5 => 'Approved',
+                        6 => 'Refund Queue',
+                        7 => 'Sent to Bank',
+                        8 => 'Disbursed'
+                        ];
+                    $status = '<label class="badge badge-'.(($nachReq->status == 2) || ($nachReq->status == 4) ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachReq->status]).'&nbsp; &nbsp;</label>';
                     return $status ? $status : 'NA' ;
             })
             ->editColumn(

@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DocumentRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
@@ -461,19 +462,15 @@ class NACHController extends Controller {
     public function importNachTransResponse(Request $request)
     {
         try {
-            //dd('$request--', $request->files);
             $arrFileData = $request->files;
-//            dd('$arrFileData--', $arrFileData);
             $inputArr = [];
             $path = '';
             $userId = Auth::user()->user_id;
-//            dd('$request--', $request['doc_file']);
             if ($request['doc_file']) {
                 if (!Storage::exists('/public/nach/transaction/response')) {
                     Storage::makeDirectory('/public/nach/transaction/response');
                 }
                 $path = Storage::disk('public')->put('/nach/transaction/response', $request['doc_file'], null);
-//                dd('$path--', $path);
             }
             $uploadedFile = $request->file('doc_file');
             $destinationPath = storage_path() . '/app/public/nach/transaction/response';
@@ -492,12 +489,10 @@ class NACHController extends Controller {
                 
             }
             $fullFilePath  = $destinationPath . '/' . $fileName;
-//            dd('$fullFilePath', $fullFilePath);
             $header = [
                 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21
             ];
             $fileArrayData = $this->fileHelper->excelNcsv_to_array($fullFilePath, $header);
-//            dd('$fileArrayData--', $fileArrayData);
             if($fileArrayData['status'] != 'success'){
                 Session::flash('message', 'Please import correct format sheet,');
                 return redirect()->back();
@@ -508,27 +503,59 @@ class NACHController extends Controller {
                 return redirect()->back();                     
             }
             foreach ($rowData as $key => $value) {
-//                dd('$value--', $value);
                 $customerRefNo = trim($value[4]);
                 if (!empty($customerRefNo) && $customerRefNo != null) {
-//                        $nachReqStatus = '';
+                        $nachReqStatus = '';
                     if (trim($value[7]) == 'S') {
-                        $nachReqStatus = 2;
+                        $nachReqStatus = 8;
                     } elseif (trim($value[7]) == 'F') {
-                        $nachReqStatus = 3;
+                        $nachReqStatus = 4;
                     } 
                     $arrUpdateData = [
                         'status' => $nachReqStatus,
                     ];                           
                     $whereCondition[] = ['ref_no', '=',  $customerRefNo];
+                    $whereCondition[] = ['status', '!=',  $nachReqStatus];
                     $resUpdate = $this->lmsRepo->updateRepaymentReq($arrUpdateData, $whereCondition);
+                    
+                    $whereCond[] = ['ref_no', '=',  $customerRefNo];
+                    $nachList = $this->lmsRepo->getNachRepaymentReq($whereCond)->first();
+                    if ($nachList && $resUpdate != false) {
+                        $wherCond['user_id'] = $nachList['user_id'];
+                        $lmsData = $this->appRepo->getLmsUsers($wherCond)->first();
+                            $paymentData = [
+                            'user_id' => $nachList['user_id'],
+                            'biz_id' => null,
+                            'virtual_acc' => $lmsData ? $lmsData->virtual_acc_id : '',
+                            'action_type' => 1,
+                            'trans_type' => config('lms.TRANS_TYPE.REPAYMENT'),
+                            'parent_trans_id' => '',
+                            'amount' => trim($value[3]),
+                            'date_of_payment' => trim($value[2]),
+                            'gst' => '',
+                            'sgst_amt' => 0,
+                            'cgst_amt' => 0,
+                            'igst_amt' => 0,
+                            'payment_type' => 3,
+                            'utr_no' => trim($value[5]),
+                            'unr_no' => '',
+                            'cheque_no' => '',
+                            'tds_certificate_no' => '',
+                            'file_id' => '',
+                            'description' => $value[9] ? $value[9] : '',
+                            'is_settled' => 0,
+                            'is_manual' => '',
+                            'generated_by' => 1,
+                            'is_refundable' => 1
+                            ];
+                        $paymentId = Payment::insertPayments($paymentData);
+                    }
                 }
             }
             Session::flash('message',trans('Excel Data Imported successfully.'));
             Session::flash('operation_status', 1);
             return redirect()->route('nach_repayment_trans_list');
         } catch (\Exception $ex) {
-            dd('$ex--->', $ex);
             return Helpers::getExceptionMessage($ex);
         }
     }
