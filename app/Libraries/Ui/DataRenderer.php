@@ -7536,10 +7536,8 @@ class DataRenderer implements DataProviderInterface
                 function ($nachData) {
                     return $nachData->outstandingAmt;
             })
-           ->filter(function ($query) use ($request) {
-                    $query->where('period_to', '>',date("Y-m-d"));
-                // $query->where(function ($query) use ($request) {
-                // });
+           ->filter(function ($query) use ($data) {
+                
               
             })
            ->make(true);
