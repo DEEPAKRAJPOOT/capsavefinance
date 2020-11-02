@@ -1238,7 +1238,7 @@ Route::group(
 
     Route::post('anchor-ajax-user-nach-list',[
         'as' => 'anchor_ajax_user_nach_list',
-        'uses' => 'AjaxController@frontAjaxUserNachList'
+        'uses' => 'AjaxController@anchorAjaxUserNachList'
     ]);
 
     Route::post('backend-ajax-user-nach-list',[

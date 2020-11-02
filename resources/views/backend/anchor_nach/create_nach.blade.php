@@ -1,6 +1,6 @@
 @extends('layouts.popup_layout')
 @section('content')
-<form style="width: 100%" method="POST" action="{{ Route('anchor_add_nach_detail') }}" enctype="multipart/form-data" target="_top">
+<form style="width: 100%" method="POST" action="{{ Route('anchor_add_nach_detail') }}" enctype="multipart/form-data" target="_top"  id="submitForm">
     @csrf
     <div class="modal-body text-left">
         <div class="row">
@@ -21,4 +21,39 @@
     </div>
 </form>
  
+@endsection
+
+@section('jscript')
+
+<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+
+<script type="text/javascript"> 
+
+ $(document).ready(function () {
+  /////// jquery validate on submit button/////////////////////
+  $('#submitForm').validate({ // initialize the plugin
+      
+    rules: {
+      'bank_account_id': {
+        required: true,
+      }
+    },
+    messages: {
+      'bank_account_id': {
+        required: "Please select Bank",
+      }
+    }
+  });
+
+  $('#submitForm').validate();
+
+  $("#savedocument").click(function(){
+    if($('#submitForm').valid()){
+      $('form#submitForm').submit();
+      $("#savedocument").attr("disabled","disabled");
+    }  
+  });        
+});
+  </script>
 @endsection

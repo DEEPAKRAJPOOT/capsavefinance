@@ -3,6 +3,11 @@
 <form id="documentForm" style="width: 100%" method="POST" action="{{ Route('backend_nach_document_save', ['user_id' => request()->get('user_id'), 'users_nach_id' => request()->get('users_nach_id')]) }}" enctype="multipart/form-data" target="_top">       
     @csrf
     <div class="modal-body text-left">
+
+        <label for="nach_date">NACH Document
+            <span class="mandatory">*</span>
+                <small> ( Maximum file upload size : 20 MB. Allowed Formats : JPG,PNG,PDF )</small>
+        </label>
         <div class="custom-file upload-btn-cls mb-3 mt-2">
             <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file" >
             <label class="custom-file-label" for="customFile">Choose file</label>

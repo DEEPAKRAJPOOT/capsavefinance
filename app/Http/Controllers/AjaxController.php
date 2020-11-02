@@ -4944,6 +4944,14 @@ if ($err) {
     public function frontAjaxUserNachList(DataProviderInterface $dataProvider) {
         $whereCondition = ['user_id' => Auth::user()->user_id];
         $nachList = $this->application->getUserNACH($whereCondition);
+        $nach = $dataProvider->getUserNACH($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
+
+    public function anchorAjaxUserNachList(DataProviderInterface $dataProvider) {
+        $whereCondition = ['user_id' => Auth::user()->user_id];
+        $nachList = $this->application->getUserNACH($whereCondition);
         $nach = $dataProvider->getAnchorUserNACH($this->request, $nachList);
         $nach = $nach->getData(true);
         return new JsonResponse($nach);

@@ -316,5 +316,20 @@
         format: 'dd/mm/yyyy',
         autoclose: true,
         minView: 2, });
+    // $(document).ready(function () {
+    $( "#period_from_date" ).change(function() {
+        var dateString = $('#period_from_date').val();
+        var dateParts = dateString.split("/");
+        var date = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]); 
+        date.setDate(date.getDate());
+        $('#period_to_date').datetimepicker('setStartDate',  date);
+    });
+    $( "#period_to_date" ).change(function() {
+        var dateString = $('#period_from_date').val();
+        if (dateString == null || dateString == '') {
+            alert("please choose period from date.");
+            $('#period_to_date').val('');
+        } 
+    });
 </script>
 @endsection

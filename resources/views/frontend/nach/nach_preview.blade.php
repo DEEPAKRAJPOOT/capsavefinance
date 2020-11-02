@@ -17,5 +17,5 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('uploadNachDocument','Upload Nach Document', 'modal-md')!!}
+{!!Helpers::makeIframePopup('uploadNachDocument','Upload Nach Document ', 'modal-md')!!}
 @endsection
