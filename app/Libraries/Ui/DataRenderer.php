@@ -7413,6 +7413,10 @@ class DataRenderer implements DataProviderInterface
                     if ($nachData->nach_status < 3 ) {
                         $action .= '<a class="btn btn-action-btn btn-sm" title="Preview PDF" href ="'.route('anchor_nach_detail_preview', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-eye"></i></a>';
                     }
+
+                    if(($nachData->uploaded_file_id != 0)) {
+                       $action .=  '<a class="btn btn-action-btn btn-sm" title="download PDF" href="'.route('download_storage_file', ['file_id' => $nachData->uploaded_file_id ]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                    }
                     return $action;
                 }
             )
