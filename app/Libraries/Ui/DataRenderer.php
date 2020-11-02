@@ -7320,7 +7320,7 @@ class DataRenderer implements DataProviderInterface
                        1 => 'PENDING',
                        2 => 'PDF_UPLOADED',
                        3 => 'SENT_TO_APPROVAL',
-                       4 => 'ACTIVE',
+                       4 => 'NACH_ACTIVED',
                        5 => 'FAILED',
                        6 => 'ClOSED'
                     ];
@@ -7387,7 +7387,7 @@ class DataRenderer implements DataProviderInterface
                        1 => 'PENDING',
                        2 => 'PDF_UPLOADED',
                        3 => 'SENT_TO_APPROVAL',
-                       4 => 'ACTIVE',
+                       4 => 'NACH_ACTIVED',
                        5 => 'FAILED',
                        6 => 'ClOSED'
                     ];
@@ -7460,7 +7460,7 @@ class DataRenderer implements DataProviderInterface
                        1 => 'PENDING',
                        2 => 'PDF_UPLOADED',
                        3 => 'SENT_TO_APPROVAL',
-                       4 => 'ACTIVE',
+                       4 => 'NACH_ACTIVED',
                        5 => 'FAILED',
                        6 => 'ClOSED'
                     ];
