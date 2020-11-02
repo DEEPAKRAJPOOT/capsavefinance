@@ -8,10 +8,10 @@
                 <i class="fa fa-clipboard" aria-hidden="true"></i>
             </div>
             <div class="header-title">
-                <h3 class="mt-2">Nach List</h3>
+                <h3 class="mt-2">NACH List</h3>
                 <ol class="breadcrumb">
                     <li><a href="/admin/dashboard"><i class="fa fa-home"></i> Home</a></li>
-                    <li class="active"> Nach List</li>
+                    <li class="active"> NACH List</li>
                 </ol>
             </div>
             <div class="clearfix"></div>
@@ -46,7 +46,7 @@
                                                             <thead>
                                                                 <tr role="row">
                                                                     <th><input type="checkbox" id="chkAll"></th>
-                                                                    <th class="white-space">Nach Date</th>
+                                                                    <th class="white-space">NACH Date</th>
                                                                     <th>Sponsor Bank Code</th>
                                                                     <th>Account Name</th>
                                                                     <th>Account No.</th>
@@ -59,7 +59,7 @@
                                                                     <th class="white-space">Period To</th>
                                                                     <th>Debit Type</th>
                                                                     <th class="white-space">Created At</th> 
-                                                                    <th>Nach Uploaded</th> 
+                                                                    <th>NACH Uploaded</th> 
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -81,7 +81,7 @@
     </div>
 </div>
 </div>
-{!!Helpers::makeIframePopup('importNachExcelResponse','Upload Nach Document', 'modal-md')!!}
+{!!Helpers::makeIframePopup('importNachExcelResponse','Upload NACH Document', 'modal-md')!!}
 @endsection
 @section('jscript')
 <script>

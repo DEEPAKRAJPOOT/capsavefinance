@@ -144,7 +144,7 @@
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu6" aria-expanded="false"
             aria-controls="collapseExample">
             <i class="fa fa-bank" aria-hidden="true"></i>
-            <span class="menu-title">Manage Nach</span>
+            <span class="menu-title">Manage NACH</span>
             <i class="fa fa-angle-right" aria-hidden="true"></i>
         </a>
         <div class="collapse" id="layoutsSubmenu6" style="">
@@ -165,7 +165,7 @@
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu6" aria-expanded="false"
             aria-controls="collapseExample">
             <i class="fa fa-bank" aria-hidden="true"></i>
-            <span class="menu-title">Manage Nach</span>
+            <span class="menu-title">Manage NACH</span>
             <i class="fa fa-angle-right" aria-hidden="true"></i>
         </a>
         <div class="collapse" id="layoutsSubmenu6" style="">
@@ -177,12 +177,12 @@
                 @endcan
                 @can('users_nach_list')
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('users_nach_list') }}">Manage Nach List</a>
+                    <a class="nav-link" href="{{ route('users_nach_list') }}">Manage NACH List</a>
                 </li>
                 @endcan
                 @can('users_nach_list')
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('nach_repayment_list') }}">Nach Repayment</a>
+                    <a class="nav-link" href="{{ route('nach_repayment_list') }}">NACH Repayment</a>
                 </li>
                 @endcan
             </ul>

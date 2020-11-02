@@ -47,5 +47,5 @@ return [
     'existing_email' => 'This email is already exists',
     'register_different_anchor' => 'You are already exist with another anchor, if you register, you will also associate with this anchor, use the old credentials to login.',
     'basic_saved_successfully' => 'Registration is done successfully, Please verify the OTP',
-    'nach_updated' => 'Nach data successfully updated',
+    'nach_updated' => 'NACH data successfully updated',
 ];

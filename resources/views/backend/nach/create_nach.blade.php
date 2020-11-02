@@ -7,9 +7,9 @@
 
 			<div class="col-12">
 			   <div class="form-group">
-				  <label for="bank">Select Nach User Type</label>
+				  <label for="bank">Select NACH User Type</label>
 				  <select class="form-control" name="role_type" id="role_type">
-					 	<option selected diabled value=''>Select Nach User Type</option>
+					 	<option selected diabled value=''>Select NACH User Type</option>
 						<option value="1"> User</option>
 						<option value="3"> Anchor</option>
 				  </select>

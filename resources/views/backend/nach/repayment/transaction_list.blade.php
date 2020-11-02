@@ -8,10 +8,10 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Nach Repayment </h3>
+            <h3>Manage NACH Repayment </h3>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li class="active">Manage Nach Repayment</li>
+                <li class="active">Manage NACH Repayment</li>
             </ol>
         </div>
     </section>
@@ -63,7 +63,7 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('importNachTransResponse','Upload Nach Transaction Document', 'modal-md')!!}
+{!!Helpers::makeIframePopup('importNachTransResponse','Upload NACH Transaction Document', 'modal-md')!!}
 @endsection
 
 @section('jscript')

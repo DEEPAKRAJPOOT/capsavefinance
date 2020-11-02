@@ -54,7 +54,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="nach_date">Nach Date
+                                                <label for="nach_date">NACH Date
                                                     <span class="mandatory">*</span>
                                                 </label>
                                                 {!! Form::text('nach_date', 

@@ -8,11 +8,11 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Nach Repayment </h3>
+            <h3>Manage NACH Repayment </h3>
             <small>(Pending Request)</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li class="active">Manage Nach Repayment</li>
+                <li class="active">Manage NACH Repayment</li>
             </ol>
         </div>
     </section>
