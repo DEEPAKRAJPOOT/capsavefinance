@@ -56,7 +56,7 @@ try {
                 replaceAlert('Please select atleast one checked', 'error');
                 return false;
             }
-            if (confirm('Are you sure, You want to select it.'))
+            if (confirm('Are you sure, you want to export the selected record(s).'))
             {  
                 $("#excelExportForm").submit();
             } else {
