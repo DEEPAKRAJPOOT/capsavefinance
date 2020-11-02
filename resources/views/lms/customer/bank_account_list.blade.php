@@ -81,9 +81,6 @@
                                                                                         if (Helpers::checkPermission('download_bank_detail')) {
                                                                                             $act .= '<a href="' . route('download_bank_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '" class="btn btn-action-btn btn-sm" target="_blank" title="Download Upload File"><i class="fa fa-download"></i></a>';
 											}
-                                                                                        if ($account->is_default == 1) {
-                                                                                            $act .= '<a href="' . route('add_nach_detail', ['bank_account_id' => $account->bank_account_id, 'user_id' => request()->get('user_id')]) . '" class="btn btn-success btn-sm" title="Add Nach">Add Nach</a>';
-                                                                                        }
 											@endphp
 											<td>{!! $act !!}</td>
 										</tr>
