@@ -55,7 +55,7 @@ $messages = session()->get('message', false);
             messages: {
                 'doc_file': {
                     required: "Please select file",
-                    extension:"Please select jpg, png, pdf type format only.",
+                    extension:"Only xls is allowed.",
                     filesize:"maximum size for upload 20 MB.",
                 }
             }
