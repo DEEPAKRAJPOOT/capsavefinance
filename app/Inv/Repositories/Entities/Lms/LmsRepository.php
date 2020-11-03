@@ -1720,5 +1720,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getNachRepaymentReq($whereCondition){
         return NachRepaymentReq::where($whereCondition)->get();
     }
-
+    
+	public static function getNACHUnsettledTrans($userId, $where = []){
+		return Transactions::getNACHUnsettledTrans($userId, $where);
+	}
 }

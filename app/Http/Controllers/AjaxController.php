@@ -4996,7 +4996,8 @@ if ($err) {
         $whereCondition = ['is_active' => 1, 'nach_status' => 4];
         $nachList = $this->application->getUserNACH($whereCondition);
         foreach ($nachList as $key => $value) {
-            $value->outstandingAmt = number_format($this->lmsRepo->getUnsettledTrans($value->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding'),2);
+            $value->outstandingAmt = number_format($this->lmsRepo->getNACHUnsettledTrans($value->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding'),2);
+
             if ($value->outstandingAmt == 0.00) {
                 $nachList->forget($key);
             }
