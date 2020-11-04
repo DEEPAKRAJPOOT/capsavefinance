@@ -46,7 +46,7 @@ class NachBatch extends BaseModel {
 	protected $fillable = [
 		'batch_id',
 		'req_file_id',
-                'res_file_id',
+        'res_file_id',
 		'status',
 		'created_at',
 		'created_by',

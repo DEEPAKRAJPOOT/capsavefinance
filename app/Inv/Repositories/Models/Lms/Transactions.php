@@ -1269,10 +1269,15 @@ class Transactions extends BaseModel {
       return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions', 'invoice_disbursed_id', 'invoice_disbursed_id')->where($where)->first();
     }
 
+    public function nachTansReq() {
+      return $this->hasOne('App\Inv\Repositories\Models\Lms\NachTransReq', 'trans_id', 'trans_id')->whereIn('status', [1,2]);
+    }
+
     public static function getNACHUnsettledTrans($userId, $where = []) {
         $query = self::whereNull('parent_trans_id')
                 ->whereNull('payment_id')
-                ->where('user_id',$userId);
+                ->where('user_id',$userId)
+                ->doesntHave('nachTansReq');
         if(!empty($where['trans_type_not_in'])){
             $query = $query->whereNotIn('trans_type',$where['trans_type_not_in']); 
         }

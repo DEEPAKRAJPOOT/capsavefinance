@@ -321,18 +321,28 @@ class NACHController extends Controller {
 
 
             foreach ($nachData as $nach) {
-        		 	$nach->outstanding_amt = $this->lmsRepo->getUnsettledTrans($nach->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding');
-        		 	if($nach->outstanding_amt > $nach->amount) {
-                    	return redirect()->route('nach_repayment_list')->withErrors(trans('backend_messages.noBankAccount'));
-        		 	}
+    		 	$nach->outstanding_amt = $this->lmsRepo->getUnsettledTrans($nach->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding');
+
+	            $nach->transactions = [];
+	            $transAr = [];
+	            foreach ($this->lmsRepo->getNACHUnsettledTrans($nach->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ]) as $key1 => $value1) {
+	                $transArray['trans_id'] = $value1->trans_id;
+	                $transArray['amount'] = $value1->outstanding;
+	                array_push($transAr, $transArray);
+
+	            }
+	            $nach->transactions = $transAr;
+    		 	if($nach->outstanding_amt > $nach->amount) {
+                	return redirect()->route('nach_repayment_list')->withErrors(trans('backend_messages.noBankAccount'));
+    		 	}
             }
 
             $batchNo= _getRand(12);
             $nachData = $nachData->toArray();
-
             foreach ($nachData as $nach) {
             		$refNo = _getRand(18);
 
+                    $exportData[$nach['user_id']]['users_nach_id'] = $nach['users_nach_id'];
                     $exportData[$nach['user_id']]['user_id'] = $nach['user_id'];
                     $exportData[$nach['user_id']]['Client_code'] = 'CAPSAVE';
                     $exportData[$nach['user_id']]['Batch_Reference_Number'] = $batchNo ?? '';
@@ -340,10 +350,13 @@ class NACHController extends Controller {
                     $exportData[$nach['user_id']]['Amount'] = $nach['outstanding_amt'] ?? 0.00;
                     $exportData[$nach['user_id']]['Customer_Transaction_ref_Number'] = $refNo ?? '';
                     $exportData[$nach['user_id']]['UMRN'] = $nach['umrn'] ?? '';
+                    $exportData[$nach['user_id']]['transactions'] = $nach['transactions'] ?? '';
 
             }
+
             $result = $this->export($exportData, 'ACH_Debit_Transaction_'.$batchNo);
             $file['file_path'] = $result['file_path'] ?? '';
+
             if ($file) {
                 $createBatchFileData = $this->createBatchFileData($file);
                 $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
@@ -353,6 +366,12 @@ class NACHController extends Controller {
                     foreach ($exportData as $key => $value) {
                 		$createNachReqData = $this->createNachReqData($value, $nachBatchId);
                 		$createNachReq = $this->lmsRepo->saveNachReq($createNachReqData);
+                		$nachReqId = $createNachReq->nach_repayment_req_id;
+                		foreach ($value['transactions'] as $key2 => $trans) {
+                			$createNachTransData = $this->createNachTransData($trans, $nachReqId);
+                			$createNachTrans = $this->lmsRepo->saveNachTrans($createNachTransData);
+
+                		}
                     }
                 }
             }
@@ -507,9 +526,11 @@ class NACHController extends Controller {
                 if (!empty($customerRefNo) && $customerRefNo != null) {
                         $nachReqStatus = '';
                     if (trim($value[7]) == 'S') {
-                        $nachReqStatus = 8;
+                        $nachReqStatus = 2;
+                        $nachTransStatus = 2;
                     } elseif (trim($value[7]) == 'F') {
-                        $nachReqStatus = 4;
+                        $nachReqStatus = 3;
+                        $nachTransStatus = 3;
                     } 
                     $arrUpdateData = [
                         'status' => $nachReqStatus,
@@ -517,6 +538,8 @@ class NACHController extends Controller {
                     $whereCondition[] = ['ref_no', '=',  $customerRefNo];
                     $whereCondition[] = ['status', '!=',  $nachReqStatus];
                     $resUpdate = $this->lmsRepo->updateRepaymentReq($arrUpdateData, $whereCondition);
+                    $nachRepaymentReq = $this->lmsRepo->getNachRepaymentReqFirst(['ref_no' => $customerRefNo]);
+                    $updateNachTrans = $this->lmsRepo->updateNachTransReq(['status' => $nachTransStatus], ['nach_repayment_req_id' => $nachRepaymentReq->nach_repayment_req_id]);
                     
                     $whereCond[] = ['ref_no', '=',  $customerRefNo];
                     $nachList = $this->lmsRepo->getNachRepaymentReq($whereCond)->first();

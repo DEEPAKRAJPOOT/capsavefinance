@@ -68,6 +68,7 @@ use App\Inv\Repositories\Models\Lms\DisbursalApiLog;
 use App\Inv\Repositories\Models\UserNach;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReq;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReqBatch;
+use App\Inv\Repositories\Models\Lms\NachTransReq;
 
 /**
  * Lms Repository class
@@ -1724,4 +1725,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function getNACHUnsettledTrans($userId, $where = []){
 		return Transactions::getNACHUnsettledTrans($userId, $where);
 	}
+
+    public static function saveNachTrans($data)
+    {
+        return NachTransReq::create($data);
+    }
+
+    public function getNachRepaymentReqFirst($whereCondition){
+        return NachRepaymentReq::where($whereCondition)->first();
+    }
+    public function updateNachTransReq($attr, $whereCond){
+        return NachTransReq::updateNachTransReq($attr, $whereCond);
+    }
 }
