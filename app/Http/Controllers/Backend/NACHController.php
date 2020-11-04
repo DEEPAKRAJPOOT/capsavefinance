@@ -514,12 +514,12 @@ class NACHController extends Controller {
             $fileArrayData = $this->fileHelper->excelNcsv_to_array($fullFilePath, $header);
             if($fileArrayData['status'] != 'success'){
                 Session::flash('message', 'Please import correct format sheet,');
-                return redirect()->back();
+                return redirect()->route('nach_repayment_trans_list');
             }
             $rowData = $fileArrayData['data'];
             if (empty($rowData)) {
                 Session::flash('message', 'File does not contain any record');
-                return redirect()->back();                     
+                return redirect()->route('nach_repayment_trans_list');
             }
             foreach ($rowData as $key => $value) {
                 $customerRefNo = trim($value[4]);
