@@ -1719,7 +1719,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     }
 
     public function getNachRepaymentReq($whereCondition){
-        return NachRepaymentReq::where($whereCondition)->get();
+        return NachRepaymentReq::where($whereCondition)->orderBy('created_at', 'DESC')->get();
     }
     
 	public static function getNACHUnsettledTrans($userId, $where = []){
