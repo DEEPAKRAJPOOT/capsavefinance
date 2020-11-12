@@ -268,6 +268,11 @@ class ApportionmentController extends Controller
                     'trans_id' => $resp->trans_id,
                     'comment' => $comment,
                 ];
+                if($TransDetail->disburse->invoice_disbursed_id){
+                    $invoiceList = array();
+                    array_push($invoiceList, $TransDetail->disburse->invoice_disbursed_id);
+                    $this->updateInvoiceRepaymentFlag($invoiceList);
+                }
                 $comment = $this->lmsRepo->saveTxnComment($commentData);
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Amount successfully waived off']);
             }
