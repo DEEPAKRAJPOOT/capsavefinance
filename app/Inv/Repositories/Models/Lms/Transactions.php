@@ -213,15 +213,24 @@ class Transactions extends BaseModel {
     }
 
     public function getDpdAttribute(){
-        $to = Carbon::createFromFormat('Y-m-d H:i:s', Helpers::getSysStartDate());
+        $to = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
         if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-            $from = Carbon::createFromFormat('Y-m-d', $this->invoiceDisbursed->payment_due_date);
+            $from = Carbon::parse($this->invoiceDisbursed->payment_due_date)->format('Y-m-d');
         }
         elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-            $from = Carbon::createFromFormat('Y-m-d H:i:s', $this->trans_date);
+            $inv = $this->invoiceDisbursed->invoice;
+            if($inv->program_offer->payment_frequency == 1 && $inv->program->interest_borne_by == '1'){
+                $from = Carbon::parse($this->invoiceDisbursed->disbursal->disburse_date)->format('Y-m-d');
+            }else{
+                $from = Carbon::parse($this->trans_date)->format('Y-m-d');
+            }
+        }
+        $number_days = 0;
+        if(strtotime($to) > strtotime($from)){
+            $number_days = (strtotime($to) - strtotime($from)) / (60 * 60 * 24);
         }
 
-        return $to->diffInDays($from);
+        return $number_days;
     }
 
     public function getWaiveOffAmount(){

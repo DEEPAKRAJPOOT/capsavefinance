@@ -896,6 +896,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             
             $invoiceIds = $request->get('invoice_ids');
             $disburseDate = $request->get('disburse_date');
+            $fundDate = date("Y-m-d h:i:s", strtotime(str_replace('/','-',$disburseDate)));
             $creatorId = Auth::user()->user_id;
             $validator = Validator::make($request->all(), [
                'disburse_date' => 'required'
@@ -1058,6 +1059,12 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $tenor = $this->calculateTenorDays($invoice);
                         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
+
+                        $banchMarkDateFlag = $invoice['program_offer']['benchmark_date'];
+                        if ($banchMarkDateFlag == 1) {
+                            $tenor = $this->calDiffDays($invoice['invoice_due_date'], $fundDate);
+                        }
+
                         $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
                         if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {

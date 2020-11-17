@@ -148,6 +148,7 @@ trait LmsTrait
         */
         $disbursalData = [];
         $disburseDate = $invoice['disburse_date'];
+        $fundDate = date("Y-m-d h:i:s", strtotime(str_replace('/','-',$disburseDate)));
         if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$disburseDate)) {
             $str_to_time_date = strtotime($disburseDate);
         } else {
@@ -164,11 +165,17 @@ trait LmsTrait
           $actIntRate = $interestRate;
         }
         $interest= 0;
+        $diffDays= 0;
         $margin= 0;
 
         $tenor = $this->calculateTenorDays($invoice);
         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
+        $banchMarkDateFlag = $invoice['program_offer']['benchmark_date'];
+        
+        if ($banchMarkDateFlag == 1) {
+            $tenor = $this->calDiffDays($invoice['invoice_due_date'], $fundDate);
+        }
         $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
         if($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
@@ -1041,4 +1048,13 @@ trait LmsTrait
         return $disbursalData;
     }
     
+    protected function calDiffDays($pastDate = '', $nowDate = '')
+    {
+        $now = strtotime((isset($pastDate)) ? $pastDate : ''); // or your date as well
+        $your_date = strtotime((isset($nowDate)) ? $nowDate : '');
+        $datediff = abs($now - $your_date);
+
+        $days = round($datediff / (60 * 60 * 24));
+        return $days;        
+    }
 }
