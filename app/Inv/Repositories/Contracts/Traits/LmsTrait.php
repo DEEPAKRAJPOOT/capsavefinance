@@ -171,6 +171,8 @@ trait LmsTrait
         $tenor = $this->calculateTenorDays($invoice);
         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
+        $banchMarkDateFlag = $invoice['program_offer']['benchmark_date'];
+        
         if ($banchMarkDateFlag == 1) {
             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $fundDate);
         }
