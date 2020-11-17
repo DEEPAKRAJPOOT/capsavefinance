@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
        // \App\Console\Commands\ScoutPayoutDetail::class,
       //  \App\Console\Commands\PaypalScoutRefund::class,
         //:ScoutRefund
+        \App\Console\Commands\TallyPosting::class,
         \App\Console\Commands\InterestAccrual::class,
         \App\Console\Commands\RenewApplications::class,
     ];
@@ -39,6 +40,9 @@ class Kernel extends ConsoleKernel
 
         if(config('lms.LMS_STATUS') && !\Helpers::checkEodProcess() && \Helpers::getInterestAccrualCronStatus() && !\Helpers::getEodProcessCronStatus()){
             $schedule->command('lms:eodprocess')->timezone(config('common.timezone'))->dailyAt('23:50')->emailOutputOnFailure(config('lms.EOD_FAILURE_MAIL'));
+        }
+        if (config('lms.LMS_STATUS')) {
+            $schedule->command('finance:tallyposting')->timezone(config('common.timezone'))->weeklyOn(4, '20:00');
         }
     }
 
