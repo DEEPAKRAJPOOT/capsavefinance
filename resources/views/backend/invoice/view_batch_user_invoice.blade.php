@@ -27,22 +27,18 @@
                                
 							<td> {{ $invoice->invoice_no }}</td>
 							<td> {{ ($invoice->invoice_disbursed->disbursal) ? \Helpers::convertDateTimeFormat($invoice->invoice_disbursed->disbursal->disburse_date, 'Y-m-d h:i:s', 'Y-m-d') : ''}}</td>
-							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount) }} </td>
+							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount, 2) }} </td>
 							<td> </i>{{ $margin }} %</td>
-							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$margin)/100)) }} </td>
+							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$margin)/100), 2) }} </td>
 							<td><i class="fa fa-inr"></i>
 							@php
 								$interest = 0;
-								$now = strtotime($invoice->invoice_due_date); // or your date as well
-								$your_date = strtotime($invoice->invoice_date);
-								$datediff = abs($now - $your_date);
-								$tenor = round($datediff / (60 * 60 * 24));
-								$fundedAmount = $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$invoice->program_offer->margin)/100);
-				    			$tInterest = $fundedAmount * $tenor * (($invoice->program_offer->interest_rate/100) / config('common.DCC')) ;     
+								$tenor = $invoice->invoice_disbursed->tenor_days;
+								$fundedAmount = $invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$invoice->invoice_disbursed->margin)/100);
 				    			if( ($invoice->program->interest_borne_by == 2) && ($invoice->program_offer->payment_frequency == 1 || empty($invoice->program_offer->payment_frequency)) ) {
-						            $interest = $tInterest;
+						            $interest = $invoice->invoice_disbursed->total_interest;
 						        }           
-								$disburseAmount = round($fundedAmount - $interest, 5);
+								$disburseAmount = round($fundedAmount - $interest, 2);
 							@endphp
 
 							{{ number_format($disburseAmount, 2) }}
