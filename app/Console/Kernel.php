@@ -51,7 +51,8 @@ class Kernel extends ConsoleKernel
             $schedule->command('lms:dailyReport')->timezone(config('common.timezone'))->dailyAt('20:00');
         }
     
-
+    }
+    
     /**
      * Register the commands for the application.
      *
