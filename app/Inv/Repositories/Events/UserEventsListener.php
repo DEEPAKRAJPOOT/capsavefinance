@@ -956,7 +956,7 @@ class UserEventsListener extends BaseEvent
         Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
         function ($message) use ($data) {
             if(!empty($data['attachment'])){
-                $att_name = 'Overdue Report';
+                $att_name = 'Overdue Report.xlsx';
                 $message->attach($data['attachment'] ,['as' => $att_name]);
             }
             
@@ -984,7 +984,7 @@ class UserEventsListener extends BaseEvent
         Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
         function ($message) use ($data) {
             if(!empty($data['attachment'])){
-                $att_name = 'Disbursal Report';
+                $att_name = 'Disbursal Report.xlsx';
                 $message->attach($data['attachment'] ,['as' => $att_name]);
             }
             

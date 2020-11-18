@@ -555,13 +555,13 @@ class ReportController extends Controller
        return $pdf->download('tdsReport.pdf');        
     }
 
-    public function maturityReport(Request $request){
+    public function maturityReport(){
         dump('start....');
-
-        $anchor_id = $request->anchor_id ?? null;
-        $emailTo = ['vilesh.modi@rentalpha.com', 'gaurav.agarwal@zuron.in', 'varun.dudani@zuron.in'];
-        //$emailTo = ['sudesh.kumar@prolitus.com'];
-        
+        $anchor_id = null;
+        $emailTo =  config('lms.DAILY_REPORT_MAIL');
+        if(empty($emailTo)){
+            dd('DAILY_REPORT_MAIL is missing');
+        }
         $anchorList = Anchor::where('is_active','1');
         if($anchor_id){
             $anchorList->where('anchor_id',$anchor_id);
