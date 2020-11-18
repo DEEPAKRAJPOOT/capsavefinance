@@ -616,7 +616,7 @@ class ApiController
       'status' => 'failure',
       'message' => 'Request method not allowed to execute the script.',
     );
-    if (strpos(php_sapi_name(), 'cli') !== false) {
+    if (strpos(php_sapi_name(), 'cli') < 0) {
         $response['sapi'] = php_sapi_name();
         return $this->_setResponse($response, 405);
     }
