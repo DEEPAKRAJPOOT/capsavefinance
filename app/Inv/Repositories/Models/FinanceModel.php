@@ -280,7 +280,7 @@ class FinanceModel extends BaseModel
           $filename = $emailData['att_name'] ?? 'attachment.pdf';
           $fileparts = pathinfo($filename);
           $filename = $fileparts['filename'];
-          $ext = $fileparts['extension'];
+          $ext = $fileparts['extension'] ?? null;
           if(!Storage::exists('public/user/docs/attachments')) {
                 Storage::makeDirectory('public/user/docs/attachments', 0777, true);
           }

@@ -861,6 +861,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'pdf_invoice_realisation_url',
                         'uses' => 'Backend\ReportController@pdfInvoiceRealisation',
                     ]);
+
+                    Route::get('/test', [
+                        'as' => 'test',
+                        'uses' => 'Backend\ReportController@maturityReport',
+                    ]);
                 }
             });
 

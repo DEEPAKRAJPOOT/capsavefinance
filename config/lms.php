@@ -8,6 +8,7 @@
 */
 
 return [
+    'DAILY_REPORT_MAIL' => (env('DAILY_REPORT_MAIL'))?explode(',', env('DAILY_REPORT_MAIL')):[],
     'EOD_FAILURE_MAIL' => explode(',',env('EOD_FAILURE_MAIL','')),
     'LMS_STATUS' => env('LMS_STATUS', 0),
     'NPA_DAYS' => env('NPA_DAYS', 90),

@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers\Backend;
 use Auth;
-use Session;
 use Helpers;
+use Session;
 use PHPExcel;
-use PHPExcel_IOFactory;
-use PHPExcel_Style_Fill;
-use PHPExcel_Cell_DataType;
-use PHPExcel_Style_Alignment;
 use PDF as DPDF;
 use Carbon\Carbon;
+use App\Events\Event;
+use PHPExcel_IOFactory;
+use PHPExcel_Style_Fill;
+use App\Helpers\FileHelper;
+use PHPExcel_Cell_DataType;
 use Illuminate\Http\Request;
+use PHPExcel_Style_Alignment;
 use App\Http\Controllers\Controller;
-use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
+use App\Inv\Repositories\Models\Anchor;
+use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Contracts\ReportInterface;
-use App\Helpers\FileHelper;
+use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 
 
 class ReportController extends Controller
@@ -492,7 +495,7 @@ class ReportController extends Controller
     * @param Request $request
     * @return type
     */
-   public function tdsReport(Request $request) {
+    public function tdsReport(Request $request) {
         try {
             return view('reports.tds');
         } catch (Exception $ex) {
@@ -550,5 +553,422 @@ class ReportController extends Controller
        $pdfArr = ['pdfArr' => $tdsArr, 'filter' => $condArr];
        $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.tdsReport');
        return $pdf->download('tdsReport.pdf');        
+    }
+
+    public function maturityReport(){
+        dump('start....');
+        $anchor_id = null;
+        $emailTo =  config('lms.DAILY_REPORT_MAIL');
+        if(empty($emailTo)){
+            dd('DAILY_REPORT_MAIL is missing');
+        }
+        $anchorList = Anchor::where('is_active','1');
+        if($anchor_id){
+            $anchorList->where('anchor_id',$anchor_id);
+        }
+        $anchorList = $anchorList->get();
+        
+        $sendMail = false;
+        $data = $this->reportsRepo->getMaturityReport([],$sendMail);
+        if($sendMail){
+            $filePath = $this->downloadMaturityReport($data);
+            $emailData['email'] = $emailTo;
+            $emailData['name'] = 'Sudesh Kumar';
+            $emailData['body'] = 'PFA';
+            $emailData['attachment'] = $filePath;
+            $emailData['subject'] ="Maturity Report";
+            \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
+            
+            foreach($anchorList as $anchor){
+                $sendMail = false;
+                $data = $this->reportsRepo->getMaturityReport(['anchor_id'=>$anchor->anchor_id],$sendMail);
+                if($sendMail && $anchor->comp_email){
+                    $filePath = $this->downloadMaturityReport($data);
+                    //$emailData['email'] = $anchor->comp_email;
+                    $emailData['email'] = $emailTo;
+                    $emailData['name'] = $anchor->comp_name;
+                    $emailData['body'] = 'PFA';
+                    $emailData['attachment'] = $filePath;
+                    $emailData['subject'] ="Maturity Report (".$anchor->comp_name.")";
+                    \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
+                }
+            }
+        }
+
+        $sendMail = false;
+        $data = $this->reportsRepo->getUtilizationReport( [],$sendMail);
+        if($sendMail){
+            $filePath = $this->downloadUtilizationExcel($data);
+            //$emailData['email'] = $anchor->comp_email;
+            $emailData['email'] = $emailTo;
+            $emailData['name'] = 'Sudesh Kumar';
+            $emailData['body'] = 'PFA';
+            $emailData['attachment'] = $filePath;
+            $emailData['subject'] ="Utilization Report";
+            \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
+            
+            foreach($anchorList as $anchor){
+                $sendMail = false;
+                $data = $this->reportsRepo->getUtilizationReport( ['anchor_id'=>$anchor->anchor_id],$sendMail);
+                if($sendMail && $anchor->comp_email){
+                    $filePath = $this->downloadUtilizationExcel($data);
+                    //$emailData['email'] = $anchor->comp_email;
+                    $emailData['email'] = $emailTo;
+                    $emailData['name'] = $anchor->comp_name;
+                    $emailData['body'] = 'PFA';
+                    $emailData['attachment'] = $filePath;
+                    $emailData['subject'] ="Utilization Report (".$anchor->comp_name.")";
+                    \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
+                }
+            }
+        }        
+
+        $sendMail = false;
+        $data = $this->reportsRepo->getDisbursalReport([],$sendMail);
+        if($sendMail){
+            $filePath = $this->downloadDailyDisbursalReport($data);
+            //$emailData['email'] = $anchor->comp_email;
+            $emailData['email'] = $emailTo;
+            $emailData['name'] = 'Sudesh Kumar';
+            $emailData['body'] = 'PFA';
+            $emailData['attachment'] = $filePath;
+            $emailData['subject'] ="Disbursal Report";
+            \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
+            
+            foreach($anchorList as $anchor){
+                $sendMail = false;
+                $data = $this->reportsRepo->getDisbursalReport(['anchor_id'=>$anchor->anchor_id],$sendMail);
+                if($sendMail && $anchor->comp_email){
+                    $filePath = $this->downloadDailyDisbursalReport($data);
+                    //$emailData['email'] = $anchor->comp_email;
+                    $emailData['email'] = $emailTo;
+                    $emailData['name'] = $anchor->comp_name;
+                    $emailData['body'] = 'PFA';
+                    $emailData['attachment'] = $filePath;
+                    $emailData['subject'] ="Disbursal Report (".$anchor->comp_name.")";
+                    \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
+                }
+            }
+        }
+
+        $sendMail = false;
+        $data = $this->reportsRepo->getOverdueReport([],$sendMail);
+        if($sendMail){
+            $filePath = $this->downloadOverdueReport($data);
+            //$emailData['email'] = $anchor->comp_email;
+            $emailData['email'] = $emailTo;
+            $emailData['name'] = 'Sudesh Kumar';
+            $emailData['body'] = 'PFA';
+            $emailData['attachment'] = $filePath;
+            $emailData['subject'] ="Overdue Report";
+            \Event::dispatch("NOTIFY_OVERDUE_REPORT", serialize($emailData));
+        }
+        
+        $sendMail = false;
+        $data = $this->reportsRepo->getAccountDisbursalReport([],$sendMail);
+        if($sendMail){
+            $filePath = $this->downloadAccountDailyDisbursalReport($data);
+            //$emailData['email'] = $anchor->comp_email;
+            $emailData['email'] = $emailTo;
+            $emailData['name'] = 'Sudesh Kumar';
+            $emailData['body'] = 'PFA';
+            $emailData['attachment'] = $filePath;
+            $emailData['subject'] ="Disbursal Report";
+            \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
+        }
+        
+        dump('end....');
+    }
+
+    public function downloadMaturityReport($exceldata){
+        $rows = 5;
+        $sheet =  new PHPExcel();
+        $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, 'Customer Name')
+            ->setCellValue('B'.$rows, 'Loan Account #')
+            ->setCellValue('C'.$rows, 'Virtual Account #')
+            ->setCellValue('D'.$rows, 'Transction Date')
+            ->setCellValue('E'.$rows, 'Tranction #')
+            ->setCellValue('F'.$rows, 'Invoice #')
+            ->setCellValue('G'.$rows, 'Invoice Date')
+            ->setCellValue('H'.$rows, 'Invoice Amount')
+            ->setCellValue('I'.$rows, 'Margin Amount')
+            ->setCellValue('J'.$rows, 'Amount Disbrused')
+            ->setCellValue('K'.$rows, 'O/s Amount')
+            ->setCellValue('L'.$rows, 'O/s Days')
+            ->setCellValue('M'.$rows, 'Credit Period')
+            ->setCellValue('N'.$rows, 'Maturity Date (Due Date)')
+            ->setCellValue('O'.$rows, 'Maturity Amount')
+            ->setCellValue('P'.$rows, 'Over Due Days')
+            ->setCellValue('Q'.$rows, 'Overdue Amount')
+            ->setCellValue('R'.$rows, 'Remark while uploading Invoice');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':R'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $rows++;
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, $rowData['cust_name'])
+            ->setCellValue('B'.$rows, $rowData['loan_ac'])
+            ->setCellValue('C'.$rows, $rowData['virtual_ac'])
+            ->setCellValue('D'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
+            ->setCellValue('E'.$rows, $rowData['trans_no'])
+            ->setCellValue('F'.$rows, $rowData['invoice_no'])
+            ->setCellValue('G'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'))
+            ->setCellValue('H'.$rows, number_format($rowData['invoice_amt'],2))
+            ->setCellValue('I'.$rows, number_format($rowData['margin_amt'],2))
+            ->setCellValue('J'.$rows, number_format($rowData['disb_amt'],2))
+            ->setCellValue('K'.$rows, number_format($rowData['out_amt'],2))
+            ->setCellValue('L'.$rows, $rowData['out_days'])
+            ->setCellValue('M'.$rows, $rowData['tenor'])
+            ->setCellValue('N'.$rows, Carbon::parse($rowData['due_date'])->format('d-m-Y'))
+            ->setCellValue('O'.$rows, number_format($rowData['due_amt'],2))
+            ->setCellValue('P'.$rows, $rowData['od_days'])
+            ->setCellValue('Q'.$rows, number_format($rowData['od_amt'],2))
+            ->setCellValue('R'.$rows, $rowData['remark']); 
+            $rows++;
+        }
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        
+        $dirPath = 'public/report/temp/maturityReport/'.date('Ymd');
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
+        }
+        $storage_path = storage_path('app/'.$dirPath);
+        $filePath = $storage_path.'/Maturity Report'.time().'.xlsx';
+        $objWriter->save($filePath);
+        return $filePath;
+    }
+
+    public function downloadDailyDisbursalReport($exceldata){
+        $rows = 5;
+        $sheet =  new PHPExcel();
+        $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, 'Customer Name')
+            ->setCellValue('B'.$rows, 'Loan Account #')
+            ->setCellValue('C'.$rows, 'Transction Date')
+            ->setCellValue('D'.$rows, 'tranction #')
+            ->setCellValue('E'.$rows, 'Invoice #')
+            ->setCellValue('F'.$rows, 'Invoice Date')
+            ->setCellValue('G'.$rows, 'Invoice Amount')
+            ->setCellValue('H'.$rows, 'Margin Amount')
+            ->setCellValue('I'.$rows, 'Amount Disbrused')
+            ->setCellValue('J'.$rows, 'UTR')
+            ->setCellValue('K'.$rows, 'Remark while uploading Invoice');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $rows++;
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, $rowData['cust_name'])
+            ->setCellValue('B'.$rows, $rowData['loan_ac'])
+            ->setCellValue('C'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
+            ->setCellValue('D'.$rows, $rowData['trans_no'])
+            ->setCellValue('E'.$rows, $rowData['invoice_no'])
+            ->setCellValue('F'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'))
+            ->setCellValue('G'.$rows, number_format($rowData['invoice_amt'],2))
+            ->setCellValue('H'.$rows, number_format($rowData['margin_amt'],2))
+            ->setCellValue('I'.$rows, number_format($rowData['disb_amt'],2))
+            ->setCellValue('J'.$rows, $rowData['trans_utr'])
+            ->setCellValue('K'.$rows, $rowData['remark']);
+            $rows++;
+        }
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+
+        $dirPath = 'public/report/temp/dailyDisbursalReport/'.date('Ymd');
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
+        }
+        $storage_path = storage_path('app/'.$dirPath);
+        $filePath = $storage_path.'/Daily Disbursal Report'.time().'.xlsx';
+        $objWriter->save($filePath);
+        return $filePath;
+    }
+
+    public function downloadUtilizationExcel($exceldata) {
+    
+        $rows = 5;
+
+        $sheet =  new PHPExcel();
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, 'Anchor Name')
+            ->setCellValue('B'.$rows, 'Program Name')
+            ->setCellValue('C'.$rows, 'Sub Program Name')
+            ->setCellValue('D'.$rows, '# of Clients sanctioned')
+            ->setCellValue('E'.$rows, '# of Overdue Customers')
+            ->setCellValue('F'.$rows, 'Total Over Due Amount');
+            $sheet->getActiveSheet()->getStyle('A'.$rows.':F'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+            $rows++;
+
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A' . $rows, $rowData['anchor_name'])
+            ->setCellValue('B' . $rows, $rowData['prgm_name'])
+            ->setCellValue('C' . $rows, $rowData['sub_prgm_name'])
+            ->setCellValue('D' . $rows, $rowData['client_sanction'])
+            ->setCellValue('E' . $rows, $rowData['ttl_od_customer'])
+            ->setCellValue('F' . $rows, number_format($rowData['ttl_od_amt'],2)); 
+            $rows++;
+            $rows++;
+            if(!empty($rowData['disbursement'])){
+                foreach($rowData['disbursement'] as $disb){
+                    $rows++;
+                    $sheet->setActiveSheetIndex(0)
+                    ->setCellValue('A'.$rows, 'Client Name')
+                    ->setCellValue('B'.$rows, 'Loan #')
+                    ->setCellValue('C'.$rows, 'Virtual Account #')
+                    ->setCellValue('D'.$rows, 'Client Sanction Limit')
+                    ->setCellValue('E'.$rows, 'Limit Utilized Limit')
+                    ->setCellValue('F'.$rows, 'Available Limit')
+                    ->setCellValue('G'.$rows, 'Expiry Date')
+                    ->setCellValue('H'.$rows, 'Sales Person Name')
+                    ->setCellValue('I'.$rows, 'Sub Program Name');
+                    $sheet->getActiveSheet()->getStyle('A'.$rows.':I'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+                    $rows++;
+                    $sheet->setActiveSheetIndex(0)
+                    ->setCellValue('A'.$rows, $disb['client_name'])
+                    ->setCellValue('B'.$rows, $disb['loan_ac'])
+                    ->setCellValue('C'.$rows, $disb['virtual_ac'])
+                    ->setCellValue('D'.$rows, number_format($disb['client_sanction_limit'],2))
+                    ->setCellValue('E'.$rows, number_format($disb['limit_utilize'],2))
+                    ->setCellValue('F'.$rows, number_format($disb['limit_available'],2))
+                    ->setCellValue('G'.$rows, Carbon::parse($disb['end_date'])->format('d/m/Y') ?? NULL)
+                    ->setCellValue('H'.$rows, '')
+                    ->setCellValue('I'.$rows, $disb['sub_prgm_name']);
+                    $rows++;
+                    $rows++;
+                    if(!empty($disb['invoice'])){
+                        $sheet->setActiveSheetIndex(0)
+                        ->setCellValue('B'.$rows,'Invoice #')
+                        ->setCellValue('C'.$rows,'Invoice Date')
+                        ->setCellValue('D'.$rows,'Invoice Amount')
+                        ->setCellValue('E'.$rows,'Margin Amount')
+                        ->setCellValue('F'.$rows,'Amount Disbrused')
+                        ->setCellValue('G'.$rows,'Over Due Days')
+                        ->setCellValue('H'.$rows,'Over Due Amount');
+                        $sheet->getActiveSheet()->getStyle('A'.$rows.':H'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+                        $rows++;
+
+                        foreach($disb['invoice'] as $inv){
+                            $sheet->setActiveSheetIndex(0)
+                            ->setCellValue('B'.$rows,$inv['invoice_no'])
+                            ->setCellValue('C'.$rows,Carbon::parse($inv['invoice_date'])->format('d/m/Y') ?? NULL)
+                            ->setCellValue('D'.$rows,number_format($inv['invoice_amt'],2))
+                            ->setCellValue('E'.$rows,number_format($inv['margin_amt'],2))
+                            ->setCellValue('F'.$rows,number_format($inv['disb_amt'],2))
+                            ->setCellValue('G'.$rows,$inv['od_days'])
+                            ->setCellValue('H'.$rows,number_format($inv['od_amt'],2));
+                            $rows++;
+                        }
+                    }
+                }
+            }
+            $rows++;
+        }
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        
+        $dirPath = 'public/report/temp/utilizationReport/'.date('Ymd');
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
+        }
+        $storage_path = storage_path('app/'.$dirPath);
+        $filePath = $storage_path.'/Utilization Report'.time().'.xlsx';
+        $objWriter->save($filePath);
+        return $filePath;
+    }
+
+    public function downloadOverdueReport($exceldata){
+        $rows = 5;
+        $sheet =  new PHPExcel();
+        $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, 'Customer Name')
+            ->setCellValue('B'.$rows, 'Loan Account #')
+            ->setCellValue('C'.$rows, 'Virtual Account #')
+            ->setCellValue('D'.$rows, 'Sanction Limit')
+            ->setCellValue('E'.$rows, 'Limit Available')
+            ->setCellValue('F'.$rows, 'O/s Amount')
+            ->setCellValue('G'.$rows, 'Over Due Days')
+            ->setCellValue('H'.$rows, 'Overdue Amount')
+            ->setCellValue('I'.$rows, 'Sales Person Name');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':I'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $rows++;
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, $rowData['cust_name'])
+            ->setCellValue('B'.$rows, $rowData['loan_ac'])
+            ->setCellValue('C'.$rows, $rowData['virtual_ac'])
+            ->setCellValue('D'.$rows, number_format($rowData['client_sanction_limit'],2))
+            ->setCellValue('E'.$rows, number_format($rowData['limit_available'],2))
+            ->setCellValue('F'.$rows, number_format($rowData['out_amt'],2))
+            ->setCellValue('G'.$rows, $rowData['od_days'])
+            ->setCellValue('H'.$rows, number_format($rowData['od_amt'],2))
+            ->setCellValue('I'.$rows, $rowData['sales_person_name']);
+            $rows++;
+        }
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        
+        $dirPath = 'public/report/temp/overdueReport/'.date('Ymd');
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
+        }
+        $storage_path = storage_path('app/'.$dirPath);
+        $filePath = $storage_path.'/Overdue Report'.time().'.xlsx';
+        $objWriter->save($filePath);
+        return $filePath;
+    }
+
+    public function downloadAccountDailyDisbursalReport($exceldata){
+        $rows = 5;
+        $sheet =  new PHPExcel();
+        $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, 'Customer Name')
+            ->setCellValue('B'.$rows, 'Loan Account #')
+            ->setCellValue('C'.$rows, 'Transction Date')
+            ->setCellValue('D'.$rows, 'tranction #')
+            ->setCellValue('E'.$rows, 'Invoice #')
+            ->setCellValue('F'.$rows, 'Invoice Date')
+            ->setCellValue('G'.$rows, 'Invoice Amount')
+            ->setCellValue('H'.$rows, 'Margin Amount')
+            ->setCellValue('I'.$rows, 'Amount Disbrused')
+            ->setCellValue('J'.$rows, 'UTR')
+            ->setCellValue('K'.$rows, 'Remark while uploading Invoice')
+            ->setCellValue('L'.$rows, 'Beneficiary Credit Account No.')	
+            ->setCellValue('M'.$rows, 'Beneficiary IFSC Code')
+            ->setCellValue('N'.$rows, 'Status')	
+            ->setCellValue('O'.$rows, 'Status Description');
+
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':O'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $rows++;
+        foreach($exceldata as $rowData){
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A'.$rows, $rowData['cust_name'])
+            ->setCellValue('B'.$rows, $rowData['loan_ac'])
+            ->setCellValue('C'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
+            ->setCellValue('D'.$rows, $rowData['trans_no'])
+            ->setCellValue('E'.$rows, $rowData['invoice_no'])
+            ->setCellValue('F'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'))
+            ->setCellValue('G'.$rows, number_format($rowData['invoice_amt'],2))
+            ->setCellValue('H'.$rows, number_format($rowData['margin_amt'],2))
+            ->setCellValue('I'.$rows, number_format($rowData['disb_amt'],2))
+            ->setCellValue('J'.$rows, $rowData['trans_utr'])
+            ->setCellValue('K'.$rows, $rowData['remark'])
+            ->setCellValue('L'.$rows, $rowData['bank_ac'])
+            ->setCellValue('M'.$rows, $rowData['ifsc'])
+            ->setCellValue('N'.$rows, $rowData['status'])
+            ->setCellValue('O'.$rows, $rowData['status_des']);
+            $rows++;
+        }
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+
+        $dirPath = 'public/report/temp/accountDailyDisbursalReport/'.date('Ymd');
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
+        }
+        $storage_path = storage_path('app/'.$dirPath);
+        $filePath = $storage_path.'/Account Daily Disbursal Report'.time().'.xlsx';
+        $objWriter->save($filePath);
+        return $filePath;
     }
 }

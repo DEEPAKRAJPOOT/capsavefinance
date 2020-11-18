@@ -865,6 +865,147 @@ class UserEventsListener extends BaseEvent
             });
         }
     } 
+
+    public function onMaturityReport($mailData){
+        $data = unserialize($mailData); 
+        $this->func_name = __FUNCTION__;
+        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
+        function ($message) use ($data) {
+            if(!empty($data['attachment'])){
+                $att_name = 'Maturity Report.xlsx';
+                $message->attach($data['attachment'] ,['as' => $att_name]);
+            }
+            
+            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
+            ->to($data["email"], $data["name"])
+            ->subject($data['subject']);
+
+            $mailContent = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_to' => $data["email"],
+                'email_type' => $this->func_name,
+                'name' => $data['name'],
+                'subject' => $data['subject'],
+                'body' => $data['body'],
+                'att_name' => $att_name ?? NULL,
+                'attachment' => $data['attachment'] ?? NULL,
+            ];
+            FinanceModel::logEmail($mailContent);
+        }); 
+    }
+
+    public function onUtilizationReport($mailData){
+        $data = unserialize($mailData); 
+        $this->func_name = __FUNCTION__;
+        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
+        function ($message) use ($data) {
+            if(!empty($data['attachment'])){
+                $att_name = 'Utilization Report.xlsx';
+                $message->attach($data['attachment'] ,['as' => $att_name]);
+            }
+            
+            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
+            ->to($data["email"], $data["name"])
+            ->subject($data['subject']);
+
+            $mailContent = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_to' => $data["email"],
+                'email_type' => $this->func_name,
+                'name' => $data['name'],
+                'subject' => $data['subject'],
+                'body' => $data['body'],
+                'att_name' => $att_name ?? NULL,
+                'attachment' => $data['attachment'] ?? NULL,
+            ];
+            FinanceModel::logEmail($mailContent);
+        });
+    }
+
+    public function onDisbursalReport($mailData){
+        $data = unserialize($mailData); 
+        $this->func_name = __FUNCTION__;
+        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
+        function ($message) use ($data) {
+            if(!empty($data['attachment'])){
+                $att_name = 'Disbursal Report.xlsx';
+                $message->attach($data['attachment'] ,['as' => $att_name]);
+            }
+            
+            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
+            ->to($data["email"], $data["name"])
+            ->subject($data['subject']);
+
+            $mailContent = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_to' => $data["email"],
+                'email_type' => $this->func_name,
+                'name' => $data['name'],
+                'subject' => $data['subject'],
+                'body' => $data['body'],
+                'att_name' => $att_name ?? NULL,
+                'attachment' => $data['attachment'] ?? NULL,
+            ];
+            FinanceModel::logEmail($mailContent);
+        });
+    }
+
+    public function onOverdueReport($mailData){
+        $data = unserialize($mailData); 
+        $this->func_name = __FUNCTION__;
+        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
+        function ($message) use ($data) {
+            if(!empty($data['attachment'])){
+                $att_name = 'Overdue Report.xlsx';
+                $message->attach($data['attachment'] ,['as' => $att_name]);
+            }
+            
+            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
+            ->to($data["email"], $data["name"])
+            ->subject($data['subject']);
+
+            $mailContent = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_to' => $data["email"],
+                'email_type' => $this->func_name,
+                'name' => $data['name'],
+                'subject' => $data['subject'],
+                'body' => $data['body'],
+                'att_name' => $att_name ?? NULL,
+                'attachment' => $data['attachment'] ?? NULL,
+            ];
+            FinanceModel::logEmail($mailContent);
+        });
+    }
+
+    public function onAccountDisbursalReport($mailData){
+        $data = unserialize($mailData); 
+        $this->func_name = __FUNCTION__;
+        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
+        function ($message) use ($data) {
+            if(!empty($data['attachment'])){
+                $att_name = 'Disbursal Report.xlsx';
+                $message->attach($data['attachment'] ,['as' => $att_name]);
+            }
+            
+            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
+            ->to($data["email"], $data["name"])
+            ->subject($data['subject']);
+
+            $mailContent = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_to' => $data["email"],
+                'email_type' => $this->func_name,
+                'name' => $data['name'],
+                'subject' => $data['subject'],
+                'body' => $data['body'],
+                'att_name' => $att_name ?? NULL,
+                'attachment' => $data['attachment'] ?? NULL,
+            ];
+            FinanceModel::logEmail($mailContent);
+        });
+    }
+
     
     /**
      * Event subscribers
@@ -990,6 +1131,31 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'NOTIFY_EXISTING_USER', 
             'App\Inv\Repositories\Events\UserEventsListener@onRegdWithSamePan'
-        );          
+        );
+        
+        $events->listen(
+            'NOTIFY_MATURITY_REPORT', 
+            'App\Inv\Repositories\Events\UserEventsListener@onMaturityReport'
+        );
+        
+        $events->listen(
+            'NOTIFY_UTILIZATION_REPORT', 
+            'App\Inv\Repositories\Events\UserEventsListener@onUtilizationReport'
+        );
+
+        $events->listen(
+            'NOTIFY_DISBURSAL_REPORT', 
+            'App\Inv\Repositories\Events\UserEventsListener@onDisbursalReport'
+        );
+
+        $events->listen(
+            'NOTIFY_OVERDUE_REPORT', 
+            'App\Inv\Repositories\Events\UserEventsListener@onOverdueReport'
+        );
+
+        $events->listen(
+            'NOTIFY_ACCOUNT_DISBURSAL_REPORT', 
+            'App\Inv\Repositories\Events\UserEventsListener@onAccountDisbursalReport'
+        );
     }
 }
