@@ -27,9 +27,9 @@
                                
 							<td> {{ $invoice->invoice_no }}</td>
 							<td> {{ ($invoice->invoice_disbursed->disbursal) ? \Helpers::convertDateTimeFormat($invoice->invoice_disbursed->disbursal->disburse_date, 'Y-m-d h:i:s', 'Y-m-d') : ''}}</td>
-							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount) }} </td>
+							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount, 2) }} </td>
 							<td> </i>{{ $margin }} %</td>
-							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$margin)/100)) }} </td>
+							<td> <i class="fa fa-inr"></i> {{ number_format($invoice->invoice_approve_amount - (($invoice->invoice_approve_amount*$margin)/100), 2) }} </td>
 							<td><i class="fa fa-inr"></i>
 							@php
 								$interest = 0;
