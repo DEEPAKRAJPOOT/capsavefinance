@@ -98,7 +98,9 @@ class userInvoiceController extends Controller
             $allApplications  = $this->UserInvRepo->getUserAllApplicationsDetail($user_id);
             $encData = _encrypt("$user_id|$company_id|$biz_addr_id|$user_invoice_rel_id");
             $origin_of_recipient = $origin_of_recipient['data'];
-            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData, 'allApplications' => $allApplications, 'eodStartDate' => $eodStartDate]);
+            $latestUserInvoice = $this->UserInvRepo->getUserLastInvoiceNo($user_id);
+            // dd($latestUserInvoice,$user_id);
+            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData, 'allApplications' => $allApplications, 'eodStartDate' => $eodStartDate, 'lastUserInvoice' => $latestUserInvoice]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

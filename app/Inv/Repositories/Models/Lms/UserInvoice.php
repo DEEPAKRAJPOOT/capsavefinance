@@ -145,4 +145,9 @@ class UserInvoice extends BaseModel {
         $result = self::where('user_id' , $user_id);
         return $result ? : false;
     }
+
+    public static function getUserLastInvoiceNo($userId){
+        $result =  self::where('user_id', $userId)->latest()->first();
+        return $result ?? false;
+    }
 }
