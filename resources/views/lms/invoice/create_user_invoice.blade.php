@@ -87,9 +87,9 @@
                                                     </label>
                                                     <div>
                                                         <ul class="mh-line">
-                                                            <li>{{$origin_of_recipient['state_code']}}/ </li>
+                                                            <li>{{$origin_of_recipient['state_code'].'/'.$origin_of_recipient['financial_year']}}/</li>
                                                             <li><input type="text" id="invoice_user_code" class="form-control" tabindex="3" autocomplete="off" maxlength="3" readonly /></li>
-                                                            <li>/{{$origin_of_recipient['financial_year']}}/{{$origin_of_recipient['rand_4_no']}}</li>
+                                                            <li>/{{$origin_of_recipient['rand_4_no']}}</li>
                                                         </ul>
                                                     </div> 
                                                 </div>
@@ -224,8 +224,8 @@
        state_name: "{{ $origin_of_recipient['state_name'] }}",
        charge_prefix: "{{ $origin_of_recipient['charge_prefix'] }}",
        interest_prefix: "{{ $origin_of_recipient['interest_prefix'] }}",
-       invoice_state_code : "{{$origin_of_recipient['state_code']}}/",
-       invoice_fin : "/{{$origin_of_recipient['financial_year'] . '/' . $origin_of_recipient['rand_4_no']}}",
+       invoice_state_code : "{{$origin_of_recipient['state_code'] . '/' .$origin_of_recipient['financial_year']}}/",
+       invoice_fin : "/{{$origin_of_recipient['rand_4_no']}}",
    }
    $(document).ready(function(){
        $("#invoice_date").datetimepicker({

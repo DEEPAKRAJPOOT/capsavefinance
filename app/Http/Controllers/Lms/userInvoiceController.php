@@ -422,7 +422,6 @@ class userInvoiceController extends Controller
             $InvoiceNoArr = explode('/',$requestedData['invoice_no']);
             $InvoiceNoArr[3] = $invSerialNo;
             $newInvoiceNo = implode('/',$InvoiceNoArr);
-            // dd($lastInvSrNo,$requestedData['invoice_no'],$serielNo,$newInvoiceNo);
 
             $is_state_diffrent = ($userStateId != $companyStateId);
             $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
