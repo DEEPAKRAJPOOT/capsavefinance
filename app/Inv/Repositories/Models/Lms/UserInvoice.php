@@ -57,6 +57,7 @@ class UserInvoice extends BaseModel {
         'reference_no',
         'invoice_type',
         'invoice_no',
+        'inv_serial_no',
         'invoice_date',
         'invoice_state_code',
         'place_of_supply',
@@ -149,5 +150,9 @@ class UserInvoice extends BaseModel {
     public static function getUserLastInvoiceNo($userId){
         $result =  self::where('user_id', $userId)->latest()->first();
         return $result ?? false;
+    }
+
+    public static function getLastInvoiceSerialNo(){
+        return self::count();
     }
 }

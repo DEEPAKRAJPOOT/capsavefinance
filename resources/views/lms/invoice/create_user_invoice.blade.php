@@ -44,7 +44,7 @@
                   </div>
                   <div class="row">
                     <div class='col-md-12 mb-3'>
-                      <span class="label other">Last Invoice generated Number {{$lastUserInvoice->invoice_no}} created by {{\Helpers::getUserInfo((int)$lastUserInvoice->created_by)->f_name}} created on {{ $lastUserInvoice->created_at}}</span>
+                      <span class="label other">{{Session::get('lastInvMsg')}}</span>
                     </div>
                   </div>
                   <div class=" form-fields mb-4">

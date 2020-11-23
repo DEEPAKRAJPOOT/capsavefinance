@@ -215,4 +215,8 @@ return [
        'DISBURSED' =>'8',
        'FAILED_REFUND'=>'9',
     ],
+    'INVOICE_TYPE' => [
+        'I' => 'ZR',
+        'C' => 'NZ'
+    ],
 ];
