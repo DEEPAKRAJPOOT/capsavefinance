@@ -275,7 +275,9 @@ class AnchorNACHController extends Controller {
 			
             if ($userFile) {
 				$logData = $this->appRepo->createNachStatusLog($users_nach_id, config('lms.NACH_STATUS')['PDF_UPLOADED']);
+                $requestId = _getRand(14);
                 $nachData = [
+                	'request_id' => $requestId,
                 	'uploaded_file_id' =>  $userFile->file_id, 
                 	'nach_status' => config('lms.NACH_STATUS')['PDF_UPLOADED'], 
                 	'nach_status_log_id' => $logData->nach_status_log_id,
