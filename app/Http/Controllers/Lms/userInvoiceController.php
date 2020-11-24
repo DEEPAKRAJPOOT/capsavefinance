@@ -292,6 +292,12 @@ class userInvoiceController extends Controller
         $trans_ids = $request->get('trans_id');
         $trans_ids = $request->get('trans_id');
 
+        $lastInvSrNo = $this->UserInvRepo->getLastInvoiceSerialNo();
+        $invSerialNo = sprintf('%04d', ($lastInvSrNo + 1) ?? rand(0, 9999));
+        $InvoiceNoArr = explode('/',$invoice_no);
+        $InvoiceNoArr[3] = $invSerialNo;
+        $invoice_no = implode('/',$InvoiceNoArr);
+
         if (!in_array($invoice_type, ['I', 'C'])) {
            return response()->json(['status' => 0,'message' => "Invalid Invoice Type found."]); 
         }
