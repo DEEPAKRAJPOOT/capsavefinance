@@ -1107,7 +1107,7 @@ class CamController extends Controller
             'loanType' => 'SME Loan',
             'processingType' => 'STATEMENT',
             'facility' => 'NONE',
-            'sanctionLimitFixed' => 'FALSE',
+            'sanctionLimitFixed' => 'false',
             'acceptancePolicy' => 'atLeastOneTransactionInRange',
             'yearMonthFrom' => date('Y-m',strtotime($ranges['from'])),
             'yearMonthTo' => date('Y-m',strtotime($ranges['to'])),
