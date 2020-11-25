@@ -49,6 +49,7 @@ try {
                 "url": messages.backend_ajax_user_nach_list, // json datasource
                 "method": 'POST',
                 data: function (d) {
+                    d.nach_status = $('select[name=nach_status]').val();
                     d.search_keyword = $('input[name=search_keyword]').val();
                     d._token = messages.token;
                 },

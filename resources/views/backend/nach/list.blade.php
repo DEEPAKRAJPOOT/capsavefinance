@@ -8,14 +8,23 @@
 		<div class="card-body">
 			<div class="row">
 				
-				<div class="col-md-5">
-					<input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number">
+				{{--  <div class="col-md-4">
+					<input class="form-control form-control-sm"  name="search_keyword"  placeholder="Search by Anchor / business name, Invoice number">
+				</div>
+				!--}}
+				<div class="col-md-4">
+					<select class="form-control form-control-sm" name="nach_status">
+						<option value=""> Select Status</option>  
+						@foreach(config('lms.NACH_STATUS') as $key => $value)
+						<option value="{{ $value }}">{{ $key }} </option>
+						@endforeach
+					</select>
 				</div> 
 				<div class="col-md-1">
-					<button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
+					<button  type="button" id="searchbtn" class="btn  btn-success btn-sm float-right">Search</button>
 				</div>  
 					
-				<div class="col-md-5 text-right">
+				<div class="col-md-7 text-right">
 					<div class="btn-group btn-custom-group inline-action-btn">
 					   <button data-toggle="modal" data-target="#createNachFrame" data-url ="{{route('backend_create_nach') }}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-success btn-sm">Create NACH</button>
 					</div>

@@ -7504,6 +7504,13 @@ class DataRenderer implements DataProviderInterface
                     return $action;
                 }
             )
+           ->filter(function ($query) use ($request) {
+                if($request->get('nach_status') != '') {
+                    $nach_status = trim($request->get('nach_status'));
+                    $query->where('nach_status', $nach_status);
+                }
+              
+            })
            ->make(true);
    }
 
