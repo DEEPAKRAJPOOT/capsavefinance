@@ -371,7 +371,8 @@ class InvoiceController extends Controller {
             $banchMarkDateFlag = $value['invoice']['program_offer']['benchmark_date'];
 
             $updateInvoiceDisbursed = $this->lmsRepo->updateInvoiceDisbursed([
-                        'payment_due_date' => ($banchMarkDateFlag == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")) : date('Y-m-d', strtotime($value['invoice']['invoice_date']. "+ $tenor Days")),                        
+                        'payment_due_date' => date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")),                        
+                        // 'payment_due_date' => ($banchMarkDateFlag == 2) ? date('Y-m-d', strtotime(str_replace('/','-',$fundedDate). "+ $tenor Days")) : date('Y-m-d', strtotime($value['invoice']['invoice_date']. "+ $tenor Days")),                        
                         'status_id' => config('lms.DISBURSAL_STATUS')['DISBURSED'],
                         'int_accrual_start_dt' => $selectDate,
                         'updated_by' => Auth::user()->user_id,
