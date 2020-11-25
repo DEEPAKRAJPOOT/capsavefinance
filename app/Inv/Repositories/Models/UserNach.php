@@ -46,6 +46,8 @@ class UserNach extends BaseModel {
         'parent_users_nach_id',
         'user_type',
         'user_id',
+        'anchor_id',
+        'cust_ref_no',
         'bank_account_id',
         'umrn',
         'nach_date',
@@ -128,9 +130,9 @@ class UserNach extends BaseModel {
      * 
      * @return type mixed
      */
-    public static function getNach()
+    public static function getNach($whereCond = [])
     {
-        $res = self::select('*')->get();
+        $res = self::select('*')->whereBetween('nach_status', $whereCond)->get();
         return ($res ?: false);
     }
 

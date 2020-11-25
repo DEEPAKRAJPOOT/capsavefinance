@@ -87,8 +87,8 @@ class NachController extends Controller {
                     'CustName' => $nach->user->f_name ? $nach->user->f_name .' '. $nach->user->l_name : '',
                     'CustUtilityCd' => $nach->utility_code ? $nach->utility_code : '',
                     'DebtorName' => $nach->acc_name ? $nach->acc_name : '',
-                    'ConsumerRefNum' => $nach->lms_user ? $nach->lms_user->customer_id : '',
-                    'SchemeRefNum' => $nach->lms_user ? $nach->lms_user->customer_id : '',
+                    'ConsumerRefNum' => $nach->cust_ref_no ?? '',
+                    'SchemeRefNum' => $nach->cust_ref_no ?? '',
                     'PhoneNum' => '',
                     'MobileNum' => $nach->phone_no,
                     'Email' => $nach->email_id,
@@ -198,14 +198,11 @@ class NachController extends Controller {
                     }
                     $customer_id = trim($value[0]);
                     if (!empty($customer_id) && $customer_id != null) {
-                        $wherCond['customer_id'] = $customer_id;
-                        $lmsData = $this->appRepo->getLmsUsers($wherCond)->first();
-                        if ($lmsData){
                             $arrUpdatePre = [
                                 'nach_status' => config('lms.NACH_STATUS')['CLOSED']
                             ];
                             $whereCon = [];
-                            $whereCon[] = ['user_id', '=', $lmsData->user_id];
+                            $whereCon[] = ['cust_ref_no', '=', $customer_id];
                             $whereCon[] = ['nach_status', '>', config('lms.NACH_STATUS')['SENT_TO_APPROVAL']];
                             $resPreUp = $this->appRepo->updateNachByUserId($arrUpdatePre, $whereCon);
                             $arrUpdateData = [
@@ -215,10 +212,9 @@ class NachController extends Controller {
                                 'response_date' =>  !empty($value[20]) ? date('Y-m-d', strtotime($value[20])) : ''
                             ];
                             $whereCondition = [];
-                            $whereCondition[] = ['user_id', '=', $lmsData->user_id];
+                            $whereCondition[] = ['cust_ref_no', '=', $customer_id];
                             $whereCondition[] = ['nach_status', '=', config('lms.NACH_STATUS')['SENT_TO_APPROVAL']];
                             $resUpdate = $this->appRepo->updateNachByUserId($arrUpdateData, $whereCondition);
-                        }
                     }
                 }
             }

@@ -1683,8 +1683,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return ($response) ?? $response;
 	}
     
-    public function getAllNach(){
-        return UserNach::getNach();
+    public function getAllNach($whereCond = []){
+        return UserNach::getNach($whereCond);
     }
 
 	public function getUserNaches($nachIds)

@@ -4935,7 +4935,8 @@ if ($err) {
      * @return JsonResponse
      */
     public function getAllNach(DataProviderInterface $dataProvider) {
-        $nachList = $this->lmsRepo->getAllNach();
+        $whereCond = [2,3];
+        $nachList = $this->lmsRepo->getAllNach($whereCond);
         $nach = $dataProvider->getNach($this->request, $nachList);
         $nach = $nach->getData(true);
         return new JsonResponse($nach);
@@ -4981,8 +4982,15 @@ if ($err) {
 
     public function backendNachUserBankList(Request $request){
         $userId = $request->customer_id;
+        $roleType = $request->role_type;
         if ($userId) {
-            $BankList = $this->application->getUserBankNACH(['user_id' => $userId]);
+            if($roleType == 3) {
+                $userData = $this->userRepo->getCustomerDetail($userId);
+                $BankList = $this->application->getUserBankNACH(['anchor_id' => $userData->anchor_id]);
+            } else {
+                $BankList = $this->application->getUserBankNACH(['user_id' => $userId]);
+
+            }
         }
         if(!empty($BankList)){
             return response()->json(['status' => 1,'BankList' => $BankList]);

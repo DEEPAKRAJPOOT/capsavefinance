@@ -23,6 +23,7 @@ use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as AppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 
 class NACHController extends Controller {
 
@@ -31,12 +32,14 @@ class NACHController extends Controller {
 	protected $appRepo;
 	protected $docRepo;
     protected $lmsRepo;
+	protected $userRepo;
 
-	public function __construct(AppRepoInterface $appRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo, FileHelper $file_helper) {
+	public function __construct(AppRepoInterface $appRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo, InvUserRepoInterface $user_repo, FileHelper $file_helper) {
 		$this->appRepo  =  $appRepo;
 		$this->docRepo  =  $docRepo;
-                $this->lmsRepo = $lms_repo;
-                $this->fileHelper = $file_helper;
+        $this->lmsRepo = $lms_repo;
+        $this->fileHelper = $file_helper;
+		$this->userRepo = $user_repo;
 		$this->middleware('auth');
 		// $this->middleware('checkBackendLeadAccess');
 	}
@@ -70,6 +73,7 @@ class NACHController extends Controller {
 		try {
 			$acc_id = $request->get('bank_account_id');
 			$userId = $request->get('customer_id');
+			$roleType = $request->get('role_type');
 
 			$whereCondition = ['bank_account_id' => $acc_id, 'user_id' => $userId];
 			$nachDetail = $this->appRepo->getNachData($whereCondition);
@@ -78,6 +82,7 @@ class NACHController extends Controller {
 					->with([
 						'acc_id' => $acc_id, 
 						'user_id' => $userId, 
+						'role_type' => $roleType, 
 						'nachDetail' => $nachDetail
 					]);
 
@@ -139,10 +144,17 @@ class NACHController extends Controller {
 			} else if ($request->get('submit') == 'cancel'){
 				$status = 3;
 			}
+
+			if($roleType == 3) {
+				$userData = $this->userRepo->getCustomerDetail($user_id);
+			}
+
 			$nachData = [
 				'bank_account_id' => $acc_id ? $acc_id : '',
 				'user_id' => $user_id,
+				'anchor_id' => (isset($userData)) ? $userData->anchor_id : null ,
 				'user_type' => ($roleType == 3) ? 2 : 1,
+				'cust_ref_no' => ($roleType == 3) ? 'CAPANC000'.$userData->anchor_id : 'CAP000'.$user_id,
 				'acc_name' => $bankAccount['acc_name'] ? $bankAccount['acc_name'] : '',
 				'acc_no' => $bankAccount['acc_no'] ? $bankAccount['acc_no'] : '',
 				'ifsc_code' => $bankAccount['ifsc_code'] ? $bankAccount['ifsc_code'] : '',
@@ -166,6 +178,8 @@ class NACHController extends Controller {
 				'request_for' => $status,
 				'nach_status' => config('lms.NACH_STATUS')['PENDING'],
 			];
+
+			// dd($nachData);
 			if ($users_nach_id != null) {
 				$whereCondition = ['users_nach_id' => $users_nach_id];
 				$nachDetail = $this->appRepo->getNachData($whereCondition);

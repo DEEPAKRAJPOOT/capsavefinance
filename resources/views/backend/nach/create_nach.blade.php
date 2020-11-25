@@ -130,9 +130,10 @@ var messages = {
   	});
 
   	$(document).on('change','#customer_id',function(){
+  		var role_type =  $('#role_type').val();
 	  	var customer_id =  $(this).val(); 
 	  	$("#bank_account_id").empty();
-	  	var postData =  ({'customer_id':customer_id, '_token':messages.token});
+	  	var postData =  ({'role_type':role_type, 'customer_id':customer_id, '_token':messages.token});
 	   	jQuery.ajax({
 		url: messages.backend_ajax_nach_user_bank,
 				method: 'post',

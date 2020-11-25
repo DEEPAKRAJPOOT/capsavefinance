@@ -10,9 +10,12 @@
                         @php
                             $users_nach_id = isset($nachDetail) ? $nachDetail['users_nach_id'] : null;
                             $anchor_id = $anchor_id ?? null;
+                            if($nachDetail != false) {
+                                $role_type =  (($nachDetail->user_type == 2) ? 3 : 1);
+                            }
                         @endphp
                         <div class="card">
-                                <form id='nach_form' method="post" action="{{route('backend_save_nach_detail', ['acc_id' => $acc_id, 'user_id' => $user_id, 'anchor_id' => $anchor_id, 'users_nach_id' => $users_nach_id])}}">
+                                <form id='nach_form' method="post" action="{{route('backend_save_nach_detail', ['acc_id' => $acc_id, 'user_id' => $user_id, 'anchor_id' => $anchor_id, 'role_type' => $role_type, 'users_nach_id' => $users_nach_id])}}">
 				                @csrf
                                 <div class="card-body">
                                     <div class="row">
