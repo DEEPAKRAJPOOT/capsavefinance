@@ -140,6 +140,8 @@ class AnchorNACHController extends Controller {
 			$nachData = [
 				'bank_account_id' => $acc_id ? $acc_id : '',
 				'user_id' => $user_id,
+				'anchor_id' => $anchor_id ? $anchor_id : '',
+				'cust_ref_no' => $anchor_id ? 'CAPANC000'.$anchor_id : '',
 				'user_type' => 2,
 				'acc_name' => $bankAccount['acc_name'] ? $bankAccount['acc_name'] : '',
 				'acc_no' => $bankAccount['acc_no'] ? $bankAccount['acc_no'] : '',

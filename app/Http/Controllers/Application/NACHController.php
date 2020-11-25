@@ -132,6 +132,7 @@ class NACHController extends Controller {
 			}
 			$nachData = [
 				'bank_account_id' => $acc_id ? $acc_id : '',
+				'cust_ref_no' => $user_id ? 'CAP000'.$user_id : '',
 				'user_id' => $user_id,
 				'user_type' => 1,
 				'acc_name' => $bankAccount['acc_name'] ? $bankAccount['acc_name'] : '',
