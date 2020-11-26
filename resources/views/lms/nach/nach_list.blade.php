@@ -32,7 +32,7 @@
                                             null,
                                             [
                                             'class' => 'form-control',
-                                            'placeholder' => 'Search by App Id, Entity Name and Pan',
+                                            'placeholder' => 'Search by Email Id, Account Name and Account No.',
                                             'id'=>'by_name'
                                             ])
                                         !!}

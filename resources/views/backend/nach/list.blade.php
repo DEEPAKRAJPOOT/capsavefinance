@@ -14,7 +14,7 @@
                         null,
                         [
                         'class' => 'form-control',
-                        'placeholder' => 'Search by App Id, Entity Name and Pan',
+                        'placeholder' => 'Search by Name and Email',
                         'id'=>'by_name'
                         ])
                     !!}
