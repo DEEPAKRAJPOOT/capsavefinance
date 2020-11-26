@@ -8,7 +8,29 @@
         <div class="card-body">
             <div class="row">
 
-                <div class="col-md-12 text-right">
+                <div class="col-3 text-right">
+                    {!!
+                        Form::text('search_keyword',
+                        null,
+                        [
+                        'class' => 'form-control',
+                        'placeholder' => 'Search by App Id, Entity Name and Pan',
+                        'id'=>'by_name'
+                        ])
+                    !!}
+                </div>
+                <div class="col-md-2">
+
+                    {!!
+                        Form::select('is_assign',
+                        [''=>'Select', '1'=>'PENDING','2'=> 'PDF UPLOADED','3'=>'SENT TO APPROVAL','4'=>'NACH ACTIVED','5'=>'FAILED','6'=>'ClOSED'],
+                        null,
+                        array('id' => 'is_active',
+                        'class'=>'form-control'))
+                    !!}
+                </div>
+                <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
+                <div class="col-6 text-right">
                     <div class="btn-group btn-custom-group inline-action-btn">
                        <button data-toggle="modal" data-target="#createNachFrame" data-url ="{{route('backend_create_nach') }}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-success btn-sm">Create NACH</button>
                     </div>
@@ -26,6 +48,7 @@
                                             <tr role="row">
                                                 <th>User Type</th>
                                                 <th>Name</th>
+                                                <th>Email</th>
                                                 <th>Bank Name</th>
                                                 <th>Start Date</th>
                                                 <th>End Date</th>

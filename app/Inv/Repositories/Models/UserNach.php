@@ -130,7 +130,7 @@ class UserNach extends BaseModel {
      */
     public static function getNach()
     {
-        $res = self::select('*')->get();
+        $res = self::select('*');
         return ($res ?: false);
     }
 
