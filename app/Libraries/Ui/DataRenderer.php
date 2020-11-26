@@ -7279,7 +7279,15 @@ class DataRenderer implements DataProviderInterface
                    return '<a href="'.route('download_storage_file', ['file_id' => $nachData->uploaded_file_id ]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
                }
            }) 
-           
+           ->filter(function ($query) use ($request) {
+                    
+                if ($request->get('search_keyword') != '') {  
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('branch_name', 'like',"%$search_keyword%");
+                    });                        
+                }
+            })
            ->make(true);
    }
 
