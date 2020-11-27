@@ -87,7 +87,7 @@
                                                     </label>
                                                     <div>
                                                         <ul class="mh-line">
-                                                            <li>{{$origin_of_recipient['state_code'].'/'.$origin_of_recipient['financial_year']}}/</li>
+                                                            <li style="flex: 30%;">{{$origin_of_recipient['state_code'].'/'.$origin_of_recipient['financial_year']}}/</li>
                                                             <li><input type="text" id="invoice_user_code" class="form-control" tabindex="3" autocomplete="off" maxlength="3" readonly /></li>
                                                             <li>/{{$origin_of_recipient['rand_4_no']}}</li>
                                                         </ul>
