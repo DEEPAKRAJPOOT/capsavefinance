@@ -7279,7 +7279,16 @@ class DataRenderer implements DataProviderInterface
                    return '<a href="'.route('download_storage_file', ['file_id' => $nachData->uploaded_file_id ]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
                }
            }) 
-           
+           ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') { 
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('email_id', 'like',"%$search_keyword%");
+                        $query->orWhere('acc_name', 'like',"%$search_keyword%");
+                        $query->orWhere('acc_no', 'like',"%$search_keyword%");
+                    });                        
+                }
+            })
            ->make(true);
    }
 
@@ -7511,6 +7520,20 @@ class DataRenderer implements DataProviderInterface
                 }
               
             })
+            ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') { 
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('email_id', 'like',"%$search_keyword%");
+                        $query->orWhere('acc_name', 'like',"%$search_keyword%");
+                    });                        
+                }
+                if($request->get('nach_status') != '') {
+                    $nach_status = trim($request->get('nach_status'));
+                    $query->where('nach_status', $nach_status);
+                }
+            })
+
            ->make(true);
    }
 
@@ -7543,9 +7566,13 @@ class DataRenderer implements DataProviderInterface
                 function ($nachData) {
                     return $nachData->outstandingAmt;
             })
-           ->filter(function ($query) use ($data) {
-                
-              
+           ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') { 
+                    $query->whereHas('lms_user',function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('customer_id', 'like',"%$search_keyword%");
+                    });                        
+                }
             })
            ->make(true);
    }
@@ -7617,6 +7644,14 @@ class DataRenderer implements DataProviderInterface
                 function ($nachReq) {
                     return ($nachReq->req_date) ? date('d-m-Y',strtotime($nachReq->req_date)) : '---' ;
             })
+           ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') { 
+                    $query->whereHas('lms_user',function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('customer_id', 'like',"%$search_keyword%");
+                    });                        
+                }
+            })            
            ->make(true);
    }
 

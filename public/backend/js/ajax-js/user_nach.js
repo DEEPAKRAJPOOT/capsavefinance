@@ -1,5 +1,5 @@
 try {
-    var oTable2;
+    var oTable2, oTable;
     jQuery(document).ready(function ($) {   
         //User Listing code
         oTable = $('#anchorUserNachList').DataTable({
@@ -51,6 +51,7 @@ try {
                 data: function (d) {
                     d.nach_status = $('select[name=nach_status]').val();
                     d.search_keyword = $('input[name=search_keyword]').val();
+                    d.is_assign = $('select[name=is_assign]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -62,6 +63,7 @@ try {
             columns: [
                 {data: 'user_type'},
                 {data: 'customer_name'},
+                { data: 'email_id'},
                 {data: 'bank_name'},
                 {data: 'start_date'},
                 {data: 'end_date'},

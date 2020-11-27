@@ -12,6 +12,8 @@ try {
                 "url": messages.get_all_nach, // json datasource
                 "method": 'POST',
                 data: function (d) {
+                    d.search_keyword = $('input[name=search_keyword]').val();
+                    d.is_assign = $('select[name=is_assign]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling
@@ -41,7 +43,7 @@ try {
         });
 
         //Search
-        $('.searchbtn').on('click', function (e) {
+        $('#searchbtn').on('click', function (e) {
             oTable.draw();
         });
         

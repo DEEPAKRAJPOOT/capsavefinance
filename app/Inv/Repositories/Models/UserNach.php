@@ -132,7 +132,7 @@ class UserNach extends BaseModel {
      */
     public static function getNach($whereCond = [])
     {
-        $res = self::select('*')->whereBetween('nach_status', $whereCond)->get();
+        $res = self::select('*')->whereBetween('nach_status', $whereCond);
         return ($res ?: false);
     }
 

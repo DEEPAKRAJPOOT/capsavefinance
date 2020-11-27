@@ -8,27 +8,31 @@
 		<div class="card-body">
 			<div class="row">
 				
-				{{--  <div class="col-md-4">
-					<input class="form-control form-control-sm"  name="search_keyword"  placeholder="Search by Anchor / business name, Invoice number">
-				</div>
-				!--}}
-				<div class="col-md-4">
+				<div class="col-3 text-right">
+                    {!!
+                        Form::text('search_keyword',
+                        null,
+                        [
+                        'class' => 'form-control',
+                        'placeholder' => 'Search by Name and Email',
+                        'id'=>'by_name'
+                        ])
+                    !!}
+                </div>
+                <div class="col-md-2">
 					<select class="form-control form-control-sm" name="nach_status">
 						<option value=""> Select Status</option>  
 						@foreach(config('lms.NACH_STATUS') as $key => $value)
 						<option value="{{ $value }}">{{ $key }} </option>
 						@endforeach
 					</select>
-				</div> 
-				<div class="col-md-1">
-					<button  type="button" id="searchbtn" class="btn  btn-success btn-sm float-right">Search</button>
-				</div>  
-					
-				<div class="col-md-7 text-right">
-					<div class="btn-group btn-custom-group inline-action-btn">
-					   <button data-toggle="modal" data-target="#createNachFrame" data-url ="{{route('backend_create_nach') }}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-success btn-sm">Create NACH</button>
-					</div>
-			   </div>
+				</div>
+                <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
+                <div class="col-6 text-right">
+                    <div class="btn-group btn-custom-group inline-action-btn">
+                       <button data-toggle="modal" data-target="#createNachFrame" data-url ="{{route('backend_create_nach') }}" data-height="300px" data-width="100%" data-placement="top" class="btn btn-success btn-sm">Create NACH</button>
+                    </div>
+               </div>
 
 			</div>
 			<div class="row">
@@ -42,6 +46,7 @@
 											<tr role="row">
 												<th>User Type</th>
 												<th>Name</th>
+                                                <th>Email</th>
 												<th>Bank Name</th>
 												<th>Start Date</th>
 												<th>End Date</th>

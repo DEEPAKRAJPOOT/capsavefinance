@@ -20,34 +20,33 @@
 	<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
 		<div class="card">
 			<div class="card-body">
-				<div class="row">
-					<div class="col-md-4">
-						<select class="form-control form-control-sm" name="nach_status">
-							<option value=""> Select Status</option>  
-							@foreach(config('lms.NACH_STATUS') as $key => $value)
-							<option value="{{ $value }}">{{ $key }} </option>
-							@endforeach
-						</select>
-					</div> 
-					<div class="col-md-1">
-						<button  type="button" id="searchbtn" class="btn  btn-success btn-sm float-right">Search</button>
-					</div>
-				</div>
 				<div class="form-fields">
 					<div class="active" id="details">
 						<div class="form-sections">
 							<form id="excelExportForm" action="{{Route('nach_download_reports_sheet')}}" method="post">
 								@csrf
 								<div class="row">
-									<div class="col-md-8">
-									</div>
-									<div class="col-md-2">	          
-										<input type="button" id="exportExcel" name="Submmit" class="btn btn-primary btn-sm ml-2 btn-app filter-abs-btn" value="Export Excel">
-									</div>
-									<div class="col-md-2">   
-										<a data-toggle="modal" data-target="#importNachExcelResponse" data-url ="{{route('upload_nach_response') }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm ml-2 btn-app filter-abs-btn">Import Response Excel</a>
-									</div>
-								</div>
+                                    <div class="col-md-6">
+                                        {!!
+                                            Form::text('search_keyword',
+                                            null,
+                                            [
+                                            'class' => 'form-control',
+                                            'placeholder' => 'Search by Email Id, Account Name and Account No.',
+                                            'id'=>'by_name'
+                                            ])
+                                        !!}
+                                    </div>
+                                    <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
+                                    <div class="col-md-1">	          
+                                    </div>
+                                    <div class="col-md-2 pull-right">	          
+                                        <input type="button" id="exportExcel" name="Submmit" class="btn btn-primary btn-sm ml-2 btn-app filter-abs-btn" value="Export Excel">
+                                    </div>
+                                    <div class="col-md-2 pull-right">   
+                                        <a data-toggle="modal" data-target="#importNachExcelResponse" data-url ="{{route('upload_nach_response') }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm ml-2 btn-app filter-abs-btn">Import Response Excel</a>
+                                    </div>
+                                </div>
 								<div class="row">
 									<div class="col-12 dataTables_wrapper mt-2">
 										<div class="overflow">
