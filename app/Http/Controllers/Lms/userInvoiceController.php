@@ -100,14 +100,14 @@ class userInvoiceController extends Controller
             $origin_of_recipient = $origin_of_recipient['data'];
             $origin_of_recipient['charge_prefix'] = config('lms.INVOICE_TYPE.C');
             $origin_of_recipient['interest_prefix'] = config('lms.INVOICE_TYPE.I'); 
-            $latestUserInvoice = $this->UserInvRepo->getUserLastInvoiceNo($user_id);
+            $latestUserInvoice = $this->UserInvRepo->getUserLastInvoiceNo();
             if($latestUserInvoice){
                 $fname = \Helpers::getUserInfo((int)$latestUserInvoice->created_by)->f_name;
                 $lname = \Helpers::getUserInfo((int)$latestUserInvoice->created_by)->l_name;
                 $created_by = $fname.' '.$lname;
                 Session::flash('lastInvMsg','Last Invoice generated Number '.$latestUserInvoice->invoice_no .' created by '.$created_by.' created on '.$latestUserInvoice->created_at);
             }else{
-                Session::flash('lastInvMsg','Still Invoice not created.');
+                Session::flash('lastInvMsg','Still Invoice not created for any customer.');
             }
             return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData, 'allApplications' => $allApplications, 'eodStartDate' => $eodStartDate]);
         } catch (Exception $ex) {
