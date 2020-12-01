@@ -7481,7 +7481,9 @@ class DataRenderer implements DataProviderInterface
                        3 => 'SENT_TO_APPROVAL',
                        4 => 'NACH_ACTIVED',
                        5 => 'FAILED',
-                       6 => 'ClOSED'
+                       6 => 'ACK',
+                       7 => 'REJECT',
+                       8 => 'ClOSED'
                     ];
                     if (strtotime(date("Y-m-d")) > strtotime($nachData->period_to)) {
                         $status = '<label class="badge badge-danger current-status" style="margin-bottom: 13px">NACH Expired &nbsp; &nbsp;</label>';
