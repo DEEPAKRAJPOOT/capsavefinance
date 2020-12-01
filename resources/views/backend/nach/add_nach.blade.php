@@ -321,5 +321,17 @@
         format: 'dd/mm/yyyy',
         autoclose: true,
         minView: 2, });
+
+    $(document).ready(function () {
+        var date = new Date();
+        var date = $('#period_from_date').val();
+        // date.setDate(date.getDate());
+        $('#period_to_dateperiod_to_date').datetimepicker('setStartDate',  date);
+        // var date2 = new Date();
+        // date2.setDate(date2.getDate() + 7);
+        // $('#value_date').datetimepicker('setEndDate',  date2);
+
+        // parent.$('.modal-dialog').addClass('viewCiblReportModal .modal-lg').removeClass('modal-dialog modal-lg');
+    });
 </script>
 @endsection

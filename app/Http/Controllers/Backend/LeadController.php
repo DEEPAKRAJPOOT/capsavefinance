@@ -621,7 +621,7 @@ class LeadController extends Controller {
             $by_default = ($request->get('by_default')) ? ((int)$request->get('by_default')) : 0;
             $bank_acc_id = ($request->get('bank_account_id')) ? \Crypt::decrypt($request->get('bank_account_id')) : null;
             $anchorId = ($request->get('anchor_id')) ? \Crypt::decrypt($request->get('anchor_id')) : null;
-           dd($anchorId);
+           // dd($anchorId);
             $prepareData = [
                 'acc_name' => $request->get('acc_name'),
                 'acc_no' => $request->get('acc_no'),
