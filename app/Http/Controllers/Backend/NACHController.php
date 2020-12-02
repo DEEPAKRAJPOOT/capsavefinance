@@ -348,7 +348,7 @@ class NACHController extends Controller {
 	            }
 	            $nach->transactions = $transAr;
     		 	if($nach->outstanding_amt > $nach->amount) {
-                	return redirect()->route('nach_repayment_list')->withErrors(trans('backend_messages.noBankAccount'));
+                	return redirect()->route('nach_repayment_list')->withErrors(trans('backend_messages.amountNachValidate'));
     		 	}
             }
 
