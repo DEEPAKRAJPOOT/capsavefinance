@@ -5002,7 +5002,7 @@ if ($err) {
 
     public function lmsGetNachRepaymentList(DataProviderInterface $dataProvider) {
         $whereCondition = ['is_active' => 1, 'nach_status' => 4];
-        $nachList = $this->application->getUserNACH($whereCondition);
+        $nachList = $this->application->getUserRepaymentNACH($whereCondition);
         foreach ($nachList as $key => $value) {
             // die("here");
             $value->outstandingAmt = number_format($this->lmsRepo->getNACHUnsettledTrans($value->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding'),2);

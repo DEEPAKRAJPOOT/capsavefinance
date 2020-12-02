@@ -7551,7 +7551,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'customer_id', 
                 function ($nachData) {
-                    return $nachData->lms_user->customer_id;
+                    return $nachData->cust_ref_no ?? '';
             })
             ->editColumn(
                 'umr_no', 

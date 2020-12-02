@@ -2546,6 +2546,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function updateNachByUserId($attr, $whereCond){
         return UserNach::updateNachByUserId($attr, $whereCond);
     }
+
+    public function getUserRepaymentNACH($whereCondition){
+        return UserNach::where($whereCondition)
+            ->where('period_to', '>',date("Y-m-d"))
+            ->orderBy('created_at', 'DESC');
+    }
 }
 
 
