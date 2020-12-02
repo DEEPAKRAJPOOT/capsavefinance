@@ -2550,7 +2550,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getUserRepaymentNACH($whereCondition){
         return UserNach::where($whereCondition)
             ->where('period_to', '>',date("Y-m-d"))
-            ->orderBy('created_at', 'DESC');
+            ->orderBy('created_at', 'DESC')
+            ->get();
     }
 }
 

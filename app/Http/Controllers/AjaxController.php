@@ -5004,7 +5004,6 @@ if ($err) {
         $whereCondition = ['is_active' => 1, 'nach_status' => 4];
         $nachList = $this->application->getUserRepaymentNACH($whereCondition);
         foreach ($nachList as $key => $value) {
-            // die("here");
             $value->outstandingAmt = number_format($this->lmsRepo->getNACHUnsettledTrans($value->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding'),2);
 
             $value->ids = [];
@@ -5020,7 +5019,6 @@ if ($err) {
                 $nachList->forget($key);
             }
         }
-        // dd($nachList);
         $nach = $dataProvider->getNachRepaymentList($this->request, $nachList);
         $nach = $nach->getData(true);
         return new JsonResponse($nach);

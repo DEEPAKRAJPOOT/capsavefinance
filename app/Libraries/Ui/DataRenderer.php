@@ -7570,10 +7570,10 @@ class DataRenderer implements DataProviderInterface
             })
            ->filter(function ($query) use ($request) {
                 if ($request->get('search_keyword') != '') { 
-                    $query->whereHas('lms_user',function ($query) use ($request) {
+                    // $query->where('lms_user',function ($query) use ($request) {
                         $search_keyword = trim($request->get('search_keyword'));
-                        $query->where('customer_id', 'like',"%$search_keyword%");
-                    });                        
+                        $query->where('cust_ref_no', 'like',"%$search_keyword%");
+                    // });                        
                 }
             })
            ->make(true);
