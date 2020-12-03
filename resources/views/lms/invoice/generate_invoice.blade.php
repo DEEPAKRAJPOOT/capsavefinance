@@ -9,7 +9,7 @@
    </h2>
    <hr />
    <h2  style="font-size: 10px;text-align: center; margin: 5px 0 5px;"><strong><u>GST TAX INVOICE</u></strong></h2>
-   <span style="font-family:Book Antiqua;padding-left: 6px;margin-bottom: 10px;border-left: 6px solid #108763; float: left;width: 50%; font-size: 9px;">
+   <span style="font-family:Book Antiqua;padding-left: 6px;margin-bottom: 10px;border-left: 6px; float: left;width: 50%; font-size: 9px;">
       <strong>
       <span>BILLING ADDRESS:</span><br />
       <span style="line-height: 1.5;">{{$billingDetails['name']}}</span><br />

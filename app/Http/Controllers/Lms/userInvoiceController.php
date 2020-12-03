@@ -507,7 +507,13 @@ class userInvoiceController extends Controller
         $invoice_no = $invData->invoice_no;
         $state_name = $invData->place_of_supply;
         $invoice_type = $invData->invoice_type;
-        $invoice_date = $invData->invoice_date;
+
+        $invoice_date_arr = explode('-',$invData->invoice_date);
+        $temp = $invoice_date_arr[0];
+        $invoice_date_arr[0] = $invoice_date_arr[2];
+        $invoice_date_arr[2] = $temp;
+        $invoice_date = implode('-',$invoice_date_arr);
+
         $company_id = $invData->comp_addr_id;
         $registered_comp_id = $invData->registered_comp_id;
 
