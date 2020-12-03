@@ -66,6 +66,7 @@ class userInvoiceController extends Controller
        public function createUserInvoice(Request $request) {
         try {
             $eodStartDate = Helper::getSysStartDate();
+            $due_date = \Carbon\Carbon::now()->addDays(7)->toDateTimeString();
             $user_id = $request->get('user_id');
             $userCompanyRelation  = $this->UserInvRepo->getUserCompanyRelation($user_id);
             if (empty($userCompanyRelation)) {
@@ -109,7 +110,7 @@ class userInvoiceController extends Controller
             }else{
                 Session::flash('lastInvMsg','Still Invoice not created for any customer.');
             }
-            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData, 'allApplications' => $allApplications, 'eodStartDate' => $eodStartDate]);
+            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData, 'allApplications' => $allApplications, 'eodStartDate' => $eodStartDate, 'due_date' => $due_date]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

@@ -252,7 +252,7 @@
            setDate : new Date(),
            format: 'dd/mm/yyyy',
            autoclose: true,
-           startDate:  new Date("{{$eodStartDate}}"),
+           startDate:  new Date("{{$due_date}}"),
            endDate: '+7d',
            minView : 2,
        });
