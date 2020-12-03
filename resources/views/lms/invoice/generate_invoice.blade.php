@@ -23,7 +23,9 @@
       <span><strong>Original for Recipient:</strong></span><br />
       <span>Invoice No: {{$origin_of_recipient['invoice_no']}}</span><br />
       <span>Invoice Date: {{$origin_of_recipient['invoice_date']}}</span><br />
+      @if(!empty($origin_of_recipient['due_date']))
       <span>Due Date: {{$origin_of_recipient['due_date']}}</span><br />
+      @endif
       <span>Reference No: #{{$origin_of_recipient['reference_no']}}</span><br />
       <span>Place of Supply: {{$billingDetails['state_name']}}</span><br />
    </span>
