@@ -252,3 +252,141 @@
       /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:70
 
   Please use the argument -v to see more details.
+
+
+   Illuminate\Database\QueryException  : SQLSTATE[HY000] [2002] No such file or directory (SQL: select * from `rta_permissions`)
+
+  at /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connection.php:669
+    665|         // If an exception occurs when attempting to run a query, we'll format the error
+    666|         // message to include the bindings with SQL, which will make this exception a
+    667|         // lot more helpful to the developer instead of just the database's errors.
+    668|         catch (Exception $e) {
+  > 669|             throw new QueryException(
+    670|                 $query, $this->prepareBindings($bindings), $e
+    671|             );
+    672|         }
+    673|
+
+  Exception trace:
+
+  1   Illuminate\Foundation\Application::Illuminate\Foundation\{closure}()
+      [internal]:0
+
+  2   PDOException::("SQLSTATE[HY000] [2002] No such file or directory")
+      /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:70
+
+  Please use the argument -v to see more details.
+   Illuminate\Database\QueryException  : SQLSTATE[HY000] [2002] No such file or directory (SQL: select * from `rta_permissions`)
+
+  at /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connection.php:669
+    665|         // If an exception occurs when attempting to run a query, we'll format the error
+    666|         // message to include the bindings with SQL, which will make this exception a
+    667|         // lot more helpful to the developer instead of just the database's errors.
+    668|         catch (Exception $e) {
+  > 669|             throw new QueryException(
+    670|                 $query, $this->prepareBindings($bindings), $e
+    671|             );
+    672|         }
+    673|
+
+  Exception trace:
+
+  1   Illuminate\Foundation\Application::Illuminate\Foundation\{closure}()
+      [internal]:0
+
+  2   PDOException::("SQLSTATE[HY000] [2002] No such file or directory")
+      /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:70
+
+  Please use the argument -v to see more details.
+
+   Illuminate\Database\QueryException  : SQLSTATE[HY000] [2002] No such file or directory (SQL: select * from `rta_permissions`)
+
+  at /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connection.php:669
+    665|         // If an exception occurs when attempting to run a query, we'll format the error
+    666|         // message to include the bindings with SQL, which will make this exception a
+    667|         // lot more helpful to the developer instead of just the database's errors.
+    668|         catch (Exception $e) {
+  > 669|             throw new QueryException(
+    670|                 $query, $this->prepareBindings($bindings), $e
+    671|             );
+    672|         }
+    673|
+
+  Exception trace:
+
+  1   Illuminate\Foundation\Application::Illuminate\Foundation\{closure}()
+      [internal]:0
+
+  2   PDOException::("SQLSTATE[HY000] [2002] No such file or directory")
+      /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:70
+
+  Please use the argument -v to see more details.
+
+   Illuminate\Database\QueryException  : SQLSTATE[HY000] [2002] No such file or directory (SQL: select * from `rta_permissions`)
+
+  at /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connection.php:669
+    665|         // If an exception occurs when attempting to run a query, we'll format the error
+    666|         // message to include the bindings with SQL, which will make this exception a
+    667|         // lot more helpful to the developer instead of just the database's errors.
+    668|         catch (Exception $e) {
+  > 669|             throw new QueryException(
+    670|                 $query, $this->prepareBindings($bindings), $e
+    671|             );
+    672|         }
+    673|
+
+  Exception trace:
+
+  1   Illuminate\Foundation\Application::Illuminate\Foundation\{closure}()
+      [internal]:0
+
+  2   PDOException::("SQLSTATE[HY000] [2002] No such file or directory")
+      /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:70
+
+  Please use the argument -v to see more details.
+
+   Illuminate\Database\QueryException  : SQLSTATE[HY000] [2002] No such file or directory (SQL: select * from `rta_permissions`)
+
+  at /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connection.php:669
+
+   Illuminate\Database\QueryException  : SQLSTATE[HY000] [2002] No such file or directory (SQL: select * from `rta_permissions`)
+
+  at /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connection.php:669
+    665|         // If an exception occurs when attempting to run a query, we'll format the error
+    666|         // message to include the bindings with SQL, which will make this exception a
+    667|         // lot more helpful to the developer instead of just the database's errors.
+    668|         catch (Exception $e) {
+  > 669|             throw new QueryException(
+    670|                 $query, $this->prepareBindings($bindings), $e
+    671|             );
+    672|         }
+    673|
+
+  Exception trace:
+
+  1   Illuminate\Foundation\Application::Illuminate\Foundation\{closure}()
+      [internal]:0
+
+  2   PDOException::("SQLSTATE[HY000] [2002] No such file or directory")
+      /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:70
+
+  Please use the argument -v to see more details.
+    665|         // If an exception occurs when attempting to run a query, we'll format the error
+    666|         // message to include the bindings with SQL, which will make this exception a
+    667|         // lot more helpful to the developer instead of just the database's errors.
+    668|         catch (Exception $e) {
+  > 669|             throw new QueryException(
+    670|                 $query, $this->prepareBindings($bindings), $e
+    671|             );
+    672|         }
+    673|
+
+  Exception trace:
+
+  1   Illuminate\Foundation\Application::Illuminate\Foundation\{closure}()
+      [internal]:0
+
+  2   PDOException::("SQLSTATE[HY000] [2002] No such file or directory")
+      /var/www/html/rentalpha/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:70
+
+  Please use the argument -v to see more details.

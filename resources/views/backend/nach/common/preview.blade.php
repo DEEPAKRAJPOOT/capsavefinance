@@ -1,4 +1,3 @@
-
 <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size:10px;" >
     @php
         $tick = url('backend/assets/images/checkmark-outline.png');
@@ -176,7 +175,7 @@
                                                             with Bank
                                                         </td>
                                                         <td style="border: 1px solid #ddd;padding-left: 5px;">
-                                                            {{isset($nachDetail['branch_name']) ? $nachDetail['branch_name'] : ''}}
+                                                            {{isset($nachDetail['user_bank']['bank']['bank_name']) ? $nachDetail['user_bank']['bank']['bank_name'] : ''}}
                                                         </td>
                                                     </tr>
                                                 </table>

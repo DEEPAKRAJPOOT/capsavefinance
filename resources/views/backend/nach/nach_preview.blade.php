@@ -2,7 +2,7 @@
 @section('content')
 
 <div class="content-wrapper">
-    @include('frontend.nach.common.section')
+    @include('backend.nach.common.section')
     <div class="row grid-margin mt-3">
         <div class="  col-md-12  ">
              <div class="card">
@@ -11,7 +11,7 @@
                         <a class="btn btn-success btn-sm ml-2" href="{{route('backend_generate_nach', ['users_nach_id' => $nachDetail['users_nach_id']])}}">Download NACH</a>
                         <a data-toggle="modal" data-target="#uploadNachDocument" data-url ="{{route('backend_upload_nach_document', ['user_id' => $nachDetail['user_id'], 'users_nach_id' => $nachDetail['users_nach_id']]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2">Upload NACH Document</a>
                     </div>
-                    @include('frontend.nach.common.preview')
+                    @include('backend.nach.common.preview')
                 </div>
              </div>
         </div>

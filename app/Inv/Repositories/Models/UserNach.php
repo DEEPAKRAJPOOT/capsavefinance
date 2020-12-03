@@ -176,7 +176,7 @@ class UserNach extends BaseModel {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
 
-        $res = self::where($whereCond)->first();
+        $res = self::with('user_bank.bank')->where($whereCond)->first();
         return $res ?: false;
     }
     
