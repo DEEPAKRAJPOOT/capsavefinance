@@ -62,6 +62,11 @@
                                               </div>
                                               <div class="col-md-12">
                                                   <div class="form-group">
+                                                      <label class="m-0">State Code:<span>{{substr($billingDetails['gstin_no'],0,2)}}</span></label>
+                                                  </div>
+                                              </div>
+                                              <div class="col-md-12">
+                                                  <div class="form-group">
                                                       <label class="m-0">GSTIN:<span>{{$billingDetails['gstin_no']}}</span></label>
                                                   </div>
                                               </div>
@@ -248,7 +253,7 @@
            format: 'dd/mm/yyyy',
            autoclose: true,
            startDate:  new Date("{{$eodStartDate}}"),
-           endDate: '+0d',
+           endDate: '+7d',
            minView : 2,
        });
    });

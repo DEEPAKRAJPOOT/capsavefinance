@@ -293,8 +293,8 @@ class userInvoiceController extends Controller
         $trans_ids = $request->get('trans_id');
         $trans_ids = $request->get('trans_id');
 
-        $lastInvSrNo = $this->UserInvRepo->getLastInvoiceSerialNo();
-        $invSerialNo = sprintf('%04d', ($lastInvSrNo + 1) ?? rand(0, 9999));
+        $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoice_type);
+        $invSerialNo = sprintf('%04d', ($lastInvData->inv_serial_no + 1) ?? rand(0, 9999));
         $InvoiceNoArr = explode('/',$invoice_no);
         $InvoiceNoArr[3] = $invSerialNo;
         $invoice_no = implode('/',$InvoiceNoArr);
@@ -426,8 +426,8 @@ class userInvoiceController extends Controller
                 return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No remaining txns found for the invoice.');
             }
             
-            $lastInvSrNo = $this->UserInvRepo->getLastInvoiceSerialNo();
-            $invSerialNo = sprintf('%04d', ($lastInvSrNo + 1) ?? rand(0, 9999));
+            $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoice_type);
+            $invSerialNo = sprintf('%04d', ($lastInvData->inv_serial_no + 1) ?? rand(0, 9999));
             $InvoiceNoArr = explode('/',$requestedData['invoice_no']);
             $InvoiceNoArr[3] = $invSerialNo;
             $newInvoiceNo = implode('/',$InvoiceNoArr);
@@ -845,7 +845,7 @@ class userInvoiceController extends Controller
         $temp = $date_arr[0];
         $date_arr[0] = $date_arr[2];
         $date_arr[2] = $temp;
-        $new_date_format = implode('-',$invoice_date_arr);
+        $new_date_format = implode('-',$date_arr);
         return $new_date_format;
     }
    

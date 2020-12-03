@@ -166,8 +166,8 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return UserInvoice::getUserLastInvoiceNo();
 	}
 
-	public function getLastInvoiceSerialNo(){
-		return UserInvoice::getLastInvoiceSerialNo();
+	public function getLastInvoiceSerialNo($inv_type){
+		return UserInvoice::getLastInvoiceSerialNo($inv_type);
 	}
 
 }

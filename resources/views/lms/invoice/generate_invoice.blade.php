@@ -15,7 +15,8 @@
       <span style="line-height: 1.5;">{{$billingDetails['name']}}</span><br />
       <span style="line-height: 1.5;">{{$billingDetails['address']}}</span><br />
       <span style="line-height: 1.5;">GSTIN: {{$billingDetails['gstin_no']}}</span><br />
-      <span style="line-height: 1.5;">PAN Number: {{$billingDetails['pan_no']}}</span>
+      <span style="line-height: 1.5;">PAN Number: {{$billingDetails['pan_no']}}</span><br />
+      <span style="line-height: 1.5;">State Code: {{substr($billingDetails['gstin_no'],0,2)}}</span>
       </strong>
    </span>
    <span style="font-family:Book Antiqua;float: right;width: 45%;text-align: right;font-size: 9px;">
