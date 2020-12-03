@@ -29,6 +29,7 @@ try {
                 {data: 'biz_gst_no'},
                 {data: 'invoice_no'},
                 {data: 'invoice_date'},
+                {data: 'due_date'},
                 {data: 'place_of_supply'},
                 {data: 'action'},
                 ],

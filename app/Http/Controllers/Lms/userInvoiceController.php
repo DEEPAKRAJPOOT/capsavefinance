@@ -840,7 +840,7 @@ class userInvoiceController extends Controller
             }
     }
 
-    private function dateFormat($date){
+    public function dateFormat($date){
         $date_arr = explode('-',$date);
         $temp = $date_arr[0];
         $date_arr[0] = $date_arr[2];
