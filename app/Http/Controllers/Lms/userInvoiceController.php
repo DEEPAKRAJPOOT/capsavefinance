@@ -512,7 +512,7 @@ class userInvoiceController extends Controller
         $state_name = $invData->place_of_supply;
         $invoice_type = $invData->invoice_type;
         $invoice_date = $this->dateFormat($invData->invoice_date);
-        $due_date = $this->dateFormat($invData->due_date);
+        $due_date = $invData->due_date ? $this->dateFormat($invData->due_date) :'';
         // $invoice_date_arr = explode('-',$invData->invoice_date);
         // $temp = $invoice_date_arr[0];
         // $invoice_date_arr[0] = $invoice_date_arr[2];
@@ -841,12 +841,16 @@ class userInvoiceController extends Controller
     }
 
     public function dateFormat($date){
-        $date_arr = explode('-',$date);
-        $temp = $date_arr[0];
-        $date_arr[0] = $date_arr[2];
-        $date_arr[2] = $temp;
-        $new_date_format = implode('-',$date_arr);
-        return $new_date_format;
+        if($date){
+            $date_arr = explode('-',$date);
+            $temp = $date_arr[0];
+            $date_arr[0] = $date_arr[2];
+            $date_arr[2] = $temp;
+            $new_date_format = implode('-',$date_arr);
+            return $new_date_format;
+        }else{
+            return '';
+        }
     }
    
 
