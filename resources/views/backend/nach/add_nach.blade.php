@@ -8,7 +8,7 @@
 		<div class="  col-md-12  ">
                      <div class="card">
                         @php
-                            $users_nach_id = isset($nachDetail) ? $nachDetail['users_nach_id'] : null;
+                            $users_nach_id = !empty($nachDetail) ? $nachDetail['users_nach_id'] : null;
                             $anchor_id = $anchor_id ?? null;
                             if($nachDetail != false) {
                                 $role_type =  (($nachDetail->user_type == 2) ? 3 : 1);
@@ -24,31 +24,31 @@
                                                 <h5>Frequency <span class="mandatory">*</span></h5>
                                                 <ul class="custom-check-label">
                                                     <li>
-                                                        <input id='frequency' type="radio" name="frequency" value='1' {{ isset($nachDetail) && ($nachDetail['frequency'] == 1) ? 'checked' : '' }}>
+                                                        <input id='frequency' type="radio" name="frequency" value='1' {{ !empty($nachDetail) && ($nachDetail['frequency'] == 1) ? 'checked' : '' }}>
                                                         {!! $errors->first('frequency', '<span class="error">:message</span>') !!}
                                                         <label for="frequency">Monthly
                                                         </label>
                                                     </li>
                                                     <li>
-                                                        <input type="radio" name="frequency" value='2' {{ isset($nachDetail) && ($nachDetail['frequency'] == 2) ? 'checked' : '' }}>
+                                                        <input type="radio" name="frequency" value='2' {{ !empty($nachDetail) && ($nachDetail['frequency'] == 2) ? 'checked' : '' }}>
                                                         {!! $errors->first('frequency', '<span class="error">:message</span>') !!}
                                                         <label for="frequency">Quaterly
                                                         </label>
                                                     </li>
                                                     <li>
-                                                        <input type="radio" name="frequency" value='3' {{ isset($nachDetail) && ($nachDetail['frequency'] == 3) ? 'checked' : '' }}>
+                                                        <input type="radio" name="frequency" value='3' {{ !empty($nachDetail) && ($nachDetail['frequency'] == 3) ? 'checked' : '' }}>
                                                         {!! $errors->first('frequency', '<span class="error">:message</span>') !!}
                                                         <label for="frequency">Half Yearly
                                                         </label>
                                                     </li>
                                                     <li>
-                                                        <input type="radio" name="frequency" value='4' {{ isset($nachDetail) && ($nachDetail['frequency'] == 4) ? 'checked' : '' }}>
+                                                        <input type="radio" name="frequency" value='4' {{ !empty($nachDetail) && ($nachDetail['frequency'] == 4) ? 'checked' : '' }}>
                                                         {!! $errors->first('frequency', '<span class="error">:message</span>') !!}
                                                         <label for="frequency">Yearly
                                                         </label>
                                                     </li>
                                                     <li>
-                                                        <input type="radio" name="frequency" value='5' {{ isset($nachDetail) && ($nachDetail['frequency'] == 5) ? 'checked' : '' }}>
+                                                        <input type="radio" name="frequency" value='5' {{ !empty($nachDetail) && ($nachDetail['frequency'] == 5) ? 'checked' : '' }}>
                                                         {!! $errors->first('frequency', '<span class="error">:message</span>') !!}
                                                         <label for="frequency">As & When Presented
                                                         </label>
@@ -62,7 +62,7 @@
                                                     <span class="mandatory">*</span>
                                                 </label>
                                                 {!! Form::text('nach_date', 
-                                                 isset($nachDetail) && ($nachDetail['nach_date'] != '') ? \Carbon\Carbon::parse($nachDetail['nach_date'])->format('d/m/Y') : ''
+                                                 !empty($nachDetail) && ($nachDetail['nach_date'] != '') ? \Carbon\Carbon::parse($nachDetail['nach_date'])->format('d/m/Y') : ''
                                                 ,['id'=>'nach_date', 'class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Date']) !!}
                                                 {!! $errors->first('nach_date', '<span class="error">:message</span>') !!}
                                             </div>
@@ -74,25 +74,25 @@
                                                 <h5>To Debit Tick (√) <span class="mandatory">*</span></h5>
                                                 <ul class="custom-check-label">
                                                     <li>
-                                                        <input id='debit_tick' type="radio" name="debit_tick" value='1' {{ isset($nachDetail) && ($nachDetail['debit_tick'] == 1) ? 'checked' : '' }}>
+                                                        <input id='debit_tick' type="radio" name="debit_tick" value='1' {{ !empty($nachDetail) && ($nachDetail['debit_tick'] == 1) ? 'checked' : '' }}>
                                                         {!! $errors->first('debit_tick', '<span class="error">:message</span>') !!}
                                                         <label for="debit_tick">SB
                                                         </label>
                                                     </li>
                                                     <li>
-                                                        <input id='debit_tick' type="radio" name="debit_tick" value='2' {{ isset($nachDetail) && ($nachDetail['debit_tick'] == 2) ? 'checked' : '' }}>
+                                                        <input id='debit_tick' type="radio" name="debit_tick" value='2' {{ !empty($nachDetail) && ($nachDetail['debit_tick'] == 2) ? 'checked' : '' }}>
                                                         {!! $errors->first('debit_tick', '<span class="error">:message</span>') !!}
                                                         <label for="debit_tick">CA
                                                         </label>
                                                     </li>
                                                     <li>
-                                                        <input id='debit_tick' type="radio" name="debit_tick" value='3' {{ isset($nachDetail) && ($nachDetail['debit_tick'] == 3) ? 'checked' : '' }}>
+                                                        <input id='debit_tick' type="radio" name="debit_tick" value='3' {{ !empty($nachDetail) && ($nachDetail['debit_tick'] == 3) ? 'checked' : '' }}>
                                                         {!! $errors->first('debit_tick', '<span class="error">:message</span>') !!}
                                                         <label for="debit_tick">CC
                                                         </label>
                                                     </li>
                                                     <li>
-                                                        <input id='debit_tick' type="radio" name="debit_tick" value='4' {{ isset($nachDetail) && ($nachDetail['debit_tick'] == 5) ? 'checked' : '' }}>
+                                                        <input id='debit_tick' type="radio" name="debit_tick" value='4' {{ !empty($nachDetail) && ($nachDetail['debit_tick'] == 5) ? 'checked' : '' }}>
                                                         {!! $errors->first('debit_tick', '<span class="error">:message</span>') !!}
                                                         <label for="debit_tick">Other
                                                         </label>
@@ -106,7 +106,7 @@
                                                     <span class="mandatory">*</span>
                                                 </label>
                                                 {!! Form::text('amount', 
-                                                 isset($nachDetail) && ($nachDetail['amount'] != '') ? $nachDetail['amount'] : ''
+                                                 !empty($nachDetail) && ($nachDetail['amount'] != '') ? $nachDetail['amount'] : ''
                                                 ,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Amount']) !!}
                                                 {!! $errors->first('amount', '<span class="error">:message</span>') !!}
                                             </div>
@@ -119,7 +119,7 @@
                                                     <span class="mandatory">*</span>
                                                 </label>
                                                 {!! Form::text('phone_no', 
-                                                 isset($nachDetail) && ($nachDetail['phone_no'] != '') ? $nachDetail['phone_no'] : ''
+                                                 !empty($nachDetail) && ($nachDetail['phone_no'] != '') ? $nachDetail['phone_no'] : ''
                                                 ,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Phone No']) !!}
                                                 {!! $errors->first('phone_no', '<span class="error">:message</span>') !!}
                                             </div>
@@ -130,7 +130,7 @@
                                                     <span class="mandatory">*</span>
                                                 </label>
                                                 {!! Form::text('email_id', 
-                                                 isset($nachDetail) && ($nachDetail['email_id'] != '') ? $nachDetail['email_id'] : ''
+                                                 !empty($nachDetail) && ($nachDetail['email_id'] != '') ? $nachDetail['email_id'] : ''
                                                 ,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Email Id']) !!}
                                                 {!! $errors->first('email_id', '<span class="error">:message</span>') !!}
                                             </div>
@@ -143,7 +143,7 @@
                                                     <span class="mandatory">*</span>
                                                 </label>
                                                 {!! Form::text('reference_1', 
-                                                 isset($nachDetail) && ($nachDetail['reference_1'] != '') ? $nachDetail['reference_1'] : ''
+                                                 !empty($nachDetail) && ($nachDetail['reference_1'] != '') ? $nachDetail['reference_1'] : ''
                                                 ,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Reference 1']) !!}
                                                 {!! $errors->first('reference_1', '<span class="error">:message</span>') !!}
                                             </div>
@@ -154,52 +154,52 @@
                                                     <span class="mandatory">*</span>
                                                 </label>
                                                 {!! Form::text('reference_2', 
-                                                 isset($nachDetail) && ($nachDetail['reference_2'] != '') ? $nachDetail['reference_2'] : ''
+                                                 !empty($nachDetail) && ($nachDetail['reference_2'] != '') ? $nachDetail['reference_2'] : ''
                                                 ,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Reference 2']) !!}
                                                 {!! $errors->first('reference_2', '<span class="error">:message</span>') !!}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
-					<div class="col-md-6">
-                                            <div class="form-group">
-                                                <h5>Debit Type <span class="mandatory">*</span></h5>
-                                                <ul class="custom-check-label">
-                                                    <li>
-                                                        <input type="radio" name="debit_type" value='1' {{ isset($nachDetail) && ($nachDetail['debit_type'] == 1) ? 'checked' : '' }}>
-                                                        <label for="debit_type">Fixed Amount
-                                                        {!! $errors->first('debit_type', '<span class="error">:message</span>') !!}
-                                                    </li>
-                                                    <li>
-                                                        <input type="radio" name="debit_type" value='2' {{ isset($nachDetail) && ($nachDetail['debit_type'] == 2) ? 'checked' : '' }}>
-                                                        {!! $errors->first('debit_type', '<span class="error">:message</span>') !!}
-                                                        <label for="debit_type">Maximum Amount
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="period_from_date">Period From
                                                     <span class="mandatory">*</span>
                                                 </label>
                                                 {!! Form::text('period_from', 
-                                                 isset($nachDetail) && ($nachDetail['period_from'] != null) ? \Carbon\Carbon::parse($nachDetail['period_from'])->format('d/m/Y') : ''
+                                                 !empty($nachDetail) && ($nachDetail['period_from'] != null) ? \Carbon\Carbon::parse($nachDetail['period_from'])->format('d/m/Y') : ''
                                                 ,['id'=>'period_from_date', 'class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Date']) !!}
                                                 {!! $errors->first('period_from', '<span class="error">:message</span>') !!}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="period_to_date">Period To
+                                                    <span class="mandatory">*</span>
+                                                </label>
+                                                {!! Form::text('period_to', 
+                                                 !empty($nachDetail) && ($nachDetail['period_to'] != null) ? \Carbon\Carbon::parse($nachDetail['period_to'])->format('d/m/Y') : ''
+                                                ,['id'=>'period_to_date','class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Date']) !!}
+                                                {!! $errors->first('period_to', '<span class="error">:message</span>') !!}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
 										<div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="period_to_date">Period To
-                                                    <span class="mandatory">*</span>
-                                                </label>
-                                                {!! Form::text('period_to', 
-                                                 isset($nachDetail) && ($nachDetail['period_to'] != null) ? \Carbon\Carbon::parse($nachDetail['period_to'])->format('d/m/Y') : ''
-                                                ,['id'=>'period_to_date','class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Date']) !!}
-                                                {!! $errors->first('period_to', '<span class="error">:message</span>') !!}
+                                                <h5>Debit Type <span class="mandatory">*</span></h5>
+                                                <ul class="custom-check-label">
+                                                    <li>
+                                                        <input type="radio" name="debit_type" value='1' {{ !empty($nachDetail) && ($nachDetail['debit_type'] == 1) ? 'checked' : '' }}>
+                                                        <label for="debit_type">Fixed Amount
+                                                        {!! $errors->first('debit_type', '<span class="error">:message</span>') !!}
+                                                    </li>
+                                                    <li>
+                                                        <input type="radio" name="debit_type" value='2' {{ !empty($nachDetail) && ($nachDetail['debit_type'] == 2) ? 'checked' : '' }}>
+                                                        {!! $errors->first('debit_type', '<span class="error">:message</span>') !!}
+                                                        <label for="debit_type">Maximum Amount
+                                                    </li>
+                                                </ul>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -210,7 +210,7 @@
                                                     <li>
                                                         {!! Form::checkbox('period_until_cancelled',
                                                         1,
-                                                        isset($nachDetail) && ($nachDetail['period_until_cancelled'] == 1) ? 'checked' : ''
+                                                        !empty($nachDetail) && ($nachDetail['period_until_cancelled'] == 1) ? 'checked' : ''
                                                        ,['id'=>'period_until_cancelled' ]) !!}
                                                        {!! $errors->first('period_until_cancelled', '<span class="error">:message</span>') !!}
                                                        <label for="period_until_cancelled">Period Until Cancelled
@@ -250,6 +250,44 @@
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             token: "{{ csrf_token() }}",
     };
+
+    $.validator.addMethod('dateBefore', function (value, element, params) {
+        // if end date is valid, validate it as well
+        var end = $(params);
+        if (!end.data('validation.running')) {
+            $(element).data('validation.running', true);
+            setTimeout($.proxy(
+
+            function () {
+                this.element(end);
+            }, this), 0);
+            // Ensure clearing the 'flag' happens after the validation of 'end' to prevent endless looping
+            setTimeout(function () {
+                $(element).data('validation.running', false);
+            }, 0);
+        }
+        return this.optional(element) || this.optional(end[0]) || new Date(value) < new Date(end.val());
+
+    }, 'Period From is samller then Period To');
+
+    $.validator.addMethod('dateAfter', function (value, element, params) {
+        // if start date is valid, validate it as well
+        var start = $(params);
+        if (!start.data('validation.running')) {
+            $(element).data('validation.running', true);
+            setTimeout($.proxy(
+
+            function () {
+                this.element(start);
+            }, this), 0);
+            setTimeout(function () {
+                $(element).data('validation.running', false);
+            }, 0);
+        }
+        return this.optional(element) || this.optional(start[0]) || new Date(value) > new Date($(params).val());
+
+    }, 'Period To is larger then Period From');
+    
     $("#nach_form").validate({
         rules: {
             frequency:{
@@ -284,9 +322,11 @@
                 required:true
             },
             period_from:{
+                dateBefore: '#period_to_date',
                 required:true
             },
             period_to:{
+                dateAfter: '#period_from_date',
                 required: function(element) {
                     return $('input[name="period_until_cancelled"]').val() == '';
                 }
