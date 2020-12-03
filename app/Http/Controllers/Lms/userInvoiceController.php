@@ -285,6 +285,7 @@ class userInvoiceController extends Controller
     public function previewUserInvoice(Request $request){
         $url_user_id = $request->get('user_id');
         $invoice_date = $request->get('invoice_date');
+        $due_date = $request->get('due_date');
         $reference_no = $request->get('reference_no');
         $invoice_no = $request->get('invoice_no');
         $state_name = $request->get('state_name');
@@ -349,6 +350,7 @@ class userInvoiceController extends Controller
             'invoice_no' => $invoice_no,
             'place_of_supply' => $state_name,
             'invoice_date' => $invoice_date,
+            'due_date' => $due_date,
         ];
         $is_state_diffrent = ($userStateId != $companyStateId);
         $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
@@ -377,6 +379,7 @@ class userInvoiceController extends Controller
             $invoice_type = $request->get('invoice_type');
             $trans_ids = $request->get('trans_id');
             $invoice_date = $request->get('invoice_date');
+            $due_date = $request->get('due_date');
             $reference_no = $request->get('reference_no');
             if (!is_array($trans_ids) || empty($trans_ids)) {
                 return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No selected txns found for the invoice.');
@@ -451,6 +454,7 @@ class userInvoiceController extends Controller
                 'invoice_no' => $newInvoiceNo,
                 'inv_serial_no' => $invSerialNo,
                 'invoice_date' => Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d H:i:s'),
+                'due_date' => Carbon::createFromFormat('d/m/Y', $due_date)->format('Y-m-d H:i:s'),
                 'invoice_state_code' => $company_data['state_code'],
                 'place_of_supply' => $billing_data['state_name'],
                 'tot_no_of_trans' => count($requestedData['trans_id']),
@@ -507,12 +511,13 @@ class userInvoiceController extends Controller
         $invoice_no = $invData->invoice_no;
         $state_name = $invData->place_of_supply;
         $invoice_type = $invData->invoice_type;
-
-        $invoice_date_arr = explode('-',$invData->invoice_date);
-        $temp = $invoice_date_arr[0];
-        $invoice_date_arr[0] = $invoice_date_arr[2];
-        $invoice_date_arr[2] = $temp;
-        $invoice_date = implode('-',$invoice_date_arr);
+        $invoice_date = $this->dateFormat($invData->invoice_date);
+        $due_date = $this->dateFormat($invData->due_date);
+        // $invoice_date_arr = explode('-',$invData->invoice_date);
+        // $temp = $invoice_date_arr[0];
+        // $invoice_date_arr[0] = $invoice_date_arr[2];
+        // $invoice_date_arr[2] = $temp;
+        // $invoice_date = implode('-',$invoice_date_arr);
 
         $company_id = $invData->comp_addr_id;
         $registered_comp_id = $invData->registered_comp_id;
@@ -552,6 +557,7 @@ class userInvoiceController extends Controller
             'invoice_no' => $invoice_no,
             'place_of_supply' => $state_name,
             'invoice_date' => $invoice_date,
+            'due_date' => $due_date,
         ];
         if (empty($invData->inv_comp_data)) {
             $companyDetail = $this->_getCompanyDetail($company_id, $bank_account_id);
@@ -832,6 +838,15 @@ class userInvoiceController extends Controller
             } catch (Exception $ex) {
                 dd($ex);
             }
+    }
+
+    private function dateFormat($date){
+        $date_arr = explode('-',$date);
+        $temp = $date_arr[0];
+        $date_arr[0] = $date_arr[2];
+        $date_arr[2] = $temp;
+        $new_date_format = implode('-',$invoice_date_arr);
+        return $new_date_format;
     }
    
 

@@ -113,6 +113,13 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="txtEmail">Due Date
+                                                    </label>
+                                                    <input type="text" name="due_date" id="due_date" class="form-control" placeholder="dd/mm/yyyy" readonly maxlength="10" />
+                                                </div>
+                                            </div>
                                             <div class="col-md-12">
                                                 <div class="form-group m-0">
                                                     <label class="m-0">Place of Supply: <span>{{$billingDetails['state_name']}}</span>
@@ -236,6 +243,14 @@
            endDate: '+0d',
            minView : 2,
        });
+       $("#due_date").datetimepicker({
+           setDate : new Date(),
+           format: 'dd/mm/yyyy',
+           autoclose: true,
+           startDate:  new Date("{{$eodStartDate}}"),
+           endDate: '+0d',
+           minView : 2,
+       });
    });
   $(document).on('keyup', '#invoice_user_code', function(e) {
     var invoice_user_code = $(this).val();
@@ -277,6 +292,7 @@
     $('#invoice_type_error').remove();
     $('#invoice_user_code_error').remove();
     $('#invoice_date_error').remove();
+    $('#due_date_error').remove();
     $('#reference_no_error').remove();
     let invoice_type = $('#invoice_type').val();
     if (!invoice_type) {
@@ -296,7 +312,12 @@
       $('#invoice_date').focus();
       return false;
     }
-
+    let due_date = $('#due_date').val();
+    if (!due_date) {
+      $('#due_date').after('<span id="due_date_error" class="error">Please select invoice Date</span>');
+      $('#due_date').focus();
+      return false;
+    }
     let reference_no = $('#reference_no').val();
     if (!reference_no) {
       $('#reference_no').after('<span id="reference_no_error" class="error">Please select Reference Appliction</span>');
