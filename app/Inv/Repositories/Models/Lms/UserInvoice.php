@@ -143,7 +143,7 @@ class UserInvoice extends BaseModel {
      * GET AJAX result list
      */
     public static function getUserInvoiceList($user_id, $appId = null) {
-        $result = self::where('user_id' , $user_id);
+        $result = self::where('user_id' , $user_id)->orderBy('user_invoice_id','desc');
         return $result ? : false;
     }
 
