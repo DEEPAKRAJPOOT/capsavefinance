@@ -201,4 +201,12 @@ return [
        'DISBURSED' =>'8',
        'FAILED_REFUND'=>'9',
     ],
+    'IDFC_DEBIT_BANK' => [    
+       'DEBIT_ACC_NO' => '10062193074',
+       'DEBIT_ACC_NAME' => '',
+       'DEBIT_MOBILE' => ''
+    ],
+    'IDFC_API_URL' => 'https://api.idfcbank.com:443/',
+    'IDFC_CRYPTO_KEY' => 'MXgMPdydQGTiNyWXoEnyCySHLiWRYMFo',
+    'IDFC_CORP_ID' => 'CAPSAVEAPI',
 ];
