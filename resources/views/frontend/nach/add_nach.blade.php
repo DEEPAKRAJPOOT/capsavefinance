@@ -245,6 +245,25 @@
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             token: "{{ csrf_token() }}",
     };
+
+    $.validator.addMethod('currentDate', function (value, element, params) {
+        var myDate = new Date(dateConversion(value));
+        var today = new Date();
+        return myDate > today;
+    }, 'Period To is greter then current date');
+
+    $.validator.addMethod('dateBefore', function (value, element, params) {
+        var end = $(params);
+        return new Date(dateConversion(value)) < new Date(dateConversion(end.val()));
+
+    }, 'Period From is samller then Period To');
+
+    $.validator.addMethod('dateAfter', function (value, element, params) {
+        return new Date(dateConversion(value)) > new Date(dateConversion($(params).val()));
+
+    }, 'Period To is larger then Period From');
+
+    
     $("#nach_form").validate({
         rules: {
             frequency:{
@@ -279,9 +298,12 @@
                 required:true
             },
             period_from:{
+                dateBefore: '#period_to_date',
                 required:true
             },
             period_to:{
+                dateAfter: '#period_from_date',
+                currentDate: true,                
                 required: function(element) {
                     return $('input[name="period_until_cancelled"]').val() == '';
                 }

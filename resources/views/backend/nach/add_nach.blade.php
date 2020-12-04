@@ -240,61 +240,26 @@
 @section('jscript')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 <script>
     var messages = {
-            // frequency: "{{ trans('error_messages.frequency') }}",
             data_not_found: "{{ trans('error_messages.data_not_found') }}",
             token: "{{ csrf_token() }}",
     };
 
     $.validator.addMethod('currentDate', function (value, element, params) {
-        console.log(value)
-        var myDate = new Date(value);
+        var myDate = new Date(dateConversion(value));
         var today = new Date();
         return myDate > today;
     }, 'Period To is greter then current date');
 
     $.validator.addMethod('dateBefore', function (value, element, params) {
-        // if end date is valid, validate it as well
         var end = $(params);
-        if (!end.data('validation.running')) {
-            $(element).data('validation.running', true);
-            setTimeout($.proxy(
-
-            function () {
-                this.element(end);
-            }, this), 0);
-            // Ensure clearing the 'flag' happens after the validation of 'end' to prevent endless looping
-            setTimeout(function () {
-                $(element).data('validation.running', false);
-            }, 0);
-        }
-        // value = moment().format('MM/DD/YYYY');
-        var toSplit = value.split('/')
-        var fromSplit = $(params).val().split('/')
-        return this.optional(element) || this.optional(end[0]) || new Date(value) < new Date(end.val());
+        return new Date(dateConversion(value)) < new Date(dateConversion(end.val()));
 
     }, 'Period From is samller then Period To');
 
     $.validator.addMethod('dateAfter', function (value, element, params) {
-        // if start date is valid, validate it as well
-        var start = $(params);
-        if (!start.data('validation.running')) {
-            $(element).data('validation.running', true);
-            setTimeout($.proxy(
-
-            function () {
-                this.element(start);
-            }, this), 0);
-            setTimeout(function () {
-                $(element).data('validation.running', false);
-            }, 0);
-        }
-        // value = moment().format('MM/DD/YYYY');
-        var toSplit = value.split('/')
-        var fromSplit = $(params).val().split('/')        
-        return this.optional(element) || this.optional(start[0]) || new Date(value) > new Date($(params).val() && new Date(value) > new Date());
+        return new Date(dateConversion(value)) > new Date(dateConversion($(params).val()));
 
     }, 'Period To is larger then Period From');
     
@@ -365,11 +330,11 @@
         autoclose: true,
         minView: 2, });
     $('#period_from_date').datetimepicker({
-        format: 'mm/dd/yyyy',
+        format: 'dd/mm/yyyy',
         autoclose: true,
         minView: 2, });
     $('#period_to_date').datetimepicker({
-        format: 'mm/dd/yyyy',
+        format: 'dd/mm/yyyy',
         autoclose: true,
         minView: 2, });
 
