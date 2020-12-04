@@ -13,7 +13,6 @@ date_default_timezone_set("Asia/Kolkata");
 class Idfc_lib{
 	private $httpMethod = 'POST';
 	const BASE_URL    =  IDFC_LIB_URL . FIXED['vendorId']. '/';
-	// const SECRET_KEY    =  'wdqrEbgYfilAWJXCLRrqfYGdGJJGSShf'; //OLD
 	const SECRET_KEY    =  config('lms.IDFC_CRYPTO_KEY'); //NEW
 	const CORP_ID    =  config('lms.IDFC_CORP_ID');
 
