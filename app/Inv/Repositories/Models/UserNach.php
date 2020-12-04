@@ -177,7 +177,7 @@ class UserNach extends BaseModel {
         }
 
         $res = self::with('user_bank.bank')->where($whereCond)->first();
-        return $res ?: false;
+        return $res ?: null;
     }
     
     /**
