@@ -7,15 +7,15 @@ use Illuminate\Support\Facades\Storage;
 use Auth;
 
 define('FIXED', array('vendorId' => 'cfpl','time' => date('Ymd\THis\Z')));
-define('IDFC_LIB_URL', 'https://ESBUAT1RTN0140.idfcbank.com:9444/'); //config('proin.IDFC_LIB_URL')
+define('IDFC_LIB_URL', config('lms.IDFC_API_URL')); //config('proin.IDFC_LIB_URL')
 date_default_timezone_set("Asia/Kolkata");
 
 class Idfc_lib{
 	private $httpMethod = 'POST';
 	const BASE_URL    =  IDFC_LIB_URL . FIXED['vendorId']. '/';
 	// const SECRET_KEY    =  'wdqrEbgYfilAWJXCLRrqfYGdGJJGSShf'; //OLD
-	const SECRET_KEY    =  'VNpCutoEupsJZvWcTAnEohnhdjgccWbP'; //NEW
-	const CORP_ID    =  'CAPSAVEUAT';
+	const SECRET_KEY    =  config('lms.IDFC_CRYPTO_KEY'); //NEW
+	const CORP_ID    =  config('lms.IDFC_CORP_ID');
 
 	const MULTI_PAYMENT    = '1001';    #Intiate Multi Payment API
 	const BATCH_ENQ    = '1002';    #Check Batch Transaction Inquiry API
