@@ -203,7 +203,7 @@ return [
     ],
     'IDFC_DEBIT_BANK' => [    
        'DEBIT_ACC_NO' => '10062193074',
-       'DEBIT_ACC_NAME' => '',
+       'DEBIT_ACC_NAME' => 'Capsave Finance Pvt Ltd',
        'DEBIT_MOBILE' => '9930840248
 
 '
