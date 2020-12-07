@@ -1,2 +1,1 @@
-
 {"doMultiPaymentCorpReq":{"Header":{"Maker_ID":"CAPSAVE.M","Checker_ID":"CAPSAVE.C1","Approver_ID":"CAPSAVE.C2"},"Body":{"Payment":[{"RefNo":"CAPVA0000003","Amount":1.00,"Debit_Acct_No":"10062193074","Debit_Acct_Name":"","Debit_Mobile":"","Ben_IFSC":"HDFC0001897","Ben_Acct_No":"50100318923146","Ben_Name":"Akash Kumar","Ben_BankName":"HDFC Bank","Ben_Email":"akash.kumar@prolitus.com","Ben_Mobile":"8744037213","Mode_of_Pay":"IFT","Nature_of_Pay":"MPYMT","Remarks":"No remarks it is testing purpose"}]}}}
