@@ -123,7 +123,7 @@ class Idfc_lib{
     }
 
     private function _curlCall($url, $postdata, $header ,$timeout= 600){
-    	$idfc_cert_path = getcwd() . '/idfc_cert/';
+    	$idfc_cert_path = getcwd() . '/idfc_cert/prod/';
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);

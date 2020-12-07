@@ -79,8 +79,8 @@ class DashboardController extends Controller
        $result = [];
        $idfcObj= new Idfc_lib();
        $request = $this->getIdfcRequest();
+       dd($request);
        $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $request, $getRespWithoutParse);
-       dd($result);
        // $transId = '2RFJS5825ZBUWI0JPU'; // 35505
        $transId = '2RFPR57599AE0X2TFJ'; //887.625
 
@@ -100,7 +100,7 @@ class DashboardController extends Controller
     }
 
     private function getIdfcRequest() {
-       $params = array ( 
+       $uatParams = array ( 
             'http_header' => array(
                 'timestamp' => date('Y-m-d H:i:s'), 
                 'txn_id' => _getRand('18'), 
@@ -113,15 +113,15 @@ class DashboardController extends Controller
             'request' => array ( 
                 617 => array ( 
                     'RefNo' => _getRand('12'), 
-                    'Amount' => 936.04688, 
+                    'Amount' => 1.00, 
                     'Debit_Acct_No' => '21480259346', 
                     'Debit_Acct_Name' => 'Debit Account Name', 
                     'Debit_Mobile' => '1234567890', 
-                    'Ben_IFSC' => 'DNSB0000021', 
-                    'Ben_Acct_No' => '33607554763', 
-                    'Ben_Name' => 'Ravi Prakash', 
-                    'Ben_BankName' => 'State Bank Of India', 
-                    'Ben_Email' => 'ravi.awasthi93@gmail.com', 
+                    'Ben_IFSC' => 'HDFC0001897', 
+                    'Ben_Acct_No' => '10100318923146', 
+                    'Ben_Name' => 'Akash Kumar', 
+                    'Ben_BankName' => 'HDFC Bank', 
+                    'Ben_Email' => 'akash.kumar@prolitus.com', 
                     'Ben_Mobile' => '8595445454', 
                     'Mode_of_Pay' => 'IFT', 
                     'Nature_of_Pay' => 'MPYMT', 
@@ -129,7 +129,7 @@ class DashboardController extends Controller
                 ), 
             ), 
         );
-       $params2 = array ( 
+       $prodParams = array ( 
             'http_header' => array(
                 'timestamp' => date('Y-m-d H:i:s'), 
                 'txn_id' => _getRand('18'), 
@@ -142,23 +142,23 @@ class DashboardController extends Controller
             'request' => array ( 
                 617 => array ( 
                     "RefNo" => _getRand('12'),
-                    "Amount" => 1380.00,
-                    "Debit_Acct_No" => "21480259346",
-                    "Debit_Acct_Name" => "testing name",
-                    "Debit_Mobile" => "9876543210",
-                    "Ben_IFSC" => "UTIB0000001",
-                    "Ben_Acct_No" => "21480314831",
-                    "Ben_BankName" => "State Bank Of India",
-                    "Ben_Name" => "Ravi Prakash",
-                    "Ben_Email" => "testing.jkg_01@sofodev.co",
-                    "Ben_Mobile" => "8787876787",
+                    "Amount" => 1.00,
+                    "Debit_Acct_No" => "10062193074",
+                    "Debit_Acct_Name" => "",
+                    "Debit_Mobile" => "",
+                    "Ben_IFSC" => "HDFC0001897",
+                    "Ben_Acct_No" => "50100318923146",
+                    "Ben_BankName" => "HDFC Bank",
+                    "Ben_Name" => "Akash Kumar",
+                    "Ben_Email" => "akash.kumar@prolitus.com",
+                    "Ben_Mobile" => "8744037213",
                     "Mode_of_Pay" => "IFT",
                     "Nature_of_Pay" => "MPYMT",
                     "Remarks" => "test remarks",
                 ), 
             ), 
         );
-       return $params2;
+       return $prodParams;
     }
 
      private function getIdfcEnquiryRequest($transId = null) {
