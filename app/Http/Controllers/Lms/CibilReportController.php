@@ -410,8 +410,8 @@ class CibilReportController extends Controller
               'Segment Identifier' => 'SS',
               'Value of Security' => $ps->ps_desc_of_security,
               'Currency Type' => 'INR',
-              'Type of Security' => config('common.ps_security_id')[$ps->ps_security_id],
-              'Security Classification' => config('common.ps_type_of_security_id')[$ps->ps_type_of_security_id],
+              'Type of Security' => config('common.ps_security_id')[$ps->ps_security_id] ?? NULL,
+              'Security Classification' => config('common.ps_type_of_security_id')[$ps->ps_type_of_security_id] ?? NULL,
               'Date of Valuation' => NULL,
               'Filler' => NULL,
             ];
