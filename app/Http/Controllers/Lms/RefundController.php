@@ -304,10 +304,10 @@ class RefundController extends Controller
                 $requestData[$userId]['Debit_Acct_No'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NO'];
                 $requestData[$userId]['Debit_Acct_Name'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NAME'];
                 $requestData[$userId]['Debit_Mobile'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_MOBILE'];
-                // $requestData[$userId]['Ben_IFSC'] = $aprvlRfd['ifsc_code'];
-                // $requestData[$userId]['Ben_Acct_No'] = $aprvlRfd['acc_no'];
-                $requestData[$userid]['Ben_IFSC'] = 'UTIB0000001';
-                $requestData[$userid]['Ben_Acct_No'] = '21480314831';
+                $requestData[$userId]['Ben_IFSC'] = $aprvlRfd['ifsc_code'];
+                $requestData[$userId]['Ben_Acct_No'] = $aprvlRfd['acc_no'];
+                // $requestData[$userid]['Ben_IFSC'] = 'UTIB0000001';
+                // $requestData[$userid]['Ben_Acct_No'] = '21480314831';
                 $requestData[$userId]['Ben_Name'] = $aprvl['payment']['user']['f_name'].' '.$aprvl['payment']['user']['l_name'];
                 $requestData[$userId]['Ben_BankName'] = $aprvlRfd['bank_name'];
                 $requestData[$userId]['Ben_Email'] = $aprvl['payment']['user']['email'];

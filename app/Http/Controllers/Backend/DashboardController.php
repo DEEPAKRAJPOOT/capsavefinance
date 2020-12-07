@@ -79,8 +79,8 @@ class DashboardController extends Controller
        $result = [];
        $idfcObj= new Idfc_lib();
        $request = $this->getIdfcRequest();
-       dd($request);
        $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $request, $getRespWithoutParse);
+       dd($result);
        // $transId = '2RFJS5825ZBUWI0JPU'; // 35505
        $transId = '2RFPR57599AE0X2TFJ'; //887.625
 

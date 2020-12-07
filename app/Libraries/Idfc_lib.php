@@ -7,14 +7,16 @@ use Illuminate\Support\Facades\Storage;
 use Auth;
 
 define('FIXED', array('vendorId' => 'cfpl','time' => date('Ymd\THis\Z')));
-define('IDFC_LIB_URL', config('lms.IDFC_API_URL')); //config('proin.IDFC_LIB_URL')
+define('IDFC_LIB_URL', config('lms.IDFC_API_URL'));
+define('IDFC_CRYPTO_KEY', config('lms.IDFC_CRYPTO_KEY'));
+define('IDFC_CORP_ID', config('lms.IDFC_CORP_ID'));
 date_default_timezone_set("Asia/Kolkata");
 
 class Idfc_lib{
 	private $httpMethod = 'POST';
 	const BASE_URL    =  IDFC_LIB_URL . FIXED['vendorId']. '/';
-	const SECRET_KEY    =  config('lms.IDFC_CRYPTO_KEY'); //NEW
-	const CORP_ID    =  config('lms.IDFC_CORP_ID');
+	const SECRET_KEY    =  IDFC_LIB_URL; //NEW
+	const CORP_ID    =  IDFC_CORP_ID;
 
 	const MULTI_PAYMENT    = '1001';    #Intiate Multi Payment API
 	const BATCH_ENQ    = '1002';    #Check Batch Transaction Inquiry API
@@ -49,6 +51,7 @@ class Idfc_lib{
 		}
 		list($payload, $http_header, $txn_id) = $request;
      	$response = $this->_curlCall($url, $payload, $http_header);
+		// dd($url, $payload, $http_header, $response);
      	if ($getApiResponse) {
      		return [$txn_id, $payload, $http_header, $response['result']];
      	}
@@ -135,7 +138,7 @@ class Idfc_lib{
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->httpMethod);
 		curl_setopt($curl, CURLOPT_VERBOSE, true);
 		curl_setopt($curl, CURLOPT_SSLCERT, $idfc_cert_path . 'cert.pem');
-		curl_setopt($curl, CURLOPT_SSLKEY, $idfc_cert_path . 'priv_key.pem');
+		curl_setopt($curl, CURLOPT_SSLKEY, $idfc_cert_path . 'priv.key');
 		curl_setopt($curl, CURLOPT_CAINFO, $idfc_cert_path . 'cacert.pem');
 		curl_setopt($curl, CURLOPT_POST, true);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
