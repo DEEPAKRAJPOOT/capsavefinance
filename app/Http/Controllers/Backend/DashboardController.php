@@ -165,7 +165,7 @@ class DashboardController extends Controller
                     "Ben_Name" => "Akash Kumar",
                     "Ben_Email" => "akash.kumar@prolitus.com",
                     "Ben_Mobile" => "8744037213",
-                    "Mode_of_Pay" => "IFT",
+                    "Mode_of_Pay" => "NEFT",
                     "Nature_of_Pay" => "MPYMT",
                     "Remarks" => "test remarks",
                 ), 
