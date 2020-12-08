@@ -308,8 +308,8 @@ class RefundController extends Controller
                 $requestData[$userId]['Ben_Acct_No'] = $aprvlRfd['acc_no'];
                 // $requestData[$userid]['Ben_IFSC'] = 'UTIB0000001';
                 // $requestData[$userid]['Ben_Acct_No'] = '21480314831';
-                $requestData[$userId]['Ben_Name'] = $aprvl['payment']['user']['f_name'].' '.$aprvl['payment']['user']['l_name'];
                 $requestData[$userId]['Ben_BankName'] = $aprvlRfd['bank_name'];
+                $requestData[$userId]['Ben_Name'] = $asprvl['payment']['user']['f_name'].' '.$aprvl['payment']['user']['l_name'];
                 $requestData[$userId]['Ben_Email'] = $aprvl['payment']['user']['email'];
                 $requestData[$userId]['Ben_Mobile'] = $aprvl['payment']['user']['mobile_no'];
                 $requestData[$userId]['Mode_of_Pay'] = $modePay;
