@@ -104,32 +104,54 @@ class ManualApportionmentHelper{
                 // Interest Refund Process
                 
                 if($amount > 0){
-                    $irpAmt = ($trans->amount - $trans->outstanding) - $trans->revertedAmt;
-                    if($irpAmt > 0){
-                        if($amount >= $irpAmt){
-                            $rAmt = $irpAmt;
-                        }else{
-                            $rAmt = $amount;
-                        }
-                        $amount -= $rAmt;
-                        
-                        if(round($rAmt,2) > 0){
-                            $transactionList[] = [
-                                'payment_id' => null,
-                                'link_trans_id' => $trans->trans_id,
-                                'parent_trans_id' => $trans->trans_id,
-                                'trans_running_id'=> $trans->trans_running_id,
-                                'invoice_disbursed_id' => $trans->invoice_disbursed_id,
-                                'user_id' => $trans->user_id,
-                                'trans_date' => $trans->trans_date,
-                                'amount' => $rAmt,
-                                'entry_type' => 1,
-                                'soa_flag' => 1,
-                                'trans_type' => config('lms.TRANS_TYPE.REFUND')
-                            ];
+                    $rTransactions = Transactions::where('link_trans_id','=',$trans->trans_id)
+                    ->where('invoice_disbursed_id','=',$invDisbId)
+                    ->where('entry_type','=',1)
+                    ->where('trans_type','=',config('lms.TRANS_TYPE.REFUND'))
+                    ->whereNotNull('trans_running_id')
+                    ->get();
+                    
+                    foreach($rTransactions as $rTrans){
+                        $amount -= $rTrans->amount;
+                    }
+
+                    if($amount > 0){
+
+                        $paidTransactions = Transactions::where('parent_trans_id','=',$trans->trans_id)
+                        ->where('invoice_disbursed_id','=',$invDisbId)
+                        ->where('entry_type','=',1)
+                        ->where('trans_type','=',$trans->trans_type)
+                        ->get();
+
+                        foreach($paidTransactions as $paidTrans){
+                            $paidAmt = $paidTrans->settledOutstanding;
+                            if($paidAmt > 0 && $amount > 0){
+                                if($amount >= $paidAmt){
+                                    $rAmt = $paidAmt;
+                                }else{
+                                    $rAmt = $amount;
+                                }
+                                $amount -= $rAmt;
+
+                                if(round($rAmt,2) > 0){
+                                    $transactionList[] = [
+                                        'payment_id' => null,
+                                        'link_trans_id' => $paidTrans->trans_id,
+                                        'parent_trans_id' => $paidTrans->trans_id,
+                                        'trans_running_id'=> $paidTrans->trans_running_id,
+                                        'invoice_disbursed_id' => $paidTrans->invoice_disbursed_id,
+                                        'user_id' => $paidTrans->user_id,
+                                        'trans_date' => $paidTrans->trans_date,
+                                        'amount' => $rAmt,
+                                        'entry_type' => 1,
+                                        'soa_flag' => 1,
+                                        'trans_type' => config('lms.TRANS_TYPE.REFUND')
+                                    ];
+                                }
+                            }
                         }
                     }
-                }  
+                }
             }
         }
 
