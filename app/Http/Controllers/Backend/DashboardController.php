@@ -113,7 +113,7 @@ class DashboardController extends Controller
             'request' => array ( 
                 617 => array ( 
                     'RefNo' => _getRand('12'), 
-                    'Amount' => 1.00, 
+                    'Amount' => 1.00,
                     'Debit_Acct_No' => '21480259346', 
                     'Debit_Acct_Name' => 'Debit Account Name', 
                     'Debit_Mobile' => '1234567890', 
@@ -142,14 +142,14 @@ class DashboardController extends Controller
             'request' => array ( 
                 617 => array ( 
                     "RefNo" => _getRand('12'),
-                    "Amount" => 1.00,
+                    "Amount" => 1.51,
                     "Debit_Acct_No" => "10062193074",
                     "Debit_Acct_Name" => "Capsave Finance Pvt Ltd",
                     "Debit_Mobile" => "9930840248",
                     "Ben_IFSC" => "HDFC0001897",
                     "Ben_Acct_No" => "50100318923146",
-                    "Ben_BankName" => "HDFC Bank",
                     "Ben_Name" => "Akash Kumar",
+                    "Ben_BankName" => "HDFC Bank",
                     "Ben_Email" => "akash.kumar@prolitus.com",
                     "Ben_Mobile" => "8744037213",
                     "Mode_of_Pay" => "NEFT",
