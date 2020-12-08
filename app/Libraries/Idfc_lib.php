@@ -15,7 +15,7 @@ date_default_timezone_set("Asia/Kolkata");
 class Idfc_lib{
 	private $httpMethod = 'POST';
 	const BASE_URL    =  IDFC_LIB_URL . FIXED['vendorId']. '/';
-	const SECRET_KEY    =  IDFC_LIB_URL; //NEW
+	const SECRET_KEY    =  IDFC_CRYPTO_KEY; //NEW
 	const CORP_ID    =  IDFC_CORP_ID;
 
 	const MULTI_PAYMENT    = '1001';    #Intiate Multi Payment API
@@ -51,7 +51,6 @@ class Idfc_lib{
 		}
 		list($payload, $http_header, $txn_id) = $request;
      	$response = $this->_curlCall($url, $payload, $http_header);
-		// dd($url, $payload, $http_header, $response);
      	if ($getApiResponse) {
      		return [$url, $txn_id, $payload, $http_header, $response];
      	}
