@@ -741,7 +741,7 @@ class InvoiceController extends Controller {
                     ];
 
                 $idfcObj= new Idfc_lib();
-                $getResponse = true;
+                $getResponse = false;
                 $result = $idfcObj->api_call(Idfc_lib::MULTI_PAYMENT, $params, $getResponse);
                 if ($getResponse) {
                     dd($result);
