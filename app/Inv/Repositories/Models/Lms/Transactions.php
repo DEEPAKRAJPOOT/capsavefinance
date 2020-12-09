@@ -5,6 +5,7 @@ use DB;
 use Helpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Master\Tds;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
@@ -85,6 +86,10 @@ class Transactions extends BaseModel {
         return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','trans_id','parent_trans_id');
     }
 
+    public function linkTransactions(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions','link_trans_id','trans_id');
+    }
+
     public function payment(){
         return $this->belongsTo('App\Inv\Repositories\Models\Payment','payment_id','payment_id');
     } 
@@ -133,6 +138,10 @@ class Transactions extends BaseModel {
         return $this->hasOne('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','trans_id','trans_id');
     }
 
+    public function refundTrans(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Refund\RefundReqTrans','refund_trans_id','trans_id');
+    }
+
     public function transRunning(){
         return $this->belongsTo('App\Inv\Repositories\Models\Lms\TransactionsRunning','trans_running_id','trans_running_id');
     }
@@ -144,18 +153,19 @@ class Transactions extends BaseModel {
     public function ChargesTransactions(){
         return $this->hasOne('App\Inv\Repositories\Models\Lms\ChargesTransactions','trans_id','trans_id');
     }
-    
 
     public function getInvoiceNoAttribute(){
-        $data = '';
+        
+        $invNo = '';
         if($this->userInvTrans){
-            return $this->userInvTrans->getUserInvoice->invoice_no;
+            $invNo = $this->userInvTrans->getUserInvoice->invoice_no;
         }elseif($this->userInvParentTrans){
-            return $this->userInvParentTrans->getUserInvoice->invoice_no;
-        }elseif($this->invoice_disbursed_id && $this->invoiceDisbursed->invoice_id){
-            return $this->invoiceDisbursed->invoice->invoice_no;
+            $invNo = $this->userInvParentTrans->getUserInvoice->invoice_no;
+        }elseif($this->invoice_disbursed_id){
+            $invNo = $this->invoiceDisbursed->invoice->billNo;
         }
-        return $data;
+
+        return $invNo;
     }
 
     public function getsettledAmtAttribute(){
@@ -207,7 +217,7 @@ class Transactions extends BaseModel {
 
         return $flag;
     }
-    
+
     public function getSettledOutstandingAttribute(){
         return round(($this->amount - $this->getRevertedAmtAttribute()),2);
     }
@@ -308,6 +318,7 @@ class Transactions extends BaseModel {
 
     public function getNarrationAttribute(){
         $data = '';
+        $pTrans = $this->parentTransactions;
         if(in_array($this->trans_type,[config('lms.TRANS_TYPE.REPAYMENT')])){
             if($this->BatchNo)
             $data .= $this->BatchNo.' ';
@@ -315,7 +326,7 @@ class Transactions extends BaseModel {
             $data .= $this->payment->paymentmode.': '.$this->payment->transactionno.' ' ;
             $data .= ' Payment Allocated as Normal: INR '. number_format($this->payment->amount,2) . ' ';
         }
-        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
+        elseif(in_array($this->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
             $data .= ' Payment Failed as Normal: INR '. number_format($this->payment->amount,2) . ' ';
         }
         return trim($data);
@@ -564,13 +575,13 @@ class Transactions extends BaseModel {
         if(isset($data['trans_type']) && !empty($data['trans_type'])){
             $query = $query->whereIn('trans_type',$data['trans_type']);
         }
-
+        
         if(!empty($data['trans_type_not_in'])){
             $query->whereNotIn('trans_type',$data['trans_type_not_in']);
         }
-
-        $query = $query->orderByRaw("FIELD(trans_type, '".config('lms.TRANS_TYPE.INTEREST')."', '".config('lms.TRANS_TYPE.PAYMENT_DISBURSED')."', '".config('lms.TRANS_TYPE.INTEREST_OVERDUE')."', '".config('lms.TRANS_TYPE.MARGIN')."' )");
-        $query = $query->orderby('trans_date','asc');
+        
+        $query = $query->orderByRaw("FIELD(trans_type, '".config('lms.TRANS_TYPE.INTEREST')."', '".config('lms.TRANS_TYPE.PAYMENT_DISBURSED')."', '".config('lms.TRANS_TYPE.INTEREST_OVERDUE')."', '".config('lms.TRANS_TYPE.MARGIN')."' ), trans_id");
+ 
         return $query->get()->filter(function($item) {
             return ($item->outstanding > 0 && $item->IsTransaction);
         });
@@ -823,7 +834,7 @@ class Transactions extends BaseModel {
     public static function getConsolidatedSoaList(){
         return self::select('transactions.*')
                     ->orderBy('user_id', 'asc')
-                    ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
+                    ->orderBy('created_at', 'asc')
                     ->orderBy('trans_id', 'asc');
     }
 
@@ -832,7 +843,7 @@ class Transactions extends BaseModel {
         return self::select('transactions.*')
                     ->where('soa_flag','=',1)
                     ->orderBy('user_id', 'asc')
-                    ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
+                    ->orderBy('created_at', 'asc')
                     ->orderBy('trans_id', 'asc');
     }
 
@@ -845,7 +856,7 @@ class Transactions extends BaseModel {
                     })
                     ->where('soa_flag','=',1)
                     ->orderBy('user_id', 'asc')
-                    ->orderBy(DB::raw("DATE_FORMAT(rta_transactions.created_at, '%Y-%m-%d')"), 'asc')
+                    ->orderBy('created_at', 'asc')
                     ->orderBy('trans_id', 'asc');
     }
     
@@ -963,8 +974,9 @@ class Transactions extends BaseModel {
     }  
     
     public static function checkRunningTrans($transStartDate, $transEndDate){
-        return self::whereBetween('trans_date', [$transStartDate, $transEndDate])
+        return self::whereBetween('sys_created_at', [$transStartDate, $transEndDate])
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+        ->where('trans_mode','2')
         ->whereNotNull('trans_running_id')
         ->get()
         ->filter(function($item) {

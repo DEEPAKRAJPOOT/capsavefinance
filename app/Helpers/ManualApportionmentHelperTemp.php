@@ -21,8 +21,8 @@ class ManualApportionmentHelperTemp{
     }
 
     private function calInterest($principalAmt, $interestRate, $tenorDays){
-        $interest = $principalAmt * $tenorDays * ($interestRate / config('common.DCC')) ;                
-        return $interest/100;        
+        $interest = round(($principalAmt * ($interestRate / config('common.DCC')))/100,2) ;                
+        return $tenorDays * $interest;        
     }  
     
     private function addDays($currentDate, $noOfDays){
@@ -39,6 +39,7 @@ class ManualApportionmentHelperTemp{
         $intrest = 0;
         $disbTransIds = null;
         $intTransIds = null;
+        $Dr = 0 ;
 
         $disbTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
         ->whereNull('payment_id') 
@@ -47,6 +48,13 @@ class ManualApportionmentHelperTemp{
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
         ->pluck('trans_id')->toArray();
 
+        $invDisbDetails = InvoiceDisbursed::find($invDisbId);
+        if($invDisbDetails){
+            $margin = ($invDisbDetails->invoice->invoice_approve_amount*$invDisbDetails->margin)/100;
+            $Dr = $invDisbDetails->invoice->invoice_approve_amount - $margin;
+        }
+
+        /*
         $Dr = Transactions::whereDate('trans_date','<=',$transDate)
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->where('entry_type','=','0')
@@ -55,6 +63,7 @@ class ManualApportionmentHelperTemp{
             $query->OrwhereIn('parent_trans_id',$disbTransIds);
         })
         ->sum('amount');
+        */
 
         $Cr =  Transactions::whereDate('trans_date','<=',$transDate) 
         ->where('invoice_disbursed_id','=',$invDisbId)

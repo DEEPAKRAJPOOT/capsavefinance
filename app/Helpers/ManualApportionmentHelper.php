@@ -23,8 +23,8 @@ class ManualApportionmentHelper{
     }
 
     private function calInterest($principalAmt, $interestRate, $tenorDays){
-        $interest = $principalAmt * $tenorDays * ($interestRate / config('common.DCC')) ;                
-        return $interest/100;        
+        $interest = round(($principalAmt * ($interestRate / config('common.DCC')))/100,2) ;                
+        return $tenorDays * $interest;         
     }  
     
     private function addDays($currentDate, $noOfDays){
@@ -52,12 +52,13 @@ class ManualApportionmentHelper{
         foreach($transactions as $trans){
             
             $amount = $trans->amount;
+            $outstanding = ($trans->outstanding > 0)?$trans->outstanding:0;
 
             $actualAmount = InterestAccrual::where('interest_date', '>=',$trans->fromIntDate)
             ->where('interest_date','<=',$trans->toIntDate)
             ->where('invoice_disbursed_id', $trans->invoice_disbursed_id)
             ->sum('accrued_interest');
-            
+            $actualAmount = round($actualAmount,2);
             $cTransactions = Transactions::where('link_trans_id','=',$trans->trans_id)
             ->where('invoice_disbursed_id','=',$invDisbId)
             ->where('entry_type','=',1)
@@ -69,17 +70,14 @@ class ManualApportionmentHelper{
                 $amount -= $cTrans->amount;
             }
 
-            $amount = round($actualAmount,2) - $amount;
-            if($amount > 0){
-
-            }
-            elseif($amount < 0){
+            $amount = $actualAmount - $amount;
+            if($amount < 0){
                 $amount = abs($amount);
                 // Interest cancelation Process
                 
                 if($amount > 0){
-                    if($amount >= $trans->outstanding){
-                        $cAmt = $trans->outstanding;
+                    if($amount >= $outstanding){
+                        $cAmt = $outstanding;
                     }else{
                         $cAmt = $amount;
                     }
@@ -114,7 +112,6 @@ class ManualApportionmentHelper{
                     foreach($rTransactions as $rTrans){
                         $amount -= $rTrans->amount;
                     }
-
                     if($amount > 0){
 
                         $paidTransactions = Transactions::where('parent_trans_id','=',$trans->trans_id)
