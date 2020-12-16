@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Storage;
 use Auth;
 
 define('FIXED', array('vendorId' => 'cfpl','time' => date('Ymd\THis\Z')));
-define('IDFC_LIB_URL', config('lms.IDFC_PROD.IDFC_API_URL'));
-define('IDFC_CRYPTO_KEY', config('lms.IDFC_PROD.IDFC_CRYPTO_KEY'));
-define('IDFC_CORP_ID', config('lms.IDFC_PROD.IDFC_CORP_ID'));
+define('IDFC_LIB_URL', config('lms.IDFC_API_URL'));
+define('IDFC_CRYPTO_KEY', config('lms.IDFC_CRYPTO_KEY'));
+define('IDFC_CORP_ID', config('lms.IDFC_CORP_ID'));
 date_default_timezone_set("Asia/Kolkata");
 
 class Idfc_lib{
@@ -50,6 +50,7 @@ class Idfc_lib{
 			return $request;
 		}
 		list($payload, $http_header, $txn_id) = $request;
+		dd($url, $payload, $http_header);
      	$response = $this->_curlCall($url, $payload, $http_header);
      	// $response = $this->staticEnquiryResponse();
      	// $response = $this->staticPaymentResponse();
