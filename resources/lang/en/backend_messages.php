@@ -40,5 +40,6 @@ return [
     'offer_rejected' => 'Offer rejected successfully.',
     'disbursed_error' => 'Some error occured, Please try again.',
     'reject_app' => 'Application Status Changed Successfully',
+    'batch_disbursed' => 'Batch successfully marked disbursed.',
 ];
 

@@ -201,12 +201,26 @@ return [
        'DISBURSED' =>'8',
        'FAILED_REFUND'=>'9',
     ],
-    'IDFC_DEBIT_BANK' => [    
-       'DEBIT_ACC_NO' => '10062193074',
-       'DEBIT_ACC_NAME' => 'Capsave Finance Pvt Ltd',
-       'DEBIT_MOBILE' => '9930840248'
+    'IDFC_PROD' => [
+        'IDFC_DEBIT_BANK' => [    
+           'DEBIT_ACC_NO' => '10062193074',
+           'DEBIT_ACC_NAME' => 'Capsave Finance Pvt Ltd',
+           'DEBIT_MOBILE' => '9930840248'
+        ],
+        'IDFC_API_URL' => 'https://api.idfcbank.com:443/',
+        'IDFC_CRYPTO_KEY' => 'MXgMPdydQGTiNyWXoEnyCySHLiWRYMFo',
+        'IDFC_CORP_ID' => 'CAPSAVEAPI',
     ],
-    'IDFC_API_URL' => 'https://api.idfcbank.com:443/',
-    'IDFC_CRYPTO_KEY' => 'MXgMPdydQGTiNyWXoEnyCySHLiWRYMFo',
-    'IDFC_CORP_ID' => 'CAPSAVEAPI',
+    'IDFC_UAT' => [
+        'IDFC_DEBIT_BANK' => [    
+           'DEBIT_ACC_NO' => '21480259346',
+           'DEBIT_ACC_NAME' => 'testing name',
+           'DEBIT_MOBILE' => '1234567890',
+           'BEN_IFSC' => 'UTIB0000001',
+           'BEN_ACC_NO' => '21480314831'
+        ],
+        'IDFC_API_URL' => 'https://ESBUAT1RTN0140.idfcbank.com:9444/',
+        'IDFC_CRYPTO_KEY' => 'VNpCutoEupsJZvWcTAnEohnhdjgccWbP',
+        'IDFC_CORP_ID' => 'CAPSAVEUAT',
+    ]
 ];

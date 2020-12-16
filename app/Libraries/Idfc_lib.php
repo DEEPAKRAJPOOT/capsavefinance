@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Storage;
 use Auth;
 
 define('FIXED', array('vendorId' => 'cfpl','time' => date('Ymd\THis\Z')));
-define('IDFC_LIB_URL', config('lms.IDFC_API_URL'));
-define('IDFC_CRYPTO_KEY', config('lms.IDFC_CRYPTO_KEY'));
-define('IDFC_CORP_ID', config('lms.IDFC_CORP_ID'));
+define('IDFC_LIB_URL', config('lms.IDFC_PROD.IDFC_API_URL'));
+define('IDFC_CRYPTO_KEY', config('lms.IDFC_PROD.IDFC_CRYPTO_KEY'));
+define('IDFC_CORP_ID', config('lms.IDFC_PROD.IDFC_CORP_ID'));
 date_default_timezone_set("Asia/Kolkata");
 
 class Idfc_lib{
@@ -51,6 +51,8 @@ class Idfc_lib{
 		}
 		list($payload, $http_header, $txn_id) = $request;
      	$response = $this->_curlCall($url, $payload, $http_header);
+     	// $response = $this->staticEnquiryResponse();
+     	// $response = $this->staticPaymentResponse();
      	if ($getApiResponse) {
      		return [$txn_id, $payload, $http_header, $response['result']];
      	}
@@ -59,17 +61,17 @@ class Idfc_lib{
 			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
 			return $resp;
 		}
-		if (empty($response['error_no']) && $response['curl_info']['http_code'] != 200) {
-			$resp['code'] 	 = "HTTPCode : " . $response['curl_info']['http_code'];
-			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
-			return $resp;
-		}
+		// if (empty($response['error_no']) && $response['curl_info']['http_code'] != 200) {
+		// 	$resp['code'] 	 = "HTTPCode : " . $response['curl_info']['http_code'];
+		// 	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
+		// 	return $resp;
+		// }
 		$result = $this->_parseResult($response['result'], $method);
 		$result['result']['url'] = $url;
 		$result['result']['payload'] = $payload;
 		$result['result']['http_header'] = $http_header;
 		$result['result']['response'] = $response['result'];
-		$result['http_code'] = $response['curl_info']['http_code'];
+		$result['http_code'] = $response['curl_info']['http_code'] ?? '';
 
 		return $result;
     }
@@ -237,6 +239,80 @@ class Idfc_lib{
       	list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
       	$path = Storage::disk('public')->put("/IDFCH2H/CAPSAVEUAT/ACHDR/$w_folder/$w_filename", $data);
       	return True;
+	}
+
+    private function staticPaymentResponse() {
+      	
+      	$enquiryRes['result'] = 'HTTP/1.1 200 OK
+Date: Thu, 10 Dec 2020 12:02:41 GMT
+server: 
+Content-Type: application/json;charset=UTF-8
+Content-Length: 653
+
+{
+  "doMultiPaymentCorpRes":{
+    "Header":{
+      "Tran_ID":"2RLJQ4955QEVD6FVFJ",
+      "Corp_ID":"CAPSAVEAPI",
+      "Status":"Success"
+    },
+    "Body":{
+      "Tran_ID":"2RLJQ4955QEVD6FVFJ",
+      "TranID_Status":"SUCCESS",
+      "TranID_StatusDesc":"FILE HAS BEEN ACCEPTED",
+      "Transaction":[
+        {
+          "RefNo":"2RLJQ4955JFV",
+          "UTR_No":null,
+          "Mode_of_Pay":"RTGS",
+          "Ben_Acct_No":"50200026128604",
+          "Ben_Name_as_per_dest_bank":"NA",
+          "Ben_IFSC":"HDFC0000891",
+          "RefStatus":"FAILED",
+          "StatusDesc":"CLEARED BAL/FUNDS/DP NOT AVAILABLE.CARE!"
+        }
+      ]
+    }
+  }
+}';
+      	return $enquiryRes;
+	}
+
+    private function staticEnquiryResponse() {
+      	
+      	$enquiryRes['result'] = 'HTTP/1.1 200 OK
+Date: Thu, 10 Dec 2020 12:02:41 GMT
+server: 
+Content-Type: application/json;charset=UTF-8
+Content-Length: 653
+
+{
+  "doMultiPaymentCorpRes":{
+    "Header":{
+      "Tran_ID":"2RLJQ4955QEVD6FVFJ",
+      "Corp_ID":"CAPSAVEAPI",
+      "Status":"Success"
+    },
+    "Body":{
+      "Tran_ID":"2RLJQ4955QEVD6FVFJ",
+      "TranID_Status":"SUCCESS",
+      "TranID_StatusDesc":"FILE HAS BEEN ACCEPTED",
+      "Transaction":[
+        {
+          "RefNo":"2RLJQ4955JFV",
+          "UTR_No":null,
+          "Mode_of_Pay":"RTGS",
+          "Ben_Acct_No":"50200026128604",
+          "Ben_Name_as_per_dest_bank":"NA",
+          "Ben_IFSC":"HDFC0000891",
+          "RefStatus":"FAILEDs",
+          "StatusDesc":"CLEARED BAL/FUNDS/DP NOT AVAILABLE.CARE!"
+        }
+      ]
+    }
+  }
+}';
+      	return $enquiryRes;
 	}
 }
 
