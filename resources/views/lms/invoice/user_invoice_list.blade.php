@@ -56,6 +56,7 @@
                                   <th>Business GST No</th>
                                   <th>Invoice No</th>
                                   <th>Invoice Date</th>
+                                  <th>Due Date</th>
                                   <th>Place of Supply</th>
                                   <th>Action</th> 
                                 </tr>

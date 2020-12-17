@@ -81,9 +81,9 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		return State::getStateById($state_id);
 	}
 
-	public function getNextInv($data) {
-		return InvoiceNo::create($data);
-	}
+	// public function getNextInv($data) {
+	// 	return InvoiceNo::create($data);
+	// }
 
 	public function getUserCompanyRelation(int $user_id) {
 		return UserInvoiceRelation::getUserCurrCompany($user_id);
@@ -160,6 +160,14 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 
 	public function getUserAllApplicationsDetail(int $user_id) {
 		return Application::getApplicationsDetail($user_id);
+	}
+
+	public function getUserLastInvoiceNo() {
+		return UserInvoice::getUserLastInvoiceNo();
+	}
+
+	public function getLastInvoiceSerialNo($inv_type){
+		return UserInvoice::getLastInvoiceSerialNo($inv_type);
 	}
 
 }

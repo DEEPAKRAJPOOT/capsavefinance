@@ -233,4 +233,8 @@ return [
        'REJECT'=>'7',
        'CLOSED'=>'8'
     ],
+    'INVOICE_TYPE' => [
+        'I' => 'ZR',
+        'C' => 'NZ'
+    ],
 ];

@@ -6,6 +6,11 @@
       #table td {
           text-align: center !important;
       }
+      /* .label {
+        color: white;
+        padding: 8px;
+      } */
+      .other {background-color: #e7e7e7; color: black;} /* Gray */
    </style>
    <section class="content-header">
       <div class="header-icon">
@@ -37,6 +42,11 @@
                         </select>
                     </div>
                   </div>
+                  <div class="row">
+                    <div class='col-md-12 mb-3'>
+                      <span class="label other">{{Session::get('lastInvMsg')}}</span>
+                    </div>
+                  </div>
                   <div class=" form-fields mb-4">
                       <div class="row">
                           <div class="col-md-6 d-flex">
@@ -48,6 +58,11 @@
                                               <div class="col-md-12">
                                                   <div class="form-group">
                                                       <label class="m-0">PAN Number: <span>{{$billingDetails['pan_no']}}</span></label>
+                                                  </div>
+                                              </div>
+                                              <div class="col-md-12">
+                                                  <div class="form-group">
+                                                      <label class="m-0">State Code:<span>{{substr($billingDetails['gstin_no'],0,2)}}</span></label>
                                                   </div>
                                               </div>
                                               <div class="col-md-12">
@@ -77,9 +92,9 @@
                                                     </label>
                                                     <div>
                                                         <ul class="mh-line">
-                                                            <li>{{$origin_of_recipient['state_code']}}/ </li>
+                                                            <li style="flex: 30%;">{{$origin_of_recipient['state_code'].'/'.$origin_of_recipient['financial_year']}}/</li>
                                                             <li><input type="text" id="invoice_user_code" class="form-control" tabindex="3" autocomplete="off" maxlength="3" readonly /></li>
-                                                            <li>/{{$origin_of_recipient['financial_year']}}/{{$origin_of_recipient['rand_4_no']}}</li>
+                                                            <li>/{{$origin_of_recipient['rand_4_no']}}</li>
                                                         </ul>
                                                     </div> 
                                                 </div>
@@ -101,6 +116,13 @@
                                                         <option selected value="{{ \Helpers::formatIdWithPrefix($app->app_id) }}">{{ $app->biz_entity_name }} ({{ \Helpers::formatIdWithPrefix($app->app_id) }})</option>
                                                       @endforeach
                                                     </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="txtEmail">Due Date
+                                                    </label>
+                                                    <input type="text" name="due_date" id="due_date" class="form-control" placeholder="dd/mm/yyyy" readonly maxlength="10" />
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
@@ -214,8 +236,8 @@
        state_name: "{{ $origin_of_recipient['state_name'] }}",
        charge_prefix: "{{ $origin_of_recipient['charge_prefix'] }}",
        interest_prefix: "{{ $origin_of_recipient['interest_prefix'] }}",
-       invoice_state_code : "{{$origin_of_recipient['state_code']}}/",
-       invoice_fin : "/{{$origin_of_recipient['financial_year'] . '/' . $origin_of_recipient['rand_4_no']}}",
+       invoice_state_code : "{{$origin_of_recipient['state_code'] . '/' .$origin_of_recipient['financial_year']}}/",
+       invoice_fin : "/{{$origin_of_recipient['rand_4_no']}}",
    }
    $(document).ready(function(){
        $("#invoice_date").datetimepicker({
@@ -224,6 +246,14 @@
            autoclose: true,
            startDate:  new Date("{{$eodStartDate}}"),
            endDate: '+0d',
+           minView : 2,
+       });
+       $("#due_date").datetimepicker({
+           setDate : new Date(),
+           format: 'dd/mm/yyyy',
+           autoclose: true,
+           startDate:  new Date("{{$due_date}}"),
+           endDate: '+7d',
            minView : 2,
        });
    });
@@ -267,6 +297,7 @@
     $('#invoice_type_error').remove();
     $('#invoice_user_code_error').remove();
     $('#invoice_date_error').remove();
+    $('#due_date_error').remove();
     $('#reference_no_error').remove();
     let invoice_type = $('#invoice_type').val();
     if (!invoice_type) {
@@ -286,7 +317,12 @@
       $('#invoice_date').focus();
       return false;
     }
-
+    let due_date = $('#due_date').val();
+    if (!due_date) {
+      $('#due_date').after('<span id="due_date_error" class="error">Please select invoice Date</span>');
+      $('#due_date').focus();
+      return false;
+    }
     let reference_no = $('#reference_no').val();
     if (!reference_no) {
       $('#reference_no').after('<span id="reference_no_error" class="error">Please select Reference Appliction</span>');

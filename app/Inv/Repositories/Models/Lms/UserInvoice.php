@@ -57,7 +57,9 @@ class UserInvoice extends BaseModel {
         'reference_no',
         'invoice_type',
         'invoice_no',
+        'inv_serial_no',
         'invoice_date',
+        'due_date',
         'invoice_state_code',
         'place_of_supply',
         'comp_addr_id',
@@ -142,7 +144,16 @@ class UserInvoice extends BaseModel {
      * GET AJAX result list
      */
     public static function getUserInvoiceList($user_id, $appId = null) {
-        $result = self::where('user_id' , $user_id);
+        $result = self::where('user_id' , $user_id)->orderBy('user_invoice_id','desc');
         return $result ? : false;
+    }
+
+    public static function getUserLastInvoiceNo(){
+        $result =  self::latest()->first();
+        return $result ?? false;
+    }
+
+    public static function getLastInvoiceSerialNo($inv_type){
+        return self::where('invoice_type',$inv_type)->latest()->first();
     }
 }

@@ -9,19 +9,23 @@
    </h2>
    <hr />
    <h2  style="font-size: 10px;text-align: center; margin: 5px 0 5px;"><strong><u>GST TAX INVOICE</u></strong></h2>
-   <span style="font-family:Book Antiqua;padding-left: 6px;margin-bottom: 10px;border-left: 6px solid #108763; float: left;width: 50%; font-size: 9px;">
+   <span style="font-family:Book Antiqua;padding-left: 6px;margin-bottom: 10px;border-left: 6px; float: left;width: 50%; font-size: 9px;">
       <strong>
       <span>BILLING ADDRESS:</span><br />
       <span style="line-height: 1.5;">{{$billingDetails['name']}}</span><br />
       <span style="line-height: 1.5;">{{$billingDetails['address']}}</span><br />
       <span style="line-height: 1.5;">GSTIN: {{$billingDetails['gstin_no']}}</span><br />
-      <span style="line-height: 1.5;">PAN Number: {{$billingDetails['pan_no']}}</span>
+      <span style="line-height: 1.5;">PAN Number: {{$billingDetails['pan_no']}}</span><br />
+      <span style="line-height: 1.5;">State Code: {{substr($billingDetails['gstin_no'],0,2)}}</span>
       </strong>
    </span>
    <span style="font-family:Book Antiqua;float: right;width: 45%;text-align: right;font-size: 9px;">
       <span><strong>Original for Recipient:</strong></span><br />
       <span>Invoice No: {{$origin_of_recipient['invoice_no']}}</span><br />
       <span>Invoice Date: {{$origin_of_recipient['invoice_date']}}</span><br />
+      @if(!empty($origin_of_recipient['due_date']))
+      <span>Due Date: {{$origin_of_recipient['due_date']}}</span><br />
+      @endif
       <span>Reference No: #{{$origin_of_recipient['reference_no']}}</span><br />
       <span>Place of Supply: {{$billingDetails['state_name']}}</span><br />
    </span>

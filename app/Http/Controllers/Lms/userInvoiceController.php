@@ -66,6 +66,7 @@ class userInvoiceController extends Controller
        public function createUserInvoice(Request $request) {
         try {
             $eodStartDate = Helper::getSysStartDate();
+            $due_date = \Carbon\Carbon::now()->addDays(7)->toDateTimeString();
             $user_id = $request->get('user_id');
             $userCompanyRelation  = $this->UserInvRepo->getUserCompanyRelation($user_id);
             if (empty($userCompanyRelation)) {
@@ -98,7 +99,18 @@ class userInvoiceController extends Controller
             $allApplications  = $this->UserInvRepo->getUserAllApplicationsDetail($user_id);
             $encData = _encrypt("$user_id|$company_id|$biz_addr_id|$user_invoice_rel_id");
             $origin_of_recipient = $origin_of_recipient['data'];
-            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData, 'allApplications' => $allApplications, 'eodStartDate' => $eodStartDate]);
+            $origin_of_recipient['charge_prefix'] = config('lms.INVOICE_TYPE.C');
+            $origin_of_recipient['interest_prefix'] = config('lms.INVOICE_TYPE.I'); 
+            $latestUserInvoice = $this->UserInvRepo->getUserLastInvoiceNo();
+            if($latestUserInvoice){
+                $fname = \Helpers::getUserInfo((int)$latestUserInvoice->created_by)->f_name;
+                $lname = \Helpers::getUserInfo((int)$latestUserInvoice->created_by)->l_name;
+                $created_by = $fname.' '.$lname;
+                Session::flash('lastInvMsg','Last Invoice generated Number '.$latestUserInvoice->invoice_no .' created by '.$created_by.' created on '.$latestUserInvoice->created_at);
+            }else{
+                Session::flash('lastInvMsg','Still Invoice not created for any customer.');
+            }
+            return view('lms.invoice.create_user_invoice')->with(['user_id'=> $user_id, 'billingDetails' => $billingDetails, 'origin_of_recipient' => $origin_of_recipient, 'encData' => $encData, 'allApplications' => $allApplications, 'eodStartDate' => $eodStartDate, 'due_date' => $due_date]);
         } catch (Exception $ex) {
              return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -210,12 +222,13 @@ class userInvoiceController extends Controller
         }
         $companyDetail = $companyDetail['data'];
         $reference_no = _getRand(10). $user_id;
-        $invoice_no_id = $this->UserInvRepo->getNextInv(['user_id' => $user_id])->invoice_no_id;
+        // $invoice_no_id = $this->UserInvRepo->getNextInv(['user_id' => $user_id])->invoice_no_id;
         $curr_date = date('y-m-d');
         $origin_of_recipient = [
             'reference_no' => 'RENT'. $reference_no,
             'financial_year' => getFinancialYear($curr_date),
-            'rand_4_no' => sprintf('%04d', $invoice_no_id ?? rand(0, 9999)),
+            // 'rand_4_no' => sprintf('%04d', $invoice_no_id ?? rand(0, 9999)),
+            'rand_4_no' => '----',
         ];
         $response['status'] = 'success';
         $response['message'] = 'success';
@@ -273,12 +286,19 @@ class userInvoiceController extends Controller
     public function previewUserInvoice(Request $request){
         $url_user_id = $request->get('user_id');
         $invoice_date = $request->get('invoice_date');
+        $due_date = $request->get('due_date');
         $reference_no = $request->get('reference_no');
         $invoice_no = $request->get('invoice_no');
         $state_name = $request->get('state_name');
         $invoice_type = $request->get('invoice_type');
         $trans_ids = $request->get('trans_id');
         $trans_ids = $request->get('trans_id');
+
+        $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoice_type);
+        $invSerialNo = sprintf('%04d', ($lastInvData->inv_serial_no + 1) ?? rand(0, 9999));
+        $InvoiceNoArr = explode('/',$invoice_no);
+        $InvoiceNoArr[3] = $invSerialNo;
+        $invoice_no = implode('/',$InvoiceNoArr);
 
         if (!in_array($invoice_type, ['I', 'C'])) {
            return response()->json(['status' => 0,'message' => "Invalid Invoice Type found."]); 
@@ -331,6 +351,7 @@ class userInvoiceController extends Controller
             'invoice_no' => $invoice_no,
             'place_of_supply' => $state_name,
             'invoice_date' => $invoice_date,
+            'due_date' => $due_date,
         ];
         $is_state_diffrent = ($userStateId != $companyStateId);
         $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
@@ -359,6 +380,7 @@ class userInvoiceController extends Controller
             $invoice_type = $request->get('invoice_type');
             $trans_ids = $request->get('trans_id');
             $invoice_date = $request->get('invoice_date');
+            $due_date = $request->get('due_date');
             $reference_no = $request->get('reference_no');
             if (!is_array($trans_ids) || empty($trans_ids)) {
                 return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No selected txns found for the invoice.');
@@ -404,6 +426,13 @@ class userInvoiceController extends Controller
             if(empty($txnsData) ||  $txnsData->isEmpty()){
                 return redirect()->route('view_user_invoice', ['user_id' => $url_user_id])->with('error', 'No remaining txns found for the invoice.');
             }
+            
+            $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoice_type);
+            $invSerialNo = sprintf('%04d', ($lastInvData->inv_serial_no + 1) ?? rand(0, 9999));
+            $InvoiceNoArr = explode('/',$requestedData['invoice_no']);
+            $InvoiceNoArr[3] = $invSerialNo;
+            $newInvoiceNo = implode('/',$InvoiceNoArr);
+
             $is_state_diffrent = ($userStateId != $companyStateId);
             $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
             $intrest_charges = $inv_data[0];
@@ -423,8 +452,10 @@ class userInvoiceController extends Controller
                 'biz_entity_name' => $billing_data['name'],
                 'reference_no' => $reference_no,
                 'invoice_type' => $requestedData['invoice_type'],
-                'invoice_no' => $requestedData['invoice_no'],
+                'invoice_no' => $newInvoiceNo,
+                'inv_serial_no' => $invSerialNo,
                 'invoice_date' => Carbon::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d H:i:s'),
+                'due_date' => Carbon::createFromFormat('d/m/Y', $due_date)->format('Y-m-d H:i:s'),
                 'invoice_state_code' => $company_data['state_code'],
                 'place_of_supply' => $billing_data['state_name'],
                 'tot_no_of_trans' => count($requestedData['trans_id']),
@@ -481,7 +512,14 @@ class userInvoiceController extends Controller
         $invoice_no = $invData->invoice_no;
         $state_name = $invData->place_of_supply;
         $invoice_type = $invData->invoice_type;
-        $invoice_date = $invData->invoice_date;
+        $invoice_date = $this->dateFormat($invData->invoice_date);
+        $due_date = $invData->due_date ? $this->dateFormat($invData->due_date) :'';
+        // $invoice_date_arr = explode('-',$invData->invoice_date);
+        // $temp = $invoice_date_arr[0];
+        // $invoice_date_arr[0] = $invoice_date_arr[2];
+        // $invoice_date_arr[2] = $temp;
+        // $invoice_date = implode('-',$invoice_date_arr);
+
         $company_id = $invData->comp_addr_id;
         $registered_comp_id = $invData->registered_comp_id;
 
@@ -520,6 +558,7 @@ class userInvoiceController extends Controller
             'invoice_no' => $invoice_no,
             'place_of_supply' => $state_name,
             'invoice_date' => $invoice_date,
+            'due_date' => $due_date,
         ];
         if (empty($invData->inv_comp_data)) {
             $companyDetail = $this->_getCompanyDetail($company_id, $bank_account_id);
@@ -800,6 +839,19 @@ class userInvoiceController extends Controller
             } catch (Exception $ex) {
                 dd($ex);
             }
+    }
+
+    public function dateFormat($date){
+        if($date){
+            $date_arr = explode('-',$date);
+            $temp = $date_arr[0];
+            $date_arr[0] = $date_arr[2];
+            $date_arr[2] = $temp;
+            $new_date_format = implode('-',$date_arr);
+            return $new_date_format;
+        }else{
+            return '';
+        }
     }
    
 
