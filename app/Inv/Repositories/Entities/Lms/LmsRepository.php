@@ -65,6 +65,10 @@ use App\Inv\Repositories\Models\Lms\Refund\RefundReqBatch;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Contracts\Traits\CommonRepositoryTraits;
 use App\Inv\Repositories\Models\Lms\DisbursalApiLog;
+use App\Inv\Repositories\Models\UserNach;
+use App\Inv\Repositories\Models\Lms\NachRepaymentReq;
+use App\Inv\Repositories\Models\Lms\NachRepaymentReqBatch;
+use App\Inv\Repositories\Models\Lms\NachTransReq;
 
 /**
  * Lms Repository class
@@ -1678,5 +1682,59 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		$response =  RefundReq::updateOrCreate(['tran_no' => $updatingId],$data);
 		return ($response) ?? $response;
 	}
+    
+    public function getAllNach($whereCond = []){
+        return UserNach::getNach($whereCond);
+    }
 
+	public function getUserNaches($nachIds)
+	{
+		return UserNach::whereIn('users_nach_id', $nachIds)
+			   ->get();
+	}
+
+	public static function createNachReqBatch($file, $batchNo = null)
+    {   
+        if (!empty($batchNo)) {
+            $disburseBatch['batch_no'] = $batchNo ?? null;
+            $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
+            $disburseBatch['batch_status'] = 1;
+        }
+        return NachRepaymentReqBatch::create($disburseBatch);
+    }
+    public static function saveNachReq($data)
+    {
+        return NachRepaymentReq::create($data);
+    }
+    
+    /**
+     * Update Nach repayment Data By Condition
+     * 
+     * @param arr $attr
+     * @param arr $whereCond
+     * @return type
+     */
+    public function updateRepaymentReq($attr, $whereCond){
+        return NachRepaymentReq::updateRepaymentReq($attr, $whereCond);
+    }
+
+    public function getNachRepaymentReq($whereCondition){
+        return NachRepaymentReq::where($whereCondition)->orderBy('created_at', 'DESC');
+    }
+    
+	public static function getNACHUnsettledTrans($userId, $where = []){
+		return Transactions::getNACHUnsettledTrans($userId, $where);
+	}
+
+    public static function saveNachTrans($data)
+    {
+        return NachTransReq::create($data);
+    }
+
+    public function getNachRepaymentReqFirst($whereCondition){
+        return NachRepaymentReq::where($whereCondition)->first();
+    }
+    public function updateNachTransReq($attr, $whereCond){
+        return NachTransReq::updateNachTransReq($attr, $whereCond);
+    }
 }

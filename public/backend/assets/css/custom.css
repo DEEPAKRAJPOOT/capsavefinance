@@ -1443,8 +1443,8 @@ ul.custom-tab li a.active {color: #ffffff !important;border-color:0 !important;b
     font-size: 13px;
 }
 
-ul.custom-check-label{display:flex;justify-content:space-between;padding:0;}
-ul.custom-check-label li{list-style:none;}
+ul.custom-check-label{display:flex;padding:0;}	
+ul.custom-check-label li{list-style:none; padding: 0 10px 0 0; position: relative;}
 ul.custom-check-label li label{padding:0;font-weight: 400;}
 
 /*15/07/2020 Add Css*/
@@ -1453,3 +1453,62 @@ a.btn.btn-success.btn-sm {color: #fff; cursor: pointer;}
 #addAppRejection ul.custom-check-label li {padding: 0 10px 0 25px;}
 #addAppRejection ul.custom-check-label{padding: 0;}
 #addAppRejection .form-check{padding:0}
+
+/*30/07/2020 vikrant Add Css*/
+ul.custom-check-label #debit_type-error {
+    position: absolute;
+    width: 130px;
+    top: 22px;
+}
+ul.custom-check-label #debit_tick-error {
+    position: absolute;
+    width: 130px;
+    top: 22px;
+}
+ul.custom-check-label #period_until_cancelled-error {
+    position: absolute;
+    width: 130px;
+    top: 22px;
+}
+ul.custom-check-label #frequency-error {
+    position: absolute;
+    width: 130px;
+    top: 22px;
+}
+.error {
+    color: #ff0000;
+    font-weight: normal;
+}
+.form-control {
+    display: block;
+    width: 100%;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+/*14-08-2020*/
+
+#nachList.table{
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.white-space{
+    white-space: nowrap;
+}
+.filter-abs-btn {
+    position: absolute;
+    right: 15px;
+    top: 0px;
+    z-index: 3;
+}

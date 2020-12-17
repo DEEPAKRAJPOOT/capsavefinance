@@ -7214,5 +7214,447 @@ class DataRenderer implements DataProviderInterface
                 )
                 ->make(true);
     }
+    
+    /**
+    * Nach Data table listing
+    * 
+    * @param Request $request
+    * @param type $data
+    * @return type
+    */
+   public function getNach(Request $request, $data) {
+       $this->sr_no = 1;
+       return DataTables::of($data)
+           ->rawColumns(['users_nach_id','nach_date','sponsor_bank_code','acc_name','acc_no','ifsc_code',
+               'branch_name','amount','phone_no','email_id','period_from', 'period_to', 'debit_type', 'created_at', 'uploaded_file_id'])
+           ->addColumn('users_nach_id', function ($nachData) {
+               $cBox = '';
+               if($nachData->nach_status < 4) {
+                   $cBox = '<input type="checkbox" data-id="'.$nachData->users_nach_id.'" name="chkstatus[]" value="'.(($nachData->users_nach_id) ? $nachData->users_nach_id : '' ).'" class="chkstatus">';
+               }
+               return $cBox;
+           })
+           ->editColumn('nach_date', function ($nachData) {
+               return date('d-m-Y', strtotime($nachData->nach_date));
+           })
+           ->editColumn('sponsor_bank_code', function ($nachData) {
+               return $nachData->sponsor_bank_code;
+           })  
+           ->editColumn('acc_name', function ($nachData) {
+               return $nachData->acc_name ;
+           })
+           ->editColumn('acc_no', function ($nachData) {
+               return $nachData->acc_no ;
+           })
+           ->editColumn('ifsc_code', function ($nachData) {
+               return $nachData->ifsc_code ? $nachData->ifsc_code : $nachData->micr ;
+           })
+           ->editColumn('branch_name', function ($nachData) {
+               return $nachData->branch_name ;
+           })
+           ->editColumn('amount', function ($nachData) {
+               return $nachData->amount ;
+           })
+           ->editColumn('phone_no', function ($nachData) {
+               return $nachData->phone_no ;
+           })
+           ->editColumn('email_id', function ($nachData) {
+               return $nachData->email_id ;
+           })
+           ->editColumn('period_from', function ($nachData) {
+               return date('d-m-Y', strtotime($nachData->period_from));
+           })
+           ->editColumn('period_to', function ($nachData) {
+               return $nachData->period_to ? date('d-m-Y', strtotime($nachData->period_to)) : 'Until Cancelled';
+           })
+           ->editColumn('debit_type',  function ($nachData) {
+               $full_name = $nachData->debit_type == 1 ? 'Fixed Amount' : 'Maximum Amount' ;
+               return $full_name;
+           })
+           ->editColumn('created_at', function ($nachData) {
+               return $nachData->created_at ? date('d-m-Y', strtotime($nachData->created_at)) : '';
+           })
+           ->editColumn('uploaded_file_id',  function ($nachData) {
+               if(($nachData->uploaded_file_id != 0)) {
+                   return '<a href="'.route('download_storage_file', ['file_id' => $nachData->uploaded_file_id ]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+               }
+           }) 
+           ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') { 
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('email_id', 'like',"%$search_keyword%");
+                        $query->orWhere('acc_name', 'like',"%$search_keyword%");
+                        $query->orWhere('acc_no', 'like',"%$search_keyword%");
+                    });                        
+                }
+            })
+           ->make(true);
+   }
+
+   public function getUserNACH(Request $request, $data) {
+       return DataTables::of($data)
+            ->rawColumns(['status', 'action'])
+
+            ->editColumn(
+                'customer_id', 
+                function ($nachData) {
+                    return $nachData->lms_user->customer_id;
+            })
+            ->editColumn(
+                'customer_name', 
+                function ($nachData) {
+                    return $nachData->user->f_name.' '.$nachData->user->l_name;;
+            })  
+            ->editColumn(
+                'bank_name', 
+                function ($nachData) {
+                    return $nachData->user_bank->bank->bank_name ;
+            })
+            ->editColumn(
+                'start_date', 
+                function ($nachData) {
+                    return ($nachData->period_from) ? date('d-m-Y',strtotime($nachData->period_from)) : '---' ;
+            })
+            ->editColumn(
+                'end_date', 
+                function ($nachData) {
+                    return ($nachData->period_to) ? date('d-m-Y',strtotime($nachData->period_to)) : '---' ;
+            })
+            ->editColumn(
+                'status', 
+                function ($nachData) {
+
+                    $statusArray =  [    
+                       1 => 'PENDING',
+                       2 => 'PDF_UPLOADED',
+                       3 => 'SENT_TO_APPROVAL',
+                       4 => 'NACH_ACTIVED',
+                       5 => 'FAILED',
+                       6 => 'ClOSED'
+                    ];
+                    if (strtotime(date("Y-m-d")) > strtotime($nachData->period_to)) {
+                        $status = '<label class="badge badge-danger current-status" style="margin-bottom: 13px">NACH Expired &nbsp; &nbsp;</label>';
+                    } else {
+                        $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
+                    }
+                    return $status ? $status : 'NA' ;
+            })
+            ->editColumn(
+                'created', 
+                function ($nachData) {
+                    return $nachData->created_at ? date('d-m-Y', strtotime($nachData->created_at)) : '';
+            })
+
+            ->addColumn(
+                'action',
+                function ($nachData) {
+                    $action= '';
+                    if ($nachData->nach_status < 2 ) {
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Edit NACH Detail" href ="'.route('front_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-edit"></i></a>';
+                    }
+                    if ($nachData->nach_status == 4  && empty($nachData->child_nach)) {
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Modify or Cancel" href ="'.route('front_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-arrow-right"></i></a>';
+                    }
+                    if ($nachData->nach_status < 3 ) {
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Preview PDF" href ="'.route('front_nach_detail_preview', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-eye"></i></a>';
+                    }
+                    if(($nachData->uploaded_file_id != 0)) {
+                       $action .=  '<a class="btn btn-action-btn btn-sm" title="download PDF" href="'.route('frontend_download_storage_file', ['file_id' => $nachData->uploaded_file_id ]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                    }
+                    return $action;
+                }
+            )
+           ->make(true);
+   }
+
+   public function getAnchorUserNACH(Request $request, $data) {
+       return DataTables::of($data)
+            ->rawColumns(['status', 'action'])
+
+            ->editColumn(
+                'customer_name', 
+                function ($nachData) {
+                    return $nachData->user->f_name.' '.$nachData->user->l_name;
+            })  
+            ->editColumn(
+                'bank_name', 
+                function ($nachData) {
+                    return $nachData->user_bank->bank->bank_name ;
+            })
+            ->editColumn(
+                'start_date', 
+                function ($nachData) {
+                    return ($nachData->period_from) ? date('d-m-Y',strtotime($nachData->period_from)) : '---' ;
+            })
+            ->editColumn(
+                'end_date', 
+                function ($nachData) {
+                    return ($nachData->period_to) ? date('d-m-Y',strtotime($nachData->period_to)) : '---' ;
+            })
+            ->editColumn(
+                'status', 
+                function ($nachData) {
+
+                    $statusArray =  [    
+                       1 => 'PENDING',
+                       2 => 'PDF_UPLOADED',
+                       3 => 'SENT_TO_APPROVAL',
+                       4 => 'NACH_ACTIVED',
+                       5 => 'FAILED',
+                       6 => 'ClOSED'
+                    ];
+
+                    if (strtotime(date("Y-m-d")) > strtotime($nachData->period_to)) {
+                        $status = '<label class="badge badge-danger current-status" style="margin-bottom: 13px">NACH Expired &nbsp; &nbsp;</label>';
+                    } else {
+                        $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
+                    }
+                    
+                    return $status ? $status : 'NA' ;
+            })
+            ->editColumn(
+                'created', 
+                function ($nachData) {
+                    return $nachData->created_at ? date('d-m-Y', strtotime($nachData->created_at)) : '';
+            })
+
+            ->addColumn(
+                'action',
+                function ($nachData) {
+                    $action= '';
+                    if ($nachData->nach_status < 2 ) {
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Edit NACH Detail" href ="'.route('anchor_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-edit"></i></a>';
+                    }
+                    if ($nachData->nach_status == 4 && empty($nachData->child_nach)) {
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Modify or Cancel" href ="'.route('anchor_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-arrow-right"></i></a>';
+                    }
+                    if ($nachData->nach_status < 3 ) {
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Preview PDF" href ="'.route('anchor_nach_detail_preview', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-eye"></i></a>';
+                    }
+
+                    if(($nachData->uploaded_file_id != 0)) {
+                       $action .=  '<a class="btn btn-action-btn btn-sm" title="download PDF" href="'.route('download_storage_file', ['file_id' => $nachData->uploaded_file_id ]).'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                    }
+                    return $action;
+                }
+            )
+           ->make(true);
+   }
+
+   public function getBackendUserNACH(Request $request, $data) {
+       return DataTables::of($data)
+            ->rawColumns(['status', 'action'])
+
+            ->editColumn(
+                'user_type', 
+                function ($nachData) {
+                    return ($nachData->user_type == 1) ? 'Customer' : 'Anchor' ;
+            }) 
+            ->editColumn(
+                'customer_name', 
+                function ($nachData) {
+                    return $nachData->user->f_name.' '.$nachData->user->l_name;
+            })  
+            ->editColumn(
+                'bank_name', 
+                function ($nachData) {
+                    return $nachData->user_bank->bank->bank_name ;
+            })
+            ->editColumn(
+                'start_date', 
+                function ($nachData) {
+                    return ($nachData->period_from) ? date('d-m-Y',strtotime($nachData->period_from)) : '---' ;
+            })
+            ->editColumn(
+                'end_date', 
+                function ($nachData) {
+                    return ($nachData->period_to) ? date('d-m-Y',strtotime($nachData->period_to)) : '---' ;
+            })
+            ->editColumn(
+                'status', 
+                function ($nachData) {
+
+                    $statusArray =  [    
+                       1 => 'PENDING',
+                       2 => 'PDF_UPLOADED',
+                       3 => 'SENT_TO_APPROVAL',
+                       4 => 'NACH_ACTIVED',
+                       5 => 'FAILED',
+                       6 => 'ACK',
+                       7 => 'REJECT',
+                       8 => 'ClOSED'
+                    ];
+                    if (strtotime(date("Y-m-d")) > strtotime($nachData->period_to)) {
+                        $status = '<label class="badge badge-danger current-status" style="margin-bottom: 13px">NACH Expired &nbsp; &nbsp;</label>';
+                    } else {
+                        $status = '<label class="badge badge-'.($nachData->nach_status == 5 ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachData->nach_status]).'&nbsp; &nbsp;</label>';
+                    }
+
+                    return $status ? $status : 'NA' ;
+            })
+            ->editColumn(
+                'created', 
+                function ($nachData) {
+                    return $nachData->created_at ? date('d-m-Y', strtotime($nachData->created_at)) : '';
+            })
+
+            ->addColumn(
+                'action',
+                function ($nachData) {
+                    $action= '';
+                    if ($nachData->nach_status < 2 ) {
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Edit NACH Detail" href ="'.route('backend_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-edit"></i></a>';
+                    }
+                    if ($nachData->nach_status == 4 && empty($nachData->child_nach)) {
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Modify or Cancel" href ="'.route('backend_edit_nach_detail', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-arrow-right"></i></a>';
+                    }
+                    if ($nachData->nach_status < 3 ) {
+                        $action .= '<a class="btn btn-action-btn btn-sm" title="Preview PDF" href ="'.route('backend_nach_detail_preview', ['users_nach_id' => $nachData->users_nach_id]).'" ><i class="fa fa-eye"></i></a>';
+                    }
+                    return $action;
+                }
+            )
+           ->filter(function ($query) use ($request) {
+                if($request->get('nach_status') != '') {
+                    $nach_status = trim($request->get('nach_status'));
+                    $query->where('nach_status', $nach_status);
+                }
+              
+            })
+            ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') { 
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('email_id', 'like',"%$search_keyword%");
+                        $query->orWhere('acc_name', 'like',"%$search_keyword%");
+                    });                        
+                }
+                if($request->get('nach_status') != '') {
+                    $nach_status = trim($request->get('nach_status'));
+                    $query->where('nach_status', $nach_status);
+                }
+            })
+
+           ->make(true);
+   }
+
+   public function getNachRepaymentList(Request $request, $data) {
+       return DataTables::of($data)
+            ->rawColumns(['id', 'action'])
+            ->editColumn(
+                'id',
+                function ($nachData) {
+                    return '<input class="nach-request" type="checkbox" name="nachRequest[]" value="'.$nachData->users_nach_id.'">';
+                }
+            )
+            ->editColumn(
+                'customer_id', 
+                function ($nachData) {
+                    return $nachData->cust_ref_no ?? '';
+            })
+            ->editColumn(
+                'umr_no', 
+                function ($nachData) {
+                    return $nachData->umrn;
+            })
+            ->editColumn(
+                'nach_amount', 
+                function ($nachData) {
+                    return $nachData->amount;
+            })
+            ->editColumn(
+                'amount', 
+                function ($nachData) {
+                    return $nachData->outstandingAmt;
+            })
+           ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') { 
+                    // $query->where('lms_user',function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('cust_ref_no', 'like',"%$search_keyword%");
+                    // });                        
+                }
+            })
+           ->make(true);
+   }
    
+   public function getNachRepaymentTransList(Request $request, $data) {
+       return DataTables::of($data)
+            ->rawColumns(['action'])
+            ->editColumn(
+                'customer_id', 
+                function ($nachData) {
+                    return $nachData->lms_user->customer_id;
+            })
+            ->editColumn(
+                'Reference', 
+                function ($nachData) {
+                    return $nachData->ref_no;
+            })
+            ->editColumn(
+                'req_date',
+                function ($nachData) {
+                    return $nachData->req_date;
+            })
+            ->editColumn(
+                'amount', 
+                function ($nachData) {
+                    return $nachData->amount;
+            })
+           ->make(true);
+   }
+   
+   public function getNachRepaymentReq(Request $request, $data) {
+       return DataTables::of($data)
+            ->rawColumns(['status', 'action'])
+
+            ->editColumn(
+                'customer_id', 
+                function ($nachReq) {
+                    return $nachReq->lms_user->customer_id ?? '';
+            }) 
+            ->editColumn(
+                'ref_no', 
+                function ($nachReq) {
+                    return $nachReq->ref_no ?? '';
+            })  
+            ->editColumn(
+                'umr_no', 
+                function ($nachReq) {
+                    return $nachReq->user_nach ? $nachReq->user_nach->umrn : '' ;
+            })
+            ->editColumn(
+                'outstanding_amount', 
+                function ($nachReq) {
+                    return ($nachReq->amount ?? '0.00') ;
+            })
+            ->editColumn(
+                'status', 
+                function ($nachReq) {
+
+                    $statusArray =  [
+                        1 => 'Sent to Bank',
+                        2 => 'Success',
+                        3 => 'Failed'
+                        ];
+                    $status = '<label class="badge badge-'.(($nachReq->status == 3) ? 'danger' : 'success pt-2').' current-status" style="margin-bottom: 13px">'.($statusArray[$nachReq->status]).'&nbsp; &nbsp;</label>';
+                    return $status ? $status : 'NA' ;
+            })
+            ->editColumn(
+                'req_date', 
+                function ($nachReq) {
+                    return ($nachReq->req_date) ? date('d-m-Y',strtotime($nachReq->req_date)) : '---' ;
+            })
+           ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') { 
+                    $query->whereHas('lms_user',function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('customer_id', 'like',"%$search_keyword%");
+                    });                        
+                }
+            })            
+           ->make(true);
+   }
+
 }

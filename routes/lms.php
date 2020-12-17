@@ -141,6 +141,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_user_invoice_unpublished',
                 'uses' => 'Lms\userInvoiceController@unpublishUsereAddr',
             ]);
+            
 
             Route::group(['prefix' => 'charges'], function () {
                 if (config('lms.LMS_STATUS')) {
@@ -884,6 +885,31 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::get('process', [
                         'as' => 'do_process',
                         'uses' => 'Lms\EodProcessController@process',
+                    ]);
+                }
+            });
+
+                    
+            Route::group(['prefix' => 'nach'], function () {
+                if (config('lms.LMS_STATUS')) {
+                    
+                    Route::get('/users-nach-list', [
+                        'as' => 'users_nach_list',
+                        'uses' => 'Lms\NachController@getNachList'
+                    ]);
+                    Route::post('/nach-download_sheet', [
+                        'as' => 'nach_download_reports_sheet',
+                        'uses' => 'Lms\NachController@downloadNachReport'
+                    ]);
+                    
+                    Route::get('/upload-nach-response', [
+                        'as' => 'upload_nach_response',
+                        'uses' => 'Lms\NachController@uploadNachResponse'
+                    ]);
+                    
+                    Route::post('/import-nach-response', [
+                        'as' => 'import_nach_response',
+                        'uses' => 'Lms\NachController@importNachResponse'
                     ]);
                 }
             });

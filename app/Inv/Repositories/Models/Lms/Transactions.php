@@ -1289,4 +1289,26 @@ class Transactions extends BaseModel {
     public function getInterestForDisbursal(array $where = []) {
       return $this->belongsTo('App\Inv\Repositories\Models\Lms\Transactions', 'invoice_disbursed_id', 'invoice_disbursed_id')->where($where)->first();
     }
+
+    public function nachTansReq() {
+      return $this->hasOne('App\Inv\Repositories\Models\Lms\NachTransReq', 'trans_id', 'trans_id')->whereIn('status', [1,2]);
+    }
+
+    public static function getNACHUnsettledTrans($userId, $where = []) {
+        $query = self::whereNull('parent_trans_id')
+                ->whereNull('payment_id')
+                ->where('user_id',$userId)
+                ->doesntHave('nachTansReq');
+        if(!empty($where['trans_type_not_in'])){
+            $query = $query->whereNotIn('trans_type',$where['trans_type_not_in']); 
+        }
+        if(!empty($where['trans_type_in'])){
+            $query = $query->whereIn('trans_type',$where['trans_type_in']); 
+        }
+
+        return $query->get()
+            ->filter(function($item) {
+                return ($item->outstanding > 0 && $item->isTransaction && $item->paymentDueDate < date('Y-m-d'));
+            });
+    }
 }

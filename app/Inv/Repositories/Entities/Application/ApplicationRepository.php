@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Entities\Application;
 
 use DB;
 use Session;
+use Auth;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\AppDocument;
 use App\Inv\Repositories\Models\AppDocumentFile;
@@ -74,6 +75,9 @@ use App\Inv\Repositories\Models\AppOfferAdhocLimit;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\BizEntityCin;
 use App\Inv\Repositories\Models\BizInvoice;
+use App\Inv\Repositories\Models\UserNach;
+use App\Inv\Repositories\Models\Lms\NachBatch;
+use App\Inv\Repositories\Models\NachStatusLog;
 
 /**
  * Application repository class
@@ -2425,7 +2429,130 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getRcuDocumentData($where)
     {
         return RcuDocument::getRcuDocumentData($where);
-    }    
+    }
+
+    /**
+     * Save Nach
+     * 
+     * @param type $arr
+     * @return type
+     */
+    public function saveNach($arr){
+        return UserNach::saveNach($arr);
+    }
+    
+    /**
+     * Get Nach Data
+     * 
+     * @param type $whereCond
+     * @return type
+     */
+    public function getNachData($whereCond){
+        return UserNach::getNachData($whereCond);
+    }
+    
+    /**
+     * Get Nach Data
+     * 
+     * @param type $whereCond
+     * @return type
+     */
+    public function getNachDataInNachId($nachIds){
+        return UserNach::getNachDataInNachId($nachIds);
+    }
+    
+    /**
+     * Update Nach Data By Nach Id
+     * 
+     * @param type $attr
+     * @param type $users_nach_id
+     * @return type
+     */
+    public function updateNach($attr, $users_nach_id){
+        return UserNach::updateNach($attr, $users_nach_id);
+    }
+    
+    /**
+     * Get Company Detail
+     * 
+     * @param type $whereCond
+     * @return type
+     */
+    public function getCompAddByCompanyName($whereCond) {
+        return Company::getCompAddByCompanyName($whereCond);
+    }
+    
+    /**
+     * Save Nach batch details
+     * 
+     * @param type $arr
+     * @param type $nach_batch_id
+     * @return type
+     */
+    public function saveNachBatch($arr, $nach_batch_id = null){
+        return NachBatch::saveNachBatch($arr, $nach_batch_id);
+    }
+
+    public function getUserBankNACH($where)
+    {
+        return UserBankAccount::with('user_nach','bank')
+                ->where($where)
+                ->whereDoesntHave('user_nach')
+                ->get();
+    }
+
+    public function getUserNACH($whereCondition){
+        return UserNach::where($whereCondition)
+            // ->where('period_to', '>',date("Y-m-d"))
+            ->orderBy('created_at', 'DESC');
+    }
+
+    public static function  createNachStatusLog($nachId, $status_id)
+    {
+        $created_at  = \Carbon\Carbon::now()->toDateTimeString();
+        $created_by = Auth::user()->user_id;
+
+        $arr  =  [
+            'users_nach_id' => $nachId,
+            'status' => $status_id,
+            'created_at' => $created_at,
+            'created_by' => $created_by
+            ]; 
+        return  NachStatusLog::create($arr);  
+    }
+
+    public function getNachUserList($roleType = false)
+    {
+        $query =  User::with('lms_user', 'roles');
+        
+        if($roleType == 1) {
+            $data = $query->whereHas('lms_user')->get();
+        } else {
+            $data = $query->whereHas('roles', function($query) use ($roleType) {
+                        $query->where('role_type', $roleType);
+                    })->get();
+
+        }
+        return $data ?? null;
+    }
+    
+    /**
+     * Update Nach Data By Condition
+     * 
+     * @param arr $attr
+     * @param arr $whereCond
+     * @return type
+     */
+    public function updateNachByUserId($attr, $whereCond){
+        return UserNach::updateNachByUserId($attr, $whereCond);
+    }
+
+    public function getUserRepaymentNACH($whereCondition){
+        return UserNach::where($whereCondition)
+            ->where('period_to', '>',date("Y-m-d"))
+            ->orderBy('created_at', 'DESC')
+            ->get();
+    }
 }
 
 

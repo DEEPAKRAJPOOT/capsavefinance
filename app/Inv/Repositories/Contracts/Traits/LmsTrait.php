@@ -1047,6 +1047,53 @@ trait LmsTrait
         $disbursalData['created_at'] = $curData;
         return $disbursalData;
     }
+    /**
+     * Prepare Nach Req Data
+     * 
+     * @param array $data
+     * @return mixed
+     */
+    protected function createNachReqData($data = [], $nachBatchId = false)
+    {
+        $reqData = [];
+        
+        $reqData['req_batch_id'] = $nachBatchId ?? null;
+        $reqData['users_nach_id'] = $data['users_nach_id'] ?? null;
+        $reqData['user_id'] = $data['user_id'] ?? null;
+        $reqData['ref_no'] = $data['Customer_Transaction_ref_Number'] ?? null ;
+        $reqData['req_date'] = $data['Settlement_date'] ?? null;
+        $reqData['amount'] = $data['Amount'] ?? null;            
+        $reqData['status'] = 1;
+        $reqData['comment'] = '';
+
+        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                        
+        $reqData['created_by'] = Auth::user()->user_id;
+        $reqData['created_at'] = $curData;
+        return $reqData;
+    }
+
+    /**
+     * Prepare Nach Req Data
+     * 
+     * @param array $data
+     * @return mixed
+     */
+    protected function createNachTransData($data = [], $nachReqId = false)
+    {
+        $reqData = [];
+        
+        $reqData['nach_repayment_req_id'] = $nachReqId ?? null;
+        $reqData['trans_id'] = $data['trans_id'] ?? null;
+        $reqData['amt'] = $data['amount'] ?? null ;
+        $reqData['status'] = 1;
+
+        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+                        
+        $reqData['created_by'] = Auth::user()->user_id;
+        $reqData['created_at'] = $curData;
+        return $reqData;
+    }
     
     protected function calDiffDays($pastDate = '', $nowDate = '')
     {

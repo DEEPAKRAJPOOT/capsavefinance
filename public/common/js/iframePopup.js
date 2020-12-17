@@ -127,7 +127,11 @@ var iframe_ids = [
     'showEndProgramReason',
     'editProgram' ,   
     'addTDSFrame',    
-    'editTDSFrame'    
+    'editTDSFrame',
+    'uploadNachDocument',
+    'createNachFrame',
+    'importNachExcelResponse',
+    'importNachTransResponse'
 ];
 
 iframe_ids.forEach(function (id) {

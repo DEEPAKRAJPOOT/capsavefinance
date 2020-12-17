@@ -165,6 +165,13 @@
             });    
         });
 
+        function dateConversion(date) {
+            var datearray = date.split("/");
+            var newdate = datearray[1] + '/' + datearray[0] + '/' + datearray[2];
+
+            return newdate;
+        }
+
         function datepickerDisFdate(){
             $(".datepicker-dis-fdate").datetimepicker({
                 format: 'dd/mm/yyyy',

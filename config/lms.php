@@ -223,4 +223,14 @@ return [
     'IDFC_API_URL' => 'https://api.idfcbank.com:443/',
     'IDFC_CRYPTO_KEY' => 'MXgMPdydQGTiNyWXoEnyCySHLiWRYMFo',
     'IDFC_CORP_ID' => 'CAPSAVEAPI',
+    'NACH_STATUS' => [    
+       'PENDING' => '1',
+       'PDF_UPLOADED' => '2',
+       'SENT_TO_APPROVAL' => '3',
+       'ACTIVE'=>'4',
+       'FAILED'=>'5',
+       'ACK'=>'6',
+       'REJECT'=>'7',
+       'CLOSED'=>'8'
+    ],
 ];

@@ -134,7 +134,55 @@ class UserFile extends BaseModel
         return $deleteFile;
     }
 
+    /**
+    * Create a new record in for Nach document file
+    *
+    * @param Array $attributes
+    *
+    * @return Array
+    */
+    public static function saveNachFile($attributes, $userId)
+    {
+        $docId = '';
+        $inputArr = UserFile::arrayInputNachData($attributes, $docId, $userId);
+        foreach ($inputArr as $value) {
+            $file = UserFile::create($value);
+        }
+        return $file;
+    }
     
+    /**
+     * Managing nach file inputs as required Array
+     *
+     * @param Array $attributes
+     *
+     * @return Array
+     */
+    
+    public static function arrayInputNachData($attributes, $mstDocId, $userId)
+    {
+        $inputArr = [];
+        $count = count($attributes['doc_file']);
+        for ( $i=0; $i < $count; $i++) 
+        {   
+            if($attributes['doc_file'][$i]) {
+                if(!Storage::exists('/public/user/' .$userId)) {
+                    Storage::makeDirectory('/public/user/' .$userId, 0775, true);
+                }
+                $path = Storage::disk('public')->put('/user/' .$userId, $attributes['doc_file'][$i], null);
+                $inputArr[$i]['file_path'] = $path;
+            }
+             
+            $inputArr[$i]['file_type'] = $attributes['doc_file'][$i]->getClientMimeType();
+            $inputArr[$i]['file_name'] = $attributes['doc_file'][$i]->getClientOriginalName();
+            $inputArr[$i]['file_size'] = $attributes['doc_file'][$i]->getClientSize();
+            $inputArr[$i]['file_encp_key'] =  !empty($path) ? md5(basename($path)) : md5('2');
+            $inputArr[$i]['created_by'] = 1;
+            $inputArr[$i]['updated_by'] = 1;
+        }
+        
+        return $inputArr;
+    }
   
 }
   

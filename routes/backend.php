@@ -961,6 +961,49 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'edit_program',
                 'uses' => 'Backend\ProgramController@addProgram'
             ]);
+
+            Route::get('nach-list', [
+                 'as' => 'anchor_nach_list',
+                'uses' => 'Backend\AnchorNACHController@nachList'
+            ]);
+            Route::get('create-nach', [
+                'as' => 'anchor_create_nach',
+                'uses' => 'Backend\AnchorNACHController@createNACH',
+            ]);
+            Route::post('/add-nach-detail', [
+                'as' => 'anchor_add_nach_detail',
+                'uses' => 'Backend\AnchorNACHController@addNachDetail',
+            ]);
+            
+            Route::get('/edit-nach-detail', [
+                'as' => 'anchor_edit_nach_detail',
+                'uses' => 'Backend\AnchorNACHController@EditNachDetail',
+            ]);
+            
+            Route::post('/save-nach-detail', [
+                'as' => 'anchor_save_nach_detail',
+                'uses' => 'Backend\AnchorNACHController@saveNachDetail',
+            ]);
+
+            Route::get('/nach-detail-preview', [
+                'as' => 'anchor_nach_detail_preview',
+                'uses' => 'Backend\AnchorNACHController@nachDetailPreview',
+            ]); 
+                    
+            Route::get('generate-nach', [
+                'as' => 'anchor_generate_nach',
+                'uses' => 'Backend\AnchorNACHController@generateNach'
+            ]);
+            
+            Route::get('/upload-nach-document', [
+                'as' => 'anchor_upload_nach_document',
+                'uses' => 'Backend\AnchorNACHController@uploadNachDocument'
+            ]);
+
+            Route::post('/nach_document-save', [
+                'as' => 'anchor_nach_document_save',
+                'uses' => 'Backend\AnchorNACHController@saveNachDocument'
+            ]);
              
         });
             // All master routes
@@ -1434,6 +1477,80 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'export_txns',
                 'uses' => 'Backend\FinanceController@exportTransactions'
             ]);                        
+        });
+
+        Route::group(['prefix' => 'nach'], function () {
+            
+            Route::get('nach-list', [
+                 'as' => 'backend_nach_list',
+                'uses' => 'Backend\NACHController@nachList'
+            ]);
+            Route::get('create-nach', [
+                'as' => 'backend_create_nach',
+                'uses' => 'Backend\NACHController@createNACH',
+            ]);
+            Route::post('/add-nach-detail', [
+                'as' => 'backend_add_nach_detail',
+                'uses' => 'Backend\NACHController@addNachDetail',
+            ]);
+            
+            Route::get('/edit-nach-detail', [
+                'as' => 'backend_edit_nach_detail',
+                'uses' => 'Backend\NACHController@EditNachDetail',
+            ]);
+            
+            Route::post('/save-nach-detail', [
+                'as' => 'backend_save_nach_detail',
+                'uses' => 'Backend\NACHController@saveNachDetail',
+            ]);
+
+            Route::get('/nach-detail-preview', [
+                'as' => 'backend_nach_detail_preview',
+                'uses' => 'Backend\NACHController@nachDetailPreview',
+            ]); 
+                    
+            Route::get('generate-nach', [
+                'as' => 'backend_generate_nach',
+                'uses' => 'Backend\NACHController@generateNach'
+            ]);
+            
+            Route::get('/upload-nach-document', [
+                'as' => 'backend_upload_nach_document',
+                'uses' => 'Backend\NACHController@uploadNachDocument'
+            ]);
+
+            Route::post('/nach_document-save', [
+                'as' => 'backend_nach_document_save',
+                'uses' => 'Backend\NACHController@saveNachDocument'
+            ]); 
+            Route::group(['prefix' => 'repayment'], function () {
+                
+                Route::get('list', [
+                    'as' => 'nach_repayment_list',
+                    'uses' => 'Backend\NACHController@repaymentList'
+                ]);
+                
+                Route::post('create-nach-repayment-req', [
+                    'as' => 'create_nach_repayment_req',
+                    'uses' => 'Backend\NACHController@createNachRepaymentReq'
+                ]);
+                
+                Route::get('repayment_trans_list', [
+                    'as' => 'nach_repayment_trans_list',
+                    'uses' => 'Backend\NACHController@repaymentTransList'
+                ]);
+                
+                Route::get('/upload-nach-trans-response', [
+                        'as' => 'upload_nach_trans_response',
+                        'uses' => 'Backend\NACHController@uploadNachTransResponse'
+                    ]);
+                    
+                Route::post('/import-nach-trans-response', [
+                    'as' => 'import_nach_trans_response',
+                    'uses' => 'Backend\NACHController@importNachTransResponse'
+                ]);
+                
+            });                     
         });
 
         Route::post('ckeditor/image_upload', 'CKEditorController@upload')->name('upload_ckeditor_image');

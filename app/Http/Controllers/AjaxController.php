@@ -4926,5 +4926,117 @@ if ($err) {
         $disbursalBatchRequest = $this->lmsRepo->lmsGetRefundBatchRequest();
         $data = $dataProvider->lmsGetRefundBatchRequest($this->request, $disbursalBatchRequest);
         return $data;
-    } 
+    }
+    
+    /**
+     * Get all NACH Request
+     * 
+     * @param DataProviderInterface $dataProvider
+     * @return JsonResponse
+     */
+    public function getAllNach(DataProviderInterface $dataProvider) {
+        $whereCond = [2,3];
+        $nachList = $this->lmsRepo->getAllNach($whereCond);
+        $nach = $dataProvider->getNach($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
+
+    public function frontAjaxUserNachList(DataProviderInterface $dataProvider) {
+        $whereCondition = ['user_id' => Auth::user()->user_id];
+        $nachList = $this->application->getUserNACH($whereCondition);
+        $nach = $dataProvider->getUserNACH($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
+
+    public function anchorAjaxUserNachList(DataProviderInterface $dataProvider) {
+        $whereCondition = ['user_id' => Auth::user()->user_id];
+        $nachList = $this->application->getUserNACH($whereCondition);
+        $nach = $dataProvider->getAnchorUserNACH($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
+
+    public function backendAjaxUserNachList(DataProviderInterface $dataProvider) {
+        $whereCondition = [];
+        $nachList = $this->application->getUserNACH($whereCondition);
+        $nach = $dataProvider->getBackendUserNACH($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
+
+    public function backendNachUserList(Request $request){
+        $roleType = $request->role_type;
+        if ($roleType) {
+            $users = $this->application->getNachUserList($roleType);
+            
+        }
+        if(!empty($users)){
+            return response()->json(['status' => 1,'users' => $users]);
+        }else{
+            return response()->json(['status' => 0,'users' => $users]);
+        }
+        
+    }
+
+    public function backendNachUserBankList(Request $request){
+        $userId = $request->customer_id;
+        $roleType = $request->role_type;
+        if ($userId) {
+            if($roleType == 3) {
+                $userData = $this->userRepo->getCustomerDetail($userId);
+                $BankList = $this->application->getUserBankNACH(['anchor_id' => $userData->anchor_id]);
+            } else {
+                $BankList = $this->application->getUserBankNACH(['user_id' => $userId]);
+
+            }
+        }
+        if(!empty($BankList)){
+            return response()->json(['status' => 1,'BankList' => $BankList]);
+        }else{
+            return response()->json(['status' => 0,'BankList' => $BankList]);
+        }
+        
+    }
+
+    public function lmsGetNachRepaymentList(DataProviderInterface $dataProvider) {
+        $whereCondition = ['is_active' => 1, 'nach_status' => 4];
+        $nachList = $this->application->getUserRepaymentNACH($whereCondition);
+        foreach ($nachList as $key => $value) {
+            $value->outstandingAmt = number_format($this->lmsRepo->getNACHUnsettledTrans($value->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding'),2);
+
+            $value->ids = [];
+            $transAr = [];
+            foreach ($this->lmsRepo->getNACHUnsettledTrans($value->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ]) as $key1 => $value1) {
+                $transArray['trans_id'] = $value1->trans_id;
+                $transArray['amount'] = $value1->outstanding;
+                array_push($transAr, $transArray);
+
+            }
+            $value->ids = $transAr;
+            if ($value->outstandingAmt == 0.00) {
+                $nachList->forget($key);
+            }
+        }
+        $nach = $dataProvider->getNachRepaymentList($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
+    
+    public function lmsGetNachRepaymentTransList(DataProviderInterface $dataProvider) {
+        $whereCondition = ['is_active' => 1, 'nach_status' => 7];
+        $nachList = $this->application->getUserNACH($whereCondition);
+        $nach = $dataProvider->getNachRepaymentTransList($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
+
+    public function backendAjaxNachSTBList(DataProviderInterface $dataProvider) {
+        $whereCondition = [];
+        $nachList = $this->lmsRepo->getNachRepaymentReq($whereCondition);
+        $nach = $dataProvider->getNachRepaymentReq($this->request, $nachList);
+        $nach = $nach->getData(true);
+        return new JsonResponse($nach);
+    }
 }

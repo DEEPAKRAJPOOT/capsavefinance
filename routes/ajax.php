@@ -1225,5 +1225,46 @@ Route::group(
         'uses' => 'AjaxController@getBackendRefundBatchRequest'
         ]
     );
+    
+    Route::post('get-all-nach',[
+        'as' => 'get_all_nach',
+        'uses' => 'AjaxController@getAllNach'
+    ]);
 
+    Route::post('front-ajax-user-nach-list',[
+        'as' => 'front_ajax_user_nach_list',
+        'uses' => 'AjaxController@frontAjaxUserNachList'
+    ]);
+
+    Route::post('anchor-ajax-user-nach-list',[
+        'as' => 'anchor_ajax_user_nach_list',
+        'uses' => 'AjaxController@anchorAjaxUserNachList'
+    ]);
+
+    Route::post('backend-ajax-user-nach-list',[
+        'as' => 'backend_ajax_user_nach_list',
+        'uses' => 'AjaxController@backendAjaxUserNachList'
+    ]);
+
+    Route::post('backend_ajax_nach_user',[
+        'as' => 'backend_ajax_nach_user',
+        'uses' => 'AjaxController@backendNachUserList'
+        ]
+    );
+
+    Route::post('backend_ajax_nach_user_bank',[
+        'as' => 'backend_ajax_nach_user_bank',
+        'uses' => 'AjaxController@backendNachUserBankList'
+        ]
+    );
+
+    Route::post('lms-get-nach-repayment-list',[
+        'as' => 'lms_get_nach_repayment_list',
+        'uses' => 'AjaxController@lmsGetNachRepaymentList'
+    ]);
+    Route::post('backend-ajax-nach-stb-list',[
+        'as' => 'backend_ajax_nach_stb_list',
+        'uses' => 'AjaxController@backendAjaxNachSTBList'
+    ]);
+    
 });
