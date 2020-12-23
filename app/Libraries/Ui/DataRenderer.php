@@ -1431,13 +1431,13 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) use ($request)  {     
                            if($request->front)
                            {
-                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                              return '<a href="'.route("frontend_view_invoice_details",["invoice_id" => $invoice->Invoice->invoice_id]).'">'.$invoice->Invoice->invoice_no.'</a>';
             
                            }
                         else {
                               $link = '';
                               if(Helpers::checkPermission('view_invoice_details') ){
-                                $link = '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->invoice_id]).'">'.$invoice->invoice_no.'</a>';
+                                $link = '<a href="'.route("view_invoice_details",["invoice_id" => $invoice->Invoice->invoice_id]).'">'.$invoice->Invoice->invoice_no.'</a>';
                               }
                               return $link;
                         }
@@ -1447,44 +1447,44 @@ class DataRenderer implements DataProviderInterface
                     'anchor_name',
                     function ($invoice) {  
                         $comp_name = '';
-                        $comp_name .= $invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->anchor->comp_name.'</span>' : '';
-                        $comp_name .= $invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->program->prgm_name.'</span>' : '';
+                        $comp_name .= $invoice->Invoice->anchor->comp_name ? '<span><b>Anchor Business Name:&nbsp;</b>'.$invoice->Invoice->anchor->comp_name.'</span>' : '';
+                        $comp_name .= $invoice->Invoice->program->prgm_name ? '<br><span><b>Program:&nbsp;</b>'.$invoice->Invoice->program->prgm_name.'</span>' : '';
                         return $comp_name;
                 })
                 ->addColumn(
                     'supplier_name',
                     function ($invoice) { 
                         $custo_name = '';
-                        $custo_name .= "<a id=\"" . $invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->lms_user->user_id,'app_id' => $invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->lms_user->customer_id."</a></br>";
-                        $custo_name .= $invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->supplier->f_name.'</span>' : '';
-                        $custo_name .= $invoice->business->biz_entity_name ? '<br><b>Business Name :</b>'.$invoice->business->biz_entity_name.'</span></br>' : '';
-                        $custo_name .= $invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
+                        $custo_name .= "<a id=\"" . $invoice->Invoice->lms_user->user_id . "\" href=\"".route('lms_get_customer_applications', ['user_id' => $invoice->Invoice->lms_user->user_id,'app_id' => $invoice->Invoice->lms_user->app_id])."\" rel=\"tooltip\"   >".$invoice->Invoice->lms_user->customer_id."</a></br>";
+                        $custo_name .= $invoice->Invoice->supplier->f_name ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoice->supplier->f_name.'</span>' : '';
+                        $custo_name .= $invoice->Invoice->business->biz_entity_name ? '<br><b>Business Name :</b>'.$invoice->Invoice->business->biz_entity_name.'</span></br>' : '';
+                        $custo_name .= $invoice->Invoice->is_adhoc ? '<span style="color:green;">Adhoc Limit</span></br>' : '';
                         return $custo_name;
                 })
                   ->addColumn(
                     'invoice_date',
                     function ($invoice) {                        
                         $inv_date = '';
-                        $inv_date .= $invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_date)->format('d-m-Y').'</span>' : '';
-                        $inv_date .= $invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
-                        $inv_date .= $invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->tenor.'</span>' : '';
+                        $inv_date .= $invoice->Invoice->invoice_date ? '<span><b>Date:&nbsp;</b>'.Carbon::parse($invoice->Invoice->invoice_date)->format('d-m-Y').'</span>' : '';
+                        $inv_date .= $invoice->Invoice->invoice_due_date ? '<br><span><b>Due Date:&nbsp;</b>'.Carbon::parse($invoice->Invoice->invoice_due_date)->format('d-m-Y').'</span>' : '';
+                        $inv_date .= $invoice->Invoice->tenor ? '<br><span><b>Tenor In Days:&nbsp;</b>'.$invoice->Invoice->tenor.'</span>' : '';
                         return $inv_date;
                 })  
               ->addColumn(            
                     'invoice_amount',
                     function ($invoice) {                        
                        $inv_amount = '';
-                        $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
-                        $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
+                        $inv_amount .= $invoice->Invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->Invoice->invoice_amount).'</span></br>' : '';
+                        $inv_amount .= $invoice->Invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->Invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->Invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->Invoice->program_offer->margin.' %</span>' : '';
                         return $inv_amount;
                 })
                   ->addColumn(            
                     'updated_at',
                     function ($invoice) {                        
                         $inv_amount = '';
-                        $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
+                        $inv_amount .= $invoice->Invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoice->Invoiceuser->l_name.'</span>' : '';
+                        $inv_amount .= $invoice->Invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->Invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })      
                   ->addColumn(
@@ -1507,19 +1507,19 @@ class DataRenderer implements DataProviderInterface
                         {
                             $customer  = 3;
                         }
-                         $expl  =  explode(",",$invoice->program->invoice_approval); 
+                         $expl  =  explode(",",$invoice->Invoice->program->invoice_approval); 
                        $action = "";
                       if($customer!=3 && $chkUser->id!=11)
                       { 
                         
-                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv4"><option value="0">Change Status</option>';
+                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->Invoice->invoice_approve_amount) ? $invoice->Invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->Invoice->supplier_id) ? $invoice->Invoice->supplier_id : '' ).'"  data-id="'.(($invoice->Invoice->invoice_id) ? $invoice->Invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv4"><option value="0">Change Status</option>';
                        if(in_array($customer, $expl)) 
                        {
                         $action .='<option value="8">Approve</option>';
                        }
-                        $action .= '<option value="9">Disb Que</option></select>&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceFailed" data-height="400px" data-width="100%" accesskey="" data-url ="'.route("invoice_failed_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Failed Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                        $action .= '<option value="9">Disb Que</option></select>&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceFailed" data-height="400px" data-width="100%" accesskey="" data-url ="'.route("invoice_failed_status",["invoice_id" => $invoice->Invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Failed Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
                       }  
-                        $action .= '&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceFailed" data-height="400px" data-width="100%" accesskey="" data-url ="'.route("invoice_failed_status",["invoice_id" => $invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Failed Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
+                        $action .= '&nbsp;&nbsp;<a data-toggle="modal"  data-target="#modalInvoiceFailed" data-height="400px" data-width="100%" accesskey="" data-url ="'.route("invoice_failed_status",["invoice_id" => $invoice->Invoice->invoice_id]).'"> <button class="btn-upload btn-sm" type="button" title="View Failed Disbursement"> <i class="fa fa-eye"></i></button></a></div>';
                      
                         return $action;
                 })
