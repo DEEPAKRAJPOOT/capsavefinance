@@ -295,7 +295,7 @@ class userInvoiceController extends Controller
         $trans_ids = $request->get('trans_id');
 
         $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoice_type);
-        $invSerialNo = sprintf('%04d', ($lastInvData->inv_serial_no + 1) ?? rand(0, 9999));
+        $invSerialNo = sprintf('%04d', ((!empty($lastInvData->inv_serial_no) ?? 0) + 1) ?? rand(0, 9999));
         $InvoiceNoArr = explode('/',$invoice_no);
         $InvoiceNoArr[3] = $invSerialNo;
         $invoice_no = implode('/',$InvoiceNoArr);
