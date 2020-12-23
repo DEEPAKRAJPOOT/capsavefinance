@@ -2,7 +2,6 @@
 
 namespace App\Inv\Repositories\Models\Lms;
 
-use Auth;
 use DB;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\User;
@@ -295,23 +294,6 @@ class InvoiceDisbursed extends BaseModel {
              return self::whereHas('isRepayment')->where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['transaction.payment','Invoice.anchor.anchorAccount','InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
 
         }
-     }
-
-    public static function getAllInvoiceFailed($request,$status)
-     {
-        $id = Auth::user()->user_id;
-        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
-        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-        if( $chkUser->id==11)
-        {
-            $res  = User::where('user_id',$id)->first();
-
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user','Invoice.userDetail'])->orderBy('invoice_id', 'DESC');
-
-        }
-        else
-        {
-           return self::where('status_id',$status)->with(['Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user','Invoice.userDetail'])->orderBy('invoice_id', 'DESC');
-        }
-     }   
+     }  
+       
 }

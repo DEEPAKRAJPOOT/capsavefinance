@@ -1226,14 +1226,4 @@ use CommonRepositoryTraits;
        
     }  
     
-    public function getAllInvoiceFailed($request,$status)
-    {
-        try
-        {
-           return InvoiceDisbursed::getAllInvoiceFailed($request,$status);  
-        } catch (Exception $ex) {
-           return $ex;
-        }
-         
-    }
 }

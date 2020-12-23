@@ -2790,7 +2790,7 @@ if ($err) {
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListFailedDisbursed(DataProviderInterface $dataProvider) {
        
-        $invoice_data = $this->invRepo->getAllInvoiceFailed($this->request,11);
+        $invoice_data = $this->invRepo->getAllInvoice($this->request,11);
         $invoice = $dataProvider->getBackendInvoiceListFailedDisbursed($this->request, $invoice_data);
         return $invoice;
     } 
