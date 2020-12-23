@@ -703,7 +703,7 @@ class InvoiceController extends Controller {
                 if($disburseType == 1) {
                     $modePay = ($disburseAmount < 200000) ? 'NEFT' : 'RTGS' ;
                     $exportData[$userid]['RefNo'] = $refNo;
-                    $exportData[$userid]['Amount'] = $disburseAmount;
+                    $exportData[$userid]['Amount'] = "$disburseAmount";
                     $exportData[$userid]['Debit_Acct_No'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NO'];
                     $exportData[$userid]['Debit_Acct_Name'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NAME'];
                     $exportData[$userid]['Debit_Mobile'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_MOBILE'];
