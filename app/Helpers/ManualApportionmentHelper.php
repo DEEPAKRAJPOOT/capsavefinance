@@ -180,7 +180,8 @@ class ManualApportionmentHelper{
                 ->where('entry_type','=',0)
                 ->whereDate('trans_date','<=',$intAccrualDate)
                 ->where(function($query)use($invdueDate,$intAccrualDt){
-                    $query->whereMonth('trans_date','<',date('n', strtotime($intAccrualDt)));
+                    $firtOfMonth = Carbon::parse($intAccrualDt)->firstOfMonth()->format('Y-m-d');
+                    $query->whereDate('trans_date','<',$firtOfMonth);
                     $query->OrwhereDate('trans_date','=',$invdueDate);
                 })
                 ->get()
@@ -326,7 +327,8 @@ class ManualApportionmentHelper{
             $mIntrest = InterestAccrual::where('invoice_disbursed_id','=',$invDisbId)
             ->whereNotNull('interest_rate')
             ->where(function($query) use($odStartDate,$transDate){
-                $query->whereMonth('interest_date','<', date('n', strtotime($transDate)));
+                $firtOfMonth = Carbon::parse($transDate)->firstOfMonth()->format('Y-m-d');
+                $query->whereDate('interest_date','<', $firtOfMonth);
                 if($odStartDate <= $transDate){
                     $query->orWhere('interest_date','<',$odStartDate);
                 }
@@ -435,10 +437,12 @@ class ManualApportionmentHelper{
                 ->whereMonth('trans_date', date('n', strtotime($interest->interestDate)))
                 ->value('trans_running_id');
                 
+                $lastOfMonth = Carbon::parse($interest->interestDate)->lastOfMonth()->format('Y-m-d');
+                
                 TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
                 ->where('entry_type','=',0)
-                ->whereMonth('trans_date','>', date('n', strtotime($interest->interestDate)))
+                ->whereDate('trans_date','>', $lastOfMonth)
                 ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
             }
 

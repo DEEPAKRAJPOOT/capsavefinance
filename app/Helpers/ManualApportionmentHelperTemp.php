@@ -78,7 +78,8 @@ class ManualApportionmentHelperTemp{
             $mIntrest = InterestAccrualTemp::where('invoice_disbursed_id','=',$invDisbId)
             ->whereNotNull('interest_rate')
             ->where(function($query) use($odStartDate,$transDate){
-                $query->whereMonth('interest_date','<', date('m', strtotime($transDate)));
+                $firtOfMonth = Carbon::parse($transDate)->firstOfMonth()->format('Y-m-d');
+                $query->whereDate('interest_date','<', $firtOfMonth);
                 if($odStartDate <= $transDate){
                     $query->orWhere('interest_date','<',$odStartDate);
                 }
