@@ -50,7 +50,7 @@
     </style>
 </head>
 
-<body class="sidebar-icon-only" style="margin: 0px !important">
+<body class="" style="margin: 0px !important">
     <div class=" container-scroller">
         @include('layouts.backend.partials.admin-header')
         <div class="container-fluid page-body-wrapper">

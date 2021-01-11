@@ -1512,3 +1512,6 @@ ul.custom-check-label #frequency-error {
     top: 0px;
     z-index: 3;
 }
+.arka-logo img {
+	max-width: 80px;
+}
