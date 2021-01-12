@@ -10,7 +10,7 @@
         </button><ul class="navbar-nav mr-lg-auto relative">
             <li class="nav-item arka-logo">
                 <a class="nav-link" href="#">
-                    <img src="https://admin-arka-dev.zuron.in/frontend/assets/images/arka_email_logo.png" alt="Arka Fincap Limited">
+                    <img src="storage_path('app/public/anchor/33/bGEGTlgNmF0Hjvz7hA5NsbH7bPMoOuHZHbaVxQxD.jpeg')" alt="Arka Fincap Limited">
                 </a>
             </li>
         </ul>

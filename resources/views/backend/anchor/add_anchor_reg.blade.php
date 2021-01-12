@@ -142,7 +142,28 @@
                              </div>
                            </div>                       
                         </div>  
-                
+                     <div class="row">
+                        <div class="col-6">
+                           <div class="form-group">
+                              <label for="anchor_logo">Upload Anchor Logo<small>(Allowed Formats: JPG,PNG)</small><span class="error_message_label">*</span></label>
+                              <div class="custom-file">
+                                 <input type="file" class="custom-file-input" id="anchor_logo" name="anchor_logo">
+                                 <label class="custom-file-label" for="customFile">Choose logo file</label>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-6">
+                           <div class="form-group">
+                              <label for="is_buyer">Logo AlignMent<span class="mandatory">*</span></label>
+                              <select class="form-control" name="logo_align" id="logo_align">
+                                 <option value="">Please Select</option>
+                                 <option value="1">Left</option>
+                                 <option value="2">Right</option>
+                              </select>
+                              {!! $errors->first('logo_align', '<span class="error">:message</span>') !!}
+                           </div> 
+                        </div>
+                     </div>
                 
                 <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
            </form>

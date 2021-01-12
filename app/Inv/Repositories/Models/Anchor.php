@@ -63,6 +63,8 @@ class Anchor extends BaseModel
         'comp_phone',
         'doc_name',
         'is_active',
+        'logo_file_id',
+        'logo_align',
         'created_by',
         'created_at',
         'updated_at',

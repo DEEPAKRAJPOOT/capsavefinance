@@ -365,6 +365,10 @@ class LeadController extends Controller {
                         self::uploadAnchorDoc($request->all(), $role['user_id'] ,$anchor_info);
                     }
 
+                    if(isset($request->anchor_logo) && !empty($request->anchor_logo)){
+                        self::uploadAnchorLogo($request->all(), $role['user_id'] ,$anchor_info);
+                    }
+
                     Session::flash('message', trans('backend_messages.anchor_registration_success'));
                     return redirect()->route('get_anchor_list');
                 }        
@@ -852,6 +856,31 @@ class LeadController extends Controller {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
 
+    }
+
+    /**
+     *  function for upload anchor documents
+     * @param Request $arrFileData
+     * @param Int $userId
+     * @param Int $anchorId
+     * @return type
+     */
+    private function uploadAnchorLogo($arrFileData, $userId, $anchorId) {
+        $attributes['doc_file'] = $arrFileData['anchor_logo'];
+        $uploadData = Helpers::uploadAnchorFile($attributes, $anchorId);
+        $anchorFile = $this->docRepo->saveFile($uploadData);
+        if(!empty($anchorFile->file_id)) {
+
+            $anchorData = $this->userRepo->getAnchorById($anchorId);
+
+            $arrData = [
+                'logo_file_id' => $anchorFile->file_id,
+                'logo_align' => $arrFileData['logo_align']
+            ];
+
+            $this->userRepo->updateAnchor($anchorId, $arrData);
+            
+        }
     }
     
 }
