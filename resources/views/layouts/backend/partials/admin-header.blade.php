@@ -10,7 +10,7 @@
         </button><ul class="navbar-nav mr-lg-auto relative">
             <li class="nav-item arka-logo">
                 <a class="nav-link" href="#">
-                    <img src="storage_path('app/public/anchor/33/bGEGTlgNmF0Hjvz7hA5NsbH7bPMoOuHZHbaVxQxD.jpeg')" alt="Arka Fincap Limited">
+                    <img src="{{url('backend/assets/images/logo_mini.svg')}}" alt="Arka Fincap Limited">
                 </a>
             </li>
         </ul>
