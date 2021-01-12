@@ -1,3 +1,6 @@
+@php 
+    $arr = Helpers::getAuthenticatedAnchorLogo();
+@endphp
 <!-- partial:partials/_navbar.html -->
 <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-left navbar-brand-wrapper">
@@ -7,10 +10,12 @@
     <div class="navbar-menu-wrapper d-flex align-self-stretch align-items-center">
         <button class="navbar-toggler navbar-toggler align-self-center mr-2" type="button" data-toggle="minimize">
           <i class="fa fa-bars" aria-hidden="true"></i>
-        </button><ul class="navbar-nav mr-lg-auto relative">
+        </button>
+        <ul class="navbar-nav mr-lg-auto relative">
             <li class="nav-item arka-logo">
                 <a class="nav-link" href="#">
-                    <img src="{{url('backend/assets/images/logo_mini.svg')}}" alt="Arka Fincap Limited">
+                
+                    <img src="{{asset($arr)}}" alt="Arka Fincap Limited">
                 </a>
             </li>
         </ul>
