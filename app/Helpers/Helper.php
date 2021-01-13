@@ -2149,15 +2149,17 @@ class Helper extends PaypalHelper
      * @param boolean   $handler
      */
     public static function getAuthenticatedAnchorLogo(){
+        $fileArr = [];
         $user_id = \Auth::user()->user_id;
         $userArr = User::getUserDetail($user_id);
         $anchorData = Anchor::getAnchorById($userArr->anchor_id);
-        $filePath = 'app/public/'.$anchorData->file_path;
         
-        $path = storage_path($filePath);
-        
-        if (file_exists($path)) {
-            return response()->file($path);
+        if($anchorData){
+            $path = 'backend\assets\images\logo.png';
+            $fileArr['path'] = 'backend\assets\images\logo.png';
+            $fileArr['align'] = $anchorData->logo_align;
         }
+        
+        return $fileArr;
     }
 }

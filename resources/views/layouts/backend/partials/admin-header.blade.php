@@ -11,14 +11,15 @@
         <button class="navbar-toggler navbar-toggler align-self-center mr-2" type="button" data-toggle="minimize">
           <i class="fa fa-bars" aria-hidden="true"></i>
         </button>
+        @if(isset($arr['align']) && $arr['align'] == 1)
         <ul class="navbar-nav mr-lg-auto relative">
             <li class="nav-item arka-logo">
                 <a class="nav-link" href="#">
-                
-                    <img src="{{asset($arr)}}" alt="Arka Fincap Limited">
+                    <img src="{{asset($arr['path'])}}" alt="Anchor Logo">
                 </a>
             </li>
         </ul>
+        @endif
         <ul class="navbar-nav ml-lg-auto relative">
             <li class="nav-item nav-profile">
                 <a class="nav-link" href="#" style="">
@@ -48,11 +49,13 @@
                     </a>
                 </div>
             </li>
+            @if(isset($arr['align']) && $arr['align'] == 2)
             <li class="nav-item arka-logo">
               <a class="nav-link" href="#">
-                  <img src="https://admin-arka-dev.zuron.in/frontend/assets/images/arka_email_logo.png" alt="Arka Fincap Limited">
+                <img src="{{asset($arr['path'])}}" alt="Anchor Logo">
               </a>
-          </li>
+            </li>
+          @endif
         </ul>
         <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
           <span class="mdi mdi-menu"></span>
