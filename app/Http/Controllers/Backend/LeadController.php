@@ -366,6 +366,17 @@ class LeadController extends Controller {
                     }
 
                     if(isset($request->anchor_logo) && !empty($request->anchor_logo)){
+                        $validator = Validator::make($request->all(), [
+                            'anchor_logo' => 'required|mimes:jpeg,jpg,png',
+                            'logo_align' => 'required'
+                        ],['anchor_logo.mimes'=> 'Invalid logo file format',
+                        'logo_align.required' => 'Logo alignment required if logo uploaded']);
+                
+                        if ($validator->fails()) {
+                            return redirect('anchor')
+                                        ->withErrors($validator)
+                                        ->withInput();
+                        }
                         self::uploadAnchorLogo($request->all(), $role['user_id'] ,$anchor_info);
                     }
 
@@ -690,7 +701,18 @@ class LeadController extends Controller {
                 self::uploadAnchorDoc($request->all(), $anchorInfo->user_id ,$anchId);
             }
 
-            if($request->anchor_logo){
+            if(isset($request->anchor_logo) && !empty($request->anchor_logo)){
+                $validator = Validator::make($request->all(), [
+                    'anchor_logo' => 'required|mimes:jpeg,jpg,png',
+                    'logo_align' => 'required'
+                ],['anchor_logo.mimes'=> 'Invalid logo file format',
+                'logo_align.required' => 'Logo alignment required if logo uploaded']);
+        
+                if ($validator->fails()) {
+                    return redirect('anchor')
+                                ->withErrors($validator)
+                                ->withInput();
+                }
                 self::uploadAnchorLogo($request->all(), $anchorInfo->user_id ,$anchId);
             }
 
@@ -871,7 +893,7 @@ class LeadController extends Controller {
      */
     private function uploadAnchorLogo($arrFileData, $userId, $anchorId) {
         $attributes['doc_file'] = $arrFileData['anchor_logo'];
-        $uploadData = Helpers::uploadAnchorFile($attributes, $anchorId);
+        $uploadData = Helpers::uploadAnchorLogo($attributes, $anchorId);
         $anchorFile = $this->docRepo->saveFile($uploadData);
         if(!empty($anchorFile->file_id)) {
 

@@ -163,7 +163,7 @@
                         <div class="row">
                         <div class="col-6">
                            <div class="form-group">
-                              <label for="anchor_logo">Upload Anchor Logo<small>(Allowed Formats: JPG,PNG)</small><span class="error_message_label">*</span></label>
+                              <label for="anchor_logo">Upload Anchor Logo<small>(Allowed Formats: JPEG,JPG,PNG)</small><span class="error_message_label">*</span></label>
                               <div class="custom-file">
                                  <input type="file" class="custom-file-input" id="anchor_logo" name="anchor_logo">
                                  <label class="custom-file-label" for="customFile">Choose logo file</label>

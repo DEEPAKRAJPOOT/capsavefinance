@@ -2124,6 +2124,9 @@ class Helper extends PaypalHelper
     {
         $inputArr = [];
         if ($attributes['doc_file']) {
+            $anchorData = Anchor::getAnchorById($anchorId);
+            $oldFileId = UserFile::deletes($anchorData->logo_file_id);
+            
             if (!Storage::exists('/public/anchor/' . $anchorId)) {
                 Storage::makeDirectory('/public/anchor/' . $anchorId, 0777, true);
             }
@@ -2155,10 +2158,7 @@ class Helper extends PaypalHelper
         $anchorData = Anchor::getAnchorById($userArr->anchor_id);
         // dd($anchorData);
         if($anchorData){
-            // $path = Storage::disk()->get($anchorData->file_path);
-            $fileArr['path'] = 'backend\assets\images\logo.png';
-            $fileArr['path'] = 'storage/app/public/'.$anchorData->file_path;
-            // dd($fileArr);
+            $fileArr['path'] = $anchorData->file_path;
             $fileArr['align'] = $anchorData->logo_align;
         }
         
