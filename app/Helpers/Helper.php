@@ -2155,8 +2155,10 @@ class Helper extends PaypalHelper
         $anchorData = Anchor::getAnchorById($userArr->anchor_id);
         // dd($anchorData);
         if($anchorData){
-            $path = 'backend\assets\images\logo.png';
+            // $path = Storage::disk()->get($anchorData->file_path);
             $fileArr['path'] = 'backend\assets\images\logo.png';
+            $fileArr['path'] = 'storage/app/public/'.$anchorData->file_path;
+            // dd($fileArr);
             $fileArr['align'] = $anchorData->logo_align;
         }
         
