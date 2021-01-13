@@ -2153,7 +2153,7 @@ class Helper extends PaypalHelper
         $user_id = \Auth::user()->user_id;
         $userArr = User::getUserDetail($user_id);
         $anchorData = Anchor::getAnchorById($userArr->anchor_id);
-        
+        // dd($anchorData);
         if($anchorData){
             $path = 'backend\assets\images\logo.png';
             $fileArr['path'] = 'backend\assets\images\logo.png';

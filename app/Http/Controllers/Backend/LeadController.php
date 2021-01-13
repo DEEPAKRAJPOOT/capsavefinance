@@ -574,7 +574,7 @@ class LeadController extends Controller {
                 $anchorUserInfo = $this->userRepo->getUserByAnchorId($anchorId);
                 $anchorVal = $this->userRepo->getAnchorById($anchorId);
             }
-            // dd($anchorUserInfo);
+            // dd($anchorVal);
              $states = State::getStateList()->get();
             return view('backend.anchor.edit_anchor_reg')
                             ->with('anchor_id', $anchorId)
@@ -688,6 +688,10 @@ class LeadController extends Controller {
             
             if($request->doc_file){
                 self::uploadAnchorDoc($request->all(), $anchorInfo->user_id ,$anchId);
+            }
+
+            if($request->anchor_logo){
+                self::uploadAnchorLogo($request->all(), $anchorInfo->user_id ,$anchId);
             }
 
             if ($updateAnchInfo && $Updateanchorinfo) {
