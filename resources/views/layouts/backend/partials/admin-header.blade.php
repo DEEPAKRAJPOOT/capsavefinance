@@ -11,7 +11,7 @@
         <button class="navbar-toggler navbar-toggler align-self-center mr-2" type="button" data-toggle="minimize">
           <i class="fa fa-bars" aria-hidden="true"></i>
         </button>
-        @if(isset($arr['align']) && $arr['align'] == 1)
+        @if(isset($arr['align']) && $arr['align'] == 1 && !empty($arr['path']))
         <ul class="navbar-nav mr-lg-auto relative">
             <li class="nav-item arka-logo">
                 <a class="nav-link" href="#">
@@ -49,7 +49,7 @@
                     </a>
                 </div>
             </li>
-            @if(isset($arr['align']) && $arr['align'] == 2)
+            @if(isset($arr['align']) && $arr['align'] == 2 && !empty($arr['path']))
             <li class="nav-item arka-logo">
               <a class="nav-link" href="#">
                 <img src="{{url('storage/'.$arr['path'])}}" alt="Anchor Logo">
