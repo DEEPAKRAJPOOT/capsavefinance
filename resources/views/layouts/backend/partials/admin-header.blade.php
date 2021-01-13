@@ -15,7 +15,7 @@
         <ul class="navbar-nav mr-lg-auto relative">
             <li class="nav-item arka-logo">
                 <a class="nav-link" href="#">
-                    <img src="{{url('storage/'.$arr['path'])}}" alt="Anchor Logo">
+                    <img src="{{url('storage/'.$arr['path'])}}" alt="Anchor Logo" style="height: 48px;margin-top: -10px">
                 </a>
             </li>
         </ul>
@@ -52,7 +52,7 @@
             @if(isset($arr['align']) && $arr['align'] == 2 && !empty($arr['path']))
             <li class="nav-item arka-logo">
               <a class="nav-link" href="#">
-                <img src="{{url('storage/'.$arr['path'])}}" alt="Anchor Logo">
+                <img src="{{url('storage/'.$arr['path'])}}" alt="Anchor Logo" style="height: 48px;margin-top: -10px">
               </a>
             </li>
           @endif
