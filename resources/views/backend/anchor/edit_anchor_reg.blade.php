@@ -288,6 +288,7 @@
                      anchor_logo: {
                         required: false,
                         extension: "jpg,jpeg,png",
+                        filesize : 1, // here we are working with MB
                      },
                      logo_align: {
                         required: function(element) {
