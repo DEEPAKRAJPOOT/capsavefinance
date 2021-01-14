@@ -289,13 +289,25 @@
                         required: true,
                         extension: "jpg,jpeg,png,pdf",
                      },
-
                      assigned_sale_mgr: {
                         required: true
                      },
-
                      city: {
                         required: true
+                     },
+                     anchor_logo: {
+                        required: false,
+                        extension: "jpg,jpeg,png",
+                        filesize : 1, // here we are working with MB
+                     },
+                     logo_align: {
+                        required: function(element) {
+                           if ($("#anchor_logo").val() != '') {
+                                 return true;
+                           } else {
+                                 return false;
+                           }
+                        }
                      }
                   },
                   messages: {
@@ -306,9 +318,11 @@
                      assigned_sale_mgr: {
                         required: 'This field is required.'
                      },
-
                      city: {
                         required: 'This field is required.'
+                     },
+                     anchor_logo: {
+                        extension: "Invalid logo file format"
                      }
                   }
                }
