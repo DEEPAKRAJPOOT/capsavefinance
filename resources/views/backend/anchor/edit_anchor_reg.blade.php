@@ -284,18 +284,35 @@
                      },
                      assigned_sale_mgr: {
                         required: true
+                     },
+                     anchor_logo: {
+                        required: false,
+                        extension: "jpg,jpeg,png",
+                     },
+                     logo_align: {
+                        required: function(element) {
+                           if ($("#anchor_logo").val() != '') {
+                                 return true;
+                           } else {
+                                 return false;
+                           }
+                        }
                      }
                   },
+
                   messages: {
                      doc_file: {
                         required: "Please select file",
                         extension:"Invalid file format",
                      },
-                  },
-                  assigned_sale_mgr: {
-                     required: 'Please select file'
+                     assigned_sale_mgr: {
+                        required: 'Please select file'
+                     },
+                     anchor_logo: {
+                        extension: "Invalid logo file format",
+                     }
                   }
-                  }
+
                });
         });
 
