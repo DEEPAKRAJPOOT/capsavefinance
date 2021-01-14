@@ -834,7 +834,7 @@ class Transactions extends BaseModel {
     public static function getConsolidatedSoaList(){
         return self::select('transactions.*')
                     ->orderBy('user_id', 'asc')
-                    ->orderBy('created_at', 'asc')
+                    ->orderBy('trans_date', 'asc')
                     ->orderBy('trans_id', 'asc');
     }
 
@@ -843,7 +843,7 @@ class Transactions extends BaseModel {
         return self::select('transactions.*')
                     ->where('soa_flag','=',1)
                     ->orderBy('user_id', 'asc')
-                    ->orderBy('created_at', 'asc')
+                    ->orderBy('trans_date', 'asc')
                     ->orderBy('trans_id', 'asc');
     }
 
@@ -856,7 +856,7 @@ class Transactions extends BaseModel {
                     })
                     ->where('soa_flag','=',1)
                     ->orderBy('user_id', 'asc')
-                    ->orderBy('created_at', 'asc')
+                    ->orderBy('trans_date', 'asc')
                     ->orderBy('trans_id', 'asc');
     }
     
