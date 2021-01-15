@@ -225,7 +225,7 @@ class SoaController extends Controller
                 if($request->user_id){
                     $result = $this->getUserLimitDetais($request->user_id);
                     $userInfo = $result['userInfo'];
-                    $customerId = $this->lmsRepo->getCustomerIdByUserId($request->user_id);
+                    $customerId = '';
                 }
 
                 if($request->has('soaType')){
