@@ -136,7 +136,7 @@ class CibilController extends Controller
                 $arrRequest['biz_cin'] = $arrBizData->pan->cin;
                 $arrRequest['biz_address'] = $arrBizData->address[0]->addr_1.' '.(isset($arrBizData->address[0]->city_name) ? $arrBizData->address[0]->city_name : '').' '. (isset($arrBizData->address[0]->state->name) ? $arrBizData->address[0]->state->name : '').' '. (isset($arrBizData->address[0]->pin_code) ? $arrBizData->address[0]->pin_code : '');
         }else{
-               return response()->json(['message' =>'Something went wrong1','status' => 0]);
+               return response()->json(['message' =>'Something went wrong','status' => 0]);
         }
 
 
@@ -156,7 +156,7 @@ class CibilController extends Controller
         // }
 
         $responce =  $CibilApi->getCommercialCibilAcknowledgement($arrRequest);
-      // dd($responce);
+      	//dd($responce);
         $p = xml_parser_create('utf-8');
         xml_parse_into_struct($p, $responce, $resp);
         xml_parser_free($p);
