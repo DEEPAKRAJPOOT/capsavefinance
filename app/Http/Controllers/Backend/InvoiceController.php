@@ -393,17 +393,14 @@ class InvoiceController extends Controller {
 
             $transactionData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $value['disburse_amt'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.PAYMENT_DISBURSED'));
             $createTransaction = $this->lmsRepo->saveTransaction($transactionData);
-           
-            $prgmWhere=[];
-            $prgmWhere['prgm_id'] = $value['invoice']['program_id'];
-            $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);      
+                 
             $intrstAmt = round($interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
 
             if ($intrstAmt > 0.00) {
                 $intrstDbtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'));
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                if (isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2) {
+                if ($value['invoice']['program_offer']['program']['interest_borne_by'] == 2) {
                     $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'), 1);
                     $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
                 }
@@ -417,7 +414,37 @@ class InvoiceController extends Controller {
             }
            
             $Obj->intAccrual($value['invoice_disbursed_id']);
-
+            /* Sudesh: Code to save Invoice Disbursed details : S */
+            $invoiceDetails = [
+                'invoice_id' => $value['invoice']['invoice_id'],
+                'invoice_disbursed_id' => $value['invoice_disbursed_id'],
+                'request_amount' => $value['invoice']['invoice_amount'],
+                'approve_amount' => $value['invoice']['invoice_approve_amount'],
+                'margin_amount' => $marginAmt,
+                'principal_amount' => $value['invoice']['invoice_approve_amount'] - $marginAmt,
+                'upfront_interest' => $intrstAmt,
+                'disbursed_amount' => ($value['invoice']['program_offer']['payment_frequency'] == 1 && $value['invoice']['program_offer']['program']['interest_borne_by'] == 2)? ($value['invoice']['invoice_approve_amount'] - $marginAmt - $intrstAmt): ($value['invoice']['invoice_approve_amount'] - $marginAmt),
+                'final_disbursed_amount' => $value['disburse_amt'],
+                'invoice_date' => $value['invoice']['invoice_date'],
+                'funded_date' => $value['disbursal']['funded_date'],
+                'payment_due_date' => $value['payment_due_date'],
+                'interest_start_date' => $value['int_accrual_start_dt'],
+                'tenor' => $value['tenor_days'],
+                'grace_period' => $value['grace_period'],
+                'interest_born_by' => $value['invoice']['program_offer']['program']['interest_borne_by']?? null,
+                'payment_frequency' => $value['invoice']['program_offer']['payment_frequency'],
+                'interest_rate' => $value['interest_rate'],
+                'overdue_rate' => $value['overdue_interest_rate'],
+                'limit_used' => ($value['is_adhoc']==0)?$value['invoice']['invoice_approve_amount']:0,
+                'adhoc_limit_used' => ($value['is_adhoc']==1)?$value['invoice']['invoice_approve_amount']:0
+            ];
+            $whereInvoiceDetails = ['invoice_id' => $value['invoice']['invoice_id'],
+            'invoice_disbursed_id' => $value['invoice_disbursed_id']];
+            
+            $this->lmsRepo->saveInvoiceDisbursedDetails($invoiceDetails,$whereInvoiceDetails);
+            unset($invoiceDetails);
+            unset($whereInvoiceDetails);
+            /* Sudesh: Code to save Invoice Disbursed details : E */
         }
 
         $disbursals = $this->lmsRepo->getDisbursals($disbursalIds)->toArray();

@@ -1737,4 +1737,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function updateNachTransReq($attr, $whereCond){
         return NachTransReq::updateNachTransReq($attr, $whereCond);
     }
+	public function saveInvoiceDisbursedDetails($attr, $whereCond){
+		return InvoiceDisbursedDetail::saveInvoiceDisbursedDetails($attr, $whereCond);
+	}
 }

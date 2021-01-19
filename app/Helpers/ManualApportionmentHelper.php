@@ -631,6 +631,25 @@ class ManualApportionmentHelper{
             Helper::cronLogEnd('1',$cLogDetails->cron_log_id);
         }
     }
+
+    public function runningIntPosting(){
+        $curDate = Helpers::getSysStartDate();
+        $curDate = Carbon::parse($curDate)->format('Y-m-d');
+        $invDisbursedIds = TransactionsRunning::get()->whereDate('trans_date','<',$curDate)->filter(function($item) {
+            return round($item->outstanding,2) > 0;
+        })->pluck('invoice_disbursed_id')->toArray();
+
+        foreach (sort(array_unique($invDisbursedIds ?? [])) as  $invDisbId) {
+            $invDisbDetail = InvoiceDisbursed::find($invDisbId);
+            $offerDetails = $invDisbDetail->invoice->program_offer;
+            $payFreq = $offerDetails->payment_frequency;
+            $payDueDate = $invDisbDetail->payment_due_date;
+            $gPeriod = $invDisbDetail->grace_period;
+            $gEndDate = $this->addDays($payDueDate,$gPeriod);
+            $odStartDate = $this->addDays($gEndDate,1);
+            $this->runningToTransPosting($invDisbId, $curDate, $payFreq, $payDueDate, $odStartDate);
+        }
+    }
     
     public function getBankBaseRates($bank_id, $date=null){
         if($bank_id){
