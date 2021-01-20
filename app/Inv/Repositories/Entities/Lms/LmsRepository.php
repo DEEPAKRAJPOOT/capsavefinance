@@ -69,7 +69,7 @@ use App\Inv\Repositories\Models\UserNach;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReq;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReqBatch;
 use App\Inv\Repositories\Models\Lms\NachTransReq;
-
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 /**
  * Lms Repository class
  */

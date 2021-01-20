@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use App\Inv\Repositories\Observers\TransactionsObserver;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -35,7 +37,6 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
-
-        //
+        Transactions::observe(TransactionsObserver::class);
     }
 }
