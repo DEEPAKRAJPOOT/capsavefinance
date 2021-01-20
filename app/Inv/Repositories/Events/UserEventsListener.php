@@ -649,9 +649,10 @@ class UserEventsListener extends BaseEvent
         
         $email = [];
         foreach($user as $u) {
-            $email[] = $u['receiver_email'];
-        }        
-        
+            if(!empty($u['receiver_email']) ){
+                $email[] = $u['receiver_email'];
+            }
+        }
         if( env('SEND_MAIL_ACTIVE') == 1){
             //$email = $user["receiver_email"];    //explode(',', env('SEND_MAIL'));
             //$email_bcc = explode(',', env('SEND_MAIL_BCC'));
