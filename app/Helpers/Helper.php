@@ -1182,7 +1182,7 @@ class Helper extends PaypalHelper
                 $allEmailData[] = $emailData;
             }
         }
-          
+        $allEmailData['product_id'] = $application->products->product_id;
         \Event::dispatch("APPLICATION_APPROVER_MAIL", serialize($allEmailData));
         return $approvers;
     }
