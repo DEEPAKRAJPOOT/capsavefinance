@@ -1503,9 +1503,9 @@ ul.custom-check-label #frequency-error {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
-.white-space{
+/* .white-space{
     white-space: nowrap;
-}
+} */
 .filter-abs-btn {
     position: absolute;
     right: 15px;
