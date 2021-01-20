@@ -30,7 +30,7 @@
                                 <div class="label-bottom">{{ number_format($uLimit->tot_limit_amt) }}
                                   @if($uLimit->app->app_type==2) 
                                     @if($uLimit->status==1 && $uLimit->actual_end_date==Null) 
-                                    <button type="button" class="badge badge-success btn-sm float-right">Inprocess </button>
+                                    <button type="button" class="badge badge-success btn-sm float-right">Active </button>
                                     @elseif($uLimit->status==1 && $uLimit->actual_end_date!=Null) 
                                    <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }}</button>
                                     @else
