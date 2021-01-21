@@ -27,18 +27,21 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Helpers\ApportionmentHelper;
 use Illuminate\Validation\Rule;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
+use App\Helpers\FileHelper;
+use App\Inv\Repositories\Models\UserFile;
 
 class PaymentController extends Controller {
 
 	protected $invRepo;
 	protected $docRepo;
 	use LmsTrait;
-	public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo) {
+	public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo, FileHelper $file_helper) {
 		$this->invRepo = $invRepo;
 		$this->docRepo = $docRepo;
 		$this->lmsRepo = $lms_repo;
 		$this->userRepo = $user_repo;
 		$this->appRepo = $appRepo;
+                $this->fileHelper = $file_helper;
 		$this->middleware('auth');
         $this->middleware('checkEodProcess');
         $this->middleware('checkBackendLeadAccess');
@@ -750,10 +753,102 @@ class PaymentController extends Controller {
      */
     public function uploadExcelPayments(Request $request)
     {
-        $user_id = $request->get('user_id');
-        $users_nach_id = $request->get('users_nach_id');
-        return view('backend.payment.upload_xlsx_payments')
-                    ->with(['user_id' => $user_id]);
+        return view('backend.payment.upload_xlsx_payments');
+    }
+
+
+    /**
+     * Import uploaded excel file
+     *
+     * @param Request $request
+     * @return type
+     */
+    public function importExcelPayment(Request $request)
+    {
+        try {
+            $arrFileData = $request->files;
+            $inputArr = [];
+            $path = '';
+            $userId = Auth::user()->user_id;
+            if ($request['doc_file']) {
+                if (!Storage::exists('/public/nachexcel/response')) {
+                    Storage::makeDirectory('/public/nachexcel/response');
+                }
+                $path = Storage::disk('public')->put('/nachexcel/response', $request['doc_file'], null);
+            }
+            $uploadedFile = $request->file('doc_file');
+            $destinationPath = storage_path() . '/app/public/nachexcel/response';
+            $date = new DateTime;
+            $currentDate = $date->format('Y-m-d H:i:s');
+            $fileName = $currentDate.'_nachexcel.xlsx';
+            if ($uploadedFile->isValid()) {
+                $uploadedFile->move($destinationPath, $fileName);
+                $filePath = $destinationPath.'/'.$fileName;
+                $fileContent = $this->fileHelper->readFileContent($filePath);
+                $fileData = $this->fileHelper->uploadFileWithContent($filePath, $fileContent);
+                $file = UserFile::create($fileData);
+                $nachBatchData['res_file_id'] = $file->file_id;
+                //$this->appRepo->saveNachBatch($nachBatchData, null);
+
+            }
+            $fullFilePath  = $destinationPath . '/' . $fileName;
+            //echo $fullFilePath; exit;
+
+            $header = [
+                0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28
+            ];
+            $fileArrayData = $this->fileHelper->excelNcsv_to_array($fullFilePath, $header);
+
+            dd($fileArrayData);
+            if($fileArrayData['status'] != 'success'){
+                Session::flash('message', 'Please import correct format sheet,');
+                return redirect()->route('payment_list');
+            }
+            $rowData = $fileArrayData['data'];
+            if (empty($rowData)) {
+                Session::flash('message', 'File does not contain any record');
+                return redirect()->route('payment_list');
+            }
+            foreach ($rowData as $key => $value) {
+                if(!empty($value[0])){
+                    $nachStatus = '';
+                    if (trim($value[18]) == 'Active') {
+                        $nachStatus = config('lms.NACH_STATUS')['ACTIVE'];
+                    } elseif (trim($value[18]) == 'Failed') {
+                        $nachStatus = config('lms.NACH_STATUS')['FAILED'];
+                    } elseif (trim($value[18]) == 'ACK') {
+                        $nachStatus = config('lms.NACH_STATUS')['ACK'];
+                    } elseif (trim($value[18]) == 'Reject') {
+                        $nachStatus = config('lms.NACH_STATUS')['REJECT'];
+                    }
+                    $customer_id = trim($value[0]);
+                    if (!empty($customer_id) && $customer_id != null) {
+                            $arrUpdatePre = [
+                                'nach_status' => config('lms.NACH_STATUS')['CLOSED']
+                            ];
+                            $whereCon = [];
+                            $whereCon[] = ['cust_ref_no', '=', $customer_id];
+                            $whereCon[] = ['nach_status', '>', config('lms.NACH_STATUS')['SENT_TO_APPROVAL']];
+                            $resPreUp = $this->appRepo->updateNachByUserId($arrUpdatePre, $whereCon);
+                            $arrUpdateData = [
+                                'nach_status' => $nachStatus,
+                                'umrn' =>  trim($value[5]),
+                                'ack_date' => !empty($value[19]) ? date('Y-m-d', strtotime($value[19])) : '',
+                                'response_date' =>  !empty($value[20]) ? date('Y-m-d', strtotime($value[20])) : ''
+                            ];
+                            $whereCondition = [];
+                            $whereCondition[] = ['cust_ref_no', '=', $customer_id];
+                            $whereCondition[] = ['nach_status', '=', config('lms.NACH_STATUS')['SENT_TO_APPROVAL']];
+                            $resUpdate = $this->appRepo->updateNachByUserId($arrUpdateData, $whereCondition);
+                    }
+                }
+            }
+            Session::flash('message',trans('Excel Data Imported successfully.'));
+            Session::flash('operation_status', 1);
+            return redirect()->route('users_nach_list');
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
     }
 
 }

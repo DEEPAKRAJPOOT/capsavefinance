@@ -286,7 +286,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
                     Route::get('/upload-excel-payments', [
                         'as' => 'upload_excel_payments',
-                        'uses' => 'Lms\PaymentController@uploadExcelPayments'
+                        'uses' => 'Backend\PaymentController@uploadExcelPayments'
+                    ]);
+                    Route::post('/import-excel-payments', [
+                        'as' => 'import_excel_payments',
+                        'uses' => 'Backend\PaymentController@importExcelPayment'
                     ]);
                 }
             });

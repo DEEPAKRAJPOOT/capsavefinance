@@ -64,7 +64,7 @@
                                                                             <a href="{{route('add_payment')}}" class="btn btn-primary btn-sm">Add Manual</a>
 									@endcan
                                                                         
-                                                                        <a data-toggle="modal" data-target="#importExcelPayments" data-url ="{{route('upload_nach_response') }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm" title="Import Excel">Import Excel</a>
+                                                                        <a data-toggle="modal" data-target="#importExcelPayments" data-url ="{{route('upload_excel_payments') }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm" title="Import Excel">Import Excel</a>
                                                                         <!--<a  data-toggle="modal" data-target="#modalUploadPayment" data-url ="{{route('excel_bulk_payment', [])}}" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="Edit Anchor Detail">Excel</a> -->
 									<!-- <a href="{{route('excel_payment_list')}}" class="btn btn-primary btn-sm">Excel</a> -->
 								</div>
@@ -108,7 +108,7 @@
 </div>
 {!!Helpers::makeIframePopup('modalUploadPayment','Upload Payment', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('editPaymentFrm','Edit Payment', 'modal-md')!!}
-{!!Helpers::makeIframePopup('importExcelPayments','Import Payments from Excel', 'modal-md')!!}
+{!!Helpers::makeIframePopup('importExcelPayments','Import Payments From Excel', 'modal-md')!!}
 @endsection
 @section('jscript')
 <script>
