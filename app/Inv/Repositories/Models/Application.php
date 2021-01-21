@@ -646,7 +646,7 @@ class Application extends BaseModel
     }
 
     public function products(){
-        return $this->belongsToMany('App\Inv\Repositories\Models\Master\Product', 'app_product', 'app_id')->withPivot('loan_amount', 'tenor_days');;
+        return $this->belongsToMany('App\Inv\Repositories\Models\Master\Product', 'app_product', 'app_id')->withPivot('loan_amount', 'tenor_days');
     }
 
     /**

@@ -658,7 +658,12 @@ class UserEventsListener extends BaseEvent
             $email_cc = explode(',', env('SEND_APPROVER_MAIL_CC'));
         }else{
             //$email = $user["receiver_email"];
-            $email_cc = '';
+            $email_content = EmailTemplate::getEmailTemplate("APPLICATION_APPROVER_MAIL");
+            if(!empty($user['product_id']) && $user['product_id'] == 1 || 3){
+                $email_cc = explode(',', $email_content->cc);
+            }else{
+                $email_cc = '';
+            }
         }  
             
         /*
