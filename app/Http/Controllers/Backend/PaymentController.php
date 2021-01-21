@@ -740,4 +740,20 @@ class PaymentController extends Controller {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+
+    /**
+     * Upload excel file for import
+     *
+     * @param Request $request
+     * @return type
+     */
+    public function uploadExcelPayments(Request $request)
+    {
+        $user_id = $request->get('user_id');
+        $users_nach_id = $request->get('users_nach_id');
+        return view('backend.payment.upload_xlsx_payments')
+                    ->with(['user_id' => $user_id]);
+    }
+
 }
