@@ -16,8 +16,8 @@
     <link rel="stylesheet" href="{{url('backend/assets/css/uploadfile.css')}}" >
     <link rel="stylesheet" href="{{url('backend/assets/css/data-table.css')}}" />
     <link rel="stylesheet" href="{{url('backend/assets/plugins/datatables/css/datatables.min.css')}}" />
-    <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}" />
-    <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" />
+    <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" />
+    <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" />
     <link rel="stylesheet" href="{{ url('common/js/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" />
     @yield('additional_css')
 </head>
