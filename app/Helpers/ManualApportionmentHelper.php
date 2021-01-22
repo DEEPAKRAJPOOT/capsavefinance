@@ -46,15 +46,12 @@ class ManualApportionmentHelper{
             ->whereNull('link_trans_id')
             ->whereNull('parent_trans_id')
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
-            ->whereNotNull('trans_running_id')
             ->get();
         
         foreach($transactions as $trans){
             
             $amount = round($trans->amount,2);
             $outstanding = ($trans->outstanding > 0.00)?$trans->outstanding:0.00;
-            $fromDate = $trans->fromIntDate;
-            $toDate = $trans->toIntDate;
 
             $actualAmount = InterestAccrual::where('interest_date', '>=',$trans->fromIntDate)
             ->where('interest_date','<=',$trans->toIntDate)
@@ -541,7 +538,7 @@ class ManualApportionmentHelper{
             } 
             $intType = 1;
             
-            if($startDate && strtotime($gStartDate) >= strtotime($startDate) &&  strtotime($startDate) <= strtotime($gEndDate)){
+            if($startDate && strtotime($gStartDate) <= strtotime($startDate) && strtotime($gEndDate) >= strtotime($startDate)){
                 $startDate = $gStartDate;
             }
             
@@ -628,7 +625,8 @@ class ManualApportionmentHelper{
     
     public function dailyIntAccrual(){
         $cLogDetails = Helper::cronLogBegin(1);
-
+        $this->transactionPostingAdjustment('538', NULL, NULL, NULL);
+        /*
         $curdate = Helpers::getSysStartDate();
         $transRunningTrans = $this->lmsRepo->getUnsettledRunningTrans();
         sort($transRunningTrans);
@@ -637,7 +635,6 @@ class ManualApportionmentHelper{
             $pos = array_search($invId, $transRunningTrans);
             unset($transRunningTrans[$pos]);
             unset($pos);
-            dump('a/'.$invId);
             $this->intAccrual($invId);
             $this->transactionPostingAdjustment($invId, NULL, NULL, NULL);
         }
@@ -649,7 +646,6 @@ class ManualApportionmentHelper{
             $payDueDate = $invDisbDetail->payment_due_date;
             $gStartDate = $payDueDate;
             $gEndDate = $this->addDays($payDueDate,$gPeriod);
-            dump('b'.'/'.$invId.'/'.$payFreq);
             $this->runningToTransPosting($invId, $curdate, $payFreq, $gStartDate, $gEndDate);
             $this->transactionPostingAdjustment($invId, NULL, NULL, NULL);   
         }
@@ -657,6 +653,7 @@ class ManualApportionmentHelper{
         if($cLogDetails){
             Helper::cronLogEnd('1',$cLogDetails->cron_log_id);
         }
+        */
     }
     
     public function getBankBaseRates($bank_id, $date=null){
