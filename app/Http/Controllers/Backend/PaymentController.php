@@ -799,7 +799,7 @@ class PaymentController extends Controller {
             ];
             $fileArrayData = $this->fileHelper->excelNcsv_to_array($fullFilePath, $header);
 
-            //dd($fileArrayData);
+            dd($fileArrayData);
             if($fileArrayData['status'] != 'success'){
                 Session::flash('message', 'Please import correct format sheet,');
                 return redirect()->route('payment_list');
