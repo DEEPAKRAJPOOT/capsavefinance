@@ -821,6 +821,7 @@ class PaymentController extends Controller {
                             $parent_trans_id = NULL;
                             $amount = $value[9];
                            // $date_of_payment = ($value[10]) ? Carbon::createFromFormat('d/m/Y', $value[10])->format('Y-m-d') : '';
+                           $date_of_payment = '';
                             $gst = NULL;
                             $sgst_amt = NULL;
                             $cgst_amt = NULL;
