@@ -799,7 +799,7 @@ class PaymentController extends Controller {
             ];
             $fileArrayData = $this->fileHelper->excelNcsv_to_array($fullFilePath, $header);
 
-            dd($fileArrayData);
+            //dd($fileArrayData);
             if($fileArrayData['status'] != 'success'){
                 Session::flash('message', 'Please import correct format sheet,');
                 return redirect()->route('payment_list');
@@ -811,41 +811,65 @@ class PaymentController extends Controller {
             }
             foreach ($rowData as $key => $value) {
                 if(!empty($value[0])){
-                    $nachStatus = '';
-                    if (trim($value[18]) == 'Active') {
-                        $nachStatus = config('lms.NACH_STATUS')['ACTIVE'];
-                    } elseif (trim($value[18]) == 'Failed') {
-                        $nachStatus = config('lms.NACH_STATUS')['FAILED'];
-                    } elseif (trim($value[18]) == 'ACK') {
-                        $nachStatus = config('lms.NACH_STATUS')['ACK'];
-                    } elseif (trim($value[18]) == 'Reject') {
-                        $nachStatus = config('lms.NACH_STATUS')['REJECT'];
-                    }
-                    $customer_id = trim($value[0]);
-                    if (!empty($customer_id) && $customer_id != null) {
-                            $arrUpdatePre = [
-                                'nach_status' => config('lms.NACH_STATUS')['CLOSED']
-                            ];
-                            $whereCon = [];
-                            $whereCon[] = ['cust_ref_no', '=', $customer_id];
-                            $whereCon[] = ['nach_status', '>', config('lms.NACH_STATUS')['SENT_TO_APPROVAL']];
-                            $resPreUp = $this->appRepo->updateNachByUserId($arrUpdatePre, $whereCon);
-                            $arrUpdateData = [
-                                'nach_status' => $nachStatus,
-                                'umrn' =>  trim($value[5]),
-                                'ack_date' => !empty($value[19]) ? date('Y-m-d', strtotime($value[19])) : '',
-                                'response_date' =>  !empty($value[20]) ? date('Y-m-d', strtotime($value[20])) : ''
-                            ];
-                            $whereCondition = [];
-                            $whereCondition[] = ['cust_ref_no', '=', $customer_id];
-                            $whereCondition[] = ['nach_status', '=', config('lms.NACH_STATUS')['SENT_TO_APPROVAL']];
-                            $resUpdate = $this->appRepo->updateNachByUserId($arrUpdateData, $whereCondition);
+                    $virtual_acc = trim($value[1]);
+                    if (!empty($virtual_acc) && $virtual_acc != null) {
+                            $user_id = '';
+                            $biz_id = '';
+                            $virtual_acc = $virtual_acc;
+                            $action_type = 1;
+                            $trans_type = 17; //17 for Repayment
+                            $parent_trans_id = NULL;
+                            $amount = $value[9];
+                            $date_of_payment = ($value[10]) ? Carbon::createFromFormat('d/m/Y', $value[10])->format('Y-m-d') : '';
+                            $gst = NULL;
+                            $sgst_amt = NULL;
+                            $cgst_amt = NULL;
+                            $igst_amt = NULL;
+                            $payment_type = '';
+                            $utr_no = NULL;
+                            $unr_no = NULL;
+                            $cheque_no = NULL;
+                            $tds_certificate_no = '';
+                            $file_id = '';
+                            $description = '';
+                            $is_settled = '';
+                            $is_manual = '1';
+                            $sys_date = \Helpers::getSysStartDate();
+                            $generated_by = 0;
+                            
+                            $paymentData = [
+				'user_id' => $user_id,
+				'biz_id' => $biz_id,
+				'virtual_acc' => $virtual_acc,
+				'action_type' => $action_type,
+				'trans_type' => $trans_type,
+				'parent_trans_id' => $parent_trans_id,
+				'amount' => $$amount,
+				'date_of_payment' => $date_of_payment,
+				'gst' => $gst,
+				'sgst_amt' => $sgst_amt,
+				'cgst_amt' => $cgst_amt,
+				'igst_amt' => $igst_amt,
+				'payment_type' => $payment_type,
+				'utr_no' => $utr_no,
+				'unr_no' => $unr_no,
+				'cheque_no' => $cheque_no,
+				'tds_certificate_no' => $tds_certificate_no,
+				'file_id' => $file_id,
+				'description' => $description,
+				'is_settled' => $is_settled,
+				'is_manual' => $is_manual,
+				'sys_date'=> $sys_date,
+				'generated_by' => $generated_by,
+			];
+			$paymentId = NULL;
+                        $paymentId = Payment::insertPayments($paymentData);
                     }
                 }
             }
             Session::flash('message',trans('Excel Data Imported successfully.'));
             Session::flash('operation_status', 1);
-            return redirect()->route('users_nach_list');
+            return redirect()->route('payment_list');
         } catch (\Exception $ex) {
             return Helpers::getExceptionMessage($ex);
         }
