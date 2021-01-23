@@ -844,7 +844,7 @@ class PaymentController extends Controller {
 				'action_type' => $action_type,
 				'trans_type' => $trans_type,
 				'parent_trans_id' => $parent_trans_id,
-				'amount' => $$amount,
+				'amount' => $amount,
 				'date_of_payment' => $date_of_payment,
 				'gst' => $gst,
 				'sgst_amt' => $sgst_amt,
