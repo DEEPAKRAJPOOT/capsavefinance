@@ -625,8 +625,6 @@ class ManualApportionmentHelper{
     
     public function dailyIntAccrual(){
         $cLogDetails = Helper::cronLogBegin(1);
-        $this->transactionPostingAdjustment('538', NULL, NULL, NULL);
-        /*
         $curdate = Helpers::getSysStartDate();
         $transRunningTrans = $this->lmsRepo->getUnsettledRunningTrans();
         sort($transRunningTrans);
@@ -653,7 +651,6 @@ class ManualApportionmentHelper{
         if($cLogDetails){
             Helper::cronLogEnd('1',$cLogDetails->cron_log_id);
         }
-        */
     }
     
     public function getBankBaseRates($bank_id, $date=null){
