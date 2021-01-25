@@ -788,8 +788,7 @@ class PaymentController extends Controller {
                 $fileData = $this->fileHelper->uploadFileWithContent($filePath, $fileContent);
                 $file = UserFile::create($fileData);
                 $nachBatchData['res_file_id'] = $file->file_id;
-                //$this->appRepo->saveNachBatch($nachBatchData, null);
-
+                $this->appRepo->saveNachBatch($nachBatchData, null);
             }
             $fullFilePath  = $destinationPath . '/' . $fileName;
             //echo $fullFilePath; exit;
@@ -813,15 +812,18 @@ class PaymentController extends Controller {
                 if(!empty($value[0])){
                     $virtual_acc = trim($value[1]);
                     if (!empty($virtual_acc) && $virtual_acc != null) {
-                            $user_id = '';
+
+                         $wherCond['virtual_acc_id'] = $virtual_acc;
+                         $lmsData = $this->appRepo->getLmsUsers($wherCond)->first();
+                            $user_id = $lmsData ? $lmsData->user_id : '';
                             $biz_id = '';
                             $virtual_acc = $virtual_acc;
                             $action_type = 1;
                             $trans_type = 17; //17 for Repayment
                             $parent_trans_id = NULL;
                             $amount = $value[9];
-                           // $date_of_payment = ($value[10]) ? Carbon::createFromFormat('d/m/Y', $value[10])->format('Y-m-d') : '';
-                           $date_of_payment = '';
+                            $date_of_payment = ($value[10]) ? Carbon::createFromFormat('d-m-Y', $value[10])->format('Y-m-d') : '';
+                           // $date_of_payment = '';
                             $gst = NULL;
                             $sgst_amt = NULL;
                             $cgst_amt = NULL;
