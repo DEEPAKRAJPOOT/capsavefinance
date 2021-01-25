@@ -625,6 +625,7 @@ class ManualApportionmentHelper{
     
     public function dailyIntAccrual(){
         $cLogDetails = Helper::cronLogBegin(1);
+
         $curdate = Helpers::getSysStartDate();
         $transRunningTrans = $this->lmsRepo->getUnsettledRunningTrans();
         sort($transRunningTrans);
