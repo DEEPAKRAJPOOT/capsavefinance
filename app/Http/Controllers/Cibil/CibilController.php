@@ -154,6 +154,7 @@ class CibilController extends Controller
         // }else {
         //     $arrOwnerData->owner_addr = '';
         // }
+        //dd($arrRequest);
 
         $responce =  $CibilApi->getCommercialCibilAcknowledgement($arrRequest);
       // dd($responce);
