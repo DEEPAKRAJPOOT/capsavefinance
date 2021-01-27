@@ -789,6 +789,7 @@ class PaymentController extends Controller {
                 $file = UserFile::create($fileData);
                 $nachBatchData['res_file_id'] = $file->file_id;
                 $this->appRepo->saveNachBatch($nachBatchData, null);
+                $file_id = $file->file_id;
             }
             $fullFilePath  = $destinationPath . '/' . $fileName;
             //echo $fullFilePath; exit;
@@ -816,24 +817,24 @@ class PaymentController extends Controller {
                          $wherCond['virtual_acc_id'] = $virtual_acc;
                          $lmsData = $this->appRepo->getLmsUsers($wherCond)->first();
                             $user_id = $lmsData ? $lmsData->user_id : '';
-                            $biz_id = '';
+                            $biz_id = NULL;
                             $virtual_acc = $virtual_acc;
                             $action_type = 1;
                             $trans_type = 17; //17 for Repayment
-                            $parent_trans_id = NULL;
+                            $parent_trans_id = '';
                             $amount = $value[9];
                             $date_of_payment = ($value[10]) ? Carbon::createFromFormat('d-m-Y', $value[10])->format('Y-m-d') : '';
                            // $date_of_payment = '';
-                            $gst = NULL;
-                            $sgst_amt = NULL;
-                            $cgst_amt = NULL;
-                            $igst_amt = NULL;
-                            $payment_type = '';
-                            $utr_no = NULL;
-                            $unr_no = NULL;
-                            $cheque_no = NULL;
+                            $gst = '';
+                            $sgst_amt = 0;
+                            $cgst_amt = 0;
+                            $igst_amt = 0;
+                            $payment_type = '2';
+                            $utr_no = '';
+                            $unr_no = '';
+                            $cheque_no = '';
                             $tds_certificate_no = '';
-                            $file_id = '';
+                            $file_id = $file_id;
                             $description = '';
                             $is_settled = '';
                             $is_manual = '1';
@@ -864,10 +865,11 @@ class PaymentController extends Controller {
 				'is_manual' => $is_manual,
 				'sys_date'=> $sys_date,
 				'generated_by' => $generated_by,
+                                'generated_by' => 1,
+                                'is_refundable' => 1
 			];
-                            dd($paymentData);
-			$paymentId = NULL;
-                        $paymentId = Payment::insertPayments($paymentData);
+                           // dd($paymentData);
+			$paymentId = Payment::insertPayments($paymentData);
                     }
                 }
             }
