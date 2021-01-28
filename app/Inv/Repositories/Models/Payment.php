@@ -75,6 +75,7 @@ class Payment extends BaseModel {
         'generated_by',
         'sys_created_at',
         'sys_updated_at',
+        'payment_excel_id',
         'created_at',
         'created_by',
         'updated_at',

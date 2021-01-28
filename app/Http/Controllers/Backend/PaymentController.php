@@ -14,6 +14,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Payment;
+use App\Inv\Repositories\Models\PaymentExcel;
 use Session;
 use Helpers;
 use DB;
@@ -813,9 +814,34 @@ class PaymentController extends Controller {
                 if(!empty($value[0])){
                     $virtual_acc = trim($value[1]);
                     if (!empty($virtual_acc) && $virtual_acc != null) {
-
                          $wherCond['virtual_acc_id'] = $virtual_acc;
                          $lmsData = $this->appRepo->getLmsUsers($wherCond)->first();
+                            $paymentExcelData = [
+				'user_id' => $lmsData ? $lmsData->user_id : '',
+				'bankcode' => $value[0],
+				'virtual_acc' => $virtual_acc,
+				'instrument_type' => $value[2],
+				'remitter_account_number' => $value[3],
+				'remitter_ifsc_code' => $value[4],
+				'remitter_name' => $value[5],
+				'contact_no' => $value[6],
+				'email' => $value[7],
+				'is_status' => $value[8],
+				'txn_amount' => $value[9],
+				'txn_date' => $value[10],
+				'txn_ref_number' => $value[11],
+				'client_code' => $value[12],
+				'trn_time_stamp' => $value[13],
+				'file_id' => $file_id
+                            ];
+                           
+
+                         $paymentExcelId = PaymentExcel::insertPaymentsExcel($paymentExcelData);
+                         //echo "==>".$paymentExcelId; exit;
+
+                         if($value[8] == 'Success') {
+                            $wherCond['virtual_acc_id'] = $virtual_acc;
+                            $lmsData = $this->appRepo->getLmsUsers($wherCond)->first();
                             $user_id = $lmsData ? $lmsData->user_id : '';
                             $biz_id = NULL;
                             $virtual_acc = $virtual_acc;
@@ -837,9 +863,9 @@ class PaymentController extends Controller {
                             $file_id = $file_id;
                             $description = '';
                             $is_settled = '';
-                            $is_manual = '1';
+                            $is_manual = '0'; // Automatic
                             $sys_date = \Helpers::getSysStartDate();
-                            $generated_by = 0;
+                            $generated_by = 1;
                             
                             $paymentData = [
 				'user_id' => $user_id,
@@ -866,10 +892,13 @@ class PaymentController extends Controller {
 				'sys_date'=> $sys_date,
 				'generated_by' => $generated_by,
                                 'generated_by' => 1,
-                                'is_refundable' => 1
+                                'is_refundable' => 1,
+                                'payment_excel_id' => $paymentExcelId
 			];
                            // dd($paymentData);
 			$paymentId = Payment::insertPayments($paymentData);
+
+                        }
                     }
                 }
             }
