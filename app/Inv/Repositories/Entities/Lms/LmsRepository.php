@@ -1733,8 +1733,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     public function getNachRepaymentReqFirst($whereCondition){
         return NachRepaymentReq::where($whereCondition)->first();
-    }
+	}
+
     public function updateNachTransReq($attr, $whereCond){
         return NachTransReq::updateNachTransReq($attr, $whereCond);
-    }
+	}
+
+	public function getUnsettledRunningTrans(){
+        return TransactionsRunning::getUnsettledRunningTrans();
+	}
 }
