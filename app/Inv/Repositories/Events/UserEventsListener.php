@@ -653,7 +653,7 @@ class UserEventsListener extends BaseEvent
                 $email[] = $u['receiver_email'];
             }
         }
-        if( env('SEND_MAIL_ACTIVE') == 1){
+        if( env('SEND_APPROVER_MAIL_ACTIVE') == 1){
             //$email = $user["receiver_email"];    //explode(',', env('SEND_MAIL'));
             //$email_bcc = explode(',', env('SEND_MAIL_BCC'));
             $email_cc = explode(',', env('SEND_APPROVER_MAIL_CC'));
