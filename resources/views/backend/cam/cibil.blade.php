@@ -704,7 +704,8 @@
              success: function (data) {
               $(".isloader").hide();
                 var status =  data['status'];
-                var html = '<div class="alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+data['message']+'</div>';
+                $msgType = status == 1 ? 'success' : 'danger';
+                var html = '<div class="alert-' + $msgType + ' alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>'+data['message']+'</div>';
                   if(status==1)
                     {  
                          $("#pullMsgCommercial").html(html);
