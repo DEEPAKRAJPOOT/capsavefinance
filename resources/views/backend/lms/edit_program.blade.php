@@ -159,7 +159,7 @@
 @endsection 
 
 @section('additional_css')
-<link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}" /> 
+<link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" /> 
 @endsection 
 
 @section('jscript')

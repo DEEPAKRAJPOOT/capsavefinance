@@ -1177,12 +1177,12 @@ class Helper extends PaypalHelper
                 $emailData['app_id'] = \Helpers::formatIdWithPrefix($application->app_id, 'APP');
                 $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                 $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
-                $emailData['receiver_email'] = $user->email;
+                $emailData['receiver_email'] = isset($user->email) ? $user->email : '';
                 $emailData['cover_note'] = (isset($reviewerSummaryData->cover_note))?$reviewerSummaryData->cover_note:'';  
                 $allEmailData[] = $emailData;
             }
         }
-          
+        $allEmailData['product_id'] = $application->products[0]->id;
         \Event::dispatch("APPLICATION_APPROVER_MAIL", serialize($allEmailData));
         return $approvers;
     }
