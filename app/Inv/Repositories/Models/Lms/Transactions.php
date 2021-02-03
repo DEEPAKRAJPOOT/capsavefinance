@@ -1120,6 +1120,7 @@ class Transactions extends BaseModel {
                 $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id] = 
                 [
                     'loan' => config('common.idprefix.APP').$uITrans->invoiceDisbursed->invoice->app_id,
+                    'customer_id' => $uITrans->invoiceDisbursed->invoice->lms_user->customer_id,
                     'client_name' => $uITrans->user->biz->biz_entity_name,
                     'disbursed_amt' => $dTrans->amount,
                     'from_date' => $uITrans->fromIntDate,
