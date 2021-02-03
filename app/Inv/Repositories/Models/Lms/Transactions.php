@@ -1259,6 +1259,7 @@ class Transactions extends BaseModel {
                 $data[strtotime($tds->trans_date).'-'.$tds->trans_id] = 
                 [
                     'loan' => '',
+                    'cust_id' => $tds->user->lms_user->customer_id,
                     'client_name' => $tds->user->biz->biz_entity_name,
                     'trans_date' => $tds->trans_date,
                     'int_amt' => $cTrans->amount,
