@@ -6547,7 +6547,7 @@ class DataRenderer implements DataProviderInterface
             return $trans['loan'];
         })
         ->editColumn('cust_id', function($trans) {
-            return $trans['customer_id'];
+            return $trans['cust_id'];
         })
         ->editColumn('client_name', function($trans) {
             return $trans['client_name'];
@@ -6593,6 +6593,9 @@ class DataRenderer implements DataProviderInterface
         ->editColumn('loan', function($trans) { 
             return $trans['loan']?$trans['loan']:'';
         })
+        // ->editColumn('cust_id', function($trans) {
+        //     return $trans['cust_id'];
+        // })
         ->editColumn('client_name', function($trans) { 
             return $trans['client_name']?$trans['client_name']:'';
         })
