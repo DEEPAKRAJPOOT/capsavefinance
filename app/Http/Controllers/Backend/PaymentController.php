@@ -828,7 +828,7 @@ class PaymentController extends Controller {
 				'email' => $value[7],
 				'is_status' => $value[8],
 				'txn_amount' => $value[9],
-				'txn_date' => $value[10],
+				'txn_date' => ($value[10]) ? Carbon::createFromFormat('d-m-Y', $value[10])->format('Y-m-d') : '',
 				'txn_ref_number' => $value[11],
 				'client_code' => $value[12],
 				'trn_time_stamp' => $value[13],
@@ -862,7 +862,7 @@ class PaymentController extends Controller {
                             $tds_certificate_no = '';
                             $file_id = $file_id;
                             $description = '';
-                            $is_settled = '';
+                            $is_settled = '0';
                             $is_manual = '0'; // Automatic
                             $sys_date = \Helpers::getSysStartDate();
                             $generated_by = 1;
