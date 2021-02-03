@@ -676,10 +676,13 @@ class InvoiceController extends Controller {
                     $exportData[$userid]['Debit_Mobile'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_MOBILE'];
                     $exportData[$userid]['Ben_IFSC'] = $disbursalData['invoice']['supplier_bank_detail']['ifsc_code'];
                     $exportData[$userid]['Ben_Acct_No'] = $disbursalData['invoice']['supplier_bank_detail']['acc_no'];
-                    // $exportData[$userid]['Ben_IFSC'] = config('lms.IDFC_DEBIT_BANK')['BEN_IFSC'];
-                    // $exportData[$userid]['Ben_Acct_No'] = config('lms.IDFC_DEBIT_BANK')['BEN_ACC_NO'];
-                    $exportData[$userid]['Ben_Name'] = $disbursalData['invoice']['supplier_bank_detail']['acc_name'];
-                    $exportData[$userid]['Ben_BankName'] = $disbursalData['invoice']['supplier_bank_detail']['bank']['bank_name'];
+                    if (config('lms.UAT_ACTIVE') == 1) {
+                        $exportData[$userid]['Ben_IFSC'] = config('lms.IDFC_CREDIT_BANK')['BEN_IFSC'];
+                        $exportData[$userid]['Ben_Acct_No'] = config('lms.IDFC_CREDIT_BANK')['BEN_ACC_NO'];
+                    } else {
+                        $exportData[$userid]['Ben_Name'] = $disbursalData['invoice']['supplier_bank_detail']['acc_name'];
+                        $exportData[$userid]['Ben_BankName'] = $disbursalData['invoice']['supplier_bank_detail']['bank']['bank_name'];
+                    }
                     $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
                     $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
                     $exportData[$userid]['Mode_of_Pay'] = $modePay;

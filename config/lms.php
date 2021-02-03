@@ -207,7 +207,12 @@ return [
        'DEBIT_ACC_NAME' => env('DEBIT_ACC_NAME', 'Capsave Finance Pvt Ltd'),
        'DEBIT_MOBILE' => env('DEBIT_MOBILE', '')
     ],
+    'IDFC_CREDIT_BANK' => [    
+       'BEN_ACC_NO' => env('BEN_ACC_NO', '112101505172011'),
+       'BEN_IFSC' => env('BEN_IFSC', 'SIMB0002233'),
+    ],
     'IDFC_API_URL' => env('IDFC_API_URL', ''),
     'IDFC_CRYPTO_KEY' => env('IDFC_CRYPTO_KEY', ''),
     'IDFC_CORP_ID' => env('IDFC_CORP_ID', ''),
+    'UAT_ACTIVE' => env('UAT_ACTIVE', ''),
 ];
