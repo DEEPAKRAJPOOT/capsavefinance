@@ -18,13 +18,14 @@ class Crif_lib {
             '1' => '40',
             '4' => '40'
         ];
-        $this->url = 'https://test.crifhighmark.com/Inquiry/Inquiry/CPUAction.action';//config('library.CRIF_URL');
-        $this->req_mbr = 'NBF0002966';//config('library.CRIF_REQ_MBR');
-        $this->mbr_id = 'BOROCTSAN005';//config('library.CRIF_MBR_ID');
-        $this->sub_mbr_id = 'CAPSAVE FINANCE PRIVATE LIMITED';//config('library.CRIF_MBR_ID');
-        $this->usrId = 'crif1_cpu_uat@capsavefinance.com';//config('library.CRIF_USRID');
-        $this->PassCode = '55DE689372D33C9876D1E09CFFF8BBBFF74B9445';//config('library.CRIF_PASSCODE');
+        $this->url = 'https://test.crifhighmark.com/Inquiry/Inquiry/CPUAction.action';
+        $this->req_mbr = 'NBF0002966';
+        $this->mbr_id = 'BOROCTSAN005';
+        $this->sub_mbr_id = 'CAPSAVE FINANCE PRIVATE LIMITED';
+        $this->usrId = 'crif1_cpu_uat@capsavefinance.com';
+        $this->PassCode = '55DE689372D33C9876D1E09CFFF8BBBFF74B9445';
         $this->res_frmt = 'XML';
+        $this->req_action_type = 'SUBMIT';
     }
 
     public function _callApi($method, $data, $biz_crif_id, $random_no) {
@@ -100,7 +101,7 @@ class Crif_lib {
     private function getCommercialCibilAcknowledgement($ArrData) {
       extract($ArrData);
       $this->random_no = $random_no;
-      $dummyXML = TRUE;
+      $dummyXML = FALSE;
       if ($dummyXML) {
           $request_xml = $this->_getDummyXML();
       }else{
@@ -157,7 +158,7 @@ class Crif_lib {
             <SUB-MBR-ID>'.$this->sub_mbr_id.'</SUB-MBR-ID>
             <INQ-DT-TM>'.date('d-m-Y').'</INQ-DT-TM>
             <REQ-VOL-TYP>INDV</REQ-VOL-TYP>
-            <REQ-ACTN-TYP>SUBMIT</REQ-ACTN-TYP>
+            <REQ-ACTN-TYP>'. $this->req_action_type .'</REQ-ACTN-TYP>
             <TEST-FLG>Y</TEST-FLG>
             <USER-ID>'. $this->usrId .'</USER-ID>
             <PWD>'. $this->PassCode .'</PWD>
@@ -209,8 +210,8 @@ class Crif_lib {
                 <ADDRESS-LINE>'.$arrRequest['biz_address'].'</ADDRESS-LINE>
                 <LOCALITY></LOCALITY>
                 <CITY>'.$arrRequest['city_name'].'</CITY>
-                <STATE>'.$arrRequest['state_code'].'</STATE>
-                <PIN>'.$arrRequest['pincode'].'</PIN>
+                <STATE>'.(!empty($arrRequest['state_code']) ? $arrRequest['state_code'] : 'GJ').'</STATE>
+                <PIN>'.(!empty($arrRequest['pincode']) ? $arrRequest['pincode'] : 'GJ').'</PIN>
             </ADDRESS>
         </COMM-ADDRESS-SEGMENT>
         <APPLICATION-SEGMENT>
@@ -276,6 +277,7 @@ class Crif_lib {
 
     private function prepareXmlToGetData($arrRequest) {
         $this->res_frmt = $arrRequest['resFormat'];
+        $this->req_action_type = 'AT02';
         $requestXml = $this->_getHeaderSegment() . '<INQUIRY>
             <INQUIRY-UNIQUE-REF-NO>'.$arrRequest['inquiry_unique_ref_no'].'</INQUIRY-UNIQUE-REF-NO>
             <REQUEST-DT-TM>'.date('d-m-Y H:i:s').'</REQUEST-DT-TM>
