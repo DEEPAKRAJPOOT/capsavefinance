@@ -32,7 +32,21 @@
                 <textarea class="form-control" id="debit_desc" name="debit_desc" placeholder="Debit Description" maxlength="200" style="height:35px;"></textarea>
             </div>
         </div>       
-
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="chrg_type">Charge Based On</label><br />
+                <div class="form-check-inline ">
+                    <label class="form-check-label fnt">
+                        <input type="radio" class="form-check-input" checked name="based_on" value="1">Program Based
+                    </label>
+                </div>
+                <div class="form-check-inline">
+                    <label class="form-check-label fnt">
+                        <input type="radio" class="form-check-input" name="based_on" value="2">Customer Based
+                    </label>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="form-group col-md-6">
                 <div class="row">
@@ -62,7 +76,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group col-md-6 float-md-right">
+            <div class="form-group col-md-6 float-md-right" id="chrg_calculation_amt_div">
                 <label for="chrg_calculation_amt">Amount/Percent</label>
                 <input type="text" class="form-control amtpercnt" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" maxlength="10">
             </div>
@@ -112,7 +126,7 @@
         </div>
         </div>
         <div class="row">
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-6" id="chrg_tiger_div">
                 <label for="chrg_tiger_id">Charge Trigger</label>
                 <select class="form-control" name="chrg_tiger_id" id="chrg_tiger_id">
                     <option value="" selected>Select</option>
@@ -154,10 +168,19 @@
     $(document).ready(function () {
 
         $(document).on('click', 'input[name="chrg_calculation_type"]', function (e) {
-            if ($(this).val() == '2')
-                $('#approved_limit_div').show();
-            else
+            var basedOn = $('input[name="based_on"]:checked').val();
+
+            if ($(this).val() == '2' && basedOn == 2){
                 $('#approved_limit_div').hide();
+                $('#chrg_tiger_div').hide();
+                $('#chrg_calculation_amt_div').hide();
+            }
+            if ($(this).val() == '2' && basedOn == 1) {
+                $('#approved_limit_div').show();
+            }
+            else {
+                $('#approved_limit_div').hide();
+            }
         })
 
         $(document).on('click', 'input[name="is_gst_applicable"]', function (e) {
@@ -166,6 +189,21 @@
             else{
                 $('input[name="gst_percentage"]').val('');
                 $('#gst_div').hide();
+            }
+        })
+        
+        $(document).on('click', 'input[name="based_on"]', function (e) {
+            if ($(this).val() == '2') {
+                $('#gst_div').show();
+                $('#approved_limit_div').hide();
+                $('#chrg_tiger_div').hide();
+                $('#chrg_calculation_amt_div').hide();
+            }
+            else{
+                // $('input[name="gst_percentage"]').val('');
+                $('#approved_limit_div').show();
+                $('#chrg_tiger_div').show();
+                $('#gst_div').show();
             }
         })
 

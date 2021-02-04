@@ -115,7 +115,7 @@
       $("#chrgMsg").html('');
       $("#chrg_applicable_id").empty();
       var chrg_name =  $(this).val(); 
-      if($("#program_id").val()=='') 
+      if($("#program_id").val()=='' && $('#based_on').val() == 1) 
       {    
              $(this).val('');
              $("#msgprogram").html('Please select program');
@@ -214,7 +214,7 @@
                       else
                       {
                          $("#chrg_name").val('');
-                         replaceAlert('Something went wrong, Please try again', 'error');
+                         // replaceAlert('Something went wrong, Please try again', 'error');
                       }
                 }
         }); 

@@ -16,6 +16,15 @@
             </div>
 
             <div class="form-group col-md-6">
+                <label for="chrg_name">Charge Based On</label>
+                <select class="form-control" id="based_on" name="based_on">
+                    <option value="">Please Select</option>   
+                    <option value="1" selected="">Program Based</option>
+                    <option value="2">Customer Based</option>
+                </select>
+                <span id="msgprogram" class="error"></span>
+            </div>
+            <div class="form-group col-md-6" id="program_div">
                 <label for="chrg_name">Program</label>
                 <select class="form-control" id="program_id" name="program_id">
                     <option value="">Please Select</option>
@@ -59,7 +68,7 @@
             <div class="form-group col-md-12 payment">
                 <label for="chrg_type">Select Payment</label>
                 <select class="form-control" id="payment" name="payment">
-                    <option value="" disabled selected>Choose Paymeny</option>
+                    <option value="" disabled selected>Choose Payment</option>
                 </select>
             </div>
         </div>
@@ -151,13 +160,59 @@ var messages = {
     eod_sys_date: "{{ \Helpers::getSysStartDate() }}",
 };
 
+
 $(document).ready(function () {
+    
+
     $(".datepicker-charge_date").datetimepicker({
         format: 'dd/mm/yyyy',
         autoclose: true,
         minView: 2,
         endDate: messages.eod_sys_date
     });
+});
+    $('#based_on').on('change', function() {
+        // alert($(this).val());
+        if ($(this).val() == '2') {
+            $('#program_div').hide();
+
+            var basedOn  = $(this).val();
+             if(basedOn=='')
+            {
+                return false;
+            }
+            $(".chrg_name").empty();
+            $("#msgprogram").html('');
+            var postData =  ({'app_id':$("#app_id").val(),'based_on': basedOn,'_token':messages.token});
+            jQuery.ajax({
+            url: messages.get_trans_name,
+                    method: 'post',
+                    dataType: 'json',
+                    data: postData,
+                    error: function (xhr, status, errorThrown) {
+                    alert(errorThrown);
+                    },
+                    success: function (data) {
+                    
+                        if(data.status==1 && basedOn== 2)
+                        {  $("#limit_amount_new").val(data.amount); 
+                            $("#programamount").val(data.amount);
+                            $(".chrg_name").append('<option value="">Please select</option>'); 
+                            $(data.res).each(function(i,v){
+                                $(".chrg_name").append('<option value="'+v.id+'">'+v.chrg_name+'</option>'); 
+                            });
+                        }
+                        else
+                        {
+                                 $(".chrg_name").append('<option value="">No charge found</option>'); 
+                           
+                        }
+                    }
+            });
+        }
+        else{
+            $('#program_div').show();
+        }
 });
 
 </script>
