@@ -2285,7 +2285,13 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getLmsUsers($whereCond=[])
     {
         return LmsUser::getLmsUsers($whereCond);
-    }    
+    }
+
+
+    public function getBizDataByUserId($userId)
+    {
+        return Business::getBizDataByUserId($userId);
+    } 
 
      public function saveAppOfferAdhocLimit($arr, $limit_id=null){
         return AppOfferAdhocLimit::saveAppOfferAdhocLimit($arr, $limit_id);

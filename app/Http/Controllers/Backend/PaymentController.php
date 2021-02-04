@@ -843,7 +843,10 @@ class PaymentController extends Controller {
                             $wherCond['virtual_acc_id'] = $virtual_acc;
                             $lmsData = $this->appRepo->getLmsUsers($wherCond)->first();
                             $user_id = $lmsData ? $lmsData->user_id : '';
-                            $biz_id = NULL;
+
+                            $BizDataArray = $this->appRepo->getBizDataByUserId($user_id)->first();
+                            $biz_id = $BizDataArray ? $BizDataArray->biz_id : '';
+                            $biz_id = $biz_id;
                             $virtual_acc = $virtual_acc;
                             $action_type = 1;
                             $trans_type = 17; //17 for Repayment
