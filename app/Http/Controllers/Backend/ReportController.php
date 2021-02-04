@@ -88,35 +88,37 @@ class ReportController extends Controller
         $sheet->getActiveSheet()->getStyle('A1:M1')->applyFromArray(['font' => ['bold'  => true]]);
         $sheet->setActiveSheetIndex(0)
                 ->setCellValue('A'.$rows, 'Loan #')
-                ->setCellValue('B'.$rows, 'Client Name')
-                ->setCellValue('C'.$rows, 'Amount Disbrused (₹)')
-                ->setCellValue('D'.$rows, 'From Date')
-                ->setCellValue('E'.$rows, 'To date')
-                ->setCellValue('F'.$rows, 'Days')
-                ->setCellValue('G'.$rows, 'Interest Rate (%)')
-                ->setCellValue('H'.$rows, 'Interest Amount (₹)')
-                ->setCellValue('I'.$rows, 'Date of Interest Collection')
-                ->setCellValue('J'.$rows, 'TDS Rate (%)')
-                ->setCellValue('K'.$rows, 'TDS Amount (₹)')
-                ->setCellValue('L'.$rows, 'Net Interest (₹)')
-                ->setCellValue('M'.$rows, 'Tally Batch');
+                ->setCellValue('B'.$rows, 'Cutomer ID')
+                ->setCellValue('C'.$rows, 'Client Name')
+                ->setCellValue('D'.$rows, 'Amount Disbrused (₹)')
+                ->setCellValue('E'.$rows, 'From Date')
+                ->setCellValue('F'.$rows, 'To date')
+                ->setCellValue('G'.$rows, 'Days')
+                ->setCellValue('H'.$rows, 'Interest Rate (%)')
+                ->setCellValue('I'.$rows, 'Interest Amount (₹)')
+                ->setCellValue('J'.$rows, 'Date of Interest Collection')
+                ->setCellValue('K'.$rows, 'TDS Rate (%)')
+                ->setCellValue('L'.$rows, 'TDS Amount (₹)')
+                ->setCellValue('M'.$rows, 'Net Interest (₹)')
+                ->setCellValue('N'.$rows, 'Tally Batch');
         $rows++;
         $exceldata = $this->reportsRepo->getInterestBreakupReport($condArr, NULL);
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
                 ->setCellValue('A' . $rows, $rowData['loan'])
-                ->setCellValue('B' . $rows, $rowData['client_name'])
-                ->setCellValue('C' . $rows, number_format($rowData['disbursed_amt'],2))
-                ->setCellValue('D' . $rows, Carbon::parse($rowData['from_date'])->format('d-m-Y'))
-                ->setCellValue('E' . $rows, Carbon::parse($rowData['to_date'])->format('d-m-Y'))
-                ->setCellValue('F' . $rows, number_format($rowData['days'],2))
-                ->setCellValue('G' . $rows, number_format($rowData['int_rate'],2))
-                ->setCellValue('H' . $rows, number_format($rowData['int_amt'],2))
-                ->setCellValue('I' . $rows, Carbon::parse($rowData['collection_date'])->format('d-m-Y'))
-                ->setCellValue('J' . $rows, $rowData['tds_rate'])
-                ->setCellValue('K' . $rows, $rowData['tds_amt']?number_format($rowData['tds_amt'],2):'')
-                ->setCellValue('L' . $rows, number_format($rowData['net_int'],2))
-                ->setCellValue('M' . $rows, $rowData['tally_batch']);
+                ->setCellValue('B' . $rows, $rowData['cust_id'])
+                ->setCellValue('C' . $rows, $rowData['client_name'])
+                ->setCellValue('D' . $rows, number_format($rowData['disbursed_amt'],2))
+                ->setCellValue('E' . $rows, Carbon::parse($rowData['from_date'])->format('d-m-Y'))
+                ->setCellValue('F' . $rows, Carbon::parse($rowData['to_date'])->format('d-m-Y'))
+                ->setCellValue('G' . $rows, number_format($rowData['days'],2))
+                ->setCellValue('H' . $rows, number_format($rowData['int_rate'],2))
+                ->setCellValue('I' . $rows, number_format($rowData['int_amt'],2))
+                ->setCellValue('J' . $rows, Carbon::parse($rowData['collection_date'])->format('d-m-Y'))
+                ->setCellValue('K' . $rows, $rowData['tds_rate'])
+                ->setCellValue('L' . $rows, $rowData['tds_amt']?number_format($rowData['tds_amt'],2):'')
+                ->setCellValue('M' . $rows, number_format($rowData['net_int'],2))
+                ->setCellValue('N' . $rows, $rowData['tally_batch']);
             $rows++;
         }
         
@@ -151,27 +153,29 @@ class ReportController extends Controller
         $sheet->getActiveSheet()->getStyle('A1:H1')->applyFromArray(['font' => ['bold'  => true]]);
         $sheet->setActiveSheetIndex(0)
                 ->setCellValue('A'.$rows, 'Loan #')
-                ->setCellValue('B'.$rows, 'Client Name')
-                ->setCellValue('C'.$rows, 'Charge Date')
-                ->setCellValue('D'.$rows, 'Charge Name')
-                ->setCellValue('E'.$rows, 'Charge (%)')
-                ->setCellValue('F'.$rows, 'Charge Amount (₹)')
-                ->setCellValue('G'.$rows, 'GST Amount (₹)')
-                ->setCellValue('H'.$rows, 'Total Amount (₹)')
-                ->setCellValue('I'.$rows, 'Tally Batch #');
+                ->setCellValue('B'.$rows, 'Cutomer ID')
+                ->setCellValue('C'.$rows, 'Client Name')
+                ->setCellValue('D'.$rows, 'Charge Date')
+                ->setCellValue('E'.$rows, 'Charge Name')
+                ->setCellValue('F'.$rows, 'Charge (%)')
+                ->setCellValue('G'.$rows, 'Charge Amount (₹)')
+                ->setCellValue('H'.$rows, 'GST Amount (₹)')
+                ->setCellValue('I'.$rows, 'Total Amount (₹)')
+                ->setCellValue('J'.$rows, 'Tally Batch #');
         $rows++;
         $exceldata = $this->reportsRepo->getChargeBreakupReport([], $rowWhere);
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'. $rows, $rowData['loan'])
-            ->setCellValue('B'. $rows, $rowData['client_name'])
-            ->setCellValue('C'. $rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
-            ->setCellValue('D'. $rows, $rowData['chrg_name'])
-            ->setCellValue('E'. $rows, $rowData['chrg_rate'] ? number_format($rowData['chrg_rate'],2):'')
-            ->setCellValue('F'. $rows, $rowData['chrg_amt'] ? number_format($rowData['chrg_amt'],2):'')
-            ->setCellValue('G'. $rows, $rowData['gst'] ? number_format($rowData['gst'],2):'')
-            ->setCellValue('H'. $rows, $rowData['net_amt'] ? number_format($rowData['net_amt'],2):'')
-            ->setCellValue('I'. $rows, $rowData['tally_batch']);
+            ->setCellValue('B'. $rows, $rowData['cust_id'])
+            ->setCellValue('C'. $rows, $rowData['client_name'])
+            ->setCellValue('D'. $rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
+            ->setCellValue('E'. $rows, $rowData['chrg_name'])
+            ->setCellValue('F'. $rows, $rowData['chrg_rate'] ? number_format($rowData['chrg_rate'],2):'')
+            ->setCellValue('G'. $rows, $rowData['chrg_amt'] ? number_format($rowData['chrg_amt'],2):'')
+            ->setCellValue('H'. $rows, $rowData['gst'] ? number_format($rowData['gst'],2):'')
+            ->setCellValue('I'. $rows, $rowData['net_amt'] ? number_format($rowData['net_amt'],2):'')
+            ->setCellValue('J'. $rows, $rowData['tally_batch']);
             $rows++;
         }
         
@@ -206,25 +210,27 @@ class ReportController extends Controller
         $sheet->getActiveSheet()->getStyle('A1:M1')->applyFromArray(['font' => ['bold'  => true]]);
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Loan #')
-            ->setCellValue('B'.$rows, 'Client Name')
-            ->setCellValue('D'.$rows, 'Interest Amount (₹)')
-            ->setCellValue('E'.$rows, 'Date of Interest Deduction')
-            ->setCellValue('C'.$rows, 'TDS Date')
-            ->setCellValue('F'.$rows, 'TDS Amount (₹)')
-            ->setCellValue('G'.$rows, 'TDS certificate #')
-            ->setCellValue('H'.$rows, 'Tally Batch #');
+            ->setCellValue('B'.$rows, 'Cutomer ID')
+            ->setCellValue('C'.$rows, 'Client Name')
+            ->setCellValue('E'.$rows, 'Interest Amount (₹)')
+            ->setCellValue('F'.$rows, 'Date of Interest Deduction')
+            ->setCellValue('D'.$rows, 'TDS Date')
+            ->setCellValue('G'.$rows, 'TDS Amount (₹)')
+            ->setCellValue('H'.$rows, 'TDS certificate #')
+            ->setCellValue('I'.$rows, 'Tally Batch #');
         $rows++;
         $exceldata = $this->reportsRepo->getTdsBreakupReport([], $rowWhere);
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
                 ->setCellValue('A' . $rows, $rowData['loan'])
-                ->setCellValue('B' . $rows, $rowData['client_name'])
-                ->setCellValue('D' . $rows, number_format($rowData['int_amt'],2))
-                ->setCellValue('E' . $rows, Carbon::parse($rowData['deduction_date'])->format('d-m-Y'))
-                ->setCellValue('C' . $rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
-                ->setCellValue('F' . $rows, number_format($rowData['tds_amt'],2))
-                ->setCellValue('G' . $rows, $rowData['tds_certificate'])
-                ->setCellValue('H' . $rows, $rowData['tally_batch']);
+                // ->setCellValue('B'. $rows, $rowData['cust_id'])
+                ->setCellValue('C' . $rows, $rowData['client_name'])
+                ->setCellValue('E' . $rows, number_format($rowData['int_amt'],2))
+                ->setCellValue('F' . $rows, Carbon::parse($rowData['deduction_date'])->format('d-m-Y'))
+                ->setCellValue('D' . $rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
+                ->setCellValue('G' . $rows, number_format($rowData['tds_amt'],2))
+                ->setCellValue('H' . $rows, $rowData['tds_certificate'])
+                ->setCellValue('I' . $rows, $rowData['tally_batch']);
             $rows++;
         }
         
