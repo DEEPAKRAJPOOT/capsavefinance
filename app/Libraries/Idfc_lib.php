@@ -10,6 +10,9 @@ define('FIXED', array('vendorId' => 'cfpl','time' => date('Ymd\THis\Z')));
 define('IDFC_LIB_URL', config('lms.IDFC_API_URL'));
 define('IDFC_CRYPTO_KEY', config('lms.IDFC_CRYPTO_KEY'));
 define('IDFC_CORP_ID', config('lms.IDFC_CORP_ID'));
+define('CURLOPT_SSLCERT_FILE', config('lms.CURLOPT_SSLCERT_FILE'));
+define('CURLOPT_SSLKEY_FILE', config('lms.CURLOPT_SSLKEY_FILE'));
+define('CURLOPT_CAINFO_FILE', config('lms.CURLOPT_CAINFO_FILE'));
 date_default_timezone_set("Asia/Kolkata");
 
 class Idfc_lib{
@@ -128,7 +131,7 @@ class Idfc_lib{
     }
 
     private function _curlCall($url, $postdata, $header ,$timeout= 600){
-    	$idfc_cert_path = getcwd() . '/idfc_cert/prod/';
+    	$idfc_cert_path = getcwd();
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
@@ -139,14 +142,15 @@ class Idfc_lib{
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->httpMethod);
 		curl_setopt($curl, CURLOPT_VERBOSE, true);
-		curl_setopt($curl, CURLOPT_SSLCERT, $idfc_cert_path . 'cert.pem');
-		curl_setopt($curl, CURLOPT_SSLKEY, $idfc_cert_path . 'priv.key');
-		curl_setopt($curl, CURLOPT_CAINFO, $idfc_cert_path . 'cacert.pem');
+		curl_setopt($curl, CURLOPT_SSLCERT, $idfc_cert_path . CURLOPT_SSLCERT_FILE);
+		curl_setopt($curl, CURLOPT_SSLKEY, $idfc_cert_path . CURLOPT_SSLKEY_FILE);
+		curl_setopt($curl, CURLOPT_CAINFO, $idfc_cert_path . CURLOPT_CAINFO_FILE);
 		curl_setopt($curl, CURLOPT_POST, true);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		$output = curl_exec($curl);
+		dd($output);
 		$resp['error'] = curl_error($curl);
 		$resp['error_no'] = curl_errno($curl);
 		$resp['curl_info'] = curl_getinfo($curl);

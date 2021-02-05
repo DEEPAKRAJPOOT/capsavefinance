@@ -214,5 +214,8 @@ return [
     'IDFC_API_URL' => env('IDFC_API_URL', ''),
     'IDFC_CRYPTO_KEY' => env('IDFC_CRYPTO_KEY', ''),
     'IDFC_CORP_ID' => env('IDFC_CORP_ID', ''),
+    'CURLOPT_SSLCERT_FILE' => env('CURLOPT_SSLCERT_FILE', ''),
+    'CURLOPT_SSLKEY_FILE' => env('CURLOPT_SSLKEY_FILE', ''),
+    'CURLOPT_CAINFO_FILE' => env('CURLOPT_CAINFO_FILE', ''),
     'UAT_ACTIVE' => env('UAT_ACTIVE', ''),
 ];

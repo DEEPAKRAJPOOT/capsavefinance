@@ -602,10 +602,10 @@ class InvoiceController extends Controller {
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
-            if (date('H') >= $validateTimeHour) { 
-                Session::flash('error', 'Disbursment can not be done after '. Carbon::createFromFormat('H', $validateTimeHour)->format('g:i A'));
-                return redirect()->route('backend_get_disbursed_invoice');
-            }
+            // if (date('H') >= $validateTimeHour) { 
+            //     Session::flash('error', 'Disbursment can not be done after '. Carbon::createFromFormat('H', $validateTimeHour)->format('g:i A'));
+            //     return redirect()->route('backend_get_disbursed_invoice');
+            // }
             if(empty($invoiceIds)){
                 return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
             }
@@ -669,19 +669,26 @@ class InvoiceController extends Controller {
                 }
                 if($disburseType == 1) {
                     $modePay = ($disburseAmount < 200000) ? 'NEFT' : 'RTGS' ;
+                    $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
+                    $bank_account_id = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank_account_id'] : $userData['supplier_bank_detail']['bank_account_id'];
+                    $bank_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank']['bank_name'] : $userData['supplier_bank_detail']['bank']['bank_name'] ;
+                    $ifsc_code = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['ifsc_code'] : $userData['supplier_bank_detail']['ifsc_code'];
+                    $acc_no = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_no'] : $userData['supplier_bank_detail']['acc_no'];
+                    $acc_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_name'] : $userData['supplier_bank_detail']['acc_name'];
                     $exportData[$userid]['RefNo'] = $refNo;
                     $exportData[$userid]['Amount'] = $disburseAmount;
                     $exportData[$userid]['Debit_Acct_No'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NO'];
                     $exportData[$userid]['Debit_Acct_Name'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NAME'];
                     $exportData[$userid]['Debit_Mobile'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_MOBILE'];
-                    $exportData[$userid]['Ben_IFSC'] = $disbursalData['invoice']['supplier_bank_detail']['ifsc_code'];
-                    $exportData[$userid]['Ben_Acct_No'] = $disbursalData['invoice']['supplier_bank_detail']['acc_no'];
+                    $exportData[$userid]['Ben_Name'] = $acc_name;
+                    $exportData[$userid]['Ben_BankName'] = $bank_name;
+
                     if (config('lms.UAT_ACTIVE') == 1) {
                         $exportData[$userid]['Ben_IFSC'] = config('lms.IDFC_CREDIT_BANK')['BEN_IFSC'];
                         $exportData[$userid]['Ben_Acct_No'] = config('lms.IDFC_CREDIT_BANK')['BEN_ACC_NO'];
                     } else {
-                        $exportData[$userid]['Ben_Name'] = $disbursalData['invoice']['supplier_bank_detail']['acc_name'];
-                        $exportData[$userid]['Ben_BankName'] = $disbursalData['invoice']['supplier_bank_detail']['bank']['bank_name'];
+                        $exportData[$userid]['Ben_IFSC'] = $ifsc_code;
+                        $exportData[$userid]['Ben_Acct_No'] = $acc_no;
                     }
                     $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
                     $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
@@ -799,7 +806,6 @@ class InvoiceController extends Controller {
                 if($invoice['supplier_id'] == $userid) {
                     $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
 
-                        // dd($invoiceDisbursedData);
                     if (empty($invoiceDisbursedData)) {
                         $invoice['batch_id'] = $batchId;
                         $invoice['disburse_date'] = $disburseDate;
@@ -930,15 +936,22 @@ class InvoiceController extends Controller {
                 }
                 if($disburseType == 2) {
 
+                    $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
+                    $bank_account_id = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank_account_id'] : $userData['supplier_bank_detail']['bank_account_id'];
+                    $bank_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank']['bank_name'] : $userData['supplier_bank_detail']['bank']['bank_name'] ;
+                    $ifsc_code = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['ifsc_code'] : $userData['supplier_bank_detail']['ifsc_code'];
+                    $acc_no = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_no'] : $userData['supplier_bank_detail']['acc_no'];
+                    $acc_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_name'] : $userData['supplier_bank_detail']['acc_name'];
+
                     $exportData[$userid]['RefNo'] = $disbursalData['invoice']['lms_user']['virtual_acc_id'];
                     $exportData[$userid]['Amount'] = $disburseAmount;
                     $exportData[$userid]['Debit_Acct_No'] = '12334445511111';
                     $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
                     $exportData[$userid]['Debit_Mobile'] = '9876543210';
-                    $exportData[$userid]['Ben_IFSC'] = $disbursalData['invoice']['supplier_bank_detail']['ifsc_code'];
-                    $exportData[$userid]['Ben_Acct_No'] = $disbursalData['invoice']['supplier_bank_detail']['acc_no'];
-                    $exportData[$userid]['Ben_Name'] = $disbursalData['invoice']['supplier_bank_detail']['acc_name'];
-                    $exportData[$userid]['Ben_BankName'] = $disbursalData['invoice']['supplier_bank_detail']['bank']['bank_name'];
+                    $exportData[$userid]['Ben_IFSC'] = $ifsc_code;
+                    $exportData[$userid]['Ben_Acct_No'] = $acc_no;
+                    $exportData[$userid]['Ben_Name'] = $acc_name;
+                    $exportData[$userid]['Ben_BankName'] = $bank_name;
                     $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
                     $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
                     $exportData[$userid]['Mode_of_Pay'] = 'IFT';
