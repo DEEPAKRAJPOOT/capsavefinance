@@ -220,6 +220,7 @@ trait LmsTrait
         $disbursalData['disburse_date'] = (!empty($user['disburse_date'])) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$user['disburse_date']))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $disbursalData['disburse_amount'] = $disburseAmount ?? null;
         $disbursalData['disbursal_batch_id'] = $user['disbursal_batch_id'] ?? null;
+        $disbursalData['ref_no'] = $user['ref_no'] ?? null;
         $disbursalData['tran_id'] = $user['tran_id'] ?? null;
         
         $disbursalData['bank_account_id'] = ($user['is_buyer'] == 2) ? $user['anchor_bank_details']['bank_account_id'] : $user['supplier_bank_detail']['bank_account_id'];

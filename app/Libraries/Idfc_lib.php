@@ -50,7 +50,7 @@ class Idfc_lib{
 			return $request;
 		}
 		list($payload, $http_header, $txn_id) = $request;
-		dd($url, $payload, $http_header);
+		// dd($url, $payload, $http_header);
      	$response = $this->_curlCall($url, $payload, $http_header);
      	// $response = $this->staticEnquiryResponse();
      	// $response = $this->staticPaymentResponse();
@@ -62,11 +62,11 @@ class Idfc_lib{
 			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
 			return $resp;
 		}
-		// if (empty($response['error_no']) && $response['curl_info']['http_code'] != 200) {
-		// 	$resp['code'] 	 = "HTTPCode : " . $response['curl_info']['http_code'];
-		// 	$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
-		// 	return $resp;
-		// }
+		if (empty($response['error_no']) && $response['curl_info']['http_code'] != 200) {
+			$resp['code'] 	 = "HTTPCode : " . $response['curl_info']['http_code'];
+			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
+			return $resp;
+		}
 		$result = $this->_parseResult($response['result'], $method);
 		$result['result']['url'] = $url;
 		$result['result']['payload'] = $payload;
@@ -282,32 +282,32 @@ Content-Length: 653
     private function staticEnquiryResponse() {
       	
       	$enquiryRes['result'] = 'HTTP/1.1 200 OK
-Date: Thu, 10 Dec 2020 12:02:41 GMT
+Date: Thu, 04 Feb 2021 13:58:18 GMT
 server: 
 Content-Type: application/json;charset=UTF-8
-Content-Length: 653
+Content-Length: 635
 
 {
   "doMultiPaymentCorpRes":{
     "Header":{
-      "Tran_ID":"2RLJQ4955QEVD6FVFJ",
+      "Tran_ID":"2SBDT0730FTIIY0RJL",
       "Corp_ID":"CAPSAVEAPI",
       "Status":"Success"
     },
     "Body":{
-      "Tran_ID":"2RLJQ4955QEVD6FVFJ",
+      "Tran_ID":"2SBDT0730FTIIY0RJL",
       "TranID_Status":"SUCCESS",
       "TranID_StatusDesc":"FILE HAS BEEN ACCEPTED",
       "Transaction":[
         {
-          "RefNo":"2RLJQ4955JFV",
-          "UTR_No":null,
-          "Mode_of_Pay":"RTGS",
-          "Ben_Acct_No":"50200026128604",
-          "Ben_Name_as_per_dest_bank":"NA",
-          "Ben_IFSC":"HDFC0000891",
-          "RefStatus":"FAILEDs",
-          "StatusDesc":"CLEARED BAL/FUNDS/DP NOT AVAILABLE.CARE!"
+          "RefNo":"2SBDT0730Q0P",
+          "UTR_No":"IDFBH21035982775",
+          "Mode_of_Pay":"NEFT",
+          "Ben_Acct_No":"01682320002803",
+          "Ben_Name_as_per_dest_bank":null,
+          "Ben_IFSC":"HDFC0002249",
+          "RefStatus":"SUCCESS",
+          "StatusDesc":"SUCCESS"
         }
       ]
     }

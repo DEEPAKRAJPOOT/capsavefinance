@@ -789,7 +789,7 @@ class InvoiceController extends Controller {
             $disburseAmount = 0;
             $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
             $userData['disbursal_batch_id'] =$disbursalBatchId;
-            $userData['tran_id'] =$exportData[$userid]['RefNo'];;
+            $userData['ref_no'] =$exportData[$userid]['RefNo'];;
 
             $disbursalRequest = $this->createDisbursalData($userData, $disburseAmount, $disburseType);
             $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disbursalRequest);
@@ -1502,7 +1502,6 @@ class InvoiceController extends Controller {
 
                 $idfcObj= new Idfc_lib();
                 $result = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $params);
-                // dd($result);
                 if (isset($result['code'])) { 
                     if (isset($result['http_code']) && $result['http_code'] == 200) {
                         
@@ -1521,7 +1520,6 @@ class InvoiceController extends Controller {
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
-                // dd($result);
                 $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
                 if(is_array($createOrUpdatefile)) {
                     $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
@@ -1559,10 +1557,11 @@ class InvoiceController extends Controller {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED_DISBURSMENT'];
                                 } 
                                 
-                                $transDisbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['tran_id' => $value['RefNo']])->toArray();
+                                $transDisbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['ref_no' => $value['RefNo']])->toArray();
                                 $updateDisbursalByTranId = $this->lmsRepo->updateDisbursalByTranId([
-                                        'status_id' => $disburseStatus
-                                    ], $value['RefNo']);
+                                        'status_id' => $disburseStatus,
+                                        'tran_id' => $value['UTR_No']
+                                    ], ['ref_no' => $value['RefNo']]);
 
                                 foreach ($transDisbursalIds as $key => $value1) {
                                     $this->lmsRepo->createDisbursalStatusLog($value1, $disburseStatus, 'online disbursed', $createdBy);
