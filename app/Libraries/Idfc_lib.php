@@ -150,7 +150,6 @@ class Idfc_lib{
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		$output = curl_exec($curl);
-		dd($output);
 		$resp['error'] = curl_error($curl);
 		$resp['error_no'] = curl_errno($curl);
 		$resp['curl_info'] = curl_getinfo($curl);
@@ -294,17 +293,17 @@ Content-Length: 635
 {
   "doMultiPaymentCorpRes":{
     "Header":{
-      "Tran_ID":"2SBDT0730FTIIY0RJL",
+      "Tran_ID":"2SBEX1949HSXF5K877",
       "Corp_ID":"CAPSAVEAPI",
       "Status":"Success"
     },
     "Body":{
-      "Tran_ID":"2SBDT0730FTIIY0RJL",
+      "Tran_ID":"2SBEX1949HSXF5K877",
       "TranID_Status":"SUCCESS",
       "TranID_StatusDesc":"FILE HAS BEEN ACCEPTED",
       "Transaction":[
         {
-          "RefNo":"2SBDT0730Q0P",
+          "RefNo":"2SBEX1949J7X",
           "UTR_No":"IDFBH21035982775",
           "Mode_of_Pay":"NEFT",
           "Ben_Acct_No":"01682320002803",
