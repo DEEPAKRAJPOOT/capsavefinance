@@ -47,5 +47,6 @@ return [
     'reject_app' => 'Application Status Changed Successfully',
     'validate_limit_rejected' => 'In case of limit rejected you cannot move the case to reviewer until the offer detail is updated or modified.',
     'amountNachValidate' => 'Outstanding Amount can not be greater than NACH max amount.',
+    'batch_disbursed' => 'Batch successfully marked disbursed.',
 ];
 
