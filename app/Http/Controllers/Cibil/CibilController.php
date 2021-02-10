@@ -62,10 +62,10 @@ class CibilController extends Controller
                     $arrCommercialRequest['mobile_no'] = $arrBizData->users->mobile_no;
                     $arrCommercialRequest['app_code'] = $arrBizData->app->app_code;
                     $arrCommercialRequest['biz_constitution'] = $arrBizData->biz_constitution;
-                    $arrCommercialRequest['city_name'] = $arrBizData->address[0]->city_name ?? 'MEHSANA';
+                    $arrCommercialRequest['city_name'] = $arrBizData->address[0]->city_name ?? 'BAZARGATE';
                     $arrCommercialRequest['state_name'] = $arrBizData->address[0]->state->name ?? '';
-                    $arrCommercialRequest['state_code'] = trim($arrBizData->address[0]->state->state_code) ?? 'GJ';
-                    $arrCommercialRequest['pincode'] = $arrBizData->address[0]->pin_code ?? '560012';
+                    $arrCommercialRequest['state_code'] = trim($arrBizData->address[0]->state->state_code) ?? 'MH';
+                    $arrCommercialRequest['pincode'] = $arrBizData->address[0]->pin_code ?? '400001';
                     $arrCommercialRequest['biz_address'] = $arrBizData->address[0]->addr_1 ?? '';
                     $arrCommercialRequest['loan_amount'] = (int)$loanAmount ?? NULL;
             }else{
@@ -93,10 +93,10 @@ class CibilController extends Controller
             $arrIndividualRequest[$key]['pan_number'] = $arrOwnerData->pan;
             $arrIndividualRequest[$key]['mobile_no'] = $arrOwnerData->mobile_no;
             $arrIndividualRequest[$key]['address'] = $addressData->addr_1 ?? '--';
-            $arrIndividualRequest[$key]['state_code'] =  $addressData->state->state_code ?? 'GJ';
+            $arrIndividualRequest[$key]['state_code'] =  $addressData->state->state_code ?? 'MH';
             $arrIndividualRequest[$key]['state_name'] =  $addressData->state->name ?? '--';
             $arrIndividualRequest[$key]['city_name'] =  $addressData->city_name ?? '';
-            $arrIndividualRequest[$key]['pin_code'] =  $addressData->pin_code ?? '560012';
+            $arrIndividualRequest[$key]['pin_code'] =  $addressData->pin_code ?? '400001';
             $arrIndividualRequest[$key]['date_of_birth'] = date("d/m/Y", strtotime($arrOwnerData->date_of_birth));
         }
 
