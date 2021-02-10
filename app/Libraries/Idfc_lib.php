@@ -10,6 +10,9 @@ define('FIXED', array('vendorId' => 'cfpl','time' => date('Ymd\THis\Z')));
 define('IDFC_LIB_URL', config('lms.IDFC_API_URL'));
 define('IDFC_CRYPTO_KEY', config('lms.IDFC_CRYPTO_KEY'));
 define('IDFC_CORP_ID', config('lms.IDFC_CORP_ID'));
+define('CURLOPT_SSLCERT_FILE', config('lms.CURLOPT_SSLCERT_FILE'));
+define('CURLOPT_SSLKEY_FILE', config('lms.CURLOPT_SSLKEY_FILE'));
+define('CURLOPT_CAINFO_FILE', config('lms.CURLOPT_CAINFO_FILE'));
 date_default_timezone_set("Asia/Kolkata");
 
 class Idfc_lib{
@@ -50,7 +53,10 @@ class Idfc_lib{
 			return $request;
 		}
 		list($payload, $http_header, $txn_id) = $request;
+		// dd($url, $payload, $http_header);
      	$response = $this->_curlCall($url, $payload, $http_header);
+     	// $response = $this->staticEnquiryResponse();
+     	// $response = $this->staticPaymentResponse();
      	if ($getApiResponse) {
      		return [$url, $txn_id, $payload, $http_header, $response];
      	}
@@ -69,7 +75,7 @@ class Idfc_lib{
 		$result['result']['payload'] = $payload;
 		$result['result']['http_header'] = $http_header;
 		$result['result']['response'] = $response['result'];
-		$result['http_code'] = $response['curl_info']['http_code'];
+		$result['http_code'] = $response['curl_info']['http_code'] ?? '';
 
 		return $result;
     }
@@ -125,7 +131,7 @@ class Idfc_lib{
     }
 
     private function _curlCall($url, $postdata, $header ,$timeout= 600){
-    	$idfc_cert_path = getcwd() . '/idfc_cert/prod/';
+    	$idfc_cert_path = getcwd();
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
@@ -136,9 +142,9 @@ class Idfc_lib{
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->httpMethod);
 		curl_setopt($curl, CURLOPT_VERBOSE, true);
-		curl_setopt($curl, CURLOPT_SSLCERT, $idfc_cert_path . 'cert.pem');
-		curl_setopt($curl, CURLOPT_SSLKEY, $idfc_cert_path . 'priv.key');
-		curl_setopt($curl, CURLOPT_CAINFO, $idfc_cert_path . 'cacert.pem');
+		curl_setopt($curl, CURLOPT_SSLCERT, $idfc_cert_path . CURLOPT_SSLCERT_FILE);
+		curl_setopt($curl, CURLOPT_SSLKEY, $idfc_cert_path . CURLOPT_SSLKEY_FILE);
+		curl_setopt($curl, CURLOPT_CAINFO, $idfc_cert_path . CURLOPT_CAINFO_FILE);
 		curl_setopt($curl, CURLOPT_POST, true);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
@@ -237,6 +243,80 @@ class Idfc_lib{
       	list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
       	$path = Storage::disk('public')->put("/IDFCH2H/CAPSAVEUAT/ACHDR/$w_folder/$w_filename", $data);
       	return True;
+	}
+
+    private function staticPaymentResponse() {
+      	
+      	$enquiryRes['result'] = 'HTTP/1.1 200 OK
+Date: Thu, 10 Dec 2020 12:02:41 GMT
+server: 
+Content-Type: application/json;charset=UTF-8
+Content-Length: 653
+
+{
+  "doMultiPaymentCorpRes":{
+    "Header":{
+      "Tran_ID":"2RLJQ4955QEVD6FVFJ",
+      "Corp_ID":"CAPSAVEAPI",
+      "Status":"Success"
+    },
+    "Body":{
+      "Tran_ID":"2RLJQ4955QEVD6FVFJ",
+      "TranID_Status":"SUCCESS",
+      "TranID_StatusDesc":"FILE HAS BEEN ACCEPTED",
+      "Transaction":[
+        {
+          "RefNo":"2RLJQ4955JFV",
+          "UTR_No":null,
+          "Mode_of_Pay":"RTGS",
+          "Ben_Acct_No":"50200026128604",
+          "Ben_Name_as_per_dest_bank":"NA",
+          "Ben_IFSC":"HDFC0000891",
+          "RefStatus":"FAILED",
+          "StatusDesc":"CLEARED BAL/FUNDS/DP NOT AVAILABLE.CARE!"
+        }
+      ]
+    }
+  }
+}';
+      	return $enquiryRes;
+	}
+
+    private function staticEnquiryResponse() {
+      	
+      	$enquiryRes['result'] = 'HTTP/1.1 200 OK
+Date: Thu, 04 Feb 2021 13:58:18 GMT
+server: 
+Content-Type: application/json;charset=UTF-8
+Content-Length: 635
+
+{
+  "doMultiPaymentCorpRes":{
+    "Header":{
+      "Tran_ID":"2SBEX1949HSXF5K877",
+      "Corp_ID":"CAPSAVEAPI",
+      "Status":"Success"
+    },
+    "Body":{
+      "Tran_ID":"2SBEX1949HSXF5K877",
+      "TranID_Status":"SUCCESS",
+      "TranID_StatusDesc":"FILE HAS BEEN ACCEPTED",
+      "Transaction":[
+        {
+          "RefNo":"2SBEX1949J7X",
+          "UTR_No":"IDFBH21035982775",
+          "Mode_of_Pay":"NEFT",
+          "Ben_Acct_No":"01682320002803",
+          "Ben_Name_as_per_dest_bank":null,
+          "Ben_IFSC":"HDFC0002249",
+          "RefStatus":"SUCCESS",
+          "StatusDesc":"SUCCESS"
+        }
+      ]
+    }
+  }
+}';
+      	return $enquiryRes;
 	}
 }
 
