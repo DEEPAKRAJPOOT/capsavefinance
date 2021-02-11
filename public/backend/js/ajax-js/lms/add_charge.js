@@ -274,7 +274,7 @@
                 $('#RadioValidation').text("Charge Type is required.");
                 return false;
         }
-        if($("#program_id").val()=='')
+        if($("#program_id").val()=='' && $('#based_on').val() == 1 )
         {
      
                 $('#msgprogram').text("Please select program");

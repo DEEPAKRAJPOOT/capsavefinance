@@ -27,6 +27,21 @@
                 <label for="chrg_type">Debit Description</label>
                 <textarea class="form-control" id="debit_desc" name="debit_desc" placeholder="Debit Description" maxlength="200" style="height:35px;">{{$charge_data->debit_desc}}</textarea>
             </div>
+        </div>       
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label for="chrg_type">Charge Based On</label><br />
+                <div class="form-check-inline ">
+                    <label class="form-check-label fnt">
+                        <input type="radio" class="form-check-input" checked name="based_on" value="1" {{ ($charge_data->based_on == 1) ? 'checked' : '' }}>Program Based
+                    </label>
+                </div>
+                <div class="form-check-inline">
+                    <label class="form-check-label fnt">
+                        <input type="radio" class="form-check-input" name="based_on" value="2" {{ ($charge_data->based_on == 2) ? 'checked' : '' }}>Customer Based
+                    </label>
+                </div>
+            </div>
         </div>               
 
         <div class="row">
@@ -102,7 +117,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-6" id="chrg_tiger_div">
                 <label for="chrg_type">Charge Trigger</label>
                 <select class="form-control" name="chrg_tiger_id" id="chrg_tiger_id">
                     <option value="" selected>Select</option>
@@ -146,6 +161,12 @@
         gst_percentage: "{{Config::get('payment.gst')}}"
     }
     $(document).on('click', 'input[name="chrg_calculation_type"]', function (e) {
+        var basedOn = $('input[name="based_on"]:checked').val();
+        if ($(this).val() == '2' && basedOn == 2){
+            $('#approved_limit_div').hide();
+            $('#chrg_tiger_div').hide();
+            $('#chrg_calculation_amt_div').hide();
+        }
         if ($(this).val() == '2') {
             $('#approved_limit_div').show();
         } else {
@@ -164,6 +185,21 @@
         }
     })
 
+
+    $(document).on('click', 'input[name="based_on"]', function (e) {
+        if ($(this).val() == '2') {
+            $('#gst_div').show();
+            $('#approved_limit_div').hide();
+            $('#chrg_tiger_div').hide();
+            $('#chrg_calculation_amt_div').hide();
+        }
+        else{
+            // $('input[name="gst_percentage"]').val('');
+            $('#approved_limit_div').show();
+            $('#chrg_tiger_div').show();
+            $('#gst_div').show();
+        }
+    })
     $(document).ready(function () {
         
         $.validator.addMethod("isChrgApplied",
@@ -194,8 +230,8 @@
         if (is_gst_applicable.val() == 1) {
             $('#gst_div').show();
         } else {
-            $('input[name="gst_percentage"]').val('');
             $('#gst_div').hide();
+            $('input[name="gst_percentage"]').val('');
         }
 
         if (chrg_calculation_type.val() == 2) {
@@ -203,6 +239,18 @@
         } else {
             $('#chrg_applicable_id option:selected').removeAttr('selected');
             $('#approved_limit_div').hide();
+        }
+
+        if ($('input[name="based_on"]:checked').val() == '2') {
+            $('#approved_limit_div').hide();
+            $('#chrg_tiger_div').hide();
+            $('#chrg_calculation_amt_div').hide();
+        }
+        else{
+            // $('input[name="gst_percentage"]').val('');
+            $('#approved_limit_div').show();
+            $('#chrg_tiger_div').show();
+            $('#gst_div').show();
         }
 
 
