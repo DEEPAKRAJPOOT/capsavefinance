@@ -816,7 +816,30 @@ class PaymentController extends Controller {
                     if (!empty($virtual_acc) && $virtual_acc != null) {
                          $wherCond['virtual_acc_id'] = $virtual_acc;
                          $lmsData = $this->appRepo->getLmsUsers($wherCond)->first();
-                            $paymentExcelData = [
+
+                       // $date="2012-09-12";
+                        $txn_date = $value[10];
+
+                        if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-[0-9]{4}$/",$txn_date)) {
+                            
+                        } else {
+                            Session::flash('error','Date formate is not correct(txnDate), Use only dd-mm-yyyy formate');
+                            //Session::flash('operation_status', 1);
+                            return redirect()->route('payment_list');
+                        }
+
+                        $TrnTimeStampArray = explode(' ',$value[13]);
+                        $TrnTimeStamp  = $TrnTimeStampArray[0];
+
+                        if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-[0-9]{4}$/",$TrnTimeStamp)) {
+
+                        } else {
+                            Session::flash('error','Date formate is not correct(Trn TimeStamp), Use only dd-mm-yyyy formate');
+                            //Session::flash('operation_status', 1);
+                            return redirect()->route('payment_list');
+                        }
+
+                           $paymentExcelData = [
 				'user_id' => $lmsData ? $lmsData->user_id : '',
 				'bankcode' => $value[0],
 				'virtual_acc' => $virtual_acc,
@@ -831,7 +854,7 @@ class PaymentController extends Controller {
 				'txn_date' => ($value[10]) ? Carbon::createFromFormat('d-m-Y', $value[10])->format('Y-m-d') : '',
 				'txn_ref_number' => $value[11],
 				'client_code' => $value[12],
-				'trn_time_stamp' => $value[13],
+				'trn_time_stamp' => ($value[13]) ? date('Y-m-d H:i:s', strtotime($value[13])) : '',
 				'file_id' => $file_id
                             ];
                            
@@ -866,7 +889,7 @@ class PaymentController extends Controller {
                             $file_id = $file_id;
                             $description = '';
                             $is_settled = '0';
-                            $is_manual = '0'; // Automatic
+                            $is_manual = '3'; // Automatic
                             $sys_date = \Helpers::getSysStartDate();
                             $generated_by = 1;
                             

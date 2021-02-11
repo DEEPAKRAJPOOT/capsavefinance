@@ -80,13 +80,13 @@
 													<table id="invoiceListTransaction" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 														<thead>
 															<tr role="row">
-																<th>Cust Id</th>
-																<th>Customer Detail</th>
-																<th>Repayment Detail</th>
-																<th>Trans Type</th>
-																<th>Comment</th>
-																<th>Created By</th> 
-																<th>Action</th> 
+                                                                                                                            <th>Cust Id</th>
+                                                                                                                            <th>Customer Detail</th>
+                                                                                                                            <th>Repayment Detail</th>
+                                                                                                                            <th>Trans Type</th>
+                                                                                                                            <th>Comment</th>
+                                                                                                                            <th>Created By</th>
+                                                                                                                            <th>Action</th> 
 															</tr>
 														</thead>
 														<tbody>

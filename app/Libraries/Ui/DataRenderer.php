@@ -2018,7 +2018,7 @@ class DataRenderer implements DataProviderInterface
      public function getAllManualTransaction(Request $request,$trans)
      {
          return DataTables::of($trans)
-               ->rawColumns(['trans_by', 'customer_name', 'customer_id','customer_detail','created_by', 'action'])
+               ->rawColumns(['trans_by', 'customer_name', 'customer_id','customer_detail','trans_type','created_by', 'action'])
                 ->addIndexColumn()
                 
                 ->addColumn(
@@ -2055,7 +2055,14 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'trans_type',
                     function ($trans) {
-                        return $trans->paymentname;
+                     $tType = '';
+                     if($trans->is_manual == 3) {
+                         $tType = '<br><span><b>Import Payment</b></span>';
+                     } else if($trans->is_manual == 1) {
+                         $tType = '<br><span><b>Manual Payment</b></span>';
+                     }
+
+                        return $trans->paymentname.$tType;
                 })
                  ->addColumn(
                     'comment',
@@ -5195,7 +5202,7 @@ class DataRenderer implements DataProviderInterface
 
         public function getToSettlePayments(Request $request, $dataRecords){
             return DataTables::of($dataRecords)
-                    ->rawColumns(['customer_id','updated_by','action'])
+                    ->rawColumns(['customer_id','trans_type','updated_by','action'])
                     ->addColumn(
                     'customer_id',
                         function ($dataRecords) {
@@ -5230,8 +5237,16 @@ class DataRenderer implements DataProviderInterface
                     }) 
                     ->editColumn(
                         'trans_type',
-                        function ($dataRecords) {   
-                            return $dataRecords->paymentname;
+                        function ($dataRecords) {
+
+                            $tType = '';
+                            if($dataRecords->is_manual == 3) {
+                                $tType = '<br><span><b>Import Payment</b></span>';
+                            } else if($dataRecords->is_manual == 1) {
+                                $tType = '<br><span><b>Manual Payment</b></span>';
+                            }
+
+                            return $dataRecords->paymentname.$tType;
                     }) 
                     ->addColumn(
                         'date_of_payment', 
