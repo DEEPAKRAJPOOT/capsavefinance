@@ -284,17 +284,18 @@ class Helper extends PaypalHelper
     {
         $userId = Application::where('app_id', $appId)->pluck('user_id')->first();
         $inputArr = [];
-        if ($attributes['doc_file']) {
-            if (!Storage::exists('/public/user/' . $userId . '/' . $appId)) {
-                Storage::makeDirectory('/public/user/' . $userId . '/' . $appId, 0777, true);
+        if(!empty($attributes['doc_file'])) {
+            if ($attributes['doc_file']) {
+                if (!Storage::exists('/public/user/' . $userId . '/' . $appId)) {
+                    Storage::makeDirectory('/public/user/' . $userId . '/' . $appId, 0777, true);
+                }
+                $path = Storage::disk('public')->put('/user/' . $userId . '/' . $appId, $attributes['doc_file'], null);
+                $inputArr['file_path'] = $path;
             }
-            $path = Storage::disk('public')->put('/user/' . $userId . '/' . $appId, $attributes['doc_file'], null);
-            $inputArr['file_path'] = $path;
         }
-
-        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
-        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_type'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientMimeType() : '';
+        $inputArr['file_name'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientOriginalName() : '';
+        $inputArr['file_size'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientSize() : '';
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
