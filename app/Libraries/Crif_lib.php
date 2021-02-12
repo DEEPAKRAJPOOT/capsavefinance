@@ -18,12 +18,12 @@ class Crif_lib {
             '1' => '40',
             '4' => '40'
         ];
-        $this->url = 'https://test.crifhighmark.com/Inquiry/Inquiry/CPUAction.action';
-        $this->req_mbr = 'NBF0002966';
-        $this->mbr_id = 'BOROCTSAN005';
-        $this->sub_mbr_id = 'CAPSAVE FINANCE PRIVATE LIMITED';
-        $this->usrId = 'crif1_cpu_uat@capsavefinance.com';
-        $this->PassCode = '55DE689372D33C9876D1E09CFFF8BBBFF74B9445';
+        $this->url = config('library.CRIF_URL');
+        $this->req_mbr = config('library.CRIF_REQ_MBR');
+        $this->mbr_id = config('library.CRIF_MBR_ID');
+        $this->sub_mbr_id = config('library.CRIF_SUB_MBR_ID');
+        $this->usrId = config('library.CRIF_USRID');
+        $this->PassCode = config('library.CRIF_PASSCODE');
         $this->res_frmt = 'XML';
         $this->req_action_type = 'SUBMIT';
     }
@@ -101,7 +101,7 @@ class Crif_lib {
     private function getCommercialCibilAcknowledgement($ArrData) {
       extract($ArrData);
       $this->random_no = $random_no;
-      $dummyXML = FALSE;
+      $dummyXML = TRUE;
       if ($dummyXML) {
           $request_xml = $this->_getDummyXML();
       }else{
@@ -306,7 +306,7 @@ class Crif_lib {
             $promoterState = 'AS';
             $promoterPin = '781350';
 
-            $promoter2 = FALSE;
+            $promoter2 = TRUE;
             $individual2 = '';
             if ($promoter2) {
                 $promoterName2 = 'SACHI RANI SINHA';
