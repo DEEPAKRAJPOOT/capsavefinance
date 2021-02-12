@@ -351,6 +351,7 @@ var messages = {
     chk_anchor_phy_inv_req: "{{ URL::route('chk_anchor_phy_inv_req') }}",
    };
  
+   $(".check_upload_inv").hide();
    $(document).ready(function () {
       $(document).on('change blur keyup', '.changeAnchor', function(){
             var anchorID = $(this).val();
