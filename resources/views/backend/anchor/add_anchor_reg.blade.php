@@ -168,13 +168,13 @@
                         <div class="col-md-4">
                            <label for="chrg_type"><strong>Upload Invoice Copy Mandatory</strong></label><br />
                            <div class="form-check-inline ">
-                              <label class="form-check-label fnt">
-                              <input type="radio" class="form-check-input is_phy_inv" checked name="is_phy_inv" value="1">Yes
+                              <label class="fnt">
+                              <input type="radio" class="form-check-input is_phy_inv_req" checked name="is_phy_inv_req" value="1">Yes
                               </label>
                            </div>
                            <div class="form-check-inline">
-                              <label class="form-check-label fnt">
-                              <input type="radio" class="form-check-input is_phy_inv" name="is_phy_inv" value="2">No
+                              <label class="fnt">
+                              <input type="radio" class="form-check-input is_phy_inv_req" name="is_phy_inv_req" value="0">No
                               </label>
                            </div>
                         </div> 
@@ -290,6 +290,12 @@
                             })
                 });
                 $('input.assigned_sale_mgr').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true,
+                            })
+                });                   
+                $('input.is_phy_inv_req').each(function () {
                     $(this).rules("add",
                             {
                                 required: true,

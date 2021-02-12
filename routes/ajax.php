@@ -1266,5 +1266,9 @@ Route::group(
         'as' => 'backend_ajax_nach_stb_list',
         'uses' => 'AjaxController@backendAjaxNachSTBList'
     ]);
+    Route::post('chk_anchor_phy_inv_req',[
+        'as' => 'chk_anchor_phy_inv_req',
+        'uses' => 'AjaxController@chkAnchorPhyInvReq'
+    ]);
     
 });
