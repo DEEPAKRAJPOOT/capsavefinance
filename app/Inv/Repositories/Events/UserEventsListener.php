@@ -654,11 +654,12 @@ class UserEventsListener extends BaseEvent
             }
         }
         if( env('SEND_MAIL_ACTIVE') == 1){
-            //$email = $user["receiver_email"];    //explode(',', env('SEND_MAIL'));
-            //$email_bcc = explode(',', env('SEND_MAIL_BCC'));
-            $email_cc = explode(',', env('SEND_APPROVER_MAIL_CC'));
+            if(!empty($user['product_id']) && (in_array($user['product_id'], [1,2]))){
+                $email_cc = explode(',', env('SEND_APPROVER_MAIL_CC_ADD'));
+            }else{
+                $email_cc = explode(',', env('SEND_APPROVER_MAIL_CC'));
+            }
         }else{
-            //$email = $user["receiver_email"];
             $email_content = EmailTemplate::getEmailTemplate("APPLICATION_APPROVER_MAIL");
             if(!empty($user['product_id']) && (in_array($user['product_id'], [1,2]))){
                 $email_cc = explode(',', $email_content->cc);

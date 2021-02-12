@@ -1628,9 +1628,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return $response ?? false;
 	}
 
-	public static function updateDisbursalByTranId($data = [], $updatingId = null)
+	public static function updateDisbursalByTranId($data = [], $whereCondition = [])
 	{
-		$response =  Disbursal::where('tran_id', $updatingId)
+		$response =  Disbursal::where($whereCondition)
 			->update($data);
 		return ($response) ?? $response;
 	}
@@ -1741,5 +1741,18 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	public function getUnsettledRunningTrans(){
         return TransactionsRunning::getUnsettledRunningTrans();
+    }
+	
+	public function findInvoiceDisburseByDisbursalId($data)
+	{
+		return InvoiceDisbursed::where($data)
+				->pluck('invoice_disbursed_id');
+	}
+
+	public function updateInvoiceDisburseStatus($invoiceDisburseIds, $status)
+	{
+		$response =  InvoiceDisbursed::whereIn('invoice_disbursed_id', $invoiceDisburseIds)
+				->update(['status_id' => $status]);
+		return $response;
 	}
 }
