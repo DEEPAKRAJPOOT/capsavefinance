@@ -680,8 +680,6 @@ class InvoiceController extends Controller {
                     $exportData[$userid]['Debit_Acct_No'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NO'];
                     $exportData[$userid]['Debit_Acct_Name'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NAME'];
                     $exportData[$userid]['Debit_Mobile'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_MOBILE'];
-                    $exportData[$userid]['Ben_Name'] = $acc_name;
-                    $exportData[$userid]['Ben_BankName'] = $bank_name;
 
                     if (config('lms.UAT_ACTIVE') == 1) {
                         $exportData[$userid]['Ben_IFSC'] = config('lms.IDFC_CREDIT_BANK')['BEN_IFSC'];
@@ -690,6 +688,8 @@ class InvoiceController extends Controller {
                         $exportData[$userid]['Ben_IFSC'] = $ifsc_code;
                         $exportData[$userid]['Ben_Acct_No'] = $acc_no;
                     }
+                    $exportData[$userid]['Ben_Name'] = $acc_name;
+                    $exportData[$userid]['Ben_BankName'] = $bank_name;
                     $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
                     $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
                     $exportData[$userid]['Mode_of_Pay'] = $modePay;
