@@ -164,6 +164,21 @@
                            </div> 
                         </div>
                      </div>
+                     <div class="row">
+                        <div class="col-md-4">
+                           <label for="chrg_type"><strong>Upload Invoice Copy Mandatory</strong></label><br />
+                           <div class="form-check-inline ">
+                              <label class="form-check-label fnt">
+                              <input type="radio" class="form-check-input is_phy_inv" checked name="is_phy_inv" value="1">Yes
+                              </label>
+                           </div>
+                           <div class="form-check-inline">
+                              <label class="form-check-label fnt">
+                              <input type="radio" class="form-check-input is_phy_inv" name="is_phy_inv" value="2">No
+                              </label>
+                           </div>
+                        </div> 
+                     </div>
                 
                 <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
            </form>
