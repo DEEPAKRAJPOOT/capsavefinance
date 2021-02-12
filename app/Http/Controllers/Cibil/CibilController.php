@@ -64,7 +64,7 @@ class CibilController extends Controller
                     $arrCommercialRequest['biz_constitution'] = $arrBizData->biz_constitution;
                     $arrCommercialRequest['city_name'] = $arrBizData->address[0]->city_name ?? 'BAZARGATE';
                     $arrCommercialRequest['state_name'] = $arrBizData->address[0]->state->name ?? '';
-                    $arrCommercialRequest['state_code'] = trim($arrBizData->address[0]->state->state_code) ?? 'MH';
+                    $arrCommercialRequest['state_code'] = $arrBizData->address[0]->state->state_code ?? 'MH';
                     $arrCommercialRequest['pincode'] = $arrBizData->address[0]->pin_code ?? '400001';
                     $arrCommercialRequest['biz_address'] = $arrBizData->address[0]->addr_1 ?? '';
                     $arrCommercialRequest['loan_amount'] = (int)$loanAmount ?? NULL;
