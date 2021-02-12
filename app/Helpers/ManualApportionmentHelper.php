@@ -93,19 +93,25 @@ class ManualApportionmentHelper{
                     $amount -= round($cAmt,2);
                     $amount = round($amount,2);
                     if(round($cAmt, 2) > 0.00){
-                        $transactionList[] = [
-                            'payment_id' => null,
-                            'link_trans_id' => $trans->trans_id,
-                            'parent_trans_id' => $trans->parent_trans_id ?? $trans->trans_id,
-                            'trans_running_id'=> $trans->trans_running_id,
-                            'invoice_disbursed_id' => $trans->invoice_disbursed_id,
-                            'user_id' => $trans->user_id,
-                            'trans_date' => $trans->trans_date,
-                            'amount' => $cAmt,
-                            'entry_type' => 1,
-                            'soa_flag' => 1,
-                            'trans_type' => config('lms.TRANS_TYPE.CANCEL')
-                        ];
+                        $refundFlag = True;
+                        if($payFreq == 1 && $trans->invoiceDisbursed->invoice->is_repayment == 0){
+                            $refundFlag = False;
+                        }
+                        if($refundFlag){
+                            $transactionList[] = [
+                                'payment_id' => null,
+                                'link_trans_id' => $trans->trans_id,
+                                'parent_trans_id' => $trans->parent_trans_id ?? $trans->trans_id,
+                                'trans_running_id'=> $trans->trans_running_id,
+                                'invoice_disbursed_id' => $trans->invoice_disbursed_id,
+                                'user_id' => $trans->user_id,
+                                'trans_date' => $trans->trans_date,
+                                'amount' => $cAmt,
+                                'entry_type' => 1,
+                                'soa_flag' => 1,
+                                'trans_type' => config('lms.TRANS_TYPE.CANCEL')
+                            ];
+                        }
                     }
                 }
                 // Interest Refund Process
