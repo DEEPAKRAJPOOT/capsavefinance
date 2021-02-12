@@ -732,17 +732,27 @@ class InvoiceController extends Controller {
                 }
                 if($disburseType == 1) {
                     $modePay = ($disburseAmount < 200000) ? 'NEFT' : 'RTGS' ;
+                    $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
+                    $bank_account_id = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank_account_id'] : $userData['supplier_bank_detail']['bank_account_id'];
+                    $bank_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank']['bank_name'] : $userData['supplier_bank_detail']['bank']['bank_name'] ;
+                    $ifsc_code = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['ifsc_code'] : $userData['supplier_bank_detail']['ifsc_code'];
+                    $acc_no = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_no'] : $userData['supplier_bank_detail']['acc_no'];
+                    $acc_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_name'] : $userData['supplier_bank_detail']['acc_name'];
                     $exportData[$userid]['RefNo'] = $refNo;
-                    $exportData[$userid]['Amount'] = "$disburseAmount";
+                    $exportData[$userid]['Amount'] = $disburseAmount;
                     $exportData[$userid]['Debit_Acct_No'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NO'];
                     $exportData[$userid]['Debit_Acct_Name'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NAME'];
                     $exportData[$userid]['Debit_Mobile'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_MOBILE'];
-                    $exportData[$userid]['Ben_IFSC'] = $disbursalData['invoice']['supplier_bank_detail']['ifsc_code'];
-                    $exportData[$userid]['Ben_Acct_No'] = $disbursalData['invoice']['supplier_bank_detail']['acc_no'];
-                    // $exportData[$userid]['Ben_IFSC'] = 'UTIB0000001';
-                    // $exportData[$userid]['Ben_Acct_No'] = '21480314831';
-                    $exportData[$userid]['Ben_Name'] = $disbursalData['invoice']['supplier_bank_detail']['acc_name'];
-                    $exportData[$userid]['Ben_BankName'] = $disbursalData['invoice']['supplier_bank_detail']['bank']['bank_name'];
+
+                    if (config('lms.UAT_ACTIVE') == 1) {
+                        $exportData[$userid]['Ben_IFSC'] = config('lms.IDFC_CREDIT_BANK')['BEN_IFSC'];
+                        $exportData[$userid]['Ben_Acct_No'] = config('lms.IDFC_CREDIT_BANK')['BEN_ACC_NO'];
+                    } else {
+                        $exportData[$userid]['Ben_IFSC'] = $ifsc_code;
+                        $exportData[$userid]['Ben_Acct_No'] = $acc_no;
+                    }
+                    $exportData[$userid]['Ben_Name'] = $acc_name;
+                    $exportData[$userid]['Ben_BankName'] = $bank_name;
                     $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
                     $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
                     $exportData[$userid]['Mode_of_Pay'] = $modePay;
@@ -853,7 +863,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $disburseAmount = 0;
             $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
             $userData['disbursal_batch_id'] =$disbursalBatchId;
-            $userData['tran_id'] =$exportData[$userid]['RefNo'];;
+            $userData['ref_no'] =$exportData[$userid]['RefNo'];;
 
             $disbursalRequest = $this->createDisbursalData($userData, $disburseAmount, $disburseType);
             $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disbursalRequest);
@@ -863,7 +873,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 if($invoice['supplier_id'] == $userid) {
                     $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
 
-                        // dd($invoiceDisbursedData);
                     if (empty($invoiceDisbursedData)) {
                         $invoice['batch_id'] = $batchId;
                         $invoice['disburse_date'] = $disburseDate;
@@ -1014,15 +1023,22 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 }
                 if($disburseType == 2) {
 
+                    $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
+                    $bank_account_id = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank_account_id'] : $userData['supplier_bank_detail']['bank_account_id'];
+                    $bank_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank']['bank_name'] : $userData['supplier_bank_detail']['bank']['bank_name'] ;
+                    $ifsc_code = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['ifsc_code'] : $userData['supplier_bank_detail']['ifsc_code'];
+                    $acc_no = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_no'] : $userData['supplier_bank_detail']['acc_no'];
+                    $acc_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_name'] : $userData['supplier_bank_detail']['acc_name'];
+
                     $exportData[$userid]['RefNo'] = $disbursalData['invoice']['lms_user']['virtual_acc_id'];
                     $exportData[$userid]['Amount'] = $disburseAmount;
                     $exportData[$userid]['Debit_Acct_No'] = '12334445511111';
                     $exportData[$userid]['Debit_Acct_Name'] = 'testing name';
                     $exportData[$userid]['Debit_Mobile'] = '9876543210';
-                    $exportData[$userid]['Ben_IFSC'] = $disbursalData['invoice']['supplier_bank_detail']['ifsc_code'];
-                    $exportData[$userid]['Ben_Acct_No'] = $disbursalData['invoice']['supplier_bank_detail']['acc_no'];
-                    $exportData[$userid]['Ben_Name'] = $disbursalData['invoice']['supplier_bank_detail']['acc_name'];
-                    $exportData[$userid]['Ben_BankName'] = $disbursalData['invoice']['supplier_bank_detail']['bank']['bank_name'];
+                    $exportData[$userid]['Ben_IFSC'] = $ifsc_code;
+                    $exportData[$userid]['Ben_Acct_No'] = $acc_no;
+                    $exportData[$userid]['Ben_Name'] = $acc_name;
+                    $exportData[$userid]['Ben_BankName'] = $bank_name;
                     $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
                     $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
                     $exportData[$userid]['Mode_of_Pay'] = 'IFT';
@@ -1626,7 +1642,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
                     .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['response'] . PHP_EOL;
-                
                 $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
                 if(is_array($createOrUpdatefile)) {
                     $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
@@ -1643,53 +1658,73 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 }
                 if ($result['status'] == 'success') {
 
-                    $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
+                    // $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
                     $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
                     if ($disbursalIds) {
-                        $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById([
+                        
+                        if ($result['result']['body']['TranID_Status'] == 'SUCCESS') {
+
+                            $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
+                                    // 'status_id' => config('lms.DISBURSAL_STATUS')['DISBURSED'],
+                                    'funded_date' => (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s')
+                                ], $disbursalIds);
+
+                            foreach ($result['result']['body']['Transaction'] as $key => $value) {
+                                
+                                if ($value['RefStatus'] == 'SUCCESS') {
+                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['DISBURSED'];
+                                } else if($value['RefStatus'] == 'REJECT') {
+                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
+                                } else {
+                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED_DISBURSMENT'];
+                                } 
+                                
+                                $transDisbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['ref_no' => $value['RefNo']])->toArray();
+                                $updateDisbursalByTranId = $this->lmsRepo->updateDisbursalByTranId([
+                                        'status_id' => $disburseStatus,
+                                        'tran_id' => $value['UTR_No']
+                                    ], ['ref_no' => $value['RefNo']]);
+
+                                foreach ($transDisbursalIds as $key => $value1) {
+                                    $this->lmsRepo->createDisbursalStatusLog($value1, $disburseStatus, 'online disbursed', $createdBy);
+                                    
+                                    $invoiceDisburseIds = $this->lmsRepo->findInvoiceDisburseByDisbursalId(['disbursal_id' => $value1])->toArray();
+                                    $updateInvoiceDisburseStatus = $this->lmsRepo->updateInvoiceDisburseStatus($invoiceDisburseIds, $disburseStatus);
+                                    
+                                    $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_id' => $value1])->toArray();
+
+                                    $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, $disburseStatus);
+                                    foreach ($invoiceIds as $key => $value2) {
+                                        $this->invRepo->saveInvoiceStatusLog($value2, $disburseStatus);
+                                    }
+                                }
+
+                                if ($value['RefStatus'] == 'SUCCESS') {
+                                    $tranNewIds = array_merge($tranNewIds, $transDisbursalIds);
+                                } 
+                                $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById([
                                 'batch_status' => 2], $disbursalBatchId);
-
-                        $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
-                                'status_id' => config('lms.DISBURSAL_STATUS')['DISBURSED'],
-                                'funded_date' => (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s')
-                            ], $disbursalIds);
-                        foreach ($disbursalIds as $key => $value) {
-                            $this->lmsRepo->createDisbursalStatusLog($value, config('lms.DISBURSAL_STATUS')['DISBURSED'], 'online disbursed', $createdBy);
-                        }
-                        foreach ($result['result']['body']['Transaction'] as $key => $value) {
-                            if ($value['RefStatus'] == 'SUCCESS') {
-                                $updateDisbursalByTranId = $this->lmsRepo->updateDisbursalByTranId([
-                                    'status_id' => config('lms.DISBURSAL_STATUS')['DISBURSED']
-                                ], $value['RefNo']);
-                                $transDisbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['tran_id' => $value['RefNo']])->toArray();
-                                $tranNewIds = array_merge($tranNewIds, $transDisbursalIds);
-
-                            } else {
-                                $updateDisbursalByTranId = $this->lmsRepo->updateDisbursalByTranId([
-                                    'status_id' => config('lms.DISBURSAL_STATUS')['FAILED_DISBURSMENT']
-                                ], $value['RefNo']);
                             }
+                        } else {
+                            $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
+                            $message = $result['result']['body']['Transaction'] ?? $result['message'];
+                            Session::flash('message', 'Error : '. 'HTTP Code '. $http_code  .  $message);
+                            return redirect()->route('backend_get_disbursal_batch_request');
                         }
-                    }            
-                    if ($invoiceIds) {
-                        $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, config('lms.DISBURSAL_STATUS')['DISBURSED']);
-                        foreach ($invoiceIds as $key => $value) {
-                            $this->invRepo->saveInvoiceStatusLog($value, config('lms.DISBURSAL_STATUS')['DISBURSED']);
-                        }
-                    }
+                    }  
                     $updateTransaction = $this->updateTransactionInvoiceDisbursed($tranNewIds, $fundedDate);
                 } else {
                     $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
                     $message = $result['message'] ?? $result['message'];
                     Session::flash('message', 'Error : '. 'HTTP Code '. $http_code  .  $message);
-                    return redirect()->route('backend_get_disbursed_invoice');
+                    return redirect()->route('backend_get_disbursal_batch_request');
                    
                 }
                  
             }
                     
-            Session::flash('message',trans('backend_messages.disbursed'));
-            return redirect()->back()->withErrors('message',trans('backend_messages.disbursed'));
+            Session::flash('message',trans('backend_messages.batch_disbursed'));
+            return redirect()->back()->withErrors('message',trans('backend_messages.batch_disbursed'));
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }             
