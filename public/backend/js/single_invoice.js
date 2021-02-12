@@ -167,15 +167,7 @@
         }
         }); 
        $("#customFile").rules("add", {
-         required: '.is_phy_inv[value="1"]:checked',
-         submitHandler: function () {
-           if ($('.is_phy_inv[value="1"]').is(":checked")) {
-             $('.customFile_astrik').html('*');
-           }
-           if ($('.is_phy_inv[value="2"]').is(":checked")) {
-             $('.customFile_astrik').html(' ');
-           }
-         },
+         required: true,
          messages: {
            required: "Please upload invoice copy",
          }
