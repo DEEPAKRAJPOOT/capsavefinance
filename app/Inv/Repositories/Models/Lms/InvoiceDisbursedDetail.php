@@ -258,7 +258,7 @@ class InvoiceDisbursedDetail extends BaseModel
 
     public static function updateChargeTrans($transDetail, $invDisbDetail){
         if($transDetail && $invDisbDetail){
-            if($transDetail->entry_type){
+            if($transDetail->entry_type && $transDetail->transType->chrg_master_id){
                 $invDisbDetails = [ 
                     'charge_repayment' => $invDisbDetail->charge_repayment + $transDetail->amount,
                     'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount - $transDetail->amount,
@@ -277,7 +277,7 @@ class InvoiceDisbursedDetail extends BaseModel
     }
 
     public static function updateTdsTrans($transDetail, $invDisbDetail){
-        $pTransDetails = $transDetail->parentTransactions();
+        $pTransDetails = $transDetail->parentTransactions;
         if($pTransDetails && $transDetail->entry_type == 1){
             if($pTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
                 $invDisbDetails = [ 
@@ -320,7 +320,7 @@ class InvoiceDisbursedDetail extends BaseModel
     }
 
     public static function updateWaivedOffTrans($transDetail, $invDisbDetail){
-        $pTransDetails = $transDetail->parentTransactions();
+        $pTransDetails = $transDetail->parentTransactions;
         if($pTransDetails && $transDetail->entry_type == 1){
             if($pTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
                 $invDisbDetails = [ 
@@ -363,7 +363,7 @@ class InvoiceDisbursedDetail extends BaseModel
     }
 
     public static function updateWriteOffTrans($transDetail, $invDisbDetail){
-        $pTransDetails = $transDetail->parentTransactions();
+        $pTransDetails = $transDetail->parentTransactions;
         if($pTransDetails && $transDetail->entry_type == 1){
             if($pTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
                 $invDisbDetails = [ 
@@ -406,7 +406,7 @@ class InvoiceDisbursedDetail extends BaseModel
     }
 
     public static function updateRefundTrans($transDetail, $invDisbDetail){
-        $pTransDetails = $transDetail->parentTransactions();
+        $pTransDetails = $transDetail->parentTransactions;
         if($pTransDetails && $transDetail->entry_type == 1){
             if($pTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
                 $invDisbDetails = [ 
@@ -478,8 +478,8 @@ class InvoiceDisbursedDetail extends BaseModel
     }
 
     public static function updateReverseTrans($transDetail, $invDisbDetail){
-        $lTransDetails = $transDetail->linkTransactions();
-        $pTransDetails = $transDetail->parentTransactions();
+        $lTransDetails = $transDetail->linkTransactions;
+        $pTransDetails = $transDetail->parentTransactions;
         if($lTransDetails && $transDetail->entry_type == 1){
             if($lTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
                 $invDisbDetails = [ 
@@ -542,7 +542,67 @@ class InvoiceDisbursedDetail extends BaseModel
     }
 
     public static function updateCancelTrans($transDetail, $invDisbDetail){
-
+        $lTransDetails = $transDetail->linkTransactions;
+        $pTransDetails = $transDetail->parentTransactions;
+        if($lTransDetails && $transDetail->entry_type == 1){
+            if($lTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
+                $invDisbDetails = [ 
+                    'principal_amount' => $invDisbDetail->principal_amount - $transDetail->amount,
+                ];
+            }
+            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+                $invDisbDetails = [ 
+                    'interest_capitalized' => $invDisbDetail->interest_capitalized - $transDetail->amount,
+                ];
+            }
+            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                $invDisbDetails = [ 
+                    'overdue_capitalized' => $invDisbDetail->overdue_capitalized - $transDetail->amount,
+                ];
+            }
+            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
+                $invDisbDetails = [ 
+                    'margin_amount' => $invDisbDetail->margin_amount - $transDetail->amount,
+                ];
+            }
+            elseif($lTransDetails->transType->chrg_master_id){
+                $invDisbDetails = [ 
+                    'charge_amount' => $invDisbDetail->charge_amount - $transDetail->amount,
+                ];
+            }
+            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
+            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+        }
+        
+        if($lTransDetails && $transDetail->entry_type == 0){
+            if($lTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
+                $invDisbDetails = [ 
+                    'principal_repayment' => $invDisbDetail->principal_repayment - $transDetail->amount,
+                ];
+            }
+            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+                $invDisbDetails = [ 
+                    'interest_repayment' => $invDisbDetail->interest_repayment - $transDetail->amount,
+                ];
+            }
+            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                $invDisbDetails = [ 
+                    'overdue_repayment' => $invDisbDetail->overdue_repayment - $transDetail->amount,
+                ];
+            }
+            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
+                $invDisbDetails = [ 
+                    'margin_repayment' => $invDisbDetail->margin_repayment - $transDetail->amount,
+                ];
+            }
+            elseif($lTransDetails->transType->chrg_master_id){
+                $invDisbDetails = [ 
+                    'charge_repayment' => $invDisbDetail->charge_repayment - $transDetail->amount,
+                ];
+            }
+            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
+            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+        }
     }
   
     public static function createTransactionDetails($transDetails){

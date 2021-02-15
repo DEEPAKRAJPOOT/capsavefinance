@@ -421,7 +421,8 @@ class InvoiceController extends Controller {
             $whereInvoiceDetails = [
                 'invoice_id' => $value['invoice']['invoice_id'],
                 'invoice_disbursed_id' => $value['invoice_disbursed_id']];
-            
+
+
             $this->lmsRepo->saveInvoiceDisbursedDetails($invoiceDetails,$whereInvoiceDetails);
             unset($invoiceDetails);
             unset($whereInvoiceDetails);
@@ -441,13 +442,14 @@ class InvoiceController extends Controller {
                     $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
                 }
             }
-            
+
             if ($marginAmt > 0.00) {
                 $marginTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $marginAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.MARGIN'), 0);
                 $createTransaction = $this->lmsRepo->saveTransaction($marginTrnsData);
             }
            
             $Obj->intAccrual($value['invoice_disbursed_id']);
+
         }
 
         $disbursals = $this->lmsRepo->getDisbursals($disbursalIds)->toArray();
