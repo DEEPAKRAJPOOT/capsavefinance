@@ -73,7 +73,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-6" id="chrg_calculation_amt_div">
                 <label for="chrg_calculation_amt">Amount/Percent</label>
                 <input type="text" class="form-control {{$charge_data->chrg_calculation_type == 1 ? 'formatNum' : 'amtpercnt' }}" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" value="{{$charge_data->chrg_calculation_amt}}" maxlength="10">
             </div>
@@ -165,11 +165,13 @@
         if ($(this).val() == '2' && basedOn == 2){
             $('#approved_limit_div').hide();
             $('#chrg_tiger_div').hide();
-            $('#chrg_calculation_amt_div').hide();
+            // $('#chrg_calculation_amt_div').hide();
         }
         if ($(this).val() == '2') {
+            // $('#chrg_calculation_amt_div').hide();
             $('#approved_limit_div').show();
         } else {
+            // $('#chrg_calculation_amt_div').show();
             $('#chrg_applicable_id option:selected').removeAttr('selected');
             $('#approved_limit_div').hide();
         }
@@ -191,13 +193,14 @@
             $('#gst_div').show();
             $('#approved_limit_div').hide();
             $('#chrg_tiger_div').hide();
-            $('#chrg_calculation_amt_div').hide();
+            // $('#chrg_calculation_amt_div').hide();
         }
         else{
             // $('input[name="gst_percentage"]').val('');
             $('#approved_limit_div').show();
             $('#chrg_tiger_div').show();
             $('#gst_div').show();
+            // $('#chrg_calculation_amt_div').show();
         }
     })
     $(document).ready(function () {
@@ -251,6 +254,7 @@
             $('#approved_limit_div').show();
             $('#chrg_tiger_div').show();
             $('#gst_div').show();
+            $('#chrg_calculation_amt_div').show();
         }
 
 

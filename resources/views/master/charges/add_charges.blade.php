@@ -54,12 +54,12 @@
                         <label for="chrg_type">Charge Calculation</label><br />
                         <div class="form-check-inline ">
                             <label class="form-check-label fnt">
-                                <input type="radio" class="form-check-input charge_calculation_type" name="chrg_calculation_type" value="1">Fixed
+                                <input type="radio" class="form-check-input charge_calculation_type" name="chrg_calculation_type" value="1" checked>Fixed
                             </label>
                         </div>
                         <div class="form-check-inline">
                             <label class="form-check-label fnt">
-                                <input type="radio" class="form-check-input charge_calculation_type" checked name="chrg_calculation_type" value="2">Percentage
+                                <input type="radio" class="form-check-input charge_calculation_type"  name="chrg_calculation_type" value="2">Percentage
                             </label>
                         </div>
                     </div>
@@ -173,10 +173,11 @@
             if ($(this).val() == '2' && basedOn == 2){
                 $('#approved_limit_div').hide();
                 $('#chrg_tiger_div').hide();
-                $('#chrg_calculation_amt_div').hide();
+                // $('#chrg_calculation_amt_div').hide();
             }
             if ($(this).val() == '2' && basedOn == 1) {
                 $('#approved_limit_div').show();
+                // $('#chrg_calculation_amt_div').show();
             }
             else {
                 $('#approved_limit_div').hide();
@@ -197,13 +198,14 @@
                 $('#gst_div').show();
                 $('#approved_limit_div').hide();
                 $('#chrg_tiger_div').hide();
-                $('#chrg_calculation_amt_div').hide();
+                // $('#chrg_calculation_amt_div').hide();
             }
             else{
                 // $('input[name="gst_percentage"]').val('');
                 $('#approved_limit_div').show();
                 $('#chrg_tiger_div').show();
                 $('#gst_div').show();
+                // $('#chrg_calculation_amt_div').show();
             }
         })
 
