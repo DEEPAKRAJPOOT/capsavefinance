@@ -210,6 +210,12 @@
                               $("#is_gst_applicable1").attr('disabled','disabled');
                             } 
                          
+                         if($('#based_on').val() == 2) {
+                            $("#amount").attr("readonly", false);
+                            $("#chrg_calculation_type1").attr('checked', true);
+                         } else {
+                            $("#amount").attr("readonly", true);
+                         }
                       }
                       else
                       {
