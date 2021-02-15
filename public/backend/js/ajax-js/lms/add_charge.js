@@ -152,7 +152,11 @@
                           $("#chrg_applicable_hidden_id").val(res.chrg_applicable_id);
                           $("#chrg_applicable_id option").attr('disabled','disabled');
                           ////**** calculation here for according charge applicable ******/
-                          var ram = res.amount.replace(",", ""); 
+                          if (res.amount != null) {
+                            var ram = res.amount.replace(",", ""); 
+                          } else {
+                            var ram = 0; 
+                          }
                           $("#amount").val(ram);
                           $("#id").val(res.id);
                           $("#charge_type").val(res.type);
