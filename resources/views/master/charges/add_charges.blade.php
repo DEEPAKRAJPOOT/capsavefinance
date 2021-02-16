@@ -198,6 +198,7 @@
                 $('#gst_div').show();
                 $('#approved_limit_div').hide();
                 $('#chrg_tiger_div').hide();
+                $('input[name="chrg_calculation_type"]').attr('disabled', true);
                 // $('#chrg_calculation_amt_div').hide();
             }
             else{
