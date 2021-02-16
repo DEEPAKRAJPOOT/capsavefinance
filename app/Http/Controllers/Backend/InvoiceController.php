@@ -680,7 +680,6 @@ class InvoiceController extends Controller {
                     $exportData[$userid]['Debit_Acct_No'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NO'];
                     $exportData[$userid]['Debit_Acct_Name'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NAME'];
                     $exportData[$userid]['Debit_Mobile'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_MOBILE'];
-
                     if (config('lms.UAT_ACTIVE') == 1) {
                         $exportData[$userid]['Ben_IFSC'] = config('lms.IDFC_CREDIT_BANK')['BEN_IFSC'];
                         $exportData[$userid]['Ben_Acct_No'] = config('lms.IDFC_CREDIT_BANK')['BEN_ACC_NO'];
@@ -1542,6 +1541,7 @@ class InvoiceController extends Controller {
                 
                 $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
                 $otherData['enq_txn_id'] = $transId;
+                $otherData['disbursal_batch_id'] = $disbursalBatchId;
                 $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result, $otherData);
                 $createDisbusalApiLog = $this->lmsRepo->saveUpdateDisbursalApiLog($disbusalApiLogData);
                 if ($createDisbusalApiLog) {
