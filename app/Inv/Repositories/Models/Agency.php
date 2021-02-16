@@ -83,7 +83,7 @@ class Agency extends BaseModel
         if(is_null($type) || $type == ''){
             return Agency::get();
         }else{
-            return Agency::whereHas('agencyType', function(Builder $query) use($type){$query->where('status_name', $type);})->get();
+            return Agency::where('is_active',1)->whereHas('agencyType', function(Builder $query) use($type){$query->where('status_name', $type);})->get();
         }
     }
 
