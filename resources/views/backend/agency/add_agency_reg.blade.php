@@ -112,6 +112,7 @@
                          </div>
                       </div>
                   </div>
+                <input type="hidden" name="is_active" value="1" id='is_active'>
                 <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAgency">Submit</button>  
            </form>
          </div>
