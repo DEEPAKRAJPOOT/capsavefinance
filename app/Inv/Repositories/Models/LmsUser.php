@@ -76,7 +76,7 @@ class LmsUser extends Authenticatable
             ->join('users', 'lms_users.user_id', '=', 'users.user_id')
             ->join('biz','lms_users.user_id', '=', 'biz.user_id')
             ->where('biz_entity_name', 'like', '%'.$search.'%')
-            ->orwhere("customer_id","LIKE","%{$search}%")->get();
+            ->orwhere("customer_id","LIKE","%{$search}%")->groupby('biz_entity_name')->distinct()->get();
     }
       /////////////* get customer id   */////////////////
       public static function  getLmsUser()
