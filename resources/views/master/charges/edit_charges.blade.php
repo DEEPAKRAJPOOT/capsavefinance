@@ -33,12 +33,12 @@
                 <label for="chrg_type">Charge Based On</label><br />
                 <div class="form-check-inline ">
                     <label class="form-check-label fnt">
-                        <input type="radio" class="form-check-input" checked name="based_on" value="1" {{ ($charge_data->based_on == 1) ? 'checked' : '' }}>Program Based
+                        <input disabled="" type="radio" class="form-check-input" checked name="based_on" value="1" {{ ($charge_data->based_on == 1) ? 'checked' : '' }}>Program Based
                     </label>
                 </div>
                 <div class="form-check-inline">
                     <label class="form-check-label fnt">
-                        <input type="radio" class="form-check-input" name="based_on" value="2" {{ ($charge_data->based_on == 2) ? 'checked' : '' }}>Customer Based
+                        <input disabled="" type="radio" class="form-check-input" name="based_on" value="2" {{ ($charge_data->based_on == 2) ? 'checked' : '' }}>Customer Based
                     </label>
                 </div>
             </div>
@@ -247,7 +247,7 @@
         if ($('input[name="based_on"]:checked').val() == '2') {
             $('#approved_limit_div').hide();
             $('#chrg_tiger_div').hide();
-            $('#chrg_calculation_amt_div').hide();
+            // $('#chrg_calculation_amt_div').hide();
         }
         else{
             // $('input[name="gst_percentage"]').val('');
