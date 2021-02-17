@@ -354,7 +354,9 @@ function uploadFile(app_id,id)
         var approveAmount = $(this).attr('data-approve').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         var amount = $(this).attr('data-amount').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         var invoiceId = $(this).attr('data-id');
+        var stsId = $(this).attr('data-statusId');
         $("#invoice_id").val(invoiceId);
+        $("#status_id").val(stsId);
         $("#invoice_amount").val(amount);
         $("#invoice_approve_amount").val(approveAmount);
 

@@ -494,6 +494,21 @@ public static function saveBulkInvoice($arrInvoice)
     public static function getInvoiceUtilizedAmount($attr)
     {
         return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id'],'app_id' =>$attr['app_id']])->sum('invoice_margin_amount');       
-    }      
+    } 
+    
+    /* update invoice amount with statusid  */
+    public static function updateInvoiceAmountWithStausId($attributes)
+    {
+        $invoiceId  =    $attributes['invoice_id'];
+        $amount     =  str_replace(',','', $attributes['approve_invoice_amount']);  
+        $comment    =    $attributes['comment'];
+        $statusId    =    $attributes['status_id'];
+        $updated_at  = Carbon::now()->toDateTimeString();
+        $id = Auth::user()->user_id;    
+        $result =  User::getSingleUserDetails($id);
+        InvoiceStatusLog::saveInvoiceLogWithStatusId($invoiceId,$statusId,$amount,$comment);
+        return  self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
+        
+    }    
     
 }

@@ -66,6 +66,7 @@
                                                                             <th> Inv Amount</th>
                                                                             <th>Invoice (View/Upload)</th>
                                                                             <th>Status</th>
+                                                                            <th>Action</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -90,6 +91,55 @@
         </div></div>
 </div>
 
+<div class="modal show" id="myModal7" style="display: none;">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Confirm Invoice Approved Amount</h5>
+                <button type="button" class="close close-btns" data-dismiss="modal">×</button>
+            </div>
+
+            <div class="modal-body text-left">
+                <form id="signupFormNew"  action="{{Route('front_update_invoice_amount')}}" method="post">
+                    @csrf	
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="txtCreditPeriod">Invoice Amount
+                                    <span class="mandatory">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="invoice_amount" value="" disabled="">
+                                <input type="hidden" name="invoice_id" id="invoice_id">
+                                <input type="hidden" name="status_id" id="status_id">
+                            </div>
+                            <div class="form-group">
+                                <label for="txtCreditPeriod">Invoice Approved Amount
+                                    <span class="mandatory">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="invoice_approve_amount" name="approve_invoice_amount" value="Enter Amount">
+
+                            </div>
+
+                            <div class="form-group">
+                                <label for="txtCreditPeriod">Comment  <span class="error_message_label doc-error">*</span>
+
+                                </label>
+                                <textarea class="form-control" name="comment" id="comment" cols="4" rows="4"></textarea>
+
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    <span class="model7msg error"></span>			
+                    <input type="submit" id="UpdateInvoiceAmount" class="btn btn-success float-right btn-sm mt-3" value="Submit"> 
+                </form> 
+            </div>
+        </div>
+    </div>
+</div>
 
  @endsection
  @section('jscript')

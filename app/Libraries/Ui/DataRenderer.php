@@ -983,7 +983,7 @@ class DataRenderer implements DataProviderInterface
     public function getFrontendInvoiceList(Request $request,$invoice)
     { 
         return DataTables::of($invoice)
-               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','invoice_upload','invoice_id','invoice_due_date'])
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','invoice_upload','invoice_id','invoice_due_date', 'action'])
            
               
                  ->addColumn(
@@ -1047,6 +1047,13 @@ class DataRenderer implements DataProviderInterface
                     
                         return  $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
                        
+                })    
+                ->addColumn(            
+                    'action',
+                    function ($invoice) {                        
+                        $action = "";
+                        $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-statusId="'.(($invoice->status_id) ? $invoice->status_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                        return $action;
                 })    
                 ->filter(function ($query) use ($request) {
                     
