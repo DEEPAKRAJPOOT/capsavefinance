@@ -13,6 +13,7 @@ try {
                 "method": 'POST',
                 data: function (d) {
                     d.status_id = $('select[name=status_id]').val();
+                    d.biz_id = $('input[name=search_biz]').val();
                     d._token = messages.token;
                   
                 },
@@ -37,9 +38,13 @@ try {
         });
 
         //Search
-        $('.searchbtn').on('change', function (e) {
+        // $('.searchbtn').on('change', function (e) {
+        //     oTable.draw();
+        // });   
+        //Search
+        $('#search_biz').on('click', function (e) {
             oTable.draw();
-        });                   
+        });                 
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

@@ -21,16 +21,17 @@
             <div class="col-md-12 ">
                 <div class="card">
            
-  <div class="tab-content">
+  <div class="tab-content" style="padding: 0px 25px;">
 
                             <div id="menu1" class=" active tab-pane "><br>
                             
                                         <div class="row">
                                            
-                                            <div class="col-md-7">				 
-                                              
-                                            </div>
-                                            <div class="col-md-3">		    
+                                            <div class="col-md-5">
+                                                <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number">
+                                            </div> 
+
+                                            <div class="col-md-4">		    
 
                                                 <select class="form-control form-control-sm searchbtn" name="status_id">
                                                     <option value=""> Select Invoice Status</option>  
@@ -39,6 +40,9 @@
                                                         @endforeach
                                                 </select>
                                             </div>    
+                                            <div class="col-md-1">
+                                                <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
+                                            </div>                                             
                                             <div class="col-md-2">	
                                                 <a href="{{Route('frontend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
                                               
