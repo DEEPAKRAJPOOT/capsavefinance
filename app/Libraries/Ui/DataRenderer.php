@@ -7694,7 +7694,7 @@ class DataRenderer implements DataProviderInterface
                 'action',
                 function ($bank) {
                     if(Helpers::checkPermission('add_new_bank') ){
-                        $action = '<a data-toggle="modal" title="Edit Bank Detail" data-height="400px" data-width="100%" data-target="#editBankMaster" id="editBank" data-url="'.route('add_new_bank', ['bank_id' => $bank->id]).'" data-placement="top" class="btn  btn-success btn-sm mb-2"><i class="fa fa-edit"></i></a>';
+                        $action = '<a data-toggle="modal" title="Edit Bank Detail" data-height="400px" data-width="100%" data-target="#editBankMaster" id="editBank" data-url="'.route('add_new_bank', ['bank_id' => $bank->id]).'" data-placement="top" class="btn  btn-action-btn btn-sm mb-2"><i class="fa fa-edit"></i></a>';
                         return $action;
                     }
             })
