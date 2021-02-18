@@ -165,9 +165,11 @@
                              
                             
                              $("#approved_limit_div, .chargeTypeCal").hide();
+                             if($('#based_on').val() == 1) {
                              $("#chrg_calculation_type1").prop('checked',true);
                              $("#chrg_calculation_type2").prop('checked',false);
                              $("#chrg_calculation_type2").prop('disabled',true);
+                           }
                             if(res.is_gst_applicable==1)
                            { 
                              var limitAmount  =  $("#amount").val();  
@@ -181,9 +183,11 @@
                          }  
                          else if(res.type==2)
                          {
+                             if($('#based_on').val() == 1) {
                              $("#chrg_calculation_type1").prop('checked',false);
                              $("#chrg_calculation_type2").prop('checked',true);
                               $("#chrg_calculation_type1").prop('disabled',true);
+                            }
                              $("#approved_limit_div, .chargeTypeCal").show(); 
                              var limit_amount_new  =  $("#limit_amount_new").val();
                              var limit_amount_new =   limit_amount_new.replace(",", ""); 
@@ -215,10 +219,16 @@
                             } 
                          
                          if($('#based_on').val() == 2) {
+                            $("#chrg_calculation_type1").prop('disabled',false);
                             $("#amount").attr("readonly", false);
                             $("#chrg_calculation_type1").attr('checked', true);
+                            $(".chargeTypeCal").css({"display":"none"});
+                            $("#cust_hide_div").css({"display":"none"});
+                            $("#amount_label").text("Amount");;
                          } else {
+                            $("#amount_label").text("Amount/Percent");;
                             $("#amount").attr("readonly", true);
+                            $("#cust_hide_div").show();
                          }
                       }
                       else

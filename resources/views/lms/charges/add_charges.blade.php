@@ -54,7 +54,7 @@
                     <label class="form-check-label fnt">               
                         <input type="radio" class="form-check-input chrgT" id="chrg_calculation_type1" name="chrg_calculation_type" value="1"> &nbsp;&nbsp;Fixed </label>            
                 </div>
-                <div class="form-check-inline">               
+                <div class="form-check-inline" id="cust_hide_div">               
                     <label class="form-check-label fnt">               
                         <input type="radio" class="form-check-input chrgT" id="chrg_calculation_type2"  name="chrg_calculation_type" value="2">&nbsp;&nbsp;Percentage</label>
 
@@ -73,7 +73,7 @@
         </div>
         <div class="row">
             <div class="form-group col-md-6">
-                <label for="chrg_name">Amount/Percent</label>
+                <label for="chrg_name" id="amount_label">Amount/Percent</label>
                 <input type="text"  class="form-control" readonly="readonly" id="amount" name="amount" placeholder="Charge Calculation Amount" maxlength="50">
 
             </div>

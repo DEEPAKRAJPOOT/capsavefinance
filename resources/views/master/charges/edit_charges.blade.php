@@ -54,7 +54,7 @@
                                 <input type="radio" class="form-check-input charge_calculation_type" {{$charge_data->chrg_calculation_type == 1 ? 'checked' : ($charge_data->chrg_calculation_type != 2 ? 'checked' : '' )}} name="chrg_calculation_type" value="1">Fixed
                             </label>
                         </div>
-                        <div class="form-check-inline">
+                        <div class="form-check-inline" id="cust_hide_div">
                             <label class="form-check-label fnt">
                                 <input type="radio" class="form-check-input charge_calculation_type" {{$charge_data->chrg_calculation_type == 2 ? 'checked' : ''}} name="chrg_calculation_type" value="2">Percentage
                             </label>
@@ -74,7 +74,7 @@
                 </div>
             </div>
             <div class="form-group col-md-6" id="chrg_calculation_amt_div">
-                <label for="chrg_calculation_amt">Amount/Percent</label>
+                <label for="chrg_calculation_amt" id="amount_label">Amount/Percent</label>
                 <input type="text" class="form-control {{$charge_data->chrg_calculation_type == 1 ? 'formatNum' : 'amtpercnt' }}" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" value="{{$charge_data->chrg_calculation_amt}}" maxlength="10">
             </div>
 
@@ -248,7 +248,10 @@
         if ($('input[name="based_on"]:checked').val() == '2') {
             $('#approved_limit_div').hide();
             $('#chrg_tiger_div').hide();
-            $('input[name="chrg_calculation_type"]').attr('disabled', true);
+            $("#chrg_calculation_type1").prop('disabled',false);
+            $("#chrg_calculation_type1").attr('checked', true);
+            $("#cust_hide_div").css({"display":"none"});
+            $("#amount_label").text("Amount");
             // $('#chrg_calculation_amt_div').hide();
         }
         else{
@@ -257,6 +260,7 @@
             $('#chrg_tiger_div').show();
             $('#gst_div').show();
             $('#chrg_calculation_amt_div').show();
+            $("#amount_label").text("Amount/Percent");
         }
 
 

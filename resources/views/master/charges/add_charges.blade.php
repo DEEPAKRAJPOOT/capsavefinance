@@ -57,7 +57,7 @@
                                 <input type="radio" class="form-check-input charge_calculation_type" name="chrg_calculation_type" value="1" checked>Fixed
                             </label>
                         </div>
-                        <div class="form-check-inline">
+                        <div class="form-check-inline" id="cust_hide_div">
                             <label class="form-check-label fnt">
                                 <input type="radio" class="form-check-input charge_calculation_type"  name="chrg_calculation_type" value="2">Percentage
                             </label>
@@ -77,7 +77,7 @@
                 </div>
             </div>
             <div class="form-group col-md-6 float-md-right" id="chrg_calculation_amt_div">
-                <label for="chrg_calculation_amt">Amount/Percent</label>
+                <label for="chrg_calculation_amt" id="amount_label">Amount/Percent</label>
                 <input type="text" class="form-control amtpercnt" id="chrg_calculation_amt" name="chrg_calculation_amt" placeholder="Charge Calculation Amount" maxlength="10">
             </div>
 
@@ -198,7 +198,10 @@
                 $('#gst_div').show();
                 $('#approved_limit_div').hide();
                 $('#chrg_tiger_div').hide();
-                $('input[name="chrg_calculation_type"]').attr('disabled', true);
+                // $('input[name="chrg_calculation_type"]').attr('disabled', true);
+                $("#amount_label").text("Amount");
+                $("#cust_hide_div").css({"display":"none"});
+                $("#chrg_calculation_type1").attr('checked', true);
                 // $('#chrg_calculation_amt_div').hide();
             }
             else{
@@ -206,6 +209,8 @@
                 $('#approved_limit_div').show();
                 $('#chrg_tiger_div').show();
                 $('#gst_div').show();
+                $("#amount_label").text("Amount/Percent");
+                $("#cust_hide_div").css({"display":"block"});
                 // $('#chrg_calculation_amt_div').show();
             }
         })
