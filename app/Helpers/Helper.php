@@ -2164,4 +2164,9 @@ class Helper extends PaypalHelper
         
         return $fileArr;
     }
+
+    public static function getPerfiosBankById($id){
+        $bankData = Bank::find($id);
+        return $bankData['bank_name'];
+    }
 }
