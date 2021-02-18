@@ -202,6 +202,8 @@
                 $("#amount_label").text("Amount");
                 $("#cust_hide_div").css({"display":"none"});
                 $("#chrg_calculation_type1").attr('checked', true);
+                $('#chrg_calculation_amt').addClass('formatNum').removeClass('amtpercnt');                
+
                 // $('#chrg_calculation_amt_div').hide();
             }
             else{
