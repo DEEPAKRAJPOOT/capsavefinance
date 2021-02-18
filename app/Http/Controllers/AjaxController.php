@@ -5039,4 +5039,10 @@ if ($err) {
         $nach = $nach->getData(true);
         return new JsonResponse($nach);
     }
+
+    public function getAllBankList(DataProviderInterface $dataProvider) { 
+        $bankList = $this->masterRepo->getAllBankList();
+        $banks = $dataProvider->getBankList($this->request, $bankList);
+        return $banks;
+    }
 }

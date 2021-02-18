@@ -7663,4 +7663,50 @@ class DataRenderer implements DataProviderInterface
            ->make(true);
    }
 
+   public function getBankList(Request $request, $bank){              
+        return DataTables::of($bank)
+            ->rawColumns(['status','action'])
+            ->addColumn(
+                'id',
+                function ($bank) {
+                return $bank->id;
+            })
+            ->addColumn(
+                'bank_name',
+                function ($bank) {
+                return $bank->bank_name;
+            })
+            ->addColumn(
+                'per_bank_id',
+                function ($bank) {
+                // return Helpers::getPerfiosBankById($bank->perfios_bank_id);
+                return $bank->perfios_bank_id;
+            })
+            ->addColumn(
+                'status',
+                function ($bank) {
+                    $act = $bank->is_active;
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;</div>';
+                return $status;
+                }
+            )
+            ->addColumn(
+                'action',
+                function ($bank) {
+                    if(Helpers::checkPermission('add_new_bank') ){
+                        $action = '<a data-toggle="modal" title="Edit Bank Detail" data-height="400px" data-width="100%" data-target="#editBankMaster" id="editBank" data-url="'.route('add_new_bank', ['bank_id' => $bank->id]).'" data-placement="top" class="btn  btn-success btn-sm mb-2"><i class="fa fa-edit"></i></a>';
+                        return $action;
+                    }
+            })
+            ->filter(function ($query) use ($request) {
+                if ($request->get('search_keyword') != '') {
+                    $query->where(function ($query) use ($request) {
+                        $search_keyword = trim($request->get('search_keyword'));
+                        $query->where('bank_name', 'like',"%$search_keyword%");
+                    });
+                }
+            })
+            ->make(true);
+    }
+
 }
