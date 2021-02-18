@@ -1050,9 +1050,11 @@ class DataRenderer implements DataProviderInterface
                 })    
                 ->addColumn(            
                     'action',
-                    function ($invoice) {                        
+                    function ($invoice) {  
                         $action = "";
-                        $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-statusId="'.(($invoice->status_id) ? $invoice->status_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                        if($invoice->mstStatus->status_name === "Pending") {
+                            $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-statusId="'.(($invoice->status_id) ? $invoice->status_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                        }                
                         return $action;
                 })    
                 ->filter(function ($query) use ($request) {
