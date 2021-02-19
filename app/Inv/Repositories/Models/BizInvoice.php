@@ -179,6 +179,33 @@ public static function saveBulkInvoice($arrInvoice)
            return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail', 'supplier.app.disbursed_invoices.invoice_disbursed'])->orderBy('invoice_id', 'DESC');
         }
      } 
+
+     public function getBillNoAttribute(){
+        $poNo = null;            
+        $invNo = $this->invoice_no;
+
+        if(!$poNo && $this->parent_invoice_id){
+            $pInv = BizInvoice::find($this->parent_invoice_id);
+            $poNo = null;
+        }
+
+        $data = '';
+        
+        if($poNo){
+            $data .= $poNo;
+        }
+
+        if($poNo && $invNo){
+            $data .= ' / ';
+        }
+
+        if($invNo){
+            $data .= $invNo;
+        }
+
+        return $data;
+        
+    }
      
      public static function getUserAllInvoice($request)
      {
