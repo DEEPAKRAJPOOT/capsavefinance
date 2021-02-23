@@ -31,6 +31,7 @@ try {
                     {data: 'email'},
                     {data: 'phone'},
                     {data: 'created_at'},
+                    {data: 'status'},
                     {data: 'action'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,-5,6]}]

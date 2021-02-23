@@ -2879,7 +2879,7 @@ class DataRenderer implements DataProviderInterface
     {
         
         return DataTables::of($agency)
-                ->rawColumns(['agency_id', 'action'])
+                ->rawColumns(['agency_id', 'action','status'])
                 ->addColumn(
                     'agency_id',
                     function ($agency) {
@@ -2914,6 +2914,16 @@ class DataRenderer implements DataProviderInterface
                     function ($agency) {
                     return ($agency->created_at)? date('d-M-Y',strtotime($agency->created_at)) : '---';
                 })
+                ->editColumn(
+                    'status',
+                    function ($agency) {
+                    return ($agency->is_active == 0)?
+                    '<div class="btn-group ">
+                    <label class="badge badge-warning current-status">In Active</label>
+                    </div></b>':'<div class="btn-group ">
+                    <label class="badge badge-success current-status">Active</label>
+                    </div></b>';
+                }) 
                 ->addColumn(
                     'action',
                     function ($agency) {
