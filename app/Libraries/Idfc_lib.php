@@ -54,12 +54,13 @@ class Idfc_lib{
 		}
 		list($payload, $http_header, $txn_id) = $request;
 		// dd($url, $payload, $http_header);
-     	$response = $this->_curlCall($url, $payload, $http_header);
-     	// $response = $this->staticEnquiryResponse();
-     	// $response = $this->staticPaymentResponse();
-     	if ($getApiResponse) {
-     		return [$txn_id, $payload, $http_header, $response['result']];
-     	}
+		$response = $this->_curlCall($url, $payload, $http_header);
+		// dd($response);
+		// $response = $this->staticEnquiryResponse();
+		// $response = $this->staticPaymentResponse();
+		if ($getApiResponse) {
+			return [$txn_id, $payload, $http_header, $response['result']];
+		}
 		if (!empty($response['error_no'])) {
 			$resp['code'] 	 = "CurlError : " . $response['error_no'];
 			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
@@ -78,60 +79,64 @@ class Idfc_lib{
 		$result['http_code'] = $response['curl_info']['http_code'] ?? '';
 
 		return $result;
-    }
+	}
 
-    private function _genReq($method, $params){
- 		$resp = array(
-	 		'status' => "fail",
-	 		'code' => "InputRequired",
-	 		'message' => "Error occured during request generation",
-	 	);
-    	$payload = [];
-    	$httpMethod = "POST";
-    	if (!isset($params['header'])) {
-	 		$resp['code'] = "headerRequired";
-	 		$resp['message'] = "Request Header mandatory for this API";
+	private function _genReq($method, $params){
+		$resp = array(
+			'status' => "fail",
+			'code' => "InputRequired",
+			'message' => "Error occured during request generation",
+		);
+		$payload = [];
+		$httpMethod = "POST";
+		if (!isset($params['header'])) {
+			$resp['code'] = "headerRequired";
+			$resp['message'] = "Request Header mandatory for this API";
 			return $resp;
-	 	}
-	 	if (!isset($params['http_header'])) {
-	 		$resp['code'] = "HTTPheaderRequired";
-	 		$resp['message'] = "HTTP Header mandatory for this API";
+		}
+		if (!isset($params['http_header'])) {
+			$resp['code'] = "HTTPheaderRequired";
+			$resp['message'] = "HTTP Header mandatory for this API";
 			return $resp;
-	 	}
-	 	if (!isset($params['request'])) {
-	 		$resp['code'] = "PaymentRequired";
-	 		$resp['message'] = "Request Payment mandatory for this API";
+		}
+		if (!isset($params['request'])) {
+			$resp['code'] = "PaymentRequired";
+			$resp['message'] = "Request Payment mandatory for this API";
 			return $resp;
-	 	}
-    	switch ($method) {
-    		case SELF::MULTI_PAYMENT:
-	    		$req['doMultiPaymentCorpReq'] = array(
-	    			'Header' => $params['header'],
-	    			'Body' => array(
-	    				'Payment' => array_values($params['request']),
-	    			 ),
-	    		);
-    			break;
-    		case SELF::BATCH_ENQ:
-    			$req['doMultiPaymentCorpReq'] = array(
-	    			'Header' => $params['header'],
-	    			'Body' => array(
-	    				'Tran_ID' => $params['request']['txn_id'],
-	    			 ),
-	    		);
-    			break;
-    		default:
-    			/*code if default api will work*/
-    			break;
-    	}
-    	$req_json = json_encode($req);
-    	$req_http_header = $this->_genHeader($params['http_header']);
-    	$this->httpMethod = $httpMethod;
-    	return [$req_json, $req_http_header, $params['http_header']['txn_id']];
-    }
+		}
+		switch ($method) {
+			case SELF::MULTI_PAYMENT:
+				$req['doMultiPaymentCorpReq'] = array(
+					'Header' => $params['header'],
+					'Body' => array(
+						'Payment' => array_values($params['request']),
+					 ),
+				);
+				break;
+			case SELF::BATCH_ENQ:
+				$req['doMultiPaymentCorpReq'] = array(
+					'Header' => $params['header'],
+					'Body' => array(
+						'Tran_ID' => $params['request']['txn_id'],
+					 ),
+				);
+				break;
+			default:
+				/*code if default api will work*/
+				break;
+		}
+		// if (version_compare(phpversion(), '7.1', '>=')) {
+		// 	ini_set( 'precision', 17 );
+		// 	ini_set( 'serialize_precision', -1 );
+		// }
+		$req_json = json_encode($req);
+		$req_http_header = $this->_genHeader($params['http_header']);
+		$this->httpMethod = $httpMethod;
+		return [$req_json, $req_http_header, $params['http_header']['txn_id']];
+	}
 
-    private function _curlCall($url, $postdata, $header ,$timeout= 600){
-    	$idfc_cert_path = getcwd();
+	private function _curlCall($url, $postdata, $header ,$timeout= 600){
+		$idfc_cert_path = getcwd();
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
@@ -156,98 +161,98 @@ class Idfc_lib{
 		$resp['result'] = $output;
 		curl_close($curl);
 		return $resp;
-    }
+	}
 
-    private function _genHeader($http_header){
-    	$timestamp = $http_header['timestamp'];
-    	$txn_id = $http_header['txn_id'];
-    	$sign_string = $timestamp.$txn_id;
-    	$signature = $this->_genSignature($sign_string);
-    	$corpId = SELF::CORP_ID;
-    	$resp_data = array(
-    		"Content-Type: application/json",
-    		"Corp_ID: $corpId",
-    		"Sign: $signature",
-    		"TimeStamp: $timestamp",
-    		"Tran_ID: $txn_id",
-    	);
-    	return $resp_data;
-    }
+	private function _genHeader($http_header){
+		$timestamp = $http_header['timestamp'];
+		$txn_id = $http_header['txn_id'];
+		$sign_string = $timestamp.$txn_id;
+		$signature = $this->_genSignature($sign_string);
+		$corpId = SELF::CORP_ID;
+		$resp_data = array(
+			"Content-Type: application/json",
+			"Corp_ID: $corpId",
+			"Sign: $signature",
+			"TimeStamp: $timestamp",
+			"Tran_ID: $txn_id",
+		);
+		return $resp_data;
+	}
 
-    private function _parseResult($IdfcResp, $method) {
-    	$result = ['status' => 'fail','message' => 'Some Error Occured While Parsing the Response.'];
-    	$json = $this->_getJsonFromString($IdfcResp);
-    	$is_valid = @$this->_isValidJson($json);
-    	if (!$is_valid) {
-    		$result['code'] = "InvalidJSON";
-    		$result['message'] = "Response is not in valid JSON format";
-    		return $result;
-    	}
-    	$response = json_decode($json, true);
-    	if (empty($response['doMultiPaymentCorpRes'])) {
-    		$result['code'] = 'CAP000';
-    		$result['message'] = 'Response cannot be parsed.';
-	    	$result['result'] = $response['Response'] ?? $response;
-	    	return $result;
-    	}
-    	$header = $response['doMultiPaymentCorpRes']['Header'];
-    	$body = $response['doMultiPaymentCorpRes']['Body'] ?? [];
-	    if (strtolower($header['Status']) != 'success' ) {
-	    	$result['code'] = $header['Error_Cde'] ?? 'CAP001'; //change to Error_Code if response changes
-	    	$result['message'] = $header['Error_Desc'] ?? 'Some error occured';
-	    }else{
-	    	$result['status'] = 'success';
-	    	$result['message'] = 'success';
-	    	$result['result'] = [
-	    		'header'=> $header,
-	    		'body'=> $body
-	    		];
-	    }
-	    return $result;
-    }
+	private function _parseResult($IdfcResp, $method) {
+		$result = ['status' => 'fail','message' => 'Some Error Occured While Parsing the Response.'];
+		$json = $this->_getJsonFromString($IdfcResp);
+		$is_valid = @$this->_isValidJson($json);
+		if (!$is_valid) {
+			$result['code'] = "InvalidJSON";
+			$result['message'] = "Response is not in valid JSON format";
+			return $result;
+		}
+		$response = json_decode($json, true);
+		if (empty($response['doMultiPaymentCorpRes'])) {
+			$result['code'] = 'CAP000';
+			$result['message'] = 'Response cannot be parsed.';
+			$result['result'] = $response['Response'] ?? $response;
+			return $result;
+		}
+		$header = $response['doMultiPaymentCorpRes']['Header'];
+		$body = $response['doMultiPaymentCorpRes']['Body'] ?? [];
+		if (strtolower($header['Status']) != 'success' ) {
+			$result['code'] = $header['Error_Cde'] ?? 'CAP001'; //change to Error_Code if response changes
+			$result['message'] = $header['Error_Desc'] ?? 'Some error occured';
+		}else{
+			$result['status'] = 'success';
+			$result['message'] = 'success';
+			$result['result'] = [
+				'header'=> $header,
+				'body'=> $body
+				];
+		}
+		return $result;
+	}
 
-    private function _getJsonFromString($string) {
-    	$simpleString = preg_replace("#\r|\n|\s+#", " ", $string);
-    	$exceptJson = preg_replace('#\{(?:[^{}]|(?R))*\}#', '', $simpleString);
-    	$json = str_replace($exceptJson, "", $simpleString);
-    	return $json;
-    }
+	private function _getJsonFromString($string) {
+		$simpleString = preg_replace("#\r|\n|\s+#", " ", $string);
+		$exceptJson = preg_replace('#\{(?:[^{}]|(?R))*\}#', '', $simpleString);
+		$json = str_replace($exceptJson, "", $simpleString);
+		return $json;
+	}
 
-    private function _removeAttribute($array = array()){
+	private function _removeAttribute($array = array()){
 	   $result = isset($array['@attributes']) ? $array['@attributes']:[];
 	   foreach ($array as $key => $value) {
-		   	if ($key === '@attributes') {
-		   		continue;
-		   	}else{
-		   		if (is_array($value)) {
-		   			$result[$key] =  $this->_removeAttribute($value);
-		   		}else{
-		   			$result[$key] =  $value;
-		   		}
-		   	}
+			if ($key === '@attributes') {
+				continue;
+			}else{
+				if (is_array($value)) {
+					$result[$key] =  $this->_removeAttribute($value);
+				}else{
+					$result[$key] =  $value;
+				}
+			}
 	   }
 	   return $result;
 	}
 
-    private function _isValidJson($json){
-    	json_decode($json);
+	private function _isValidJson($json){
+		json_decode($json);
 		return (json_last_error() == JSON_ERROR_NONE);
-    }
-
-    private function _genSignature($checksum){
-       $signature = hash_hmac('sha256', $checksum, SELF::SECRET_KEY);
-       return $signature;
-    }
-
-    private function _saveLogFile($data, $w_filename = '', $w_folder = '') {
-      	list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
-      	$path = Storage::disk('public')->put("/IDFCH2H/CAPSAVEUAT/ACHDR/$w_folder/$w_filename", $data);
-      	return True;
 	}
 
-    private function staticPaymentResponse() {
-      	
-      	$enquiryRes['result'] = 'HTTP/1.1 200 OK
+	private function _genSignature($checksum){
+	   $signature = hash_hmac('sha256', $checksum, SELF::SECRET_KEY);
+	   return $signature;
+	}
+
+	private function _saveLogFile($data, $w_filename = '', $w_folder = '') {
+		list($year, $month, $date, $hour) = explode('-', strtolower(date('Y-M-dmy-H')));
+		$path = Storage::disk('public')->put("/IDFCH2H/CAPSAVEUAT/ACHDR/$w_folder/$w_filename", $data);
+		return True;
+	}
+
+	private function staticPaymentResponse() {
+		
+		$enquiryRes['result'] = 'HTTP/1.1 200 OK
 Date: Thu, 10 Dec 2020 12:02:41 GMT
 server: 
 Content-Type: application/json;charset=UTF-8
@@ -255,68 +260,112 @@ Content-Length: 653
 
 {
   "doMultiPaymentCorpRes":{
-    "Header":{
-      "Tran_ID":"2RLJQ4955QEVD6FVFJ",
-      "Corp_ID":"CAPSAVEAPI",
-      "Status":"Success"
-    },
-    "Body":{
-      "Tran_ID":"2RLJQ4955QEVD6FVFJ",
-      "TranID_Status":"SUCCESS",
-      "TranID_StatusDesc":"FILE HAS BEEN ACCEPTED",
-      "Transaction":[
-        {
-          "RefNo":"2RLJQ4955JFV",
-          "UTR_No":null,
-          "Mode_of_Pay":"RTGS",
-          "Ben_Acct_No":"50200026128604",
-          "Ben_Name_as_per_dest_bank":"NA",
-          "Ben_IFSC":"HDFC0000891",
-          "RefStatus":"FAILED",
-          "StatusDesc":"CLEARED BAL/FUNDS/DP NOT AVAILABLE.CARE!"
-        }
-      ]
-    }
+	"Header":{
+	  "Tran_ID":"2RLJQ4955QEVD6FVFJ",
+	  "Corp_ID":"CAPSAVEAPI",
+	  "Status":"Success"
+	},
+	"Body":{
+	  "Tran_ID":"2RLJQ4955QEVD6FVFJ",
+	  "TranID_Status":"SUCCESS",
+	  "TranID_StatusDesc":"FILE HAS BEEN ACCEPTED",
+	  "Transaction":[
+		{
+		  "RefNo":"2RLJQ4955JFV",
+		  "UTR_No":null,
+		  "Mode_of_Pay":"RTGS",
+		  "Ben_Acct_No":"50200026128604",
+		  "Ben_Name_as_per_dest_bank":"NA",
+		  "Ben_IFSC":"HDFC0000891",
+		  "RefStatus":"FAILED",
+		  "StatusDesc":"CLEARED BAL/FUNDS/DP NOT AVAILABLE.CARE!"
+		}
+	  ]
+	}
   }
 }';
-      	return $enquiryRes;
+		return $enquiryRes;
 	}
 
-    private function staticEnquiryResponse() {
-      	
-      	$enquiryRes['result'] = 'HTTP/1.1 200 OK
-Date: Thu, 04 Feb 2021 13:58:18 GMT
+	private function staticEnquiryResponse() {
+		
+//       	$enquiryRes['result'] = 'HTTP/1.1 200 OK
+// Date: Thu, 04 Feb 2021 13:58:18 GMT
+// server: 
+// Content-Type: application/json;charset=UTF-8
+// Content-Length: 635
+
+// {
+//   "doMultiPaymentCorpRes":{
+//     "Header":{
+//       "Tran_ID":"2SBEX1949HSXF5K877",
+//       "Corp_ID":"CAPSAVEAPI",
+//       "Status":"Success"
+//     },
+//     "Body":{
+//       "Tran_ID":"2SBEX1949HSXF5K877",
+//       "TranID_Status":"SUCCESS",
+//       "TranID_StatusDesc":"FILE HAS BEEN ACCEPTED",
+//       "Transaction":[
+//         {
+//           "RefNo":"2SBEX1949J7X",
+//           "UTR_No":"IDFBH21035982775",
+//           "Mode_of_Pay":"NEFT",
+//           "Ben_Acct_No":"01682320002803",
+//           "Ben_Name_as_per_dest_bank":null,
+//           "Ben_IFSC":"HDFC0002249",
+//           "RefStatus":"SUCCESS",
+//           "StatusDesc":"SUCCESS"
+//         }
+//       ]
+//     }
+//   }
+// }';
+		$enquiryRes['result'] = 'HTTP/1.1 200 OK
+X-OneAgent-JS-Injection: true
+Set-Cookie: dtCookie=v_4_srv_1_sn_13DB9F363035F2F82CFE5A4F150EE4E3_perc_100000_ol_0_mul_1; Path=/; Domain=.idfcbank.com
+Date: Tue, 23 Feb 2021 11:16:30 GMT
 server: 
 Content-Type: application/json;charset=UTF-8
-Content-Length: 635
+Content-Length: 1034
 
 {
   "doMultiPaymentCorpRes":{
-    "Header":{
-      "Tran_ID":"2SBEX1949HSXF5K877",
-      "Corp_ID":"CAPSAVEAPI",
-      "Status":"Success"
-    },
-    "Body":{
-      "Tran_ID":"2SBEX1949HSXF5K877",
-      "TranID_Status":"SUCCESS",
-      "TranID_StatusDesc":"FILE HAS BEEN ACCEPTED",
-      "Transaction":[
-        {
-          "RefNo":"2SBEX1949J7X",
-          "UTR_No":"IDFBH21035982775",
-          "Mode_of_Pay":"NEFT",
-          "Ben_Acct_No":"01682320002803",
-          "Ben_Name_as_per_dest_bank":null,
-          "Ben_IFSC":"HDFC0002249",
-          "RefStatus":"SUCCESS",
-          "StatusDesc":"SUCCESS"
-        }
-      ]
-    }
+	"Header":{
+	  "Tran_ID":"2SBWL5644SWLBPKXYH",
+	  "Corp_ID":"CAPSAVEUAT",
+	  "Status":"Success"
+	},
+	"Body":{
+	  "Tran_ID":"2SBWL5644SWLBPKXYH",
+	  "TranID_Status":"SUCCESS",
+	  "TranID_StatusDesc":"FILE HAS BEEN ACCEPTED",
+	  "Transaction":[
+		{
+		  "RefNo":"2SBWL56442U8",
+		  "UTR_No":"BT21022306773021",
+		  "Mode_of_Pay":"NEFT",
+		  "Ben_Acct_No":"112101505172011",
+		  "Ben_Name_as_per_dest_bank":"Hella Infra Market Limited",
+		  "Ben_IFSC":"SIMB0002233",
+		  "RefStatus":"Pending for Authorization",
+		  "StatusDesc":"NA"
+		},
+		{
+		  "RefNo":"2SBWL5644S4I",
+		  "UTR_No":"BT21022306773020",
+		  "Mode_of_Pay":"NEFT",
+		  "Ben_Acct_No":"112101505172011",
+		  "Ben_Name_as_per_dest_bank":"Doosan Bobcat India Private Limited",
+		  "Ben_IFSC":"SIMB0002233",
+		  "RefStatus":"Pending for Authorization",
+		  "StatusDesc":"NA"
+		}
+	  ]
+	}
   }
 }';
-      	return $enquiryRes;
+		return $enquiryRes;
 	}
 }
 

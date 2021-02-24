@@ -1492,6 +1492,7 @@ class InvoiceController extends Controller {
             $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
             $transDisbursalIds = [];
             $tranNewIds = [];
+            $message = [];
 
             if(!empty($reqData)) {
             
@@ -1564,7 +1565,11 @@ class InvoiceController extends Controller {
                                 
                                 if ($value['RefStatus'] == 'SUCCESS') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['DISBURSED'];
+                                } else if($value['RefStatus'] == 'Pending for Authorization') {
+                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'];
                                 } else if($value['RefStatus'] == 'REJECT') {
+                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
+                                } else if($value['RefStatus'] == 'Rejected by Checker') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
                                 } else {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED_DISBURSMENT'];
@@ -1575,7 +1580,7 @@ class InvoiceController extends Controller {
                                         'status_id' => $disburseStatus,
                                         'tran_id' => $value['UTR_No']
                                     ], ['ref_no' => $value['RefNo']]);
-
+                                // dd($transDisbursalIds);
                                 foreach ($transDisbursalIds as $key => $value1) {
                                     $this->lmsRepo->createDisbursalStatusLog($value1, $disburseStatus, 'online disbursed', $createdBy);
                                     
@@ -1592,9 +1597,8 @@ class InvoiceController extends Controller {
 
                                 if ($value['RefStatus'] == 'SUCCESS') {
                                     $tranNewIds = array_merge($tranNewIds, $transDisbursalIds);
-                                } 
-                                $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById([
-                                'batch_status' => 2], $disbursalBatchId);
+                                }
+                                $message[] = $value['RefNo'].' is '.$value['RefStatus'];
                             }
                         } else {
                             $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
@@ -1613,8 +1617,13 @@ class InvoiceController extends Controller {
                 }
                  
             }
+            
+            $disbureIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['status_id' => config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'], 'disbursal_batch_id' => $disbursalBatchId])->toArray();
+            if(empty($disbureIds)) {
+                $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById(['batch_status' => 2], $disbursalBatchId);
+            }
                     
-            Session::flash('message',trans('backend_messages.batch_disbursed'));
+            Session::flash('message', implode(', ', $message));
             return redirect()->back()->withErrors('message',trans('backend_messages.batch_disbursed'));
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
