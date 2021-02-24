@@ -2929,8 +2929,14 @@ class DataRenderer implements DataProviderInterface
                     function ($agency) {
                        $act = '';
                      //if(Helpers::checkPermission('edit_anchor_reg')){
-                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyFrame\" data-url =\"" . route('edit_agency_reg', ['agency_id' => $agency->agency_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency Detail\"><i class=\"fa fa-edit\"></a>";
+                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyFrame\" data-url =\"" . route('edit_agency_reg', ['agency_id' => $agency->agency_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency Detail\"><i class=\"fa fa-edit\"></i></a>";
                      //}
+                        if($agency->is_active){
+                             $act.='<a title="In Active" href="'.route('change_agency_status', ['agency_id' => $agency->agency_id, 'is_active' => 0]).'"  class="btn btn-action-btn btn-sm agency_status "><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                        }else{
+                             $act.='<a title="Active" href="'.route('change_agency_status', ['agency_id' => $agency->agency_id, 'is_active' => 1]).'"  class="btn btn-action-btn btn-sm  agency_status"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>';
+                        }
+                       // $act.'amit';
                      return $act;
                     }
                 )

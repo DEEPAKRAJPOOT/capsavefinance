@@ -88,5 +88,34 @@ class Agency extends BaseModel
     }
 
 
+    public static function updateAgencyStatus($attributes = [], $conditions = [])
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($conditions)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($conditions)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        $res = self::where($conditions)->update($attributes);
+
+        return ($res ?: false);
+    }
+
+
 
 }
