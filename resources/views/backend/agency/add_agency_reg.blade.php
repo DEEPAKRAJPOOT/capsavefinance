@@ -123,6 +123,16 @@
 @endsection
 
 @section('jscript')
+
+<script>
+
+    var messages = {
+        //get_lead: "{{ URL::route('get_lead') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+
+    };
+</script>
 <script type="text/javascript">
     $(document).ready(function () {
         $('#agencyForm1').validate({ // initialize the plugin
@@ -192,7 +202,7 @@
 
 <script type="text/javascript">
 
-    $('#comp').on('change',function(){
+    $('#comp_state').on('change',function(){
     var stateID = $(this).val();
     if(stateID){
       //  var image_id =  $(this).data('city-error');
