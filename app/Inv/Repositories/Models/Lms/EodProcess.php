@@ -143,7 +143,7 @@ class EodProcess extends BaseModel
         }
         
         $query->where($whereCond);
-        $result = $query->first();
+        $result = $query->latest()->first();
         
         return $result ? $result : null;
     }

@@ -1708,28 +1708,31 @@ class Helper extends PaypalHelper
      */
     public static function getSysStartDate()
     {
-        /*$lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         $eodDetails = $lmsRepo->getEodProcess(['is_active'=>1]);
         if($eodDetails){
             if($eodDetails->status == config('lms.EOD_PROCESS_STATUS.RUNNING')){
-                $startTime = Carbon::parse($eodDetails->sys_start_date);
-                $finishTime = Carbon::parse($eodDetails->created_at);
-                $totalDuration = strtotime($startTime) - strtotime($finishTime);
-                if($totalDuration < 0){
-                    $sys_start_date = Carbon::now()->subSeconds(abs($totalDuration))->format('Y-m-d H:i:s');
-                }elseif($totalDuration == 0){
-                    $sys_start_date = Carbon::now()->format('Y-m-d H:i:s');
-                }elseif($totalDuration > 0){
-                    $sys_start_date = Carbon::now()->addSeconds($totalDuration)->format('Y-m-d H:i:s');
-                }
-            }else{
-                $sys_start_date = Carbon::parse($eodDetails->sys_end_date)->format('Y-m-d H:i:s');
+                $sys_start_date = Carbon::parse($eodDetails->sys_start_date);
+                //$sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
+            }
+            elseif($eodDetails->status == config('lms.EOD_PROCESS_STATUS.WATING')){
+                $sys_start_date = Carbon::parse($eodDetails->sys_start_date);
+            }
+            elseif($eodDetails->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')){
+                $sys_start_date = Carbon::parse($eodDetails->sys_end_date);
+            }
+            elseif($eodDetails->status == config('lms.EOD_PROCESS_STATUS.STOPPED')){
+                $sys_start_date = Carbon::parse($eodDetails->sys_end_date);
+            }
+            elseif($eodDetails->status == config('lms.EOD_PROCESS_STATUS.FAILED')){
+                $sys_start_date = Carbon::parse($eodDetails->sys_end_date);
             }
         }else{
             $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
-        }*/
+        }
 
-        $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
+
+        //$sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
         return $sys_start_date;
     }     
 
