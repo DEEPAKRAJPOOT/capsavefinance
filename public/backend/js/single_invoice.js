@@ -166,12 +166,12 @@
         required: "Please enter invoice approve amount",
         }
         }); 
-       $("#customFile").rules("add", {
-         required: true,
-         messages: {
-           required: "Please upload invoice copy",
-         }
-       }); 
+      //  $("#customFile").rules("add", {
+      //    required: true,
+      //    messages: {
+      //      required: "Please upload invoice copy",
+      //    }
+      //  }); 
          $("#remark" ).rules( "add", {
         required: true,
         messages: {

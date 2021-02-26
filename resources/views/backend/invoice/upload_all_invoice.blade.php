@@ -351,7 +351,7 @@ var messages = {
     chk_anchor_phy_inv_req: "{{ URL::route('chk_anchor_phy_inv_req') }}",
    };
  
-   $(".check_upload_inv").hide();
+   // $(".check_upload_inv").hide();
    $(document).ready(function () {
       $(document).on('change blur keyup', '.changeAnchor', function(){
             var anchorID = $(this).val();
@@ -364,9 +364,13 @@ var messages = {
                },
                success: function(response){
                   if(response['status'] === '1') {
-                     $(".check_upload_inv").show();
-                  } else {
-                     $(".check_upload_inv").hide();
+                     //bug fixed thanks to @Sparky
+                     $('input[name^="doc_file"]').each(function () {
+                        $(this).rules('add', {
+                           required: true,
+                           // accept: "image/jpeg, image/pjpeg"
+                        })
+                     })                         
                   }
                }
             });
