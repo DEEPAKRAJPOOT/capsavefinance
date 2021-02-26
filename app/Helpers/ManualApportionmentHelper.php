@@ -272,20 +272,21 @@ class ManualApportionmentHelper{
         $transactions = $intTransactions->merge($odTransactions); 
 
         foreach ($transactions as $key => $trans) {
-            $transactionList[] = [
-                'payment_id' => null,
-                'link_trans_id' => null,
-                'parent_trans_id' => null,
-                'trans_running_id'=> $trans->trans_running_id,
-                'invoice_disbursed_id' => $trans->invoice_disbursed_id,
-                'user_id' => $trans->user_id,
-                'trans_date' => $trans->trans_date,
-                'amount' => $trans->outstanding,
-                'entry_type' => $trans->entry_type,
-                'soa_flag' => 1,
-                'trans_type' => $trans->trans_type
-            ];
-        
+            if(round($trans->outstanding,2) > 0.00){
+                $transactionList[] = [
+                    'payment_id' => null,
+                    'link_trans_id' => null,
+                    'parent_trans_id' => null,
+                    'trans_running_id'=> $trans->trans_running_id,
+                    'invoice_disbursed_id' => $trans->invoice_disbursed_id,
+                    'user_id' => $trans->user_id,
+                    'trans_date' => $trans->trans_date,
+                    'amount' => $trans->outstanding,
+                    'entry_type' => $trans->entry_type,
+                    'soa_flag' => 1,
+                    'trans_type' => $trans->trans_type
+                ];
+            }
         }
         if(!empty($transactionList)){
             foreach ($transactionList as $key => $newTrans) {
