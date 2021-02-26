@@ -715,7 +715,7 @@ class UserEventsListener extends BaseEvent
             'email_from' => config('common.FRONTEND_FROM_EMAIL'),
             'email_to' => $email,
             'email_type' => $this->func_name,
-            'name' => $user['receiver_user_name'],
+            'name' => "Move to Approver",
             'subject' => "Application Approver Mail",
             'body' => '',
         ];
