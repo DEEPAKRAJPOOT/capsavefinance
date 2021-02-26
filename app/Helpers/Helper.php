@@ -1188,17 +1188,17 @@ class Helper extends PaypalHelper
         if (in_array(1, $productsArr)) {
             $SCF_CC = explode(',', config('common.SEND_APPROVER_MAIL_CC_SCF'));
             $Array_CC = array_merge($Array_CC, $SCF_CC);
-            $productIdArr = array_merge($productIdArr, 1);
+            $productIdArr = array_merge($productIdArr, [1]);
         } 
         if (in_array(2, $productsArr)) {
             $SCF_CC = explode(',', config('common.SEND_APPROVER_MAIL_CC_TERM'));
             $Array_CC = array_merge($Array_CC, $SCF_CC);
-            $productIdArr = array_merge($productIdArr, 2);
+            $productIdArr = array_merge($productIdArr, [2]);
         } 
         if (in_array(3, $productsArr)) {
             $SCF_CC = explode(',', config('common.SEND_APPROVER_MAIL_CC_LEASE'));
             $Array_CC = array_merge($Array_CC, $SCF_CC);
-            $productIdArr = array_merge($productIdArr, 3);
+            $productIdArr = array_merge($productIdArr, [3]);
         } 
         $allEmailData['cc_mails'] = implode(',', array_unique($Array_CC));
         //dd($allEmailData['cc_mails']);
