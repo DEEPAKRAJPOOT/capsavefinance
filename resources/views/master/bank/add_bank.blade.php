@@ -28,7 +28,7 @@ Form::open(
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label for="perfios_bank_id">Perfios Bank Id
+                <label for="perfios_bank_id">Perfios Id
                     <span class="mandatory">*</span>
                 </label>
                 <!-- {!! Form::select('perfios_bank_id', $bank_list,isset($bankData->perfios_bank_id) ? $bankData->perfios_bank_id : null,['class'=>'form-control form-control-sm'])!!} -->
