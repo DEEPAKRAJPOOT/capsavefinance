@@ -6596,7 +6596,7 @@ class DataRenderer implements DataProviderInterface
             return $trans['collection_date']?Carbon::parse($trans['collection_date'])->format('d-m-Y'):'';
         })
         ->editColumn('tds_rate', function($trans) {
-            return $trans['tds_rate']?number_format($trans['tds_rate'],2):'';
+            return $trans['tds_rate'];
         })
         ->editColumn('tds_amt', function($trans) {
             return $trans['tds_amt']?number_format($trans['tds_amt'],2):'';
