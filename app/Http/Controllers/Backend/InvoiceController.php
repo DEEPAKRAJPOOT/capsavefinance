@@ -1571,8 +1571,10 @@ class InvoiceController extends Controller {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
                                 } else if($value['RefStatus'] == 'Rejected by Checker') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
+                                } else if($value['RefStatus'] == 'FAILED') {
+                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED'];
                                 } else {
-                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED_DISBURSMENT'];
+                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'];
                                 } 
                                 
                                 $transDisbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['ref_no' => $value['RefNo']])->toArray();
