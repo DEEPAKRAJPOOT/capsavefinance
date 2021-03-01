@@ -5045,4 +5045,13 @@ if ($err) {
         $banks = $dataProvider->getBankList($this->request, $bankList);
         return $banks;
     }
+    public function chkAnchorPhyInvReq(Request $request) {
+        $anchorId = $request->get('anchorID');
+        $getAnchor = $this->userRepo->getAnchorById($anchorId);
+        if($getAnchor->is_phy_inv_req === '1') {
+            return $respose = ['status'=>'1'];
+        } else {
+            return $respose = ['status'=>'0'];
+        }
+    }
 }

@@ -1272,5 +1272,9 @@ Route::group(
         'as' => 'get_ajax_bank_list',
         'uses' => 'AjaxController@getAllBankList'
     ]);
+    Route::post('chk_anchor_phy_inv_req',[
+        'as' => 'chk_anchor_phy_inv_req',
+        'uses' => 'AjaxController@chkAnchorPhyInvReq'
+    ]);
     
 });

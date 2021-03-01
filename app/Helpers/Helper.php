@@ -284,17 +284,18 @@ class Helper extends PaypalHelper
     {
         $userId = Application::where('app_id', $appId)->pluck('user_id')->first();
         $inputArr = [];
-        if ($attributes['doc_file']) {
-            if (!Storage::exists('/public/user/' . $userId . '/' . $appId)) {
-                Storage::makeDirectory('/public/user/' . $userId . '/' . $appId, 0777, true);
+        if(!empty($attributes['doc_file'])) {
+            if ($attributes['doc_file']) {
+                if (!Storage::exists('/public/user/' . $userId . '/' . $appId)) {
+                    Storage::makeDirectory('/public/user/' . $userId . '/' . $appId, 0777, true);
+                }
+                $path = Storage::disk('public')->put('/user/' . $userId . '/' . $appId, $attributes['doc_file'], null);
+                $inputArr['file_path'] = $path;
             }
-            $path = Storage::disk('public')->put('/user/' . $userId . '/' . $appId, $attributes['doc_file'], null);
-            $inputArr['file_path'] = $path;
         }
-
-        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
-        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_type'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientMimeType() : '';
+        $inputArr['file_name'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientOriginalName() : '';
+        $inputArr['file_size'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientSize() : '';
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
@@ -374,54 +375,56 @@ class Helper extends PaypalHelper
        $userId = Auth::user()->user_id;
        $inputArr = []; 
        $attr[] = "";   
-        if($attributes['file_image_id']->getClientSize() > 30000000)
-       {
-             $attr['status'] =0;
-             $attr['message']= 'File size should be upload Only 30 Mb.';
-             return  $attr;   
-       }
-       else if($attributes['file_image_id']->getClientOriginalExtension()!='zip')
-       {
-             $attr['status'] =0;
-             $attr['message']= 'Zip File format is not correct, only zip file is allowed.';
-             return  $attr;   
-       }
-       if ($attributes['file_image_id']) {
-            if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip')) {
-                Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip', 0777, true);
+        if(!empty($attributes['file_image_id'])) {
+            if($attributes['file_image_id']->getClientSize() > 30000000)
+            {
+                    $attr['status'] =0;
+                    $attr['message']= 'File size should be upload Only 30 Mb.';
+                    return  $attr;   
             }
-                $zipExtension = $attributes['file_image_id']->getClientOriginalExtension();
-                $zipName   = $attributes['file_image_id']->getClientOriginalName();
-                $zipName  =  explode('.',$zipName);
-                $zipFilename =  $zipName[0].'.'.$zipExtension;
-                $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id.'/zip', $attributes['file_image_id'], $zipFilename); 
-                $zipPath  = public_path('user/' . $userId . '/invoice/' . $batch_id.'/zip'.$zipFilename);
-                $open_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$zipFilename);
-                $extract_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip');
-                $zip =  Zip::open($open_path);
-               if(count($zip->listFiles()) > 50)
-                {
-                      
-                      $attr['status'] =0;
-                      $attr['message']= 'You can not archive more than 50 file.';
-                      return  $attr;   
-                } 
-                $resExtract  =  $zip->extract($extract_path);
-                $inputArr['file_path'] = $path;
-             }   
-            /* $totalFiles = glob($open_path . "*");
-                if ($resExtract){
-                    $countFile = count($totalFiles);
-                  }
-                  dd($countFile); */
-        $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
-        $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
-        $inputArr['file_encp_key'] =  md5('2');
-        $inputArr['created_by'] = 1;
-        $inputArr['updated_by'] = 1;
-        $inputArr['status'] =1;
-        return $inputArr;
+            else if($attributes['file_image_id']->getClientOriginalExtension()!='zip')
+            {
+                    $attr['status'] =0;
+                    $attr['message']= 'Zip File format is not correct, only zip file is allowed.';
+                    return  $attr;   
+            }
+                if ($attributes['file_image_id']) {
+                if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip')) {
+                    Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip', 0777, true);
+                }
+                    $zipExtension = $attributes['file_image_id']->getClientOriginalExtension();
+                    $zipName   = $attributes['file_image_id']->getClientOriginalName();
+                    $zipName  =  explode('.',$zipName);
+                    $zipFilename =  $zipName[0].'.'.$zipExtension;
+                    $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id.'/zip', $attributes['file_image_id'], $zipFilename); 
+                    $zipPath  = public_path('user/' . $userId . '/invoice/' . $batch_id.'/zip'.$zipFilename);
+                    $open_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$zipFilename);
+                    $extract_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip');
+                    $zip =  Zip::open($open_path);
+                if(count($zip->listFiles()) > 50)
+                    {
+                        
+                        $attr['status'] =0;
+                        $attr['message']= 'You can not archive more than 50 file.';
+                        return  $attr;   
+                    } 
+                    $resExtract  =  $zip->extract($extract_path);
+                    $inputArr['file_path'] = $path;
+                }   
+                /* $totalFiles = glob($open_path . "*");
+                    if ($resExtract){
+                        $countFile = count($totalFiles);
+                    }
+                    dd($countFile); */
+            $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
+            $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
+            $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
+            $inputArr['file_encp_key'] =  md5('2');
+            $inputArr['created_by'] = 1;
+            $inputArr['updated_by'] = 1;
+            $inputArr['status'] =1;
+            return $inputArr;
+        }
     }
     
      public static function ImageChk($file_name,$batch_id)
