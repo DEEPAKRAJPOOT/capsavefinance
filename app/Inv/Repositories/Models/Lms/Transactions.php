@@ -1126,6 +1126,7 @@ class Transactions extends BaseModel {
                 $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id] = 
                 [
                     'loan' => config('common.idprefix.APP').$uITrans->invoiceDisbursed->invoice->app_id,
+                    'cust_id' => $uITrans->invoiceDisbursed->invoice->lms_user->customer_id,
                     'client_name' => $uITrans->user->biz->biz_entity_name,
                     'disbursed_amt' => $dTrans->amount,
                     'from_date' => $uITrans->fromIntDate,
@@ -1193,10 +1194,10 @@ class Transactions extends BaseModel {
 
         $chargTrans = $chargTrans->get();
         foreach($chargTrans as $cTrans){
-            
             $data[$cTrans->trans_id] = 
             [
                 'loan' => '',
+                'cust_id' => $cTrans->user->lms_user->customer_id,
                 'client_name' =>$cTrans->user->biz->biz_entity_name,
                 'chrg_name' => $cTrans->transName,
                 'trans_date' => $cTrans->trans_date,
@@ -1264,6 +1265,7 @@ class Transactions extends BaseModel {
                 $data[strtotime($tds->trans_date).'-'.$tds->trans_id] = 
                 [
                     'loan' => '',
+                    'cust_id' => $tds->user->lms_user->customer_id,
                     'client_name' => $tds->user->biz->biz_entity_name,
                     'trans_date' => $tds->trans_date,
                     'int_amt' => $cTrans->amount,

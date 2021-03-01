@@ -355,7 +355,8 @@
     @canany(['manage_doa', 'manage_program', 'get_charges_list', 
         'get_documents_list', 'get_industries_list', 'get_vouchers_list',
         'get_segment_list', 'get_entity_list', 'get_constitutions_list',
-        'get_gst_list', 'get_equipment_list', 'get_baserate_list', 'get_companies_list'
+        'get_gst_list', 'get_equipment_list', 'get_baserate_list', 'get_companies_list',
+        'get_bank_list'
         ])
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu11" aria-expanded="false"
@@ -436,6 +437,11 @@
                 @can('get_tds_list')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('get_tds_list') }}">Manage TDS</a>
+                </li>
+                @endcan
+                @can('get_bank_list')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_bank_list') }}">Manage Bank</a>
                 </li>
                 @endcan
             </ul>

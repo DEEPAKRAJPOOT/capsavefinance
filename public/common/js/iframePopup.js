@@ -131,7 +131,9 @@ var iframe_ids = [
     'uploadNachDocument',
     'createNachFrame',
     'importNachExcelResponse',
-    'importNachTransResponse'
+    'importNachTransResponse',
+    'addBankMaster',
+    'editBankMaster'
 ];
 
 iframe_ids.forEach(function (id) {

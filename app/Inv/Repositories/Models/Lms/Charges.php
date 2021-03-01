@@ -60,6 +60,7 @@ class Charges extends BaseModel
         'is_gst_applicable',
         'gst_percentage',
         'chrg_tiger_id',
+        'based_on',
         'is_active',
         'created_at',
         'created_by'
@@ -83,7 +84,12 @@ class Charges extends BaseModel
         return $res ?: false;
     }
 
-
+    public static function getTransName($attr)
+    {
+        $res = self::where('is_active', '1')->where('based_on', $attr->based_on)->get();
+        return $res ?: false;
+    }
+    
     /**
      * get charge Data
      * 

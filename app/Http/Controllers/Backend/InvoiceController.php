@@ -1371,19 +1371,21 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
            if($resFile)
            {
               $uploadData = Helpers::uploadZipInvoiceFile($attributes, $batch_id); ///Upload zip file
-              if($uploadData['status']==0)
+              if(!empty($uploadData) && $uploadData['status']==0)
              {
                Session::flash('error', $uploadData['message']);
                return back(); 
              }
-              if($uploadData)
-              {   
-                  $zipBatch  =   self::createBatchNumber(6);
-                  $uploadData['batch_no'] = $zipBatch;
-                  $uploadData['parent_bulk_batch_id'] =  $resFile->invoice_bulk_batch_id;
-                  $resZipFile =  $this->invRepo->saveInvoiceZipBatch($uploadData);
-                  if($resZipFile)
-                  {
+            //   if($uploadData)
+            //   {   
+                if(!empty($uploadData)) {
+                    $zipBatch  =   self::createBatchNumber(6);
+                    $uploadData['batch_no'] = $zipBatch;
+                    $uploadData['parent_bulk_batch_id'] =  $resFile->invoice_bulk_batch_id;
+                    $resZipFile =  $this->invRepo->saveInvoiceZipBatch($uploadData);
+                }
+                //   if($resZipFile)
+                //   {
                     $csvPath = storage_path('app/public/'.$userFile->file_path);
                     $handle = fopen($csvPath, "r");
                     $data = fgetcsv($handle, 1000, ",");
@@ -1501,8 +1503,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                          Session::flash('message', 'Invoice data successfully sent to under reviewer process');
                          return back();  
                      
-                  }
-              }
+                //   }
+            //   }
            }
        }
       

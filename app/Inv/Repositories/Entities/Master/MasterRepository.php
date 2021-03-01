@@ -814,5 +814,24 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return GstTax::getLastGSTRecord();
     }
     
+    /**
+     * get Bank list
+     * 
+     * @return type mixed
+     */
+    public function getAllBankList()
+    {
+        $result = Bank::orderBy('id', 'DESC');
+        return $result ?: false;
+    }
 
+    public function getBankById($id)
+    {
+        $result = Bank::find($id);
+        return $result ?: false;
+    }
+
+    public function saveBank($attributes, $id = null){
+        return Bank::saveBank($attributes, $id);
+    }
 }

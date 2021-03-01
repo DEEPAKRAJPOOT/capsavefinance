@@ -1308,6 +1308,23 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Master\TdsController@saveTds'
             ]);
             // END Manage TDS
+
+            //Manage Bank Name
+            Route::get('/get-bank-list', [
+                'as' => 'get_bank_list',
+                'uses' => 'Master\BankController@index'
+            ]);
+
+            Route::get('/add-new-bank', [
+                'as' => 'add_new_bank',
+                'uses' => 'Master\BankController@addBank'
+            ]);
+
+            Route::post('/save-new-bank', [
+                'as' => 'save_new_bank',
+                'uses' => 'Master\BankController@saveNewBank'
+            ]);
+
             
         });
 
