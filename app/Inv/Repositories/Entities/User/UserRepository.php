@@ -1746,6 +1746,31 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
         return User::updateUserStatus($attributes, $conditions);
     }
+
+    public function getLenderAnchorDetail($anchorId = null)
+    {
+        return Anchor::get();
+    }
+
+    public function getAnchorUserDataDetail($anchorId = null)
+    {
+        return AnchorUser::getAnchorUserDataDetail($anchorId);
+    }
+
+    public function getAnchorInactiveUserDataDetail($anchorId = null)
+    {
+        return AnchorUser::getAnchorInactiveUserDataDetail($anchorId);
+    }
+
+    public function getAnchorAppDataDetail($anchorId = null)
+    {
+        return Application::getAnchorAppDataDetail($anchorId);
+    }
+
+    public function getAnchorInvoiceDataDetail($anchorId = null)
+    {
+        return BizInvoice::getAnchorInvoiceDataDetail($anchorId);
+    }
     
 }
 

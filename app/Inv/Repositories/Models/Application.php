@@ -947,5 +947,16 @@ class Application extends BaseModel
         $appData->groupBy('app.app_id');
         $appData = $appData->orderBy('app.app_id', 'DESC')->get();
         return $appData ? $appData : [];
-    }     
+    }    
+    
+    public static function getAnchorAppDataDetail($anchorId = null) 
+    {  
+        $appData = self::whereHas('user', function($query) use($anchorId) {
+            if (!is_null($anchorId)) {
+                $query->where('anchor_id', $anchorId);
+            }
+        })->get();
+               
+        return $appData ?? '';
+    }
 }

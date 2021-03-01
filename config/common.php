@@ -110,7 +110,8 @@ return [
         'APP_SANCTIONED'=>50,
         'APP_CLOSED'=>51,
         'OFFER_LIMIT_REJECTED'=>55,
-        'NPA' => 48
+        'NPA' => 48,
+        'SANCTION_LETTER_APPROVED' => 57,
     ],
     'facility_type' => [
         '1' => 'Rental Facility',
