@@ -364,6 +364,7 @@ var messages = {
                },
                success: function(response){
                   if(response['status'] === '1') {
+                     $(".customFile_astrik").html('*');
                      //bug fixed thanks to @Sparky
                      $('input[name^="doc_file"]').each(function () {
                         $(this).rules('add', {
@@ -371,6 +372,8 @@ var messages = {
                            // accept: "image/jpeg, image/pjpeg"
                         })
                      })                         
+                  } else {
+                     $(".customFile_astrik").html('');
                   }
                }
             });
