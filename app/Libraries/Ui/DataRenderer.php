@@ -983,7 +983,7 @@ class DataRenderer implements DataProviderInterface
     public function getFrontendInvoiceList(Request $request,$invoice)
     { 
         return DataTables::of($invoice)
-               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','invoice_upload','invoice_id','invoice_due_date'])
+               ->rawColumns(['anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','invoice_upload','invoice_id','invoice_due_date', 'action'])
            
               
                  ->addColumn(
@@ -1033,7 +1033,7 @@ class DataRenderer implements DataProviderInterface
                      
                         $action ="";
                       if(($invoice->file_id != 0)) {
-                          $action .='<a href="'.route('download_storage_file', ['file_id' => $invoice->userFile->file_id ]).'" ><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                          $action .='<a href="'.route('frontend_download_storage_file', ['file_id' => $invoice->userFile->file_id ]).'" ><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
                          } else  {
                             /// return '<input type="file" name="doc_file" id="file'.$invoice->invoice_id.'" dir="1"  onchange="uploadFile('.$invoice->app_id.','.$invoice->invoice_id.')" title="Upload Invoice">';
                            $action .='<div class="image-upload"><label for="file-input"><i class="fa fa-upload circle btnFilter" aria-hidden="true"></i> </label>
@@ -1048,6 +1048,15 @@ class DataRenderer implements DataProviderInterface
                         return  $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
                        
                 })    
+                ->addColumn(            
+                    'action',
+                    function ($invoice) {  
+                        $action = "";
+                        if($invoice->mstStatus->status_name === "Pending") {
+                            $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-statusId="'.(($invoice->status_id) ? $invoice->status_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                        }                
+                        return $action;
+                })    
                 ->filter(function ($query) use ($request) {
                     
                     if ($request->get('status_id') != '') {                        
@@ -1055,6 +1064,19 @@ class DataRenderer implements DataProviderInterface
                             $search_keyword = trim($request->get('status_id'));
                             $query->where('status_id',"$search_keyword");
                         });                        
+                    }
+
+                    if ($request->get('biz_id') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('biz_id'));
+                            $query->where('invoice_no', 'like',"%$search_keyword%")
+                            ->orwhereHas('business', function ($q) use ($search_keyword){
+                                $q->where('biz_entity_name', 'like', "%$search_keyword%");
+                            })
+                            ->orwhereHas('anchor', function ($q) use ($search_keyword){
+                                $q->where('comp_name', 'like', "%$search_keyword%");
+                            });
+                        });
                     }
                    
                     

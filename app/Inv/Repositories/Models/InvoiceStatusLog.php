@@ -98,4 +98,14 @@ class InvoiceStatusLog extends BaseModel {
      {
        return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice','invoice_id','invoice_id');
      }
+
+  /* update invoice amount with statusid  */
+  public static function  saveInvoiceLogWithStatusId($invoice_id,$status_id,$amount,$comment)
+  {
+
+    $id = Auth::user()->user_id;
+    $created_at  = Carbon::now(); 
+    $arr  =  ['invoice_id' => $invoice_id,'status_id' => $status_id,'invoice_amt' => $amount,'comm_txt' =>$comment,'created_at' =>$created_at,'created_by' => $id]; 
+    return  self::insert($arr);  
+  }     
 }
