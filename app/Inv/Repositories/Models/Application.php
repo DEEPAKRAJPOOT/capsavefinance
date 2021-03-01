@@ -812,6 +812,9 @@ class Application extends BaseModel
         if (isset($where['status']) && is_array($where['status'])) {
             $query->whereIn('status', $where['status']);            
         }
+        if (isset($where['curr_status_id']) && is_array($where['curr_status_id'])) {
+            $query->whereNotIn('curr_status_id', $where['curr_status_id']);            
+        }
         
         $result = $query->get();       
         return $result ? $result: [];
