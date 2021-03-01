@@ -640,19 +640,19 @@ class ManualApportionmentHelper{
         $cLogDetails = Helper::cronLogBegin(1);
 
         $curdate = Helpers::getSysStartDate();
-        $transRunningTrans = $this->lmsRepo->getUnsettledRunningTrans();
-        sort($transRunningTrans);
+        //$transRunningTrans = $this->lmsRepo->getUnsettledRunningTrans();
+        //sort($transRunningTrans);
         //$invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true]);
         $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt')->whereNotNull('payment_due_date')->pluck('invoice_disbursed_id','invoice_disbursed_id');
         foreach ($invoiceList as $invId => $trans) {
             dump($invId);
-            $pos = array_search($invId, $transRunningTrans);
-            unset($transRunningTrans[$pos]);
-            unset($pos);
+            //$pos = array_search($invId, $transRunningTrans);
+            //unset($transRunningTrans[$pos]);
+            //unset($pos);
             $this->intAccrual($invId);
             $this->transactionPostingAdjustment($invId, NULL, NULL, NULL);
         }
-        foreach($transRunningTrans as $invId){
+        /*foreach($transRunningTrans as $invId){
             $invDisbDetail = InvoiceDisbursed::find($invId);
             $offerDetails = $invDisbDetail->invoice->program_offer;
             $payFreq = $offerDetails->payment_frequency;
@@ -662,7 +662,7 @@ class ManualApportionmentHelper{
             $gEndDate = $this->addDays($payDueDate,$gPeriod);
             $this->runningToTransPosting($invId, $curdate, $payFreq, $gStartDate, $gEndDate);
             $this->transactionPostingAdjustment($invId, NULL, NULL, NULL);   
-        }
+        }*/
         
         if($cLogDetails){
             Helper::cronLogEnd('1',$cLogDetails->cron_log_id);

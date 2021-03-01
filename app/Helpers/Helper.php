@@ -1732,6 +1732,7 @@ class Helper extends PaypalHelper
      */
     public static function getSysStartDate()
     {
+        /*
         $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         $eodDetails = $lmsRepo->getEodProcess(['is_active'=>1]);
         if($eodDetails){
@@ -1754,9 +1755,9 @@ class Helper extends PaypalHelper
         }else{
             $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
         }
+        */
 
-
-        //$sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
+        $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
         return $sys_start_date;
     }     
 
