@@ -1185,7 +1185,28 @@ class Helper extends PaypalHelper
                 $allEmailData[] = $emailData;
             }
         }
-        $allEmailData['product_id'] = $application->products[0]->id;
+        $productsArr = $application->products->pluck('id')->toArray();
+        $Array_CC = [];
+        $productIdArr = [];
+        if (in_array(1, $productsArr)) {
+            $SCF_CC = explode(',', config('common.SEND_APPROVER_MAIL_CC_SCF'));
+            $Array_CC = array_merge($Array_CC, $SCF_CC);
+            $productIdArr = array_merge($productIdArr, [1]);
+        } 
+        if (in_array(2, $productsArr)) {
+            $SCF_CC = explode(',', config('common.SEND_APPROVER_MAIL_CC_TERM'));
+            $Array_CC = array_merge($Array_CC, $SCF_CC);
+            $productIdArr = array_merge($productIdArr, [2]);
+        } 
+        if (in_array(3, $productsArr)) {
+            $SCF_CC = explode(',', config('common.SEND_APPROVER_MAIL_CC_LEASE'));
+            $Array_CC = array_merge($Array_CC, $SCF_CC);
+            $productIdArr = array_merge($productIdArr, [3]);
+        } 
+        $allEmailData['cc_mails'] = implode(',', array_unique($Array_CC));
+        //dd($allEmailData['cc_mails']);
+        $allEmailData['cc_mails'] = array_unique($Array_CC);
+        $allEmailData['product_id'] = array_unique($productIdArr);
         \Event::dispatch("APPLICATION_APPROVER_MAIL", serialize($allEmailData));
         return $approvers;
     }
