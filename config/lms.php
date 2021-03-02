@@ -246,4 +246,17 @@ return [
     'CURLOPT_SSLKEY_FILE' => env('CURLOPT_SSLKEY_FILE', ''),
     'CURLOPT_CAINFO_FILE' => env('CURLOPT_CAINFO_FILE', ''),
     'UAT_ACTIVE' => env('UAT_ACTIVE', ''),
+    'mst_status_invoice' => [
+        'SELECTION_PENDING'=>58,
+        'PENDING'=>7,
+        'APPROVED'=>8,
+        'DISBURSMENT_QUE'=>9,
+        'SENT_TO_BANK'=>10,
+        'FAILED_DISBURSMENT'=>11,
+        'DISBURSED'=>12,
+        'PARTIALLY_PAYMENT_SETTLED'=>13,
+        'REJECT'=>14,
+        'PAYMENT_SETTLED'=>15,
+        'EXCEPTION_CASE' => 28
+    ],
 ];
