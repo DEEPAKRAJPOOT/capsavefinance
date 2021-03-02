@@ -291,7 +291,7 @@ cursor: pointer;
             source:sample_data,
             limit: 'Infinity',
             templates:{
-                suggestion:Handlebars.compile(' <div class="row"> <div class="col-md-12" style="padding-right:5px; padding-left:5px;">@{{biz_entity_name}} <small>( @{{customer_id}} )</small></div> </div>') 
+                suggestion:Handlebars.compile(' <div class="row"> <div class="col-md-12" style="padding-right:5px; padding-left:5px; padding-bottom:5px;">@{{biz_entity_name}} <small>( @{{customer_id}} )</small></div> </div>') 
             },
         }).bind('typeahead:select', function(ev, suggestion) {
             setClientDetails(suggestion)

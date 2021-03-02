@@ -284,17 +284,18 @@ class Helper extends PaypalHelper
     {
         $userId = Application::where('app_id', $appId)->pluck('user_id')->first();
         $inputArr = [];
-        if ($attributes['doc_file']) {
-            if (!Storage::exists('/public/user/' . $userId . '/' . $appId)) {
-                Storage::makeDirectory('/public/user/' . $userId . '/' . $appId, 0777, true);
+        if(!empty($attributes['doc_file'])) {
+            if ($attributes['doc_file']) {
+                if (!Storage::exists('/public/user/' . $userId . '/' . $appId)) {
+                    Storage::makeDirectory('/public/user/' . $userId . '/' . $appId, 0777, true);
+                }
+                $path = Storage::disk('public')->put('/user/' . $userId . '/' . $appId, $attributes['doc_file'], null);
+                $inputArr['file_path'] = $path;
             }
-            $path = Storage::disk('public')->put('/user/' . $userId . '/' . $appId, $attributes['doc_file'], null);
-            $inputArr['file_path'] = $path;
         }
-
-        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
-        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_type'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientMimeType() : '';
+        $inputArr['file_name'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientOriginalName() : '';
+        $inputArr['file_size'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientSize() : '';
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
@@ -374,54 +375,56 @@ class Helper extends PaypalHelper
        $userId = Auth::user()->user_id;
        $inputArr = []; 
        $attr[] = "";   
-        if($attributes['file_image_id']->getClientSize() > 30000000)
-       {
-             $attr['status'] =0;
-             $attr['message']= 'File size should be upload Only 30 Mb.';
-             return  $attr;   
-       }
-       else if($attributes['file_image_id']->getClientOriginalExtension()!='zip')
-       {
-             $attr['status'] =0;
-             $attr['message']= 'Zip File format is not correct, only zip file is allowed.';
-             return  $attr;   
-       }
-       if ($attributes['file_image_id']) {
-            if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip')) {
-                Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip', 0777, true);
+        if(!empty($attributes['file_image_id'])) {
+            if($attributes['file_image_id']->getClientSize() > 30000000)
+            {
+                    $attr['status'] =0;
+                    $attr['message']= 'File size should be upload Only 30 Mb.';
+                    return  $attr;   
             }
-                $zipExtension = $attributes['file_image_id']->getClientOriginalExtension();
-                $zipName   = $attributes['file_image_id']->getClientOriginalName();
-                $zipName  =  explode('.',$zipName);
-                $zipFilename =  $zipName[0].'.'.$zipExtension;
-                $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id.'/zip', $attributes['file_image_id'], $zipFilename); 
-                $zipPath  = public_path('user/' . $userId . '/invoice/' . $batch_id.'/zip'.$zipFilename);
-                $open_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$zipFilename);
-                $extract_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip');
-                $zip =  Zip::open($open_path);
-               if(count($zip->listFiles()) > 50)
-                {
-                      
-                      $attr['status'] =0;
-                      $attr['message']= 'You can not archive more than 50 file.';
-                      return  $attr;   
-                } 
-                $resExtract  =  $zip->extract($extract_path);
-                $inputArr['file_path'] = $path;
-             }   
-            /* $totalFiles = glob($open_path . "*");
-                if ($resExtract){
-                    $countFile = count($totalFiles);
-                  }
-                  dd($countFile); */
-        $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
-        $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
-        $inputArr['file_encp_key'] =  md5('2');
-        $inputArr['created_by'] = 1;
-        $inputArr['updated_by'] = 1;
-        $inputArr['status'] =1;
-        return $inputArr;
+            else if($attributes['file_image_id']->getClientOriginalExtension()!='zip')
+            {
+                    $attr['status'] =0;
+                    $attr['message']= 'Zip File format is not correct, only zip file is allowed.';
+                    return  $attr;   
+            }
+                if ($attributes['file_image_id']) {
+                if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip')) {
+                    Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip', 0777, true);
+                }
+                    $zipExtension = $attributes['file_image_id']->getClientOriginalExtension();
+                    $zipName   = $attributes['file_image_id']->getClientOriginalName();
+                    $zipName  =  explode('.',$zipName);
+                    $zipFilename =  $zipName[0].'.'.$zipExtension;
+                    $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id.'/zip', $attributes['file_image_id'], $zipFilename); 
+                    $zipPath  = public_path('user/' . $userId . '/invoice/' . $batch_id.'/zip'.$zipFilename);
+                    $open_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$zipFilename);
+                    $extract_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip');
+                    $zip =  Zip::open($open_path);
+                if(count($zip->listFiles()) > 50)
+                    {
+                        
+                        $attr['status'] =0;
+                        $attr['message']= 'You can not archive more than 50 file.';
+                        return  $attr;   
+                    } 
+                    $resExtract  =  $zip->extract($extract_path);
+                    $inputArr['file_path'] = $path;
+                }   
+                /* $totalFiles = glob($open_path . "*");
+                    if ($resExtract){
+                        $countFile = count($totalFiles);
+                    }
+                    dd($countFile); */
+            $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
+            $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
+            $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
+            $inputArr['file_encp_key'] =  md5('2');
+            $inputArr['created_by'] = 1;
+            $inputArr['updated_by'] = 1;
+            $inputArr['status'] =1;
+            return $inputArr;
+        }
     }
     
      public static function ImageChk($file_name,$batch_id)
@@ -1182,7 +1185,28 @@ class Helper extends PaypalHelper
                 $allEmailData[] = $emailData;
             }
         }
-        $allEmailData['product_id'] = $application->products[0]->id;
+        $productsArr = $application->products->pluck('id')->toArray();
+        $Array_CC = [];
+        $productIdArr = [];
+        if (in_array(1, $productsArr)) {
+            $SCF_CC = explode(',', config('common.SEND_APPROVER_MAIL_CC_SCF'));
+            $Array_CC = array_merge($Array_CC, $SCF_CC);
+            $productIdArr = array_merge($productIdArr, [1]);
+        } 
+        if (in_array(2, $productsArr)) {
+            $SCF_CC = explode(',', config('common.SEND_APPROVER_MAIL_CC_TERM'));
+            $Array_CC = array_merge($Array_CC, $SCF_CC);
+            $productIdArr = array_merge($productIdArr, [2]);
+        } 
+        if (in_array(3, $productsArr)) {
+            $SCF_CC = explode(',', config('common.SEND_APPROVER_MAIL_CC_LEASE'));
+            $Array_CC = array_merge($Array_CC, $SCF_CC);
+            $productIdArr = array_merge($productIdArr, [3]);
+        } 
+        $allEmailData['cc_mails'] = implode(',', array_unique($Array_CC));
+        //dd($allEmailData['cc_mails']);
+        $allEmailData['cc_mails'] = array_unique($Array_CC);
+        $allEmailData['product_id'] = array_unique($productIdArr);
         \Event::dispatch("APPLICATION_APPROVER_MAIL", serialize($allEmailData));
         return $approvers;
     }
@@ -1708,26 +1732,30 @@ class Helper extends PaypalHelper
      */
     public static function getSysStartDate()
     {
-        /*$lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        /*
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         $eodDetails = $lmsRepo->getEodProcess(['is_active'=>1]);
         if($eodDetails){
             if($eodDetails->status == config('lms.EOD_PROCESS_STATUS.RUNNING')){
-                $startTime = Carbon::parse($eodDetails->sys_start_date);
-                $finishTime = Carbon::parse($eodDetails->created_at);
-                $totalDuration = strtotime($startTime) - strtotime($finishTime);
-                if($totalDuration < 0){
-                    $sys_start_date = Carbon::now()->subSeconds(abs($totalDuration))->format('Y-m-d H:i:s');
-                }elseif($totalDuration == 0){
-                    $sys_start_date = Carbon::now()->format('Y-m-d H:i:s');
-                }elseif($totalDuration > 0){
-                    $sys_start_date = Carbon::now()->addSeconds($totalDuration)->format('Y-m-d H:i:s');
-                }
-            }else{
-                $sys_start_date = Carbon::parse($eodDetails->sys_end_date)->format('Y-m-d H:i:s');
+                $sys_start_date = Carbon::parse($eodDetails->sys_start_date);
+                //$sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
+            }
+            elseif($eodDetails->status == config('lms.EOD_PROCESS_STATUS.WATING')){
+                $sys_start_date = Carbon::parse($eodDetails->sys_start_date);
+            }
+            elseif($eodDetails->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')){
+                $sys_start_date = Carbon::parse($eodDetails->sys_end_date);
+            }
+            elseif($eodDetails->status == config('lms.EOD_PROCESS_STATUS.STOPPED')){
+                $sys_start_date = Carbon::parse($eodDetails->sys_end_date);
+            }
+            elseif($eodDetails->status == config('lms.EOD_PROCESS_STATUS.FAILED')){
+                $sys_start_date = Carbon::parse($eodDetails->sys_end_date);
             }
         }else{
             $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
-        }*/
+        }
+        */
 
         $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
         return $sys_start_date;
@@ -2163,5 +2191,10 @@ class Helper extends PaypalHelper
         }
         
         return $fileArr;
+    }
+
+    public static function getPerfiosBankById($id){
+        $bankData = Bank::find($id);
+        return $bankData['bank_name'];
     }
 }

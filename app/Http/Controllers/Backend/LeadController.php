@@ -333,7 +333,8 @@ class LeadController extends Controller {
                     'comp_addr' => $arrAnchorVal['comp_addr'],                
                     'comp_state' => $arrAnchorVal['state'],
                     'comp_city' => $arrAnchorVal['city'],
-                    'comp_zip' => $arrAnchorVal['pin_code']
+                    'comp_zip' => $arrAnchorVal['pin_code'],
+                    'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req']
                 ];
                 $anchor_info = $this->userRepo->saveAnchor($arrAnchorData);
 
@@ -686,7 +687,8 @@ class LeadController extends Controller {
                 'comp_addr' => $arrAnchorVal['comp_addr'],
                 'comp_state' => $arrAnchorVal['state'],
                 'comp_city' => $arrAnchorVal['city'],
-                'comp_zip' => $arrAnchorVal['pin_code']
+                'comp_zip' => $arrAnchorVal['pin_code'],
+                'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req']
             ];
             $updateAnchInfo = $this->userRepo->updateAnchor($anchId, $arrAnchorData);            
             $anchorInfo = $this->userRepo->getUserByAnchorId($anchId);

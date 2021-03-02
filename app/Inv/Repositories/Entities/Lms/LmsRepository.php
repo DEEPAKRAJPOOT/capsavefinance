@@ -538,8 +538,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	  public static function getSingleChargeAmount($attr)
 	{
 	   try
-	   {
-		  return ProgramCharges::getSingleChargeAmount($attr); 
+	   {	
+	   		if (!empty($attr['prog_id'])) {
+		  		return ProgramCharges::getSingleChargeAmount($attr); 
+	   		} else {
+   				return Charges::getSingleChargeAmount($attr);
+	   		}
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
@@ -596,7 +600,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 	   try
 	   {
-		  return ProgramCharges::getTransName($attr); 
+	   		if (isset($attr->prog_id)) {
+		  		return ProgramCharges::getTransName($attr); 
+		  	} else {
+		  		return Charges::getTransName($attr); 
+
+		  	}
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
@@ -1733,10 +1742,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     public function getNachRepaymentReqFirst($whereCondition){
         return NachRepaymentReq::where($whereCondition)->first();
-    }
+	}
+
     public function updateNachTransReq($attr, $whereCond){
         return NachTransReq::updateNachTransReq($attr, $whereCond);
+	}
+
+	public function getUnsettledRunningTrans(){
+        return TransactionsRunning::getUnsettledRunningTrans();
     }
+	
 	public function findInvoiceDisburseByDisbursalId($data)
 	{
 		return InvoiceDisbursed::where($data)

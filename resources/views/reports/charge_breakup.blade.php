@@ -58,6 +58,7 @@
                                             <thead>
                                                 <tr role="row">
                                                     <th>Loan #</th>
+                                                    <th>Customer Id</th>
                                                     <th>Client Name</th>
                                                     <th>Charge Date</th>
                                                     <th>Charge Name</th>

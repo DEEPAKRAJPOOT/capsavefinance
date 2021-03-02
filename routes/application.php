@@ -223,6 +223,11 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
 				 'as' => 'frontend_view_invoice_details',
 				'uses' => 'Application\InvoiceController@viewInvoiceDetails'
 			]); 
+			 
+			  Route::post('front_update_invoice_amount', [
+				 'as' => 'front_update_invoice_amount',
+				'uses' => 'Application\InvoiceController@saveFrontInvoiceAmount'
+			]); 
 			   
 			   
 		  });
