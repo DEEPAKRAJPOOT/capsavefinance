@@ -355,6 +355,9 @@ return [
         '44' => 'badge-warning',   //APP_CANCEL
         '45' => 'badge-warning',   //APP_HOLD
         '46' => 'badge-warning'    //APP_DATA_PENDING
-    ]    
+    ],
+    'SEND_APPROVER_MAIL_CC_SCF' => env('SEND_APPROVER_MAIL_CC_SCF', ''), 
+    'SEND_APPROVER_MAIL_CC_TERM' => env('SEND_APPROVER_MAIL_CC_TERM', ''), 
+    'SEND_APPROVER_MAIL_CC_LEASE' => env('SEND_APPROVER_MAIL_CC_LEASE', ''),     
 ];
  

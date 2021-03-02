@@ -534,4 +534,19 @@ public static function saveBulkInvoice($arrInvoice)
         return $data ?? '';
     }
     
+    /* update invoice amount with statusid  */
+    public static function updateInvoiceAmountWithStausId($attributes)
+    {
+        $invoiceId  =    $attributes['invoice_id'];
+        $amount     =  str_replace(',','', $attributes['approve_invoice_amount']);  
+        $comment    =    $attributes['comment'];
+        $statusId    =    $attributes['status_id'];
+        $updated_at  = Carbon::now()->toDateTimeString();
+        $id = Auth::user()->user_id;    
+        $result =  User::getSingleUserDetails($id);
+        InvoiceStatusLog::saveInvoiceLogWithStatusId($invoiceId,$statusId,$amount,$comment);
+        return  self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
+        
+    }    
+    
 }

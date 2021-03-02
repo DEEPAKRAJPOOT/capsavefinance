@@ -157,4 +157,20 @@ class TransactionsRunning extends BaseModel {
         });
     }
 
+    public static function getUnsettledRunningTrans(){
+        $invDisb = self::whereHas('invoiceDisbursed', function($q){
+            $q->whereHas('invoice', function($q2){
+                $q2->whereHas('program_offer', function($q3){
+                    $q3->where('payment_frequency',2);
+                });
+            });
+        })
+        ->get()
+        ->filter(function($item) { 
+            return round($item->outstanding,2) > 0.00; 
+        })
+        ->pluck('invoice_disbursed_id')->toArray();
+        return array_unique($invDisb);
+    }
+
 }
