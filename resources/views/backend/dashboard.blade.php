@@ -170,7 +170,7 @@
 								<th>Offer Generated </th>
 								<th>Limit Approved </th>
 								<th>Sanction Letter Generated </th>
-								<th>Sanction Letter Approved </th>
+								<!-- <th>Sanction Letter Approved </th> -->
 								<th>Sanctioned </th>
 							</tr>
 						</thead>
@@ -181,7 +181,7 @@
 								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['OFFER_GENERATED'])) }}</td>
 								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['OFFER_ACCEPTED'])) }}</td>
 								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['SANCTION_LETTER_GENERATED'])) }}</td>
-								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['SANCTION_LETTER_APPROVED'])) }}</td>
+								<!-- <td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['SANCTION_LETTER_APPROVED'])) }}</td> -->
 								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['APP_SANCTIONED'])) }}</td>
 
 							</tr>
