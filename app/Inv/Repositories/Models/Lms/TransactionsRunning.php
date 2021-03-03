@@ -122,7 +122,8 @@ class TransactionsRunning extends BaseModel {
             ->where('trans_type','=',config('lms.TRANS_TYPE.CANCEL'))
             ->sum('amount');
 
-        return $amount -= ($dr - $cr); 
+        $amount -= round((round($dr,2) - round($cr,2)),2);
+        return round($amount,2);
     }
 
     /**

@@ -1257,17 +1257,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				switch ($transRunning->trans_type) {
 					case config('lms.TRANS_TYPE.INTEREST'):
 						$response['interest'][] = [
-							'trans_running_id' => $transRunning->trans_id,
+							'trans_running_id' => $transRunning->trans_running_id,
 							'amount'=> $transRunning->amount,
-							'outstanding'=>$transRunning->amount,
+							'outstanding'=>$transRunning->outstanding,
 							'trans_date'=>$transRunning->trans_date
 						];
 						break;
 					case config('lms.TRANS_TYPE.INTEREST_OVERDUE'):
 						$response['overdue'][] = [
-							'trans_running_id' => $transRunning->trans_id,
+							'trans_running_id' => $transRunning->trans_running_id,
 							'amount'=> $transRunning->amount,
-							'outstanding'=>$transRunning->amount,
+							'outstanding'=>$transRunning->outstanding,
 							'trans_date'=>$transRunning->trans_date
 						];
 						break;
