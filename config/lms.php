@@ -247,7 +247,6 @@ return [
     'CURLOPT_CAINFO_FILE' => env('CURLOPT_CAINFO_FILE', ''),
     'UAT_ACTIVE' => env('UAT_ACTIVE', ''),
     'mst_status_invoice' => [
-        'SELECTION_PENDING'=>58,
         'PENDING'=>7,
         'APPROVED'=>8,
         'DISBURSMENT_QUE'=>9,

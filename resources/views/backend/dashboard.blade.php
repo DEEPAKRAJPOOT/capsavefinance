@@ -178,7 +178,7 @@
 								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['APP_INCOMPLETE'])) }}</td>
 								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['COMPLETED'])) }}</td>
 								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['OFFER_GENERATED'])) }}</td>
-								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['OFFER_ACCEPTED'])) }}</td>
+								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['OFFER_LIMIT_APPROVED'])) }}</td>
 								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['SANCTION_LETTER_GENERATED'])) }}</td>
 								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['APP_SANCTIONED'])) }}</td>
 
@@ -207,7 +207,6 @@
 					<table class="table text-center text-muted m-0 mt-2">
 						<thead>
 							<tr>
-								<th>Selection Pending </th>
 								<th>Pending </th>
 								<th>Approved </th>
 								<th>Disbursement Queue  </th>
@@ -221,7 +220,6 @@
 						</thead>
 						<tbody>
 							<tr>
-								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['SELECTION_PENDING'])) }}</td>
 								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['PENDING'])) }}</td>
 								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['APPROVED'])) }}</td>
 								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['DISBURSMENT_QUE'])) }}</td>
