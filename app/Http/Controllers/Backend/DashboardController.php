@@ -97,7 +97,7 @@ class DashboardController extends Controller
                 $data['anchorAppData'] = $this->userRepo->getAnchorAppDataDetail();
                 $data['anchorInvoiceData'] = $this->userRepo->getAnchorInvoiceDataDetail();
             }
-            // dd($data);
+            dd($data['anchorAppData']);
             return view('backend.dashboard',compact('benifinary','data'));
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
