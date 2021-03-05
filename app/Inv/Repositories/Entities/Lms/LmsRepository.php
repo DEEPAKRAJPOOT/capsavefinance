@@ -1537,4 +1537,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				->update(['status_id' => $status]);
 		return $response;
 	}
+
+	public function findInvoiceDisbursedInvoiceIdByInvoiceId($invoiceId)
+	{
+		return InvoiceDisbursed::where('invoice_id', $invoiceId)
+				->whereIn('status_id', [10,12])
+				->get();
+	}
 }
