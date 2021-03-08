@@ -1013,7 +1013,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	public function findDisbursalByUserAndBatchId($data)
 	{
-		return Disbursal::where($data)
+		return Disbursal::where($data)->where('status_id', 10)
 				->pluck('disbursal_id');
 	}
 
@@ -1615,6 +1615,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return DisbursalBatch::with('disbursal_api_log')
 				->where('disbursal_batch_id', $disbursalBatchId)
+				->where('batch_status', 1)
 				->first();
 	}
 
@@ -1763,5 +1764,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		$response =  InvoiceDisbursed::whereIn('invoice_disbursed_id', $invoiceDisburseIds)
 				->update(['status_id' => $status]);
 		return $response;
+	}
+
+	public function findInvoiceDisbursedInvoiceIdByInvoiceId($invoiceId)
+	{
+		return InvoiceDisbursed::where('invoice_id', $invoiceId)
+				->whereIn('status_id', [10,12])
+				->get();
 	}
 }

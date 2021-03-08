@@ -333,7 +333,10 @@ class InvoiceController extends Controller {
 
             $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
             $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $disbursalBatchId])->toArray();
-            
+            if (!isset($disbursalIds) || empty($disbursalIds)) {
+                    return redirect()->route('backend_get_sent_to_bank')->withErrors('Something went wrong please try again.');
+            }
+
             if ($disbursalIds) {
                 $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
                         'tran_id' => $transId,
@@ -646,7 +649,12 @@ class InvoiceController extends Controller {
 
 
             foreach ($allinvoices as $inv) {
-                if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
+                $disbursedInvoiceId = $this->lmsRepo->findInvoiceDisbursedInvoiceIdByInvoiceId($inv['invoice_id']);
+
+                if($disbursedInvoiceId->count() > 0) {
+                    return redirect()->route('backend_get_disbursed_invoice')->withErrors('Invoice '.$inv['invoice_no'].' already under process of disbursment');
+                }
+                else if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
                 } elseif ($inv['supplier']['is_buyer'] == 1 && empty($inv['supplier_bank_detail'])) {
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
@@ -928,7 +936,12 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
 
             foreach ($allinvoices as $inv) {
-                if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
+                $disbursedInvoiceId = $this->lmsRepo->findInvoiceDisbursedInvoiceIdByInvoiceId($inv['invoice_id']);
+                
+                if($disbursedInvoiceId->count() > 0) {
+                    return redirect()->route('backend_get_disbursed_invoice')->withErrors('Invoice '.$inv['invoice_no'].' already under process of disbursment');
+                }
+                else if($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])){
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
                 } elseif ($inv['supplier']['is_buyer'] == 1 && empty($inv['supplier_bank_detail'])) {
                     return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
@@ -1566,7 +1579,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $disbursalBatchId = $request->get('disbursal_batch_id');
             $sysDate =  \Helpers::getSysStartDate();
             date_default_timezone_set("Asia/Kolkata");
-            $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId)->toArray();
+            $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
             $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
             $transId = $reqData['txn_id'];
             // $transId = '2RGIK4436OUMXHZGXH';
@@ -1574,6 +1587,12 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
             $transDisbursalIds = [];
             $tranNewIds = [];
+            // dd($data);
+            if (!isset($data) || empty($data)) {
+                return redirect()->route('backend_get_disbursal_batch_request')->withErrors('Something went wrong please try again.');
+            } else {
+                $data = $data->toArray();
+            }
 
             if(!empty($reqData)) {
             
