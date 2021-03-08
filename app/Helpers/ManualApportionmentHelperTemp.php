@@ -4,6 +4,7 @@ namespace App\Helpers;
 use DB;
 use Helpers;
 use Carbon\Carbon;
+use App\Helpers\Helper;
 use InvalidArgumentException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,7 @@ use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Master\BaseRate;
 use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 
@@ -22,7 +24,7 @@ class ManualApportionmentHelperTemp{
 
     private function calInterest($principalAmt, $interestRate, $tenorDays){
         $interest = round(($principalAmt * ($interestRate / config('common.DCC')))/100,2) ;                
-        return $tenorDays * $interest;        
+        return $tenorDays * $interest;         
     }  
     
     private function addDays($currentDate, $noOfDays){
@@ -41,6 +43,12 @@ class ManualApportionmentHelperTemp{
         $intTransIds = null;
         $Dr = 0 ;
 
+        $invDisbDetails = InvoiceDisbursed::find($invDisbId);
+        if($invDisbDetails){
+            $margin = ($invDisbDetails->invoice->invoice_approve_amount*$invDisbDetails->margin)/100;
+            $Dr = $invDisbDetails->invoice->invoice_approve_amount - $margin;
+        }
+
         $disbTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
         ->whereNull('payment_id') 
         ->whereNull('link_trans_id') 
@@ -48,22 +56,22 @@ class ManualApportionmentHelperTemp{
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')]) 
         ->pluck('trans_id')->toArray();
 
-        $invDisbDetails = InvoiceDisbursed::find($invDisbId);
-        if($invDisbDetails){
-            $margin = ($invDisbDetails->invoice->invoice_approve_amount*$invDisbDetails->margin)/100;
-            $Dr = $invDisbDetails->invoice->invoice_approve_amount - $margin;
+        if($disbTransIds){
+            $disbIntTransIds = [];
+            $disbDetails = Transactions::find($disbTransIds[0]);
+            $intBornBy = $disbDetails->invoiceDisbursed->invoice->program->interest_borne_by;
+            $disTransDate = $disbDetails->trans_date;
+            /*if((int) $intBornBy == 1){
+                $disbIntTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
+                ->whereNull('payment_id') 
+                ->whereNull('link_trans_id') 
+                ->whereNull('parent_trans_id')
+                ->where('trans_date',$disTransDate)
+                ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST')]) 
+                ->pluck('trans_id')->toArray();
+            }*/
+            $disbTransIds = array_merge($disbIntTransIds,$disbTransIds);
         }
-
-        /*
-        $Dr = Transactions::whereDate('trans_date','<=',$transDate)
-        ->where('invoice_disbursed_id','=',$invDisbId)
-        ->where('entry_type','=','0')
-        ->where(function($query) use($disbTransIds){
-            $query->whereIn('trans_id',$disbTransIds);
-            $query->OrwhereIn('parent_trans_id',$disbTransIds);
-        })
-        ->sum('amount');
-        */
 
         $Cr =  Transactions::whereDate('trans_date','<=',$transDate) 
         ->where('invoice_disbursed_id','=',$invDisbId)
@@ -85,9 +93,8 @@ class ManualApportionmentHelperTemp{
                 }
             })
             ->sum('accrued_interest');
+            $Dr += round($mIntrest,2);
 
-            $Dr +=  round($mIntrest,2);
-            
             $intTransIds = Transactions::where('invoice_disbursed_id','=',$invDisbId) 
             ->whereNull('payment_id') 
             ->whereNull('link_trans_id') 
@@ -145,11 +152,7 @@ class ManualApportionmentHelperTemp{
 
     public function intAccrual(int $invDisbId, $startDate = null, $endDate = null, $paymentId){
         try{
-            if($endDate){
-                $curdate = $endDate;     
-            }else{
-                $curdate =  Helpers::getSysStartDate();
-            }
+            $curdate =  Helpers::getSysStartDate();
             $curdate = Carbon::parse($curdate)->format('Y-m-d');
             
             $invDisbDetail = InvoiceDisbursed::find($invDisbId);
@@ -174,6 +177,10 @@ class ManualApportionmentHelperTemp{
                 $maxAccrualDate = $this->addDays($maxAccrualDate,1);
             } 
             $intType = 1;
+            
+            if($startDate && strtotime($gStartDate) <= strtotime($startDate) && strtotime($gEndDate) >= strtotime($startDate)){
+                $startDate = $gStartDate;
+            }
             
             $loopStratDate = $startDate ?? $maxAccrualDate ?? $intAccrualStartDate;
              
@@ -200,11 +207,8 @@ class ManualApportionmentHelperTemp{
                     $currentIntRate = $intRate;
                 }
                 
-                if(strtotime($loopStratDate) < strtotime($odStartDate)){
-                    $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq, $odStartDate);
-                }else{
-                    $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq, $gStartDate);
-                }
+                $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq, $gStartDate);
+
 
                 if($balancePrincipal > 0){
                     if(strtotime($loopStratDate) >= strtotime($odStartDate)){
@@ -245,7 +249,7 @@ class ManualApportionmentHelperTemp{
                     ->where('payment_id','=',$paymentId)
                     ->delete();
                 }
-               
+                
                 $loopStratDate = $this->addDays($loopStratDate,1);
                 
                 $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $loopStratDate)->endOfMonth()->format('Y-m-d');
