@@ -1592,7 +1592,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             } else {
                 $data = $data->toArray();
             }
-            
+
             $message = [];
 
             if(!empty($reqData)) {
@@ -1641,6 +1641,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $userFileSaved = $createOrUpdatefile;
                 }
                 
+                $otherData['disbursal_batch_id'] = $disbursalBatchId;
+                $otherData['txn_id'] = $transId;
                 $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
                 $otherData['enq_txn_id'] = $transId;
                 $otherData['disbursal_batch_id'] = $disbursalBatchId;
