@@ -18,6 +18,6 @@ $crifPROD = [
     'CRIF_PASSCODE' => env('CRIF_PASSCODE', 'D261F46CFA7E1C0DB5A80FB02269668E1A3F05B9'),
 ];
 
-$uatEnable = TRUE;
+$uatEnable = FALSE;
 
 return ($uatEnable ? $crifUAT : $crifPROD);
