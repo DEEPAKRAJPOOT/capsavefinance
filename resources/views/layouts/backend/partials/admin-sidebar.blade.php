@@ -138,7 +138,7 @@
     @endcan
 
     @php $roleData = \Helpers::getUserRole() @endphp
-    @if($roleData[0]->role_type == 3)
+    @if(isset($roleData[0]) && $roleData[0]->role_type == 3)
     @can('anchor_nach_list')
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu6" aria-expanded="false"
@@ -509,7 +509,7 @@
 
     @php $roleData = \Helpers::getUserRole() @endphp
 
-    @if($roleData[0]->is_superadmin == 1)
+    @if(isset($roleData[0]) && $roleData[0]->is_superadmin == 1)
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu10" aria-expanded="false"
             aria-controls="collapseExample">

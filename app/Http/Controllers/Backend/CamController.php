@@ -258,16 +258,26 @@ class CamController extends Controller
     public function showCibilForm(Request $request){
         try{
             $arrRequest['biz_id'] = $biz_id = $request->get('biz_id');
-            $arrRequest['app_id'] = $request->get('app_id');
+            $arrRequest['app_id'] = $app_id = $request->get('app_id');
             $arrHygieneData = CamHygiene::where('biz_id','=',$arrRequest['biz_id'])->where('app_id','=',$arrRequest['app_id'])->first();
             if(!empty($arrHygieneData)){
                   $arrHygieneData['remarks'] = json_decode($arrHygieneData['remarks'], true);  
 
             }
+            $individualOwnerId = [];
             $arrCompanyDetail = Business::getCompanyDataByBizId($biz_id);
             $arrCompanyOwnersData = BizOwner::getCompanyOwnerByBizId($biz_id);
-            //dd($arrCompanyOwnersData);
-            return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData', 'arrRequest', 'arrHygieneData'));
+            foreach ($arrCompanyOwnersData as $key => $value) {
+              $individualOwnerId[] = $value->biz_owner_id;
+            }
+            $crifDataforcompanyandpromoter = [
+              'app_id' => $app_id,
+              'biz_id' => $biz_id,
+              'commercial' => array($biz_id),
+              'individual' => $individualOwnerId,
+            ];
+            $crifData = _encrypt(json_encode($crifDataforcompanyandpromoter));
+            return view('backend.cam.cibil', compact('arrCompanyDetail', 'arrCompanyOwnersData', 'arrRequest', 'arrHygieneData', 'crifData'));
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
