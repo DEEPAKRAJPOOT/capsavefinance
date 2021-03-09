@@ -4,13 +4,13 @@
       <table class="table table-responsive overview-table" cellpadding="0" cellspacing="0" border="1">
           <thead>
           <tr>
-              <th><b>Co-lender Name</b></th>
-              <th><b>Capsave Share(%)</b></th>
-              <th><b>Co-lender Share(%)</b></th>
-              <th><b>Capsave Comment</b></th>
-              <th><b>Co-lender Comment</b></th>
-              <th><b>Co-lender Status</b></th>
-              <th><b>Created at</b></th>
+              <th width="25%"><b>Co-lender Name</b></th>
+              <th width="15%"><b>Capsave Share(%)</b></th>
+              <th width="15%"><b>Co-lender Share(%)</b></th>
+              <th width="25%"><b>Capsave Comment</b></th>
+              <!--<th><b>Co-lender Comment</b></th>
+              <th><b>Co-lender Status</b></th>-->
+              <th width="20%"><b>Created at</b></th>
               <!-- <th><b>Updated at</b></th> -->
               <!-- <th><b>Action</b></th> -->
           </tr>
@@ -22,15 +22,15 @@
                   <td>{{$sharedColender->capsave_percent}}%</td>
                   <td>{{$sharedColender->co_lender_percent}}%</td>
                   <td>{{$sharedColender->capsave_comment}}</td>
-                  <td>{{$sharedColender->co_lender_comment}}</td>
-                  <td>{{($sharedColender->co_lender_status == 0)? 'Pending':(($sharedColender->co_lender_status == 1)? 'Accept': 'Reject')}}</td>
+                  <!--<td>{{$sharedColender->co_lender_comment}}</td>
+                  <td>{{($sharedColender->co_lender_status == 0)? 'Pending':(($sharedColender->co_lender_status == 1)? 'Accept': 'Reject')}}</td>-->
                   <td>{{($sharedColender->created_at)? \Carbon\Carbon::parse($sharedColender->created_at)->format('d-m-Y'): ''}}</td>
                   {{--<td>{{($sharedColender->updated_at)? \Carbon\Carbon::parse($sharedColender->updated_at)->format('d-m-Y'): ''}}</td>--}}
                   <!-- <td></td> -->
               </tr>
               @empty
               <tr>
-                  <td colspan="7" style="text-align: center;">No record found</td>
+                  <td colspan="5" style="text-align: center;">No record found</td>
               </tr>
               @endforelse
       </table>
