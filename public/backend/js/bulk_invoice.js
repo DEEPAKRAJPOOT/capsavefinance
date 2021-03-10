@@ -438,12 +438,12 @@
             $("#program_bulk_id_msg").text("Please Select Product Program Name");
             return false;
         }
-       else if ($("#customImageFile").val() == '')
-        {
-            $("#customImageFile_msg").show();
-            $("#customImageFile_msg").text("Please Select Invoice Copy Zip File");
-            return false;
-        }
+    //    else if ($("#customImageFile").val() == '')
+    //     {
+    //         $("#customImageFile_msg").show();
+    //         $("#customImageFile_msg").text("Please Select Invoice Copy Zip File");
+    //         return false;
+    //     }
       else   if ($("#customFile").val() == '')
         {
             $("#customFile_msg").show();

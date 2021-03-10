@@ -1366,6 +1366,13 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $id = Auth::user()->user_id; 
         $attributes = $request->all();
         $program_name  = explode(',',$attributes['program_name']);
+        $getAnchor = $this->userRepo->getAnchorById((int) $attributes['anchor_name']);
+        
+        if(($getAnchor->is_phy_inv_req === '1') && (empty($attributes['file_image_id']))) {
+            Session::flash('error', 'For this Anchor please Upload Invoice Copy');
+            return back(); 
+        }
+        
         $prgm_id        =   $program_name[0];
         $prgm_limit_id   =   $program_name[1];
         $batch_id =  self::createBatchNumber(6);
