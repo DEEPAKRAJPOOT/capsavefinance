@@ -26,7 +26,7 @@
         @endcan
         @can('backend_inspection')
         <li>
-            <a href="{{ route('backend_inspection', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Inspection</a>
+            {{-- <a href="{{ route('backend_inspection', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Inspection</a> --}}
         </li>
         @endcan
         @can('pd_notes_list')
