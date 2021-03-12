@@ -1761,4 +1761,31 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         }
 
     }
+
+    public function deleteDisbursalBatchRequest(Request $request)
+	{
+		try {
+            dd($request->all());
+			$paymentId = $request->get('payment_id');
+			if($paymentId){
+				$payment = Payment::find($paymentId);
+				if($payment){
+					if($payment->is_settled == '0' && $payment->action_type == '1' && $payment->trans_type == '17' /*&& 
+					strtotime(\Helpers::convertDateTimeFormat($payment->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d'))*/
+					){
+						$payment->delete();
+						InterestAccrualTemp::where('payment_id',$paymentId)->delete();
+						return response()->json(['status' => 1,'message' => 'Successfully Deleted Payment']); 
+					}
+					else{
+						return response()->json(['status' => 0,'message' => 'Invalid Request: Payment cannot be deleted']);
+					}
+				}
+				return response()->json(['status' => 0,'message' => 'Record Not Found / Already deleted!']);
+			}
+			return response()->json(['status' => 0,'message' => 'Invalid Request: Payment details missing.']);
+        } catch (Exception $ex) {
+			return response()->json(['status' => 0,'message' => Helpers::getExceptionMessage($ex)]); 
+		}  
+	}
 }
