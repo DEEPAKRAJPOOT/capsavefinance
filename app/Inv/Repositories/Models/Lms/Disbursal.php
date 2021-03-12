@@ -220,7 +220,7 @@ class Disbursal extends BaseModel {
         return $result;
     }
 
-	public function  getDisbursalStatusLog()
+	public function  disbursalStatusLog()
 	{
 		  return $this->hasMany('App\Inv\Repositories\Models\Lms\DisbursalStatusLog','disbursal_id','disbursal_id');
 	}

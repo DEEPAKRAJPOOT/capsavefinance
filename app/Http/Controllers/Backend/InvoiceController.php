@@ -1764,41 +1764,38 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
     public function deleteDisbursalBatchRequest(Request $request)
 	{
-		try {
-            $disbursalBatchId = $request->get('disbursal_batch_id');
-            $disbursalBatchData = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
+		try 
+        {
             $disbursalIdsArr = [];
             $invoiceIdsArr = [];
-            $disbursalData = $this->lmsRepo->getdisbursalByDBId($disbursalBatchId);
-            foreach($disbursalData as $data){
-                $disbursalIdsArr[] = $data->disbursal_id;
+            $disbursalBatchId = $request->get('disbursal_batch_id');
+            if($disbursalBatchId){
+                $disbursalBatchData = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
+                $disbursalData = $this->lmsRepo->getDisbursalByDBId($disbursalBatchId);
+                foreach($disbursalData as $data){
+                    $disbursalIdsArr[] = $data->disbursal_id;
+                }
+                $disbursedInvoices = $this->lmsRepo->getInvoiceDisbursed($disbursalIdsArr);
+                foreach($disbursedInvoices as $data){
+                    $invoiceIdsArr[] = $data->invoice_id;
+                }
+                  
+                if($disbursalBatchData && $disbursalData && $disbursedInvoices){
+                    
+                    $this->lmsRepo->deleteInvoiceStatusLogByInvIdArr($invoiceIdsArr);
+                    foreach($invoiceIdsArr as $invoice_id){
+                        $this->lmsRepo->updateInvoiceStatus($invoice_id, 9);
+                    }
+                    $this->lmsRepo->deleteInvoiceDisbursed($disbursalIdsArr);
+                    $this->lmsRepo->deleteDisbursalStatusLogByDidArr($disbursalIdsArr);
+                    $this->lmsRepo->deleteDisbursalByDBId($disbursalBatchId);
+                    $this->lmsRepo->deleteDisbursalBatchByDBId($disbursalBatchId);
+
+                    return response()->json(['status' => 1,'message' => 'Online disbursal successfully rolback']); 
+                }
+                return response()->json(['status' => 0,'message' => 'Record Not Found / Already deleted!']);
             }
-            $disbursalStatusLogData = $this->lmsRepo->deleteDisbursalStatusLogByDidArr($disbursalIdsArr);
-            $disbursedInvoices = $this->lmsRepo->getInvoiceDisbursed($disbursalIdsArr);
-            foreach($disbursedInvoices as $data){
-                $invoiceIdsArr[] = $data->invoice_id;
-                // $this->lmsRepo->updateInvoiceStatus($data->invoice_id, 9);
-            }
-            $invoiceStatusLogData = $this->lmsRepo->deleteInvoiceStatusLogByInvIdArr($invoiceIdsArr);
-            dd($invoiceStatusLogData);
-			$paymentId = $request->get('payment_id');
-			if($paymentId){
-				$payment = Payment::find($paymentId);
-				if($payment){
-					if($payment->is_settled == '0' && $payment->action_type == '1' && $payment->trans_type == '17' /*&& 
-					strtotime(\Helpers::convertDateTimeFormat($payment->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d'))*/
-					){
-						$payment->delete();
-						InterestAccrualTemp::where('payment_id',$paymentId)->delete();
-						return response()->json(['status' => 1,'message' => 'Successfully Deleted Payment']); 
-					}
-					else{
-						return response()->json(['status' => 0,'message' => 'Invalid Request: Payment cannot be deleted']);
-					}
-				}
-				return response()->json(['status' => 0,'message' => 'Record Not Found / Already deleted!']);
-			}
-			return response()->json(['status' => 0,'message' => 'Invalid Request: Payment details missing.']);
+            return response()->json(['status' => 0,'message' => 'Invalid Request']);
         } catch (Exception $ex) {
 			return response()->json(['status' => 0,'message' => Helpers::getExceptionMessage($ex)]); 
 		}  

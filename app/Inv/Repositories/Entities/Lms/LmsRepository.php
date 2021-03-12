@@ -1774,15 +1774,29 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				->get();
 	}
 
-	public function getdisbursalByDBId($disbursalBatchId){
+	public function getDisbursalByDBId($disbursalBatchId){
 		return Disbursal::where('disbursal_batch_id',$disbursalBatchId)->get();
 	}
 
 	public function deleteDisbursalStatusLogByDidArr($IdsArr){
-		return DisbursalStatusLog::whereIn('disbursal_id',$IdsArr)->get();
+		return DisbursalStatusLog::whereIn('disbursal_id',$IdsArr)->delete();
 	}
 
 	public function deleteInvoiceStatusLogByInvIdArr($IdsArr){
-		return DisbursalStatusLog::whereIn('invoice_id',$IdsArr)->where('status_id',10)->get();
+		return InvoiceStatusLog::whereIn('invoice_id',$IdsArr)->where('status_id',10)->delete();
+	}
+
+	public static  function deleteInvoiceDisbursed($disbursalIds)
+	{
+		return InvoiceDisbursed::whereIn('disbursal_id',$disbursalIds)->delete();
+	}
+
+	public function deleteDisbursalByDBId($disbursalBatchId){
+		return Disbursal::where('disbursal_batch_id',$disbursalBatchId)->delete();
+	}
+
+	public function deleteDisbursalBatchByDBId($disbursalBatchId)
+	{
+		return DisbursalBatch::where('disbursal_batch_id', $disbursalBatchId)->delete();
 	}
 }
