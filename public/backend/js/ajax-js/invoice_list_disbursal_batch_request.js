@@ -41,7 +41,7 @@ try {
     function disbursal_rollback(url, ele) {
         var ele = $(ele);
         var oldHtml = ele.html();
-        if (confirm("Are you sure you want to revert the payment?")) {
+        if (confirm("Are you sure you want to rollback the Online disbursal?")) {
             $.ajax({
                 type: "post",
                 url: url,
