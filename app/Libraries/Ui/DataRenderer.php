@@ -6988,11 +6988,12 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($disbursalBatchRequest) {
+                        $act = '';
                         if(Helpers::checkPermission('delete_disbursal_batch_request')){
-                            $btn .= '<button class="btn btn-action-btn btn-sm"  title="Online Disbursal Rollback" onclick="disbursal_rollback(\''. route('delete_disbursal_batch_request', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
+                            $act .= '<button class="btn btn-action-btn btn-sm"  title="Online Disbursal Rollback" onclick="disbursal_rollback(\''. route('delete_disbursal_batch_request', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
                         }
 
-                        $act = '<a   href="' . route('disbursal_payment_enquiry', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';
+                        $act .= '<a   href="' . route('disbursal_payment_enquiry', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';
                         
                         return $act;
                 })
