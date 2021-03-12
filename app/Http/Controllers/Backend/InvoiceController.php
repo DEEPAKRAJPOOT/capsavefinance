@@ -1765,7 +1765,22 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
     public function deleteDisbursalBatchRequest(Request $request)
 	{
 		try {
-            dd($request->all());
+            $disbursalBatchId = $request->get('disbursal_batch_id');
+            $disbursalBatchData = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
+            $disbursalIdsArr = [];
+            $invoiceIdsArr = [];
+            $disbursalData = $this->lmsRepo->getdisbursalByDBId($disbursalBatchId);
+            foreach($disbursalData as $data){
+                $disbursalIdsArr[] = $data->disbursal_id;
+            }
+            $disbursalStatusLogData = $this->lmsRepo->deleteDisbursalStatusLogByDidArr($disbursalIdsArr);
+            $disbursedInvoices = $this->lmsRepo->getInvoiceDisbursed($disbursalIdsArr);
+            foreach($disbursedInvoices as $data){
+                $invoiceIdsArr[] = $data->invoice_id;
+                // $this->lmsRepo->updateInvoiceStatus($data->invoice_id, 9);
+            }
+            $invoiceStatusLogData = $this->lmsRepo->deleteInvoiceStatusLogByInvIdArr($invoiceIdsArr);
+            dd($invoiceStatusLogData);
 			$paymentId = $request->get('payment_id');
 			if($paymentId){
 				$payment = Payment::find($paymentId);

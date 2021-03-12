@@ -219,4 +219,9 @@ class Disbursal extends BaseModel {
                 ->sum('disburse_amount');
         return $result;
     }
+
+	public function  getDisbursalStatusLog()
+	{
+		  return $this->hasMany('App\Inv\Repositories\Models\Lms\DisbursalStatusLog','disbursal_id','disbursal_id');
+	}
 }

@@ -69,6 +69,7 @@ use App\Inv\Repositories\Models\UserNach;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReq;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReqBatch;
 use App\Inv\Repositories\Models\Lms\NachTransReq;
+use App\Inv\Repositories\Models\InvoiceStatusLog;
 
 /**
  * Lms Repository class
@@ -1771,5 +1772,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return InvoiceDisbursed::where('invoice_id', $invoiceId)
 				->whereIn('status_id', [10,12])
 				->get();
+	}
+
+	public function getdisbursalByDBId($disbursalBatchId){
+		return Disbursal::where('disbursal_batch_id',$disbursalBatchId)->get();
+	}
+
+	public function deleteDisbursalStatusLogByDidArr($IdsArr){
+		return DisbursalStatusLog::whereIn('disbursal_id',$IdsArr)->get();
+	}
+
+	public function deleteInvoiceStatusLogByInvIdArr($IdsArr){
+		return DisbursalStatusLog::whereIn('invoice_id',$IdsArr)->where('status_id',10)->get();
 	}
 }
