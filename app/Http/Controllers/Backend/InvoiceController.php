@@ -1791,7 +1791,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $this->lmsRepo->deleteDisbursalByDBId($disbursalBatchId);
                     $this->lmsRepo->deleteDisbursalBatchByDBId($disbursalBatchId);
 
-                    return response()->json(['status' => 1,'message' => 'Online disbursal successfully rolback']); 
+                    return response()->json(['status' => 1,'message' => 'Online disbursal successfully rollbacked']); 
                 }
                 return response()->json(['status' => 0,'message' => 'Record Not Found / Already deleted!']);
             }
