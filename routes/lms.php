@@ -463,8 +463,8 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     ]);
 
                     Route::post('delete-disbursal-batch-request', [
-                        'as' => 'delete_disbursal_batch_request',
-                        'uses' => 'Backend\InvoiceController@deleteDisbursalBatchRequest',
+                        'as' => 'rollback_disbursal_batch_request',
+                        'uses' => 'Backend\InvoiceController@rollbackDisbursalBatchRequest',
                     ]);
                 }
             });

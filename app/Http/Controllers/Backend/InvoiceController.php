@@ -1762,7 +1762,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
     }
 
-    public function deleteDisbursalBatchRequest(Request $request)
+    public function rollbackDisbursalBatchRequest(Request $request)
 	{
 		try 
         {
@@ -1779,7 +1779,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 foreach($disbursedInvoices as $data){
                     $invoiceIdsArr[] = $data->invoice_id;
                 }
-                  
+
                 if($disbursalBatchData && $disbursalData && $disbursedInvoices){
                     
                     $this->lmsRepo->deleteInvoiceStatusLogByInvIdArr($invoiceIdsArr);
