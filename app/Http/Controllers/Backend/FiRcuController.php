@@ -102,7 +102,20 @@ class FiRcuController extends Controller
             Session::flash('error',trans('You can not assign to same user'));
            return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);  
         }
+
+        $comment = $request->get('comment');
+
+        $agenciData = $this->appRepo->getAgenciByAgenciId($request->get('agency_id'));
+        $userData = $this->userRepo->getUserDetail($request->get('to_id'));
+
+        $emailData['email'] = isset($agenciData) ? $agenciData->comp_email : '';
+        $emailData['name'] = isset($agenciData) ? $agenciData->comp_name : '';
+        $emailData['user'] = $userData->f_name . ' ' . $userData->l_name;
+        $emailData['comment'] = isset($comment) ? $comment : '';
+        $emailData['subject'] = 'Emails to Agency Users';
+        
         $this->appRepo->insertFIAddress($request->all());  
+        \Event::dispatch("FI_FCU_PD_CONCERN_MAIL", serialize($emailData));
         return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
 
@@ -265,6 +278,19 @@ class FiRcuController extends Controller
             }
                 
         }
+
+        $comment = $request->get('comment');
+
+        $agenciData = $this->appRepo->getAgenciByAgenciId($request->get('agency_id'));
+        $userData = $this->userRepo->getUserDetail($request->get('to_id'));
+
+        $emailData['email'] = isset($agenciData) ? $agenciData->comp_email : '';
+        $emailData['name'] = isset($agenciData) ? $agenciData->comp_name : '';
+        $emailData['user'] = $userData->f_name . ' ' . $userData->l_name;
+        $emailData['comment'] = isset($comment) ? $comment : '';
+        $emailData['subject'] = 'Emails to Agency Users';
+
+        \Event::dispatch("FI_FCU_PD_CONCERN_MAIL", serialize($emailData));
         
         Session::flash('message',trans('success_messages.rcu.assigned'));
         return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   

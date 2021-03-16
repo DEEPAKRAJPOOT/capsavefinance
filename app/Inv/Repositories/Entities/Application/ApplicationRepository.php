@@ -2553,6 +2553,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
             ->orderBy('created_at', 'DESC')
             ->get();
     }
+
+    // get all agency
+    public function getAgenciByAgenciId($id){
+        $agency = Agency::getAgenciByAgenciId($id);
+        return $agency ?: false;
+    }
 }
 
 

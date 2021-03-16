@@ -9,16 +9,18 @@ use App\Inv\Repositories\Models\AppNote;
 use Auth;
 use Session;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 
 class NotesController extends Controller {
 
     protected $appRepo;
 
-    public function __construct(InvAppRepoInterface $app_repo)
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo)
     {
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
         $this->appRepo = $app_repo;
+        $this->userRepo = $user_repo;
     }
 
     public function index(Request $request)
@@ -93,6 +95,19 @@ class NotesController extends Controller {
             'created_by' => Auth::user()->user_id,
             'created_at' => \Carbon\Carbon::now(),
             ]);
+            $userId = Auth::user()->user_id;
+            $appData = $this->appRepo->getAnchorDataByAppId((int) $app_id);
+            $userData = $this->userRepo->getUserDetail($userId);
+
+            $emailData['email'] = isset($appData) ? $appData->email : '';
+            $emailData['name'] = isset($appData) ? $appData->f_name . ' ' . $appData->l_name : '';
+            $emailData['curr_user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
+            $emailData['curr_email'] = isset($userData) ? $userData->email : '';
+            $emailData['comment'] = isset($comment) ? $comment : '';
+            $emailData['subject'] = 'FI/RCU/PD concern ';
+            
+            \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailData));
+
             Session::flash('message', trans('success_messages.pd_notes_saved'));
             Session::flash('operation_status', 1); 
             return redirect()->back();
