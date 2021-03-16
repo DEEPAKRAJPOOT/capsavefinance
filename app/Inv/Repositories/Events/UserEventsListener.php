@@ -1019,6 +1019,71 @@ class UserEventsListener extends BaseEvent
         });
     }
 
+    // Inform to respective AGENCY
+    public function FiFcuPdConcernMail($mailData){
+        $user = unserialize($mailData);
+        $this->func_name = __FUNCTION__;
+        //Send mail to User
+        $email_content = EmailTemplate::getEmailTemplate("FI_FCU_PD_CONCERN_MAIL");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%agency_email','%agency_name' ,'%user', '%comment'],
+                [$user['email'],$user['name'],$user['user'],$user['comment']],
+                $email_content->message
+            );
+            $mail_subject = $user['subject'];
+
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
+                function ($message) use ($user, $mail_subject, $mail_body) {
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($user["email"])->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => array($user["email"]),
+                    'email_type' => $this->func_name,
+                    'name' => $user['name'],
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }
+
+    // Inform to CPA and CR when agency Status Change
+    public function AgencyUpdateToCPAandCR($mailData){
+        $user = unserialize($mailData);
+        $this->func_name = __FUNCTION__;
+        //Send mail to User
+        $email_content = EmailTemplate::getEmailTemplate("AGENCY_UPDATE_MAIL_TO_CPA_CR");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%user_name','%current_user' ,'%current_email', '%comment'],
+                [$user['name'],$user['curr_user'],$user['curr_email'],$user['comment']],
+                $email_content->message
+            );
+            $mail_subject = $user['subject'];
+            $email_cc = explode(',', $email_content->cc);
+
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
+                function ($message) use ($user, $mail_subject, $mail_body, $email_cc) {
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($user["email"])->subject($mail_subject);
+                $message->cc($email_cc);
+                
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => array($user["email"]),
+                    'email_type' => $this->func_name,
+                    'name' => $user['name'],
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }
+
     
     /**
      * Event subscribers
@@ -1169,6 +1234,16 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'NOTIFY_ACCOUNT_DISBURSAL_REPORT', 
             'App\Inv\Repositories\Events\UserEventsListener@onAccountDisbursalReport'
+        );
+
+        $events->listen(
+            'FI_FCU_PD_CONCERN_MAIL', 
+            'App\Inv\Repositories\Events\UserEventsListener@FiFcuPdConcernMail'
+        );
+
+        $events->listen(
+            'AGENCY_UPDATE_MAIL_TO_CPA_CR', 
+            'App\Inv\Repositories\Events\UserEventsListener@AgencyUpdateToCPAandCR'
         );
     }
 }

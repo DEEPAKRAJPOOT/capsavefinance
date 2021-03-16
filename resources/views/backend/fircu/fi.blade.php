@@ -17,7 +17,7 @@
         @endcan
         @can('backend_inspection')
         <li>
-            <a href="{{ route('backend_inspection', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Inspection</a>
+            {{-- <a href="{{ route('backend_inspection', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}">Inspection</a> --}}
         </li>
         @endcan
         @can('pd_notes_list')
@@ -38,7 +38,7 @@
                             <table id="fiList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                 <thead>
                                     <tr role="row">
-                                        <th>Residence ID</th>
+                                        <th>FI ID</th>
                                         <th>Address Type</th>
                                         <th>Name</th>
                                         <th>Address</th>
