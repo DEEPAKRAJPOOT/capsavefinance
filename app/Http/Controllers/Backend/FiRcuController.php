@@ -102,20 +102,26 @@ class FiRcuController extends Controller
             Session::flash('error',trans('You can not assign to same user'));
            return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);  
         }
+        
+        $this->appRepo->insertFIAddress($request->all()); 
 
         $comment = $request->get('comment');
+        $app_id = $request->get('app_id');
 
-        $agenciData = $this->appRepo->getAgenciByAgenciId($request->get('agency_id'));
-        $userData = $this->userRepo->getUserDetail($request->get('to_id'));
-
-        $emailData['email'] = isset($agenciData) ? $agenciData->comp_email : '';
-        $emailData['name'] = isset($agenciData) ? $agenciData->comp_name : '';
-        $emailData['user'] = $userData->f_name . ' ' . $userData->l_name;
-        $emailData['comment'] = isset($comment) ? $comment : '';
-        $emailData['subject'] = 'Emails to Agency Users';
-        
-        $this->appRepo->insertFIAddress($request->all());  
-        \Event::dispatch("FI_FCU_PD_CONCERN_MAIL", serialize($emailData));
+        $userId = Auth::user()->user_id;
+        $appData = $this->appRepo->getAnchorDataByAppId((int) $app_id);
+        $getRoleData = $this->userRepo->getAllRoleDataByUserId((int) $appData->user_id);
+        $userData = $this->userRepo->getUserDetail($userId);
+        if(!empty($getRoleData[0])) {
+            $emailData['email'] = isset($appData) ? $appData->email : '';
+            $emailData['name'] = isset($appData) ? $appData->f_name . ' ' . $appData->l_name : '';
+            $emailData['curr_user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
+            $emailData['curr_email'] = isset($userData) ? $userData->email : '';
+            $emailData['comment'] = isset($comment) ? $comment : '';
+            $emailData['subject'] = 'FI/RCU/PD concern ';
+            
+            \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailData));
+        }
         return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
 
@@ -281,16 +287,21 @@ class FiRcuController extends Controller
 
         $comment = $request->get('comment');
 
-        $agenciData = $this->appRepo->getAgenciByAgenciId($request->get('agency_id'));
-        $userData = $this->userRepo->getUserDetail($request->get('to_id'));
 
-        $emailData['email'] = isset($agenciData) ? $agenciData->comp_email : '';
-        $emailData['name'] = isset($agenciData) ? $agenciData->comp_name : '';
-        $emailData['user'] = $userData->f_name . ' ' . $userData->l_name;
-        $emailData['comment'] = isset($comment) ? $comment : '';
-        $emailData['subject'] = 'Emails to Agency Users';
-
-        \Event::dispatch("FI_FCU_PD_CONCERN_MAIL", serialize($emailData));
+        $userId = Auth::user()->user_id;
+        $appData = $this->appRepo->getAnchorDataByAppId((int) $appId);
+        $getRoleData = $this->userRepo->getAllRoleDataByUserId((int) $appData->user_id);
+        $userData = $this->userRepo->getUserDetail($userId);
+        if(!empty($getRoleData[0])) {
+            $emailData['email'] = isset($appData) ? $appData->email : '';
+            $emailData['name'] = isset($appData) ? $appData->f_name . ' ' . $appData->l_name : '';
+            $emailData['curr_user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
+            $emailData['curr_email'] = isset($userData) ? $userData->email : '';
+            $emailData['comment'] = isset($comment) ? $comment : '';
+            $emailData['subject'] = 'FI/RCU/PD concern ';
+            
+            \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailData));
+        }
         
         Session::flash('message',trans('success_messages.rcu.assigned'));
         return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   

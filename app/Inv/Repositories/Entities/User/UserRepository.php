@@ -1746,6 +1746,12 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
         return User::updateUserStatus($attributes, $conditions);
     }
+
+    // Check role id behalf of user_id
+    public function getAllRoleDataByUserId($uesrId)
+    {
+        return RoleUser::getAllRoleDataByUserId($uesrId);
+    }
     
 }
 

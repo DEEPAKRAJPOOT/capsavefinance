@@ -193,5 +193,14 @@ class RoleUser extends BaseModel
          }
          $arr =   $query->get();
          return $arr;
-    }    
+    } 
+    
+    // Check role id behalf of user_id
+    public static function getAllRoleDataByUserId($user_id)
+    {
+        $arrRoles = self::where('user_id', $user_id)
+                        ->whereIn('role_id', [5, 6])
+                        ->get();
+        return ($arrRoles ? : false);
+    }
 }
