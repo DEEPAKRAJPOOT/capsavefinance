@@ -109,12 +109,12 @@ class FiRcuController extends Controller
         $app_id = $request->get('app_id');
 
         $userId = Auth::user()->user_id;
-        $appData = $this->appRepo->getAnchorDataByAppId((int) $app_id);
-        $getRoleData = $this->userRepo->getAllRoleDataByUserId((int) $appData->user_id);
+        $appDatas = $this->appRepo->getAnchorDataByAppId((int) $app_id);
+        $getRoleData = $this->userRepo->getAllRoleDataByUserId((int) $appDatas->user_id);
         $userData = $this->userRepo->getUserDetail($userId);
         if(!empty($getRoleData[0])) {
-            $emailData['email'] = isset($appData) ? $appData->email : '';
-            $emailData['name'] = isset($appData) ? $appData->f_name . ' ' . $appData->l_name : '';
+            $emailData['email'] = isset($appDatas) ? $appDatas->email : '';
+            $emailData['name'] = isset($appDatas) ? $appDatas->f_name . ' ' . $appDatas->l_name : '';
             $emailData['curr_user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
             $emailData['curr_email'] = isset($userData) ? $userData->email : '';
             $emailData['comment'] = isset($comment) ? $comment : '';
@@ -289,12 +289,12 @@ class FiRcuController extends Controller
 
 
         $userId = Auth::user()->user_id;
-        $appData = $this->appRepo->getAnchorDataByAppId((int) $appId);
-        $getRoleData = $this->userRepo->getAllRoleDataByUserId((int) $appData->user_id);
+        $appDatas = $this->appRepo->getAnchorDataByAppId((int) $appId);
+        $getRoleData = $this->userRepo->getAllRoleDataByUserId((int) $appDatas->user_id);
         $userData = $this->userRepo->getUserDetail($userId);
         if(!empty($getRoleData[0])) {
-            $emailData['email'] = isset($appData) ? $appData->email : '';
-            $emailData['name'] = isset($appData) ? $appData->f_name . ' ' . $appData->l_name : '';
+            $emailData['email'] = isset($appDatas) ? $appDatas->email : '';
+            $emailData['name'] = isset($appDatas) ? $appDatas->f_name . ' ' . $appDatas->l_name : '';
             $emailData['curr_user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
             $emailData['curr_email'] = isset($userData) ? $userData->email : '';
             $emailData['comment'] = isset($comment) ? $comment : '';
