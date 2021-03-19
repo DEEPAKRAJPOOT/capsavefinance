@@ -3142,7 +3142,7 @@ if ($err) {
                 $userCreData = $this->userRepo->getUserDetail($value->from_user_id);
                 $currUserData = $this->userRepo->getUserDetail($roleData);
 
-                $emailDatas['email'] = isset($userCreData) ? 'aditya.kumar@prolitus.com' : '';
+                $emailDatas['email'] = isset($userCreData) ? $userCreData->email : '';
                 $emailDatas['name'] = isset($userCreData) ? $userCreData->f_name . ' ' . $userCreData->l_name : '';
                 $emailDatas['curr_user'] = isset($currUserData) ? $currUserData->f_name . ' ' . $currUserData->l_name : '';
                 $emailDatas['curr_email'] = isset($currUserData) ? $currUserData->email : '';

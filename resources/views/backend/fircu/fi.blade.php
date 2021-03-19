@@ -97,13 +97,13 @@
                                                         <a title="Download Document" href="{{ route('download_fi_doc', ['file_id' => $fiAdd->userFile->file_id]) }}" download="{{$fiAdd->userFile->file_name}}"><i class="fa fa-download"></i></a>
                                                         @endif
                                                         
-                                                        {{-- @if(isset($fiAdd->status->id) && $fiAdd->status->id != 2) --}}
+                                                        @if(isset($fiAdd->status->id) && $fiAdd->status->id != 2)
                                                         <!-- Take Rest -->
-                                                        {{-- @elseif($fiAdd->is_active && Auth::user()->agency_id !=null) --}}
+                                                        @elseif($fiAdd->is_active && Auth::user()->agency_id !=null)
                                                         <button class="btn-upload btn-sm trigger-for-fi-doc" style="padding: 1px 8px;" type="button" data-fiadd_id="{{$fiAdd->fi_addr_id}}"> <i class="fa fa-upload"></i></button>
                                                         <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
-                                                        {{-- @else --}}
-                                                        {{-- @endif --}}
+                                                        @else
+                                                        @endif
 
                                                         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-fi_address_id="{{$fiAdd->fi_addr_id}}" data-app_id="{{request()->get('app_id')}}" data-address_id="{{$fiList->biz_addr_id}}" data-biz_id="{{request()->get('biz_id')}}">
                                                         @foreach($status_lists as $status_id => $status_name)
