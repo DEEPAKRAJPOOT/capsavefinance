@@ -1053,9 +1053,9 @@ class UserEventsListener extends BaseEvent
     public function AgencyUpdateToCPAandCR($mailData){
         $user = unserialize($mailData);
         if(isset($user['trigger_email']) && !empty($user['trigger_email'])) {
-            $email_to = array($user["email"], $user['trigger_email'], $user['curr_email']);
+            $email_to = array($user["email"], $user['trigger_email']);
         } else {
-            $email_to = array($user["email"], $user['curr_email']);
+            $email_to = array($user["email"]);
         };
         $this->func_name = __FUNCTION__;
         //Send mail to User
