@@ -1071,7 +1071,7 @@ class UserEventsListener extends BaseEvent
                 
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => array($user["email"], $user['trigger_email']),
+                    'email_to' => array($user["email"], $user['trigger_email'], $user['curr_email']),
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
                     'subject' => $mail_subject,
