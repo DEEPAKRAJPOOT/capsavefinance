@@ -113,7 +113,7 @@ class FiRcuController extends Controller
         $agencyDatas = $this->appRepo->getAgenciByAgenciId((int) $agencyId);
         $userData = $this->userRepo->getUserDetail($userId);
 
-        $emailData['email'] = isset($agencyDatas) ? 'aditya.kumar@prolitus.com' : '';
+        $emailData['email'] = isset($agencyDatas) ? $agencyDatas->comp_email : '';
         $emailData['name'] = isset($agencyDatas) ? $agencyDatas->comp_name . ' ' . $agencyDatas->comp_name : '';
         $emailData['user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
         $emailData['user_email'] = isset($userData) ? $userData->email : '';
