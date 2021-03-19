@@ -1052,6 +1052,11 @@ class UserEventsListener extends BaseEvent
     // Inform to CPA and CR when agency Status Change
     public function AgencyUpdateToCPAandCR($mailData){
         $user = unserialize($mailData);
+        if(isset( $user['trigger_email'])) {
+            $email_to = array($user["email"], $user['trigger_email'], $user['curr_email']);
+        } else {
+            $email_to = array($user["email"], $user['curr_email']);
+        };
         $this->func_name = __FUNCTION__;
         //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("AGENCY_UPDATE_MAIL_TO_CPA_CR");
@@ -1064,9 +1069,9 @@ class UserEventsListener extends BaseEvent
             $mail_subject = $user['subject'];
             $email_cc = explode(',', $email_content->cc);
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject, $mail_body, $email_cc) {
+                function ($message) use ($user, $mail_subject, $mail_body, $email_cc, $email_to) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["email"])->subject($mail_subject);
+                $message->to($email_to)->subject($mail_subject);
                 $message->cc($email_cc);
                 
                 $mailContent = [
