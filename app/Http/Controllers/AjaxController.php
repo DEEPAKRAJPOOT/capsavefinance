@@ -3123,7 +3123,6 @@ if ($err) {
         $biz_id = $request->get('biz_id');
         $request_info = $request->get('address_id');
         $roleData = \Auth::user()->user_id;
-
         $assignees = AppAssignment::getAppAssigneWithRoleId((int) $app_id);
         $fiLists = $this->application->getAddressforAgencyFI($biz_id);
         $getFiAddData = $this->application->getFiAddressData($where);
@@ -3152,6 +3151,7 @@ if ($err) {
                 $emailDatas['subject'] = 'Case Id '. $request_info .' of Agency ' . $agencyName .' updated the status';
                 $emailDatas['agency_name'] = $agencyName;
                 $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email : '';
+                $emailDatas['change_status'] = config('common.FI_RCU_STATUS')[$changeStatus];
                 \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailDatas));
             }
         }
@@ -3215,6 +3215,7 @@ if ($err) {
     public function changeAgentRcuStatus(Request $request){
       $status = $this->application->changeAgentRcuStatus($request);
         $docId = $request->get('rcu_doc_id');
+        $changeStatus = $request->get('status');
         $where = [];
         $where['rcu_doc_id'] = $docId;
 
@@ -3255,6 +3256,7 @@ if ($err) {
                 $emailDatas['subject'] = 'Case Id '. $request_info .' of Agency ' . $fiLists[0]['agencies'][0]->agency->comp_name .' updated the status';
                 $emailDatas['agency_name'] = $fiLists[0]['agencies'][0]->agency->comp_name;
                 $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email : '';
+                $emailDatas['change_status'] = config('common.FI_RCU_STATUS')[$changeStatus];
                 \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailDatas));
             }
         }
