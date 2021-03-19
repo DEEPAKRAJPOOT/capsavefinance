@@ -3112,13 +3112,13 @@ if ($err) {
      * @param Request $request
      */
     public function changeAgentFiStatus(Request $request){
-        $fiAddId = $request->all('fi_addr_id');
+        $fiAddId = $request->get('fi_addr_id');
+        $changeStatus = $request->get('status');
         $agencyName;
         $trigger_email;
         $where = [];
         $where['fi_addr_id'] = $fiAddId;
         $status = $this->application->changeAgentFiStatus($request);
-
         $app_id = $request->get('app_id');
         $biz_id = $request->get('biz_id');
         $request_info = $request->get('address_id');
@@ -3143,7 +3143,7 @@ if ($err) {
                 $userCreData = $this->userRepo->getUserDetail($value->from_user_id);
                 $currUserData = $this->userRepo->getUserDetail($roleData);
 
-                $emailDatas['email'] = isset($userCreData) ? $userCreData->email : '';
+                $emailDatas['email'] = isset($userCreData) ? 'aditya.kumar@prolitus.com' : '';
                 $emailDatas['name'] = isset($userCreData) ? $userCreData->f_name . ' ' . $userCreData->l_name : '';
                 $emailDatas['curr_user'] = isset($currUserData) ? $currUserData->f_name . ' ' . $currUserData->l_name : '';
                 $emailDatas['curr_email'] = isset($currUserData) ? $currUserData->email : '';
