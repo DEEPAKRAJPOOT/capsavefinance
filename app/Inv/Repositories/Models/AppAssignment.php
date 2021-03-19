@@ -342,6 +342,16 @@ class AppAssignment extends BaseModel
 
     }
 
+    // Check role id behalf of user_id
+    public static function getAllRoleDataByUserIdAppID($user_id, $appId)
+    {
+        // dd($user_id, $appId);
+        $arrRoles = self::where('from_id', $user_id)
+                        ->whereNotIn('role_id', [5, 6])
+                        ->get();
+        return ($arrRoles ? : false);
+    }
+
 }
   
 
