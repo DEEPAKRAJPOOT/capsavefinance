@@ -1052,7 +1052,7 @@ class UserEventsListener extends BaseEvent
     // Inform to CPA and CR when agency Status Change
     public function AgencyUpdateToCPAandCR($mailData){
         $user = unserialize($mailData);
-        if(isset( $user['trigger_email'])) {
+        if(isset($user['trigger_email']) && !empty($user['trigger_email'])) {
             $email_to = array($user["email"], $user['trigger_email'], $user['curr_email']);
         } else {
             $email_to = array($user["email"], $user['curr_email']);
