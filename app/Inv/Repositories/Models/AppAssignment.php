@@ -306,6 +306,42 @@ class AppAssignment extends BaseModel
 
     }
 
+    /**
+     * Get Application shared details where role_id 5,6
+     *
+     * @param int $app_id
+     *
+     * @return type
+     *
+     */
+    public static function getAppAssigneWithRoleId($app_id){
+          /**
+         * Check Data is Array
+         */
+        
+        if (!is_numeric($app_id)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        return  $result = self::select( DB::raw("concat_ws(' ',rta_from_u.f_name,rta_from_u.l_name ) as assignby"), 
+        DB::raw("concat_ws(' ',rta_to_u.f_name,rta_to_u.l_name ) as assignto"),
+        'app_assign.sharing_comment', 'app_assign.created_at','from_u.user_id as from_user_id' ,'to_u.user_id as to_user_id','app_assign.role_id')
+        ->leftjoin('users as from_u','from_u.user_id', '=', 'app_assign.from_id')
+        ->leftjoin('users as to_u','to_u.user_id', '=', 'app_assign.to_id')
+        ->where('app_assign.app_id', (int) $app_id)
+        ->where('app_assign.role_id', '<>', null)
+        ->whereIn('app_assign.role_id', [5,6])
+        ->get();
+
+    }
+
 }
   
 

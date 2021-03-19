@@ -1027,12 +1027,11 @@ class UserEventsListener extends BaseEvent
         $email_content = EmailTemplate::getEmailTemplate("FI_FCU_PD_CONCERN_MAIL");
         if ($email_content) {
             $mail_body = str_replace(
-                ['%agency_email','%agency_name' ,'%user', '%comment'],
-                [$user['email'],$user['name'],$user['user'],$user['comment']],
+                ['%agency_email','%agency_name' ,'%user', '%user_email', '%trigger_type', '%comment'],
+                [$user['email'],$user['name'],$user['user'],$user['user_email'],$user['trigger_type'],$user['comment']],
                 $email_content->message
             );
             $mail_subject = $user['subject'];
-
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
                 function ($message) use ($user, $mail_subject, $mail_body) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
@@ -1058,13 +1057,12 @@ class UserEventsListener extends BaseEvent
         $email_content = EmailTemplate::getEmailTemplate("AGENCY_UPDATE_MAIL_TO_CPA_CR");
         if ($email_content) {
             $mail_body = str_replace(
-                ['%user_name','%current_user' ,'%current_email', '%comment'],
-                [$user['name'],$user['curr_user'],$user['curr_email'],$user['comment']],
+                ['%user_email','%user_name','%curr_user','%curr_email','%trigger_type','%comment','%agency_name'],
+                [$user['email'],$user['name'],$user['curr_user'],$user['curr_email'],$user['trigger_type'],$user['comment'],$user['agency_name']],
                 $email_content->message
             );
             $mail_subject = $user['subject'];
             $email_cc = explode(',', $email_content->cc);
-
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
                 function ($message) use ($user, $mail_subject, $mail_body, $email_cc) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
@@ -1073,7 +1071,7 @@ class UserEventsListener extends BaseEvent
                 
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => array($user["email"]),
+                    'email_to' => array($user["email"], $user['trigger_email']),
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
                     'subject' => $mail_subject,

@@ -185,7 +185,7 @@
                                                         <button class="btn-upload btn-sm trigger-for-rcu-doc" style="padding: 1px 8px;" type="button" data-rcu_doc_id="{{$value2->rcu_doc_id}}"> <i class="fa fa-upload"></i></button>
                                                         @can('change_agent_rcu_status')
                                                         <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>                                                                                                                                                                        
-                                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-rcu_doc_id="{{$value2->rcu_doc_id}}">
+                                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-rcu_doc_id="{{$value2->rcu_doc_id}}" data-address_id="{{ $value->rcuDoc->id }}" data-app_id="{{request()->get('app_id')}}" data-biz_id="{{request()->get('biz_id')}}">
                                                             <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="1" @if(isset($value2->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >Pending</a>
                                                             <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="2" @if(isset($value2->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >Inprogress</a>
                                                             <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="3" @if(isset($value2->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >Positive</a>
@@ -264,6 +264,9 @@ $(document).ready(function(){
 
 $(document).on('click', '.change-agent-status', function(){
     let rcu_doc_id = $(this).parent('div').data('rcu_doc_id');
+    let address_id = $(this).parent('div').data('address_id');
+    let app_id = $(this).parent('div').data('app_id');
+    let biz_id = $(this).parent('div').data('biz_id'); 
     let status = $(this).attr('value');
     let token = '{{ csrf_token() }}';
     if ($(this).data('is_uploaded') == '0') {
@@ -275,7 +278,7 @@ $(document).on('click', '.change-agent-status', function(){
     $.ajax({
         url: "{{route('change_agent_rcu_status')}}",
         type: "POST",
-        data: {"rcu_doc_id": rcu_doc_id, "status": status, "_token":token},
+        data: {"rcu_doc_id": rcu_doc_id, "address_id":address_id, "app_id":app_id, "biz_id":biz_id, "status": status, "_token":token},
         //dataType:'json',
         error:function (xhr, status, errorThrown) {
             $('.isloader').hide();

@@ -44,6 +44,7 @@ use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Crypt;
+use App\Inv\Repositories\Models\AppAssignment;
 
 class AjaxController extends Controller {
 
@@ -3111,8 +3112,50 @@ if ($err) {
      * @param Request $request
      */
     public function changeAgentFiStatus(Request $request){
-      $status = $this->application->changeAgentFiStatus($request);
-      return $status;
+        $fiAddId = $request->all('fi_addr_id');
+        $agencyName;
+        $trigger_email;
+        $where = [];
+        $where['fi_addr_id'] = $fiAddId;
+        $status = $this->application->changeAgentFiStatus($request);
+
+        $app_id = $request->get('app_id');
+        $biz_id = $request->get('biz_id');
+        $request_info = $request->get('address_id');
+        $roleData = \Auth::user()->user_id;
+
+        $assignees = AppAssignment::getAppAssigneWithRoleId((int) $app_id);
+        $fiLists = $this->application->getAddressforAgencyFI($biz_id);
+        $getFiAddData = $this->application->getFiAddressData($where);
+        $checkRoleUserCRCPA = $this->userRepo->getAllRoleDataByUserId($getFiAddData[0]->from_id);
+        if(!empty($checkRoleUserCRCPA[0])) {
+            $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->from_id);
+            $trigger_email = $triggerUserCreData->email;
+        }
+        foreach ($fiLists as $key => $fiList) {
+            foreach($fiList->fiAddress as $fiAdd) {
+                $agencyName = $fiAdd->agency->comp_name;
+            }
+        }
+
+        if(!empty($assignees[0])) {
+            foreach ($assignees as $key => $value) {
+                $userCreData = $this->userRepo->getUserDetail($value->from_user_id);
+                $currUserData = $this->userRepo->getUserDetail($roleData);
+
+                $emailDatas['email'] = isset($userCreData) ? 'aditya.kumar@prolitus.com' : '';
+                $emailDatas['name'] = isset($userCreData) ? $userCreData->f_name . ' ' . $userCreData->l_name : '';
+                $emailDatas['curr_user'] = isset($currUserData) ? $currUserData->f_name . ' ' . $currUserData->l_name : '';
+                $emailDatas['curr_email'] = isset($currUserData) ? $currUserData->email : '';
+                $emailDatas['comment'] = isset($comment) ? $comment : '';
+                $emailDatas['trigger_type'] = 'FI';
+                $emailDatas['subject'] = 'Case Id '. $request_info .' of Agency ' . $agencyName .' updated the status';
+                $emailDatas['agency_name'] = $agencyName;
+                $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email : '';
+                \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailDatas));
+            }
+        }
+        return $status;
     }
 
     /**
@@ -3171,6 +3214,50 @@ if ($err) {
      */
     public function changeAgentRcuStatus(Request $request){
       $status = $this->application->changeAgentRcuStatus($request);
+        $docId = $request->get('rcu_doc_id');
+        $where = [];
+        $where['rcu_doc_id'] = $docId;
+
+        $app_id = $request->get('app_id');
+        $biz_id = $request->get('biz_id');
+        $request_info = $request->get('address_id');
+        $roleData = \Auth::user()->user_id;
+
+        $assignees = AppAssignment::getAppAssigneWithRoleId((int) $app_id);
+        if(Auth::user()->agency_id != null)
+            $fiLists = $this->application->getRcuActiveLists($app_id);
+        else
+            $fiLists = $this->application->getRcuLists($app_id);
+
+        foreach ($fiLists as $key => $value) {
+            if(Auth::user()->agency_id != null)
+                $fiLists[$key]['agencies'] = $this->application->getRcuActiveAgencies($app_id, $value->doc_id);
+            else
+                $fiLists[$key]['agencies'] = $this->application->getRcuAgencies($app_id, $value->doc_id);        
+        }
+        $getFiAddData = $this->application->getRcuDocumentData($where);
+        $checkRoleUserCRCPA = $this->userRepo->getAllRoleDataByUserId($getFiAddData[0]->from_id);
+        if(!empty($checkRoleUserCRCPA[0])) {
+            $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->from_id);
+            $trigger_email = $triggerUserCreData->email;
+        }
+        if(!empty($assignees[0])) {
+            foreach ($assignees as $key => $value) {
+                $userCreData = $this->userRepo->getUserDetail($value->from_user_id);
+                $currUserData = $this->userRepo->getUserDetail($roleData);
+
+                $emailDatas['email'] = isset($userCreData) ? $userCreData->email : '';
+                $emailDatas['name'] = isset($userCreData) ? $userCreData->f_name . ' ' . $userCreData->l_name : '';
+                $emailDatas['curr_user'] = isset($currUserData) ? $currUserData->f_name . ' ' . $currUserData->l_name : '';
+                $emailDatas['curr_email'] = isset($currUserData) ? $currUserData->email : '';
+                $emailDatas['comment'] = isset($comment) ? $comment : '';
+                $emailDatas['trigger_type'] = 'RCU';
+                $emailDatas['subject'] = 'Case Id '. $request_info .' of Agency ' . $fiLists[0]['agencies'][0]->agency->comp_name .' updated the status';
+                $emailDatas['agency_name'] = $fiLists[0]['agencies'][0]->agency->comp_name;
+                $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email : '';
+                \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailDatas));
+            }
+        }
       return $status;
     }
 

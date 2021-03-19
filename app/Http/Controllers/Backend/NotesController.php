@@ -87,29 +87,15 @@ class NotesController extends Controller {
             $dom = new \DomDocument();
             $dom->loadHtml($comments, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD); 
             $comments = $dom->saveHTML();
-            // $this->appRepo->savePdNotes([
-            // 'app_id' => $app_id,
-            // 'type' => $type,
-            // 'title' => $title,
-            // 'comments' => $comments,
-            // 'created_by' => Auth::user()->user_id,
-            // 'created_at' => \Carbon\Carbon::now(),
-            // ]);
-            $userId = Auth::user()->user_id;
-            $appData = $this->appRepo->getAnchorDataByAppId((int) $app_id);
-            $getRoleData = $this->userRepo->getAllRoleDataByUserId((int) $appData->user_id);
-            $userData = $this->userRepo->getUserDetail($userId);
-            if(!empty($getRoleData[0])) {
-                $emailData['email'] = isset($appData) ? $appData->email : '';
-                $emailData['name'] = isset($appData) ? $appData->f_name . ' ' . $appData->l_name : '';
-                $emailData['curr_user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
-                $emailData['curr_email'] = isset($userData) ? $userData->email : '';
-                $emailData['comment'] = isset($comment) ? $comment : '';
-                $emailData['subject'] = 'FI/RCU/PD concern ';
-                
-                \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailData));
-            }
-
+            $this->appRepo->savePdNotes([
+            'app_id' => $app_id,
+            'type' => $type,
+            'title' => $title,
+            'comments' => $comments,
+            'created_by' => Auth::user()->user_id,
+            'created_at' => \Carbon\Carbon::now(),
+            ]);
+            
             Session::flash('message', trans('success_messages.pd_notes_saved'));
             Session::flash('operation_status', 1); 
             return redirect()->back();

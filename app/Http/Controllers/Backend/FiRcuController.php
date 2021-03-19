@@ -97,31 +97,30 @@ class FiRcuController extends Controller
     {
         $roleData = \Auth::user()->user_id;
         $userId = $request->all('to_id');
+        $app_id = $request->all('app_id');
         $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
         if((int)$userId['to_id'] == $roleData) {
             Session::flash('error',trans('You can not assign to same user'));
            return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);  
         }
-        
         $this->appRepo->insertFIAddress($request->all()); 
 
         $comment = $request->get('comment');
-        $app_id = $request->get('app_id');
+        $agencyId = $request->get('agency_id');
+        $userId = $request->get('to_id');
+        $request_info = $request->get('address_ids');
 
-        $userId = Auth::user()->user_id;
-        $appDatas = $this->appRepo->getAnchorDataByAppId((int) $app_id);
-        $getRoleData = $this->userRepo->getAllRoleDataByUserId((int) $appDatas->user_id);
+        $agencyDatas = $this->appRepo->getAgenciByAgenciId((int) $agencyId);
         $userData = $this->userRepo->getUserDetail($userId);
-        if(!empty($getRoleData[0])) {
-            $emailData['email'] = isset($appDatas) ? $appDatas->email : '';
-            $emailData['name'] = isset($appDatas) ? $appDatas->f_name . ' ' . $appDatas->l_name : '';
-            $emailData['curr_user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
-            $emailData['curr_email'] = isset($userData) ? $userData->email : '';
-            $emailData['comment'] = isset($comment) ? $comment : '';
-            $emailData['subject'] = 'FI/RCU/PD concern ';
-            
-            \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailData));
-        }
+
+        $emailData['email'] = isset($agencyDatas) ? 'aditya.kumar@prolitus.com' : '';
+        $emailData['name'] = isset($agencyDatas) ? $agencyDatas->comp_name . ' ' . $agencyDatas->comp_name : '';
+        $emailData['user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
+        $emailData['user_email'] = isset($userData) ? $userData->email : '';
+        $emailData['comment'] = isset($comment) ? $comment : '';
+        $emailData['trigger_type'] = 'FI';
+        $emailData['subject'] = 'Capsave has requested FI for this FI ID '. $request_info;
+        \Event::dispatch("FI_FCU_PD_CONCERN_MAIL", serialize($emailData));
         return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
 
@@ -286,22 +285,20 @@ class FiRcuController extends Controller
         }
 
         $comment = $request->get('comment');
-
-
-        $userId = Auth::user()->user_id;
-        $appDatas = $this->appRepo->getAnchorDataByAppId((int) $appId);
-        $getRoleData = $this->userRepo->getAllRoleDataByUserId((int) $appDatas->user_id);
+        $agencyId = $request->get('agency_id');
+        $userId = $request->get('to_id');
+        $request_info = $request->get('document_ids');
+        $agencyDatas = $this->appRepo->getAgenciByAgenciId((int) $agencyId);
         $userData = $this->userRepo->getUserDetail($userId);
-        if(!empty($getRoleData[0])) {
-            $emailData['email'] = isset($appDatas) ? $appDatas->email : '';
-            $emailData['name'] = isset($appDatas) ? $appDatas->f_name . ' ' . $appDatas->l_name : '';
-            $emailData['curr_user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
-            $emailData['curr_email'] = isset($userData) ? $userData->email : '';
-            $emailData['comment'] = isset($comment) ? $comment : '';
-            $emailData['subject'] = 'FI/RCU/PD concern ';
-            
-            \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailData));
-        }
+
+        $emailData['email'] = isset($agencyDatas) ? $agencyDatas->comp_email : '';
+        $emailData['name'] = isset($agencyDatas) ? $agencyDatas->comp_name . ' ' . $agencyDatas->comp_name : '';
+        $emailData['user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
+        $emailData['user_email'] = isset($userData) ? $userData->email : '';
+        $emailData['comment'] = isset($comment) ? $comment : '';
+        $emailData['trigger_type'] = 'RCU';
+        $emailData['subject'] = 'Capsave has requested RCU for this RCU ID '. $request_info;
+        \Event::dispatch("FI_FCU_PD_CONCERN_MAIL", serialize($emailData));
         
         Session::flash('message',trans('success_messages.rcu.assigned'));
         return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   

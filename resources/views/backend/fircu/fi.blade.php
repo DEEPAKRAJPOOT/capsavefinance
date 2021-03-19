@@ -105,7 +105,7 @@
                                                         @else
                                                         @endif
 
-                                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-fi_address_id="{{$fiAdd->fi_addr_id}}">
+                                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;" data-fi_address_id="{{$fiAdd->fi_addr_id}}" data-app_id="{{request()->get('app_id')}}" data-address_id="{{$fiList->biz_addr_id}}" data-biz_id="{{request()->get('biz_id')}}">
                                                         @foreach($status_lists as $status_id => $status_name)
                                                             <a class="dropdown-item change-agent-status" href="javascript:void(0);" value="{{$status_id}}" @if(isset($fiAdd->userFile->file_path)) data-is_uploaded="1" @else data-is_uploaded="0" @endif >{{$status_name}}</a>
                                                         @endforeach
@@ -196,6 +196,9 @@ $(document).ready(function(){
 
     $(document).on('click', '.change-agent-status', function(){
         let fi_addr_id = $(this).parent('div').data('fi_address_id');
+        let address_id = $(this).parent('div').data('address_id');
+        let app_id = $(this).parent('div').data('app_id');
+        let biz_id = $(this).parent('div').data('biz_id');
         let status = $(this).attr('value');
         let token = '{{ csrf_token() }}';
         if ($(this).data('is_uploaded') == '0') {
@@ -207,7 +210,7 @@ $(document).ready(function(){
         $.ajax({
             url: "{{route('change_agent_fi_status')}}",
             type: "POST",
-            data: {"fi_addr_id": fi_addr_id, "status": status, "_token":token},
+            data: {"fi_addr_id": fi_addr_id, "app_id":app_id, "address_id":address_id, "biz_id":biz_id, "status": status, "_token":token},
             //dataType:'json',
             error:function (xhr, status, errorThrown) {
                 $('.isloader').hide();
