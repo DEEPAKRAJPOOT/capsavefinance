@@ -6989,8 +6989,21 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($disbursalBatchRequest) {
                         $act = '';
+                        $tInv = 0;
+                        $appId = '';
+                        $userId = '';
+                        $disbursal = $disbursalBatchRequest->disbursal;
+                        $tCust = $disbursal->count();
+                        $tAmt = number_format($disbursal->sum('disburse_amount'),2);
+                        foreach($disbursal as $data){
+                            $tInv += $data->invoice_disbursed->count();
+                            $appId = $data->app_id;
+                            $userId = $data->user_id;
+                        }
+                        $custName = HelperS::getUserInfo($userId);
+                        $fullCustName = $custName->f_name." ".$custName->l_name;
                         if(Helpers::checkPermission('rollback_disbursal_batch_request')){
-                            $act .= '<button class="btn btn-action-btn btn-sm"  title="Online Disbursal Rollback" onclick="disbursal_rollback(\''. route('rollback_disbursal_batch_request', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
+                            $act .= '<button class="btn btn-action-btn btn-sm"  title="Online Disbursal Rollback" tAmt="'.$tAmt.'" tInv="'.$tInv.'" tCust="'.$tCust.'" appId="'.$appId.'" fullCustName="'.$fullCustName.'" onclick="disbursal_rollback(\''. route('rollback_disbursal_batch_request', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
                         }
 
                         $act .= '<a   href="' . route('disbursal_payment_enquiry', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';

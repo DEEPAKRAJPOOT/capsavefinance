@@ -41,7 +41,12 @@ try {
     function disbursal_rollback(url, ele) {
         var ele = $(ele);
         var oldHtml = ele.html();
-        if (confirm("Are you sure you want to rollback the Online disbursal?")) {
+        var tAmt = ele.attr("tAmt");
+        var tInv = ele.attr("tInv");
+        var tCust = ele.attr("tCust");
+        var appId = ele.attr("appId");
+        var fullCustName = ele.attr("fullCustName");
+        if (confirm("Are you sure you want to rollback the Online disbursal?\nCustomer name: "+fullCustName+" || App Id: "+appId+" || Total Customer: "+tCust+" || Total Amount: "+tAmt+" || Total Invoices: "+tInv)) {
             $.ajax({
                 type: "post",
                 url: url,

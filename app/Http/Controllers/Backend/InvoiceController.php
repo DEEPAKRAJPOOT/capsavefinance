@@ -1766,6 +1766,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 	{
 		try 
         {
+            dd($request->all());
             $disbursalIdsArr = [];
             $invoiceIdsArr = [];
             $disbursalBatchId = $request->get('disbursal_batch_id');
