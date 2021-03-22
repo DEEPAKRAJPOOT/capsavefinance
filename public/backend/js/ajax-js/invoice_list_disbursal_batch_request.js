@@ -45,8 +45,9 @@ try {
         var tInv = ele.attr("tInv");
         var tCust = ele.attr("tCust");
         var appId = ele.attr("appId");
+        var inv_no = ele.attr("inv_no");
         var fullCustName = ele.attr("fullCustName");
-        if (confirm("Are you sure you want to rollback the Online disbursal?\nCustomer name: "+fullCustName+" || App Id: "+appId+" || Total Customer: "+tCust+" || Total Amount: "+tAmt+" || Total Invoices: "+tInv)) {
+        if (confirm("Are you sure you want to rollback the Online disbursal?\nCustomer name: "+fullCustName+" || App Id: "+appId+" || Total Customer: "+tCust+" || Total Amount: "+tAmt+" || Total Invoices: "+tInv+" || Invoices No: "+inv_no)) {
             $.ajax({
                 type: "post",
                 url: url,
