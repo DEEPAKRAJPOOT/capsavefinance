@@ -6998,7 +6998,6 @@ class DataRenderer implements DataProviderInterface
                         $invNo = [];
                         foreach($disbursal as $data){
                             foreach($data->invoice_disbursed as $invData) {
-                                // dd($invData->invoice->invoice_no);
                                 $invNo[] = $invData->invoice->invoice_no ?? '';
                             }
                             $tInv += $data->invoice_disbursed->count();
@@ -7006,7 +7005,6 @@ class DataRenderer implements DataProviderInterface
                             $userId = $data->user_id;
                         }
                         $invNoString = implode(',',$invNo); 
-                        // dd($invNo,$invNoString);
                         $custName = HelperS::getUserInfo($userId);
                         $fullCustName = $custName->f_name." ".$custName->l_name;
                         if(Helpers::checkPermission('rollback_disbursal_batch_request')){
