@@ -1779,7 +1779,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 
 	public function deleteDisbursalStatusLogByDidArr($IdsArr){
-		return DisbursalStatusLog::whereIn('disbursal_id',$IdsArr)->delete();
+		return DisbursalStatusLog::whereIn('disbursal_id',$IdsArr)->where('status_id',10)->delete();
 	}
 
 	public function deleteInvoiceStatusLogByInvIdArr($IdsArr){
