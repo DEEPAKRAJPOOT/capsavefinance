@@ -49,7 +49,7 @@ try {
         var fullCustName = ele.attr("fullCustName");
         if (confirm("Are you sure you want to rollback the Online disbursal?\nCustomer name: "+fullCustName+" || App Id: "+appId+" || Total Customer: "+tCust+" || Total Amount: "+tAmt+" || Total Invoices: "+tInv+" || Invoices No: "+inv_no)) {
             $.ajax({
-                type: "post",
+                type: "GET",
                 url: url,
                 beforeSend: function(res){
                     ele.html('<i class="fa fa-spinner" aria-hidden="true"></i>');

@@ -1762,14 +1762,18 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
     }
 
-    public function rollbackDisbursalBatchRequest(Request $request)
+    public function rollbackDisbursalBatchRequest(Request $request,$id)
 	{
 		try 
         {
             $disbursalIdsArr = [];
             $invoiceIdsArr = [];
-            $disbursalBatchId = $request->get('disbursal_batch_id');
-            if($disbursalBatchId){
+            $disbursalBatchId = $id;
+            if($request->has('disbursal_batch_id')){
+                $disbursalBatchId = $request->get('disbursal_batch_id');
+            }
+            
+            if($disbursalBatchId && is_numeric($disbursalBatchId)){
                 $disbursalBatchData = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
                 $disbursalData = $this->lmsRepo->getDisbursalByDBId($disbursalBatchId);
                 foreach($disbursalData as $data){
