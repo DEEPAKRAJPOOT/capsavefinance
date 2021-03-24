@@ -676,7 +676,7 @@ class InvoiceController extends Controller {
                     $acc_no = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_no'] : $userData['supplier_bank_detail']['acc_no'];
                     $acc_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_name'] : $userData['supplier_bank_detail']['acc_name'];
                     $exportData[$userid]['RefNo'] = $refNo;
-                    $exportData[$userid]['Amount'] = $disburseAmount;
+                    $exportData[$userid]['Amount'] = "$disburseAmount";
                     $exportData[$userid]['Debit_Acct_No'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NO'];
                     $exportData[$userid]['Debit_Acct_Name'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NAME'];
                     $exportData[$userid]['Debit_Mobile'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_MOBILE'];
@@ -1565,11 +1565,9 @@ class InvoiceController extends Controller {
                                 
                                 if ($value['RefStatus'] == 'SUCCESS') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['DISBURSED'];
-                                } else if($value['RefStatus'] == 'Pending for Authorization') {
+                                } else if($value['RefStatus'] == 'Pending for Authorization' || $value['RefStatus'] == 'Pending Auth' || $value['RefStatus'] == 'UNDER PROCESS') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'];
-                                } else if($value['RefStatus'] == 'REJECT') {
-                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
-                                } else if($value['RefStatus'] == 'Rejected by Checker') {
+                                } else if($value['RefStatus'] == 'Rejected by Checker' || $value['RefStatus'] == 'Rejected' || $value['RefStatus'] == 'Rejected by Authorizer' || $value['RefStatus'] == 'Rejected online' || $value['RefStatus'] == 'Cancelled') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
                                 } else if($value['RefStatus'] == 'FAILED') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED'];
