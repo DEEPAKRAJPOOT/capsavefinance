@@ -3237,7 +3237,6 @@ if ($err) {
                 $fiLists[$key]['agencies'] = $this->application->getRcuAgencies($app_id, $value->doc_id);        
         }
         $getFiAddData = $this->application->getRcuDocumentData($where);
-        // $checkRoleUserCRCPA = $this->userRepo->getAllRoleDataByUserId($getFiAddData[0]->from_id);
         $checkRoleUserCRCPA = AppAssignment::getAllRoleDataByUserIdAppID($getFiAddData[0]->from_id, $app_id);
         if(!empty($checkRoleUserCRCPA[0])) {
             $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->from_id);
@@ -3245,7 +3244,7 @@ if ($err) {
         }
         if(!empty($assignees[0])) {
             foreach ($assignees as $key => $value) {
-                $userCreData = $this->userRepo->getUserDetail($value->from_user_id);
+                $userCreData = $this->userRepo->getUserDetail($value->to_user_id);
                 $currUserData = $this->userRepo->getUserDetail($roleData);
 
                 $emailDatas['email'] = isset($userCreData) ? $userCreData->email : '';
