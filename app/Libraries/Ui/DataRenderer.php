@@ -6990,7 +6990,7 @@ class DataRenderer implements DataProviderInterface
                     function ($disbursalBatchRequest) {
                         $act = '';
                         if(Helpers::checkPermission('online_disbursal_rollback')){
-                            $act .='</br><a data-toggle="modal"  data-height="300px" 
+                            $act .='</br><a data-toggle="modal"  data-height="350px" 
                             data-width="100%" 
                             data-target="#viewOnlineDisbursalRollback"
                             data-url="' . route('online_disbursal_rollback', ['disbursal_batch_id' =>$disbursalBatchRequest->disbursal_batch_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Online Disbursal Rollback"><i class="fa fa-eye"></i></a>';

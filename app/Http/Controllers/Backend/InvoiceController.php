@@ -1771,7 +1771,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             if($request->has('disbursal_batch_id')){
                 $disbursalBatchId = $request->get('disbursal_batch_id');
             }
-            dd($disbursalBatchId);
+            
             if($disbursalBatchId && is_numeric($disbursalBatchId)){
                 $disbursalBatchData = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
                 $disbursalData = $this->lmsRepo->getDisbursalByDBId($disbursalBatchId);
@@ -1794,13 +1794,16 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $this->lmsRepo->deleteDisbursalByDBId($disbursalBatchId);
                     $this->lmsRepo->deleteDisbursalBatchByDBId($disbursalBatchId);
 
-                    return response()->json(['status' => 1,'message' => 'Online disbursal successfully rollbacked']); 
+                    Session::flash('message', 'Online disbursal successfully rollbacked');
+                    return redirect()->route('backend_get_disbursal_batch_request');
                 }
-                return response()->json(['status' => 0,'message' => 'Record Not Found / Already deleted!']);
-            }
-            return response()->json(['status' => 0,'message' => 'Invalid Request']);
+                Session::flash('message', 'Record Not Found / Already deleted!');
+                return redirect()->route('backend_get_disbursal_batch_request');
+            }            
+            Session::flash('error', 'Invalid Request');
+            return redirect()->route('backend_get_disbursal_batch_request');
         } catch (Exception $ex) {
-			return response()->json(['status' => 0,'message' => Helpers::getExceptionMessage($ex)]); 
+			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 		}  
 	}
 
@@ -1812,13 +1815,18 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 return back();
             }
 
-            
             $tInv = 0;
             $appId = '';
             $userId = '';
             $invNo = [];
+            $idfc_res_text = '';
             $disbursalBatchId = $req->get('disbursal_batch_id');
             $disbursalBatchData = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
+            
+            if(isset($disbursalBatchData->disbursal_api_log) && !empty($disbursalBatchData->disbursal_api_log)){
+                $idfc_res_text = $disbursalBatchData->disbursal_api_log->res_text;
+            }
+            
             $disbursal = $disbursalBatchData->disbursal;
             $tCust = $disbursal->count();
             $tAmt = number_format($disbursal->sum('disburse_amount'),2);
@@ -1830,11 +1838,11 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $appId = $data->app_id;
                 $userId = $data->user_id;
             }
-            $invNoString = implode(',',$invNo); 
+            $invNoString = implode(', ',$invNo); 
             $custName = HelperS::getUserInfo($userId);
             $fullCustName = $custName->f_name." ".$custName->l_name;
 
-            return view('backend.invoice.online_disbursal_rollback')->with(['disbursal_batch_id' => $disbursalBatchId, 'fullCustName' => $fullCustName, 'invNoString' => $invNoString, 'tInv' => $tInv, 'tAmt' => $tAmt, 'tCust' => $tCust, 'appId' => $appId]);
+            return view('backend.invoice.online_disbursal_rollback')->with(['disbursal_batch_id' => $disbursalBatchId, 'fullCustName' => $fullCustName, 'invNoString' => $invNoString, 'tInv' => $tInv, 'tAmt' => $tAmt, 'tCust' => $tCust, 'appId' => $appId, 'res_text' => $idfc_res_text]);
             } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

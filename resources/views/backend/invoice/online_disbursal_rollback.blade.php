@@ -2,8 +2,8 @@
 
 @section('content')
 
-<div class="modal-body text-left">
-    <table class="table table-striped cell-border no-footer"  cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+<div class="modal-body text-left table-responsive ps ps--theme_default">
+    <table class="table table-striped cell-border no-footer text-left"  cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
         <tbody> 
             <tr>
                 <td><b>Customer name:</b></td>
@@ -23,6 +23,12 @@
                 <td><b>Invoices No:</b></td>
                 <td>{{$invNoString}}</td>
             </tr>
+            @if($res_text)
+            <tr>
+                <td><b>IDFC API Response:</b></td>
+                <td colspan="3">{{$res_text}}</td>
+            </tr>
+            @endif
         </tbody>
     </table>
     </br>
@@ -35,7 +41,6 @@
             </form>
         </div>
     </div>
-        <!-- <button class="btn btn-action-btn btn-sm"  title="Online Disbursal Rollback" tAmt="'.$tAmt.'" tInv="'.$tInv.'" tCust="'.$tCust.'" appId="'.$appId.'" fullCustName="'.$fullCustName.'" inv_no="'.$invNoString.'" onclick="disbursal_rollback(\''. route('rollback_disbursal_batch_request',$disbursal_batch_id) .'\',this)" ><i class="fa fa-undo"></i></button> -->
 @endsection
 @section('jscript')
 <script src="{{ asset('backend/js/ajax-js/invoice_list_disbursal_batch_request.js') }}"></script>
