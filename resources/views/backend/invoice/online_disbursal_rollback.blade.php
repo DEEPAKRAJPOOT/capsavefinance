@@ -7,21 +7,21 @@
         <tbody> 
             <tr>
                 <td><b>Customer name:</b></td>
-                <td>Britania Biscuit</td>
+                <td>{{$fullCustName}}</td>
                 <td><b>Application Id:</b></td>
-                <td>APPID00145</td>
+                <td>{{$appId}}</td>
             </tr>
             <tr>
                 <td><b>Total Customer:</b></td>
-                <td>2</td>
+                <td>{{$tCust}}</td>
                 <td><b>Total Amount:</b></td>
-                <td>10,52,500</td>
+                <td>{{$tAmt}}</td>
             </tr>
             <tr>
                 <td><b>Total Invoices:</b></td>
-                <td>10</td>
+                <td>{{$tInv}}</td>
                 <td><b>Invoices No:</b></td>
-                <td>INV_1,INV_2,INV_3,INV_4,INV_5</td>
+                <td>{{$invNoString}}</td>
             </tr>
         </tbody>
     </table>

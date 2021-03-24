@@ -1806,33 +1806,35 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
     public function onlineDisbursalRollback(Request $req) {
         try {
-// dd($req->all());
-            $disbursal_batch_id = $req->get('disbursal_batch_id');
+            
             if ($req->get('eod_process')) {
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
 
-            // $tInv = 0;
-            // $appId = '';
-            // $userId = '';
-            // $disbursal = $disbursalBatchRequest->disbursal;
-            // $tCust = $disbursal->count();
-            // $tAmt = number_format($disbursal->sum('disburse_amount'),2);
-            // $invNo = [];
-            // foreach($disbursal as $data){
-            //     foreach($data->invoice_disbursed as $invData) {
-            //         $invNo[] = $invData->invoice->invoice_no ?? '';
-            //     }
-            //     $tInv += $data->invoice_disbursed->count();
-            //     $appId = $data->app_id;
-            //     $userId = $data->user_id;
-            // }
-            // $invNoString = implode(',',$invNo); 
-            // $custName = HelperS::getUserInfo($userId);
-            // $fullCustName = $custName->f_name." ".$custName->l_name;
+            
+            $tInv = 0;
+            $appId = '';
+            $userId = '';
+            $invNo = [];
+            $disbursalBatchId = $req->get('disbursal_batch_id');
+            $disbursalBatchData = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
+            $disbursal = $disbursalBatchData->disbursal;
+            $tCust = $disbursal->count();
+            $tAmt = number_format($disbursal->sum('disburse_amount'),2);
+            foreach($disbursal as $data){
+                foreach($data->invoice_disbursed as $invData) {
+                    $invNo[] = $invData->invoice->invoice_no ?? '';
+                }
+                $tInv += $data->invoice_disbursed->count();
+                $appId = $data->app_id;
+                $userId = $data->user_id;
+            }
+            $invNoString = implode(',',$invNo); 
+            $custName = HelperS::getUserInfo($userId);
+            $fullCustName = $custName->f_name." ".$custName->l_name;
 
-            return view('backend.invoice.online_disbursal_rollback')->with(['disbursal_batch_id' => $disbursal_batch_id]);
+            return view('backend.invoice.online_disbursal_rollback')->with(['disbursal_batch_id' => $disbursalBatchId, 'fullCustName' => $fullCustName, 'invNoString' => $invNoString, 'tInv' => $tInv, 'tAmt' => $tAmt, 'tCust' => $tCust, 'appId' => $appId]);
             } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
