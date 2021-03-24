@@ -3129,7 +3129,7 @@ if ($err) {
         // $checkRoleUserCRCPA = $this->userRepo->getAllRoleDataByUserId($getFiAddData[0]->from_id);
         $checkRoleUserCRCPA = AppAssignment::getAllRoleDataByUserIdAppID($getFiAddData[0]->from_id, $app_id);
         if(!empty($checkRoleUserCRCPA[0])) {
-            $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->from_id);
+            $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->to_id);
             $trigger_email = $triggerUserCreData->email;
         }
         foreach ($fiLists as $key => $fiList) {
