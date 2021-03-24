@@ -1232,7 +1232,7 @@ class DataRenderer implements DataProviderInterface
                                             $datediff = ($dueDate - $now);
                                             $days = round($datediff / (60 * 60 * 24));
                                             if ($this->overDueFlag == 0 && $days < 0 && $invc['is_repayment'] == 0) {
-                                                $this->overDueFlag = 1;
+                                                $this->overDueFlag = 0;
                                             }
                                         }
                                     }
