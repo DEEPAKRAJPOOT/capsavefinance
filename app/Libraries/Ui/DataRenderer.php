@@ -6989,26 +6989,11 @@ class DataRenderer implements DataProviderInterface
                     'action',
                     function ($disbursalBatchRequest) {
                         $act = '';
-                        $tInv = 0;
-                        $appId = '';
-                        $userId = '';
-                        $disbursal = $disbursalBatchRequest->disbursal;
-                        $tCust = $disbursal->count();
-                        $tAmt = number_format($disbursal->sum('disburse_amount'),2);
-                        $invNo = [];
-                        foreach($disbursal as $data){
-                            foreach($data->invoice_disbursed as $invData) {
-                                $invNo[] = $invData->invoice->invoice_no ?? '';
-                            }
-                            $tInv += $data->invoice_disbursed->count();
-                            $appId = $data->app_id;
-                            $userId = $data->user_id;
-                        }
-                        $invNoString = implode(',',$invNo); 
-                        $custName = HelperS::getUserInfo($userId);
-                        $fullCustName = $custName->f_name." ".$custName->l_name;
-                        if(Helpers::checkPermission('rollback_disbursal_batch_request')){
-                            $act .= '<button class="btn btn-action-btn btn-sm"  title="Online Disbursal Rollback" tAmt="'.$tAmt.'" tInv="'.$tInv.'" tCust="'.$tCust.'" appId="'.$appId.'" fullCustName="'.$fullCustName.'" inv_no="'.$invNoString.'" onclick="disbursal_rollback(\''. route('rollback_disbursal_batch_request',$disbursalBatchRequest->disbursal_batch_id) .'\',this)" ><i class="fa fa-undo"></i></button>';
+                        if(Helpers::checkPermission('online_disbursal_rollback')){
+                            $act .='</br><a data-toggle="modal"  data-height="300px" 
+                            data-width="100%" 
+                            data-target="#viewOnlineDisbursalRollback"
+                            data-url="' . route('online_disbursal_rollback', ['disbursal_batch_id' =>$disbursalBatchRequest->disbursal_batch_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Online Disbursal Rollback"><i class="fa fa-eye"></i></a>';
                         }
 
                         $act .= '<a   href="' . route('disbursal_payment_enquiry', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';
