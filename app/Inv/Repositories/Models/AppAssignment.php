@@ -347,7 +347,7 @@ class AppAssignment extends BaseModel
     {
         // dd($user_id, $appId);
         $arrRoles = self::where('from_id', $user_id)
-                        ->whereIn('role_id', [5, 6])
+                        ->whereNotIn('role_id', [5, 6])
                         ->get();
         return ($arrRoles ? : false);
     }
