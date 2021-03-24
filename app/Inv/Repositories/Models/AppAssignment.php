@@ -330,14 +330,15 @@ class AppAssignment extends BaseModel
             throw new BlankDataExceptions('No Data Found');
         }
 
-        return  $result = self::select( DB::raw("concat_ws(' ',rta_from_u.f_name,rta_from_u.l_name ) as assignby"), 
+        return  $result = self::select( DB::raw("concat_ws(' ',rta_to_u.f_name,rta_to_u.l_name ) as assignby"), 
         DB::raw("concat_ws(' ',rta_to_u.f_name,rta_to_u.l_name ) as assignto"),
-        'app_assign.sharing_comment', 'app_assign.created_at','from_u.user_id as from_user_id' ,'to_u.user_id as to_user_id','app_assign.role_id')
-        ->leftjoin('users as from_u','from_u.user_id', '=', 'app_assign.from_id')
+        'app_assign.sharing_comment', 'app_assign.created_at','to_u.user_id as to_user_id','app_assign.role_id')
         ->leftjoin('users as to_u','to_u.user_id', '=', 'app_assign.to_id')
         ->where('app_assign.app_id', (int) $app_id)
-        ->where('app_assign.role_id', '<>', null)
-        ->whereIn('app_assign.role_id', [5,6])
+        ->join('role_user', 'role_user.user_id', '=', 'app_assign.to_id')
+        ->where('app_assign.to_id', '>', 0)
+        ->whereIn('role_user.role_id', [5,6])
+        ->groupBy('app_assign.to_id')
         ->get();
 
     }
