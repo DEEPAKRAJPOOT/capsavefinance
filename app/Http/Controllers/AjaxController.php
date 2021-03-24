@@ -3128,7 +3128,7 @@ if ($err) {
         $getFiAddData = $this->application->getFiAddressData($where);
         $checkRoleUserCRCPA = AppAssignment::getAllRoleDataByUserIdAppID($getFiAddData[0]->from_id, $app_id);
         if(!empty($checkRoleUserCRCPA[0])) {
-            $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->to_id);
+            $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->from_id);
             $trigger_email = $triggerUserCreData->email;
         }
         foreach ($fiLists as $key => $fiList) {
