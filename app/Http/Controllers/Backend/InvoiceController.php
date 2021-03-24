@@ -1582,7 +1582,7 @@ class InvoiceController extends Controller {
                                     ], ['ref_no' => $value['RefNo']]);
                                 // dd($transDisbursalIds);
                                 foreach ($transDisbursalIds as $key => $value1) {
-                                    $this->lmsRepo->createDisbursalStatusLog($value1, $disburseStatus, 'online disbursed', $createdBy);
+                                    $this->lmsRepo->createDisbursalStatusLog($value1, $disburseStatus, '', $createdBy);
                                     
                                     $invoiceDisburseIds = $this->lmsRepo->findInvoiceDisburseByDisbursalId(['disbursal_id' => $value1])->toArray();
                                     $updateInvoiceDisburseStatus = $this->lmsRepo->updateInvoiceDisburseStatus($invoiceDisburseIds, $disburseStatus);
