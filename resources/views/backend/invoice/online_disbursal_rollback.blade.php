@@ -26,7 +26,7 @@
             @if($res_text)
             <tr>
                 <td><b>IDFC API Response:</b></td>
-                <td colspan="3">{{$res_text}}</td>
+                <td colspan="3" style="width: 100px">{{$res_text}}</td>
             </tr>
             @endif
         </tbody>
