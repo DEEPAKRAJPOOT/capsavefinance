@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="modal-body text-left table-responsive ps ps--theme_default">
+<div class="modal-body text-left">
     <table class="table table-striped cell-border no-footer text-left"  cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
         <tbody> 
             <tr>
