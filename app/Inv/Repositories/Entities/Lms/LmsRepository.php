@@ -1804,4 +1804,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return InterestAccrual::whereIn('invoice_disbursed_id',$invDisIdsArr)->delete();
 	}
+
+	public function deleteTransactionsByInvDisbursedId($invDisIdsArr)
+	{
+		return Transactions::whereIn('invoice_disbursed_id',$invDisIdsArr)->delete();
+	}
 }

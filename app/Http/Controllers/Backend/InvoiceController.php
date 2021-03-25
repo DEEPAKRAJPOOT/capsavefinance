@@ -1793,6 +1793,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     foreach($invoiceIdsArr as $invoice_id){
                         $this->lmsRepo->updateInvoiceStatus($invoice_id, 9);
                     }
+                    $this->lmsRepo->deleteTransactionsByInvDisbursedId($invDisIdsArr);
                     $this->lmsRepo->deleteAccruedInterestData($invDisIdsArr);
                     $this->lmsRepo->deleteInvoiceDisbursed($disbursalIdsArr);
                     $this->lmsRepo->deleteDisbursalStatusLogByDidArr($disbursalIdsArr);
