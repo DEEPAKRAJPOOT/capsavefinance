@@ -2128,7 +2128,13 @@ class ApplicationController extends Controller
                     ];
 			
                     $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);
-                    
+                    if (in_array($appStatus, ['APP_REJECTED', 'APP_CANCEL'])) {
+                    	$updtData = [
+                    		'status' => 2, 
+                    		'is_active' => 0,
+                    	];
+                    	$this->appRepo->updateOfferByAppId($app_id, $updtData);
+                    }
                     
                     $appStatusList = Helpers::getAppStatusList();
                     $arrActivity = [];
