@@ -1051,19 +1051,23 @@ class UserEventsListener extends BaseEvent
 
     // Inform to CPA and CR when agency Status Change
     public function AgencyUpdateToCPAandCR($mailData){
+        $email_to = array();
         $user = unserialize($mailData);
         if(isset($user['trigger_email']) && !empty($user['trigger_email'])) {
-            $email_to = array($user["email"], $user['trigger_email']);
+            foreach ($user['email'] as $key => $emailVal) {
+                $email_to[] = $emailVal;
+            };
+            $email_to[] = $user['trigger_email'];
         } else {
-            $email_to = array($user["email"]);
+            $email_to = $user["email"];
         };
         $this->func_name = __FUNCTION__;
         //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("AGENCY_UPDATE_MAIL_TO_CPA_CR");
         if ($email_content) {
             $mail_body = str_replace(
-                ['%user_email','%curr_user','%curr_email','%trigger_type','%comment','%agency_name','%change_status'],
-                [$user['email'],$user['curr_user'],$user['curr_email'],$user['trigger_type'],$user['comment'],$user['agency_name'],$user['change_status']],
+                ['%curr_user','%curr_email','%trigger_type','%comment','%agency_name','%change_status'],
+                [$user['curr_user'],$user['curr_email'],$user['trigger_type'],$user['comment'],$user['agency_name'],$user['change_status']],
                 $email_content->message
             );
             $mail_subject = $user['subject'];
@@ -1074,11 +1078,12 @@ class UserEventsListener extends BaseEvent
                 $message->to($email_to)->subject($mail_subject);
                 $message->cc($email_cc);
                 
+                $check = array_push($email_to, $user['curr_email']);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => array($user["email"], $user['trigger_email'], $user['curr_email']),
+                    'email_to' => $email_to,
                     'email_type' => $this->func_name,
-                    'name' => $user['name'],
+                    'name' => $user['curr_user'],
                     'subject' => $mail_subject,
                     'body' => $mail_body,
                 ];

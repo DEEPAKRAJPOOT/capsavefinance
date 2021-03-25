@@ -3118,7 +3118,7 @@ if ($err) {
         $trigger_email;
         $where = [];
         $where['fi_addr_id'] = $fiAddId;
-        // $status = $this->application->changeAgentFiStatus($request);
+        $status = $this->application->changeAgentFiStatus($request);
         $app_id = $request->get('app_id');
         $biz_id = $request->get('biz_id');
         $request_info = $request->get('address_id');
@@ -3137,17 +3137,16 @@ if ($err) {
             }
         }
 
-        $currEmailTO = array();
+        $userCreDataMail = array();
         if(!empty($assignees[0])) {
             foreach ($assignees as $key => $value) {
                 $userCreData = $this->userRepo->getUserDetail($value->to_user_id);
-                $currEmailTO[] = $userCreData->email;
+                $userCreDataMail[] = $userCreData->email;
             }
-            echo "<pre";print_r($currEmailTO);die;
 
             $currUserData = $this->userRepo->getUserDetail($roleData);
 
-            $emailDatas['email'] = isset($userCreData) ? $userCreData->email : '';
+            $emailDatas['email'] = isset($userCreDataMail) ? $userCreDataMail : '';
             // $emailDatas['name'] = isset($userCreData) ? $userCreData->f_name . ' ' . $userCreData->l_name : '';
             $emailDatas['curr_user'] = isset($currUserData) ? $currUserData->f_name . ' ' . $currUserData->l_name : '';
             $emailDatas['curr_email'] = isset($currUserData) ? $currUserData->email : '';
@@ -3247,13 +3246,18 @@ if ($err) {
             $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->from_id);
             $trigger_email = $triggerUserCreData->email;
         }
+
+        $userCreDataMail = array();
         if(!empty($assignees[0])) {
             foreach ($assignees as $key => $value) {
                 $userCreData = $this->userRepo->getUserDetail($value->to_user_id);
+                $userCreDataMail[] = $userCreData->email;
+            }
+
                 $currUserData = $this->userRepo->getUserDetail($roleData);
 
-                $emailDatas['email'] = isset($userCreData) ? $userCreData->email : '';
-                $emailDatas['name'] = isset($userCreData) ? $userCreData->f_name . ' ' . $userCreData->l_name : '';
+                $emailDatas['email'] = isset($userCreDataMail) ? $userCreDataMail : '';
+                // $emailDatas['name'] = isset($userCreData) ? $userCreData->f_name . ' ' . $userCreData->l_name : '';
                 $emailDatas['curr_user'] = isset($currUserData) ? $currUserData->f_name . ' ' . $currUserData->l_name : '';
                 $emailDatas['curr_email'] = isset($currUserData) ? $currUserData->email : '';
                 $emailDatas['comment'] = isset($comment) ? $comment : '';
@@ -3263,7 +3267,6 @@ if ($err) {
                 $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email : '';
                 $emailDatas['change_status'] = config('common.FI_RCU_STATUS')[$changeStatus];
                 \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailDatas));
-            }
         }
       return $status;
     }
