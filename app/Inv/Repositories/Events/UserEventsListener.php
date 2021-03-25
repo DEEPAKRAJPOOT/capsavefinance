@@ -1051,16 +1051,12 @@ class UserEventsListener extends BaseEvent
 
     // Inform to CPA and CR when agency Status Change
     public function AgencyUpdateToCPAandCR($mailData){
-        $email_to = array();
         $user = unserialize($mailData);
+        $email_to;
         if(isset($user['trigger_email']) && !empty($user['trigger_email'])) {
-            foreach ($user['email'] as $key => $emailVal) {
-                $email_to[] = $emailVal;
-            };
-            $email_to[] = $user['trigger_email'];
-        } else {
-            $email_to = $user["email"];
-        };
+            $email_to = $user['trigger_email'];
+        }
+
         $this->func_name = __FUNCTION__;
         //Send mail to User
         $email_content = EmailTemplate::getEmailTemplate("AGENCY_UPDATE_MAIL_TO_CPA_CR");
@@ -1072,16 +1068,20 @@ class UserEventsListener extends BaseEvent
             );
             $mail_subject = $user['subject'];
             $email_cc = explode(',', $email_content->cc);
+
+            if (($key = array_search($email_to, $email_cc)) !== false) {
+                unset($email_cc[$key]);
+            }
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
                 function ($message) use ($user, $mail_subject, $mail_body, $email_cc, $email_to) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email_to)->subject($mail_subject);
                 $message->cc($email_cc);
                 
-                $check = array_push($email_to, $user['curr_email']);
+                $check = array($email_to, $user['curr_email']);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $email_to,
+                    'email_to' => $check,
                     'email_type' => $this->func_name,
                     'name' => $user['curr_user'],
                     'subject' => $mail_subject,
