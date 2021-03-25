@@ -1827,9 +1827,10 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $disbursalBatchData = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
             
             if(isset($disbursalBatchData->disbursal_api_log) && !empty($disbursalBatchData->disbursal_api_log)){
-                $idfc_res_text = $disbursalBatchData->disbursal_api_log->res_text;
+                $latestData = $disbursalBatchData->disbursal_api_log->latest();
+                $idfc_res_text = $latestData->res_text;
             }
-            
+            dd($latestData,$idfc_res_text);
             $disbursal = $disbursalBatchData->disbursal;
             $tCust = $disbursal->count();
             $tAmt = number_format($disbursal->sum('disburse_amount'),2);
