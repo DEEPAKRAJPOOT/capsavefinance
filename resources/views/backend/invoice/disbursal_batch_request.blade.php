@@ -77,7 +77,6 @@
         </div>
     </div>
 </div>
-</div>
 {!!Helpers::makeIframePopup('viewOnlineDisbursalRollback','Online Disbursal Rollback', 'modal-lg')!!}
 @endsection
 @section('jscript')
@@ -107,6 +106,25 @@
         defaultDate: new Date(),
     })
 </script>
+
+@php 
+$operation_status = session()->get('operation_status', false);
+$message = session()->get('message');
+@endphp
+@if( $operation_status == 1)
+
+<script>
+    try {
+        var p = window.parent;
+        p.jQuery('#viewOnlineDisbursalRollback').modal('hide');
+        window.parent.location.reload();
+    } catch (e) {
+        if (typeof console !== 'undefined') {
+            console.log(e);
+        }
+    }
+</script>
+@endif
 <script src="{{ asset('backend/js/ajax-js/invoice_list_disbursal_batch_request.js') }}"></script>
 
 @endsection

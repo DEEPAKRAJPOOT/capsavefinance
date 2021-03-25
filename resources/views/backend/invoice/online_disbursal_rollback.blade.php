@@ -2,8 +2,8 @@
 
 @section('content')
 
-<div class="modal-body text-left">
-    <table class="table table-striped cell-border no-footer text-left"  cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+<div class="modal-body table-responsive ps ps--theme_default">
+    <table class="table table-striped cell-border no-footer"  cellspacing="0" width="100%">
         <tbody> 
             <tr>
                 <td><b>Customer name:</b></td>
@@ -41,6 +41,7 @@
             </form>
         </div>
     </div>
+</div>
 @endsection
 @section('jscript')
 <script src="{{ asset('backend/js/ajax-js/invoice_list_disbursal_batch_request.js') }}"></script>
