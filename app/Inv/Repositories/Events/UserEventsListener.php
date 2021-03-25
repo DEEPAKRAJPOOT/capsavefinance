@@ -1067,8 +1067,16 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             $mail_subject = $user['subject'];
-            $email_cc = explode(',', $email_content->cc);
+            // $emailCC = array();
 
+            // foreach ($user['email'] as $key => $emailVal) {
+            //     $emailCC[] = $emailVal;
+            // };
+            
+            $email_cc = explode(',', $email_content->cc);
+            foreach ($user['email'] as $key => $emailVlaue) {
+                array_push($email_cc, $emailVlaue);
+            }
             if (($key = array_search($email_to, $email_cc)) !== false) {
                 unset($email_cc[$key]);
             }
@@ -1079,6 +1087,7 @@ class UserEventsListener extends BaseEvent
                 $message->cc($email_cc);
                 
                 $check = array($email_to, $user['curr_email']);
+                $check = array_merge($check, $email_cc);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => $check,
