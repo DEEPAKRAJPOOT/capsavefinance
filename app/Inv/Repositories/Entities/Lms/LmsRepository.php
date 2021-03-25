@@ -1800,8 +1800,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return DisbursalBatch::where('disbursal_batch_id', $disbursalBatchId)->delete();
 	}
 
-	public function deleteAccruedInterestData($disbursalIds)
+	public function deleteAccruedInterestData($invDisIdsArr)
 	{
-		return InterestAccrual::whereIn('disbursal_id',$disbursalIds)->delete();
+		return InterestAccrual::whereIn('disbursal_id',$invDisIdsArr)->delete();
 	}
 }
