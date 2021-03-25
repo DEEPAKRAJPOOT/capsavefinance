@@ -3141,7 +3141,7 @@ if ($err) {
         if(!empty($assignees[0])) {
             foreach ($assignees as $key => $value) {
                 $userCreData = $this->userRepo->getUserDetail($value->to_user_id);
-                $currEmailTO = $userCreData->email;
+                $currEmailTO[] = $userCreData->email;
             }
             echo "<pre";print_r($currEmailTO);die;
 
