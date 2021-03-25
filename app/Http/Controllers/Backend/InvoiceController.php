@@ -1837,7 +1837,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             foreach($disbursal as $data){
                 foreach($data->invoice_disbursed as $invData) {
                     $invNo[] = $invData->invoice->invoice_no ?? '';
-                    // dd($invData->invoice);
                     $appId = $invData->invoice->lms_user->app_id ?? '';
                 }
                 $tInv += $data->invoice_disbursed->count();
