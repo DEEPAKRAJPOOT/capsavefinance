@@ -1768,7 +1768,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         {
             $disbursalIdsArr = [];
             $invoiceIdsArr = [];
-            $invDisIdsArr = [];
             if($request->has('disbursal_batch_id')){
                 $disbursalBatchId = $request->get('disbursal_batch_id');
             }
@@ -1780,10 +1779,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $disbursalIdsArr[] = $data->disbursal_id;
                 }
                 $disbursedInvoices = $this->lmsRepo->getInvoiceDisbursed($disbursalIdsArr);
-                // dd($disbursedInvoices);
                 foreach($disbursedInvoices as $data){
                     $invoiceIdsArr[] = $data->invoice_id;
-                    $invDisIdsArr[] = $data->invoice_disbursed_id;
                 }
 
                 
@@ -1793,8 +1790,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     foreach($invoiceIdsArr as $invoice_id){
                         $this->lmsRepo->updateInvoiceStatus($invoice_id, 9);
                     }
-                    $this->lmsRepo->deleteTransactionsByInvDisbursedId($invDisIdsArr);
-                    $this->lmsRepo->deleteAccruedInterestData($invDisIdsArr);
                     $this->lmsRepo->deleteInvoiceDisbursed($disbursalIdsArr);
                     $this->lmsRepo->deleteDisbursalStatusLogByDidArr($disbursalIdsArr);
                     $this->lmsRepo->deleteDisbursalByDBId($disbursalBatchId);
