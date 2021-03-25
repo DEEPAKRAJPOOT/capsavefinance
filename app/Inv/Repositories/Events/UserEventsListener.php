@@ -1062,8 +1062,8 @@ class UserEventsListener extends BaseEvent
         $email_content = EmailTemplate::getEmailTemplate("AGENCY_UPDATE_MAIL_TO_CPA_CR");
         if ($email_content) {
             $mail_body = str_replace(
-                ['%curr_user','%curr_email','%trigger_type','%comment','%agency_name','%change_status'],
-                [$user['curr_user'],$user['curr_email'],$user['trigger_type'],$user['comment'],$user['agency_name'],$user['change_status']],
+                ['%name','%curr_user','%curr_email','%trigger_type','%comment','%agency_name','%change_status'],
+                [$user['name'], $user['curr_user'],$user['curr_email'],$user['trigger_type'],$user['comment'],$user['agency_name'],$user['change_status']],
                 $email_content->message
             );
             $mail_subject = $user['subject'];

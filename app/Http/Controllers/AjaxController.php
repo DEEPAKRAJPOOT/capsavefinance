@@ -3129,7 +3129,7 @@ if ($err) {
         $checkRoleUserCRCPA = AppAssignment::getAllRoleDataByUserIdAppID($getFiAddData[0]->from_id, $app_id);
         if(!empty($checkRoleUserCRCPA[0])) {
             $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->from_id);
-            $trigger_email = $triggerUserCreData->email;
+            $trigger_email = $triggerUserCreData;
         }
         foreach ($fiLists as $key => $fiList) {
             foreach($fiList->fiAddress as $fiAdd) {
@@ -3143,18 +3143,17 @@ if ($err) {
                 $userCreData = $this->userRepo->getUserDetail($value->to_user_id);
                 $userCreDataMail[] = $userCreData->email;
             }
-
             $currUserData = $this->userRepo->getUserDetail($roleData);
 
             $emailDatas['email'] = isset($userCreDataMail) ? $userCreDataMail : '';
-            // $emailDatas['name'] = isset($userCreData) ? $userCreData->f_name . ' ' . $userCreData->l_name : '';
+            $emailDatas['name'] = isset($trigger_email) ? $trigger_email->f_name . ' ' . $trigger_email->l_name : '';
             $emailDatas['curr_user'] = isset($currUserData) ? $currUserData->f_name . ' ' . $currUserData->l_name : '';
             $emailDatas['curr_email'] = isset($currUserData) ? $currUserData->email : '';
             $emailDatas['comment'] = isset($comment) ? $comment : '';
             $emailDatas['trigger_type'] = 'FI';
             $emailDatas['subject'] = 'Case Id '. $request_info .' of Agency ' . $agencyName .' updated the status';
             $emailDatas['agency_name'] = $agencyName;
-            $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email : '';
+            $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email->email : '';
             $emailDatas['change_status'] = config('common.FI_RCU_STATUS')[$changeStatus];
             \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailDatas));
             
@@ -3244,7 +3243,7 @@ if ($err) {
         $checkRoleUserCRCPA = AppAssignment::getAllRoleDataByUserIdAppID($getFiAddData[0]->from_id, $app_id);
         if(!empty($checkRoleUserCRCPA[0])) {
             $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->from_id);
-            $trigger_email = $triggerUserCreData->email;
+            $trigger_email = $triggerUserCreData;
         }
 
         $userCreDataMail = array();
@@ -3257,14 +3256,14 @@ if ($err) {
                 $currUserData = $this->userRepo->getUserDetail($roleData);
 
                 $emailDatas['email'] = isset($userCreDataMail) ? $userCreDataMail : '';
-                // $emailDatas['name'] = isset($userCreData) ? $userCreData->f_name . ' ' . $userCreData->l_name : '';
+                $emailDatas['name'] = isset($trigger_email) ? $trigger_email->f_name . ' ' . $trigger_email->l_name : '';
                 $emailDatas['curr_user'] = isset($currUserData) ? $currUserData->f_name . ' ' . $currUserData->l_name : '';
                 $emailDatas['curr_email'] = isset($currUserData) ? $currUserData->email : '';
                 $emailDatas['comment'] = isset($comment) ? $comment : '';
                 $emailDatas['trigger_type'] = 'RCU';
                 $emailDatas['subject'] = 'Case Id '. $request_info .' of Agency ' . $fiLists[0]['agencies'][0]->agency->comp_name .' updated the status';
                 $emailDatas['agency_name'] = $fiLists[0]['agencies'][0]->agency->comp_name;
-                $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email : '';
+                $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email->email : '';
                 $emailDatas['change_status'] = config('common.FI_RCU_STATUS')[$changeStatus];
                 \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailDatas));
         }
