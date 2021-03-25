@@ -1617,6 +1617,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return DisbursalBatch::with('disbursal_api_log')
 				->where('disbursal_batch_id', $disbursalBatchId)
 				->where('batch_status', 1)
+				->latest()
 				->first();
 	}
 

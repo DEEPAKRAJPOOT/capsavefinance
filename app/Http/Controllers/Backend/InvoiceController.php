@@ -1825,9 +1825,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $idfc_res_text = '';
             $disbursalBatchId = $req->get('disbursal_batch_id');
             $disbursalBatchData = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
-            
             if(isset($disbursalBatchData->disbursal_api_log) && !empty($disbursalBatchData->disbursal_api_log)){
-                $latestData = $disbursalBatchData->disbursal_api_log->latest('created_at');
+                $latestData = $disbursalBatchData->disbursal_api_log;
                 $idfc_res_text = $latestData->res_text;
             }
             $disbursal = $disbursalBatchData->disbursal;
