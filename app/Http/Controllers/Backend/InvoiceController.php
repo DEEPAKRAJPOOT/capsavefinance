@@ -1842,16 +1842,18 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             foreach($disbursal as $data){
                 foreach($data->invoice_disbursed as $invData) {
                     $invNo[] = $invData->invoice->invoice_no ?? '';
+                    $appId = $invData->invoice->lms_user->app_id;
                 }
                 $tInv += $data->invoice_disbursed->count();
-                $appId = $data->app_id;
                 $userId = $data->user_id;
             }
+            
             $invNoString = implode(', ',$invNo); 
+            $appData = $this->appRepo->getAppDataByAppId($appId); 
             $custName = HelperS::getUserInfo($userId);
             $fullCustName = $custName->f_name." ".$custName->l_name;
 
-            return view('backend.invoice.online_disbursal_rollback')->with(['disbursal_batch_id' => $disbursalBatchId, 'fullCustName' => $fullCustName, 'invNoString' => $invNoString, 'tInv' => $tInv, 'tAmt' => $tAmt, 'tCust' => $tCust, 'appId' => $appId, 'res_text' => $idfc_res_text]);
+            return view('backend.invoice.online_disbursal_rollback')->with(['disbursal_batch_id' => $disbursalBatchId, 'fullCustName' => $fullCustName, 'invNoString' => $invNoString, 'tInv' => $tInv, 'tAmt' => $tAmt, 'tCust' => $tCust, 'appId' => $appData->app_code, 'res_text' => $idfc_res_text]);
             } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
