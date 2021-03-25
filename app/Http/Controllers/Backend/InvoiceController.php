@@ -1779,16 +1779,19 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $disbursalIdsArr[] = $data->disbursal_id;
                 }
                 $disbursedInvoices = $this->lmsRepo->getInvoiceDisbursed($disbursalIdsArr);
+                // dd($disbursedInvoices);
                 foreach($disbursedInvoices as $data){
                     $invoiceIdsArr[] = $data->invoice_id;
                 }
 
+                
                 if($disbursalBatchData && $disbursalData && $disbursedInvoices){
                     
                     $this->lmsRepo->deleteInvoiceStatusLogByInvIdArr($invoiceIdsArr);
                     foreach($invoiceIdsArr as $invoice_id){
                         $this->lmsRepo->updateInvoiceStatus($invoice_id, 9);
                     }
+                    $this->lmsRepo->deleteAccruedInterestData($disbursalIdsArr);
                     $this->lmsRepo->deleteInvoiceDisbursed($disbursalIdsArr);
                     $this->lmsRepo->deleteDisbursalStatusLogByDidArr($disbursalIdsArr);
                     $this->lmsRepo->deleteDisbursalByDBId($disbursalBatchId);
