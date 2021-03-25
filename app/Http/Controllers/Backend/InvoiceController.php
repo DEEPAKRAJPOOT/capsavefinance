@@ -1795,15 +1795,14 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $this->lmsRepo->deleteDisbursalByDBId($disbursalBatchId);
                     $this->lmsRepo->deleteDisbursalBatchByDBId($disbursalBatchId);
                     
-                    Session::flash('operation_status', 1);
                     Session::flash('message', 'Online disbursal successfully rollbacked');
                     return redirect()->route('backend_get_disbursal_batch_request');
                 }
-                Session::flash('operation_status', 1);
+                
                 Session::flash('message', 'Record Not Found / Already deleted!');
                 return redirect()->route('backend_get_disbursal_batch_request');
             }            
-            Session::flash('operation_status', 0);
+            
             Session::flash('error', 'Invalid Request');
             return redirect()->route('backend_get_disbursal_batch_request');
         } catch (Exception $ex) {

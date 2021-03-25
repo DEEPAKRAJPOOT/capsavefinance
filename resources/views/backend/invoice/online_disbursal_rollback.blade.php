@@ -34,7 +34,7 @@
     </br>
     <div class="row">
         <div class="col-sm-12 offset-sm-10">
-            <form action="{{route('rollback_disbursal_batch_request')}}" method="post">
+            <form action="{{route('rollback_disbursal_batch_request')}}" method="post" target="_top">
             @csrf
                 <input type="hidden" name="disbursal_batch_id" value="{{$disbursal_batch_id}}" />
                 <input type="submit" class="btn btn-primary" value="Submit" />
