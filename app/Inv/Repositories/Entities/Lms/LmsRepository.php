@@ -69,6 +69,7 @@ use App\Inv\Repositories\Models\UserNach;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReq;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReqBatch;
 use App\Inv\Repositories\Models\Lms\NachTransReq;
+use App\Inv\Repositories\Models\InvoiceStatusLog;
 
 /**
  * Lms Repository class
@@ -1616,6 +1617,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return DisbursalBatch::with('disbursal_api_log')
 				->where('disbursal_batch_id', $disbursalBatchId)
 				->where('batch_status', 1)
+				->latest()
 				->first();
 	}
 
@@ -1771,5 +1773,31 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return InvoiceDisbursed::where('invoice_id', $invoiceId)
 				->whereIn('status_id', [10,12])
 				->get();
+	}
+
+	public function getDisbursalByDBId($disbursalBatchId){
+		return Disbursal::where('disbursal_batch_id',$disbursalBatchId)->get();
+	}
+
+	public function deleteDisbursalStatusLogByDidArr($IdsArr){
+		return DisbursalStatusLog::whereIn('disbursal_id',$IdsArr)->where('status_id',10)->delete();
+	}
+
+	public function deleteInvoiceStatusLogByInvIdArr($IdsArr){
+		return InvoiceStatusLog::whereIn('invoice_id',$IdsArr)->where('status_id',10)->delete();
+	}
+
+	public static  function deleteInvoiceDisbursed($disbursalIds)
+	{
+		return InvoiceDisbursed::whereIn('disbursal_id',$disbursalIds)->delete();
+	}
+
+	public function deleteDisbursalByDBId($disbursalBatchId){
+		return Disbursal::where('disbursal_batch_id',$disbursalBatchId)->delete();
+	}
+
+	public function deleteDisbursalBatchByDBId($disbursalBatchId)
+	{
+		return DisbursalBatch::where('disbursal_batch_id', $disbursalBatchId)->delete();
 	}
 }

@@ -6988,7 +6988,15 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($disbursalBatchRequest) {
-                        $act = '<a   href="' . route('disbursal_payment_enquiry', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';
+                        $act = '';
+                        if(Helpers::checkPermission('online_disbursal_rollback')){
+                            $act .='</br><a data-toggle="modal"  data-height="400px" 
+                            data-width="100%" 
+                            data-target="#viewOnlineDisbursalRollback"
+                            data-url="' . route('online_disbursal_rollback', ['disbursal_batch_id' =>$disbursalBatchRequest->disbursal_batch_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Online Disbursal Rollback"><i class="fa fa-eye"></i></a>';
+                        }
+
+                        $act .= '<a   href="' . route('disbursal_payment_enquiry', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';
                         
                         return $act;
                 })
