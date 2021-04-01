@@ -164,9 +164,6 @@ class EodProcessController extends Controller
                     $eodProcess = $this->lmsRepo->saveEodProcess($data,$eod_process_id);
                     if ($eodProcess) {
                         $response = true;
-                        // Calculate interest for new date
-                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
-                        $Obj->dailyIntAccrual();
                     }
             }
         }
