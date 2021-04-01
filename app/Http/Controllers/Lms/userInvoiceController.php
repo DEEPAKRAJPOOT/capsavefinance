@@ -659,10 +659,14 @@ class userInvoiceController extends Controller
                    $igst_amt = round((($base_amt * $igst_rate)/100),2); 
                 }
             }
-
+            $invoice_no = NULL;
+            $invoiceNoFound = $txn->invoiceDisbursed->invoice->invoice_no ?? NULL;
+            if (isset($invoiceNoFound)) {
+               $invoice_no = "($invoiceNoFound)";
+            }
             $intrest_charges[$key] = array(
                 'trans_id' => $txn->trans_id,
-                'desc' => $txn->transType->trans_name,
+                'desc' => $txn->transType->trans_name . " $invoice_no",
                 'sac' => $txn->transType->charge->sac_code ?? '0000',
                 'base_amt' => round($base_amt,2),
                 'sgst_rate' => $sgst_rate,
