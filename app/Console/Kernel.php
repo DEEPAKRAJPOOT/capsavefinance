@@ -38,6 +38,7 @@ class Kernel extends ConsoleKernel
         
         if(config('lms.LMS_STATUS')){
             $schedule->command('lms:interestaccrual')->timezone(config('common.timezone'))->dailyAt('00:01');
+            $schedule->command('lms:interestaccrual')->dailyAt('00:01');
         }
 
         if(config('lms.LMS_STATUS') && !\Helpers::checkEodProcess() && \Helpers::getInterestAccrualCronStatus() && !\Helpers::getEodProcessCronStatus()){
