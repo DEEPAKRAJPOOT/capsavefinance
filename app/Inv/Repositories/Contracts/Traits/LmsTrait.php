@@ -238,7 +238,7 @@ trait LmsTrait
         $disbursalData['acc_no'] = ($user['is_buyer'] == 2) ? $user['anchor_bank_details']['acc_no'] : $user['supplier_bank_detail']['acc_no'];            
         $disbursalData['virtual_acc_id'] = $user['lms_user']['virtual_acc_id'] ?? null;
        
-        $disbursalData['status_id'] = ($disburseType == 2) ? 12 : 10;
+        $disbursalData['status_id'] = 10;
         $disbursalData['disburse_type'] = $disburseType;
        
         $disbursalData['funded_date'] = ($disburseType == 1) ? \Carbon\Carbon::now()->format('Y-m-d h:i:s') : null;

@@ -82,7 +82,7 @@ class EodProcessController extends Controller
                     $start = new \Carbon\Carbon(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', \Helpers::getSysStartDate()));
                     $sys_start_date = $start->addDays(1)->format('Y-m-d 00:00:00');
 
-                    $sys_start_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $sys_start_date, config('common.timezone'))
+                    $sys_start_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $sys_start_date, config('app.timezone'))
                         ->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s');
 
                     $this->lmsRepo->updateEodProcess(['is_active' => 0], ['eod_process_id' => $eod_process_id]);
@@ -96,8 +96,6 @@ class EodProcessController extends Controller
                         $logData = [];
                         $logData['eod_process_id'] = $eod_process_id;
                         $this->lmsRepo->saveEodProcessLog($logData);
-                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
-                        $Obj->dailyIntAccrual();
                     }
                     $response = true;
                 } else {
@@ -164,9 +162,6 @@ class EodProcessController extends Controller
                     $eodProcess = $this->lmsRepo->saveEodProcess($data,$eod_process_id);
                     if ($eodProcess) {
                         $response = true;
-                        // Calculate interest for new date
-                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
-                        $Obj->dailyIntAccrual();
                     }
             }
         }

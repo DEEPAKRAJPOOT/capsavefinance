@@ -95,7 +95,7 @@
                                     <div class="col-md-6 check_upload_inv">
                                         <div class="form-group">
                                          <label for="txtCreditPeriod">Upload Invoice Copy
-                                             <span class="error_message_label">*</span><span class="error">&nbsp;&nbsp;(zip file contains copy of invoice.)</span></label>
+                                             <span class="error_message_label customFile_astrik"></span><span class="error">&nbsp;&nbsp;(zip file contains copy of invoice.)</span></label>
                                         <div class="custom-file  ">
 
                                             <input type="file"   class="custom-file-input fileUpload" id="customImageFile" data-id="1" name="file_image_id">
@@ -235,7 +235,7 @@
         token: "{{ csrf_token() }}",
     };
 
-    $(".check_upload_inv").hide();
+    // $(".check_upload_inv").hide();
     $(document).ready(function () {
       $(document).on('change blur keyup', '.changeAnchor', function(){
             var anchorID = $(this).val();
@@ -248,9 +248,11 @@
                },
                success: function(response){
                   if(response['status'] === '1') {
-                     $(".check_upload_inv").show();
+                    //  $(".check_upload_inv").show();
+                    $(".customFile_astrik").html('*');
                   } else {
-                     $(".check_upload_inv").hide();
+                    //  $(".check_upload_inv").hide();
+                    $(".customFile_astrik").html('');
                   }
                }
             });
