@@ -639,11 +639,12 @@ class Transactions extends BaseModel {
             ->sum('amount');
 
             if($totalDebitAmt <= $totalCreditAmt){
+                $totalInterestAmt = 0;
                 $accruedInterest = $invoice->accruedInterest();
                 if($payment_date){
                     $accruedInterest = $accruedInterest->whereDate('interest_date','<',$payment_date);
+                    $totalInterestAmt = round($accruedInterest->sum('accrued_interest'),2);
                 } 
-                $totalInterestAmt = round($accruedInterest->sum('accrued_interest'),2);
 
                 $credit = [];
                 $debit = [];
@@ -1040,14 +1041,16 @@ class Transactions extends BaseModel {
             $fromDate = self::where('invoice_disbursed_id',$this->invoice_disbursed_id)
             ->whereDate('trans_date','<=',$this->trans_date)
             ->where('trans_id','<',$this->trans_id)
-            ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+            ->where('trans_type',$this->trans_type)
             ->whereNull('link_trans_id')
             ->whereNull('parent_trans_id')
             ->where('entry_type','0')
             ->max('trans_date');
             
-            if(!$fromDate){
+            if((!$fromDate && $this->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
                 $fromDate = $this->disburse->int_accrual_start_dt;
+            }elseif((!$fromDate && $this->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE'))){
+                $fromDate = $this->disburse->payment_due_date;
             }else{
                 $fromDate = date('Y-m-d', strtotime($fromDate . "+ 1 days"));
             }
@@ -1057,12 +1060,15 @@ class Transactions extends BaseModel {
 
     public function getToIntDateAttribute(){
         $toDate = null;
-        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST')])){
             if($this->invoiceDisbursed->invoice->program_offer->payment_frequency == 1){
                 $toDate = $this->invoiceDisbursed->payment_due_date;
             }else{
                 $toDate = $this->trans_date;
             }
+        }elseif(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+            $toDate = $this->trans_date;
         }
         return date('Y-m-d', strtotime($toDate));
     }
@@ -1120,6 +1126,7 @@ class Transactions extends BaseModel {
                 $data[strtotime($uITrans->fromIntDate).'-'.$uITrans->trans_id] = 
                 [
                     'loan' => config('common.idprefix.APP').$uITrans->invoiceDisbursed->invoice->app_id,
+                    'cust_id' => $uITrans->invoiceDisbursed->invoice->lms_user->customer_id,
                     'client_name' => $uITrans->user->biz->biz_entity_name,
                     'disbursed_amt' => $dTrans->amount,
                     'from_date' => $uITrans->fromIntDate,
@@ -1187,10 +1194,10 @@ class Transactions extends BaseModel {
 
         $chargTrans = $chargTrans->get();
         foreach($chargTrans as $cTrans){
-            
             $data[$cTrans->trans_id] = 
             [
                 'loan' => '',
+                'cust_id' => $cTrans->user->lms_user->customer_id,
                 'client_name' =>$cTrans->user->biz->biz_entity_name,
                 'chrg_name' => $cTrans->transName,
                 'trans_date' => $cTrans->trans_date,
@@ -1258,6 +1265,7 @@ class Transactions extends BaseModel {
                 $data[strtotime($tds->trans_date).'-'.$tds->trans_id] = 
                 [
                     'loan' => '',
+                    'cust_id' => $tds->user->lms_user->customer_id,
                     'client_name' => $tds->user->biz->biz_entity_name,
                     'trans_date' => $tds->trans_date,
                     'int_amt' => $cTrans->amount,

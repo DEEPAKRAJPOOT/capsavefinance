@@ -120,8 +120,8 @@
                                             <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                             <span id="msgProLimit" class="error"></span>
                                          </div>
-										 <div class="form-group">
-                                            <label for="txtCreditPeriod">Upload Invoice Copy<span class="error_message_label">*</span></label>
+										 <div class="form-group check_upload_inv">
+                                            <label for="txtCreditPeriod">Upload Invoice Copy<span class="error_message_label customFile_astrik"></span></label>
 											
 		<div class="custom-file">
                <label for="email">Upload Document</label>
@@ -348,7 +348,37 @@ var messages = {
     get_tenor: "{{ URL::route('get_tenor') }}",
     get_adhoc: "{{ URL::route('get_adhoc') }}",
     check_duplicate_invoice: "{{ URL::route('check_duplicate_invoice') }}",
+    chk_anchor_phy_inv_req: "{{ URL::route('chk_anchor_phy_inv_req') }}",
    };
+ 
+   // $(".check_upload_inv").hide();
+   $(document).ready(function () {
+      $(document).on('change blur keyup', '.changeAnchor', function(){
+            var anchorID = $(this).val();
+            $.ajax({
+               url: messages.chk_anchor_phy_inv_req,
+               type: 'POST',
+               data: {
+                     'anchorID' : anchorID,
+                     '_token' : messages.token,
+               },
+               success: function(response){
+                  if(response['status'] === '1') {
+                     $(".customFile_astrik").html('*');
+                     //bug fixed thanks to @Sparky
+                     $('input[name^="doc_file"]').each(function () {
+                        $(this).rules('add', {
+                           required: true,
+                           // accept: "image/jpeg, image/pjpeg"
+                        })
+                     })                         
+                  } else {
+                     $(".customFile_astrik").html('');
+                  }
+               }
+            });
+         });      
+   })
  
   </script> 
   <script src="{{ asset('backend/js/single_invoice.js') }}"></script>

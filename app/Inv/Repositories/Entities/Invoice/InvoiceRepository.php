@@ -1224,6 +1224,18 @@ use CommonRepositoryTraits;
                return $ex;
          }
        
-    }  
+    }
+    
+    /* update invoice amount with statusid  */
+    public function updateInvoiceAmountWithStausId($attributes)
+    {
+        try
+        {
+           return InvoiceModel::updateInvoiceAmountWithStausId($attributes);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }     
     
 }

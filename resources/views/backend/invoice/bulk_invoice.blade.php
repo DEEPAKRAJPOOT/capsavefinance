@@ -45,7 +45,7 @@
                                 <div class="col-md-6">
                                         <div class="form-group">
                                 <label for="txtCreditPeriod">Anchor Business Name  <span class="error_message_label">*</span> <!--<span id="anc_limit" class="error"></span> --> </label>
-                                            <select readonly="readonly" class="form-control changeBulkAnchor" id="anchor_bulk_id" name="anchor_name">
+                                            <select readonly="readonly" class="form-control changeBulkAnchor changeAnchor" id="anchor_bulk_id" name="anchor_name">
 
 
                                                 @if(count($anchor_list) > 0)
@@ -92,10 +92,10 @@
                                             <span id="program_bulk_id_msg" class="error"></span>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 check_upload_inv">
                                         <div class="form-group">
                                          <label for="txtCreditPeriod">Upload Invoice Copy
-                                             <span class="error_message_label">*</span><span class="error">&nbsp;&nbsp;(zip file contains copy of invoice.)</span></label>
+                                             <span class="error_message_label customFile_astrik"></span><span class="error">&nbsp;&nbsp;(zip file contains copy of invoice.)</span></label>
                                         <div class="custom-file  ">
 
                                             <input type="file"   class="custom-file-input fileUpload" id="customImageFile" data-id="1" name="file_image_id">
@@ -231,11 +231,33 @@
         front_program_list: "{{ URL::route('front_program_list') }}",
         front_supplier_list: "{{ URL::route('front_supplier_list') }}",
         delete_temp_invoice: "{{ URL::route('delete_temp_invoice') }}",
-
+        chk_anchor_phy_inv_req: "{{ URL::route('chk_anchor_phy_inv_req') }}",
         token: "{{ csrf_token() }}",
     };
 
-   
+    // $(".check_upload_inv").hide();
+    $(document).ready(function () {
+      $(document).on('change blur keyup', '.changeAnchor', function(){
+            var anchorID = $(this).val();
+            $.ajax({
+               url: messages.chk_anchor_phy_inv_req,
+               type: 'POST',
+               data: {
+                     'anchorID' : anchorID,
+                     '_token' : messages.token,
+               },
+               success: function(response){
+                  if(response['status'] === '1') {
+                    //  $(".check_upload_inv").show();
+                    $(".customFile_astrik").html('*');
+                  } else {
+                    //  $(".check_upload_inv").hide();
+                    $(".customFile_astrik").html('');
+                  }
+               }
+            });
+         });      
+   })   
 </script>
 <script src="{{ asset('backend/js/bulk_invoice.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/invoice_list.js') }}"></script>
