@@ -1210,6 +1210,11 @@ Route::group(
         ]
     );
 
+    Route::post('/change_agency_status', [
+        'as' => 'change_agency_status',
+        'uses' => 'AjaxController@changeAgencyStatus',
+    ]);
+
     Route::post('/change_agency_user_status', [
         'as' => 'change_agency_user_status',
         'uses' => 'AjaxController@changeUsersAgencyStatus',

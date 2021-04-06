@@ -4891,7 +4891,22 @@ if ($err) {
         $condArr['type']  = 'pdf';
         $tds['pdfUrl'] = route('tds_download_reports', $condArr);
         return new JsonResponse($tds);
-    } 
+    }
+
+
+     /**
+     * change Agency User status
+     *
+     * @param Request $request
+     * @return type mixed
+     */
+    public function changeAgencyStatus(Request $request)
+    {
+        $agency_id = $request->get('agency_id');
+        $is_active = $request->get('is_active');
+        $result = $this->userRepo->updateAgencyStatus(['is_active' => $is_active], ['agency_id' => $agency_id]);
+        return \Response::json(['success' => $result]);
+    }
 
         
     /**
