@@ -2203,4 +2203,19 @@ class Helper extends PaypalHelper
         $bankData = Bank::find($id);
         return $bankData['bank_name'];
     }
+
+    public static function formatCurrency($amount, $decimal = true, $prefixCurrency = true)
+    {
+        if(is_numeric($amount)){
+
+            $currency = '₹';
+            $amount = $decimal ? round($amount,2) : round($amount);
+            $formattedAmount = preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $amount);
+            if ($prefixCurrency) {
+                $formattedAmount = $currency ."$formattedAmount";
+            }
+            return $formattedAmount;
+        }
+        return null;
+    }
 }

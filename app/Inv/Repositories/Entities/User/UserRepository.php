@@ -33,6 +33,7 @@ use Auth;
 use App\Inv\Repositories\Models\CoLenderUsers;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Program;
 
 class UserRepository extends BaseRepositories implements UserInterface
 {
@@ -1756,5 +1757,43 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
         return User::getSupplierDataById($supplierId);
     }    
+    public function getLenderAnchorDetail($anchorId = null)
+    {
+        return Anchor::get();
+    }
+
+    public function getAnchorUserDataDetail($anchorId = null)
+    {
+        return AnchorUser::getAnchorUserDataDetail($anchorId);
+    }
+
+    public function getAnchorInactiveUserDataDetail($anchorId = null)
+    {
+        return AnchorUser::getAnchorInactiveUserDataDetail($anchorId);
+    }
+
+    public function getAnchorAppDataDetail($anchorId = null)
+    {
+        return Application::getAnchorAppDataDetail($anchorId);
+    }
+
+    public function getAnchorInvoiceDataDetail($anchorId = null)
+    {
+        return BizInvoice::getAnchorInvoiceDataDetail($anchorId);
+    }
+
+    public function getAnchorDetail($anchorId = null)
+    {
+        return Program::with('programList')
+            ->where('anchor_id', $anchorId)
+            ->where('parent_prgm_id', 0)
+            ->first();
+    }
+
+    public function getPrgmDetail($anchorId = null, $prgmId = null)
+    {
+        return Program::getSubProgramListByParentId((int) $anchorId, $prgmId)->get();
+    }
+    
 }
 
