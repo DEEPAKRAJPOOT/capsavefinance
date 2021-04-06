@@ -239,11 +239,11 @@ class Payment extends BaseModel {
         ->where('is_settled','1')->max('date_of_payment');
         
         $validPayment = self::where('user_id',$this->user_id)
-        ->where('is_settled','0')
-        ->where('action_type','1');
+        ->where('is_settled','0');
+        //->whereIn('action_type',['1','5']);
 
         if($lastSettledPaymentDate){
-            $validPayment = $validPayment->whereDate('date_of_payment','>=',$lastSettledPaymentDate);
+            $validPayment = $validPayment->where('date_of_payment','>=',$lastSettledPaymentDate);
             if(strtotime($lastSettledPaymentDate) > strtotime($this->date_of_payment)){
                 $error = 'Invalid Payment: The backdated payment from the last settled payment!';
             }
