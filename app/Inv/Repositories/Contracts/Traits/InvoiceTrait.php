@@ -25,6 +25,7 @@ use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
+use App\Inv\Repositories\Models\Program;
 
 
 
@@ -401,12 +402,18 @@ trait InvoiceTrait
    }
 
      public static  function    invoiceApproveLimit($attr)
-   {
+   {  
+        $prgmData = Program::where('prgm_id', $attr['prgm_id'])->first();
+        if (isset($prgmData->parent_prgm_id)) {
+           $prgm_ids = Program::where('parent_prgm_id', $prgmData->parent_prgm_id)->where('prgm_id', '<=', $attr['prgm_id'])->pluck('prgm_id')->toArray();
+        }else{
+            $prgm_ids = [$attr['prgm_id']];
+        }
         $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['user_id' => $attr['user_id'],'status' =>2])->count();  
        if($is_enhance==1)
        {
-            $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_margin_amount');
-            $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('repayment_amt');
+            $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->sum('invoice_margin_amount');
+            $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->sum('repayment_amt');
             return $marginApprAmt-$marginReypayAmt;
        }
        else
