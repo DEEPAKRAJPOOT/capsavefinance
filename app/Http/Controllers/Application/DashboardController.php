@@ -7,6 +7,7 @@ use Helpers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Contracts\Traits\StorageAccessTraits;
+use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface;
 
@@ -21,6 +22,7 @@ class DashboardController extends Controller
      */
     protected $userRepo;
     protected $application;
+    protected $lmsRepo;
 
     use StorageAccessTraits;
 
@@ -30,11 +32,13 @@ class DashboardController extends Controller
      * @return void
      */
     public function __construct(InvUserRepoInterface $user,
-                                ApplicationInterface $application)
+                                ApplicationInterface $application,
+                                InvLmsRepoInterface $lms_repo)
     {
         $this->middleware('auth');
         $this->userRepo    = $user;
         $this->application = $application;
+        $this->lmsRepo = $lms_repo;
     }
 
     /**
@@ -71,7 +75,17 @@ class DashboardController extends Controller
             }
             $benifinary['user_type'] = (int) Auth::user()->user_type;
 
-            return view('frontend.dashboard',compact('benifinary'));
+            $outstandingAmt = $this->lmsRepo->getUnsettledTrans($userId)->sum('outstanding');
+            if ((int) Auth::user()->user_type == 1) {
+                $suppData = $this->userRepo->getSupplierDataById($userId);
+                $supplierData = isset($suppData[0]) ? $suppData[0] : [];
+//               dd('$supplierData--', $supplierData, '$outstandingAmt---', $outstandingAmt);
+            return view('frontend.supplier_dashboard')
+                        ->with('supplierData', $supplierData)
+                        ->with('outstandingAmt', $outstandingAmt);
+            } else {
+                return view('frontend.dashboard',compact('benifinary'));
+            }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }

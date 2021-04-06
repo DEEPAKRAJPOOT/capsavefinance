@@ -1747,11 +1747,14 @@ class UserRepository extends BaseRepositories implements UserInterface
         return User::updateUserStatus($attributes, $conditions);
     }
 
-
     public function updateAgencyStatus($attributes, $conditions)
     {
         return Agency::updateAgencyStatus($attributes, $conditions);
     }
-    
+    // Frontend Dashboard
+    public function getSupplierDataById($supplierId)
+    {
+        return User::getSupplierDataById($supplierId);
+    }    
 }
 
