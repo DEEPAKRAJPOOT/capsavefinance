@@ -6284,7 +6284,13 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('select', function($trans)use($payment){
                 $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
-                $paymentDate = $payment->date_of_payment ?? NULL; 
+                $paymentDate = $payment->date_of_payment ?? NULL;
+                if (isset(userInvoiceDate)) {
+                    $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
+                }
+                if (isset(userInvoiceDate)) {
+                    $paymentDate = date('Y-m-d', strtotime($paymentDate));
+                }
                 $transDisabled = '';
                 $payEnable = 1;
                 $class = 'check';
