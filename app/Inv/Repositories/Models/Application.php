@@ -912,7 +912,7 @@ class Application extends BaseModel
                     ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
                     ->where(function ($q) {
                         $q->where(['app.status' => 2]);
-                        // $q->orWhere(['app.is_child_sanctioned' => 0]);
+                        $q->orWhere(['app.is_child_sanctioned' => 1]);
                     })
                     ->where(['anchor_user.anchor_id' => \Auth::user()->anchor_id])
                     ->pluck('app.app_id');
@@ -920,7 +920,7 @@ class Application extends BaseModel
             $getAppId  = self::select('app.*')
                     ->where(function ($q) {
                         $q->where(['app.status' => 2]);
-                        // $q->orWhere(['app.is_child_sanctioned' => 0]);
+                        $q->orWhere(['app.is_child_sanctioned' => 1]);
                     })
                     ->pluck('app_id');            
         }
