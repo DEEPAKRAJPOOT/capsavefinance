@@ -6286,11 +6286,15 @@ class DataRenderer implements DataProviderInterface
                 $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
                 $paymentDate = $payment->date_of_payment ?? NULL; 
                 $transDisabled = '';
-                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) > preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                $payEnable = 1;
+                $class = 'check';
+                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
                    $transDisabled = 'disabled';
+                   $payEnable = 0;
+                   $class = '';
                 }
                 $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ($trans->transType->id == config('lms.TRANS_TYPE.INTEREST') ? 'interest' : '');
-                $result = "<input class='check' $transDisabled pay='$paymentDate' userInv='$userInvoiceDate' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
+                $result = "<input class='$class' id='check_".$trans->trans_id."' $transDisabled payenabled='$payEnable' pay='$paymentDate' userInv='$userInvoiceDate' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
                 return $result;
             })
            

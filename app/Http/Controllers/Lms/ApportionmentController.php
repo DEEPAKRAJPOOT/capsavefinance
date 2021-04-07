@@ -603,11 +603,10 @@ class ApportionmentController extends Controller
             $paymentId = $request->payment_id;
             $payments = ($request->payment)?$request->payment:[];
             $checks   = ($request->has('check'))?$request->check:[];
-
             $userDetails = $this->getUserDetails($userId); 
             $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
 
-            if(!$paymentDetails['isApportPayValid']){
+            if(!$paymentDetails['isApportPayValid'] || empty($checks) || $paymentDetails['is_settled'] == 1){
                 Session::flash('error', trans('Apportionment is not possible for the selected Payment. Please select valid payment for the unsettled payment screen.'));
                 return redirect()->back()->withInput();
             }
@@ -627,6 +626,12 @@ class ApportionmentController extends Controller
             }
 
             foreach ($transactions as $trans){
+
+                $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
+                $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL; 
+                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                    continue;
+                }
                 $invoiceList[$trans->invoice_disbursed_id] = [
                     'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
                     'date_of_payment'=>$paymentDetails['date_of_payment']
@@ -689,7 +694,6 @@ class ApportionmentController extends Controller
 
                 $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
                 $repaymentAmt = (float) $paymentDetails['amount']; 
-                
                 $invoiceList = [];
                 $transactionList = [];
 
@@ -721,7 +725,12 @@ class ApportionmentController extends Controller
                     'trans_mode' => 2,
                 ];
 
-                foreach ($transactions as $trans){  
+                foreach ($transactions as $trans){
+                    $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
+                    $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL; 
+                    if ((isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) || $trans->Outstanding <= 0) {
+                        continue;
+                    }
                     if($trans->invoice_disbursed_id){
 
                         $invoiceList[$trans->invoice_disbursed_id] = [
@@ -750,7 +759,7 @@ class ApportionmentController extends Controller
 
                 $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
 
-                if($amtToSettle > $repaymentAmt){
+                if($amtToSettle <= 0 || $amtToSettle > $repaymentAmt){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
                     return redirect()->back()->withInput();
                 }

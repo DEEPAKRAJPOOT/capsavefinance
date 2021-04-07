@@ -5048,7 +5048,7 @@ if ($err) {
     public function chkAnchorPhyInvReq(Request $request) {
         $anchorId = $request->get('anchorID');
         $getAnchor = $this->userRepo->getAnchorById($anchorId);
-        if($getAnchor->is_phy_inv_req === '1') {
+        if(isset($getAnchor->is_phy_inv_req) && $getAnchor->is_phy_inv_req === '1') {
             return $respose = ['status'=>'1'];
         } else {
             return $respose = ['status'=>'0'];
