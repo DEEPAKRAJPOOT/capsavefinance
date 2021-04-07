@@ -614,7 +614,7 @@ class ApplicationController extends Controller
                                            $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
                                            $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
                                         }
-                                       $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
+                                       $this->appRepo->updateAppData($parentAppId, ['status' => 3, 'is_child_sanctioned' => 1]);
                                        $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
                                        $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
                                        \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));
@@ -963,7 +963,7 @@ class ApplicationController extends Controller
                                     $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
                                     $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
                                     \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));*/                                    
-                                    $this->appRepo->updateAppData($parentAppId, ['is_child_sanctioned' => 1]);
+                                    $this->appRepo->updateAppData($parentAppId, ['is_child_sanctioned' => 2]);
                                 }
                                 
         		if (!is_null($appLimitId)) {
