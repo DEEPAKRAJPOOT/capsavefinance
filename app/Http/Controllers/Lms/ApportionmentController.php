@@ -701,7 +701,7 @@ class ApportionmentController extends Controller
                 $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
                 if(!$paymentDetails['isApportPayValid'] || empty($checks) || $paymentDetails['is_settled'] == 1){
                     Session::flash('error', trans('Apportionment is not possible for the selected Payment. Please select valid payment for the unsettled payment screen.'));
-                    return redirect()->back()->withInput();
+                    return redirect()->route('unsettled_payments');
                 }
                 $repaymentAmt = (float) $paymentDetails['amount']; 
                 $invoiceList = [];
