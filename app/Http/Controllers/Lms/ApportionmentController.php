@@ -629,6 +629,12 @@ class ApportionmentController extends Controller
 
                 $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
                 $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL; 
+                if (isset($userInvoiceDate)) {
+                    $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
+                }
+                if (isset($userInvoiceDate)) {
+                    $paymentDate = date('Y-m-d', strtotime($paymentDate));
+                }
                 if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
                     continue;
                 }
@@ -693,6 +699,10 @@ class ApportionmentController extends Controller
                 $checks = $request->session()->get('apportionment.check');
 
                 $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
+                if(!$paymentDetails['isApportPayValid'] || empty($checks) || $paymentDetails['is_settled'] == 1){
+                    Session::flash('error', trans('Apportionment is not possible for the selected Payment. Please select valid payment for the unsettled payment screen.'));
+                    return redirect()->back()->withInput();
+                }
                 $repaymentAmt = (float) $paymentDetails['amount']; 
                 $invoiceList = [];
                 $transactionList = [];
@@ -727,7 +737,13 @@ class ApportionmentController extends Controller
 
                 foreach ($transactions as $trans){
                     $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
-                    $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL; 
+                    $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL;
+                    if (isset($userInvoiceDate)) {
+                        $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
+                    }
+                    if (isset($userInvoiceDate)) {
+                        $paymentDate = date('Y-m-d', strtotime($paymentDate));
+                    } 
                     if ((isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) || $trans->Outstanding <= 0) {
                         continue;
                     }
