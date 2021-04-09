@@ -1615,11 +1615,12 @@ class Helper extends PaypalHelper
                 }else{
                     $prgm_ids = [$attr['prgm_id']];
                 }
-                $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();  
+                $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();
+
                 if($is_enhance==1)
                 { 
-                    $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->sum('invoice_margin_amount');
-                    $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->sum('repayment_amt');
+                    $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->where('app_id' , '<=', $attr['app_id'])->sum('invoice_margin_amount');
+                    $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->where('app_id' , '<=', $attr['app_id'])->sum('repayment_amt');
                     return $marginApprAmt-$marginReypayAmt;
                  }
                 else
