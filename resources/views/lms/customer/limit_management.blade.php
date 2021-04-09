@@ -97,7 +97,7 @@
                                     @elseif($limit->status==1 && $limit->actual_end_date!=Null) 
                                     <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
                                     @else
-                                    <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
+                                    <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
                                     @endif
                                   @else
                                      @if($limit->status==0) 
