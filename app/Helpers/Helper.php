@@ -1609,7 +1609,7 @@ class Helper extends PaypalHelper
         {
                 $prgmData = Program::where('prgm_id', $attr['prgm_id'])->first();
                 if (isset($prgmData->parent_prgm_id)) {
-                   $prgm_ids = Program::where('parent_prgm_id', $prgmData->parent_prgm_id)->where('prgm_id', '<=', $attr['prgm_id'])->pluck('prgm_id')->toArray();
+                   $prgm_ids = Program::where('parent_prgm_id', $prgmData->parent_prgm_id)/*->where('prgm_id', '<=', $attr['prgm_id'])*/->pluck('prgm_id')->toArray();
                 }else{
                     $prgm_ids = [$attr['prgm_id']];
                 }
