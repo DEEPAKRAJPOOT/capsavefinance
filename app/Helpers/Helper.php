@@ -37,6 +37,8 @@ use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Models\Program;
+use App\Inv\Repositories\Models\ColenderShare;
+use App\Inv\Repositories\Models\LmsUsersLog;
 
 class Helper extends PaypalHelper
 {
@@ -1613,7 +1615,7 @@ class Helper extends PaypalHelper
                 }else{
                     $prgm_ids = [$attr['prgm_id']];
                 }
-                $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id'],'status' =>2])->count();  
+                $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();  
                 if($is_enhance==1)
                 { 
                     $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->sum('invoice_margin_amount');
@@ -2146,7 +2148,13 @@ class Helper extends PaypalHelper
 
         return $inputArr;
     }
-    
+
+    public static function getCompanyBankAccList()
+    {
+        $bank_acc = UserBankAccount::getCompanyBankAccList();
+        return  $bank_acc;
+    }    
+        
     /**
      * uploading document data
      *
@@ -2199,11 +2207,37 @@ class Helper extends PaypalHelper
         return $fileArr;
     }
 
+    public static function getProgram($prgm_id)
+    {
+        $prgmData = Program::getProgram($prgm_id);
+        return $prgmData;
+    }
+
     public static function getPerfiosBankById($id){
         $bankData = Bank::find($id);
         return $bankData['bank_name'];
     }
 
+    // Check app status for Reactivate 
+    public static function isChangeAppStatusReactivate ($curStatusId) 
+    {
+        $appStatusList = [
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CLOSED'),
+            config('common.mst_status_id.APP_HOLD'),
+        ];
+        $isChangeAppStatusAllowed = in_array($curStatusId, $appStatusList);
+        return $isChangeAppStatusAllowed;
+    }    
+    /**
+     * check colender
+     *
+     * 
+     */
+    public static function getColenderListByAppID($colenderwherCond)
+    {
+        return ColenderShare::getColenderListByAppID($colenderwherCond);
+    }
     public static function formatCurrency($amount, $decimal = true, $prefixCurrency = true)
     {
         if(is_numeric($amount)){
@@ -2217,5 +2251,36 @@ class Helper extends PaypalHelper
             return $formattedAmount;
         }
         return null;
+    }
+    
+    public static function getInvoiceStatusByPrgmOfferId($prgmOfferId){
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface'); 
+        $offerData = $appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
+        $status = FALSE;
+        if($offerData && isset($offerData->invoice) && $offerData->invoice->isNotEmpty()){
+             foreach($offerData->invoice as $invoice){
+                if($invoice->status_id > 9){
+                    $status = FALSE;
+                    break;
+                }else if($invoice->status_id >= 7 && $invoice->status_id <= 9){
+                    $status = TRUE;
+                }
+            }
+        }
+        return $status;
+    }
+
+    public static function getLatestLmsUserLogByUserId($userId){
+        $lmsUserLog = LmsUsersLog::where('user_id',$userId)->orderBy('created_at','desc')->first();
+
+        return $lmsUserLog->status_id ?? '';
+    }
+
+
+    public static function appStatus($app_id)
+    {
+
+       return $appData = Application::getAppData((int) $app_id)->status;
+       
     }
 }
