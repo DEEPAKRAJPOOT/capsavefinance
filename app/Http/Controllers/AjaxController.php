@@ -2732,8 +2732,8 @@ if ($err) {
     }
    //////////////////// use for invoice list/////////////////
      public function getBackendInvoiceList(DataProviderInterface $dataProvider) {
+        ini_set('memory_limit',-1);
         $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
-       /// dd($invoice_data);
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
         return $invoice;
     } 
