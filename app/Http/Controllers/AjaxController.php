@@ -2767,7 +2767,7 @@ if ($err) {
     } 
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListDisbursedQue(DataProviderInterface $dataProvider) {
-       
+        ini_set('memory_limit',-1);
         $invoice_data = $this->invRepo->getAllInvoice($this->request,9);
         $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data);
         return $invoice;

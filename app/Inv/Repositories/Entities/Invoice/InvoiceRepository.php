@@ -500,7 +500,7 @@ use CommonRepositoryTraits;
     {
         try
         {
-           return InvoiceModel::getAllInvoice($request,$status);  
+           return InvoiceModel::getAllInvoice($request,$status)->with('supplier.apps.disbursed_invoices.invoice_disbursed');  
         } catch (Exception $ex) {
            return $ex;
         }
