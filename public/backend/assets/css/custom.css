@@ -1516,5 +1516,5 @@ ul.custom-check-label #frequency-error {
 	max-width: 80px;
 }
 .dataTables_processing{
-	z-index: 100 !important;
+	z-index: 1000 !important;
 }
