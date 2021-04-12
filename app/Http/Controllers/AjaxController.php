@@ -2753,6 +2753,7 @@ if ($err) {
 
       //////////////////// use for Approve invoice list/////////////////
      public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {
+        ini_set('memory_limit',-1);
         $invoice_data = $this->invRepo->getAllInvoice($this->request,8);
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
         return $invoice;
@@ -2790,7 +2791,7 @@ if ($err) {
     }  
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListFailedDisbursed(DataProviderInterface $dataProvider) {
-       
+        ini_set('memory_limit',-1);
         $invoice_data = $this->invRepo->getAllInvoice($this->request,11);
         $invoice = $dataProvider->getBackendInvoiceListFailedDisbursed($this->request, $invoice_data);
         return $invoice;
@@ -2798,7 +2799,7 @@ if ($err) {
     
       //////////////////// use for Invoice Disbursed  list/////////////////
      public function getBackendInvoiceListDisbursed(DataProviderInterface $dataProvider) {
-       
+        ini_set('memory_limit',-1);
         $invoice_data = $this->invRepo->getAllInvoice($this->request,12);
         $invoice = $dataProvider->getBackendInvoiceListDisbursed($this->request, $invoice_data);
         return $invoice;
