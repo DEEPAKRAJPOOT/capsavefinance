@@ -2726,14 +2726,14 @@ if ($err) {
   
     //////////////////// use for invoice list/////////////////
      public function getInvoiceList(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,7);
         $invoice = $dataProvider->getInvoiceList($this->request, $invoice_data);
         return $invoice;
     }
    //////////////////// use for invoice list/////////////////
      public function getBackendInvoiceList(DataProviderInterface $dataProvider) {
         ini_set('memory_limit',-1);
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,7);
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2754,7 +2754,7 @@ if ($err) {
       //////////////////// use for Approve invoice list/////////////////
      public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {
         ini_set('memory_limit',-1);
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,8);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,8);
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2763,14 +2763,14 @@ if ($err) {
      //////////////////// use for exception case invoice list/////////////////
      public function getBackendEpList(DataProviderInterface $dataProvider) {
         ini_set('memory_limit',-1);
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,28);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,28);
         $invoice = $dataProvider->getBackendEpList($this->request, $invoice_data);
         return $invoice;
     } 
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListDisbursedQue(DataProviderInterface $dataProvider) {
         ini_set('memory_limit',-1);
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,9);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,9);
         $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data->with('supplier.apps.disbursed_invoices.invoice_disbursed'));
         return $invoice;
     } 
@@ -2792,7 +2792,7 @@ if ($err) {
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListFailedDisbursed(DataProviderInterface $dataProvider) {
         ini_set('memory_limit',-1);
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,11);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,11);
         $invoice = $dataProvider->getBackendInvoiceListFailedDisbursed($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2800,7 +2800,7 @@ if ($err) {
       //////////////////// use for Invoice Disbursed  list/////////////////
      public function getBackendInvoiceListDisbursed(DataProviderInterface $dataProvider) {
         ini_set('memory_limit',-1);
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,12);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,12);
         $invoice = $dataProvider->getBackendInvoiceListDisbursed($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2808,7 +2808,7 @@ if ($err) {
      //////////////////// use for Invoice Disbursed  list/////////////////
      public function getBackendInvoiceListRepaid(DataProviderInterface $dataProvider) {
        
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,13);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,13);
         $invoice = $dataProvider->getBackendInvoiceListRepaid($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2816,7 +2816,7 @@ if ($err) {
       //////////////////// use for Invoice Disbursed  list/////////////////
      public function getBackendInvoiceListReject(DataProviderInterface $dataProvider) {
        
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,14);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,14);
         $invoice = $dataProvider->getBackendInvoiceListReject($this->request, $invoice_data);
         return $invoice;
     } 

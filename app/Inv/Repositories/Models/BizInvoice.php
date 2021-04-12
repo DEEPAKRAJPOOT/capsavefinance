@@ -547,6 +547,18 @@ public static function saveBulkInvoice($arrInvoice)
         InvoiceStatusLog::saveInvoiceLogWithStatusId($invoiceId,$statusId,$amount,$comment);
         return  self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
         
-    }    
+    }
+    public static function getAllManageInvoice($request,$status)
+    {
+        $id = Auth::user()->user_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        if( $chkUser->id==11) {
+            $res  = User::where('user_id',$id)->first();
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->orderBy('invoice_id', 'DESC');
+        } else {
+           return self::where('status_id',$status)->orderBy('invoice_id', 'DESC');
+        }
+     }    
     
 }

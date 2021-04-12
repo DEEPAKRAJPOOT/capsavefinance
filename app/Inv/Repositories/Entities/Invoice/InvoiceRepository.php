@@ -1236,6 +1236,17 @@ use CommonRepositoryTraits;
            return $ex;
         }
          
-    }     
+    }
+    
+    public function getAllManageInvoice($request,$status)
+    {
+        try
+        {
+           return InvoiceModel::getAllManageInvoice($request,$status);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }      
     
 }
