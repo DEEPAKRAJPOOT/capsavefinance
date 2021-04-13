@@ -171,14 +171,41 @@ public static function saveBulkInvoice($arrInvoice)
         {
             $res  = User::where('user_id',$id)->first();
 
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['bulkUpload', 'business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail', 'supplier.apps.disbursed_invoices.invoice_disbursed'])->orderBy('invoice_id', 'DESC');
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->orderBy('invoice_id', 'DESC');
 
         }
         else
         {
-           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail', 'supplier.app.disbursed_invoices.invoice_disbursed'])->orderBy('invoice_id', 'DESC');
+           return self::where('status_id',$status)->orderBy('invoice_id', 'DESC');
         }
      } 
+
+     public function getBillNoAttribute(){
+        $poNo = null;            
+        $invNo = $this->invoice_no;
+
+        if(!$poNo && $this->parent_invoice_id){
+            $pInv = BizInvoice::find($this->parent_invoice_id);
+            $poNo = null;
+        }
+
+        $data = '';
+        
+        if($poNo){
+            $data .= $poNo;
+        }
+
+        if($poNo && $invNo){
+            $data .= ' / ';
+        }
+
+        if($invNo){
+            $data .= $invNo;
+        }
+
+        return $data;
+        
+    }
      
      public static function getUserAllInvoice($request)
      {
@@ -494,6 +521,44 @@ public static function saveBulkInvoice($arrInvoice)
     public static function getInvoiceUtilizedAmount($attr)
     {
         return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id'],'app_id' =>$attr['app_id']])->sum('invoice_margin_amount');       
-    }      
+    }    
+    
+    public static function getAnchorInvoiceDataDetail($anchorId = null) 
+    {  
+        $data = self::whereHas('supplier', function($query) use($anchorId) {
+            if (!is_null($anchorId)) {
+                $query->where('anchor_id', $anchorId);
+            }
+        })->get();
+               
+        return $data ?? '';
+    }
+    
+    /* update invoice amount with statusid  */
+    public static function updateInvoiceAmountWithStausId($attributes)
+    {
+        $invoiceId  =    $attributes['invoice_id'];
+        $amount     =  str_replace(',','', $attributes['approve_invoice_amount']);  
+        $comment    =    $attributes['comment'];
+        $statusId    =    $attributes['status_id'];
+        $updated_at  = Carbon::now()->toDateTimeString();
+        $id = Auth::user()->user_id;    
+        $result =  User::getSingleUserDetails($id);
+        InvoiceStatusLog::saveInvoiceLogWithStatusId($invoiceId,$statusId,$amount,$comment);
+        return  self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
+        
+    }
+    public static function getAllManageInvoice($request,$status)
+    {
+        $id = Auth::user()->user_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        if( $chkUser->id==11) {
+            $res  = User::where('user_id',$id)->first();
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->orderBy('invoice_id', 'DESC');
+        } else {
+           return self::where('status_id',$status)->orderBy('invoice_id', 'DESC');
+        }
+     }    
     
 }

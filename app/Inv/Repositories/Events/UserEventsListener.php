@@ -649,16 +649,19 @@ class UserEventsListener extends BaseEvent
         
         $email = [];
         foreach($user as $u) {
-            $email[] = $u['receiver_email'];
-        }        
-        
+            if(!empty($u['receiver_email']) ){
+                $email[] = $u['receiver_email'];
+            }
+        }
         if( env('SEND_MAIL_ACTIVE') == 1){
-            //$email = $user["receiver_email"];    //explode(',', env('SEND_MAIL'));
-            //$email_bcc = explode(',', env('SEND_MAIL_BCC'));
-            $email_cc = explode(',', env('SEND_APPROVER_MAIL_CC'));
+            $email_cc = $user['cc_mails'];
         }else{
-            //$email = $user["receiver_email"];
-            $email_cc = '';
+            $email_content = EmailTemplate::getEmailTemplate("APPLICATION_APPROVER_MAIL");
+            if(!empty($user['product_id']) && (in_array(1,$user['product_id']) || in_array(2,$user['product_id']))){
+                $email_cc = explode(',', $email_content->cc);
+            }else{
+                $email_cc = '';
+            }
         }  
             
         /*
@@ -707,6 +710,16 @@ class UserEventsListener extends BaseEvent
                $mailObj->cc($email_cc);
            }
            $mailObj->send(new ReviewerSummary($this->mstRepo, $user));
+
+           $mailContent = [
+            'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+            'email_to' => $email,
+            'email_type' => $this->func_name,
+            'name' => "Move to Approver",
+            'subject' => "Application Approver Mail",
+            'body' => '',
+        ];
+        FinanceModel::logEmail($mailContent);
         
     }
     

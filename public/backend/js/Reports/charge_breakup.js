@@ -29,6 +29,7 @@ try {
             },
             columns: [
                 { data: 'loan' },
+                { data: 'cust_id' },
                 { data: 'client_name' },
                 { data: 'trans_date' },
                 { data: 'chrg_name' },

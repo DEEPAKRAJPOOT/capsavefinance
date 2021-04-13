@@ -283,4 +283,37 @@ class AnchorUser extends BaseModel {
         $rowUpdate = self::where('email', $emailId)->update($arrUserData);
         return ($rowUpdate ? true : false);
     }
+
+    public static function getAnchorUserDataDetail($anchorId = null) {
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
+        
+        $result = self::with('user');
+        
+        if ($roleData[0]->id == 11) {        
+             $result->where('anchor_id', $anchorId);
+        }
+        $data = $result->get();
+
+        return $data;
+    }
+
+    public function user(){
+        return $this->belongsTo('App\Inv\Repositories\Models\User', 'user_id', 'user_id');               
+    }
+
+    public static function getAnchorInactiveUserDataDetail($anchorId = null) {
+        $roleData = User::getBackendUser(\Auth::user()->user_id);
+        
+        $result = self::with('user')
+            ->whereHas('user', function ($query) {
+                $query->where('is_active','!=' , 1);
+            });
+        
+        if ($roleData[0]->id == 11) {        
+             $result->where('anchor_id', $anchorId);
+        }
+        $data = $result->get();
+
+        return $data;
+    }
 }

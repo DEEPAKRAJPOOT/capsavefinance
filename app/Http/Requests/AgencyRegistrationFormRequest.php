@@ -23,7 +23,8 @@ class AgencyRegistrationFormRequest extends Request
             'comp_addr'   => 'required|min:5|max:100',
             'comp_state'   => 'required',
             'comp_city' => 'required|min:3|max:50|alpha_spaces',
-            'comp_zip' => 'required|numeric|digits:6', 
+            'comp_zip' => 'required|numeric|digits:6',
+            'is_active' => 'required',
             ];
     }
 
@@ -52,7 +53,8 @@ class AgencyRegistrationFormRequest extends Request
             'comp_city.max' => 'City name is too long',
             'comp_city.alpha_spaces' => 'City name may only contain letters and spaces.',
             'comp_zip.required' => 'Pin code is required',
-            'comp_zip.numeric'=>trans('error_messages.invalid_zip') 
+            'comp_zip.numeric'=>trans('error_messages.invalid_zip'),
+            'is_active.required' => 'Status is required',
         ];
     }
 }

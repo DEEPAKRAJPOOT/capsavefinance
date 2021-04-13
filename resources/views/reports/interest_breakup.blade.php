@@ -58,6 +58,7 @@
                                             <thead>
                                                 <tr role="row">
                                                     <th>Loan #</th>
+                                                    <th>Customer ID</th>
                                                     <th>Client Name</th>
                                                     <th>Amount Disbursed (₹)</th>
                                                     <th>From Date</th>

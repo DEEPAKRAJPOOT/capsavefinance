@@ -127,6 +127,21 @@
                       </div>
                   </div>
               </div>
+              
+    <div class="row">
+         <div class="col-6">
+            <div class="form-group">
+                <label for="txtCreditPeriod">Status
+                 <span class="mandatory">*</span></label><br>
+                {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],isset($agencyData->is_active) ? $agencyData->is_active : old('is_active'),['class'=>'form-control form-control-sm']) !!}
+               @error('is_active')
+                  <span class="error">{{ $message }}</span>
+               @enderror
+            </div>
+        </div>
+        </div>
+
+    
               <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
         </form>
     </div>

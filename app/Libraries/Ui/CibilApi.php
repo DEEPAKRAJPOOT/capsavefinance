@@ -127,9 +127,9 @@ class CibilApi {
                                         'password' => 'D261F46CFA7E1C0DB5A80FB02269668E1A3F05B9',
                             ]
                        ];
-              // dd($options);       
+           // dd($options);       
             $response = $this->client->post($api_url, $options);
-            $response = $response->getBody()->getContents();
+	    $response = $response->getBody()->getContents();
             return $response;
         } catch (\Exception $e) {
             //dd($e);

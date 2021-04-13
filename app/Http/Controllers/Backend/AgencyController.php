@@ -136,6 +136,7 @@ class AgencyController extends Controller {
                         'comp_state'=>$request->comp_state,
                         'comp_city'=>$request->comp_city,
                         'comp_zip'=>$request->comp_zip,
+                        'is_active'=>$request->is_active,
                         'updated_at'=>\carbon\Carbon::now(),
                         'updated_by'=>Auth::user()->user_id
                     ];

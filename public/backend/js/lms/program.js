@@ -186,6 +186,7 @@ try {
                 data: function (d) {
                     d.search_keyword = $('input[name=search_keyword]').val();
                     d._token = messages.token;
+                    d.anchor_id = messages.anchor_id;
                 },
                 error: function () { // error handling
 

@@ -1210,6 +1210,11 @@ Route::group(
         ]
     );
 
+    Route::post('/change_agency_status', [
+        'as' => 'change_agency_status',
+        'uses' => 'AjaxController@changeAgencyStatus',
+    ]);
+
     Route::post('/change_agency_user_status', [
         'as' => 'change_agency_user_status',
         'uses' => 'AjaxController@changeUsersAgencyStatus',
@@ -1265,6 +1270,16 @@ Route::group(
     Route::post('backend-ajax-nach-stb-list',[
         'as' => 'backend_ajax_nach_stb_list',
         'uses' => 'AjaxController@backendAjaxNachSTBList'
+    ]);
+
+    /*bank route*/
+    Route::post('get-bank-list',[
+        'as' => 'get_ajax_bank_list',
+        'uses' => 'AjaxController@getAllBankList'
+    ]);
+    Route::post('chk_anchor_phy_inv_req',[
+        'as' => 'chk_anchor_phy_inv_req',
+        'uses' => 'AjaxController@chkAnchorPhyInvReq'
     ]);
     
 });

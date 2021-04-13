@@ -104,7 +104,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		foreach($invDisbList as $invDisb){
 			$result[] = [
 			'cust_name'=>$invDisb->invoice->business->biz_entity_name,
-			'loan_ac'=>$invDisb->disbursal->acc_no,
+			'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
 			'virtual_ac'=>$invDisb->invoice->lms_user->virtual_acc_id,
 			'trans_date'=>$invDisb->disbursal->disburse_date,
 			'trans_no'=>$invDisb->disbursal->tran_id,
@@ -160,7 +160,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		foreach($invDisbList as $invDisb){
 			$result[] = [
 			'cust_name'=>$invDisb->invoice->business->biz_entity_name,
-			'loan_ac'=>$invDisb->invoice->lms_user->customer_id,
+			'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
 			'trans_date'=>$invDisb->disbursal->disburse_date,
 			'trans_no'=>$invDisb->disbursal->tran_id,
 			'invoice_no'=>$invDisb->invoice->invoice_no,
@@ -226,7 +226,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$result[$invDisb->invoice->program_id]['ttl_od_amt'] = 0;
 
 			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['client_name'] = $invDisb->invoice->business->biz_entity_name;
-			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['loan_ac'] = $invDisb->invoice->lms_user->customer_id;
+			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['loan_ac'] = config('common.idprefix.APP').$invDisb->invoice->app_id;
 			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['virtual_ac'] = $invDisb->invoice->lms_user->virtual_acc_id;
 			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['client_sanction_limit'] = AppProgramLimit::getProductLimit($invDisb->invoice->lms_user->app_id, 1)->sum('product_limit');
 			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['limit_utilize'] = AppProgramLimit::getUtilizeLimit($invDisb->invoice->lms_user->app_id, 1)->sum('utilize_limit');
@@ -293,7 +293,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$limit_utilize = AppProgramLimit::getUtilizeLimit($invDisb->invoice->lms_user->app_id, 1)->sum('utilize_limit');
 			$result[] = [
 				'cust_name'=>$invDisb->invoice->business->biz_entity_name,
-				'loan_ac'=>$invDisb->disbursal->acc_no,
+				'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
 				'virtual_ac'=>$invDisb->invoice->lms_user->virtual_acc_id,
 				'client_sanction_limit'=>$limit,
 				'limit_available'=>($limit-$limit_utilize),
@@ -341,7 +341,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		foreach($invDisbList as $invDisb){
 			$result[] = [
 			'cust_name'=>$invDisb->invoice->business->biz_entity_name,
-			'loan_ac'=>$invDisb->invoice->lms_user->customer_id,
+			'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
 			'trans_date'=>$invDisb->disbursal->disburse_date,
 			'trans_no'=>$invDisb->disbursal->tran_id,
 			'invoice_no'=>$invDisb->invoice->invoice_no,

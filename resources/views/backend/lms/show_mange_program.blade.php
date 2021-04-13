@@ -20,32 +20,16 @@
     </section>
     <div class="card">
         <div class="card-body">
-
-            <div class="row">
-                <div class="col-sm-12">
-
-                    <div class="head-sec">
-                        <div class="pull-right" style="margin-bottom: 10px;margin-right: 12px;">
-                            @can('add_program')
-                            <a href="{{route('add_program',['anchor_id'=>$anchor_id])}}" >
-                                <button class="btn  btn-success btn-sm" type="button">
-                                    <span class="btn-label">
-                                        <i class="fa fa-plus"></i>
-                                    </span>
-                                    {{ trans('backend.mange_program.add_program') }}
-                                </button>
-
-                            </a>
-                            @endcan
-                        </div>
-                    </div>
-                </div>     
-            </div>
             <div class="row" style="margin-bottom: 25px;">
                 <div class="col-md-4">
                     <input class="form-control" placeholder="Search by Program Name, Anchor Name" id="search_keyword" name="search_keyword" type="text">
                 </div>
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
+                <div class="col-md-7 text-right">
+                  <a href="{{route('manage_program')}}" class="btn btn-success btn-sm float-right" style="margin-left: 10px">View All</a>
+                  <span style="margin: 10px !important"></span>
+                  <a href="{{route('add_program',['anchor_id'=>$anchor_id])}}" class="btn btn-success btn-sm float-right"><i class="fa fa-plus"></i>{{ trans('backend.mange_program.add_program') }}</a>
+                </div>
            </div>
             <div class="row">
                 <div class="col-sm-12">

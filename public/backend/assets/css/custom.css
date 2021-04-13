@@ -1503,9 +1503,9 @@ ul.custom-check-label #frequency-error {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
-.white-space{
+/* .white-space{
     white-space: nowrap;
-}
+} */
 .filter-abs-btn {
     position: absolute;
     right: 15px;
@@ -1514,4 +1514,7 @@ ul.custom-check-label #frequency-error {
 }
 .arka-logo img {
 	max-width: 80px;
+}
+.dataTables_processing{
+	z-index: 1000 !important;
 }

@@ -2726,14 +2726,14 @@ if ($err) {
   
     //////////////////// use for invoice list/////////////////
      public function getInvoiceList(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,7);
         $invoice = $dataProvider->getInvoiceList($this->request, $invoice_data);
         return $invoice;
     }
    //////////////////// use for invoice list/////////////////
      public function getBackendInvoiceList(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
-       /// dd($invoice_data);
+        ini_set('memory_limit',-1);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,7);
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2753,7 +2753,8 @@ if ($err) {
 
       //////////////////// use for Approve invoice list/////////////////
      public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,8);
+        ini_set('memory_limit',-1);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,8);
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2761,15 +2762,16 @@ if ($err) {
     
      //////////////////// use for exception case invoice list/////////////////
      public function getBackendEpList(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,28);
+        ini_set('memory_limit',-1);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,28);
         $invoice = $dataProvider->getBackendEpList($this->request, $invoice_data);
         return $invoice;
     } 
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListDisbursedQue(DataProviderInterface $dataProvider) {
-       
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,9);
-        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data);
+        ini_set('memory_limit',-1);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,9);
+        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data->with('supplier.apps.disbursed_invoices.invoice_disbursed'));
         return $invoice;
     } 
     
@@ -2789,16 +2791,16 @@ if ($err) {
     }  
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListFailedDisbursed(DataProviderInterface $dataProvider) {
-       
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,11);
+        ini_set('memory_limit',-1);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,11);
         $invoice = $dataProvider->getBackendInvoiceListFailedDisbursed($this->request, $invoice_data);
         return $invoice;
     } 
     
       //////////////////// use for Invoice Disbursed  list/////////////////
      public function getBackendInvoiceListDisbursed(DataProviderInterface $dataProvider) {
-       
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,12);
+        ini_set('memory_limit',-1);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,12);
         $invoice = $dataProvider->getBackendInvoiceListDisbursed($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2806,7 +2808,7 @@ if ($err) {
      //////////////////// use for Invoice Disbursed  list/////////////////
      public function getBackendInvoiceListRepaid(DataProviderInterface $dataProvider) {
        
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,13);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,13);
         $invoice = $dataProvider->getBackendInvoiceListRepaid($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2814,7 +2816,7 @@ if ($err) {
       //////////////////// use for Invoice Disbursed  list/////////////////
      public function getBackendInvoiceListReject(DataProviderInterface $dataProvider) {
        
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,14);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,14);
         $invoice = $dataProvider->getBackendInvoiceListReject($this->request, $invoice_data);
         return $invoice;
     } 
@@ -3344,7 +3346,7 @@ if ($err) {
                $chid  = 0;
             }
                $request['chrg_applicable_id']  = $getamount->chrg_applicable_id; 
-               $gst_percentage                 = $getamount->charge->gst_percentage;
+               $gst_percentage                 = $getamount->charge->gst_percentage ?? $getamount->gst_percentage;
                $app = "";
                $sel ="";
                 $res =   [  1 => "Limit Amount",
@@ -3394,7 +3396,7 @@ if ($err) {
                  'id' => $getamount->id,
                  'limit' => $limitAmount,
                  'type' => $getamount->chrg_calculation_type,
-                 'is_gst_applicable' => $getamount->charge->is_gst_applicable,
+                 'is_gst_applicable' => $getamount->charge->is_gst_applicable ?? $getamount->is_gst_applicable,
                  'gst_percentage'  =>  $tax_value,
                  'applicable' =>$app]); 
           }
@@ -4891,7 +4893,22 @@ if ($err) {
         $condArr['type']  = 'pdf';
         $tds['pdfUrl'] = route('tds_download_reports', $condArr);
         return new JsonResponse($tds);
-    } 
+    }
+
+
+     /**
+     * change Agency User status
+     *
+     * @param Request $request
+     * @return type mixed
+     */
+    public function changeAgencyStatus(Request $request)
+    {
+        $agency_id = $request->get('agency_id');
+        $is_active = $request->get('is_active');
+        $result = $this->userRepo->updateAgencyStatus(['is_active' => $is_active], ['agency_id' => $agency_id]);
+        return \Response::json(['success' => $result]);
+    }
 
         
     /**
@@ -5038,5 +5055,20 @@ if ($err) {
         $nach = $dataProvider->getNachRepaymentReq($this->request, $nachList);
         $nach = $nach->getData(true);
         return new JsonResponse($nach);
+    }
+
+    public function getAllBankList(DataProviderInterface $dataProvider) { 
+        $bankList = $this->masterRepo->getAllBankList();
+        $banks = $dataProvider->getBankList($this->request, $bankList);
+        return $banks;
+    }
+    public function chkAnchorPhyInvReq(Request $request) {
+        $anchorId = $request->get('anchorID');
+        $getAnchor = $this->userRepo->getAnchorById($anchorId);
+        if($getAnchor->is_phy_inv_req === '1') {
+            return $respose = ['status'=>'1'];
+        } else {
+            return $respose = ['status'=>'0'];
+        }
     }
 }

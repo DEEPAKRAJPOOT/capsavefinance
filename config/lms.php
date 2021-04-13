@@ -215,14 +215,6 @@ return [
        'DISBURSED' =>'8',
        'FAILED_REFUND'=>'9',
     ],
-    'IDFC_DEBIT_BANK' => [    
-       'DEBIT_ACC_NO' => '10062193074',
-       'DEBIT_ACC_NAME' => 'Capsave Finance Pvt Ltd',
-       'DEBIT_MOBILE' => '9930840248'
-    ],
-    'IDFC_API_URL' => 'https://api.idfcbank.com:443/',
-    'IDFC_CRYPTO_KEY' => 'MXgMPdydQGTiNyWXoEnyCySHLiWRYMFo',
-    'IDFC_CORP_ID' => 'CAPSAVEAPI',
     'NACH_STATUS' => [    
        'PENDING' => '1',
        'PDF_UPLOADED' => '2',
@@ -236,5 +228,34 @@ return [
     'INVOICE_TYPE' => [
         'I' => 'ZR',
         'C' => 'NZ'
+    ],
+    'IDFC_DEBIT_BANK' => [    
+       'DEBIT_ACC_NO' => env('DEBIT_ACC_NO', ''),
+       // 'DEBIT_ACC_NAME' => env('DEBIT_ACC_NAME', 'testing name'),
+       'DEBIT_ACC_NAME' => env('DEBIT_ACC_NAME', 'Capsave Finance Pvt Ltd'),
+       'DEBIT_MOBILE' => env('DEBIT_MOBILE', '')
+    ],
+    'IDFC_CREDIT_BANK' => [    
+       'BEN_ACC_NO' => env('BEN_ACC_NO', '112101505172011'),
+       'BEN_IFSC' => env('BEN_IFSC', 'SIMB0002233'),
+    ],
+    'IDFC_API_URL' => env('IDFC_API_URL', ''),
+    'IDFC_CRYPTO_KEY' => env('IDFC_CRYPTO_KEY', ''),
+    'IDFC_CORP_ID' => env('IDFC_CORP_ID', ''),
+    'CURLOPT_SSLCERT_FILE' => env('CURLOPT_SSLCERT_FILE', ''),
+    'CURLOPT_SSLKEY_FILE' => env('CURLOPT_SSLKEY_FILE', ''),
+    'CURLOPT_CAINFO_FILE' => env('CURLOPT_CAINFO_FILE', ''),
+    'UAT_ACTIVE' => env('UAT_ACTIVE', ''),
+    'mst_status_invoice' => [
+        'PENDING'=>7,
+        'APPROVED'=>8,
+        'DISBURSMENT_QUE'=>9,
+        'SENT_TO_BANK'=>10,
+        'FAILED_DISBURSMENT'=>11,
+        'DISBURSED'=>12,
+        'PARTIALLY_PAYMENT_SETTLED'=>13,
+        'REJECT'=>14,
+        'PAYMENT_SETTLED'=>15,
+        'EXCEPTION_CASE' => 28
     ],
 ];

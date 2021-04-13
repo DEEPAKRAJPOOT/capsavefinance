@@ -65,6 +65,7 @@ class Anchor extends BaseModel
         'is_active',
         'logo_file_id',
         'logo_align',
+        'is_phy_inv_req',
         'created_by',
         'created_at',
         'updated_at',

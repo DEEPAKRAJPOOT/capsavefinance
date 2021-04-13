@@ -403,6 +403,25 @@ class InvoiceController extends Controller {
         }
         return $randomString;
     }
+
+      
+    /* update invoice amount with statusid  */
+    public function saveFrontInvoiceAmount(Request $request)
+    {     
+        $id = Auth::user()->user_id;
+        $attributes = $request->all();
+        $res =  $this->invRepo->updateInvoiceAmountWithStausId($attributes);
+        if($res)
+        {
+            
+            Session::flash('message', 'Invoice Amount successfully Updated');
+            return back();
+        }
+        else {
+            Session::flash('message', 'Something wrong, Amount is not Updated');
+            return back();
+        }
+    }    
     
 
 }

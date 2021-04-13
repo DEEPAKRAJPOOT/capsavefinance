@@ -79,6 +79,31 @@ function format_number($number) {
     return (strpos($num,'.')!==false ? preg_replace("/\.?0*$/",'',$num) : $num);
 }
 
+function xmlToArray($xml, $format = 'ARRAY') {
+	$fileContents = str_replace(array("\n", "\r", "\t"), '', $xml);
+	$xml = preg_replace('/(<\/?)(\w+):([^>]*>)/', '$1$2$3', $fileContents);
+    $fileContents = trim(str_replace('"', "'", $xml));
+    if (!_is_valid_xml($xml)) {
+    	return $xml;
+    }
+    $simpleXml = simplexml_load_string($fileContents);
+    $json = json_encode($simpleXml);
+    $array = array_filter(json_decode($json, true));
+    return (strtoupper($format) == 'ARRAY' ? $array : json_encode($array));
+}
+
+function _is_valid_xml($xml){
+	if(!empty($xml)){
+		libxml_use_internal_errors(TRUE);
+		$doc = new DOMDocument('1.0', 'utf-8');
+		$doc->loadXML( $xml );
+		$errors = libxml_get_errors();
+		libxml_clear_errors();
+		return empty($errors);
+	}
+	return FALSE;
+}
+
 function calculate_formula($formula, $variables){
 	extract($variables);
 	$script = preg_replace('/\s+/', '', $formula);
