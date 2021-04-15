@@ -688,7 +688,25 @@ class InvoiceController extends Controller {
                         $tenor = $this->calculateTenorDays($invoice);
                         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-                        $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+                        if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$disburseDate)) {
+                            $str_to_time_date = strtotime($disburseDate);
+                        } else {
+                            $str_to_time_date = strtotime(\Carbon\Carbon::createFromFormat('d/m/Y', $disburseDate)->setTimezone(config('common.timezone'))->format('Y-m-d'));
+                        }
+                        $bankId = $invoice['program_offer']['bank_id'];
+                        $oldIntRate = $invoice['program_offer']['interest_rate'] - $invoice['program_offer']['base_rate'];
+                        $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
+                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                        $bankRatesArr = $Obj->getBankBaseRates($bankId);
+                        if ($bankRatesArr && $invoice['is_adhoc'] != 1) {
+                          $actIntRate = $Obj->getIntRate($oldIntRate, $bankRatesArr, $str_to_time_date);
+                        } else {
+                          $actIntRate = $interestRate;
+                        }
+                        if ($invoice['program_offer']['benchmark_date'] == 1) {
+                            $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
+                        }
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -708,6 +726,7 @@ class InvoiceController extends Controller {
 
                     }
                 }
+
                 if($disburseType == 1) {
                     $modePay = ($disburseAmount < 200000) ? 'NEFT' : 'RTGS' ;
                     $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
@@ -868,7 +887,27 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $tenor = $this->calculateTenorDays($invoice);
                     $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                     $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-                    $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+                    if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$disburseDate)) {
+                        $str_to_time_date = strtotime($disburseDate);
+                    } else {
+                        $str_to_time_date = strtotime(\Carbon\Carbon::createFromFormat('d/m/Y', $disburseDate)->setTimezone(config('common.timezone'))->format('Y-m-d'));
+                    }
+                    $bankId = $invoice['program_offer']['bank_id'];
+                    $oldIntRate = $invoice['program_offer']['interest_rate'] - $invoice['program_offer']['base_rate'];
+                    $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
+                    $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                    $bankRatesArr = $Obj->getBankBaseRates($bankId);
+                    if ($bankRatesArr && $invoice['is_adhoc'] != 1) {
+                      $actIntRate = $Obj->getIntRate($oldIntRate, $bankRatesArr, $str_to_time_date);
+                    } else {
+                      $actIntRate = $interestRate;
+                    }
+                    $banchMarkDateFlag = $invoice['program_offer']['benchmark_date'];
+        
+                    if ($banchMarkDateFlag == 1) {
+                        $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
+                    }
+                    $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
                     $prgmWhere=[];
                     $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -882,7 +921,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $totalMargin += $margin;
                     $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                     $disburseAmount += $amount;
-
                 }
             }
            
@@ -983,6 +1021,11 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $tenor = $this->calculateTenorDays($invoice);
                         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
+                        $banchMarkDateFlag = $invoice['program_offer']['benchmark_date'];
+        
+                        if ($banchMarkDateFlag == 1) {
+                            $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
+                        }
                         $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
                         $prgmWhere=[];
@@ -1093,7 +1136,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         if ($banchMarkDateFlag == 1) {
                             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $fundDate);
                         }
-
                         $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
 
                         if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
