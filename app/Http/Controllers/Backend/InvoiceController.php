@@ -663,6 +663,7 @@ class InvoiceController extends Controller {
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
+            
             // if (date('H') >= $validateTimeHour) { 
             //     Session::flash('error', 'Disbursment can not be done after '. Carbon::createFromFormat('H', $validateTimeHour)->format('g:i A'));
             //     return redirect()->route('backend_get_disbursed_invoice');
