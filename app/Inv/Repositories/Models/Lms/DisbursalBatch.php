@@ -60,7 +60,7 @@ class DisbursalBatch extends BaseModel {
 	}
 
 	public function disbursal_api_log() { 
-		return $this->belongsTo('App\Inv\Repositories\Models\Lms\DisburseApiLog', 'disbursal_api_log_id', 'disbursal_api_log_id'); 
+		return $this->belongsTo('App\Inv\Repositories\Models\Lms\DisburseApiLog', 'disbursal_batch_id', 'disbursal_batch_id')->orderBy('disbursal_batch_id', 'DESC'); 
 	}
 
 	public static function getAllBatches($from_date, $to_date){

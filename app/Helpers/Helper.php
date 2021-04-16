@@ -36,6 +36,9 @@ use ZanySoft\Zip\Zip;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\UserFile;
+use App\Inv\Repositories\Models\Program;
+use App\Inv\Repositories\Models\ColenderShare;
+use App\Inv\Repositories\Models\LmsUsersLog;
 
 class Helper extends PaypalHelper
 {
@@ -284,17 +287,18 @@ class Helper extends PaypalHelper
     {
         $userId = Application::where('app_id', $appId)->pluck('user_id')->first();
         $inputArr = [];
-        if ($attributes['doc_file']) {
-            if (!Storage::exists('/public/user/' . $userId . '/' . $appId)) {
-                Storage::makeDirectory('/public/user/' . $userId . '/' . $appId, 0777, true);
+        if(!empty($attributes['doc_file'])) {
+            if ($attributes['doc_file']) {
+                if (!Storage::exists('/public/user/' . $userId . '/' . $appId)) {
+                    Storage::makeDirectory('/public/user/' . $userId . '/' . $appId, 0777, true);
+                }
+                $path = Storage::disk('public')->put('/user/' . $userId . '/' . $appId, $attributes['doc_file'], null);
+                $inputArr['file_path'] = $path;
             }
-            $path = Storage::disk('public')->put('/user/' . $userId . '/' . $appId, $attributes['doc_file'], null);
-            $inputArr['file_path'] = $path;
         }
-
-        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
-        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_type'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientMimeType() : '';
+        $inputArr['file_name'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientOriginalName() : '';
+        $inputArr['file_size'] = !empty($attributes['doc_file']) ? $attributes['doc_file']->getClientSize() : '';
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
@@ -374,54 +378,56 @@ class Helper extends PaypalHelper
        $userId = Auth::user()->user_id;
        $inputArr = []; 
        $attr[] = "";   
-        if($attributes['file_image_id']->getClientSize() > 30000000)
-       {
-             $attr['status'] =0;
-             $attr['message']= 'File size should be upload Only 30 Mb.';
-             return  $attr;   
-       }
-       else if($attributes['file_image_id']->getClientOriginalExtension()!='zip')
-       {
-             $attr['status'] =0;
-             $attr['message']= 'Zip File format is not correct, only zip file is allowed.';
-             return  $attr;   
-       }
-       if ($attributes['file_image_id']) {
-            if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip')) {
-                Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip', 0777, true);
+        if(!empty($attributes['file_image_id'])) {
+            if($attributes['file_image_id']->getClientSize() > 30000000)
+            {
+                    $attr['status'] =0;
+                    $attr['message']= 'File size should be upload Only 30 Mb.';
+                    return  $attr;   
             }
-                $zipExtension = $attributes['file_image_id']->getClientOriginalExtension();
-                $zipName   = $attributes['file_image_id']->getClientOriginalName();
-                $zipName  =  explode('.',$zipName);
-                $zipFilename =  $zipName[0].'.'.$zipExtension;
-                $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id.'/zip', $attributes['file_image_id'], $zipFilename); 
-                $zipPath  = public_path('user/' . $userId . '/invoice/' . $batch_id.'/zip'.$zipFilename);
-                $open_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$zipFilename);
-                $extract_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip');
-                $zip =  Zip::open($open_path);
-               if(count($zip->listFiles()) > 50)
-                {
-                      
-                      $attr['status'] =0;
-                      $attr['message']= 'You can not archive more than 50 file.';
-                      return  $attr;   
-                } 
-                $resExtract  =  $zip->extract($extract_path);
-                $inputArr['file_path'] = $path;
-             }   
-            /* $totalFiles = glob($open_path . "*");
-                if ($resExtract){
-                    $countFile = count($totalFiles);
-                  }
-                  dd($countFile); */
-        $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
-        $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
-        $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
-        $inputArr['file_encp_key'] =  md5('2');
-        $inputArr['created_by'] = 1;
-        $inputArr['updated_by'] = 1;
-        $inputArr['status'] =1;
-        return $inputArr;
+            else if($attributes['file_image_id']->getClientOriginalExtension()!='zip')
+            {
+                    $attr['status'] =0;
+                    $attr['message']= 'Zip File format is not correct, only zip file is allowed.';
+                    return  $attr;   
+            }
+                if ($attributes['file_image_id']) {
+                if (!Storage::exists('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip')) {
+                    Storage::makeDirectory('/public/user/' . $userId . '/invoice/' . $batch_id.'/zip', 0777, true);
+                }
+                    $zipExtension = $attributes['file_image_id']->getClientOriginalExtension();
+                    $zipName   = $attributes['file_image_id']->getClientOriginalName();
+                    $zipName  =  explode('.',$zipName);
+                    $zipFilename =  $zipName[0].'.'.$zipExtension;
+                    $path = Storage::disk('public')->putFileAs('/user/' . $userId . '/invoice/' . $batch_id.'/zip', $attributes['file_image_id'], $zipFilename); 
+                    $zipPath  = public_path('user/' . $userId . '/invoice/' . $batch_id.'/zip'.$zipFilename);
+                    $open_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip/'.$zipFilename);
+                    $extract_path =  storage_path('app/public/user/' . $userId . '/invoice/' . $batch_id.'/zip');
+                    $zip =  Zip::open($open_path);
+                if(count($zip->listFiles()) > 50)
+                    {
+                        
+                        $attr['status'] =0;
+                        $attr['message']= 'You can not archive more than 50 file.';
+                        return  $attr;   
+                    } 
+                    $resExtract  =  $zip->extract($extract_path);
+                    $inputArr['file_path'] = $path;
+                }   
+                /* $totalFiles = glob($open_path . "*");
+                    if ($resExtract){
+                        $countFile = count($totalFiles);
+                    }
+                    dd($countFile); */
+            $inputArr['file_type'] = $attributes['file_image_id']->getClientMimeType();
+            $inputArr['file_name'] = $attributes['file_image_id']->getClientOriginalName();
+            $inputArr['file_size'] = $attributes['file_image_id']->getClientSize();
+            $inputArr['file_encp_key'] =  md5('2');
+            $inputArr['created_by'] = 1;
+            $inputArr['updated_by'] = 1;
+            $inputArr['status'] =1;
+            return $inputArr;
+        }
     }
     
      public static function ImageChk($file_name,$batch_id)
@@ -1182,7 +1188,28 @@ class Helper extends PaypalHelper
                 $allEmailData[] = $emailData;
             }
         }
-        $allEmailData['product_id'] = $application->products[0]->id;
+        $productsArr = $application->products->pluck('id')->toArray();
+        $Array_CC = [];
+        $productIdArr = [];
+        if (in_array(1, $productsArr)) {
+            $SCF_CC = explode(',', config('common.SEND_APPROVER_MAIL_CC_SCF'));
+            $Array_CC = array_merge($Array_CC, $SCF_CC);
+            $productIdArr = array_merge($productIdArr, [1]);
+        } 
+        if (in_array(2, $productsArr)) {
+            $SCF_CC = explode(',', config('common.SEND_APPROVER_MAIL_CC_TERM'));
+            $Array_CC = array_merge($Array_CC, $SCF_CC);
+            $productIdArr = array_merge($productIdArr, [2]);
+        } 
+        if (in_array(3, $productsArr)) {
+            $SCF_CC = explode(',', config('common.SEND_APPROVER_MAIL_CC_LEASE'));
+            $Array_CC = array_merge($Array_CC, $SCF_CC);
+            $productIdArr = array_merge($productIdArr, [3]);
+        } 
+        $allEmailData['cc_mails'] = implode(',', array_unique($Array_CC));
+        //dd($allEmailData['cc_mails']);
+        $allEmailData['cc_mails'] = array_unique($Array_CC);
+        $allEmailData['product_id'] = array_unique($productIdArr);
         \Event::dispatch("APPLICATION_APPROVER_MAIL", serialize($allEmailData));
         return $approvers;
     }
@@ -1582,18 +1609,24 @@ class Helper extends PaypalHelper
     
            public   function invoiceAnchorLimitApprove($attr)
         {
-            
-                $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id'],'status' =>2])->count();  
+                $prgmData = Program::where('prgm_id', $attr['prgm_id'])->first();
+                if (isset($prgmData->parent_prgm_id)) {
+                   $prgm_ids = Program::where('parent_prgm_id', $prgmData->parent_prgm_id)/*->where('prgm_id', '<=', $attr['prgm_id'])*/->pluck('prgm_id')->toArray();
+                }else{
+                    $prgm_ids = [$attr['prgm_id']];
+                }
+                $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();
+
                 if($is_enhance==1)
                 { 
-                    $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_margin_amount');
-                    $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('repayment_amt');
+                    $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->where('app_id' , '<=', $attr['app_id'])->sum('invoice_margin_amount');
+                    $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->where('app_id' , '<=', $attr['app_id'])->sum('repayment_amt');
                     return $marginApprAmt-$marginReypayAmt;
                  }
                 else
                 {
-                     $marginApprAmt   =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_margin_amount');
-                     $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('repayment_amt');
+                     $marginApprAmt   =  BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->sum('invoice_margin_amount');
+                     $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->sum('repayment_amt');
                      return $marginApprAmt-$marginReypayAmt;
                 }
         }      
@@ -1708,26 +1741,30 @@ class Helper extends PaypalHelper
      */
     public static function getSysStartDate()
     {
-        /*$lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        /*
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
         $eodDetails = $lmsRepo->getEodProcess(['is_active'=>1]);
         if($eodDetails){
             if($eodDetails->status == config('lms.EOD_PROCESS_STATUS.RUNNING')){
-                $startTime = Carbon::parse($eodDetails->sys_start_date);
-                $finishTime = Carbon::parse($eodDetails->created_at);
-                $totalDuration = strtotime($startTime) - strtotime($finishTime);
-                if($totalDuration < 0){
-                    $sys_start_date = Carbon::now()->subSeconds(abs($totalDuration))->format('Y-m-d H:i:s');
-                }elseif($totalDuration == 0){
-                    $sys_start_date = Carbon::now()->format('Y-m-d H:i:s');
-                }elseif($totalDuration > 0){
-                    $sys_start_date = Carbon::now()->addSeconds($totalDuration)->format('Y-m-d H:i:s');
-                }
-            }else{
-                $sys_start_date = Carbon::parse($eodDetails->sys_end_date)->format('Y-m-d H:i:s');
+                $sys_start_date = Carbon::parse($eodDetails->sys_start_date);
+                //$sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
+            }
+            elseif($eodDetails->status == config('lms.EOD_PROCESS_STATUS.WATING')){
+                $sys_start_date = Carbon::parse($eodDetails->sys_start_date);
+            }
+            elseif($eodDetails->status == config('lms.EOD_PROCESS_STATUS.COMPLETED')){
+                $sys_start_date = Carbon::parse($eodDetails->sys_end_date);
+            }
+            elseif($eodDetails->status == config('lms.EOD_PROCESS_STATUS.STOPPED')){
+                $sys_start_date = Carbon::parse($eodDetails->sys_end_date);
+            }
+            elseif($eodDetails->status == config('lms.EOD_PROCESS_STATUS.FAILED')){
+                $sys_start_date = Carbon::parse($eodDetails->sys_end_date);
             }
         }else{
             $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
-        }*/
+        }
+        */
 
         $sys_start_date = \Carbon\Carbon::now()->toDateTimeString();
         return $sys_start_date;
@@ -2112,7 +2149,13 @@ class Helper extends PaypalHelper
 
         return $inputArr;
     }
-    
+
+    public static function getCompanyBankAccList()
+    {
+        $bank_acc = UserBankAccount::getCompanyBankAccList();
+        return  $bank_acc;
+    }    
+        
     /**
      * uploading document data
      *
@@ -2163,5 +2206,82 @@ class Helper extends PaypalHelper
         }
         
         return $fileArr;
+    }
+
+    public static function getProgram($prgm_id)
+    {
+        $prgmData = Program::getProgram($prgm_id);
+        return $prgmData;
+    }
+
+    public static function getPerfiosBankById($id){
+        $bankData = Bank::find($id);
+        return $bankData['bank_name'];
+    }
+
+    // Check app status for Reactivate 
+    public static function isChangeAppStatusReactivate ($curStatusId) 
+    {
+        $appStatusList = [
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CLOSED'),
+            config('common.mst_status_id.APP_HOLD'),
+        ];
+        $isChangeAppStatusAllowed = in_array($curStatusId, $appStatusList);
+        return $isChangeAppStatusAllowed;
+    }    
+    /**
+     * check colender
+     *
+     * 
+     */
+    public static function getColenderListByAppID($colenderwherCond)
+    {
+        return ColenderShare::getColenderListByAppID($colenderwherCond);
+    }
+    public static function formatCurrency($amount, $decimal = true, $prefixCurrency = true)
+    {
+        if(is_numeric($amount)){
+
+            $currency = '₹';
+            $amount = $decimal ? round($amount,2) : round($amount);
+            $formattedAmount = preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $amount);
+            if ($prefixCurrency) {
+                $formattedAmount = $currency ."$formattedAmount";
+            }
+            return $formattedAmount;
+        }
+        return null;
+    }
+    
+    public static function getInvoiceStatusByPrgmOfferId($prgmOfferId){
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface'); 
+        $offerData = $appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
+        $status = FALSE;
+        if($offerData && isset($offerData->invoice) && $offerData->invoice->isNotEmpty()){
+             foreach($offerData->invoice as $invoice){
+                if($invoice->status_id > 9){
+                    $status = FALSE;
+                    break;
+                }else if($invoice->status_id >= 7 && $invoice->status_id <= 9){
+                    $status = TRUE;
+                }
+            }
+        }
+        return $status;
+    }
+
+    public static function getLatestLmsUserLogByUserId($userId){
+        $lmsUserLog = LmsUsersLog::where('user_id',$userId)->orderBy('created_at','desc')->first();
+
+        return $lmsUserLog->status_id ?? '';
+    }
+
+
+    public static function appStatus($app_id)
+    {
+
+       return $appData = Application::getAppData((int) $app_id)->status;
+       
     }
 }

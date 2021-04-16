@@ -335,8 +335,8 @@
                                     </div> 
                                 </div>
 
-                                <h5 class="card-title form-head-h5 mt-3 mb-0 pb-0">Document  <small style="color:red"> * </small></h5>	
-                                <i  style="color:red"> (minimum one document upload)</i>
+                                <h5 class="card-title form-head-h5 mt-3 mb-0 pb-0">Document  <!--<small style="color:red"> * </small> --></h5>	
+                                <!-- <i  style="color:red"> (minimum one document upload)</i> -->
                                 <div class="row mt-2 mb-4">
                                     <div class="col-md-12">
                                         <div class="prtm-full-block">       

@@ -29,6 +29,7 @@ try {
             },
             columns: [
                 { data: 'loan' },
+                { data: 'cust_id'},
                 { data: 'client_name' },
                 { data: 'disbursed_amt' },
                 { data: 'from_date' },

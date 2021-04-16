@@ -467,4 +467,12 @@ class Business extends BaseModel
        return $this->belongsTo(Industry::Class, 'nature_of_biz', 'id');
     }
 
+
+     public static function getBizDataByUserId($userId) {
+        $query = self::select('biz.biz_id','biz.biz_entity_name')
+        ->where('biz.user_id', $userId);
+        $arrData = $query->get();
+        return $arrData;
+    }
+
 }

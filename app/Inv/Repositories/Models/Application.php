@@ -71,6 +71,7 @@ class Application extends BaseModel
         'curr_status_updated_at',
         'app_type',
         'renewal_status',
+        'is_child_sanctioned',
         'app_code',
         'created_by',
         'created_at',
@@ -812,6 +813,9 @@ class Application extends BaseModel
         if (isset($where['status']) && is_array($where['status'])) {
             $query->whereIn('status', $where['status']);            
         }
+        if (isset($where['curr_status_id']) && is_array($where['curr_status_id'])) {
+            $query->whereNotIn('curr_status_id', $where['curr_status_id']);            
+        }
         
         $result = $query->get();       
         return $result ? $result: [];
@@ -906,12 +910,18 @@ class Application extends BaseModel
         if (isset($roleData[0]) && $roleData[0]->id == 11) {
             $getAppId  = self::select('app.*')
                     ->join('anchor_user', 'anchor_user.user_id', '=', 'app.user_id')
-                    ->where(['app.status' => 2])
+                    ->where(function ($q) {
+                        $q->where(['app.status' => 2]);
+                        $q->orWhere(['app.is_child_sanctioned' => 1]);
+                    })
                     ->where(['anchor_user.anchor_id' => \Auth::user()->anchor_id])
                     ->pluck('app.app_id');
         } else {
             $getAppId  = self::select('app.*')
-                    ->where(['status' => 2])
+                    ->where(function ($q) {
+                        $q->where(['app.status' => 2]);
+                        $q->orWhere(['app.is_child_sanctioned' => 1]);
+                    })
                     ->pluck('app_id');            
         }
         return $getAppId;
@@ -947,5 +957,16 @@ class Application extends BaseModel
         $appData->groupBy('app.app_id');
         $appData = $appData->orderBy('app.app_id', 'DESC')->get();
         return $appData ? $appData : [];
-    }     
+    }    
+    
+    public static function getAnchorAppDataDetail($anchorId = null) 
+    {  
+        $appData = self::whereHas('user', function($query) use($anchorId) {
+            if (!is_null($anchorId)) {
+                $query->where('anchor_id', $anchorId);
+            }
+        })->get();
+               
+        return $appData ?? '';
+    }
 }

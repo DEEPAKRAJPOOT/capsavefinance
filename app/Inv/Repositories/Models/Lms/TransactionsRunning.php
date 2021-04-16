@@ -122,7 +122,8 @@ class TransactionsRunning extends BaseModel {
             ->where('trans_type','=',config('lms.TRANS_TYPE.CANCEL'))
             ->sum('amount');
 
-        return $amount -= ($dr - $cr); 
+        $amount -= round((round($dr,2) - round($cr,2)),2);
+        return round($amount,2);
     }
 
     /**
@@ -155,6 +156,22 @@ class TransactionsRunning extends BaseModel {
         ->filter(function($item) {
             return $item->outstanding > 0;
         });
+    }
+
+    public static function getUnsettledRunningTrans(){
+        $invDisb = self::whereHas('invoiceDisbursed', function($q){
+            $q->whereHas('invoice', function($q2){
+                $q2->whereHas('program_offer', function($q3){
+                    $q3->where('payment_frequency',2);
+                });
+            });
+        })
+        ->get()
+        ->filter(function($item) { 
+            return round($item->outstanding,2) > 0.00; 
+        })
+        ->pluck('invoice_disbursed_id')->toArray();
+        return array_unique($invDisb);
     }
 
 }

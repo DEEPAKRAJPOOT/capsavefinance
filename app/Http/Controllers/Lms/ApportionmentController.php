@@ -766,26 +766,6 @@ class ApportionmentController extends Controller
                 }
 
                 $transactionList = [];
-                foreach ($invoiceList as $invDisb) {
-                    $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
-                    $refundParentTrans = $refundData->get('parent_transaction');
-                    $refundAmt = $refundData->get('amount');
-                    if($refundAmt > 0 && $refundParentTrans){
-                        $transactionList[] = [
-                            'payment_id' => $paymentId,
-                            'link_trans_id' => $refundParentTrans->trans_id,
-                            'parent_trans_id' => $refundParentTrans->trans_id,
-                            'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
-                            'user_id' => $userId,
-                            'trans_date' => $invDisb['date_of_payment'],
-                            'amount' => $refundAmt,
-                            'soa_flag' => 1,
-                            'entry_type' => 1,
-                            'trans_type' => config('lms.TRANS_TYPE.REFUND'),
-                            'trans_mode' => 2,
-                        ];
-                    }
-                }
                 
                 if($unAppliedAmt > 0){
                     $transactionList[] = [
@@ -819,6 +799,30 @@ class ApportionmentController extends Controller
                     $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId);
                 }
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
+
+                /* Refund Process Start */
+                foreach ($invoiceList as $invDisb) {
+                    $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
+                    $refundParentTrans = $refundData->get('parent_transaction');
+                    $refundAmt = $refundData->get('amount');
+                    if($refundAmt > 0 && $refundParentTrans){
+                        $transactionList[] = [
+                            'payment_id' => $paymentId,
+                            'link_trans_id' => $refundParentTrans->trans_id,
+                            'parent_trans_id' => $refundParentTrans->trans_id,
+                            'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
+                            'user_id' => $userId,
+                            'trans_date' => $invDisb['date_of_payment'],
+                            'amount' => $refundAmt,
+                            'soa_flag' => 1,
+                            'entry_type' => 1,
+                            'trans_type' => config('lms.TRANS_TYPE.REFUND'),
+                            'trans_mode' => 2,
+                        ];
+                    }
+                }
+                /* Refund Process End */
+
                 if($paymentId){
                     InterestAccrualTemp::where('payment_id',$paymentId)->delete();
                 }

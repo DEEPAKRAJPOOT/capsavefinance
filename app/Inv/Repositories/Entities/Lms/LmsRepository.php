@@ -70,6 +70,8 @@ use App\Inv\Repositories\Models\Lms\NachRepaymentReq;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReqBatch;
 use App\Inv\Repositories\Models\Lms\NachTransReq;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
+use App\Inv\Repositories\Models\InvoiceStatusLog;
+
 /**
  * Lms Repository class
  */
@@ -538,8 +540,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	  public static function getSingleChargeAmount($attr)
 	{
 	   try
-	   {
-		  return ProgramCharges::getSingleChargeAmount($attr); 
+	   {	
+	   		if (!empty($attr['prog_id'])) {
+		  		return ProgramCharges::getSingleChargeAmount($attr); 
+	   		} else {
+   				return Charges::getSingleChargeAmount($attr);
+	   		}
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
@@ -596,7 +602,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 	   try
 	   {
-		  return ProgramCharges::getTransName($attr); 
+	   		if (isset($attr->prog_id)) {
+		  		return ProgramCharges::getTransName($attr); 
+		  	} else {
+		  		return Charges::getTransName($attr); 
+
+		  	}
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
@@ -1004,7 +1015,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	public function findDisbursalByUserAndBatchId($data)
 	{
-		return Disbursal::where($data)
+		return Disbursal::where($data)->where('status_id', 10)
 				->pluck('disbursal_id');
 	}
 
@@ -1248,17 +1259,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				switch ($transRunning->trans_type) {
 					case config('lms.TRANS_TYPE.INTEREST'):
 						$response['interest'][] = [
-							'trans_running_id' => $transRunning->trans_id,
+							'trans_running_id' => $transRunning->trans_running_id,
 							'amount'=> $transRunning->amount,
-							'outstanding'=>$transRunning->amount,
+							'outstanding'=>$transRunning->outstanding,
 							'trans_date'=>$transRunning->trans_date
 						];
 						break;
 					case config('lms.TRANS_TYPE.INTEREST_OVERDUE'):
 						$response['overdue'][] = [
-							'trans_running_id' => $transRunning->trans_id,
+							'trans_running_id' => $transRunning->trans_running_id,
 							'amount'=> $transRunning->amount,
-							'outstanding'=>$transRunning->amount,
+							'outstanding'=>$transRunning->outstanding,
 							'trans_date'=>$transRunning->trans_date
 						];
 						break;
@@ -1606,6 +1617,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return DisbursalBatch::with('disbursal_api_log')
 				->where('disbursal_batch_id', $disbursalBatchId)
+				->where('batch_status', 1)
+				->latest()
 				->first();
 	}
 
@@ -1737,6 +1750,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	
     public function updateNachTransReq($attr, $whereCond){
         return NachTransReq::updateNachTransReq($attr, $whereCond);
+	}
+
+	public function getUnsettledRunningTrans(){
+        return TransactionsRunning::getUnsettledRunningTrans();
     }
 
 	public function saveInvoiceDisbursedDetails($attr, $whereCond){
@@ -1754,5 +1771,38 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		$response =  InvoiceDisbursed::whereIn('invoice_disbursed_id', $invoiceDisburseIds)
 				->update(['status_id' => $status]);
 		return $response;
+	}
+
+	public function findInvoiceDisbursedInvoiceIdByInvoiceId($invoiceId)
+	{
+		return InvoiceDisbursed::where('invoice_id', $invoiceId)
+				->whereIn('status_id', [10,12])
+				->get();
+	}
+
+	public function getDisbursalByDBId($disbursalBatchId){
+		return Disbursal::where('disbursal_batch_id',$disbursalBatchId)->get();
+	}
+
+	public function deleteDisbursalStatusLogByDidArr($IdsArr){
+		return DisbursalStatusLog::whereIn('disbursal_id',$IdsArr)->where('status_id',10)->delete();
+	}
+
+	public function deleteInvoiceStatusLogByInvIdArr($IdsArr){
+		return InvoiceStatusLog::whereIn('invoice_id',$IdsArr)->where('status_id',10)->delete();
+	}
+
+	public static  function deleteInvoiceDisbursed($disbursalIds)
+	{
+		return InvoiceDisbursed::whereIn('disbursal_id',$disbursalIds)->delete();
+	}
+
+	public function deleteDisbursalByDBId($disbursalBatchId){
+		return Disbursal::where('disbursal_batch_id',$disbursalBatchId)->delete();
+	}
+
+	public function deleteDisbursalBatchByDBId($disbursalBatchId)
+	{
+		return DisbursalBatch::where('disbursal_batch_id', $disbursalBatchId)->delete();
 	}
 }

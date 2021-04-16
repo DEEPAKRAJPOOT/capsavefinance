@@ -62,6 +62,22 @@ class Bank extends BaseModel {
         return $res ?: false;
     }
 
-   
+    public static function saveBank($attributes, $id = null)
+    {
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        if (empty($attributes)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        if (is_null($id)) {
+            return self::create($attributes);
+        } else {
+            return self::where('id', $id)->update($attributes);
+        }
+    }
+
 
 }

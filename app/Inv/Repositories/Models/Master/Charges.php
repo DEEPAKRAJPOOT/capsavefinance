@@ -62,6 +62,7 @@ class Charges extends BaseModel
         'is_gst_applicable',
         'gst_percentage',
         'chrg_tiger_id',
+        'based_on',
         'is_active',
         'created_at',
         'created_by'
@@ -81,7 +82,7 @@ class Charges extends BaseModel
      */
     public static function getCharagesList()
     {
-        $res = self::where('is_active', '1')->pluck('chrg_name', 'id');
+        $res = self::where('is_active', '1')->where('based_on', '1')->pluck('chrg_name', 'id');
         return $res ?: false;
     }
 
@@ -127,6 +128,7 @@ class Charges extends BaseModel
                      "is_gst_applicable" => $attributes['is_gst_applicable'],
                      "gst_percentage" => $attributes['gst_percentage'],
                      "chrg_tiger_id" => $attributes['chrg_tiger_id'],
+                     "based_on" => $attributes['based_on'],
                      "is_active" => $attributes['is_active'],
                      "created_at"    =>$created_at,
                      "created_by" => $uid ];

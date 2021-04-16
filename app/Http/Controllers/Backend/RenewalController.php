@@ -32,6 +32,7 @@ class RenewalController extends Controller {
         $where=[];
         $where['user_id'] = $userId;
         $where['status'] = [0,1];
+        $where['curr_status_id'] = [config('common.mst_status_id.APP_REJECTED'), config('common.mst_status_id.APP_CANCEL')];
         $appData = $this->appRepo->getApplicationsData($where);
 
         $userData = $this->userRepo->getfullUserDetail($userId);           

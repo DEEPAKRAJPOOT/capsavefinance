@@ -115,7 +115,7 @@
       $("#chrgMsg").html('');
       $("#chrg_applicable_id").empty();
       var chrg_name =  $(this).val(); 
-      if($("#program_id").val()=='') 
+      if($("#program_id").val()=='' && $('#based_on').val() == 1) 
       {    
              $(this).val('');
              $("#msgprogram").html('Please select program');
@@ -152,7 +152,11 @@
                           $("#chrg_applicable_hidden_id").val(res.chrg_applicable_id);
                           $("#chrg_applicable_id option").attr('disabled','disabled');
                           ////**** calculation here for according charge applicable ******/
-                          var ram = res.amount.replace(",", ""); 
+                          if (res.amount != null) {
+                            var ram = res.amount.replace(",", ""); 
+                          } else {
+                            var ram = 0; 
+                          }
                           $("#amount").val(ram);
                           $("#id").val(res.id);
                           $("#charge_type").val(res.type);
@@ -161,9 +165,11 @@
                              
                             
                              $("#approved_limit_div, .chargeTypeCal").hide();
+                             if($('#based_on').val() == 1) {
                              $("#chrg_calculation_type1").prop('checked',true);
                              $("#chrg_calculation_type2").prop('checked',false);
                              $("#chrg_calculation_type2").prop('disabled',true);
+                           }
                             if(res.is_gst_applicable==1)
                            { 
                              var limitAmount  =  $("#amount").val();  
@@ -177,9 +183,11 @@
                          }  
                          else if(res.type==2)
                          {
+                             if($('#based_on').val() == 1) {
                              $("#chrg_calculation_type1").prop('checked',false);
                              $("#chrg_calculation_type2").prop('checked',true);
                               $("#chrg_calculation_type1").prop('disabled',true);
+                            }
                              $("#approved_limit_div, .chargeTypeCal").show(); 
                              var limit_amount_new  =  $("#limit_amount_new").val();
                              var limit_amount_new =   limit_amount_new.replace(",", ""); 
@@ -210,11 +218,23 @@
                               $("#is_gst_applicable1").attr('disabled','disabled');
                             } 
                          
+                         if($('#based_on').val() == 2) {
+                            $("#chrg_calculation_type1").prop('disabled',false);
+                            $("#amount").attr("readonly", false);
+                            $("#chrg_calculation_type1").attr('checked', true);
+                            $(".chargeTypeCal").css({"display":"none"});
+                            $("#cust_hide_div").css({"display":"none"});
+                            $("#amount_label").text("Amount");;
+                         } else {
+                            $("#amount_label").text("Amount/Percent");;
+                            $("#amount").attr("readonly", true);
+                            $("#cust_hide_div").show();
+                         }
                       }
                       else
                       {
                          $("#chrg_name").val('');
-                         replaceAlert('Something went wrong, Please try again', 'error');
+                         // replaceAlert('Something went wrong, Please try again', 'error');
                       }
                 }
         }); 
@@ -274,7 +294,7 @@
                 $('#RadioValidation').text("Charge Type is required.");
                 return false;
         }
-        if($("#program_id").val()=='')
+        if($("#program_id").val()=='' && $('#based_on').val() == 1 )
         {
      
                 $('#msgprogram').text("Please select program");

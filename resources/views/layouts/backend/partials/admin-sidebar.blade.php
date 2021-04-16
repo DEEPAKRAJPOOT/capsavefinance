@@ -138,7 +138,7 @@
     @endcan
 
     @php $roleData = \Helpers::getUserRole() @endphp
-    @if($roleData[0]->role_type == 3)
+    @if(isset($roleData[0]) && $roleData[0]->role_type == 3)
     @can('anchor_nach_list')
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu6" aria-expanded="false"
@@ -355,7 +355,8 @@
     @canany(['manage_doa', 'manage_program', 'get_charges_list', 
         'get_documents_list', 'get_industries_list', 'get_vouchers_list',
         'get_segment_list', 'get_entity_list', 'get_constitutions_list',
-        'get_gst_list', 'get_equipment_list', 'get_baserate_list', 'get_companies_list'
+        'get_gst_list', 'get_equipment_list', 'get_baserate_list', 'get_companies_list',
+        'get_bank_list'
         ])
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu11" aria-expanded="false"
@@ -438,6 +439,11 @@
                     <a class="nav-link" href="{{ route('get_tds_list') }}">Manage TDS</a>
                 </li>
                 @endcan
+                @can('get_bank_list')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('get_bank_list') }}">Manage Bank</a>
+                </li>
+                @endcan
             </ul>
         </div>
     </li>
@@ -503,7 +509,7 @@
 
     @php $roleData = \Helpers::getUserRole() @endphp
 
-    @if($roleData[0]->is_superadmin == 1)
+    @if(isset($roleData[0]) && $roleData[0]->is_superadmin == 1)
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu10" aria-expanded="false"
             aria-controls="collapseExample">

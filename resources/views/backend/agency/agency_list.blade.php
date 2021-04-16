@@ -57,6 +57,7 @@
                                     <th>Email ID</th>
                                     <th>Mobile</th>
                                     <th>Created At</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>

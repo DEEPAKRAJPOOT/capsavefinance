@@ -825,4 +825,21 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Inv\Repositories\Models\Application', 'user_id', 'user_id');
     }
+
+    // Frontend Dashboard
+    public static function getSupplierDataById($supplierId) {
+        $res = DB::select("SELECT supplier_id,COUNT(a.invoice_id) AS Total_Invoices,SUM(invoice_amount) AS Total_Invoice_Amount,
+                      (SELECT COUNT(invoice_id) FROM rta_invoice c WHERE status_id IN (8,9,10) AND c.supplier_id=a.supplier_id ) AS Total_Approved_Invoice,
+                      (SELECT SUM(invoice_approve_amount) FROM rta_invoice c WHERE status_id IN (8,9,10)    AND c.supplier_id=a.supplier_id) AS Total_Approved_Value,
+                      (SELECT COUNT(invoice_id) FROM rta_invoice c WHERE status_id IN (9)    AND c.supplier_id=a.supplier_id ) AS Total_Invoice_InDisbursedProcess,
+                      (SELECT SUM(invoice_approve_amount) - SUM(invoice_margin_amount) FROM rta_invoice c WHERE status_id IN (9)  AND c.supplier_id=a.supplier_id)
+                      AS Total_Invoice_IDisbursedProcess_Value,
+                      (SELECT COUNT(invoice_id) FROM rta_invoice c WHERE status_id  IN (12)    AND c.supplier_id=a.supplier_id ) AS Total_Disbursed_Invoice,
+                      (SELECT SUM(invoice_approve_amount) FROM rta_invoice c WHERE status_id  IN (12)   AND c.supplier_id=a.supplier_id) AS Total_Disbursed_Value,
+                      (SELECT COUNT(invoice_id) FROM rta_invoice c WHERE status_id  IN (15)    AND c.supplier_id=a.supplier_id ) AS Total_Invoice_Repaid,
+                      (SELECT COUNT(invoice_id) FROM rta_invoice c WHERE status_id IN (7,11,14,28)    AND c.supplier_id=a.supplier_id ) AS Total_Invoice_Pending
+                      FROM rta_invoice a
+                      WHERE a.supplier_id = $supplierId;");
+        return ($res ? $res : []);
+    }    
 }

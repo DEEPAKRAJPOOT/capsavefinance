@@ -33,6 +33,8 @@
                                     <button type="button" class="badge badge-success btn-sm float-right">Active </button>
                                     @elseif($uLimit->status==1 && $uLimit->actual_end_date!=Null) 
                                    <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }}</button>
+                                   @elseif($uLimit->status==2) 
+                                   <button type="button" class="badge badge-danger btn-sm float-right">Closed</button>
                                     @else
                                    <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
                                     @endif
@@ -42,7 +44,7 @@
                                     @elseif($uLimit->status==1) 
                                     <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
                                     @else
-                                    <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
+                                    <button type="button" class="badge badge-danger btn-sm float-right">Closed </button>
                                     @endif
                                 @endif 
                                     
@@ -96,6 +98,8 @@
                                     <button type="button" class="badge badge-success btn-sm float-right">Active </button>
                                     @elseif($limit->status==1 && $limit->actual_end_date!=Null) 
                                     <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
+                                    @elseif($uLimit->status==2) 
+                                   <button type="button" class="badge badge-danger btn-sm float-right">Closed</button>
                                     @else
                                     <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
                                     @endif
@@ -105,7 +109,7 @@
                                     @elseif($limit->status==1) 
                                     <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
                                     @else
-                                    <button type="button" class="badge badge-warning btn-sm float-right">Closed </button>
+                                    <button type="button" class="badge badge-danger btn-sm float-right">Closed </button>
                                     @endif
                                 @endif 
                             </div>
@@ -191,7 +195,7 @@
                                 @elseif($adc->status==1) 
                                 <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
                                 @else
-                                <button type="button" class="badge badge-danger btn-sm float-right">Reject </button>
+                                <button type="button" class="badge badge-danger btn-sm float-right">Closed </button>
                                 @endif
 
                                 @can('approve_adhoc_limit')
