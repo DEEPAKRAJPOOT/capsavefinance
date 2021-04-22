@@ -562,6 +562,7 @@ class ReportController extends Controller
     }
 
     public function maturityReport(){
+        ini_set("memory_limit", "-1");
         dump('start....');
         $anchor_id = null;
         $emailTo =  config('lms.DAILY_REPORT_MAIL');
