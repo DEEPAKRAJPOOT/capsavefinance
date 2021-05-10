@@ -76,6 +76,7 @@ class ApportionmentController extends Controller
      */
     public function viewUnsettledTrans(Request $request){
         try {
+            ini_set('max_execution_time', -1);
             $oldData = [];
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
