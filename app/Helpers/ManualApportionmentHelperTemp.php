@@ -262,13 +262,15 @@ class ManualApportionmentHelperTemp{
     
     public function setTempInterest($paymentId){
         if($paymentId){
+
             $payment = Payment::find($paymentId);
             if($payment){
                 InterestAccrualTemp::where('payment_id',$paymentId)->delete();
                 $paymentDate = $payment->date_of_payment;
                 $userId = $payment->user_id;
                 $invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true, 'user_id'=>$userId]);
-                foreach ($invoiceList as $invId => $trans) {
+                $arrayInvoiceSlice = array_slice($invoiceList, 0, 100,true);
+                foreach ($arrayInvoiceSlice as $invId => $trans) {
                     $this->intAccrual($invId, null, $paymentDate, $paymentId);
                 }
             }
