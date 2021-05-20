@@ -155,20 +155,20 @@ Route::domain(config('proin.lenevo_frontend_uri'))->group(function () {
     Route::get('login',
         [
         'as' => 'login_open',
-        'uses' => 'Auth\LenevoRegisterController@showLoginForm'
+        'uses' => 'Auth\LenevoLoginController@showLoginForm'
     ]);
 
     Route::post('login',
         [
         'as' => 'login_open',
-        'uses' => 'Auth\LoginController@login'
+        'uses' => 'Auth\LenevoLoginController@login'
     ]);
 
     //Logout
     Route::post('logout',
         [
         'as' => 'frontend_logout',
-        'uses' => 'Auth\LoginController@logout'
+        'uses' => 'Auth\LenevoLoginController@logout'
     ]);
     
      //Registration step 1
@@ -187,7 +187,7 @@ Route::domain(config('proin.lenevo_frontend_uri'))->group(function () {
     Route::post('register',
         [
         'as' => 'user_register_save',
-        'uses' => 'Auth\RegisterController@register'
+        'uses' => 'Auth\LenevoRegisterController@register'
     ]);
     
     // for password

@@ -85,7 +85,7 @@ use RegistersUsers,
         $arrLeadAssingData =[];
         //$userDataArray = $this->userRepo->getUserByAnchorId($data['h_anchor_id']);        
         //$arrData['anchor_user_id'] = $userDataArray->user_id;        
-        $lead_type = $data['lead_type'];
+        $lead_type = 1;//$data['lead_type'];
         $arrData['anchor_id'] = $data['h_anchor_id'];
         $arrData['f_name'] = $data['f_name'];
         //$arrData['m_name'] = $data['m_name'];
@@ -780,16 +780,6 @@ use RegistersUsers,
         }
                 
         return response()->json($result);
-    }
-    
-    /**
-     * Show the Lenevo application's login form.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function showLoginForm()
-    {
-        return view('auth.anchor_auth.login');
     }
     
     public function showResetLinkEmail() {
