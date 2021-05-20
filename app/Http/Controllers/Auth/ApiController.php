@@ -1078,6 +1078,7 @@ class ApiController
     $toUploadPath = $this->getToUploadPath($appId, 'finance');
     $contents = json_decode(base64_decode(file_get_contents($toUploadPath.'/'. $nameArr['curr_file'])),true);
     $fy = $contents['FinancialStatement']['FY'] ?? [];
+    dump($fy);
     if (empty($fy)) {
       $response['message'] = 'No Content found to update the year';
       return $response;
@@ -1085,6 +1086,7 @@ class ApiController
     foreach ($fy as $key => $fyData) {
       $fy[$key]['year'] = $year[$key];
     }
+    dump($fy);
     $contents['FinancialStatement']['FY'] = $fy;
     $json_file_name = $nameArr['new_file'];
     $myfile = fopen($toUploadPath .'/'.$json_file_name, "w");
