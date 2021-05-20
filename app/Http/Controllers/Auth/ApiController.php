@@ -1090,7 +1090,7 @@ class ApiController
     $myfile = fopen($toUploadPath .'/'.$json_file_name, "w");
     $changeContent = base64_encode(json_encode($contents));
     \File::put($toUploadPath .'/'.$json_file_name, $changeContent);
-    dump($toUploadPath .'/'.$json_file_name,$changeContent);
+    dump($nameArr, $toUploadPath .'/'.$json_file_name,$changeContent);
     $response['status'] = 'success';
     $response['message'] = 'Year changes successfully';
     return $response;
