@@ -1086,11 +1086,12 @@ class ApiController
     foreach ($fy as $key => $fyData) {
       $fy[$key]['year'] = $year[$key];
     }
-    dump($fy);
     $contents['FinancialStatement']['FY'] = $fy;
     $json_file_name = $nameArr['new_file'];
     $myfile = fopen($toUploadPath .'/'.$json_file_name, "w");
-    \File::put($toUploadPath .'/'.$json_file_name, base64_encode(json_encode($contents)));
+    $changeContent = base64_encode(json_encode($contents));
+    \File::put($toUploadPath .'/'.$json_file_name, $changeContent);
+    dump($changeContent);
     $response['status'] = 'success';
     $response['message'] = 'Year changes successfully';
     return $response;
