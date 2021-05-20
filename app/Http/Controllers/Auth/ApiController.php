@@ -881,6 +881,8 @@ class ApiController
         $files = scandir($scanpath, SCANDIR_SORT_DESCENDING);
       }
       $files = array_diff($files, [".", ".."]);
+      natsort($files);
+      $files = array_reverse($files, false);
       $filename = "";
       if (!empty($files)) {
         foreach ($files as $key => $file) {
@@ -892,8 +894,9 @@ class ApiController
           }
         }
       }
+                
       $included_no = preg_replace('#[^0-9]+#', '', $filename);
-      $file_no = str_replace($appId, '', $included_no);
+      $file_no = substr($included_no, strlen($appId));
       if (empty($file_no) && empty($filename)) {
         $new_file = $appId.'_'.$fileType.".$extType";
         $curr_file = '';
