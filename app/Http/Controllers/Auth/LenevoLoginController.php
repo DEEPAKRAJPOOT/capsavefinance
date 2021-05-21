@@ -99,17 +99,17 @@ use AuthenticatesUsers;
             }
 
             // validate user OTP verified or not
-            if ($userInfo->anchor_id != null) {
-               if (!$this->isOtpVerify($userInfo)) {
-                    Session::flash('messages', trans('error_messages.login_verify_otp'));
-                    return redirect()->route('login_open');
-                }
-            } else if($userInfo->is_otp_verified != 1) {
-                //dd('$userInfo->email--', $userInfo->email);
-                $verifyLink = Crypt::encrypt($userInfo->email);
-                $this->verifyUser($verifyLink);
-                return redirect()->route('otp', ['token' => Crypt::encrypt($userInfo->email)]);
-            }
+//            if ($userInfo->anchor_id != null) {
+//               if (!$this->isOtpVerify($userInfo)) {
+//                    Session::flash('messages', trans('error_messages.login_verify_otp'));
+//                    return redirect()->route('login_open');
+//                }
+//            } else if($userInfo->is_otp_verified != 1) {
+//                //dd('$userInfo->email--', $userInfo->email);
+//                $verifyLink = Crypt::encrypt($userInfo->email);
+//                $this->verifyUser($verifyLink);
+//                return redirect()->route('otp', ['token' => Crypt::encrypt($userInfo->email)]);
+//            }
             
             if (empty($userInfo->is_active) || $userInfo->is_active != 1) {
                 Session::flash('messages', 'You are not an active user');

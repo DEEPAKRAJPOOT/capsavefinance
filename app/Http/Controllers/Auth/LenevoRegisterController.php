@@ -245,23 +245,37 @@ use RegistersUsers,
                 $whereCond[] = ['anchor_id', '!=', $arrFileData['h_anchor_id']];
                 $whereCond[] = ['is_registered', '=', '1'];
                 $AnchorData = $this->userRepo->getAnchorUserData($whereCond);        
-                if (isset($AnchorData[0])) {
-                    $userMailArr=[];
-                    $userMailArr['name'] = $user->f_name . ' ' . $user->l_name;
-                    $userMailArr['email'] = $user->email;
-                    Event::dispatch("NOTIFY_EXISTING_USER", serialize($userMailArr));
-
-                    Session::flash('message', trans('success_messages.registration_success'));
-                    return redirect(route('login_open'));             
-                } else {            
-
-                    /// $this->sendVerificationLink($user->user_id);
-                    $verifyLink = Crypt::encrypt($user['email']);
-                    $this->verifyUser($verifyLink);
-                    Session::flash('message', trans('success_messages.basic_saved_successfully'));
-                    //return redirect(route('education_details'));
-                    return redirect()->route('otp', ['token' => Crypt::encrypt($user['email'])]);
-                }                
+//                if (isset($AnchorData[0])) {
+//                    $userMailArr=[];
+//                    $userMailArr['name'] = $user->f_name . ' ' . $user->l_name;
+//                    $userMailArr['email'] = $user->email;
+//                    Event::dispatch("NOTIFY_EXISTING_USER", serialize($userMailArr));
+//
+//                    Session::flash('message', trans('success_messages.registration_success'));
+//                    return redirect(route('login_open'));             
+//                } else {            
+//
+//                    /// $this->sendVerificationLink($user->user_id);
+//                    $verifyLink = Crypt::encrypt($user['email']);
+//                    $this->verifyUser($verifyLink);
+//                    Session::flash('message', trans('success_messages.basic_saved_successfully'));
+//                    //return redirect(route('education_details'));
+//                    return redirect()->route('otp', ['token' => Crypt::encrypt($user['email'])]);
+//                } 
+                if(Auth::loginUsingId($user->user_id)) {
+                        return redirect()->route('business_information_open');
+//                        if ($userDetails->is_pwd_changed != 1) {
+//                            return redirect()->route('changepassword');
+//                        }
+                        
+//                        $appData = $this->application->checkAppByPan($userId); 
+//                        if ($appData) {
+//                            //Session::flash('message', trans('error_messages.active_app_check'));                            
+//                            return redirect()->route('front_application_list');
+//                        } else {
+//                            return redirect()->route('business_information_open');
+//                        }       
+                    }
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
             }
