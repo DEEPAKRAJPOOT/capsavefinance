@@ -1,6 +1,6 @@
 @extends('layouts.guest_lenevo')
 @section('content')
-<div class="login_bg form-content no-padding sign-up mt-5">
+<div class="login_bg form-content no-padding sign-up">
     <div class="row justify-content-center align-items-center m-0">
         <div class="col-md-4 form-design lenevo_layout_login">
 

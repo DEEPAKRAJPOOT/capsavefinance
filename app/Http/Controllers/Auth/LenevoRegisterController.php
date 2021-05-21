@@ -177,59 +177,6 @@ use RegistersUsers,
     }
 
     /**
-     * Create a new company user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\User
-     */
-    protected function compcreate(array $data) {
-        $arrData = [];
-        $arrKyc = [];
-        $arrKycData = [];
-        $userName = $this->changeuserName($data['first_name'], $data['last_name'], $data['phone']);
-        $arrData['f_name'] = $data['first_name'];
-        $arrData['m_name'] = $data['middle_name'];
-        $arrData['l_name'] = $data['last_name'];
-        $arrData['email'] = $data['email'];
-        $arrData['username'] = $userName;
-        $arrData['phone_no'] = $data['phone'];
-        $dateofBirth = str_replace('/', '-', $data['dob']);
-        $arrData['date_of_birth'] = date('Y-m-d', strtotime($dateofBirth));
-        $arrData['user_type'] = 2;
-        $arrData['is_email_verified'] = 0;
-        $arrData['is_pwd_changed'] = 0;
-        $arrData['is_email_verified'] = 0;
-        $arrData['is_otp_verified'] = 0;
-        $arrData['is_active'] = 0;
-        $arrData['is_active'] = 0;
-        $userId = null;
-        $userDataArray = $this->userRepo->save($arrData, $userId);
-        if ($userDataArray->user_id > 0) {
-            $arrDetailData['user_id'] = $userDataArray->user_id;
-            $arrDetailData['country_id'] = $data['country_id'];
-            $arrDetailData['corp_name'] = $data['company_name'];
-            $arrDetailData['corp_license_number'] = $data['comp_trade_in'];
-            $dateofCorpration = str_replace('/', '-', $data['comp_dof']);
-            $arrDetailData['corp_date_of_formation'] = date('Y-m-d', strtotime($dateofCorpration));
-            $CorpDetail = $this->userRepo->saveCorpDetails($arrDetailData);
-
-
-
-            $arrKyc['user_id'] = $CorpDetail->user_id;
-            $arrKyc['corp_detail_id'] = $CorpDetail->corp_detail_id;
-            $arrKyc['is_by_company'] = 0;
-            $arrKyc['is_approve'] = 0;
-            $arrKyc['is_kyc_completed'] = 0;
-            $arrKyc['is_api_pulled'] = 0;
-            $kycDetail = $this->userRepo->saveKycDetails($arrKyc);
-            $arrKycData['user_kyc_id'] = $kycDetail->kyc_id;
-            $this->userRepo->save($arrKycData, $CorpDetail->user_id);
-        }
-
-        return $userDataArray;
-    }
-
-    /**
      * Show the application registration form.
      *
      * @return \Illuminate\Http\Response
@@ -262,20 +209,7 @@ use RegistersUsers,
          }
     }
 
-    /**
-     * Show the application registration form.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function showCompRegistrationForm() {
-
-        $userId = Session::has('userId') ? Session::get('userId') : 0;
-        $userArr = [];
-        if ($userId > 0) {
-            $userArr = $this->userRepo->find($userId);
-        }
-        return view('auth.company-sign-up', compact('userArr'));
-    }
+    
 
     /**
      * Handle a registration request for the application.
@@ -337,45 +271,6 @@ use RegistersUsers,
     }
 
     /**
-     * Handle a registration request for the application.
-     *
-     * @param  \Illuminate\Http\RegistrationFormRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function compregister(RegistrationFormRequest $request, StorageManagerInterface $storage) {
-
-
-        try {
-            $data = [];
-            $arrFileData = [];
-            $arrFileData = $request->all();
-            //dd($arrFileData);
-            //echo "ddddssssd"; exit;
-            //Saving data into database
-            //unset($user);
-            $user = $this->compcreate($arrFileData);
-
-
-
-            if ($user) {
-                if (!Session::has('userId')) {
-                    Session::put('userId', (int) $user->user_id);
-                }
-                // echo $user->id; exit;
-                $verifyLink = route('verify_email', ['token' => Crypt::encrypt($user['email'])]);
-                $this->sendVerificationLink($user->user_id);
-                Session::flash('message', trans('Registration is done successfully.'));
-                //return redirect(route('education_details'));
-                return redirect()->route('thanks');
-            } else {
-                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
-            }
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }
-    }
-
-    /**
      * Show the application Thanks page.
      *
      * @return \Illuminate\Http\Response
@@ -417,26 +312,7 @@ use RegistersUsers,
         }
     }
 
-    /**
-     * Send Verification link to user to verify email
-     * @param Integer $userId
-     */
-    protected function sendVerificationLinkold($userId) {
-
-       // $Otpstring = Helpers::randomOTP();
-        $Otpstring = mt_rand(1000, 9999);
-        $userArr['otp'] = $Otpstring;
-        $this->userRepo->save($userArr, $userId);
-
-        $userArr = [];
-        $userArr = $this->userRepo->find($userId, ['email', 'first_name', 'last_name']);
-        $verifyUserArr = [];
-        $verifyUserArr['name'] = $userArr->first_name . ' ' . $userArr->last_name;
-        $verifyUserArr['email'] = $userArr->email;
-        $verifyUserArr['otp'] = $Otpstring;
-
-        Event::fire("user.email.verify", serialize($verifyUserArr));
-    }
+    
 
     protected function sendVerificationLink($userId) {
         $userArr = [];

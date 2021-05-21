@@ -1,5 +1,30 @@
 *{padding:0px; margin:0px;}
-.login_bg{background:url(./bg.jpg) no-repeat; width:100%; background-size:cover;}
+.login_bg{background:url(./bg.jpg) no-repeat; width:100%; background-size:cover; min-height: calc(100% - 57px);}
 .lenevo_layout{background: #fff; margin-top: 50px;}
 .heading_color{background: #385773;}
 .lenevo_layout_login{background: #fff; margin-top: 50px; margin-botom: 200px;}
+.verify-owner-no{background: #074888;}
+.sidebar-icon-only:not(.sidebar-expanded) .sidebar .nav .nav-item.hover-open .nav-link .menu-title {background: #074888;}
+.sub-menu-main li a.active, .sub-menu-main li a:hover {color: #074888; border-color: #074888;}
+.btn-success {background: #074888; border-color: #074888;}
+.sameas {color: #074888;}
+.profile_name{color: #074888 !important;}
+.sidebar-icon-only:not(.sidebar-expanded) .navbar .navbar-brand-wrapper .brand-logo{display: block;}
+/*.btn-primary {color: #074888; background-color: #074888; border-color: #074888;}*/
+.overview-table>thead>tr>th {
+    background: #074888;
+    color: #fff;
+    border-left: 1px solid #074888;
+}
+.inline-action-btn a {
+    color: #074888;
+}
+.btn-action-btn {
+    border: 1px solid #074888;
+}
+.btn-pickup {
+    border: 1px solid #074888;
+}
+.breadcrumb>.active {
+    color: #074888;
+}

@@ -88,14 +88,14 @@ use AuthenticatesUsers;
                 if (!$this->isFrontendUser($userInfo)) {
 
                     Session::flash('messages', trans('error_messages.creadential_not_valid'));
-                    return redirect()->route('login_open');
+                    return redirect()->route('lenevo_login_open');
                 }
             }
             
             // Email verification with OTP
             if (!$this->isEmailVerify($userInfo)) {
                 Session::flash('messages', trans('error_messages.login_verify_email'));
-                return redirect()->route('login_open');
+                return redirect()->route('lenevo_login_open');
             }
 
             // validate user OTP verified or not
@@ -113,7 +113,7 @@ use AuthenticatesUsers;
             
             if (empty($userInfo->is_active) || $userInfo->is_active != 1) {
                 Session::flash('messages', 'You are not an active user');
-                return redirect()->route('login_open');
+                return redirect()->route('lenevo_login_open');
             }
 
             if ($this->attemptLogin($request)) {
@@ -165,7 +165,7 @@ use AuthenticatesUsers;
 
         $request->session()->invalidate();
 
-        return redirect('/login');
+        return redirect('/lenevo-login');
     }
 
     /**
