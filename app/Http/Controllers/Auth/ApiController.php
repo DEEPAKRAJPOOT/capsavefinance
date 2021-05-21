@@ -1088,6 +1088,9 @@ class ApiController
     foreach ($fy as $key => $fyData) {
       $fy[$key]['year'] = $year[$key];
     }
+    if (count($fy) == 2) {
+      $fy['2'] = $fyData;
+    }
     $contents['FinancialStatement']['FY'] = $fy;
     $json_file_name = $nameArr['new_file'];
     $myfile = fopen($toUploadPath .'/'.$json_file_name, "w");
