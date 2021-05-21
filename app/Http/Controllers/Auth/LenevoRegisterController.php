@@ -102,7 +102,7 @@ use RegistersUsers,
             // 'supplier_code' => isset($arrAnchorVal['supplier_code']) ? trim($arrAnchorVal['supplier_code']) : null,
         ];
     
-        $lenevo_anchor_lead = $this->userRepo->saveAnchorUser($arrLenevoAnchorUserData);
+        $lenevo_anchor_user_id = $this->userRepo->saveAnchorUser($arrLenevoAnchorUserData);
         //$userDataArray = $this->userRepo->getUserByAnchorId($data['h_anchor_id']);        
         //$arrData['anchor_user_id'] = $userDataArray->user_id;        
         $lead_type = 1;//$data['lead_type'];
@@ -142,8 +142,8 @@ use RegistersUsers,
         
         if ($userDataArray) {
 
-            if (isset($lenevo_anchor_lead->anch_user_id) && !empty(($lenevo_anchor_lead->anch_user_id))) {
-                $ancherUserId = $lenevo_anchor_lead->anch_user_id;
+            if ($lenevo_anchor_user_id) {
+                $ancherUserId = $lenevo_anchor_user_id;
                 $arrAnchUser['is_registered']=1;
                 $arrAnchUser['user_id']=$userDataArray->user_id;              
                           
