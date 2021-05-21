@@ -83,10 +83,30 @@ use RegistersUsers,
         $arrAnchUser=[];
         $arrDetailData = [];
         $arrLeadAssingData =[];
+
+        $arrLenevoAnchorUserData = [
+            'name' => $data['f_name'],
+            'l_name' => $data['l_name'],
+            'biz_name' => $data['business_name'],
+            'pan_no' => $data['pan_no'],
+            'email' => trim($data['email']),
+            'phone' => $data['mobile_no'],
+            'user_type' => 1,           //supplier -> 1, buyer -> 2
+            'is_registered'=>0,
+            'registered_type'=>0,
+            // 'created_by' => Auth::user()->user_id,
+            'created_by' => $data['h_anchor_id'],
+            'created_at' => \Carbon\Carbon::now(),
+            'token' => $data['_token'],
+            'anchor_id' => $data['h_anchor_id'],
+            // 'supplier_code' => isset($arrAnchorVal['supplier_code']) ? trim($arrAnchorVal['supplier_code']) : null,
+        ];
+    
+        $lenevo_anchor_lead = $this->userRepo->saveAnchorUser($arrLenevoAnchorUserData);
         //$userDataArray = $this->userRepo->getUserByAnchorId($data['h_anchor_id']);        
         //$arrData['anchor_user_id'] = $userDataArray->user_id;        
         $lead_type = 1;//$data['lead_type'];
-        $arrData['anchor_id'] = $data['h_anchor_id'];
+        $arrData['r'] = $data['h_anchor_id'];
         $arrData['f_name'] = $data['f_name'];
         //$arrData['m_name'] = $data['m_name'];
         $arrData['l_name'] = $data['l_name'];
@@ -122,40 +142,12 @@ use RegistersUsers,
         
         if ($userDataArray) {
 
-            if (isset($data['anch_user_id']) && !empty($data['anch_user_id'])) {
-                
-                //Associate Business
-                //$bizData = $this->application->getBizDataByPan($data['pan_no']);
-                //if (isset($bizData[0])) {
-                //    $bizId = $bizData[0]->biz_id;
-                //} else {
-                    /*
-                    $insBizData=[];
-                    $insBizData['user_id'] = $userDataArray->user_id;
-                    $newBizData = $this->application->createBusiness($insBizData);
-                    $bizId = $newBizData->biz_id;
-
-                    $bizPanGstArrData=[];
-                    $bizPanGstArrData['user_id']= $userDataArray->user_id;
-                    $bizPanGstArrData['biz_id'] = $bizId;
-                    $bizPanGstArrData['type']   = 1;
-                    $bizPanGstArrData['pan_gst_hash'] = $data['pan_no'];
-                    $this->appRepo->saveBizPanGstData($bizPanGstArrData);
-                     * 
-                     */
-                    //$bizId = null;
-                //}
-            
-            
+            if (isset($lenevo_anchor_lead->anch_user_id) && !empty(($lenevo_anchor_lead->anch_user_id))) {
+                $ancherUserId = $lenevo_anchor_lead->anch_user_id;
                 $arrAnchUser['is_registered']=1;
-
-                //$arrAnchUser['token']='';
-                $arrAnchUser['user_id']=$userDataArray->user_id;
-                $arrAnchUser['pan_no']=$data['pan_no'];
-                //$arrAnchUser['biz_id']=$bizId;
-                $arrAnchUser['anchor_id']=$data['h_anchor_id'];                
-                //$anchId=$this->userRepo->getAnchorUsersByEmail($userDataArray->email);            
-                $this->userRepo->updateAnchorUser($data['anch_user_id'], $arrAnchUser);
+                $arrAnchUser['user_id']=$userDataArray->user_id;              
+                          
+                $this->userRepo->updateAnchorUser($ancherUserId, $arrAnchUser);
             }
             
             $saleMngId=$this->userRepo->getLeadSalesManager($userDataArray->user_id);
@@ -289,7 +281,7 @@ use RegistersUsers,
             $data = [];
             $arrFileData = [];
             $arrFileData = $request->all();
-            //dd($arrFileData);
+            // dd($arrFileData);
             //echo "ddddssssd"; exit;
             //Saving data into database
             $AnchorData = $this->userRepo->getAnchorByPan($arrFileData['pan_no']);                        
