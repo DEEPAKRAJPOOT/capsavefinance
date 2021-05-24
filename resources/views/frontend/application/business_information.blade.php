@@ -246,10 +246,10 @@
 												<label for="txtSupplierName">Product Type <span class="mandatory">*</span>
 												</label><br/>
 												<div id="check_block">
-												@if(array_key_exists(1, $product_types->toArray()))
+												@if(array_key_exists(1, $product_types->toArray()) && Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
 												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input  {{ (old('product_id.1.checkbox') == '1')? 'checked': ''}} class="product-type" type="checkbox" value="1" name="product_id[1][checkbox]"> Supply Chain</label>
 												@endif
-												@if(array_key_exists(2, $product_types->toArray()))
+												@if(array_key_exists(2, $product_types->toArray()) && Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
 												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input {{ (old('product_id.2.checkbox') == '2')? 'checked': ''}} class="product-type" type="checkbox" value="2" name="product_id[2][checkbox]"> Term Loan</label>
 												@endif
 												@if(array_key_exists(3, $product_types->toArray()))
@@ -402,6 +402,7 @@
 							</div>
 						</div>
 					</div>	
+					@if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
 					<div class="form-sections row">	
 						<div class="col-md-12">
 							<h5 class="form-head">Other Addresses</h5>
@@ -625,6 +626,7 @@
 								</div>
 						</div>
 					</div>
+					@endif
 					<div class="d-flex btn-section">
 						<div class="ml-auto text-right">
 							<input type="submit" value="Save and Continue" class="btn btn-success btn-sm">
