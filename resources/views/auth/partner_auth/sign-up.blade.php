@@ -123,7 +123,7 @@
                             <!--<input type="hidden" name="lead_type" id="lead_type" value="@if($anchorDetail){{$anchorDetail->user_type}}@endif">-->
                             <input type="submit" value="Submit" tabindex="9" id="SaveUser" class="btn btn-primary"> </div>
                             <span class=" mt-3 ml-2">or</span>
-                            <a class=" mt-3 ml-2" href="{{ url('/login') }}">Sign In</a>
+                            <a class=" mt-3 ml-2" href="{{ url('/lenevo-login') }}">Sign In</a>
                     </div>
                 </form>
             </div>
