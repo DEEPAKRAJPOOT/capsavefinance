@@ -57,7 +57,7 @@ class ApplicationController extends Controller
             $isAnchorLead = $userData && !empty($userData->anchor_id);
 
             //if (isset($appData[0])) {
-            if ($appData) {
+            if ($appData && (Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))) {
                 Session::flash('message', trans('error_messages.active_app_check'));
                 return redirect()->back();
             }
