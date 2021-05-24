@@ -203,12 +203,13 @@ class Business extends BaseModel
         //insert address into rta_biz_addr
         $address_data=[];
         array_push($address_data, array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_at'=>\Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id,'rcu_status'=>0));
-        for($i=0; $i <=3 ; $i++) { 
-            $temp = array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_id'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'address_type'=>($i+1),'created_at'=>\Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id,'rcu_status'=>0);
-            array_push($address_data, $temp);
+        if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID')) {
+            for($i=0; $i <=3 ; $i++) { 
+                $temp = array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_id'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'address_type'=>($i+1),'created_at'=>\Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id,'rcu_status'=>0);
+                array_push($address_data, $temp);
+            }
+            BusinessAddress::insert($address_data);
         }
-        BusinessAddress::insert($address_data);
-
         return ['biz_id'=>$business->biz_id,'app_id'=>$app->app_id];
     }        
     
