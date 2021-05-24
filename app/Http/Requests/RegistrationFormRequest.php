@@ -36,7 +36,7 @@ class RegistrationFormRequest extends Request
             'mobile_no' => 'required|digits:10|min:0',
             'password'   => 'required|min:8|regex:/^((?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,})$/',
             'password_confirm' => 'required|same:password|regex: /^(?!.*(.)\1\1)(.+)$/',
-//            'g-recaptcha-response' => 'required', 
+            'g-recaptcha-response' => 'required', 
             ];
     }
 

@@ -110,12 +110,12 @@
                                     </div>
                                 </div>
                             </div>
-<!--                            <div class="row">
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="g-recaptcha" id="recaptcha" data-sitekey="{{config('common.google_recaptcha_key')}}"></div>
                                     <span class="text-danger error"> {{$errors->first('g-recaptcha-response')}} </span>
                                 </div>
-                            </div> -->
+                            </div>
                         </div>
                         <div class="d-flex btn-section sign-UP col-md-2 mt-3">
                             <!--<input type="hidden" name="anch_user_id" id="anchor_user_id" value="@if($anchorDetail){{$anchorDetail->anchor_user_id}}@endif">-->

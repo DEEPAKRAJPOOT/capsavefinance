@@ -245,6 +245,9 @@
 											<div class="form-group">
 												<label for="txtSupplierName">Product Type <span class="mandatory">*</span>
 												</label><br/>
+                                                                                                @php
+                                                                                                    $is_lenevo = (Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) ? 'checked' : ''; 
+                                                                                                @endphp
 												<div id="check_block">
 												@if(array_key_exists(1, $product_types->toArray()) && Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
 												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input  {{ (old('product_id.1.checkbox') == '1')? 'checked': ''}} class="product-type" type="checkbox" value="1" name="product_id[1][checkbox]"> Supply Chain</label>
@@ -253,7 +256,7 @@
 												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input {{ (old('product_id.2.checkbox') == '2')? 'checked': ''}} class="product-type" type="checkbox" value="2" name="product_id[2][checkbox]"> Term Loan</label>
 												@endif
 												@if(array_key_exists(3, $product_types->toArray()))
-												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input {{ (old('product_id.3.checkbox') == '3')? 'checked': ''}} class="product-type" type="checkbox" value="3" name="product_id[3][checkbox]"> Leasing</label>
+												<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input {{ (old('product_id.3.checkbox') == '3')? 'checked': ''}} {{$is_lenevo}} class="product-type" type="checkbox" value="3" name="product_id[3][checkbox]"> Leasing</label>
 												@endif
 												</div>
 												@error('product_id')
@@ -313,7 +316,35 @@
 												@enderror
 											</div>
 										</div>
-										<div class="col-md-4 product-type-3 {{ (old('product_id.3.checkbox') == '3')? '': 'hide'}}">
+                                                                                @if($is_lenevo == 'checked')
+										<div class="col-md-4 product-type-3 show">
+											<div class="form-group INR">
+												<label for="txtCreditPeriod">Total value of Asset
+													<span class="mandatory">*</span>
+												</label>
+                                                                                                <div class="relative"> 
+												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+												<input type="text" name="product_id[3][loan_amount]" value="{{old('product_id.3.loan_amount')}}" class="form-control number_format" tabindex="10" placeholder="Enter Total value of Asset" maxlength="19">
+                                                                                                </div>
+                                                                                                <div id="product_type_3_loan"></div>
+												@error('product_id.3.loan_amount')
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
+											</div>
+										</div>
+										<div class="col-md-4 product-type-3 show">
+											<div class="form-group">
+												<label for="txtSupplierName">Tenor in months
+												</label>
+												<input type="text" name="product_id[3][tenor_days]" value="{{old('product_id.3.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tenor in months" maxlength="3">
+												<div id="product_type_3_tenor"></div>
+												@error('product_id.3.tenor_days')
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
+											</div>
+										</div>
+                                                                                @else
+                                                                                <div class="col-md-4 product-type-3 {{ (old('product_id.3.checkbox') == '3')? '': 'hide'}}">
 											<div class="form-group INR">
 												<label for="txtCreditPeriod">Leasing Loan Amount
 													<span class="mandatory">*</span>
@@ -339,6 +370,7 @@
 												@enderror
 											</div>
 										</div>
+                                                                                @endif
 									</div>
 							</div>
 						</div>
@@ -651,7 +683,8 @@ var messages = {
 	get_sub_industry: "{{ URL::route('get_sub_industry') }}",
 	please_select: "{{ trans('backend.please_select') }}",
 	token: "{{ csrf_token() }}",
-	configure_api: "{{ config('proin.CONFIGURE_API') }}"
+	configure_api: "{{ config('proin.CONFIGURE_API') }}",
+        is_anchor_lenevo: "{{(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) ? 1 : 0}}"
 };
 
 $(document).ready(function () {
