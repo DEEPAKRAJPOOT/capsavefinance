@@ -54,9 +54,14 @@ class ChangePasswordController extends Controller
      */
     public function showChangePasswordForm(Request $request, $token = null)
     {
-
+        $view = '';
+        if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) {
+            $view = 'auth.anchor_auth.changepassword';
+        } else {
+            $view = 'auth.changepassword';
+        }
         
-        return view('auth.changepassword');
+        return view($view);
     }
     
     /**

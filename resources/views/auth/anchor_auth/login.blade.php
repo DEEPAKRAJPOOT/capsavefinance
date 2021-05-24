@@ -5,7 +5,7 @@
         <div class="col-md-4 form-design lenevo_layout_login">
 
             <div id="reg-box">
-                <form class="loginForm form form-cls" autocomplete="off" method="POST" action="{{ route('login_open') }}" id="frmLogin">
+                <form class="loginForm form form-cls" autocomplete="off" method="POST" action="{{ route('login_open_lenevo') }}" id="frmLogin">
                 {{ csrf_field() }} 
                     <div class="section-header">
                         <h4 class="section-title heading_color">Sign In</h4>
@@ -47,7 +47,7 @@
                                         <label for="txtPassword">{{trans('master.loginForm.password')}}
                                             <span class="mandatory">*</span>
                                         </label>
-                                        <input  type="password"  class="form-control" name="password"  placeholder="{{trans('master.loginForm.enter_pass')}}" name="password" oninput="removeSpace(this);" >
+                                        <input  type="password"  class="form-control" name="password"  placeholder="{{trans('master.loginForm.enter_pass')}}" name="password" id="password">
                                         @error('password')
                                         <span class="colorRed"> {{$message}} </span>
                                         @enderror
@@ -58,7 +58,7 @@
 
                         </div>
                         <div class="d-flex btn-section sign-UP col-md-12">
-                            <input type='submit' class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
+                            <input type='submit' id="submit_login1" class='btn btn-primary pull-right' name='Sign-in' value="{{trans('master.loginForm.sign_in')}}" />
                             <span class=" mt-2 ml-2">or</span>
                             <a class=" mt-2 ml-2" href="{{ url('/sign-up') }}">Sign up</a>
                         </div>
@@ -75,7 +75,6 @@
 
     };
 </script>
-<script src="{{ asset('frontend/outside/js/validation/login.js') }}"></script>
 @endsection
 
 
