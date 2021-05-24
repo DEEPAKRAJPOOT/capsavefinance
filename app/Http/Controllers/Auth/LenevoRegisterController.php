@@ -28,6 +28,7 @@ use App\Inv\Repositories\Models\Userkyc;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\UserDetail;
 use App\Libraries\Gupshup_lib;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LenevoRegisterController extends Controller {
     /*
@@ -106,7 +107,7 @@ use RegistersUsers,
         //$userDataArray = $this->userRepo->getUserByAnchorId($data['h_anchor_id']);        
         //$arrData['anchor_user_id'] = $userDataArray->user_id;        
         $lead_type = 1;//$data['lead_type'];
-        $arrData['r'] = $data['h_anchor_id'];
+        $arrData['anchor_id'] = $data['h_anchor_id'];
         $arrData['f_name'] = $data['f_name'];
         //$arrData['m_name'] = $data['m_name'];
         $arrData['l_name'] = $data['l_name'];
@@ -116,14 +117,12 @@ use RegistersUsers,
         $arrData['password'] = bcrypt($data['password']);
         $arrData['mobile_no'] = $data['mobile_no'];
         $arrData['user_type'] = 1;
-        $arrData['is_email_verified'] = 0;
+        $arrData['is_email_verified'] = 1;
         $arrData['is_pwd_changed'] = 0;
-        $arrData['is_email_verified'] = 0;
-        $arrData['is_otp_verified'] = 0;
+        $arrData['is_otp_verified'] = 1;
         $arrData['is_buyer'] = $lead_type;
         $arrData['parent_id'] = 0;
-        $arrData['is_active'] = 0;
-        $arrData['is_active'] = 0;
+        $arrData['is_active'] = 1;
         // $arrData['supplier_code'] = isset($data['supplier_code']) ? $data['supplier_code'] : null;
         $userId = null;
         
@@ -175,7 +174,10 @@ use RegistersUsers,
      */
     public function showRegistrationForm(Request $request) {
            try{
+                $this->guard()->logout();
+                $request->session()->invalidate();
                 $anchortoken = $request->get('token');
+//                dd('$anchortoken---', $anchortoken);
                 $userId = Session::has('userId') ? Session::get('userId') : 0;
                 $userArr = [];
                 $anchorDetail = [];
@@ -183,13 +185,14 @@ use RegistersUsers,
                     $userArr = $this->userRepo->find($userId);
                 }
                 $anchorLeadInfo = $this->userRepo->getAnchorUsersByToken($anchortoken);
+                $anchorDetail = $anchorLeadInfo;
                 // dd($anchorLeadInfo);
-                if(!empty($anchorLeadInfo) && $anchorLeadInfo->is_registered == 1){
-                   $email = $anchorLeadInfo->email;
-                   return redirect(route('otp', ['token' => Crypt::encrypt($email)]));
-                } else if(!empty($anchorLeadInfo) && $anchorLeadInfo->is_registered == 0){
-                    $anchorDetail = $anchorLeadInfo;
-                }
+//                if(!empty($anchorLeadInfo) && $anchorLeadInfo->is_registered == 1){
+//                   $email = $anchorLeadInfo->email;
+//                   return redirect(route('otp', ['token' => Crypt::encrypt($email)]));
+//                } else if(!empty($anchorLeadInfo) && $anchorLeadInfo->is_registered == 0){
+//                    $anchorDetail = $anchorLeadInfo;
+//                }
 //                else{
 //                    $anchorDetail = '';
 //                    return redirect(route('login_open'));
@@ -255,18 +258,16 @@ use RegistersUsers,
 //                    return redirect()->route('otp', ['token' => Crypt::encrypt($user['email'])]);
 //                } 
                 if(Auth::loginUsingId($user->user_id)) {
-                        return redirect()->route('business_information_open');
-//                        if ($userDetails->is_pwd_changed != 1) {
-//                            return redirect()->route('changepassword');
-//                        }
-                        
-//                        $appData = $this->application->checkAppByPan($userId); 
-//                        if ($appData) {
-//                            //Session::flash('message', trans('error_messages.active_app_check'));                            
-//                            return redirect()->route('front_application_list');
-//                        } else {
-//                            return redirect()->route('business_information_open');
-//                        }       
+                        //Change Password
+                        $firstTime = '';
+                        $user = Auth::user();
+                        $user->password = bcrypt($arrFileData['password']);
+                        if(Auth::user()->is_pwd_changed == 0) {
+                            $firstTime = 'Y';
+                            $user->is_pwd_changed = 1;
+                        }
+                        $user->save();
+                        return redirect()->route('business_information_open');      
                     }
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));

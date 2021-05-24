@@ -50,7 +50,7 @@
                             </div>
                             <div class="form-group">
                                 <p class=" have-account marB15">
-                                    <a class="lnk-toggler have-account marB15" data-panel=".panel-login" href="{{url('login')}}">Already have an account?</a>
+                                    <a class="lnk-toggler have-account marB15" data-panel=".panel-login" href="{{url('/lenevo-login')}}">Already have an account?</a>
                                 </p>
                             </div>
                             <div class="form-group">

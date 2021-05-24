@@ -312,8 +312,10 @@ use AuthenticatesUsers;
      *
      * @return \Illuminate\Http\Response
      */
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
+        $this->guard()->logout();
+        $request->session()->invalidate();
         return view('auth.partner_auth.login');
     }
 

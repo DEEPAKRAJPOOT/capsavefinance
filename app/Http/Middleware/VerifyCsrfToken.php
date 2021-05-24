@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        'api/perfios/fsa-callback','api/perfios/bsa-callback','api/karza/webhook', 'api/tally/entry', '/login-lenevo', 'logout'
+        'api/perfios/fsa-callback','api/perfios/bsa-callback','api/karza/webhook', 'api/tally/entry', 'login-lenevo', 'logout', 'register-lenevo'
     ];
 }
