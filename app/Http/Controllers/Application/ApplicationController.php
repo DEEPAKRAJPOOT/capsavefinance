@@ -586,8 +586,11 @@ class ApplicationController extends Controller
                 //$appData = $this->appRepo->getAppDataByAppId($appId);
                 //$userId = $appData ? $appData->user_id : null;
                 $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
-
-                return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
+                if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) {
+                    return redirect()->route('front_application_list')->with('message', trans('success_messages.app.completed'));
+                } else {
+                    return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
+                }
             // } else {
             //     //Add application workflow stages                
             //     Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);

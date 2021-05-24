@@ -21,8 +21,9 @@
 
         <header>
             <div class="container">
-                <div class="d-flex">
+                <div class="d-flex justify-content-between">
                     <a href="#"><img src="{{url('frontend/assets/images/lenevo.jpg')}}" alt="logo" width="150px"> </a>
+                    <a href="#" style="float:right;"><img src="{{url('frontend/assets/images/logo.svg')}}" alt="logo" width="150px"> </a>
                     @if (Auth::user() && Auth::user()->user_type == 1)
                         <a style="padding-left: 80%;" href="{{ route('frontend_logout') }}" onclick="event.preventDefault();
                             document.getElementById('logout-form').submit();">
