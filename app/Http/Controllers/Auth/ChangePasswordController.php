@@ -56,7 +56,7 @@ class ChangePasswordController extends Controller
     {
         $view = '';
         if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) {
-            $view = 'auth.anchor_auth.changepassword';
+            $view = 'auth.partner_auth.changepassword';
         } else {
             $view = 'auth.changepassword';
         }

@@ -194,7 +194,7 @@ use RegistersUsers,
 //                    $anchorDetail = '';
 //                    return redirect(route('login_open'));
 //                }
-                return view('auth.anchor_auth.sign-up', compact('userArr','anchorDetail'));
+                return view('auth.partner_auth.sign-up', compact('userArr','anchorDetail'));
            
            }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -665,6 +665,6 @@ use RegistersUsers,
     }
     
     public function showResetLinkEmail() {
-        return view('auth.anchor_auth.forgot');
+        return view('auth.partner_auth.forgot');
     }
 }

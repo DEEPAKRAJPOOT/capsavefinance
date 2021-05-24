@@ -314,7 +314,7 @@ use AuthenticatesUsers;
      */
     public function showLoginForm()
     {
-        return view('auth.anchor_auth.login');
+        return view('auth.partner_auth.login');
     }
 
 }
