@@ -269,7 +269,7 @@ class ManualApportionmentHelperTemp{
                 $paymentDate = $payment->date_of_payment;
                 $userId = $payment->user_id;
                 $invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true, 'user_id'=>$userId]);
-                foreach ($arrayInvoiceSlice as $invId => $trans) {
+                foreach ($invoiceList as $invId => $trans) {
                     $this->intAccrual($invId, null, $paymentDate, $paymentId);
                 }
             }
