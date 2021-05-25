@@ -402,12 +402,12 @@ class Business extends BaseModel
         BusinessAddress::where('biz_addr_id',$biz_addr_ids[0])->update(
             array('addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'updated_at' => \Carbon\Carbon::now(),'updated_by'=>Auth::user()->user_id)
             );
-        
-        for ($i=0; $i <=3 ; $i++) { 
-            $temp = array('addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_id'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'updated_at' => \Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id);
-            BusinessAddress::where('biz_addr_id',$biz_addr_ids[$i+1])->update($temp);
+        if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID')) {
+            for ($i=0; $i <=3 ; $i++) { 
+                $temp = array('addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_id'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'updated_at' => \Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id);
+                BusinessAddress::where('biz_addr_id',$biz_addr_ids[$i+1])->update($temp);
+            }
         }
-
         return true;
     }
 
