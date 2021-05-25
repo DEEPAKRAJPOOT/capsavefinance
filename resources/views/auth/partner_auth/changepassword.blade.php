@@ -49,7 +49,7 @@
 						<div class="col-md-12">
                                                     <button type='submit' class='btn btn-primary verify-btn' name='Submit' value='{{trans('master.chgPassForm.submit')}}' >SUBMIT</button>
 						@if(Auth::user()->is_pwd_changed == 1)
-                                                    <a href="{{ url('dashboard') }}" class="pull-right mt-2"><u>Back To Dashboard</u></a>
+                                                    <a href="{{ url('application/') }}" class="pull-right mt-2"><u>Back</u></a>
 						@endif
                                                 </div>
 
