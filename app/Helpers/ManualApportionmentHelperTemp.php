@@ -268,7 +268,7 @@ class ManualApportionmentHelperTemp{
                 InterestAccrualTemp::where('payment_id',$paymentId)->delete();
                 $paymentDate = $payment->date_of_payment;
                 $userId = $payment->user_id;
-                $invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true, 'user_id'=>$userId]);
+                $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt') ->whereNotNull('payment_due_date') ->where('user_id',$userId) ->pluck('invoice_disbursed_id','invoice_disbursed_id');
                 foreach ($invoiceList as $invId => $trans) {
                     $this->intAccrual($invId, null, $paymentDate, $paymentId);
                 }
