@@ -407,6 +407,7 @@
 								</div>
 							</div>
 						</div>	
+                                                @if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
 						<div class="form-sections">	
 							<h5 class="form-head">Other Addresses</h5>
 						</div>			
@@ -620,6 +621,7 @@
 								</div>
 							</div>	
 						</div>
+                                                @endif
 						@if($business_info->app->status != 1)
 						<div class="d-flex btn-section">
 							<div class="ml-auto text-right">
