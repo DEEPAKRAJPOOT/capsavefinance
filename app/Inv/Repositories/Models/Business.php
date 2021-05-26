@@ -94,7 +94,7 @@ class Business extends BaseModel
        // 'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],
-        'share_holding_date'=>Carbon::createFromFormat('d/m/Y', $attributes['share_holding_date'])->format('Y-m-d'),
+        'share_holding_date'=> isset($attributes['share_holding_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['share_holding_date'])->format('Y-m-d') : null,
         'org_id'=>1,
         'created_by'=>Auth::user()->user_id,
         'is_gst_manual'=>$attributes['is_gst_manual'],
@@ -203,7 +203,12 @@ class Business extends BaseModel
         //insert address into rta_biz_addr
         $address_data=[];
         array_push($address_data, array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_at'=>\Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id,'rcu_status'=>0));
-        if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID')) {
+        if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) {
+            for($i=0; $i <=3 ; $i++) { 
+                $temp = array('biz_id'=>$business->biz_id, 'addr_1'=> null,'city_name'=> null,'state_id'=>null,'pin_code'=>null,'address_type'=>($i+1),'created_at'=>\Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id,'rcu_status'=>0);
+                array_push($address_data, $temp);
+            }
+        } else {
             for($i=0; $i <=3 ; $i++) { 
                 $temp = array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_other_address'][$i],'city_name'=>$attributes['biz_other_city'][$i],'state_id'=>$attributes['biz_other_state'][$i],'pin_code'=>$attributes['biz_other_pin'][$i],'address_type'=>($i+1),'created_at'=>\Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id,'rcu_status'=>0);
                 array_push($address_data, $temp);
@@ -283,7 +288,7 @@ class Business extends BaseModel
         //'tenor_days'=>$attributes['tenor_days'],
         'biz_constitution'=>$attributes['biz_constitution'],
         'biz_segment'=>$attributes['segment'],
-        'share_holding_date'=>Carbon::createFromFormat('d/m/Y', $attributes['share_holding_date'])->format('Y-m-d'),
+        'share_holding_date'=> isset($attributes['share_holding_date']) ? Carbon::createFromFormat('d/m/Y', $attributes['share_holding_date'])->format('Y-m-d') : null,
         'org_id'=>1,
         'msme_type' => $attributes['msme_type'],
         'msme_no' => $attributes['msme_no'],

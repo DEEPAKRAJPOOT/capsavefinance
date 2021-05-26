@@ -169,19 +169,6 @@ Route::domain(config('proin.lenevo_frontend_uri'))->group(function () {
         'as' => 'lenevo_login_open',
         'uses' => 'Auth\LenevoLoginController@showLoginForm'
     ]);
-
-//    Route::post('lenevo-login',
-//        [
-//        'as' => 'lenevo_login_open',
-//        'uses' => 'Auth\LenevoLoginController@login'
-//    ]);
-
-    //Logout
-//    Route::post('logout',
-//        [
-//        'as' => 'frontend_logout',
-//        'uses' => 'Auth\LenevoLoginController@logout'
-//    ]);
     
      //Registration step 1
     Route::get('sign-up',
@@ -189,12 +176,6 @@ Route::domain(config('proin.lenevo_frontend_uri'))->group(function () {
         'as' => 'user_register_open',
         'uses' => 'Auth\LenevoRegisterController@showRegistrationForm'
     ]);
-
-//    Route::post('register',
-//        [
-//        'as' => 'user_register_save',
-//        'uses' => 'Auth\LenevoRegisterController@register'
-//    ]);
     
     // for password
    Route::group(['prefix' => 'password'],
@@ -224,18 +205,6 @@ Route::domain(config('proin.lenevo_frontend_uri'))->group(function () {
             'uses' => 'Auth\ResetPasswordController@reset'
             ]
         );
-//        $this->get('change',
-//            [
-//            'as' => 'changepassword',
-//            'uses' => 'Auth\ChangePasswordController@showChangePasswordForm'
-//            ]
-//        );
-//        $this->post('change',
-//            [
-//            'as' => 'changepassword',
-//            'uses' => 'Auth\ChangePasswordController@changePassword'
-//            ]
-//        );
     });
     
 });

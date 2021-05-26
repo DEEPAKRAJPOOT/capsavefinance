@@ -49,7 +49,8 @@ class Mimes
         'doc' => ['application/msword'],
         'docx' => ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip'],
         'xlsx' => ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip'],
-        'csv' => ['text/csv']
+        'csv' => ['text/csv'],
+        'mp4' => ['video/mp4']
     ];
 
     /**

@@ -338,7 +338,7 @@
 											<div class="form-group">
 												<label for="txtSupplierName">Tenor in months
 												</label>
-                                                                                                <select id="segmentId" class="form-control industry_change" tabindex="8" name="product_id[3][tenor_days]">
+                                                                                                <select class="form-control industry_change" tabindex="8" name="product_id[3][tenor_days]" tabindex="11">
                                                                                                     <option value="" selected="selected">Please Select</option>
                                                                                                     <option value="24">24 Months</option>
                                                                                                     <option value="36">36 Months</option>

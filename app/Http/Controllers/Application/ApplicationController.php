@@ -57,9 +57,14 @@ class ApplicationController extends Controller
             $isAnchorLead = $userData && !empty($userData->anchor_id);
 
             //if (isset($appData[0])) {
-            if ($appData && (Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))) {
-                Session::flash('message', trans('error_messages.active_app_check'));
-                return redirect()->back();
+            if ($appData) {
+                                
+
+                if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')){
+                    return redirect()->route('front_application_list');
+                } else {
+                    return redirect()->back();
+                }
             }
         }
         
@@ -611,7 +616,12 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+    {   
+        $userId = Auth::user()->user_id;
+        $appData = $this->appRepo->checkAppByPan($userId);
+       if((!$appData) && (Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID'))){
+            return redirect()->route('business_information_open');
+        }
        $appStatus = $this->masterRepo->getAppStatus($status_type=1);
        $appStatusList = [];       
                 
