@@ -183,7 +183,8 @@ class Transactions extends BaseModel {
     }
 
     public function getOutstandingAttribute(){
-        return round(($this->amount - $this->getsettledAmtAttribute()),2);
+        $amount = round(($this->amount - $this->getsettledAmtAttribute()),2); 
+        return $amount > 0?$amount:0;
     }
 
     public function getRevertedAmtAttribute(){

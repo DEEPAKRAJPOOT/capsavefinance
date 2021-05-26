@@ -1328,7 +1328,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			}
 			
 			foreach($response['margin'] as $val){
-				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
+				//$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
 			}
 
 			if($response['payment'] <= $response['receipt']){
