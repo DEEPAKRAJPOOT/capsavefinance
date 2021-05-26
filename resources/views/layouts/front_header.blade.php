@@ -14,7 +14,7 @@
           <i class="fa fa-bars" aria-hidden="true"></i>
         </button>
         @if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID'))
-        <a class="navbar-brand brand-logo" href="#"><img src="{{url('frontend/assets/images/lenovo-red.png')}}"/></a>
+        <a class="navbar-brand" href="#"><img src="{{url('frontend/assets/images/lenovo-red.png')}}"/></a>
         @endif
         <form class="form-inline mt-2 mt-md-0 d-none d-lg-block">
             <input class="form-control mr-sm-2 search" type="text" placeholder="Search">
