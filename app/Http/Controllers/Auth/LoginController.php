@@ -161,7 +161,6 @@ use AuthenticatesUsers;
      * @return \Illuminate\Http\Response
      */
     public function logout(Request $request) {
-//        dd('Auth::user()->anchor_id--', Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID'));
         $redirect_route = '';
         if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) {
             $redirect_route = 'lenevo_login_open';

@@ -220,6 +220,7 @@
 										</div>
 									</div>
                                                                 </div>
+                                                                @if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
                                                                 <div class="row">
 									<div class="col-md-4">
 										<div class="form-group password-input">
@@ -233,6 +234,7 @@
 										</div>
 									</div>
 								</div>
+                                                                @endif
 							</div>
 						</div>
 					</div>
@@ -336,7 +338,13 @@
 											<div class="form-group">
 												<label for="txtSupplierName">Tenor in months
 												</label>
-												<input type="text" name="product_id[3][tenor_days]" value="{{old('product_id.3.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tenor in months" maxlength="3">
+                                                                                                <select id="segmentId" class="form-control industry_change" tabindex="8" name="product_id[3][tenor_days]">
+                                                                                                    <option value="" selected="selected">Please Select</option>
+                                                                                                    <option value="24">24 Months</option>
+                                                                                                    <option value="36">36 Months</option>
+                                                                                                    <option value="48">48 Months</option>
+                                                                                                </select>
+												<!--<input type="text" name="product_id[3][tenor_days]" value="{{old('product_id.3.tenor_days')}}" class="form-control number_format" tabindex="11" placeholder="Enter Tenor in months" maxlength="3">-->
 												<div id="product_type_3_tenor"></div>
 												@error('product_id.3.tenor_days')
 													<span class="text-danger error">{{ $message }}</span>

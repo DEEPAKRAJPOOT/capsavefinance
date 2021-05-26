@@ -5,7 +5,7 @@
         <div class="col-md-6 form-design lenevo_layout" >
 
             <div id="reg-box">
-                <form class="registerForm form form-cls" autocomplete="on" enctype="multipart/form-data" method="POST" action="{{ route('user_register_save_lenevo') }}" id="registerForm">
+                <form class="registerForm form form-cls" autocomplete="off" enctype="multipart/form-data" method="POST" action="{{ route('user_register_save_lenevo') }}" id="registerForm">
 
                     {{ csrf_field() }}
 
@@ -48,10 +48,10 @@
                                 </div>
                                 <div class="col-6">
                               <div class="form-group">
-                                 <label for="pan_no">PAN No.
+                                 <label for="pan_no">Business Entity PAN No.
                                  <span class="mandatory">*</span>
                                  </label>
-                                  <input type="text" name="pan_no" id="pan_no" value="{{old('pan_no')}}" maxlength="10" class="form-control pan_no" tabindex="3" placeholder="PAN Number" >
+                                  <input type="text" name="pan_no" id="pan_no" value="{{old('pan_no')}}" maxlength="10" class="form-control pan_no" tabindex="3" placeholder="Business Entity PAN Number" >
                                  <span class="text-danger error">{{$errors->first('pan_no')}}</span>
                                  <span class="text-danger check_exist_user_pan"></span>
                               </div>
@@ -64,7 +64,7 @@
                                             <span class="mandatory">*</span>
                                         </label>
                                         <input type="hidden" name="send_otp" id="send-otp" value="">
-                                        <input type="text" name="email" id="email" value="@if($anchorDetail){{$anchorDetail->email}}@else{{old('email')}}@endif" class="form-control" tabindex="4" placeholder="Email">
+                                        <input type="text" name="email" id="email" value="" class="form-control" tabindex="4" placeholder="Email">
 
                                         <span class="text-danger error"> {{$errors->first('email')}} </span>
                                     </div>
@@ -76,7 +76,7 @@
                                         </label>
                                         <div class="relative d-flex">
                                             <input class="form-control cont" name="phone-ext" id="phone-ext" type="text" value="+91" readonly="">
-                                            <input class="form-control numbercls" name="mobile_no" value="@if($anchorDetail){{$anchorDetail->phone}}@else{{old('mobile_no')}}@endif" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" >
+                                            <input class="form-control numbercls" name="mobile_no" value="" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" >
 
 
                                         </div>

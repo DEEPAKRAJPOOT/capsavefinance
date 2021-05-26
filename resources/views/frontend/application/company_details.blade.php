@@ -217,6 +217,7 @@
 										</div>
 									</div>
                                                                 </div>
+                                                                @if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
                                                                 <div class="row">									
 									<div class="col-md-4">
 										<div class="form-group password-input">
@@ -230,6 +231,7 @@
 										</div>
 									</div>
 								</div>
+                                                                @endif
 						</div>
 						<div class="form-sections">
 							<div class="row">
@@ -337,7 +339,13 @@
 											<div class="form-group">
 												<label for="txtSupplierName">Tenor in months
 												</label>
-												<input type="text" name="product_id[3][tenor_days]" value="@if (array_key_exists(3, $product_ids)){{ old('product_id.3.tenor_days', number_format($product_ids[3]['tenor_days'])) }}@else{{ old('product_id.3.tenor_days', '') }}@endif" class="form-control number_format" tabindex="11" placeholder="Enter Tenor in months" maxlength="3">
+                                                                                                <select id="segmentId" class="form-control industry_change" tabindex="8" name="product_id[3][tenor_days]">
+                                                                                                    <option value="" selected="selected">Please Select</option>
+                                                                                                    <option value="24" @if ($product_ids[3]['tenor_days'] == 24) 'selected' @endif>24 Months</option>
+                                                                                                    <option value="36" @if ($product_ids[3]['tenor_days'] == 24) 'selected' @endif>36 Months</option>
+                                                                                                    <option value="48" @if ($product_ids[3]['tenor_days'] == 24) 'selected' @endif>48 Months</option>
+                                                                                                </select>
+												<!--<input type="text" name="product_id[3][tenor_days]" value="@if (array_key_exists(3, $product_ids)){{ old('product_id.3.tenor_days', number_format($product_ids[3]['tenor_days'])) }}@else{{ old('product_id.3.tenor_days', '') }}@endif" class="form-control number_format" tabindex="11" placeholder="Enter Tenor in months" maxlength="3">-->
 												<div id="product_type_3_tenor"></div>
 												@error('product_id.3.tenor_days')
 													<span class="text-danger error">{{ $message }}</span>
