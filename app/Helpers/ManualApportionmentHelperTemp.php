@@ -262,7 +262,7 @@ class ManualApportionmentHelperTemp{
     
     public function setTempInterest($paymentId){
         if($paymentId){
-            ini_set('max_execution_time', -1);
+            ini_set('max_execution_time', 0);
             $payment = Payment::find($paymentId);
             if($payment){
                 InterestAccrualTemp::where('payment_id',$paymentId)->delete();
