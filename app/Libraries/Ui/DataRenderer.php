@@ -6283,7 +6283,7 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('total_repay_amt', function($trans){
                 return "₹ ".number_format($trans->amount,2);
             })
-            ->addColumn('outstanding_amt', function($trans)use($payment){
+            ->addColumn('outstanding_amt', function($trans)use($payment,$showSuggestion){
                 $outResult = "₹ ".number_format($trans->outstanding,2);
                 if($showSuggestion && $payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                     $accuredInterest = $trans->tempInterest;
@@ -6298,7 +6298,7 @@ class DataRenderer implements DataProviderInterface
                     return Carbon::parse($payment->date_of_payment)->format('d-m-Y');
                 }
             })
-            ->addColumn('pay', function($trans)use($payment){
+            ->addColumn('pay', function($trans)use($payment,$showSuggestion){
                 $result = '';
                 if($payment){
                     if($showSuggestion && $payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
