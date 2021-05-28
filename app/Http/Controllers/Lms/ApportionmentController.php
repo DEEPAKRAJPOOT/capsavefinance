@@ -89,7 +89,10 @@ class ApportionmentController extends Controller
             $payment = null;
             $payment_amt = 0;
             $userDetails = $this->getUserDetails($userId); 
-            if($request->has('payment_id') && $request->payment_id){
+            $unInvCnt = BizInvoice::where('supplier_id', $userId)->whereHas('invoice_disbursed')->where('is_repayment','0')->count();
+            $paySug = false;
+            if($request->has('payment_id') && $request->payment_id && $unInvCnt <= 50 ){
+                $paySug  = true;
                 $paymentId = $request->payment_id;
                 $payment = $this->getPaymentDetails($paymentId,$userId); 
                 $payment_amt = $payment['payment_amt']; 
@@ -100,7 +103,9 @@ class ApportionmentController extends Controller
                     return redirect()->back()->withInput();
                 }
             }
-
+            if(!$paySug){
+                Session::flash('error', trans('We have disabled the suggestive amount on manual apportionment screen as records are than 50.'));
+            }
             $result = $this->getUserLimitDetais($userId);
             return view('lms.apportionment.unsettledTransactions')
             ->with('paymentId', $paymentId)  
@@ -554,13 +559,15 @@ class ApportionmentController extends Controller
         $payment_date = null;
         $payment = null;
         $transactions = null;
+        $unInvCnt = BizInvoice::where('supplier_id', $userId)->whereHas('invoice_disbursed')->where('is_repayment','0')->count();
+        $showSuggestion = ($unInvCnt <= 50) ?true:false; 
         if($request->has('payment_id')){
             $paymentId = $request->payment_id;
             $payment = $this->lmsRepo->getPaymentDetail($paymentId,$userId);    
         }
         
         $transactions = $this->getUnsettledTrans($userId);
-        return $this->dataProvider->getUnsettledTrans($request,$transactions,$payment);
+        return $this->dataProvider->getUnsettledTrans($request,$transactions,$payment,$showSuggestion);
     }
     
     /**

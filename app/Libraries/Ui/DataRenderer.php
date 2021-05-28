@@ -6265,7 +6265,7 @@ class DataRenderer implements DataProviderInterface
      * 
      * Get All Unsettled Transactions
      */
-    public function getUnsettledTrans(Request $request, $trans,$payment)
+    public function getUnsettledTrans(Request $request, $trans,$payment, $showSuggestion)
     {
         return DataTables::of($trans)
             ->rawColumns(['select', 'pay','outstanding_amt'])
@@ -6285,7 +6285,7 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('outstanding_amt', function($trans)use($payment){
                 $outResult = "₹ ".number_format($trans->outstanding,2);
-                if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                if($showSuggestion && $payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                     $accuredInterest = $trans->tempInterest;
                     if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
                            $outResult .= " <span style=\"color:red\">(".number_format($accuredInterest,2).")</span>";
@@ -6301,7 +6301,7 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('pay', function($trans)use($payment){
                 $result = '';
                 if($payment){
-                    if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                    if($showSuggestion && $payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                         $accuredInterest = $trans->tempInterest;
                         if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
                             return  "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($accuredInterest,2)."' name='payment[".$trans->trans_id."]'>";
