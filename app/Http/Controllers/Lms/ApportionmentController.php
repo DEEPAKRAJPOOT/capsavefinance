@@ -105,7 +105,7 @@ class ApportionmentController extends Controller
                     }
                 }
             }
-            if(!$paySug){
+            if(!$paySug && $paymentId){
                 Session::flash('error', trans('We have disabled the suggestive amount on manual apportionment screen as records are than 50.'));
             }
             $result = $this->getUserLimitDetais($userId);
@@ -436,7 +436,7 @@ class ApportionmentController extends Controller
      */
     private function getUnsettledTrans(int $userId){
         
-        $invoiceList = $this->lmsRepo->getUnsettledInvoices(['user_id','=',$userId]);
+        //$invoiceList = $this->lmsRepo->getUnsettledInvoices(['user_id','=',$userId]);
 
         $transactionList = new Collection();
         
