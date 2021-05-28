@@ -21,7 +21,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div id="unsettledTransactions_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                    <div id="unsettledTransactions_processing" class="dataTables_processing card" >Processing...</div>
                 </div>
             </div>
         </div>

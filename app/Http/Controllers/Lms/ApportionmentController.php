@@ -91,16 +91,18 @@ class ApportionmentController extends Controller
             $userDetails = $this->getUserDetails($userId); 
             $unInvCnt = BizInvoice::where('supplier_id', $userId)->whereHas('invoice_disbursed')->where('is_repayment','0')->count();
             $paySug = false;
-            if($request->has('payment_id') && $request->payment_id && $unInvCnt <= 50 ){
-                $paySug  = true;
+            if($request->has('payment_id') && $request->payment_id){
                 $paymentId = $request->payment_id;
                 $payment = $this->getPaymentDetails($paymentId,$userId); 
                 $payment_amt = $payment['payment_amt']; 
-                $Obj = new ManualApportionmentHelperTemp($this->lmsRepo);
-                $Obj->setTempInterest($paymentId);
-                if(!$payment['isApportPayValid']){
-                    Session::flash('error', trans('Please select Valid Payment!'));
-                    return redirect()->back()->withInput();
+                if($unInvCnt <= 50 ){
+                    $paySug  = true;
+                    $Obj = new ManualApportionmentHelperTemp($this->lmsRepo);
+                    $Obj->setTempInterest($paymentId);
+                    if(!$payment['isApportPayValid']){
+                        Session::flash('error', trans('Please select Valid Payment!'));
+                        return redirect()->back()->withInput();
+                    }
                 }
             }
             if(!$paySug){
