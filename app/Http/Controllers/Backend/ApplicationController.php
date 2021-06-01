@@ -252,7 +252,6 @@ class ApplicationController extends Controller
 				$appId = $arrFileData['app_id']; 
 				$appData = $this->appRepo->getAppDataByAppId($appId);               
 				$userId = $appData ? $appData->user_id : null;     
-				
 				$prgmDocsWhere = [];
 				$prgmDocsWhere['stage_code'] = 'doc_upload';
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
@@ -336,6 +335,7 @@ class ApplicationController extends Controller
 					
 				} else {
 					$appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+					$appDocData['is_ovd_enabled'] = 1;
 					$appDocResponse = $this->docRepo->saveAppDoc($appDocData);
 					$fileId = $appDocResponse->file_id;
 					$response = $this->docRepo->getFileByFileId($fileId);

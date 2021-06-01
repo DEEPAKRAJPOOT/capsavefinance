@@ -238,7 +238,6 @@ class DocumentRepository implements DocumentInterface
         if (empty($attributes)) {
             throw new BlankDataExceptions('No Data Found');
         }
-        
         return AppDocumentFile::create($attributes);
     }
     
@@ -254,6 +253,7 @@ class DocumentRepository implements DocumentInterface
         if($doc)
         {
             $doc->file_id = $fileId;
+            $doc->is_ovd_enabled = 1;
             $doc->save();
         }
         
