@@ -213,7 +213,7 @@ class Apportionment {
             }
     
             if(status){
-                if(totalSettledAmt > paymentAmt){
+                if(totalSettledAmt.toFixed(2) > paymentAmt.toFixed(2)){
                     message =  "Sum of your total entries is Greater than Re-payment amount";
                     status = false;
                 }
