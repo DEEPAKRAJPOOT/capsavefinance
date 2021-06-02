@@ -82,7 +82,7 @@ class ApportionmentRequest extends FormRequest
                 }
             }
             
-            if ($totalselectedAmount > $totalRePayAmount) {
+            if ( round($totalselectedAmount,2) > round($totalRePayAmount,2)) {
                     $validator->errors()->add("totalRepayAmount", 'Sum of pay must be less than: '. $totalRePayAmount);
             }
         });
