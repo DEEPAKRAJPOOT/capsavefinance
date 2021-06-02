@@ -1067,7 +1067,9 @@
                 });
                 var bizId = $('input[name=biz_id]').val();
                 var appId = $('input[name=app_id]').val();
-                var getRes = savePromoter(arr, bizId, appId);
+                if (arr.length > 0) {
+                    var getRes = savePromoter(arr, bizId, appId);
+                }
                 }
         });
         });
