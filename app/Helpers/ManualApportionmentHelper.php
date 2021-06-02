@@ -189,8 +189,7 @@ class ManualApportionmentHelper{
         // Interest Posting
         if($payFreq == 2){
 
-            if( (strtotime($endOfMonthDate) == strtotime($intAccrualDate) || strtotime($invdueDate) == strtotime($intAccrualDate)) 
-            && strtotime($intAccrualDate) < strtotime($odStartDate)){
+            if( (strtotime($endOfMonthDate) == strtotime($intAccrualDate) || strtotime($invdueDate) == strtotime($intAccrualDate))){
 
                 $intTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
