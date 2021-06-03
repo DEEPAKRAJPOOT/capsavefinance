@@ -2022,6 +2022,14 @@ class ApplicationController extends Controller
 		try {
 			$fileId = $request->file_id;
 			$fileId = $request;
+
+			$where = [
+				'app_id' => $fileId['app_id'],
+				'biz_owner_id' => $fileId['owner_id'],
+				'doc_id' => $fileId['doc_id'],
+				'file_id' => $fileId['file_id']
+			];
+			$this->docRepo->disableIsOVD($where);
 			$response = $this->docRepo->deleteFile($fileId);
 			
 			if ($response) {
