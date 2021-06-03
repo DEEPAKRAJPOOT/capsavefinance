@@ -17,7 +17,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 
-class LoginController extends Controller {
+class LenevoLoginController extends Controller {
     /*
       |--------------------------------------------------------------------------
       | Login Controller
@@ -43,8 +43,8 @@ use AuthenticatesUsers;
      *
      * @var string
      */
-    protected $redirectTo = '/dashboard';
-    //protected $redirectTo = '/application/business-information';
+//    protected $redirectTo = '/dashboard';
+    protected $redirectTo = '/application/business-information';
 
     /**
      * Multiple times user login blocking.  
@@ -88,32 +88,32 @@ use AuthenticatesUsers;
                 if (!$this->isFrontendUser($userInfo)) {
 
                     Session::flash('messages', trans('error_messages.creadential_not_valid'));
-                    return redirect()->route('login_open');
+                    return redirect()->route('lenevo_login_open');
                 }
             }
             
             // Email verification with OTP
             if (!$this->isEmailVerify($userInfo)) {
                 Session::flash('messages', trans('error_messages.login_verify_email'));
-                return redirect()->route('login_open');
+                return redirect()->route('lenevo_login_open');
             }
 
             // validate user OTP verified or not
-            if ($userInfo->anchor_id != null) {
-               if (!$this->isOtpVerify($userInfo)) {
-                    Session::flash('messages', trans('error_messages.login_verify_otp'));
-                    return redirect()->route('login_open');
-                }
-            } else if($userInfo->is_otp_verified != 1) {
-                //dd('$userInfo->email--', $userInfo->email);
-                $verifyLink = Crypt::encrypt($userInfo->email);
-                $this->verifyUser($verifyLink);
-                return redirect()->route('otp', ['token' => Crypt::encrypt($userInfo->email)]);
-            }
+//            if ($userInfo->anchor_id != null) {
+//               if (!$this->isOtpVerify($userInfo)) {
+//                    Session::flash('messages', trans('error_messages.login_verify_otp'));
+//                    return redirect()->route('login_open');
+//                }
+//            } else if($userInfo->is_otp_verified != 1) {
+//                //dd('$userInfo->email--', $userInfo->email);
+//                $verifyLink = Crypt::encrypt($userInfo->email);
+//                $this->verifyUser($verifyLink);
+//                return redirect()->route('otp', ['token' => Crypt::encrypt($userInfo->email)]);
+//            }
             
             if (empty($userInfo->is_active) || $userInfo->is_active != 1) {
                 Session::flash('messages', 'You are not an active user');
-                return redirect()->route('login_open');
+                return redirect()->route('lenevo_login_open');
             }
 
             if ($this->attemptLogin($request)) {
@@ -161,17 +161,11 @@ use AuthenticatesUsers;
      * @return \Illuminate\Http\Response
      */
     public function logout(Request $request) {
-        $redirect_route = '';
-        if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) {
-            $redirect_route = 'lenevo_login_open';
-        } else {
-            $redirect_route = '/login';
-        }
         $this->guard()->logout();
 
         $request->session()->invalidate();
 
-        return redirect(route($redirect_route));
+        return redirect('/lenevo-login');
     }
 
     /**
@@ -311,6 +305,18 @@ use AuthenticatesUsers;
         } catch (DecryptException $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
+    }
+    
+    /**
+     * Show the Lenevo application's login form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showLoginForm(Request $request)
+    {
+        $this->guard()->logout();
+        $request->session()->invalidate();
+        return view('auth.partner_auth.login');
     }
 
 }

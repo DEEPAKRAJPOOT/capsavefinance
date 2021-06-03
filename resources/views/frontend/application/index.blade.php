@@ -42,9 +42,11 @@
                 <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button> -->
 
                 <div class="col-md-12 text-right">
+                    @if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
                     <div class="btn-group btn-custom-group inline-action-btn">
                        <a href="{{route('business_information_open')}}" class="btn btn-pickup btn-sm">Create Application</a>
                     </div>
+                    @endif
                </div>
 
             </div>

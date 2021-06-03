@@ -217,6 +217,7 @@
 										</div>
 									</div>
                                                                 </div>
+                                                                @if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
                                                                 <div class="row">									
 									<div class="col-md-4">
 										<div class="form-group password-input">
@@ -230,6 +231,7 @@
 										</div>
 									</div>
 								</div>
+                                                                @endif
 						</div>
 						<div class="form-sections">
 							<div class="row">
@@ -240,11 +242,14 @@
 											<div class="form-group">
 												<label for="txtSupplierName">Product Type <span class="mandatory">*</span>
 												</label><br/>
+                                                                                                @php
+                                                                                                    $is_lenevo = (Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) ? 'checked' : ''; 
+                                                                                                @endphp
 												<div id="check_block">
-													@if(array_key_exists(1, $product_types->toArray()))
+													@if(array_key_exists(1, $product_types->toArray()) && Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
 													<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="1" name="product_id[1][checkbox]" {{ (array_key_exists(1, $product_ids) || (old('product_id.1.checkbox') == '1'))? 'checked': ''}} > Supply Chain</label>
 													@endif
-													@if(array_key_exists(2, $product_types->toArray()))
+													@if(array_key_exists(2, $product_types->toArray()) && Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
 													<label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" class="product-type" value="2" name="product_id[2][checkbox]" {{ (array_key_exists(2, $product_ids) || (old('product_id.2.checkbox') == '2'))? 'checked': ''}} > Term Loan</label>
 													@endif
 													@if(array_key_exists(3, $product_types->toArray()))
@@ -314,8 +319,41 @@
 												@enderror
 											</div>
 										</div>
-	
+                                                                            @if($is_lenevo == 'checked')
 										<div class="col-md-4 product-type-3 {{ (array_key_exists(3, $product_ids) || (old('product_id.3.checkbox') == '3'))? '': 'hide'}}">
+											<div class="form-group INR">
+												<label for="txtCreditPeriod">Total value of Asset
+													<span class="mandatory">*</span>
+												</label>
+                                                                                            <div class="relative"> 
+												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
+												<input type="text" name="product_id[3][loan_amount]" value="@if (array_key_exists(3, $product_ids)){{ old('product_id.3.loan_amount', number_format($product_ids[3]['loan_amount']))}}@else{{ old('product_id.3.loan_amount', '') }}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Total value of Asset" maxlength="19" >
+                                                                                            </div>
+												<div id="product_type_3_loan"></div>
+												@error('product_id.3.loan_amount')
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
+											</div>
+										</div>
+										<div class="col-md-4 product-type-3 {{ (array_key_exists(3, $product_ids) || (old('product_id.3.checkbox') == '3'))? '': 'hide'}}">
+											<div class="form-group">
+												<label for="txtSupplierName">Tenor in months
+												</label>
+                                                                                                <select class="form-control industry_change" tabindex="8" name="product_id[3][tenor_days]" tabindex="11">
+                                                                                                    <option value="" selected="selected">Please Select</option>
+                                                                                                    <option value="24" @if ($product_ids[3]['tenor_days'] == 24) selected="selected" @endif>24 Months</option>
+                                                                                                    <option value="36" @if ($product_ids[3]['tenor_days'] == 36) selected="selected" @endif>36 Months</option>
+                                                                                                    <option value="48" @if ($product_ids[3]['tenor_days'] == 48) selected="selected" @endif>48 Months</option>
+                                                                                                </select>
+												<!--<input type="text" name="product_id[3][tenor_days]" value="@if (array_key_exists(3, $product_ids)){{ old('product_id.3.tenor_days', number_format($product_ids[3]['tenor_days'])) }}@else{{ old('product_id.3.tenor_days', '') }}@endif" class="form-control number_format" tabindex="11" placeholder="Enter Tenor in months" maxlength="3">-->
+												<div id="product_type_3_tenor"></div>
+												@error('product_id.3.tenor_days')
+													<span class="text-danger error">{{ $message }}</span>
+												@enderror
+											</div>
+										</div>
+                                                                            @else
+                                                                                <div class="col-md-4 product-type-3 {{ (array_key_exists(3, $product_ids) || (old('product_id.3.checkbox') == '3'))? '': 'hide'}}">
 											<div class="form-group INR">
 												<label for="txtCreditPeriod">Leasing Loan Amount
 													<span class="mandatory">*</span>
@@ -323,8 +361,7 @@
                                                                                             <div class="relative"> 
 												<a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr" aria-hidden="true"></i></a>
 												<input type="text" name="product_id[3][loan_amount]" value="@if (array_key_exists(3, $product_ids)){{ old('product_id.3.loan_amount', number_format($product_ids[3]['loan_amount']))}}@else{{ old('product_id.3.loan_amount', '') }}@endif" class="form-control number_format" tabindex="10" placeholder="Enter Leasing Loan Amount" maxlength="19" >
-                 </div>
-<!-- <p class="float-right inr-box"><i>Enter amount in lakhs</i></p> -->
+                                                                                            </div>
 												<div id="product_type_3_loan"></div>
 												@error('product_id.3.loan_amount')
 													<span class="text-danger error">{{ $message }}</span>
@@ -344,6 +381,7 @@
 												@enderror
 											</div>
 										</div>
+                                                                            @endif
 									</div>
 								</div>
 							</div>
@@ -407,6 +445,7 @@
 								</div>
 							</div>
 						</div>	
+                                                @if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
 						<div class="form-sections">	
 							<h5 class="form-head">Other Addresses</h5>
 						</div>			
@@ -620,6 +659,7 @@
 								</div>
 							</div>	
 						</div>
+                                                @endif
 						@if($business_info->app->status != 1)
 						<div class="d-flex btn-section">
 							<div class="ml-auto text-right">

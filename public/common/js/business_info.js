@@ -346,7 +346,11 @@ function checkValidation(){
 		flag = false;
 	}
 	if(product_id_leasing && (loan_amount_leasing == 0 || Number.isNaN(loan_amount_leasing) == true )){
-		setError('#product_type_3_loan', 'Leasing Loan Amount is required');
+                if (messages.is_anchor_lenevo ==1){
+                    setError('#product_type_3_loan', 'Total value of Asset is required');
+                } else {
+                    setError('#product_type_3_loan', 'Leasing Loan Amount is required');
+                }
 		flag = false;
 	}
 

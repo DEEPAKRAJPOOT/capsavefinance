@@ -19,6 +19,9 @@
     <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" />
     <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" />
     <link rel="stylesheet" href="{{ url('common/js/datetimepicker/css/bootstrap-datetimepicker.min.css') }}" />
+    @if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID'))
+    <link rel="stylesheet" href="{{url('frontend/assets/css/lenevo/custom.css')}}">
+    @endif
     @yield('additional_css')
 </head>
 

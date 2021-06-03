@@ -279,4 +279,4 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
 		});
 		  
 	 
-});    
+});  

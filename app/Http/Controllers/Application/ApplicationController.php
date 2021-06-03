@@ -58,8 +58,13 @@ class ApplicationController extends Controller
 
             //if (isset($appData[0])) {
             if ($appData) {
-                Session::flash('message', trans('error_messages.active_app_check'));
-                return redirect()->back();
+                                
+
+                if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')){
+                    return redirect()->route('front_application_list');
+                } else {
+                    return redirect()->back();
+                }
             }
         }
         
@@ -586,8 +591,11 @@ class ApplicationController extends Controller
                 //$appData = $this->appRepo->getAppDataByAppId($appId);
                 //$userId = $appData ? $appData->user_id : null;
                 $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
-
-                return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
+                if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) {
+                    return redirect()->route('front_application_list')->with('message', trans('success_messages.app.completed'));
+                } else {
+                    return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
+                }
             // } else {
             //     //Add application workflow stages                
             //     Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
@@ -608,7 +616,12 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+    {   
+        $userId = Auth::user()->user_id;
+        $appData = $this->appRepo->checkAppByPan($userId);
+       if((!$appData) && (Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID'))){
+            return redirect()->route('business_information_open');
+        }
        $appStatus = $this->masterRepo->getAppStatus($status_type=1);
        $appStatusList = [];       
                 
