@@ -343,7 +343,7 @@
                                             <label for="txtCreditPeriod">CKYC Ref No
                                               
                                             </label>
-                                            <input type="text" name="ckyc_ref_no[]" id="ckyc_ref_no{{isset($row->first_name) ? $i : '1'}}" vname="ckyc_ref_no1" value="{{$row->ckyc_ref_no ? $row->ckyc_ref_no : ''}}" class="form-control" placeholder="Enter CKYC Ref No." >
+                                            <input type="text" name="ckyc_ref_no[]" id="ckyc_ref_no{{isset($row->first_name) ? $i : '1'}}" value="{{$row->ckyc_ref_no ? $row->ckyc_ref_no : ''}}" class="form-control" placeholder="Enter CKYC Ref No." >
                                         </div>
                                     </div> 
                                 </div>
