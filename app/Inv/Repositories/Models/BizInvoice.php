@@ -68,6 +68,7 @@ class BizInvoice extends BaseModel
         'biz_id',
         'invoice_no',
         'tenor',
+        'is_tenor_mannual',
         'invoice_due_date',
         'invoice_date',
         'pay_calculation_on',
