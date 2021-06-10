@@ -1048,7 +1048,7 @@ class Transactions extends BaseModel {
             $lastTrans = self::where('invoice_disbursed_id',$this->invoice_disbursed_id)
             ->whereDate('trans_date','<=',$this->trans_date)
             ->where('trans_id','<',$this->trans_id)
-            ->where('trans_type',$this->trans_type)
+            ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
             ->whereNull('link_trans_id')
             ->whereNull('parent_trans_id')
             ->where('entry_type','0')
