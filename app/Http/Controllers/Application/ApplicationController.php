@@ -912,4 +912,36 @@ class ApplicationController extends Controller
     }
     return FALSE;
   }
+
+	 /**
+	 * Handling OVD PAN documents file for the application.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return \Illuminate\Http\Response
+	 */
+	
+	public function promoterDocumentOVD(Request $request)
+	{
+		try {
+			$fileId = $request->file_id;
+			$fileId = $request;
+
+			$where = [
+				'app_id' => $fileId['app_id'],
+				'biz_owner_id' => $fileId['owner_id'],
+				'doc_id' => $fileId['doc_id'],
+				'file_id' => $fileId['file_id']
+			];
+			$response = $this->docRepo->disableIsOVD($where);
+			
+			if ($response) {
+				Session::flash('message',trans('success_messages.deleted'));
+				return redirect()->back();
+			} else {
+				return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+			}
+		} catch (Exception $ex) {
+			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+		}
+	}  
 }
