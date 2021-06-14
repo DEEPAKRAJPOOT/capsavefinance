@@ -1045,7 +1045,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
                     }
                 }
-                        dd($interest);
                 if($disburseType == 2) {
 
                     $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
