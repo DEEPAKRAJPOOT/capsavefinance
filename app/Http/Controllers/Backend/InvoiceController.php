@@ -388,7 +388,7 @@ class InvoiceController extends Controller {
             // $tenor = $this->calculateTenorDays($value['invoice']);
             $margin = $this->calMargin($value['invoice']['invoice_approve_amount'], $value['margin']);
             $fundedAmount = $value['invoice']['invoice_approve_amount'] - $margin;
-            $tInterest = $this->calInterest($fundedAmount, (float)$value['interest_rate']/100, $tenor);
+            $tInterest = $this->calInterest($fundedAmount, (float)$value['interest_rate'], $tenor);
 
             if($value['invoice']['program_offer']['payment_frequency'] == 1) {
                 $interest = $tInterest;
@@ -706,7 +706,7 @@ class InvoiceController extends Controller {
                         if ($invoice['program_offer']['benchmark_date'] == 1) {
                             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
                         }
-                        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
 
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -907,7 +907,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     if ($banchMarkDateFlag == 1) {
                         $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
                     }
-                    $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
+                    $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
 
                     $prgmWhere=[];
                     $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -1026,7 +1026,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         if ($banchMarkDateFlag == 1) {
                             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
                         }
-                        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
 
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -1035,7 +1035,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
-
                         $totalInterest += $interest;
                         $totalMargin += $margin;
                         $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
@@ -1046,6 +1045,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
                     }
                 }
+                        dd($interest);
                 if($disburseType == 2) {
 
                     $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
@@ -1136,7 +1136,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         if ($banchMarkDateFlag == 1) {
                             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $fundDate);
                         }
-                        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
 
                         if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;

@@ -3781,7 +3781,7 @@ class DataRenderer implements DataProviderInterface
                                 $fundedAmount = $this->calculateFundedAmount($invoice, $margin);
                                 
                                 $tenorDays = $this->calculateTenorDays($invoice);
-                                $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenorDays);
+                                $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate'], $tenorDays);
                                 if( $invoice['program']['interest_borne_by'] == 2 && ($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) ) {
                                     $interest = $tInterest;
                                 }

@@ -176,7 +176,7 @@ trait LmsTrait
         if ($banchMarkDateFlag == 1) {
             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $fundDate);
         }
-        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
+        $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
 
         if($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
             $interest = $tInterest;
