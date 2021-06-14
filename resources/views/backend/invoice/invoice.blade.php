@@ -208,13 +208,6 @@
                                 <input type="text" class="form-control" id="invoice_tenor" name='tenor_invoice_tenor' value="" >
                             </div>
 
-                            <div class="form-group">
-                                <label for="txtCreditPeriod">Comment  <span class="error_message_label doc-error">*</span>
-
-                                </label>
-                                <textarea class="form-control" name="comment" id="comment" cols="4" rows="4"></textarea>
-
-                            </div>
                         </div>
 
 
