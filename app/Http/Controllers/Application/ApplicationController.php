@@ -382,6 +382,7 @@ class ApplicationController extends Controller
                     
                 } else {
                     $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+                    $appDocData['is_ovd_enabled'] = 1;
                     $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
                     $fileId = $appDocResponse->file_id;
                     $response = $this->docRepo->getFileByFileId($fileId);
