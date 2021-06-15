@@ -1900,6 +1900,10 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $invoiceId = $request->tenor_invoice_id;
         $invoiceDetail = $this->invRepo->getInvoiceById($invoiceId);
         $data['invoice_due_date'] = date('Y-m-d', strtotime(str_replace('/','-',$invoiceDetail->invoice_date). "+ $request->tenor_invoice_tenor Days"));
+        if (strtotime($data['invoice_due_date']) <= strtotime(date("Y-m-d"))) {
+            Session::flash('message', 'Invoice due date should be greater thean current date.');
+            return back();
+        }
         $res = $this->invRepo->updateInvoiceTenor($data, $invoiceId);
         
        if ($res) {
