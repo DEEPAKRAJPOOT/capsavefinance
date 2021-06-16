@@ -1035,7 +1035,7 @@ class UserEventsListener extends BaseEvent
                 ],
                 function ($message) use ($user, $email_content, $mail_body) {
                 $email = $user["email"];
-                $message->cc(explode(',', config('common.LENEVO_SEND_MAIL_CC')));                    
+                $message->cc(explode(',', $email_content->cc));                    
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
