@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\TallyPosting::class,
         \App\Console\Commands\InterestAccrual::class,
         \App\Console\Commands\RenewApplications::class,
+        \App\Console\Commands\LenovoNewUser::class,
     ];
 
     /**
@@ -52,6 +53,7 @@ class Kernel extends ConsoleKernel
         if(config('lms.LMS_STATUS') && !empty('lms.DAILY_REPORT_MAIL')){
             $schedule->command('lms:dailyReport')->timezone(config('common.timezone'))->dailyAt('20:00');
         }
+        $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt(23.58);
         
     }
     

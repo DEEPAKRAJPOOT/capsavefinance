@@ -257,6 +257,11 @@ use RegistersUsers,
 //                    //return redirect(route('education_details'));
 //                    return redirect()->route('otp', ['token' => Crypt::encrypt($user['email'])]);
 //                } 
+                $userMailArr=[];
+                $userMailArr['name'] = $user->f_name . ' ' . $user->l_name;
+                $userMailArr['email'] = $user->email;
+                Event::dispatch("user.LENEVO_REGISTERED_SUCCESS", serialize($userMailArr));
+                
                 if(Auth::loginUsingId($user->user_id)) {
                         //Change Password
                         $firstTime = '';
@@ -667,5 +672,10 @@ use RegistersUsers,
     
     public function showResetLinkEmail() {
         return view('auth.partner_auth.forgot');
+    }
+    
+    public function checkLenevoNewUser() {
+        
+        
     }
 }

@@ -1020,6 +1020,42 @@ class UserEventsListener extends BaseEvent
     }
 
     
+    public function onLenevoRegdSuccess($user) {
+        $this->func_name = __FUNCTION__;
+        $user = unserialize($user);
+        $email_content = EmailTemplate::getEmailTemplate("LENEVO_USER_REGISTERED");
+        if ($email_content) {
+            $link = \Helpers::getServerProtocol() . config('proin.frontend_uri');
+            $mail_body = str_replace(
+                ['%name', '%email'],
+                [ucwords($user['name']),$user['email']],
+                $email_content->message
+            );
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+                ],
+                function ($message) use ($user, $email_content, $mail_body) {
+                    if( env('SEND_MAIL_ACTIVE') == 1){
+                        $email = explode(',', env('SEND_MAIL'));
+                        $message->cc(explode(',', config('common.LENEVO_SEND_MAIL_CC')));
+                    }else{
+                        $email = $user["email"];
+                        $message->cc(explode(',', config('common.LENEVO_SEND_MAIL_CC')));
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($email_content->subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_type' => $this->func_name,
+                    'name' => $user['name'],
+                    'subject' => $email_content->subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }
+    
     /**
      * Event subscribers
      *
@@ -1169,6 +1205,11 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'NOTIFY_ACCOUNT_DISBURSAL_REPORT', 
             'App\Inv\Repositories\Events\UserEventsListener@onAccountDisbursalReport'
+        );
+        
+        $events->listen(
+            'user.LENEVO_REGISTERED_SUCCESS',
+            'App\Inv\Repositories\Events\UserEventsListener@onLenevoRegdSuccess'
         );
     }
 }
