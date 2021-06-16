@@ -1034,13 +1034,8 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content, $mail_body) {
-                    if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->cc(explode(',', config('common.LENEVO_SEND_MAIL_CC')));
-                    }else{
-                        $email = $user["email"];
-                        $message->cc(explode(',', config('common.LENEVO_SEND_MAIL_CC')));
-                    }
+                $email = $user["email"];
+                $message->cc(explode(',', config('common.LENEVO_SEND_MAIL_CC')));                    
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
