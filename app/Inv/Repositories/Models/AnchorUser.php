@@ -316,4 +316,12 @@ class AnchorUser extends BaseModel {
 
         return $data;
     }
+    
+    public static function getAnchorUserDataByDate($whereCond, $date) {
+        $anchors = self::select('anchor_user.*')            
+            ->where($whereCond)
+            ->whereDate('created_at', $date)
+            ->get();            
+           return ($anchors ? $anchors : []);
+    }
 }

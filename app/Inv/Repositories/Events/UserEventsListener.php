@@ -1025,10 +1025,10 @@ class UserEventsListener extends BaseEvent
         $user = unserialize($user);
         $email_content = EmailTemplate::getEmailTemplate("LENEVO_USER_REGISTERED");
         if ($email_content) {
-            $link = \Helpers::getServerProtocol() . config('proin.frontend_uri');
+            $link = \Helpers::getServerProtocol() . config('proin.lenevo_frontend_uri').'/lenevo-login';
             $mail_body = str_replace(
-                ['%name', '%email'],
-                [ucwords($user['name']),$user['email']],
+                ['%name', '%email', '%login_link'],
+                [ucwords($user['name']),$user['email'], $link],
                 $email_content->message
             );
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
@@ -1044,6 +1044,40 @@ class UserEventsListener extends BaseEvent
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
                     'subject' => $email_content->subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }
+    
+    public function onLenevoDailyNewUser($anchorUserData) {
+        $rowData = '';
+        foreach ($anchorUserData as $value) {
+            $rowData .= '<tr><td>'.ucwords($value->name) .' '. $value->l_name . '</td><td>'.$value->email. '</td><td>'.$value->pan_no. '</td><td>Lenovo</td></tr>';
+        }
+        $this->func_name = __FUNCTION__;
+        $email_content = EmailTemplate::getEmailTemplate("LENEVO_LEAD_REGISTRATION_DETAILS");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%name', '%rowdata'],
+                ['', $rowData],
+                $email_content->message
+            );
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+                ],
+                function ($message) use ($email_content, $mail_body) {
+                $eSubj = $email_content->subject . \Carbon\Carbon::today();
+                $email = explode(',', config('common.LENOVO_NEW_LEAD_CRON_MAIL_TO'));
+                $message->cc(explode(',', $email_content->cc));                    
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, '')->subject($eSubj);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_type' => $this->func_name,
+                    'name' => '',
+                    'subject' => $eSubj,
                     'body' => $mail_body,
                 ];
                 FinanceModel::logEmail($mailContent);
@@ -1205,6 +1239,11 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'user.LENEVO_REGISTERED_SUCCESS',
             'App\Inv\Repositories\Events\UserEventsListener@onLenevoRegdSuccess'
+        );
+        
+        $events->listen(
+            'user.LENEVO_DAILY_NEW_USER_CRON',
+            'App\Inv\Repositories\Events\UserEventsListener@onLenevoDailyNewUser'
         );
     }
 }

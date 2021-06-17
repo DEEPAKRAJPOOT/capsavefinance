@@ -1795,5 +1795,9 @@ class UserRepository extends BaseRepositories implements UserInterface
         return Program::getSubProgramListByParentId((int) $anchorId, $prgmId)->get();
     }
     
+    public function getAnchorUserDataByDate($whereCond, $date)
+    {
+        return AnchorUser::getAnchorUserDataByDate($whereCond, $date);
+    }
 }
 

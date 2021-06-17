@@ -675,7 +675,10 @@ use RegistersUsers,
     }
     
     public function checkLenevoNewUser() {
-        
-        
+        $whereCond=[];
+        $whereCond[] = ['anchor_id', '=', config('common.LENEVO_ANCHOR_ID')];
+        $todayDate = \Carbon\Carbon::today();
+        $AnchorData = $this->userRepo->getAnchorUserDataByDate($whereCond, $todayDate);       
+        Event::dispatch("user.LENEVO_DAILY_NEW_USER_CRON", $AnchorData);
     }
 }
