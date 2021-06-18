@@ -5,7 +5,7 @@
         <div class="col-md-4 form-design lenevo_layout_login">
 
             <div id="reg-box">
-                <form class="loginForm form form-cls" autocomplete="off" method="POST" action="{{ url('password/email') }}" id="forgotPassFrm">
+                <form class="loginForm form form-cls" autocomplete="off" method="POST" action="{{ url('password/lenovo-email') }}" id="forgotPassFrm">
                     {{ csrf_field() }} 
                     <div class="section-header">
                         <h4 class="section-title heading_color"> Recover Your Password</h4>

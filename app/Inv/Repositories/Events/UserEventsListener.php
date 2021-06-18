@@ -230,7 +230,11 @@ class UserEventsListener extends BaseEvent
     public function onForgotPassword($user) {
         $this->func_name = __FUNCTION__;
         $user = unserialize($user);
-        $email_content = EmailTemplate::getEmailTemplate("FORGOT_PASSWORD");
+        if ($user['anchor_id'] == config('common.LENEVO_ANCHOR_ID')) {
+            $email_content = EmailTemplate::getEmailTemplate("FORGOT_PASSWORD_LENOVO");
+        } else {
+            $email_content = EmailTemplate::getEmailTemplate("FORGOT_PASSWORD");
+        }
         if ($email_content) {
             $mail_body = str_replace(
                 ['%name', '%reset_link'],
@@ -266,7 +270,11 @@ class UserEventsListener extends BaseEvent
     public function onResetPasswordSuccess($user) {
         $this->func_name = __FUNCTION__;
         $user = unserialize($user);
-        $email_content = EmailTemplate::getEmailTemplate("RESET_PASSWORD_SUCCESSS");
+        if ($user['anchor_id'] == config('common.LENEVO_ANCHOR_ID')) {
+            $email_content = EmailTemplate::getEmailTemplate("LENOVO_RESET_PASSWORD_SUCCESSS");
+        } else {
+            $email_content = EmailTemplate::getEmailTemplate("RESET_PASSWORD_SUCCESSS");
+        }
         if ($email_content) {
             $mail_body = str_replace(
                 ['%name'],

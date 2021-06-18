@@ -146,12 +146,17 @@ class ResetPasswordController extends Controller
             //template data
             if($insert_res)  {
                 $userMailArr = [];
+                $userMailArr['anchor_id'] = $user->anchor_id;
                 $userMailArr['email'] = $user->email;
                 $userMailArr['name'] = $user->f_name;
                 Event::dispatch("RESET_PASSWORD_SUCCESSS", serialize($userMailArr));
                 $request->session()->flash('alert-success',
                     Lang::get('success_messages.PasswordResetSuccessfully').'.');
-                return view('auth.reset_success');
+                if ($user->anchor_id == config('common.LENEVO_ANCHOR_ID')) {
+                    return view('auth.partner_auth.reset_success'); 
+                } else {
+                    return view('auth.reset_success');  
+                }
             }
         }
        
