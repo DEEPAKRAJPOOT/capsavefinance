@@ -294,7 +294,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function getInvoices($invoiceIds)
 	{
 		return BizInvoice::whereIn('invoice_id', $invoiceIds)
-			   ->with(['program_offer','lms_user' , 'supplier.anchor_bank_details.bank', 'supplier_bank_detail.bank', 'program'])
+			   ->with(['program_offer','lms_user' , 'supplier.anchor_bank_details.bank', 'supplier_bank_detail.bank', 'program', 'processing_fee'])
 			   ->get();
 	}  
 

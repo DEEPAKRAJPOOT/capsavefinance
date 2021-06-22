@@ -136,7 +136,7 @@
             </div>
 
             <div class="modal-body text-left">
-                <form id="signupFormNew"  action="{{Route('update_invoice_amount')}}" method="post">
+                <form id="signupFormNew"  action="{{Route('update_invoice_chrg')}}" method="post">
                     @csrf   
                     <div class="row">
                         <div class="col-md-12">
@@ -146,23 +146,26 @@
                                 <label for="txtCreditPeriod">Charge Type
                                     <span class="mandatory">*</span>
                                 </label>
-                                <input type="text" class="form-control" id="chrg_type" name="chrg_type" value="Enter Amount">
+                                <select type="text" class="form-control" id="chrg_type" name="chrg_type"> 
+                                    <option value="1">Fixed</option>
+                                    <option value="2">Percentage</option>
+                                </select> 
 
                             </div>
                             <div class="form-group">
                                 <label for="txtCreditPeriod">Amount/Percentage
                                     <span class="mandatory">*</span>
                                 </label>
-                                <input type="text" class="form-control" id="chrg_value" name="chrg_value" value="Enter Amount">
+                                <input type="text" class="form-control" id="chrg_value" name="chrg_value" placeholder="Enter Amount/Percentage">
 
                             </div>
                             <div class="form-group">
                                 <label for="txtCreditPeriod">Processing Fee
                                     <span class="mandatory">*</span>
                                 </label>
-                                <select type="text" class="form-control" id="invoice_amount" value="" > 
-                                <option value="0">Active</option>
-                                <option value="1">Inactive</option>
+                                <select type="text" class="form-control" id="is_active" name="is_active"> 
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
                                 </select> 
                             </div>
                         </div>
@@ -171,7 +174,7 @@
 
                     </div>
                     <span class="model7msg error"></span>           
-                    <input type="submit" id="UpdateInvoiceAmount" class="btn btn-success float-right btn-sm mt-3" value="Submit"> 
+                    <input type="submit" id="UpdateInvoiceChrg" class="btn btn-success float-right btn-sm mt-3" value="Submit"> 
                 </form> 
             </div>
         </div>

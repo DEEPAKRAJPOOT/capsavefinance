@@ -558,6 +558,35 @@ function uploadFile(app_id,id)
             return true;
         }
     });
+///////////////////////////////////////// change invoice amount////////////////
+    $(document).on('click', '.changeInvoiceProcessingFee', function () {
+
+        // var limit = $(this).attr('data-limit');
+        // var approveAmount = $(this).attr('data-approve').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        // var amount = $(this).attr('data-amount').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        var invoiceId = $(this).attr('data-id');
+        $("#invoice_id").val(invoiceId);
+        // $("#invoice_amount").val(amount);
+        // $("#invoice_approve_amount").val(approveAmount);
+
+    });
+
+///////////////////////////////////////// change invoice amount////////////////
+    $(document).on('click', '#UpdateInvoiceChrg', function () {
+
+        // var amount = parseFloat($("#invoice_amount").val().replace(/,/g, ''));
+        // var approveAmount = parseFloat($("#invoice_approve_amount").val().replace(/,/g, ''));
+        // if (approveAmount > amount)
+        // {
+        //     $(".model7msg").show();
+        //     $(".model7msg").html('Invoice Approve Amount should not greater amount');
+        //     return false;
+        // } else
+        // {
+        //     $(".model7msg").hide();
+        //     return true;
+        // }
+    });
     
     
      ///////////////////////For Invoice Approve////////////////////////

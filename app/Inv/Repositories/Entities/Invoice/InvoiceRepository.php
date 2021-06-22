@@ -27,6 +27,7 @@ use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Lms\DisbursalBatch;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use App\Inv\Repositories\Models\Lms\InvoiceCharge;
 
 class InvoiceRepository extends BaseRepositories implements InvoiceInterface
 {
@@ -1247,6 +1248,29 @@ use CommonRepositoryTraits;
            return $ex;
         }
          
-    }      
+    }
+
+    public function updateInvoiceCharge($data, $invoiceId)
+    {
+        try
+        {
+           return InvoiceCharge::updateInvoiceCharge($data, $invoiceId);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    } 
+
+    public function getInvoiceById($invoiceId)
+    {
+        try
+        {
+           return InvoiceModel::find($invoiceId);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }
+      
     
 }
