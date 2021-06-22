@@ -1259,6 +1259,17 @@ use CommonRepositoryTraits;
            return $ex;
         }
          
+    }
+
+    public function getInvoiceProcessingFee($where)
+    {
+        try
+        {
+           return InvoiceCharge::where($where)->first();  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
     } 
 
     public function getInvoiceById($invoiceId)

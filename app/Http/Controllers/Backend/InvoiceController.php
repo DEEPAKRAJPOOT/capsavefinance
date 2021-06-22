@@ -1942,6 +1942,25 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         }
     }
 
+
+    /**
+     * Display a pop up iframe for disburse check
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function iframeUpdateInvoiceChrg(Request $request)
+    {
+        $invoiceId = $request->get('invoice_id');
+        $data = $this->invRepo->getInvoiceProcessingFee(['invoice_id' =>$invoiceId]);
+
+        // dd($data);
+        return view('backend.invoice.update_invoice_charge')
+                ->with([
+                    'invoiceId' => $invoiceId,
+                    'data' => $data
+                ]);;              
+    }
+
     /* update invoice amount  */
 
     public function saveInvoiceProcessingFee(Request $request) {
@@ -1952,23 +1971,22 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $data['chrg_type'] = $request->chrg_type;
         $data['is_active'] = $request->is_active;
         $data['deductable'] = 1;
-        $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
-                        
+        if($request->chrg_type == 2&& $data['chrg_value'] > 100) {
+            Session::flash('message', 'Charge value can not be greater than 100% ');
+            return redirect()->route('backend_get_approve_invoice');
+        }                
+        // $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         // $data['created_by'] = Auth::user()->user_id;
         // $data['created_at'] = $curData;
 
-        // $invoiceDetail = $this->invRepo->getInvoiceById($invoiceId);
-        // $data['invoice_due_date'] = date('Y-m-d', strtotime(str_replace('/','-',$invoiceDetail->invoice_date). "+ $request->tenor_invoice_tenor Days"));
-        // dd($request->all(), $data);
         $res = $this->invRepo->updateInvoiceCharge($data, $invoiceId);
-        // dd($request->all(), $data, $res);
-        
+
        if ($res) {
-            Session::flash('message', 'Invoice Tenor successfully Updated ');
-            return back();
+            Session::flash('message', 'processing fee successfully Updated ');
+            return redirect()->route('backend_get_approve_invoice');
         } else {
             Session::flash('message', 'Something wrong, Tenor is not Updated');
-            return back();
+            return redirect()->route('backend_get_approve_invoice');
         }
     }
 

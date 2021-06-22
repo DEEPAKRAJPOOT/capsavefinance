@@ -482,7 +482,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'uses' => 'Backend\InvoiceController@onlineDisbursalRollback',
                     ]);
 
-                    Route::POST('update_invoice_chrg', [
+                    Route::get('/update-invoice-chrg', [
+                        'as' => 'iframe_update_invoice_chrg',
+                        'uses' => 'Backend\InvoiceController@iframeUpdateInvoiceChrg',
+                    ]);
+
+                    Route::POST('update-invoice-chrg', [
                         'as' => 'update_invoice_chrg',
                         'uses' => 'Backend\InvoiceController@saveInvoiceProcessingFee',
                     ]);
