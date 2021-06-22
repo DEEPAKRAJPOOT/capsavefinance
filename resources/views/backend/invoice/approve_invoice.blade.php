@@ -126,6 +126,57 @@
     </div>
 </div>
 
+<div class="modal show" id="myModal7" style="display: none;">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Confirm Invoice Approved Amount</h5>
+                <button type="button" class="close close-btns" data-dismiss="modal">×</button>
+            </div>
+
+            <div class="modal-body text-left">
+                <form id="signupFormNew"  action="{{Route('update_invoice_amount')}}" method="post">
+                    @csrf   
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input type="hidden" name="invoice_id" id="invoice_id">
+                            
+                            <div class="form-group">
+                                <label for="txtCreditPeriod">Charge Type
+                                    <span class="mandatory">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="chrg_type" name="chrg_type" value="Enter Amount">
+
+                            </div>
+                            <div class="form-group">
+                                <label for="txtCreditPeriod">Amount/Percentage
+                                    <span class="mandatory">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="chrg_value" name="chrg_value" value="Enter Amount">
+
+                            </div>
+                            <div class="form-group">
+                                <label for="txtCreditPeriod">Processing Fee
+                                    <span class="mandatory">*</span>
+                                </label>
+                                <select type="text" class="form-control" id="invoice_amount" value="" > 
+                                <option value="0">Active</option>
+                                <option value="1">Inactive</option>
+                                </select> 
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    <span class="model7msg error"></span>           
+                    <input type="submit" id="UpdateInvoiceAmount" class="btn btn-success float-right btn-sm mt-3" value="Submit"> 
+                </form> 
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @section('jscript')
 <style>
