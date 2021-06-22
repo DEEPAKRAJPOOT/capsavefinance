@@ -675,6 +675,7 @@ class InvoiceController extends Controller {
             $interest = 0;
             $disburseAmount = 0;
             $totalInterest = 0;
+            $totalProcessingFee = 0;
             $totalFunded = 0;
             $totalMargin = 0;
             $exportData = [];
@@ -691,6 +692,7 @@ class InvoiceController extends Controller {
                     if($invoice['supplier_id'] == $userid) {
                         
                         $interest= 0;
+                        $processingFee= 0;
                         $margin= 0;
 
                         $tenor = $this->calculateTenorDays($invoice);
@@ -715,6 +717,12 @@ class InvoiceController extends Controller {
                             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
                         }
                         $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
+                        if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
+                            $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
+                        } else {
+                            $processingFee = $invoice['processing_fee']['chrg_value'];
+
+                        }
 
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -726,7 +734,7 @@ class InvoiceController extends Controller {
 
                         $totalInterest += $interest;
                         $totalMargin += $margin;
-                        $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
+                        $amount = round($fundedAmount - $interest - $processingFee, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                         $disburseAmount += $amount;
 
 
@@ -878,9 +886,18 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
 
                     if (empty($invoiceDisbursedData)) {
+                        $processingFee= 0;
+                        if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
+                            $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
+                        } else {
+                            $processingFee = $invoice['processing_fee']['chrg_value'];
+
+                        }
+
                         $invoice['batch_id'] = $batchId;
                         $invoice['disburse_date'] = $disburseDate;
                         $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
+                        $invoice['processing_fee'] = $createDisbursal->processingFee;
                        
                         $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
                         $createInvoiceDisbursed = $this->lmsRepo->saveUpdateInvoiceDisbursed($invoiceDisbursedRequest);
@@ -927,7 +944,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
                     $totalInterest += $interest;
                     $totalMargin += $margin;
-                    $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
+                    $amount = round($fundedAmount - $interest - $processingFee, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                     $disburseAmount += $amount;
                 }
             }
@@ -1040,7 +1057,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
                             $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
                         } else {
-                            $processingFee = $fundedAmount - $invoice['processing_fee']['chrg_value'];
+                            $processingFee = $invoice['processing_fee']['chrg_value'];
 
                         }
                         
@@ -1127,7 +1144,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                             if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
                                 $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
                             } else {
-                                $processingFee = $fundedAmount - $invoice['processing_fee']['chrg_value'];
+                                $processingFee = $invoice['processing_fee']['chrg_value'];
 
                             }
                             $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
