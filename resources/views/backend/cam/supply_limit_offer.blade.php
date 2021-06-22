@@ -1479,6 +1479,9 @@
         return;
     }
     $.each(anchorPrgms, function(i,program){
+        console.log(anchorPrgms);
+        console.log(program);
+        console.log(program_id);
         if(program.prgm_id == program_id){
             //$('input[name=tenor]').val();
             //$('input[name=tenor_old_invoice]').val();
@@ -1505,7 +1508,7 @@
 //            '</div>';
 //            //value="'+program_charge.chrg_calculation_amt+'"
 //        }
-
+        console.log(program_charge, appType);
         if(program_charge.charge_name.chrg_tiger_id == appType){
             html += '<div class="col-md-6">'+
                 '<div class="form-group">'+
