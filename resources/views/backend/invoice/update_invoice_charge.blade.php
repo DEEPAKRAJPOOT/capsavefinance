@@ -20,7 +20,7 @@
                 <label for="txtCreditPeriod">Amount/Percentage
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" class="form-control" id="chrg_value" name="chrg_value" placeholder="Enter Amount/Percentage" value="{{ isset($data->chrg_type) && $data->chrg_value ?? '' }}">
+                <input type="text" class="form-control" id="chrg_value" name="chrg_value" placeholder="Enter Amount/Percentage" value="{{ (isset($data->chrg_value) && $data->chrg_value) ? $data->chrg_value : '' }}">
 
             </div>
             <div class="form-group">
