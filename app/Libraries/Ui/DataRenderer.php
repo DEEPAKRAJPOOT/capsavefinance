@@ -1170,12 +1170,9 @@ class DataRenderer implements DataProviderInterface
                      $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
                       if($chkUser->id!=11) 
                      {
-                      if(Helpers::checkPermission('update_invoice_chrg') ){
+                      if(Helpers::checkPermission('iframe_update_invoice_chrg') ){
 
                         $action .= '<a  data-toggle="modal" data-target="#iframeUpdateInvoiceCharge" data-url ="' . route('iframe_update_invoice_chrg', ['invoice_id' => $invoice->invoice_id ?? 0]) . '" data-height="350px" data-width="100%" class="btn btn-action-btn btn-sm" title="Add Processing Fee"><i class="fa fa-plus-square"></i></a>';
-
-
-                        // $action .='<a title="Add Processing fee" href="#" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'"  data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceProcessingFee"><i class="fa fa-edit" aria-hidden="true"></i></a>';
 
                       }
                       if(Helpers::checkPermission('update_invoice_approve_single_tab') ){
