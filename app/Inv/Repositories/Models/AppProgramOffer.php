@@ -88,6 +88,7 @@ class AppProgramOffer extends BaseModel {
         'ruby_sheet_xirr',
         'cash_flow_xirr',
         'addl_security',
+        'is_invoice_processingfee',
         'comment',
         'is_approve',
         'payment_frequency',

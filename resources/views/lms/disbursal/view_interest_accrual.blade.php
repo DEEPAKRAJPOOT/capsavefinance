@@ -56,13 +56,15 @@
             </tr>
             <tr>
                 <td><b>Total accured interest till date:</b></td>
-                <td colspan="3">{{number_format((float)$disbursal->accruedInterest->sum('accrued_interest'), 2, '.', '')  }}</td>
+                <td>{{number_format((float)$disbursal->accruedInterest->sum('accrued_interest'), 2, '.', '')  }}</td>
+                <td><b>Total Invoice Processing Fee:</b></td>
+                <td>{{ number_format(($disbursal->processing_fee),2)}}</td>
             </tr>
             <tr>
                 <td><b>Payment Frequency:</b></td>
                 <td>{{$paymentFrequency == 1 ? 'Up Front' : ($paymentFrequency == 2 ? 'Monthly' : 'Rear Ended') }}</td>
                 <td><b>Actual Disburse/Principal Amount:</b></td>
-                <td>{{ number_format(($disbursal->disburse_amt - $disbursal->total_interest),2)}}</td>
+                <td>{{ number_format(($disbursal->disburse_amt - $disbursal->total_interest - $disbursal->processing_fee),2)}}</td>
             </tr>
            {{--<tr>
                 <td><b>Outstanding Amount:</b></td>

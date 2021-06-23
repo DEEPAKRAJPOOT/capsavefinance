@@ -327,7 +327,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function lmsGetInvoiceClubCustomer($userIds, $invoiceIds)
 	{
 	  
-		return $data =  LmsUser::with(['bank_details.bank', 'app.invoices.program_offer', 'user.anchor_bank_details.bank', 'app.invoices.program'])
+		return $data =  LmsUser::with(['bank_details.bank', 'app.invoices.program_offer', 'user.anchor_bank_details.bank', 'app.invoices.program', 'app.invoices.processing_fee'])
 				->with(['app.invoices' => function ($query) use($invoiceIds) {
 					  if (!empty($invoiceIds)) { 
 						  $query->whereIn('invoice_id', $invoiceIds);

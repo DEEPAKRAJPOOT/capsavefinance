@@ -147,7 +147,17 @@
         @endforeach
         @endif
     </div>
-    
+         
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="txtPassword">Invoice Level Procesing Fee <span style="color: red;"> *</span> </label> 
+        <select name="is_invoice_processingfee" class="form-control">
+            <option value="">Select</option>
+            <option value="1" {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1)? 'selected': ''}}>Applicable</option>
+            <option value="0" {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 0)? 'selected': ''}}>Not Applicable</option>
+        </select>
+      </div>
+    </div>
     {{--<div class="col-md-6">
       <div class="form-group">
           <label for="txtPassword">Processing Fee <span id="processing_fee_type">(%)</span></label>

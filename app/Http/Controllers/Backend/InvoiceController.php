@@ -1971,8 +1971,15 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $data['chrg_type'] = $request->chrg_type;
         $data['is_active'] = $request->is_active;
         $data['deductable'] = 1;
-        if($request->chrg_type == 2&& $data['chrg_value'] > 100) {
-            Session::flash('message', 'Charge value can not be greater than 100% ');
+
+        $invoiceData = $this->invRepo->getInvoiceById($invoiceId);
+        
+        if($request->chrg_type == 2&& $data['chrg_value'] > 50) {
+            Session::flash('message', 'Charge value can not be greater than 50%.');
+            return redirect()->route('backend_get_approve_invoice');
+        }  
+        if($request->chrg_type == 1&& $data['chrg_value'] > $invoiceData->invoice_approve_amount) {
+            Session::flash('message', 'Charge value can not be greater than invoice approve amount. ');
             return redirect()->route('backend_get_approve_invoice');
         }                
         // $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');

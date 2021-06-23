@@ -199,7 +199,17 @@
             <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
           </div>
         </div>
-    
+          
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="txtPassword">Invoice Level Procesing Fee <span style="color: red;"> *</span> </label> 
+            <select name="is_invoice_processingfee" class="form-control">
+                <option value="">Select</option>
+                <option value="1" {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1)? 'selected': ''}}>Applicable</option>
+                <option value="0" {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 0)? 'selected': ''}}>Not Applicable</option>
+            </select>
+          </div>
+        </div>
         <div class="col-md-12">
           <div class="form-group row">
             <label for="txtPassword" class="col-md-12"><b>Additional Security</b></label> 
