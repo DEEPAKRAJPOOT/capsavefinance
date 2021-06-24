@@ -413,10 +413,10 @@ class InvoiceController extends Controller {
             }
 
             if ($value['processing_fee'] > 0.00) {
-                $intrstDbtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $value['processing_fee'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.PROCESSING_FEE'));
+                $intrstDbtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $value['processing_fee'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'));
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $value['processing_fee'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.PROCESSING_FEE'), 1);
+                $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $value['processing_fee'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'), 1);
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
             }
 

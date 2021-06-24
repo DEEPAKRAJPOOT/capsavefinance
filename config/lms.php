@@ -27,8 +27,9 @@ return [
        'NON_FACTORED_AMT' => '35',
        'WAVED_OFF'=>'36',
        'WRITE_OFF'=>'37',
-       'PROCESSING_FEE' => '51',
+       'INVOICE_PROCESSING_FEE' => '51',
         /*
+       'PROCESSING_FEE' => '51',
         'PAYMENT_RECEIVED' => '1',
         'DISCOUNT_ON_PAYMENT' => '3',
         'CHEQUE_BOUNCE'=>'5',
