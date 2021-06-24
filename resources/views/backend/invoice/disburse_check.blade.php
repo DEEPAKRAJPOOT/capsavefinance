@@ -28,7 +28,7 @@ foreach ($apps as $app) {
 		$tMargin = (($invoice['invoice_approve_amount']*$margin)/100);
 
 		if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
-            $processingFee = (($invoice['invoice_approve_amount']*$$invoice['processing_fee']['chrg_value'])/100);
+            $processingFee = (($invoice['invoice_approve_amount']*$invoice['processing_fee']['chrg_value'])/100);
         } else {
             $processingFee = $invoice['processing_fee']['chrg_value'];
 
