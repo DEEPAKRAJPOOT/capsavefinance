@@ -198,7 +198,7 @@ trait LmsTrait
         $disbursalData['tenor_days'] =  $tenor ?? null;
         $disbursalData['interest_rate'] = $actIntRate ?? null;
         $disbursalData['total_interest'] = $interest;
-        $disbursalData['processing_fee'] = $invoice['processing_fee'] ?? null;
+        $disbursalData['processing_fee'] = $invoice['processing_fee'] ?? 0.00;
         $disbursalData['margin'] = $invoice['program_offer']['margin'] ?? null;
         $disbursalData['status_id'] = 10;
         
