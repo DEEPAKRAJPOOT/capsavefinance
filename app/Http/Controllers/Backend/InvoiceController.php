@@ -1628,6 +1628,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $sysDate =  \Helpers::getSysStartDate();
             date_default_timezone_set("Asia/Kolkata");
             $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
+            $disburseDate = date("Y-m-d", strtotime($data->disbursalOne->disburse_date));
             $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
             $transId = $reqData['txn_id'];
             // $transId = '2RGIK4436OUMXHZGXH';
@@ -1635,10 +1636,12 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
             $transDisbursalIds = [];
             $tranNewIds = [];
-            // dd($data);
             if (!isset($data) || empty($data)) {
                 return redirect()->route('backend_get_disbursal_batch_request')->withErrors('Something went wrong please try again.');
-            } else {
+            } elseif ($fundedDate != $disburseDate) {
+                return redirect()->route('backend_get_disbursal_batch_request')->withErrors('funded date can not marked '.$fundedDate.'.');
+            } 
+             else {
                 $data = $data->toArray();
             }
 
