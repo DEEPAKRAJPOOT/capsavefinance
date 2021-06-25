@@ -307,10 +307,10 @@ function checkValidation(){
 		flag = false;
 	}
 
-        if(busi_pan_comm_date == ''){
-		setError('input[name=busi_pan_comm_date]', 'Date of commencement of business is required.');
-		flag = false;
-	}
+    //     if(busi_pan_comm_date == ''){
+	// 	setError('input[name=busi_pan_comm_date]', 'Date of commencement of business is required.');
+	// 	flag = false;
+	// }
         
 	if(biz_constitution == ''){
 		setError('select[name=biz_constitution]', 'Business constitution is required');
