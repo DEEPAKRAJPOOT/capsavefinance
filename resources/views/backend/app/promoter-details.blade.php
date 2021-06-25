@@ -90,52 +90,68 @@
                                 /* for get document file data   */
 
                                 $main1[$key]['panNoFileStatus'] = 0;
+                                $main1[$key]['panNoFileOVD'] = 0;
                                 $main1[$key]['dlNoFileStatus'] = 0;
+                                $main1[$key]['dlNoFileOVD'] = 0;
                                 $main1[$key]['voterNoFileStatus'] = 0;
+                                $main1[$key]['voterNoFileOVD'] = 0;
                                 $main1[$key]['passNoFileStatus'] = 0;
+                                $main1[$key]['passNoFileOVD'] = 0;
                                 $main1[$key]['photoFileStatus'] = 0;
+                                $main1[$key]['photoFileOVD'] = 0;
                                 $main1[$key]['aadharFileStatus'] = 0;
+                                $main1[$key]['aadharFileOVD'] = 0;
                                 $main1[$key]['electricityFileStatus'] = 0;
+                                $main1[$key]['electricityFileOVD'] = 0;
                                 $main1[$key]['telephoneFileStatus'] = 0;
+                                $main1[$key]['telephoneFileOVD'] = 0;
                             foreach ($row->document as $row2) {
                                 if ($row2->doc_id == 2) {
                                     $main1[$key]['panNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['panNoFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['panNoFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['panNoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 31) {
 
                                     $main1[$key]['dlNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['dlNoFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['dlNoFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['dlNoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 30) {
 
                                     $main1[$key]['voterNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['voterNoFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['voterNoFileStatus'] = ($row2->userFile->is_active)?1:0;
+                                    $main1[$key]['voterNoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 32) {
                                     $main1[$key]['passNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['passNoFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['passNoFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['passNoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 22) {
 
                                     $main1[$key]['photoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['photoFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['photoFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['photoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 34) {
 
                                     $main1[$key]['aadharFile'] = $row2->userFile->file_path;
                                     $main1[$key]['aadharFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['aadharFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['aadharFileOVD'] = $row2->is_ovd_enabled;
                                 }else if ($row2->doc_id == 37) {
 
                                     $main1[$key]['electricityFile'] = $row2->userFile->file_path;
                                     $main1[$key]['electricityFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['electricityFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['electricityFileOVD'] = $row2->is_ovd_enabled;
                                 }else if ($row2->doc_id == 38) {
 
                                     $main1[$key]['telephoneFile'] = $row2->userFile->file_path;
                                     $main1[$key]['telephoneFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['telephoneFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['telephoneFileOVD'] = $row2->is_ovd_enabled;
                                 }
                             }
                             ?>
@@ -426,7 +442,14 @@
                                                                     @endif
                                                                     <input type="file" class="panfile" data-id="{{isset($row->first_name) ? $i : '1'}}"  name="panfile[]" id="panfile{{isset($row->first_name) ? $i : '1'}}" onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 2)">
                                                                     <span class="fileUpload"></span>
-                                                                </div>   
+
+                                                                    @if($main1[$key]['panNoFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['panNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>  
+                                                                    @endif
+                                                                </div> 
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -481,6 +504,14 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" name="dlfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  id="dlfile{{isset($row->first_name) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 31)">
+
+                                                                    @if($main1[$key]['dlNoFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="31" {{ $main1[$key]['dlNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>                                                                      
+                                                                    @endif
+                                                                    
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -530,6 +561,14 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" name="voterfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  class="voterfile" id="voterfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 30)">
+
+                                                                    @if($main1[$key]['voterNoFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="30" {{ $main1[$key]['voterNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>   
+                                                                    @endif
+
                                                                 </div>
 
                                                             </td>
@@ -583,6 +622,14 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" name="passportfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" class="passportfile" id="passportfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 32)">
+
+                                                                    @if($main1[$key]['passNoFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="32" {{ $main1[$key]['passNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>
+                                                                    @endif
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -620,6 +667,14 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" class="photofile"  name="photofile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="photofile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 22)">
+
+                                                                    @if($main1[$key]['photoFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="22" {{ $main1[$key]['photoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>  
+                                                                    @endif
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -658,6 +713,14 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" class="aadharfile"  name="aadharfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="aadharfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 34)">
+
+                                                                    @if($main1[$key]['aadharFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="34" {{ $main1[$key]['aadharFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>
+                                                                    @endif
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -694,6 +757,14 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" class="electricityfile"  name="electricityfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="electricityfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 37)">
+
+                                                                    @if($main1[$key]['electricityFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="37" {{ $main1[$key]['electricityFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span> 
+                                                                    @endif
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -731,6 +802,13 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" class="telephonefile"  name="telephonefile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="telephonefile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 38)">
+
+                                                                    @if($main1[$key]['telephoneFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="38" {{ $main1[$key]['telephoneFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>
+                                                                    @endif                                                                      
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -1062,7 +1140,6 @@
                 cache: false,
                 success: function (res)
                 {
-                
                   $('.isloader').hide();
                  window.location.href = "{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
                   

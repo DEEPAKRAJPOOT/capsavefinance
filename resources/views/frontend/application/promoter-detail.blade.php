@@ -76,39 +76,57 @@
                                 }
                                 
                             }
+
+                                $main1[$key]['panNoFileOVD'] = 0;
+                                $main1[$key]['dlNoFileOVD'] = 0;
+                                $main1[$key]['voterNoFileOVD'] = 0;
+                                $main1[$key]['passNoFileOVD'] = 0;
+                                $main1[$key]['photoFileOVD'] = 0;
+                                $main1[$key]['aadharFileOVD'] = 0;
+                                $main1[$key]['electricityFileOVD'] = 0;
+                                $main1[$key]['telephoneFileOVD'] = 0;
                        
                                 /* for get document file data   */
                             foreach ($row->document as $row2) {
                                 if ($row2->doc_id == 2) {
                                     $main1[$key]['panNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['panNoId'] = $row2->userFile->file_id;
+                                    $main1[$key]['panNoFileID'] = $row2->userFile->file_id;
+                                    $main1[$key]['panNoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 31) {
 
                                     $main1[$key]['dlNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['dlNoId'] = $row2->userFile->file_id;
+                                    $main1[$key]['dlNoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 30) {
 
                                     $main1[$key]['voterNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['voterNoId'] = $row2->userFile->file_id;
+                                    $main1[$key]['voterNoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 32) {
                                     $main1[$key]['passNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['passNoId'] = $row2->userFile->file_id;
+                                    $main1[$key]['passNoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 22) {
 
                                     $main1[$key]['photoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['photoId'] = $row2->userFile->file_id;
+                                    $main1[$key]['photoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 34) {
 
                                     $main1[$key]['aadharFile'] = $row2->userFile->file_path;
                                     $main1[$key]['aadharId'] = $row2->userFile->file_id;
+                                    $main1[$key]['aadharFileOVD'] = $row2->is_ovd_enabled;
                                 }else if ($row2->doc_id == 37) {
 
                                     $main1[$key]['electricityFile'] = $row2->userFile->file_path;
                                     $main1[$key]['electricityId'] = $row2->userFile->file_id;
+                                    $main1[$key]['electricityFileOVD'] = $row2->is_ovd_enabled;
                                 }else if ($row2->doc_id == 38) {
 
                                     $main1[$key]['telephoneFile'] = $row2->userFile->file_path;
                                     $main1[$key]['telephoneId'] = $row2->userFile->file_id;
+                                    $main1[$key]['telephoneFileOVD'] = $row2->is_ovd_enabled;
                                 }
                             }
                             ?>
@@ -346,7 +364,10 @@
 
                                                                     <a  href="{{ isset($main1[$j]['panNoId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['panNoId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
 
-
+                                                                    @if($main1[$key]['panNoFileOVD'] == 1)
+                                                                        <button type="button" class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['panNoFile']) ? 'inline' : 'none'}}" name="panfiles[]" id="panfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['panNoFileID']) ? $main1[$key]['panNoFileID'] : 'null' }}, 2)" ><i class="fa fa-times"></i></button>
+                                                                    @endif
+                                                                    
                                                                     <!-- <input type="file" class="verifyfile" name="verifyfile[]" id="verifyfile{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
                                                                 </div>
                                                             </td>
@@ -357,6 +378,15 @@
                                                                      <input type="file" class="panfile" data-id="{{isset($row->first_name) ? $i : '1'}}"  name="panfile[]" id="panfile{{isset($row->first_name) ? $i : '1'}}" onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 2)">
                                                                     <span class="fileUpload"></span>
                                                                 </div>   
+
+                                                                @if($main1[$key]['panNoFileOVD'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['panNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>  
+                                                                @endif
+                                                                
+                                                                
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -378,6 +408,11 @@
                                                                    <a  href="{{ isset($main1[$j]['dlNoId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['dlNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="dldown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                    <a  href="{{ isset($main1[$j]['dlNoId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['dlNoId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
                                                                     <!-- <input type="file" id="downloaddl{{isset($row->first_name) ? $i : '1'}}" name="downloaddl[]" class="downloaddl" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+
+                                                                    @if($main1[$key]['dlNoFileOVD'] == 1)
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['dlNoFile']) ? 'inline' : 'none'}}" name="dlfiles[]" id="dlfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['dlNoId']) ? $main1[$key]['dlNoId'] : 'null' }}, 31)" ><i class="fa fa-times"></i></button>
+                                                                    @endif                                                                    
+                                                                    
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
@@ -386,6 +421,13 @@
                                                                   <button class="btn">Upload</button>
                                                                    <input type="file" name="dlfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  id="dlfile{{isset($row->first_name) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 31)">
                                                                 </div>
+                                                                @if($main1[$key]['dlNoFileOVD'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['dlNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>  
+                                                                @endif
+                                                                
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -406,6 +448,9 @@
                                                                     <a  href="{{ isset($main1[$j]['voterNoId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['voterNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="voterdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <a  href="{{ isset($main1[$j]['voterNoId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['voterNoId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
                                                                     <!-- <input type="file" name="downloadvoter[]" class="downloadvoter" id="downloadvoter{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    @if($main1[$key]['voterNoFileOVD'] == 1)
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['voterNoFile']) ? 'inline' : 'none'}}" name="voterdowns[]" id="voterdowns{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['voterNoId']) ? $main1[$key]['voterNoId'] : 'null' }}, 30)" ><i class="fa fa-times"></i></button>
+                                                                    @endif                                                                    
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
@@ -413,7 +458,12 @@
                                                                    <button class="btn">Upload</button>
                                                                    <input type="file" name="voterfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  class="voterfile" id="voterfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 30)">
                                                                 </div>
-
+                                                                @if($main1[$key]['voterNoFileOVD'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['voterNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>  
+                                                                @endif
                                                             </td>
                                                         </tr>
                                                         </tr>
@@ -437,6 +487,9 @@
                                                                     <a  href="{{ isset($main1[$j]['passNoId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['passNoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="passdown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <a  href="{{ isset($main1[$j]['passNoId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['passNoId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
                                                                     <!-- <input type="file" name="downloadpassport[]" class="downloadpassport" id="downloadpassport{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    @if($main1[$key]['passNoFileOVD'] == 1)
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['passNoFile']) ? 'inline' : 'none'}}"  name="passportfiles[]" id="passportfiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['passNoId']) ? $main1[$key]['passNoId'] : 'null' }}, 32)" ><i class="fa fa-times"></i></button>
+                                                                    @endif                                                                    
                                                                 </div>
                                                             </td>
                                                             <td width="14%">
@@ -444,6 +497,12 @@
                                                                     <button class="btn">Upload</button>
                                                                      <input type="file" name="passportfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" class="passportfile" id="passportfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 32)">
                                                                 </div>
+                                                                @if($main1[$key]['passNoFileOVD'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['passNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>  
+                                                                @endif                                                                
                                                             </td>
                                                         </tr>
                                                         </tr>
@@ -459,6 +518,9 @@
                                                                     <a  href="{{ isset($main1[$j]['photoId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['photoId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="photodown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <a  href="{{ isset($main1[$j]['photoId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['photoId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
                                                                     <!-- <input type="file" class="downloadphoto"  name="downloadphoto[]" id="downloadphoto{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    @if($main1[$key]['photoFileOVD'] == 1)
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['photoFile']) ? 'inline' : 'none'}}"  name="photofiles[]" id="photofiles{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['photoId']) ? $main1[$key]['photoId'] : 'null' }}, 22)" ><i class="fa fa-times"></i></button>
+                                                                    @endif                                                                    
                                                                 </div>
                                                             </td>
                                                             <td width="14%"> 
@@ -466,6 +528,12 @@
                                                                     <button class="btn">Upload</button>
                                                                    <input type="file" class="photofile"  name="photofile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="photofile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 22)">
                                                                 </div>
+                                                                @if($main1[$key]['photoFileOVD'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['photoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>  
+                                                                @endif                                                                
                                                             </td>
                                                         </tr>
 
@@ -482,6 +550,9 @@
                                                                     <a  href="{{ isset($main1[$j]['aadharId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['aadharId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="aadhardown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <a  href="{{ isset($main1[$j]['aadharId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['aadharId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
                                                                     <!-- <input type="file" class="downloadaadhar"  name="downloadaadhar[]" id="downloadaadhar{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    @if($main1[$key]['aadharFileOVD'] == 1)
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['aadharFile']) ? 'inline' : 'none'}}" name="downloadaadhars[]" id="downloadaadhars{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['aadharId']) ? $main1[$key]['aadharId'] : 'null' }}, 34)" ><i class="fa fa-times"></i></button>
+                                                                    @endif                                                                    
                                                                 </div>
                                                             </td>
                                                             <td width="14%"> 
@@ -489,6 +560,12 @@
                                                                     <button class="btn">Upload</button>
                                                                     <input type="file" class="aadharfile"  name="aadharfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="aadharfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 34)">
                                                                 </div>
+                                                                @if($main1[$key]['aadharFileOVD'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['aadharFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>  
+                                                                @endif                                                                
                                                             </td>
                                                         </tr>
                                                                                 <tr>
@@ -503,6 +580,9 @@
                                                                     <a  href="{{ isset($main1[$j]['electricityId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['electricityId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="electricitydown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <a  href="{{ isset($main1[$j]['electricityId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['electricityId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
                                                                     <!-- <input type="file" class="downloadelectricity"  name="downloadelectricity[]" id="downloadelectricity{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    @if($main1[$key]['electricityFileOVD'] == 1)
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['electricityFile']) ? 'inline' : 'none'}}" name="downloadelectricitys[]" id="downloadelectricitys{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['electricityId']) ? $main1[$key]['electricityId'] : 'null' }}, 37)" ><i class="fa fa-times"></i></button>
+                                                                    @endif                                                                    
                                                                 </div>
                                                             </td>
                                                             <td width="14%"> 
@@ -510,6 +590,12 @@
                                                                    <button class="btn">Upload</button>
                                                                     <input type="file" class="electricityfile"  name="electricityfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="electricityfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 37)">
                                                                 </div>
+                                                                @if($main1[$key]['electricityFileOVD'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['electricityFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>  
+                                                                @endif                                                                
                                                             </td>
                                                         </tr>
                                                         
@@ -525,6 +611,9 @@
                                                                     <a  href="{{ isset($main1[$j]['telephoneId']) ? route('frontend_download_storage_file', ['file_id' => $main1[$j]['telephoneId'] ]) : '' }}" class="btn-upload   btn-sm" type="button" id="telephonedown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                                     <a  href="{{ isset($main1[$j]['telephoneId']) ? route('frontend_view_uploaded_doc', ['file_id' => $main1[$j]['telephoneId'] ]) : '' }}" title="View File" class="btn-upload   btn-sm" target="_blank" type="button" id="pandown{{isset($row->first_name) ? $i : '1'}}" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" target="_blank"> <i class="fa fa-eye"></i></a>
                                                                     <!-- <input type="file" class="downloadtelephone"  name="downloadtelephone[]" id="downloadtelephone{{isset($row->first_name) ? $i : '1'}}" dir="1" onchange="FileDetails(this.getAttribute('dir'))" multiple=""> -->
+                                                                    @if($main1[$key]['telephoneFileOVD'] == 1)
+                                                                        <button type="button"  class="btn-upload   btn-sm" title="Disable OVD" style="display:{{ isset($main1[$j]['telephoneFile']) ? 'inline' : 'none'}}" name="downloadtelephones[]" id="downloadtelephones{{isset($row->first_name) ? $i : '1'}}" onclick="deleteFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, {{ isset($main1[$key]['telephoneId']) ? $main1[$key]['telephoneId'] : 'null' }}, 38)" ><i class="fa fa-times"></i></button>
+                                                                    @endif                                                                    
                                                                 </div>
                                                             </td>
                                                             <td width="14%"> 
@@ -532,6 +621,12 @@
                                                                    <button class="btn">Upload</button>
                                                                     <input type="file" class="telephonefile"  name="telephonefile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="telephonefile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 38)">
                                                                 </div>
+                                                                @if($main1[$key]['telephoneFileOVD'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['telephoneFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>  
+                                                                @endif                                                                
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -634,6 +729,7 @@
                 chk_user_pan_karza_add_more: "{{ URL::route('chk_user_pan_karza_add_more') }}",
                 chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
                 get_user_pan_response_karza: "{{ URL::route('get_user_pan_response_karza') }}",
+                protmoter_document_delete: "{{ url::route('promoter_document_ovd') }}",
         };
       
       

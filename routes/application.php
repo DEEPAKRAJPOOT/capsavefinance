@@ -183,6 +183,11 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
 				'uses' => 'Application\ApplicationController@gstinForm'
 			]);
 		});
+
+		Route::post('promoter-document-ovd', [
+			'as' => 'promoter_document_ovd',
+			'uses' => 'Application\ApplicationController@promoterDocumentOVD'
+		]); 
 	});
 	
 	
