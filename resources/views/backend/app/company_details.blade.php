@@ -243,6 +243,17 @@
 						            @enderror
 								</div>
 							</div>
+                                                        <div class="col-md-4">
+                                                                <div class="form-group password-input">
+                                                                        <label for="txtPassword">Date of commencement of business
+                                                                                {{-- <span class="mandatory">*</span> --}}
+                                                                        </label>
+                                                                        <input type="text" name="busi_pan_comm_date" value="{{ ($business_info->busi_pan_comm_date) ? date('d/m/Y', strtotime($business_info->busi_pan_comm_date)) : '' }}" class="form-control datepicker-dis-fdate" tabindex="5" placeholder="Enter Date of commencement of business" autocomplete="off" readonly >
+                                                                        @error('busi_pan_comm_date')
+                                                                                <span class="text-danger error">{{ $message }}</span>
+                                                                        @enderror
+                                                                </div>
+                                                        </div>
 						</div>
 					</div>
 					<div class="form-sections">
