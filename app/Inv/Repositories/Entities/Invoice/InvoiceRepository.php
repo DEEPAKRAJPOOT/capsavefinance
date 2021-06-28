@@ -1248,5 +1248,27 @@ use CommonRepositoryTraits;
         }
          
     }      
+
+    public function updateInvoiceTenor($data, $invoiceId)
+    {
+        try
+        {
+           return InvoiceModel::updateInvoiceTenor($data, $invoiceId);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    } 
+
+    public function getInvoiceById($invoiceId)
+    {
+        try
+        {
+           return InvoiceModel::find($invoiceId);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }  
     
 }

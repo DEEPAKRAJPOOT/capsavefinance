@@ -68,6 +68,7 @@ class BizInvoice extends BaseModel
         'biz_id',
         'invoice_no',
         'tenor',
+        'is_tenor_mannual',
         'invoice_due_date',
         'invoice_date',
         'pay_calculation_on',
@@ -559,6 +560,17 @@ public static function saveBulkInvoice($arrInvoice)
         } else {
            return self::where('status_id',$status)->orderBy('invoice_id', 'DESC');
         }
-     }    
+    }
+
+    public static function updateInvoiceTenor($data, $invoiceId)
+    {
+
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        return  self::where(['invoice_id' => $invoiceId])->update($data);
+        
+    }    
     
 }

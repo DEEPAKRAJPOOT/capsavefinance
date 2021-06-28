@@ -385,10 +385,10 @@ class InvoiceController extends Controller {
             $interest= 0;
             $margin= 0;
 
-            $tenor = $this->calculateTenorDays($value['invoice']);
+            // $tenor = $this->calculateTenorDays($value['invoice']);
             $margin = $this->calMargin($value['invoice']['invoice_approve_amount'], $value['margin']);
             $fundedAmount = $value['invoice']['invoice_approve_amount'] - $margin;
-            $tInterest = $this->calInterest($fundedAmount, (float)$value['interest_rate']/100, $tenor);
+            $tInterest = $this->calInterest($fundedAmount, (float)$value['interest_rate'], $tenor);
 
             if($value['invoice']['program_offer']['payment_frequency'] == 1) {
                 $interest = $tInterest;
@@ -706,7 +706,7 @@ class InvoiceController extends Controller {
                         if ($invoice['program_offer']['benchmark_date'] == 1) {
                             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
                         }
-                        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
 
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -907,7 +907,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     if ($banchMarkDateFlag == 1) {
                         $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
                     }
-                    $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
+                    $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
 
                     $prgmWhere=[];
                     $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -1026,7 +1026,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         if ($banchMarkDateFlag == 1) {
                             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
                         }
-                        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
 
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -1035,7 +1035,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
-
                         $totalInterest += $interest;
                         $totalMargin += $margin;
                         $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
@@ -1136,7 +1135,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         if ($banchMarkDateFlag == 1) {
                             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $fundDate);
                         }
-                        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
 
                         if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
@@ -1894,6 +1893,28 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             return view('backend.invoice.online_disbursal_rollback')->with(['disbursal_batch_id' => $disbursalBatchId, 'fullCustName' => $fullCustName, 'invNoString' => $invNoString, 'tInv' => $tInv, 'tAmt' => $tAmt, 'tCust' => $tCust, 'appId' => $appData->app_code ?? '', 'res_text' => $idfc_res_text]);
             } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    public function saveInvoiceTenor(Request $request) {
+        $id = Auth::user()->user_id;
+        $data['tenor'] = $request->tenor_invoice_tenor;
+        $data['is_tenor_mannual'] = 1;
+        $invoiceId = $request->tenor_invoice_id;
+        $invoiceDetail = $this->invRepo->getInvoiceById($invoiceId);
+        $data['invoice_due_date'] = date('Y-m-d', strtotime(str_replace('/','-',$invoiceDetail->invoice_date). "+ $request->tenor_invoice_tenor Days"));
+        if (strtotime($data['invoice_due_date']) <= strtotime(date("Y-m-d"))) {
+            Session::flash('message', 'Invoice due date should be greater than current date.');
+            return back();
+        }
+        $res = $this->invRepo->updateInvoiceTenor($data, $invoiceId);
+        
+       if ($res) {
+            Session::flash('message', 'Invoice Tenor successfully Updated ');
+            return back();
+        } else {
+            Session::flash('message', 'Something wrong, Tenor is not Updated');
+            return back();
         }
     }
 }
