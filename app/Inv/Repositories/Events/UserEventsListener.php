@@ -1092,7 +1092,60 @@ class UserEventsListener extends BaseEvent
             });
         }
     }
-    
+     
+    /**
+     * Supply chain limit activation
+     * 
+     * @param Array $attributes
+     */
+    public function supplyChainInvDueAlert($attributes) {
+        $data = unserialize($attributes); 
+        $this->func_name = __FUNCTION__;
+        $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_DUE_ALERT");
+        if ($email_content) {
+            // dump('template_found');
+            $offerData = view('reports.invoice_due_alrt')->with('data', $data['data'])->render();
+            $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
+            dd($offerData);
+            Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $offerData],
+                function ($message) use ($data, $mail_subject, $offerData, $email_content) {
+                    if( env('SEND_MAIL_ACTIVE') == 1){
+                        $email = explode(',', env('SEND_MAIL'));
+                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+                        $message->cc(explode(',', env('SEND_MAIL_CC')));
+                    }else{
+                        $email = $data["email"];
+                        $bcc = array_filter(explode(',', $email_content->bcc));
+                        $cc = array_filter(explode(',', $email_content->cc));
+                        if (!empty($bcc)) {
+                            $message->bcc($bcc);
+                        }
+                        if (!empty($cc)) {
+                            $message->cc($cc);
+                        }
+
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $data["anchor_name"]);
+                $message->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_cc' => $cc ?? NULL,
+                    'email_bcc' => $bcc ?? NULL,
+                    'email_type' => $this->func_name,
+                    'anchor_name' => $data['anchor_name'],
+                    'subject' => $mail_subject,
+                    'body' => $offerData,
+                    // 'att_name' => $att_name ?? NULL,
+                    // 'attachment' => $data['attachment'] ?? NULL,
+                ];
+                // dump(['to'=>$email, 'subject'=>$data['subject'], 'cc'=>explode(',', env('SEND_MAIL_CC')), 'bcc'=>explode(',', env('SEND_MAIL_BCC'))]);
+                FinanceModel::logEmail($mailContent);
+            }); 
+        }
+    }
+
     /**
      * Event subscribers
      *
@@ -1252,6 +1305,11 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'user.LENEVO_DAILY_NEW_USER_CRON',
             'App\Inv\Repositories\Events\UserEventsListener@onLenevoDailyNewUser'
+        );
+
+        $events->listen(
+            'SUPPLY_CHAIN_INVOICE_DUE_ALERT', 
+            'App\Inv\Repositories\Events\UserEventsListener@supplyChainInvDueAlert'
         );
     }
 }

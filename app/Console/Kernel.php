@@ -22,6 +22,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\InterestAccrual::class,
         \App\Console\Commands\RenewApplications::class,
         \App\Console\Commands\LenovoNewUser::class,
+        \App\Console\Commands\MaturityInvoiceDueAlert::class,
     ];
 
     /**
@@ -54,7 +55,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('lms:dailyReport')->timezone(config('common.timezone'))->dailyAt('20:00');
         }
         $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt('23:00');
-        
+        $schedule->command('lms:maturityinvoicedueAlert')->timezone(config('common.timezone'))->dailyAt('21:30');
     }
     
     /**
