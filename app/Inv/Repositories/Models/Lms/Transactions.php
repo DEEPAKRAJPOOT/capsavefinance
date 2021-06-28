@@ -1048,7 +1048,7 @@ class Transactions extends BaseModel {
             $lastTrans = self::where('invoice_disbursed_id',$this->invoice_disbursed_id)
             ->whereDate('trans_date','<=',$this->trans_date)
             ->where('trans_id','<',$this->trans_id)
-            ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+            ->where('trans_type',$this->trans_type)
             ->whereNull('link_trans_id')
             ->whereNull('parent_trans_id')
             ->where('entry_type','0')
@@ -1059,26 +1059,30 @@ class Transactions extends BaseModel {
 
             if(!$lastTransToDate){
                 if($paymentFrequency == 1){
-                    if($disbursedDate == $transDate){
+                    if($transDate == $disbursedDate){
                         $fromDate = $disbursedDate;
                     }
                     elseif($transDate == $paymentDate){
                         $fromDate = date('Y-m-d', strtotime($paymentDate . "- 1 days"));
-                    }else{
+                    }elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
                         $fromDate = $this->trans_date;
+                    }elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                        $fromDate = $paymentDate;
                     }
                 }else{
                     $fromDate = $disbursedDate;
                 }
             }else{
                 if($paymentFrequency == 1){
-                    if($disbursedDate == $lastTransToDate){
+                    if($lastTransToDate == $disbursedDate){
                         $fromDate = $disbursedDate;
                     }
-                    elseif($lastTransToDate == $paymentDate){
+                    elseif($lastTransToDate == $paymentDate && $this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
                         $fromDate = date('Y-m-d', strtotime($paymentDate . "- 1 days"));
-                    }else{
+                    }elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
                         $fromDate = $lastTransToDate;
+                    }elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                        $fromDate = date('Y-m-d', strtotime($lastTransToDate . "+ 1 days"));
                     }
                 }else{
                     $fromDate = date('Y-m-d', strtotime($lastTransToDate . "+ 1 days"));
