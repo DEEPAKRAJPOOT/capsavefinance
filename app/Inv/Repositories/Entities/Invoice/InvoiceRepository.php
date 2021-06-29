@@ -1312,5 +1312,46 @@ use CommonRepositoryTraits;
 
         return $result;
     }
+      
+    public function getMaturityOverdueData($user_id = null){
+        $currentDate =  Carbon::now()->format('Y-m-d');
+        $nextDate =  Carbon::now()->addDays(config('lms.INVOICE_MATURITY_ALERT_DAYS'))->format('Y-m-d');
+        $invoiceData = InvoiceDisbursed::whereDate('payment_due_date','=',$nextDate)
+        ->whereDate('payment_due_date','>=', $currentDate)
+        ->whereIn('status_id',[config('lms.STATUS_ID.DISBURSED'),
+        config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED')/*,
+        config('lms.STATUS_ID.PAYMENT_SETTLED')*/]);
+
+        if($user_id){
+            $invoiceData = $invoiceData->whereHas('invoice', function($query) use($user_id){
+                $query->where('supplier_id',$user_id);
+            });
+        }
+        $invoiceData = $invoiceData->get();
+
+        $result = [];
+        foreach($invoiceData as $inv){ 
+            $balance = ($inv->disburse_amt - $inv->invoice->repayment_amt );
+            if ($balance <= 0) {
+              continue;
+            }
+            $result[] = [
+                'cust_id'=> $inv->customer_id,
+                'sup_code'=> $inv->invoice->supplierCode,
+                'batch_no'=> $inv->disbursal->disbursal_batch->batch_id,
+                'batch_date'=> Carbon::parse($inv->disbursal->disbursal_batch->created_at)->format('d/m/Y'),
+                'bill_type'=> $inv->invoice->billType,
+                'inv_no'=> $inv->invoice->billNo,
+                'bill_date'=> Carbon::parse($inv->invoice->invoice_date)->format('d/m/Y'),
+                'due_date'=> Carbon::parse($inv->payment_due_date)->format('d/m/Y'),
+                'bill_amt'=> number_format($inv->invoice->invoice_amount),
+                'approve_amt'=> number_format($inv->invoice->invoice_approve_amount),
+                'discounted_amt'=> number_format($inv->invoice->invoice_approve_amount - round(($inv->invoice->invoice_approve_amount*$inv->margin)/100,2)),
+                'balance'=> $balance,
+            ];
+        }
+
+        return $result;
+    }
          
 }

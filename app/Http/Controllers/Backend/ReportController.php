@@ -1030,7 +1030,7 @@ class ReportController extends Controller
 			$userList = LmsUser::get();
 			$invoiceFound = false;
 			foreach($userList as $key=>$user){
-				$data = $this->invRepo->getMaturityData($user->user_id);
+				$data = $this->invRepo->getMaturityOverdueData($user->user_id);
 				$userNameList[$key] = $user->user->f_name.' '.$user->user->l_name;
 				if(!empty($data) && $user->user->email){
 					$invoiceFound = true;
