@@ -1315,9 +1315,8 @@ use CommonRepositoryTraits;
       
     public function getMaturityOverdueData($user_id = null){
         $currentDate =  Carbon::now()->format('Y-m-d');
-        $nextDate =  Carbon::now()->addDays(config('lms.INVOICE_MATURITY_ALERT_DAYS'))->format('Y-m-d');
-        $invoiceData = InvoiceDisbursed::whereDate('payment_due_date','=',$nextDate)
-        ->whereDate('payment_due_date','>=', $currentDate)
+        // $nextDate =  Carbon::now()->addDays(config('lms.INVOICE_MATURITY_ALERT_DAYS'))->format('Y-m-d');
+        $invoiceData = InvoiceDisbursed::whereDate('payment_due_date','<', $currentDate)
         ->whereIn('status_id',[config('lms.STATUS_ID.DISBURSED'),
         config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED')/*,
         config('lms.STATUS_ID.PAYMENT_SETTLED')*/]);
