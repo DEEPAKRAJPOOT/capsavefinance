@@ -17,27 +17,14 @@
               Dear Sir/Ma’am,
             </td>
           </tr>
-          <?php 
-              $amount = 0;
-                foreach($data as $val) {
-                    $amount += $val['balance']; 
-                    $dueDate = $val['due_date']; 
-                }
-              ?>
           <tr>
             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              This is to inform you that the below invoices will mature after 7 days on date - {{ $dueDate }}.
+              This is to inform you that the below invoices are in overdue from .
             </td>
           </tr>
           <tr>
             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
               <b>Total Number of Invoices</b> : <?php $countInv = count($data) ?> {{ $countInv }}
-            </td>
-          </tr>
-          <tr>
-            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:5px;padding-bottom:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              <b>Total Amount Due</b> : 
-               {{ number_format($amount) }}
             </td>
           </tr>
           <tr>
