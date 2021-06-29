@@ -17,25 +17,27 @@
               Dear Sir/Ma’am,
             </td>
           </tr>
+          <?php 
+              $amount = 0;
+                foreach($data as $val) {
+                    $amount += $val['balance']; 
+                    $dueDate = $val['due_date']; 
+                }
+              ?>
           <tr>
-            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:5px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              This is to inform you that the below invoices will mature within 7 days:
+            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
+              This is to inform you that the below invoices will mature after 7 days on date - {{ $dueDate }}.
             </td>
           </tr>
           <tr>
-            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:5px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
+            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
               <b>Total Number of Invoices</b> : <?php $countInv = count($data) ?> {{ $countInv }}
             </td>
           </tr>
           <tr>
-            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:5px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
+            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:5px;padding-bottom:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
               <b>Total Amount Due</b> : 
-              <?php 
-              $amount = 0;
-                foreach($data as $val) {
-                    $amount += $val['balance']; 
-                }
-              ?> {{ $amount }}
+               {{ number_format($amount) }}
             </td>
           </tr>
           <tr>
@@ -50,10 +52,6 @@
                     </td>
                     <td
                       style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
-                      Supplier Code
-                    </td>
-                    <td
-                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
                       Batch No 
                     </td>
                     <td
@@ -62,11 +60,7 @@
                     </td>
                     <td
                       style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
-                      Bill Type 
-                    </td>
-                    <td
-                      style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
-                      Invoice No 
+                      Bill No 
                     </td>
                     <td
                       style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
@@ -90,7 +84,7 @@
                     </td>
                     <td
                       style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;color: #262626;">
-                      Balance
+                      Amount Due
                     </td>
                     
 
@@ -102,10 +96,6 @@
                         {{ $val['cust_id'] }}
                       </td>
 
-                      <td
-                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{ $val['sup_code'] }}
-                      </td>
 
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
@@ -115,11 +105,6 @@
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
                         {{ $val['batch_date'] }}
-                      </td>
-
-                      <td
-                        style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{ $val['bill_type'] }}
                       </td>
 
                       <td
@@ -148,7 +133,7 @@
                       </td>
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{ $val['balance'] }}
+                        {{ number_format($val['balance']) }}
                       </td>
 
                     </tr>
@@ -160,14 +145,14 @@
           </tr
           <tr>
             <td
-              style="box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:30px;font-weight: 600; font-size: 0.917rem !important; font-family: Calibri !important; line-height: 21px; padding-bottom:15px;color: #111;">
+              style="box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:30px;font-weight: 600; font-size: 0.917rem !important; font-family: Calibri !important; line-height: 21px; padding-bottom:5px;color: #111;">
               Warm Regards,
             </td>
           </tr>
           <tr>
             <td
               style="box-sizing: border-box; font-size: 0.917rem !important; text-align: left;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; line-height: 21px; padding-bottom:5px;color: #111;">
-              Team Capsaave
+              Team Capsave
             </td>
           </tr>
 
