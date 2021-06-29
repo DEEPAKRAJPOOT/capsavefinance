@@ -1317,14 +1317,14 @@ use CommonRepositoryTraits;
     public function getMaturityOverdueData($user_id = null){
         $currentDate =  Carbon::now()->format('Y-m-d');
         $invoiceData = InvoiceDisbursed::whereRaw('ADDDATE(payment_due_Date, grace_period) <= ?', [$currentDate])
-        ->where('invoice_disbursed_id', 310)
+        // ->where('invoice_disbursed_id', 310)
         ->whereIn('status_id',[config('lms.STATUS_ID.DISBURSED'),
         config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED')/*,
         config('lms.STATUS_ID.PAYMENT_SETTLED')*/]);
 
         if($user_id){
             $invoiceData = $invoiceData->whereHas('invoice', function($query) use($user_id){
-                $query->where('supplier_id',200);
+                $query->where('supplier_id',$user_id);
             });
         }
         $invoiceData = $invoiceData->get();
