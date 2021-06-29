@@ -1106,7 +1106,6 @@ class UserEventsListener extends BaseEvent
             // dump('template_found');
             $offerData = view('reports.invoice_due_alrt')->with('data', $data['data'])->render();
             $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
-            dd($offerData);
             Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $offerData],
                 function ($message) use ($data, $mail_subject, $offerData, $email_content) {
                     if( env('SEND_MAIL_ACTIVE') == 1){
@@ -1126,7 +1125,7 @@ class UserEventsListener extends BaseEvent
 
                     }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $data["anchor_name"]);
+                $message->to($email, $data["user_name"]);
                 $message->subject($mail_subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
@@ -1134,7 +1133,7 @@ class UserEventsListener extends BaseEvent
                     'email_cc' => $cc ?? NULL,
                     'email_bcc' => $bcc ?? NULL,
                     'email_type' => $this->func_name,
-                    'anchor_name' => $data['anchor_name'],
+                    'user_name' => $data['user_name'],
                     'subject' => $mail_subject,
                     'body' => $offerData,
                     // 'att_name' => $att_name ?? NULL,
