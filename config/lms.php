@@ -258,4 +258,5 @@ return [
         'PAYMENT_SETTLED'=>15,
         'EXCEPTION_CASE' => 28
     ],
+    'INVOICE_MATURITY_ALERT_DAYS' => 7,
 ];
