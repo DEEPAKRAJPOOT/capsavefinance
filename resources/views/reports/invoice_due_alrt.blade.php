@@ -26,7 +26,7 @@
               ?>
           <tr>
             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              This is to inform you that the below invoices will mature after 7 days on date: {{ $dueDate }}
+              This is to inform you that the below invoices will mature after 7 days on date - {{ $dueDate }}.
             </td>
           </tr>
           <tr>
@@ -35,9 +35,9 @@
             </td>
           </tr>
           <tr>
-            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:5px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
+            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:5px;padding-bottom:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
               <b>Total Amount Due</b> : 
-               {{ $amount }}
+               {{ number_format($amount) }}
             </td>
           </tr>
           <tr>
@@ -133,7 +133,7 @@
                       </td>
                       <td
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                        {{ $val['balance'] }}
+                        {{ number_format($val['balance']) }}
                       </td>
 
                     </tr>
