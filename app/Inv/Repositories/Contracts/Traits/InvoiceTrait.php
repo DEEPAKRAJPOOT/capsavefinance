@@ -498,19 +498,24 @@ trait InvoiceTrait
             if($inv_details['status_id']==7)  
            { 
                 $status_id=7; 
-                $limit_exceed='';  
+                 
                 if($isOverDue->is_overdue==1)
                 {
+                    $limit_exceed=''; 
                     $status_id=28; 
                     $limit_exceed='Overdue';
+                    InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status_id);
+                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status_id]);
                 } 
                 if($dueDateGreaterCurrentdate)
                 {
+                    $limit_exceed=''; 
                     $status_id=28; 
-                    $limit_exceed='Customer limit has been expired.'; 
+                    $limit_exceed='Customer limit has been expired.';
+                    InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status_id);
+                    return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status_id]);
                 }
-                  InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status_id); 
-                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status_id]);
+                  
             }
              if($inv_details['status_id']==28)
            {

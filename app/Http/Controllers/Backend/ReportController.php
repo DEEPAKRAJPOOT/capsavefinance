@@ -574,6 +574,8 @@ class ReportController extends Controller
             $anchorList->where('anchor_id',$anchor_id);
         }
         $anchorList = $anchorList->get();
+
+
         
         $sendMail = false;
         $data = $this->reportsRepo->getMaturityReport([],$sendMail);
