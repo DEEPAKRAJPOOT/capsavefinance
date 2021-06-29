@@ -295,17 +295,4 @@ class InvoiceDisbursed extends BaseModel {
 
 		}
 	 }  
-	 
-	public function duetransactions()
-	{
-		return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions','invoice_disbursed_id','invoice_disbursed_id')->where(['entry_type' =>0])->whereNull('parent_trans_id')->whereNull('payment_id')->whereIn('trans_type', [16,9,33])
-			->filter(function($item) {
-	            return $item->outstanding > 0;
-	        });
-	}
-
-	public function duerunningtransactions()
-	{
-		return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions','invoice_disbursed_id','invoice_disbursed_id')->where(['entry_type' =>0])->whereNull('parent_trans_id')->whereNull('payment_id')->whereIn('trans_type', [16,9,33]);
-	} 
 }

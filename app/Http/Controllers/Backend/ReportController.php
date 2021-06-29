@@ -1042,7 +1042,7 @@ class ReportController extends Controller
 						'body' => 'body',
 						'data' => $data,
 					);
-					\Event::dispatch("SUPPLY_CHAIN_INVOICE_DUE_ALERT", serialize($emailData));
+					\Event::dispatch("SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT", serialize($emailData));
 				}
 			}
 			if (!$invoiceFound) {

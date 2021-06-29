@@ -940,5 +940,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             });
         });
     });
+        Route::get('/maturityOverdueAlertReport', [
+            'as' => 'maturityOverdueAlertReport',
+            'uses' => 'Backend\ReportController@maturityOverdueAlertReport'
+        ]);
     //end of application
 });
