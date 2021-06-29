@@ -1016,4 +1016,42 @@ class ReportController extends Controller
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
 		}
 	}
+
+	/**
+	 * Alert to invoice overdue alert daily
+	 * Email alert
+	 */
+	public function maturityOverdueAlertReport() 
+	{
+		try {
+			$anchor_id = null;
+			$anchorNameList = array();
+			// $anchorList = Anchor::where('is_active','1')->get();
+			$userList = LmsUser::get();
+			$invoiceFound = false;
+			foreach($userList as $key=>$user){
+				$data = $this->invRepo->getMaturityData($user->user_id);
+				$userNameList[$key] = $user->user->f_name.' '.$user->user->l_name;
+				if(!empty($data) && $user->user->email){
+					$invoiceFound = true;
+					$emailData = array(
+						'user_name' => $user->user->f_name.' '.$user->user->l_name,
+						'email' => $user->user->email,
+						'name' => 'Capsave Finance PVT LTD.',
+						'subject' => 'subject',
+						'body' => 'body',
+						'data' => $data,
+					);
+					\Event::dispatch("SUPPLY_CHAIN_INVOICE_DUE_ALERT", serialize($emailData));
+				}
+			}
+			if (!$invoiceFound) {
+			  return printf('No coming matured Invoice found.' .PHP_EOL);
+			}
+			return printf(implode(PHP_EOL . '<br />', $anchorNameList));
+			
+		} catch (Exception $ex) {
+			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+		}
+	}
 }
