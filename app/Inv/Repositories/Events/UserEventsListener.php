@@ -1364,5 +1364,7 @@ class UserEventsListener extends BaseEvent
 
         $events->listen(
             'SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT', 
+            'App\Inv\Repositories\Events\UserEventsListener@supplyChainInvOverDueAlert'
+        );
     }
 }

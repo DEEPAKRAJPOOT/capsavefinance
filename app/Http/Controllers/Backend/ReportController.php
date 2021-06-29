@@ -1031,6 +1031,7 @@ class ReportController extends Controller
 			$invoiceFound = false;
 			foreach($userList as $key=>$user){
 				$data = $this->invRepo->getMaturityOverdueData($user->user_id);
+				// return view('reports.invoice_overdue_alrt')->with('data', $data);
 				$userNameList[$key] = $user->user->f_name.' '.$user->user->l_name;
 				if(!empty($data) && $user->user->email){
 					$invoiceFound = true;

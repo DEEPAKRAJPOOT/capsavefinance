@@ -1324,7 +1324,7 @@ use CommonRepositoryTraits;
 
         if($user_id){
             $invoiceData = $invoiceData->whereHas('invoice', function($query) use($user_id){
-                $query->where('supplier_id',$user_id);
+                $query->where('supplier_id', $user_id);
             });
         }
         $invoiceData = $invoiceData->get();
