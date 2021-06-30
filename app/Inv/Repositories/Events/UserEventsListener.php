@@ -800,7 +800,7 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name'])],
                 $email_content->message
             );
-            Mail::send('email', ['varContent' => $mail_body,
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content, $mail_body) {
                     if( env('SEND_MAIL_ACTIVE') == 1){
