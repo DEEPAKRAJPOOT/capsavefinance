@@ -719,9 +719,11 @@ class UserEventsListener extends BaseEvent
            }
            $mailObj->send(new ReviewerSummary($this->mstRepo, $user));
 
+           $cc = array_filter(explode(',', $email_cc));
            $mailContent = [
             'email_from' => config('common.FRONTEND_FROM_EMAIL'),
             'email_to' => $email,
+            'email_cc' => $cc ?? NULL,
             'email_type' => $this->func_name,
             'name' => "Move to Approver",
             'subject' => "Application Approver Mail",
