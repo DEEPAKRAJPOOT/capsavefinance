@@ -1104,7 +1104,9 @@ class UserEventsListener extends BaseEvent
         $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_DUE_ALERT");
         if ($email_content) {
             // dump('template_found');
-            $offerData = view('reports.invoice_due_alrt')->with('data', $data['data'])->render();
+            $userData['user_name'] = $data['user_name'];
+            $userData['email'] = $data['email'];
+            $offerData = view('reports.invoice_due_alrt')->with(['data' => $data['data'], 'userData' => $userData])->render();
             $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
             Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $offerData],
                 function ($message) use ($data, $mail_subject, $offerData, $email_content) {
