@@ -125,6 +125,8 @@
                     </tr>
                     </tbody>
                     @if(isset($val['transactions']))
+                      <tr >
+                        <td colspan="10">
                           <table border="0" cellpadding="0" cellspacing="0"
                             style="width: 100%;border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">
                             <tbody>
@@ -194,6 +196,8 @@
 
                             </tbody>
                           </table>
+                          </td>
+                      </tr>
                       @endif
                   @endforeach
 
