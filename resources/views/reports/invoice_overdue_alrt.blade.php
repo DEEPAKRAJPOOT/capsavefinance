@@ -124,7 +124,7 @@
                       </td>
                     </tr>
                     </tbody>
-                      <tr>
+                    @if(isset($val['transactions']))
                           <table border="0" cellpadding="0" cellspacing="0"
                             style="width: 100%;border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">
                             <tbody>
@@ -156,7 +156,7 @@
                                 
 
                               </tr>
-                              @if(isset($val['transactions']))
+                              
                               @foreach($val['transactions'] as $key1 => $val1)
                                 <tr>
                                   <td
@@ -191,11 +191,10 @@
 
                                 </tr>
                               @endforeach
-                              @endif
 
                             </tbody>
                           </table>
-                      </tr>
+                      @endif
                   @endforeach
 
                 
