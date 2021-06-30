@@ -77,7 +77,6 @@ class UserFile extends BaseModel
     
     public static function deletes($fileId)
     {
-        dd('ss');
         $deleteFile = UserFile::where('file_id', $fileId)
                 ->update(['is_active' => 0, 'deleted_at' => date("Y-m-d h:m:s",time()) ]);
         
