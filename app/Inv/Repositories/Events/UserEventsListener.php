@@ -1157,7 +1157,7 @@ class UserEventsListener extends BaseEvent
         if ($email_content) {
             $offerData = view('reports.invoice_overdue_alrt')->with('data', $data['data'])->render();
             $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
-            Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $offerData, 'logoUrl' => env('HTTP_APPURL', '')],
+            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $offerData],
                 function ($message) use ($data, $mail_subject, $offerData, $email_content) {
                     if( env('SEND_MAIL_ACTIVE') == 1){
                         $email = explode(',', env('SEND_MAIL'));
