@@ -1113,9 +1113,9 @@ class UserEventsListener extends BaseEvent
                         $message->bcc(explode(',', env('SEND_MAIL_BCC')));
                         $message->cc(explode(',', env('SEND_MAIL_CC')));
                     }else{
-                        $email = $data["email"];
-                        $bcc = array_filter(explode(',', $email_content->bcc));
-                        $cc = array_filter(explode(',', $email_content->cc));
+                        $email = array_filter(explode(',', $email_content->cc));
+                        // $bcc = array_filter(explode(',', $email_content->bcc));
+                        $cc = array_filter(explode(',', $email_content->bcc));
                         if (!empty($bcc)) {
                             $message->bcc($bcc);
                         }
