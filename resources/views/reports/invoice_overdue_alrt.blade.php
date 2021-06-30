@@ -156,6 +156,7 @@
                                 
 
                               </tr>
+                              @if(isset($val['transactions']))
                               @foreach($val['transactions'] as $key1 => $val1)
                                 <tr>
                                   <td
@@ -190,6 +191,7 @@
 
                                 </tr>
                               @endforeach
+                              @endif
 
                             </tbody>
                           </table>
