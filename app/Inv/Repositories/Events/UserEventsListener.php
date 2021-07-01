@@ -718,8 +718,8 @@ class UserEventsListener extends BaseEvent
                $mailObj->cc($email_cc);
            }
            $mailObj->send(new ReviewerSummary($this->mstRepo, $user));
-
-           $cc = array_filter(explode(',', $email_cc));
+           $ccMails = is_array($email_cc) ? $email_cc : explode(',', $email_cc);
+           $cc = array_filter($ccMails);
            $mailContent = [
             'email_from' => config('common.FRONTEND_FROM_EMAIL'),
             'email_to' => $email,
