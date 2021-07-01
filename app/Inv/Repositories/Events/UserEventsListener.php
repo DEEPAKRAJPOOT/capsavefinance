@@ -1113,13 +1113,14 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $offerData],
                 function ($message) use ($data, $mail_subject, $offerData, $email_content) {
                     if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
+                        $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO', ''));
+                        $message->bcc(explode(',', env('CRONINVOICE_SEND_MAIL_BCC', '')));
+                        $message->cc(explode(',', env('CRONINVOICE_SEND_MAIL_CC', '')));
                     }else{
-                        $email = array_filter(explode(',', $email_content->cc));
-                        // $bcc = array_filter(explode(',', $email_content->bcc));
-                        $cc = array_filter(explode(',', $email_content->bcc));
+                        $email = $data["email"];
+                        // $email = array_filter(explode(',', $email_content->cc));
+                        $cc = array_filter(explode(',', $email_content->cc));
+                        $bcc = array_filter(explode(',', $email_content->bcc));
                         if (!empty($bcc)) {
                             $message->bcc($bcc);
                         }
