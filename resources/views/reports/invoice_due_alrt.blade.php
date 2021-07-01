@@ -14,6 +14,7 @@
           <tr>
             <td
               style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:20px; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
+              {{ $userData['user_name'].' - '.$userData['email'] }} <br>
               Dear Sir/Ma’am,
             </td>
           </tr>

@@ -719,9 +719,11 @@ class UserEventsListener extends BaseEvent
            }
            $mailObj->send(new ReviewerSummary($this->mstRepo, $user));
 
+           $cc = array_filter(explode(',', $email_cc));
            $mailContent = [
             'email_from' => config('common.FRONTEND_FROM_EMAIL'),
             'email_to' => $email,
+            'email_cc' => $cc ?? NULL,
             'email_type' => $this->func_name,
             'name' => "Move to Approver",
             'subject' => "Application Approver Mail",
@@ -800,7 +802,7 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name'])],
                 $email_content->message
             );
-            Mail::send('email', ['varContent' => $mail_body,
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content, $mail_body) {
                     if( env('SEND_MAIL_ACTIVE') == 1){
@@ -1104,18 +1106,20 @@ class UserEventsListener extends BaseEvent
         $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_DUE_ALERT");
         if ($email_content) {
             // dump('template_found');
-            $offerData = view('reports.invoice_due_alrt')->with('data', $data['data'])->render();
+            $userData['user_name'] = $data['user_name'];
+            $userData['email'] = $data['email'];
+            $offerData = view('reports.invoice_due_alrt')->with(['data' => $data['data'], 'userData' => $userData])->render();
             $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
-            Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $offerData, 'logoUrl' => env('HTTP_APPURL', '')],
+            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $offerData],
                 function ($message) use ($data, $mail_subject, $offerData, $email_content) {
                     if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
+                        $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+                        $message->bcc(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+                        $message->cc(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
                     }else{
                         $email = $data["email"];
-                        $bcc = array_filter(explode(',', $email_content->bcc));
                         $cc = array_filter(explode(',', $email_content->cc));
+                        $bcc = array_filter(explode(',', $email_content->bcc));
                         if (!empty($bcc)) {
                             $message->bcc($bcc);
                         }
@@ -1153,16 +1157,18 @@ class UserEventsListener extends BaseEvent
     public function supplyChainInvOverDueAlert($attributes) {
         $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
+        $userData['user_name'] = $data['user_name'];
+        $userData['email'] = $data['email'];
         $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT");
         if ($email_content) {
-            $offerData = view('reports.invoice_overdue_alrt')->with('data', $data['data'])->render();
+            $offerData = view('reports.invoice_overdue_alrt')->with(['data' => $data['data'], 'userData' => $userData])->render();
             $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
             Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $offerData],
                 function ($message) use ($data, $mail_subject, $offerData, $email_content) {
                     if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
+                        $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+                        $message->bcc(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+                        $message->cc(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
                     }else{
                         $email = $data["email"];
                         $bcc = array_filter(explode(',', $email_content->bcc));
