@@ -834,4 +834,14 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function saveBank($attributes, $id = null){
         return Bank::saveBank($attributes, $id);
     }
+
+    // Check Docuement Exists or not
+    public function checkDocumentExist($where){
+        return Documents::checkDocumentExist($where);
+    }
+
+    // Check Docuement Exists in case of Edit
+    public function checkDocumentExistEditCase($where, $document_id){
+        return Documents::checkDocumentExistEditCase($where, $document_id);
+    }
 }

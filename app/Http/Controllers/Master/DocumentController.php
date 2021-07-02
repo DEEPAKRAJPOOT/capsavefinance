@@ -62,10 +62,29 @@ class DocumentController extends Controller {
                 $document_data = $this->masterRepo->findDocumentById($document_id);
                 if (!empty($document_data)) {
                     $arrDocumentsData['updated_by'] = Auth::user()->user_id;
+                    $where = [
+                        'doc_name' => $arrDocumentsData['doc_name'],
+                    ];
+                    $id = [
+                        'id' => $document_id
+                    ];
+                    $checkDocName = $this->masterRepo->checkDocumentExistEditCase($where, $id); 
+                    if($checkDocName > 0) {
+                        Session::flash('error', 'Document already present with this name!');
+                        return redirect()->route('get_documents_list');
+                    }                    
                     $status = $this->masterRepo->updateDocuments($arrDocumentsData, $document_id);
                     $result = $this->masterRepo->updateProductDocuments($productsIds, $document_id);
                 }
             }else{
+                $where = [
+                    'doc_name' => $arrDocumentsData['doc_name'],
+                ];
+                $checkDocName = $this->masterRepo->checkDocumentExist($where); 
+                if($checkDocName > 0) {
+                    Session::flash('error', 'Document already present with this name!');
+                    return redirect()->route('get_documents_list');
+                }                
                $arrDocumentsData['created_by'] = Auth::user()->user_id;
                $status = $this->masterRepo->saveDocuments($arrDocumentsData); 
                $result = $this->masterRepo->updateProductDocuments($productsIds, $status->id);

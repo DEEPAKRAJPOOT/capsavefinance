@@ -85,6 +85,7 @@
 			rules: {
 				'doc_name' : {
 					required : true,
+					remote: '/check_document_name_exist_ajax'
 				},
 				'is_rcu' : {
 					required : true,
@@ -99,6 +100,7 @@
 			messages: {
 				'doc_name': {
 					required: "Please enter document name.",
+					remote: "Document already present",
 				},
 				'is_rcu': {
 					required: "Please enter document",

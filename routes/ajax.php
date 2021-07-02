@@ -1282,4 +1282,6 @@ Route::group(
         'uses' => 'AjaxController@chkAnchorPhyInvReq'
     ]);
     
+    Route::match(['get', 'post'], '/check_document_name_exist_ajax', 'AjaxController@checkDocumentNametAjax');
+    Route::match(['get', 'post'], '/check_document_name_exist_edit_ajax', 'AjaxController@checkDocumentNameEdittAjax');
 });

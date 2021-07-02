@@ -5067,4 +5067,33 @@ if ($err) {
             return $respose = ['status'=>'0'];
         }
     }
+
+    public function checkDocumentNametAjax(Request $request) {
+        $data = $request->all();
+        $where = [
+            'doc_name' => $data['doc_name'],
+        ];
+        $checkDocName = $this->masterRepo->checkDocumentExist($where); 
+        if($checkDocName > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }      
+    }
+
+    public function checkDocumentNameEdittAjax(Request $request) {
+        $data = $request->all();
+        $where = [
+            'doc_name' => $data['doc_name'],
+        ];
+        $id = [
+            'id' => $data['id']
+        ];
+        $checkDocName = $this->masterRepo->checkDocumentExistEditCase($where, $id); 
+        if($checkDocName > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }      
+    }
 }
