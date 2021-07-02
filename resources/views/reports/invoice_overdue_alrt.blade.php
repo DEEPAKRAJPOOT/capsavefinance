@@ -15,12 +15,12 @@
             <td
               style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:20px; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
               {{ $userData['user_name'].' - '.$userData['email'] }} <br>
-              Dear Sir/Ma’am,
+              Dear Sir/Madam,
             </td>
           </tr>
           <tr>
             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              This is to inform you that the below invoices are in overdue.
+              This is to inform you that the below invoices are in overdue towards the Supply Chain Facility.
             </td>
           </tr>
           {{--
@@ -221,7 +221,7 @@
             </td>
           </tr>
 
-          
+
           <tr>
             <td
               style="box-sizing: border-box; font-size: 0.917rem !important; text-align: left;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; line-height: 21px; padding-top:25px;padding-bottom:5px;color: #111;">
