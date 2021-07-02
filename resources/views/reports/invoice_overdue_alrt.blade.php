@@ -20,14 +20,16 @@
           </tr>
           <tr>
             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              This is to inform you that the below invoices are in overdue from .
+              This is to inform you that the below invoices are in overdue.
             </td>
           </tr>
+          {{--
           <tr>
             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
               <b>Total Number of Invoices</b> : <?php $countInv = count($data) ?> {{ $countInv }}
             </td>
           </tr>
+          --}}
           <tr>
             <td>
               <table border="0" cellpadding="0" cellspacing="0"
@@ -219,6 +221,13 @@
             </td>
           </tr>
 
+          
+          <tr>
+            <td
+              style="box-sizing: border-box; font-size: 0.917rem !important; text-align: left;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; line-height: 21px; padding-top:25px;padding-bottom:5px;color: #111;">
+              This is a computer generated statement
+            </td>
+          </tr>
 
 
         </table>

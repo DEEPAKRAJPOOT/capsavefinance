@@ -26,19 +26,8 @@
                 }
               ?>
           <tr>
-            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              This is to inform you that the below invoices will mature after 7 days on date - {{ $dueDate }}.
-            </td>
-          </tr>
-          <tr>
-            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              <b>Total Number of Invoices</b> : <?php $countInv = count($data) ?> {{ $countInv }}
-            </td>
-          </tr>
-          <tr>
-            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:5px;padding-bottom:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              <b>Total Amount Due</b> : 
-               {{ number_format($amount) }}
+            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;padding-bottom:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
+              Rs {{ number_format($amount) }} is due on date("d-M-Y", strtotime($dueDate)) towards the Supply Chain Facility against following Invoices.
             </td>
           </tr>
           <tr>
@@ -154,6 +143,13 @@
             <td
               style="box-sizing: border-box; font-size: 0.917rem !important; text-align: left;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; line-height: 21px; padding-bottom:5px;color: #111;">
               Team Capsave
+            </td>
+          </tr>
+
+          <tr>
+            <td
+              style="box-sizing: border-box; font-size: 0.917rem !important; text-align: left;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; line-height: 21px; padding-top:25px;padding-bottom:5px;color: #111;">
+              This is a computer generated statement
             </td>
           </tr>
 
