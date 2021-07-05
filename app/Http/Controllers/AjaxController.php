@@ -5126,5 +5126,19 @@ if ($err) {
         } else {
             return 'true';
         }      
+    }
+    
+    // Check Unique Industry
+    public function checkUniqueIndustries(Request $request) 
+    {        
+        $IndustryName = $request->get('name');
+        $industryId = $request->has('industry_id') ? $request->get('industry_id'): null ;
+        $result = $this->masterRepo->checkIndustryName($IndustryName, $industryId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
     }    
 }

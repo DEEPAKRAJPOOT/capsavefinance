@@ -31,11 +31,39 @@
 @endsection
 @section('jscript')
 <script type="text/javascript">
+
+    var messages={
+        unique_industry_url:"{{ route('check_unique_industry_url') }}",
+        token: "{{ csrf_token() }}"
+    }
+
     $(document).ready(function () {
+        $.validator.addMethod("uniqueIndustry",
+            function(value, element, params) {
+                var result = true;
+                console.log(params);
+                var data = {name : value, _token: messages.token};
+                if (params.chrg_id) {
+                    data['chrg_id'] = params.chrg_id;
+                }
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.unique_industry_url, // script to validate in server side
+                    data: data,
+                    success: function(data) {                        
+                        result = (data.status == 1) ? false : true;
+                    }
+                });                
+                return result;                
+            },'Industry is already exists'
+        );
+
         $('#industriesForm').validate({ // initialize the plugin
             rules: {
                 'name' : {
                     required : true,
+                    uniqueIndustry: true
                 },
                 'is_active' : {
                     required : true,

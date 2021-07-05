@@ -9,7 +9,7 @@
         <div class="form-group col-md-12">
           <label for="chrg_name">Industry Name</label>
           <input type="text" class="form-control" id="name" name="name" value="{{$industries_data->name}}" placeholder="Enter Industry Name" maxlength="50">
-          <input type="hidden" class="form-control" name="id" maxlength="5" value="{{$industries_data->id}}">
+          <input type="hidden" class="form-control" name="id" id="id" maxlength="5" value="{{$industries_data->id}}">
         </div>
       </div>
       <div class="row">
@@ -32,11 +32,43 @@
 @endsection
 @section('jscript')
 <script type="text/javascript">
+
+    var messages={
+        unique_industry_url:"{{ route('check_unique_industry_url') }}",
+        token: "{{ csrf_token() }}"
+    }
+
     $(document).ready(function () {
+
+        $.validator.addMethod("uniqueIndustry",
+            function(value, element, params) {
+                var result = true;
+                console.log(params);
+                var data = {name: value, _token: messages.token};
+                if (params.industry_id) {
+                    data['industry_id'] = params.industry_id;
+                }
+                console.log(params)
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.unique_industry_url, // script to validate in server side
+                    data: data,
+                    success: function(data) {                        
+                        result = (data.status == 1) ? false : true;
+                    }
+                });                
+                return result;                
+            },'Industry is already exists'
+        );
+
         $('#industriesForm').validate({ // initialize the plugin
             rules: {
                 'name' : {
                     required : true,
+                    uniqueIndustry: {
+                        industry_id: $("#id").val()
+                    }
                 },
                 'is_active' : {
                     required : true,

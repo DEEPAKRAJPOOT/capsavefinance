@@ -1281,6 +1281,11 @@ Route::group(
         'as' => 'chk_anchor_phy_inv_req',
         'uses' => 'AjaxController@chkAnchorPhyInvReq'
     ]);
+
+    Route::post('unique-industry-url', [
+        'as' => 'check_unique_industry_url',
+        'uses' => 'AjaxController@checkUniqueIndustries'
+    ]); 
     
     Route::match(['get', 'post'], '/check_document_name_exist_ajax', 'AjaxController@checkDocumentNametAjax');
     Route::match(['get', 'post'], '/check_document_name_exist_edit_ajax', 'AjaxController@checkDocumentNameEdittAjax');
