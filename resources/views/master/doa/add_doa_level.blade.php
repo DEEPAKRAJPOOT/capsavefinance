@@ -53,6 +53,7 @@
                 'id' => 'level_name'
                 ])
                 !!}            
+                <span class="doa-error"></span>
             </div>
         </div>
          <div class="col-md-4">
@@ -240,7 +241,7 @@
 
 
 
-{!! Form::hidden('doa_level_id', isset($doaLevel->doa_level_id) ? $doaLevel->doa_level_id : '') !!}
+{!! Form::hidden('doa_level_id', isset($doaLevel->doa_level_id) ? $doaLevel->doa_level_id : '', ['id'=>'doa_id']) !!}
 <button type="submit" class="btn btn-success btn-sm  submit float-right">Submit</button>  
 {!!
 Form::close()
@@ -268,6 +269,7 @@ var messages = {
     is_data_saved: "{{ Session::get('is_data_saved') }}",
     target_model: "{{ isset($doaLevel->doa_level_id) && !empty($doaLevel->doa_level_id) ? 'editDoaLevelFrame' : 'addDoaLevelFrame' }}",
     get_user_by_role: "{{ route('get_ueser_by_role') }}",
+    doaLevel: "{{ isset($doaLevel->level_name) ? $doaLevel->level_name : '' }}"
 
 };
 $(document).ready(function () {
@@ -397,7 +399,6 @@ $(document).ready(function () {
         var msg = {};
         form.removeData('validator');
         $("label[class='error']").remove();
-
         let validationRules = {
             rules: {
                   
@@ -405,7 +406,8 @@ $(document).ready(function () {
                         required: true
                     },
                 level_name: {
-                    required: true
+                    required: true,
+                    remote: (messages.doaLevel == "") ? '/check_doa_name_exist_ajax' : false
                 },
                 product_type: {
                         required: true
@@ -418,9 +420,12 @@ $(document).ready(function () {
                 }
             },
             messages: {
-
+                level_name: {
+                    remote: (messages.doaLevel == "") ? 'DOA name already present' : false
+                }
             }
         }
+        
 
         $('.clsRequired ').each(function (index, value) {
             $(this).removeClass('error');
@@ -620,7 +625,31 @@ $(document).on('blur','.role_change', function (){
            $('.delete_role').last().show();
        }
 
-
+    if(messages.doaLevel != "") {
+        $("#level_name").on('keypress change blur keyup keydown', function() {
+			var doa_name = $(this).val();
+			var doa_id = $('#doa_id').val();
+			$.ajax({
+				type: 'post',
+				url: "{{url('check_doa_name_exist_edit_ajax')}}",
+				data: { 
+					doa_name: doa_name,
+					doa_id: doa_id,
+					_token : messages.token,
+				},
+				success: function(resp) {
+					if(resp == 'false') {
+						$('.doa-error').html('<font style="color:red; font-weight: 900;">DOA name already present.</font>')
+					} else {
+						$('.doa-error').html('')
+					}               
+				},
+				error: function() {
+					alert('Error');
+				}
+			});
+		});	
+    }
 
 });
 </script>        

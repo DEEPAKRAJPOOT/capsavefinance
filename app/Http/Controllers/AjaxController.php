@@ -5068,6 +5068,7 @@ if ($err) {
         }
     }
 
+    // Manage Document
     public function checkDocumentNametAjax(Request $request) {
         $data = $request->all();
         $where = [
@@ -5096,4 +5097,34 @@ if ($err) {
             return 'true';
         }      
     }
+
+    // Manage DOA Level
+    public function checkDOANametAjax(Request $request) {
+        $data = $request->all();
+        $where = [
+            'level_name' => $data['level_name']
+        ];
+        $doaCheckNameExists = $this->masterRepo->getDoaNameExists($where);
+        if($doaCheckNameExists > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }      
+    }
+
+    public function checkDOANametEditAjax(Request $request) {
+        $data = $request->all();
+        $where = [
+            'level_name' => $data['doa_name']
+        ];
+        $doa_id = [
+            'doa_level_id' => $data['doa_id']
+        ];  
+        $doaCheckNameExists = $this->masterRepo->getDoaNameEditCaseExists($where, $doa_id);
+        if($doaCheckNameExists > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }      
+    }    
 }

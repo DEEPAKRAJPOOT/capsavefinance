@@ -844,4 +844,14 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function checkDocumentExistEditCase($where, $document_id){
         return Documents::checkDocumentExistEditCase($where, $document_id);
     }
+
+    // Check DOA name exists
+    public function getDoaNameExists($where){
+        return DoaLevel::getDoaNameExists($where);
+    }
+
+    // Check DOA name exists in Edit case
+    public function getDoaNameEditCaseExists($where, $doa_id){
+        return DoaLevel::getDoaNameEditCaseExists($where, $doa_id);
+    }
 }
