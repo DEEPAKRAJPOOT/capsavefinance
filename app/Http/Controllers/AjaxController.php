@@ -5154,4 +5154,18 @@ if ($err) {
         }
         return response()->json($result); 
     }    
+    
+    // Check Unique Segment
+    public function checkUniqueSegment(Request $request) 
+    {        
+        $segmentName = $request->get('name');
+        $segmentId = $request->has('id') ? $request->get('id'): null ;
+        $result = $this->masterRepo->checkSegmentName($segmentName, $segmentId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
 }

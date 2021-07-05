@@ -865,4 +865,9 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function checkVoucherName($voucherName){
         return Voucher::checkVoucherName($voucherName);
     }
+
+    // Check Segment name exists in Edit case
+    public function checkSegmentName($segmentName, $segmentId){
+        return Segment::checkSegmentName($segmentName, $segmentId);
+    }
 }

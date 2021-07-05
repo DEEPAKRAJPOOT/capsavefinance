@@ -1292,6 +1292,11 @@ Route::group(
         'uses' => 'AjaxController@checkUniqueVoucher'
     ]);
     
+    Route::post('unique-segment-url', [
+        'as' => 'check_unique_segment_url',
+        'uses' => 'AjaxController@checkUniqueSegment'
+    ]);
+    
     Route::match(['get', 'post'], '/check_document_name_exist_ajax', 'AjaxController@checkDocumentNametAjax');
     Route::match(['get', 'post'], '/check_document_name_exist_edit_ajax', 'AjaxController@checkDocumentNameEdittAjax');
     Route::match(['get', 'post'], '/check_doa_name_exist_ajax', 'AjaxController@checkDOANametAjax');

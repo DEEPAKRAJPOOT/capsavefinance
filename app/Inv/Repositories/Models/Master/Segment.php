@@ -93,5 +93,24 @@ class Segment extends BaseModel
         return $res ?: [];
     }
 
-    
+
+    /**
+     * Check Segment name
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function checkSegmentName($segmentName, $segmentId=null)
+    {
+
+        $query = self::select('id')
+                ->where('name', $segmentName);
+        if (!is_null($segmentId)) {
+            $query->where('id', '!=', $segmentId);
+        }
+        $res = $query->get();        
+        return $res ?: [];
+    }    
 }
