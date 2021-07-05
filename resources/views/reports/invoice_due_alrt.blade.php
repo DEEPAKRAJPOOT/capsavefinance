@@ -27,7 +27,7 @@
               ?>
           <tr>
             <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;padding-bottom:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              Rs {{ number_format($amount) }} is due on date("d-M-Y", strtotime($dueDate)) towards the Supply Chain Facility against following Invoices.
+              Rs {{ number_format($amount) }} is due on {{ date("d-M-Y", strtotime($dueDate)) }} towards the Supply Chain Facility against following Invoices.
             </td>
           </tr>
           <tr>
