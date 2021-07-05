@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 use Auth;
+use Mail;
 use Helpers;
 use Session;
 use PHPExcel;
