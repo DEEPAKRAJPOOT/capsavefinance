@@ -31,6 +31,7 @@ class ApiController
 
 
   public function tally_recover() {
+    dd(env('SEND_MAIL_ACTIVE'));
     $disbursedRec= TallyEntry::where(['trans_type' => 'Payment Disbursed'])->whereNotNull('transactions_id')->get();
     $count = 0;
     foreach ($disbursedRec as $key => $value) {
