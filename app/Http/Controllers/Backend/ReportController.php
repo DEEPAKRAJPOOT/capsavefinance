@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
+use App\Inv\Repositories\Models\FinanceModel;
 
 
 class ReportController extends Controller
@@ -990,6 +991,7 @@ class ReportController extends Controller
 		try {
 			$anchor_id = null;
 			$anchorNameList = array();
+			$emailIds = array();
 			// $anchorList = Anchor::where('is_active','1')->get();
 			$userList = LmsUser::get();
 			$invoiceFound = false;
@@ -1006,11 +1008,16 @@ class ReportController extends Controller
 						'body' => 'body',
 						'data' => $data,
 					);
+					$emailIds[] = $user->user->email;
 					\Event::dispatch("SUPPLY_CHAIN_INVOICE_DUE_ALERT", serialize($emailData));
 				}
 			}
+			
+
 			if (!$invoiceFound) {
 			  return printf('No coming matured Invoice found.' .PHP_EOL);
+			}else{
+				$this->sendAnStringFromArr($emailIds, 'Maturity Invoice due Alert Email sent to the users');
 			}
 			return printf(implode(PHP_EOL . '<br />', $anchorNameList));
 			
@@ -1028,6 +1035,7 @@ class ReportController extends Controller
 		try {
 			$anchor_id = null;
 			$anchorNameList = array();
+			$emailIds = array();
 			// $anchorList = Anchor::where('is_active','1')->get();
 			$userList = LmsUser::get();
 			$invoiceFound = false;
@@ -1045,16 +1053,44 @@ class ReportController extends Controller
 						'body' => 'body',
 						'data' => $data,
 					);
+					$emailIds[] = $user->user->email;
 					\Event::dispatch("SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT", serialize($emailData));
 				}
 			}
 			if (!$invoiceFound) {
 			  return printf('No coming matured Invoice found.' .PHP_EOL);
+			}else{
+				$this->sendAnStringFromArr($emailIds, 'Maturity Invoice overdue Alert Email sent to the users');
 			}
 			return printf(implode(PHP_EOL . '<br />', $anchorNameList));
 			
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
 		}
+	}
+
+	public function sendAnStringFromArr($array=[], $subject) {
+		if (empty($array) || !is_array($array)) {
+			return;
+		}
+		$mail_body = implode(PHP_EOL, $array);
+		Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+                ],
+                function ($message) use ($subject, $email_content, $mail_body) {
+                $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+                $message->bcc(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+                $message->cc(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, '')->subject($subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_type' => $this->func_name,
+                    'name' => $user['name'] ?? NULL,
+                    'subject' => $subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
 	}
 }
