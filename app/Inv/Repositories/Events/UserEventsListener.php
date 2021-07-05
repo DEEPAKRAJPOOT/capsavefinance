@@ -1104,7 +1104,7 @@ class UserEventsListener extends BaseEvent
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $data["user_name"]);
                 $message->subject($mail_subject);
-                $toEmailArr = is_array($dynamicEmail) ? array_merge($toEmailArr, $dynamicEmail) : array_merge($toEmailArr, explode(',', $dynamicEmail));
+                // $toEmailArr = is_array($dynamicEmail) ? array_merge($toEmailArr, $dynamicEmail) : array_merge($toEmailArr, explode(',', $dynamicEmail));
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => $email,
@@ -1172,7 +1172,7 @@ class UserEventsListener extends BaseEvent
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $data["user_name"]);
                 $message->subject($mail_subject);
-                $toEmailArr = is_array($dynamicEmail) ? array_merge($toEmailArr, $dynamicEmail) : array_merge($toEmailArr, explode(',', $dynamicEmail));
+                // $toEmailArr = is_array($dynamicEmail) ? array_merge($toEmailArr, $dynamicEmail) : array_merge($toEmailArr, explode(',', $dynamicEmail));
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => $email,
