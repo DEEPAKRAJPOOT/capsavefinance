@@ -1064,7 +1064,21 @@ class UserEventsListener extends BaseEvent
         $this->func_name = __FUNCTION__;
         $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_DUE_ALERT");
         if ($email_content) {
-            // dump('template_found');
+            $testingAllow = true;
+            if ($testingAllow == true) {
+              $activeMailemail = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+              $activeMailbcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+              $activeMailcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+              $envMails = ['email' => $activeMailemail, 'cc' => $activeMailcc, 'bcc' => $activeMailbcc];
+
+              $dynamicEmail = $data["email"] ?? 'gaurav.agarwal@zuron.in';
+              $dynamiccc = array_filter(explode(',', $email_content->cc));
+              $dynamicbcc = array_filter(explode(',', $email_content->bcc));
+              $dynamicMails = ['email' => $dynamicEmail, 'cc' => $dynamiccc, 'bcc' => $dynamicbcc];
+              
+              $mailIds = ['envMails' => $envMails, 'dynamicMails' => $dynamicMails, 'sendigFrom' => (env('SEND_MAIL_ACTIVE') == 1) ? 'ENV' : 'Dynamically'];
+              dump($mailIds);
+            }
             $userData['user_name'] = $data['user_name'];
             $userData['email'] = $data['email'];
             $offerData = view('reports.invoice_due_alrt')->with(['data' => $data['data'], 'userData' => $userData])->render();
@@ -1076,7 +1090,7 @@ class UserEventsListener extends BaseEvent
                         $bcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
                         $cc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
                     }else{
-                        $email = $data["email"];
+                        $email = 'gaurav.agarwal@zuron.in';//$data["email"];
                         $cc = array_filter(explode(',', $email_content->cc));
                         $bcc = array_filter(explode(',', $email_content->bcc));
                     }
@@ -1119,6 +1133,21 @@ class UserEventsListener extends BaseEvent
         $userData['email'] = $data['email'];
         $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT");
         if ($email_content) {
+            $testingAllow = true;
+            if ($testingAllow == true) {
+              $activeMailemail = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+              $activeMailbcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+              $activeMailcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+              $envMails = ['email' => $activeMailemail, 'cc' => $activeMailcc, 'bcc' => $activeMailbcc];
+
+              $dynamicEmail = $data["email"] ?? 'gaurav.agarwal@zuron.in';
+              $dynamiccc = array_filter(explode(',', $email_content->cc));
+              $dynamicbcc = array_filter(explode(',', $email_content->bcc));
+              $dynamicMails = ['email' => $dynamicEmail, 'cc' => $dynamiccc, 'bcc' => $dynamicbcc];
+              
+              $mailIds = ['envMails' => $envMails, 'dynamicMails' => $dynamicMails, 'sendigFrom' => (env('SEND_MAIL_ACTIVE') == 1) ? 'ENV' : 'Dynamically'];
+              dump($mailIds);
+            }
             $offerData = view('reports.invoice_overdue_alrt')->with(['data' => $data['data'], 'userData' => $userData])->render();
             $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
             Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $offerData],
@@ -1128,7 +1157,7 @@ class UserEventsListener extends BaseEvent
                         $bcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
                         $cc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
                     }else{
-                        $email = $data["email"];
+                        $email = 'gaurav.agarwal@zuron.in';//$data["email"];
                         $bcc = array_filter(explode(',', $email_content->bcc));
                         $cc = array_filter(explode(',', $email_content->cc));
                     }
