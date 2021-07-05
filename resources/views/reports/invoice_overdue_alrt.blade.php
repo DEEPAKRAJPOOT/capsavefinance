@@ -18,18 +18,18 @@
               Dear Sir/Madam,
             </td>
           </tr>
-          <?php 
-              $amount = 0;
-                foreach($data as $val) {
-                    $amount += $val['balance']; 
-                    $dueDate = $val['due_date']; 
-                }
-              ?>
           <tr>
-            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;padding-bottom:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
-              Rs {{ number_format($amount) }} is due on date("d-M-Y", strtotime($dueDate)) towards the Supply Chain Facility against following Invoices.
+            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
+              This is to inform you that the below invoices are in overdue towards the Supply Chain Facility.
             </td>
           </tr>
+          {{--
+          <tr>
+            <td style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding-top:15px;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; color: #111; line-height: 11px;">
+              <b>Total Number of Invoices</b> : <?php $countInv = count($data) ?> {{ $countInv }}
+            </td>
+          </tr>
+          --}}
           <tr>
             <td>
               <table border="0" cellpadding="0" cellspacing="0"
@@ -125,11 +125,86 @@
                         style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
                         {{ number_format($val['balance']) }}
                       </td>
-
                     </tr>
+                    </tbody>
+                    @if(isset($val['transactions']))
+                      <tr >
+                        <td colspan="10">
+                          <table border="0" cellpadding="0" cellspacing="0"
+                            style="width: 100%;border: 1px solid #ccc; margin-top: 10px; margin-bottom: 10px;">
+                            <tbody>
+                              <tr style="background-color: #eceff1;">
+                                <td
+                                  style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                                  Bill No 
+                                </td>
+                                <td
+                                  style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                                  Trans Date 
+                                </td>
+                                <td
+                                  style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                                  Value Date 
+                                </td>
+                                <td
+                                  style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                                  Trans Name 
+                                </td>
+                                <td
+                                  style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;border-right:1px solid #ccc;color: #262626;">
+                                  Amount
+                                </td>
+                                <td
+                                  style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; font-weight: 600; padding-bottom: 10px;font-size: 0.917rem !important;;white-space: nowrap;padding:2px 5px;color: #262626;">
+                                  Amount Due
+                                </td>
+                                
+
+                              </tr>
+                              
+                              @foreach($val['transactions'] as $key1 => $val1)
+                                <tr>
+                                  <td
+                                    style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                                    {{ $val['inv_no'] }}
+                                  </td>
+
+                                  <td
+                                    style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                                    {{ $val1['trans_date'] }}
+                                  </td>
+
+
+                                  <td
+                                    style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                                    {{ $val1['value_date'] }}
+                                  </td>
+
+                                  <td
+                                    style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                                    {{ $val1['trans_name'] }}
+                                  </td>
+
+                                  <td
+                                    style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                                    {{ number_format($val1['amount']) }}
+                                  </td>
+                                  <td
+                                    style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                                    {{ number_format($val1['outstanding']) }}
+                                  </td>
+
+                                </tr>
+                              @endforeach
+
+                            </tbody>
+                          </table>
+                          </td>
+                      </tr>
+                      @endif
                   @endforeach
 
-                </tbody>
+                
               </table>
             </td>
           </tr>
@@ -146,13 +221,13 @@
             </td>
           </tr>
 
+
           <tr>
             <td
               style="box-sizing: border-box; font-size: 0.917rem !important; text-align: left;font-weight: 500; font-size: 0.917rem !important; font-family: Calibri !important; line-height: 21px; padding-top:25px;padding-bottom:5px;color: #111;">
               This is a computer generated statement
             </td>
           </tr>
-
 
 
         </table>

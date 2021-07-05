@@ -1113,13 +1113,66 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $offerData],
                 function ($message) use ($data, $mail_subject, $offerData, $email_content) {
                     if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
+                        $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+                        $message->bcc(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+                        $message->cc(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
                     }else{
-                        $email = array_filter(explode(',', $email_content->cc));
-                        // $bcc = array_filter(explode(',', $email_content->bcc));
-                        $cc = array_filter(explode(',', $email_content->bcc));
+                        $email = $data["email"];
+                        $cc = array_filter(explode(',', $email_content->cc));
+                        $bcc = array_filter(explode(',', $email_content->bcc));
+                        if (!empty($bcc)) {
+                            $message->bcc($bcc);
+                        }
+                        if (!empty($cc)) {
+                            $message->cc($cc);
+                        }
+
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $data["user_name"]);
+                $message->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_cc' => $cc ?? NULL,
+                    'email_bcc' => $bcc ?? NULL,
+                    'email_type' => $this->func_name,
+                    'user_name' => $data['user_name'],
+                    'subject' => $mail_subject,
+                    'body' => $offerData,
+                    // 'att_name' => $att_name ?? NULL,
+                    // 'attachment' => $data['attachment'] ?? NULL,
+                ];
+                // dump(['to'=>$email, 'subject'=>$data['subject'], 'cc'=>explode(',', env('SEND_MAIL_CC')), 'bcc'=>explode(',', env('SEND_MAIL_BCC'))]);
+                FinanceModel::logEmail($mailContent);
+            }); 
+        }
+    }
+     
+    /**
+     * Supply chain limit activation
+     * 
+     * @param Array $attributes
+     */
+    public function supplyChainInvOverDueAlert($attributes) {
+        $data = unserialize($attributes); 
+        $this->func_name = __FUNCTION__;
+        $userData['user_name'] = $data['user_name'];
+        $userData['email'] = $data['email'];
+        $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT");
+        if ($email_content) {
+            $offerData = view('reports.invoice_overdue_alrt')->with(['data' => $data['data'], 'userData' => $userData])->render();
+            $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
+            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $offerData],
+                function ($message) use ($data, $mail_subject, $offerData, $email_content) {
+                    if( env('SEND_MAIL_ACTIVE') == 1){
+                        $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+                        $message->bcc(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+                        $message->cc(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+                    }else{
+                        $email = $data["email"];
+                        $bcc = array_filter(explode(',', $email_content->bcc));
+                        $cc = array_filter(explode(',', $email_content->cc));
                         if (!empty($bcc)) {
                             $message->bcc($bcc);
                         }
@@ -1313,6 +1366,11 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'SUPPLY_CHAIN_INVOICE_DUE_ALERT', 
             'App\Inv\Repositories\Events\UserEventsListener@supplyChainInvDueAlert'
+        );
+
+        $events->listen(
+            'SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT', 
+            'App\Inv\Repositories\Events\UserEventsListener@supplyChainInvOverDueAlert'
         );
     }
 }
