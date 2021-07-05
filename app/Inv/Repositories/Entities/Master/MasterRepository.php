@@ -34,6 +34,7 @@ use App\Inv\Repositories\Models\Master\BaseRate;
 use App\Inv\Repositories\Models\Master\Activity;
 use App\Inv\Repositories\Models\Master\ChargeGST;
 use App\Inv\Repositories\Models\Master\Tds;
+use App\Inv\Repositories\Models\Master\Voucher;
 
 
 /**
@@ -858,5 +859,10 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     // Check DOA name exists in Edit case
     public function checkIndustryName($IndustryName, $industryId){
         return Industry::checkIndustryName($IndustryName, $industryId);
+    }
+
+    // Check DOA name exists in Edit case
+    public function checkVoucherName($voucherName){
+        return Voucher::checkVoucherName($voucherName);
     }
 }

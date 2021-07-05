@@ -130,5 +130,20 @@ class Voucher extends BaseModel
         return $resp;
       }
     
-    
+    /**
+     * Check Voucher name
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function checkVoucherName($voucherName)
+    {
+
+        $query = self::select('tally_voucher_id')
+                ->where('voucher_name', $voucherName);
+        $res = $query->get();        
+        return $res ?: [];
+    }
 }

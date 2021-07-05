@@ -5141,4 +5141,17 @@ if ($err) {
         }
         return response()->json($result); 
     }    
+    
+    // Check Unique Voucher
+    public function checkUniqueVoucher(Request $request) 
+    {        
+        $voucherName = $request->get('voucher_name');
+        $result = $this->masterRepo->checkVoucherName($voucherName);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
 }

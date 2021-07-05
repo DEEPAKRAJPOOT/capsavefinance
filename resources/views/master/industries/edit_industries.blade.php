@@ -43,7 +43,6 @@
         $.validator.addMethod("uniqueIndustry",
             function(value, element, params) {
                 var result = true;
-                console.log(params);
                 var data = {name: value, _token: messages.token};
                 if (params.industry_id) {
                     data['industry_id'] = params.industry_id;

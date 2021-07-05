@@ -41,7 +41,6 @@
         $.validator.addMethod("uniqueIndustry",
             function(value, element, params) {
                 var result = true;
-                console.log(params);
                 var data = {name : value, _token: messages.token};
                 if (params.chrg_id) {
                     data['chrg_id'] = params.chrg_id;
