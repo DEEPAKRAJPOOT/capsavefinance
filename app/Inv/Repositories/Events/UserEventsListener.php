@@ -1064,18 +1064,6 @@ class UserEventsListener extends BaseEvent
         $this->func_name = __FUNCTION__;
         $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_DUE_ALERT");
         if ($email_content) {
-
-            if( env('SEND_MAIL_ACTIVE') == 1){
-                $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
-                $bcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
-                $cc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
-            }else{
-                $email = $data["email"];
-                $cc = array_filter(explode(',', $email_content->cc));
-                $bcc = array_filter(explode(',', $email_content->bcc));
-            }
-            $mailIds = ['email' => $email, 'cc' => $cc, 'bcc' => $bcc];
-            dd($mailIds);
             // dump('template_found');
             $userData['user_name'] = $data['user_name'];
             $userData['email'] = $data['email'];
@@ -1131,6 +1119,17 @@ class UserEventsListener extends BaseEvent
         $userData['email'] = $data['email'];
         $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT");
         if ($email_content) {
+            if( env('SEND_MAIL_ACTIVE') == 1){
+                $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+                $bcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+                $cc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+            }else{
+                $email = $data["email"];
+                $cc = array_filter(explode(',', $email_content->cc));
+                $bcc = array_filter(explode(',', $email_content->bcc));
+            }
+            $mailIds = ['email' => $email, 'cc' => $cc, 'bcc' => $bcc];
+            dd($mailIds);
             $offerData = view('reports.invoice_overdue_alrt')->with(['data' => $data['data'], 'userData' => $userData])->render();
             $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
             Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $offerData],
