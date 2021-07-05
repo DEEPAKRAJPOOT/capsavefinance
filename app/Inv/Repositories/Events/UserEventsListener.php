@@ -670,64 +670,23 @@ class UserEventsListener extends BaseEvent
             }else{
                 $email_cc = '';
             }
-        }  
-            
-        /*
-        $email_content = EmailTemplate::getEmailTemplate("APPLICATION_APPROVER_MAIL");
-        if ($email_content) {
-            $mail_body = str_replace(
-                ['%receiver_user_name','%receiver_role_name','%app_id','%cover_note','%url'],
-                [$user['receiver_user_name'],$user['receiver_role_name'],$user['app_id'],$user['cover_note'],config('proin.backend_uri')],
-                $email_content->message
-            );
-            $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
-            if( env('SEND_MAIL_ACTIVE') == 1){
-                $email = $user["receiver_email"];    //explode(',', env('SEND_MAIL'));
-                //$email_bcc = explode(',', env('SEND_MAIL_BCC'));
-                $email_cc = explode(',', env('SEND_APPROVER_MAIL_CC'));
-            }else{
-                $email = $user["receiver_email"];
-            }  
-                
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject, $mail_body, $email, $email_cc) {
-                if( env('SEND_MAIL_ACTIVE') == 1){
-                    $email = $email;
-                    //$message->bcc($email_bcc);
-                    $message->cc($email_cc);
-                }else{
-                    $email = $user["receiver_email"];
-                }                
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["receiver_user_name"]);
-                $message->subject($mail_subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => array($email),
-                    'email_type' => $this->func_name,
-                    'name' => $user['receiver_user_name'],
-                    'subject' => $mail_subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
-            });
-        }
-        */           
-           $mailObj = Mail::to($email, ''); //$user["receiver_user_name"]
-           if (!empty($email_cc)) {
-               $mailObj->cc($email_cc);
-           }
-           $mailObj->send(new ReviewerSummary($this->mstRepo, $user));
-           $ccMails = is_array($email_cc) ? $email_cc : explode(',', $email_cc);
-           $cc = array_filter($ccMails);
-           $mailContent = [
-            'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-            'email_to' => $email,
-            'email_cc' => $cc ?? NULL,
-            'email_type' => $this->func_name,
-            'name' => "Move to Approver",
-            'subject' => "Application Approver Mail",
-            'body' => '',
+        }        
+       $mailObj = Mail::to($email, ''); //$user["receiver_user_name"]
+       if (!empty($email_cc)) {
+           $mailObj->cc($email_cc);
+       }
+       $mailObj->send(new ReviewerSummary($this->mstRepo, $user));
+
+       $ccMails = is_array($email_cc) ? $email_cc : explode(',', $email_cc);
+       $cc = array_filter($ccMails);
+       $mailContent = [
+        'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+        'email_to' => $email,
+        'email_cc' => $cc ?? NULL,
+        'email_type' => $this->func_name,
+        'name' => "Move to Approver",
+        'subject' => "Application Approver Mail",
+        'body' => '',
         ];
         FinanceModel::logEmail($mailContent);
         
@@ -1114,19 +1073,18 @@ class UserEventsListener extends BaseEvent
                 function ($message) use ($data, $mail_subject, $offerData, $email_content) {
                     if( env('SEND_MAIL_ACTIVE') == 1){
                         $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
-                        $message->bcc(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
-                        $message->cc(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+                        $bcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+                        $cc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
                     }else{
                         $email = $data["email"];
                         $cc = array_filter(explode(',', $email_content->cc));
                         $bcc = array_filter(explode(',', $email_content->bcc));
-                        if (!empty($bcc)) {
-                            $message->bcc($bcc);
-                        }
-                        if (!empty($cc)) {
-                            $message->cc($cc);
-                        }
-
+                    }
+                    if (!empty($bcc)) {
+                        $message->bcc($bcc);
+                    }
+                    if (!empty($cc)) {
+                        $message->cc($cc);
                     }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $data["user_name"]);
@@ -1167,19 +1125,18 @@ class UserEventsListener extends BaseEvent
                 function ($message) use ($data, $mail_subject, $offerData, $email_content) {
                     if( env('SEND_MAIL_ACTIVE') == 1){
                         $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
-                        $message->bcc(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
-                        $message->cc(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+                        $bcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+                        $cc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
                     }else{
                         $email = $data["email"];
                         $bcc = array_filter(explode(',', $email_content->bcc));
                         $cc = array_filter(explode(',', $email_content->cc));
-                        if (!empty($bcc)) {
-                            $message->bcc($bcc);
-                        }
-                        if (!empty($cc)) {
-                            $message->cc($cc);
-                        }
-
+                    }
+                    if (!empty($bcc)) {
+                        $message->bcc($bcc);
+                    }
+                    if (!empty($cc)) {
+                        $message->cc($cc);
                     }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $data["user_name"]);
