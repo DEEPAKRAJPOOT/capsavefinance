@@ -31,12 +31,6 @@ class ApiController
 
 
   public function tally_recover() {
-    if( env('SEND_MAIL_ACTIVE') == 1){
-            $email_cc = 'ravi';
-    }else{
-        $email_cc = 'awasthi';
-    } 
-    dd($email_cc, env('SEND_MAIL_ACTIVE'), env('SEND_MAIL_ACTIVE') == 1); 
     $disbursedRec= TallyEntry::where(['trans_type' => 'Payment Disbursed'])->whereNotNull('transactions_id')->get();
     $count = 0;
     foreach ($disbursedRec as $key => $value) {
