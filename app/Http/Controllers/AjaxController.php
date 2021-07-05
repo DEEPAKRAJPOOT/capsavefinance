@@ -5168,4 +5168,18 @@ if ($err) {
         }
         return response()->json($result); 
     }    
+    
+    // Check Unique Entity
+    public function checkUniqueEntity(Request $request) 
+    {        
+        $entityName = $request->get('entity_name');
+        $entitytId = $request->has('id') ? $request->get('id'): null ;
+        $result = $this->masterRepo->checkEntityName($entityName, $entitytId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
 }

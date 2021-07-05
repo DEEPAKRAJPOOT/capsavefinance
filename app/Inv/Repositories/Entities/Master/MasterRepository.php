@@ -870,4 +870,9 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function checkSegmentName($segmentName, $segmentId){
         return Segment::checkSegmentName($segmentName, $segmentId);
     }
+
+    // Check Entity name exists in Edit case
+    public function checkEntityName($entityName, $entitytId){
+        return Entity::checkEntityName($entityName, $entitytId);
+    }
 }
