@@ -1525,7 +1525,9 @@
         }
 
     });
-    $('.charges_block').html(html);
+    if(offerData == "") { 
+        $('.charges_block').html(html);
+    }
     //$(html).insertAfter(".charges_block");
   }
 </script>
