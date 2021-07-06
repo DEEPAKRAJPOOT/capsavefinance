@@ -880,4 +880,9 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function checkConsitutionName($constiName, $constitId){
         return Constitution::checkConsitutionName($constiName, $constitId);
     }
+
+    // Check Equipment name exists in Edit case
+    public function checkEquipmentName($equipmentName, $equipmentId){
+        return Equipment::checkEquipmentName($equipmentName, $equipmentId);
+    }
 }

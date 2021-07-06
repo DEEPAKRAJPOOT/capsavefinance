@@ -1307,6 +1307,11 @@ Route::group(
         'uses' => 'AjaxController@checkUniqueConstitution'
     ]);
     
+    Route::post('unique-equipment-url', [
+        'as' => 'check_unique_equipment_url',
+        'uses' => 'AjaxController@checkUniqueEquipment'
+    ]);
+    
     Route::match(['get', 'post'], '/check_document_name_exist_ajax', 'AjaxController@checkDocumentNametAjax');
     Route::match(['get', 'post'], '/check_document_name_exist_edit_ajax', 'AjaxController@checkDocumentNameEdittAjax');
     Route::match(['get', 'post'], '/check_doa_name_exist_ajax', 'AjaxController@checkDOANametAjax');
