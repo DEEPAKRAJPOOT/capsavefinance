@@ -1312,6 +1312,11 @@ Route::group(
         'uses' => 'AjaxController@checkUniqueEquipment'
     ]);
     
+    Route::post('unique-bank-master-url', [
+        'as' => 'check_unique_bank_master_url',
+        'uses' => 'AjaxController@checkUniqueBankMaster'
+    ]);
+    
     Route::match(['get', 'post'], '/check_document_name_exist_ajax', 'AjaxController@checkDocumentNametAjax');
     Route::match(['get', 'post'], '/check_document_name_exist_edit_ajax', 'AjaxController@checkDocumentNameEdittAjax');
     Route::match(['get', 'post'], '/check_doa_name_exist_ajax', 'AjaxController@checkDOANametAjax');

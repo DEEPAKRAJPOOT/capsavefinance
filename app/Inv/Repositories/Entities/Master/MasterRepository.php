@@ -885,4 +885,9 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function checkEquipmentName($equipmentName, $equipmentId){
         return Equipment::checkEquipmentName($equipmentName, $equipmentId);
     }
+
+    // Check Bank name exists in Edit case
+    public function checkBankName($bankName, $banktId) {
+        return Bank::checkBankName($bankName, $banktId);
+    }
 }

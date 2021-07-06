@@ -5210,4 +5210,18 @@ if ($err) {
         }
         return response()->json($result); 
     }    
+    
+    // Check Unique Bank name
+    public function checkUniqueBankMaster(Request $request) 
+    {        
+        $bankName = $request->get('bank_name');
+        $banktId = $request->has('bank_id') ? \Crypt::decrypt($request->get('bank_id')) : null ;
+        $result = $this->masterRepo->checkBankName($bankName, $banktId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
 }

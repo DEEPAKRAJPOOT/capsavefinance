@@ -76,12 +76,13 @@ $messages = session()->get('message', false);
 
     var messages = {
         check_bank_acc_exist: "{{ URL::route('check_bank_acc_exist') }}",
+        unique_bank_master_url:"{{ route('check_unique_bank_master_url') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
+        id: "{{ isset($bankData->id) ? 'yes'  : '' }}",
     };
 </script>
 <script>
-    
     jQuery.validator.addMethod("alphadotspace", function(value, element) {
         return this.optional(element) || /^[A-Za-z .-]+$/i.test(value);
     }, "Only letters, space, hyphen and dot allowed");
@@ -98,11 +99,34 @@ $messages = session()->get('message', false);
    });
 
     $(function () {
+        $.validator.addMethod("uniqueBank",
+            function(value, element, params) {
+                var result = true;
+                var data = {bank_name : value, _token: messages.token};
+                if (params.bank_id) {
+                    data['bank_id'] = params.bank_id;
+                }
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.unique_bank_master_url, // script to validate in server side
+                    data: data,
+                    success: function(data) {                        
+                        result = (data.status == 1) ? false : true;
+                    }
+                });                
+                return result;                
+            },'Bank name is already exists'
+        );
+
         $("form[name='add_bank']").validate({
             rules: {
                 'bank_name': {
                     required: true,
-                    alphadotspace: true
+                    alphadotspace: true,
+                    uniqueBank: {
+                        bank_id: (messages.id != '') ? $("#bank_id").val() : null
+                    }
                 },
                 'perfios_bank_id': {
                     required: true
