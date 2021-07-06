@@ -1302,6 +1302,11 @@ Route::group(
         'uses' => 'AjaxController@checkUniqueEntity'
     ]);
     
+    Route::post('unique-constitution-url', [
+        'as' => 'check_unique_constitution_url',
+        'uses' => 'AjaxController@checkUniqueConstitution'
+    ]);
+    
     Route::match(['get', 'post'], '/check_document_name_exist_ajax', 'AjaxController@checkDocumentNametAjax');
     Route::match(['get', 'post'], '/check_document_name_exist_edit_ajax', 'AjaxController@checkDocumentNameEdittAjax');
     Route::match(['get', 'post'], '/check_doa_name_exist_ajax', 'AjaxController@checkDOANametAjax');

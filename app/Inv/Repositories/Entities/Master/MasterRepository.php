@@ -875,4 +875,9 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function checkEntityName($entityName, $entitytId){
         return Entity::checkEntityName($entityName, $entitytId);
     }
+
+    // Check Constution name exists in Edit case
+    public function checkConsitutionName($constiName, $constitId){
+        return Constitution::checkConsitutionName($constiName, $constitId);
+    }
 }

@@ -5182,4 +5182,18 @@ if ($err) {
         }
         return response()->json($result); 
     }    
+    
+    // Check Unique Entity
+    public function checkUniqueConstitution(Request $request) 
+    {        
+        $constiName = $request->get('name');
+        $constitId = $request->has('id') ? $request->get('id'): null ;
+        $result = $this->masterRepo->checkConsitutionName($constiName, $constitId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
 }
