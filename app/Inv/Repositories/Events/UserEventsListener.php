@@ -1060,7 +1060,6 @@ class UserEventsListener extends BaseEvent
      * @param Array $attributes
      */
     public function supplyChainInvDueAlert($attributes) {
-        static $toEmailArr = [];
         $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
         $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_DUE_ALERT");
@@ -1104,7 +1103,6 @@ class UserEventsListener extends BaseEvent
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $data["user_name"]);
                 $message->subject($mail_subject);
-                // $toEmailArr = is_array($dynamicEmail) ? array_merge($toEmailArr, $dynamicEmail) : array_merge($toEmailArr, explode(',', $dynamicEmail));
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => $email,
@@ -1128,7 +1126,6 @@ class UserEventsListener extends BaseEvent
      * @param Array $attributes
      */
     public function supplyChainInvOverDueAlert($attributes) {
-        static $toEmailArr = [];
         $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
         $userData['user_name'] = $data['user_name'];
@@ -1153,7 +1150,7 @@ class UserEventsListener extends BaseEvent
             $offerData = view('reports.invoice_overdue_alrt')->with(['data' => $data['data'], 'userData' => $userData])->render();
             $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
             Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $offerData],
-                function ($message) use ($data, $mail_subject, $offerData, $email_content, &$toEmailArr) {
+                function ($message) use ($data, $mail_subject, $offerData, $email_content) {
                     if( env('SEND_MAIL_ACTIVE') == 1){
                         $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
                         $bcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
@@ -1172,7 +1169,6 @@ class UserEventsListener extends BaseEvent
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $data["user_name"]);
                 $message->subject($mail_subject);
-                // $toEmailArr = is_array($dynamicEmail) ? array_merge($toEmailArr, $dynamicEmail) : array_merge($toEmailArr, explode(',', $dynamicEmail));
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => $email,
