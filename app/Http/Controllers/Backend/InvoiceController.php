@@ -455,21 +455,21 @@ class InvoiceController extends Controller {
         }
 
         $disbursals = $this->lmsRepo->getDisbursals($disbursalIds)->toArray();
-        // foreach ($disbursals as $key => $value) {
-        // $userMailArr['receiver_user_name'] = $name = $value['user']['f_name']. ' ' . $value['user']['l_name'];
-        // $userMailArr['amount'] = $value['disburse_amount'];
-        // $userMailArr['receiver_email'] = $value['user']['email'];
-        // $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
-        // $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
-        // Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
+        foreach ($disbursals as $key => $value) {
+        $userMailArr['receiver_user_name'] = $name = $value['user']['f_name']. ' ' . $value['user']['l_name'];
+        $userMailArr['amount'] = $value['disburse_amount'];
+        $userMailArr['receiver_email'] = $value['user']['email'];
+        $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
+        $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
+        Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
 
-        // $userMailArr['receiver_user_name'] = $name = $value['user']['anchor']['comp_name'];
-        // $userMailArr['amount'] = $value['disburse_amount'];
-        // $userMailArr['receiver_email'] = $value['user']['anchor']['comp_email'];
-        // $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
-        // $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
-        // Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
-        // }
+        $userMailArr['receiver_user_name'] = $name = $value['user']['anchor']['comp_name'];
+        $userMailArr['amount'] = $value['disburse_amount'];
+        $userMailArr['receiver_email'] = $value['user']['anchor']['comp_email'];
+        $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
+        $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
+        Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
+        }
         return true;
     }
 
