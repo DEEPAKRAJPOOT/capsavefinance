@@ -413,10 +413,33 @@ class InvoiceController extends Controller {
             }
 
             if ($value['processing_fee'] > 0.00) {
-                $intrstDbtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['amount' => $value['processing_fee'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'));
+                $transData['amount'] = $value['processing_fee'];
+                $getPercentage  = $this->lmsRepo->getLastGSTRecord();
+                if($getPercentage)
+                {
+                    $tax_value  = $getPercentage['tax_value'];
+                    $chid  = $getPercentage['tax_id'];
+                }
+                else
+                {
+                    $tax_value  =0; 
+                    $chid  = 0;
+                }
+                $fWGst = round((($value['processing_fee']*$tax_value)/100),2);
+                $transData['gst'] = 1;
+                $transData['amount'] += $fWGst;
+                $transData['base_amt'] = $value['processing_fee'];
+                $transData['gst_amt']  = $tax_value;
+                $transData['chrg_gst_id']  = $chid;
+                $transData['trans_mode']  = 1;
+                $transData['trans_date'] = $fundedDate;
+                $transData['invoice_disbursed_id'] = $value['invoice_disbursed_id'];
+                $intrstDbtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], $transData, config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'));
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $value['processing_fee'], 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'), 1);
+                $transData['invoice_disbursed_id'] = $createTransaction->trans_id;
+                $transData['link_trans_id'] = $createTransaction->trans_id;
+                $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], $transData, config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'), 1);
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
             }
 
@@ -1952,13 +1975,15 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
     public function iframeUpdateInvoiceChrg(Request $request)
     {
         $invoiceId = $request->get('invoice_id');
-        $data = $this->invRepo->getInvoiceProcessingFee(['invoice_id' =>$invoiceId]);
+        $invoiceData = $this->invRepo->getInvoiceById($invoiceId);
+        $chargeData = $this->invRepo->getInvoiceProcessingFee(['invoice_id' =>$invoiceId]);
+        $offerData = $this->appRepo->getOfferData(['prgm_offer_id' =>$invoiceData->prgm_offer_id]);
 
-        // dd($data);
         return view('backend.invoice.update_invoice_charge')
                 ->with([
                     'invoiceId' => $invoiceId,
-                    'data' => $data
+                    'chargeData' => $chargeData,
+                    'offerData' => $offerData,
                 ]);;              
     }
 
@@ -1967,7 +1992,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
     public function saveInvoiceProcessingFee(Request $request) {
         $id = Auth::user()->user_id;
         $invoiceId = $request->invoice_id;
-        $data['charge_id'] = 1; // processing fee charge id
+        $data['charge_id'] = 12; // processing fee charge id
         $data['chrg_value'] = $request->chrg_value;
         $data['chrg_type'] = $request->chrg_type;
         $data['is_active'] = $request->is_active;

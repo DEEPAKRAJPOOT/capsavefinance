@@ -1800,4 +1800,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return DisbursalBatch::where('disbursal_batch_id', $disbursalBatchId)->delete();
 	}
+	// END TDS
+    public function getLastGSTRecord()
+    {
+        return GstTax::getLastGSTRecord();
+    }
 }

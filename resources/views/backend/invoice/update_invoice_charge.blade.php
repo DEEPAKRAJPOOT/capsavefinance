@@ -11,8 +11,22 @@
                     <span class="mandatory">*</span>
                 </label>
                 <select type="text" class="form-control" id="chrg_type" name="chrg_type"> 
-                    <option value="1" {{ (isset($data->chrg_type) && $data->chrg_type == 1)  ? 'selected' : '' }}>Fixed</option>
-                    <option value="2" {{ (isset($data->chrg_type) && $data->chrg_type == 2)  ? 'selected' : '' }}>Percentage</option>
+                @php 
+
+                if(!isset($chargeData->chrg_type) && $offerData->invoice_processingfee_type == 1) {
+                    $typeFlag = 1;
+                } else if (isset($chargeData->chrg_type) && $chargeData->chrg_type == 1 ) {
+                    $typeFlag = 1;
+                } else if(!isset($chargeData->chrg_type) && $offerData->invoice_processingfee_type == 2) {
+                    $typeFlag = 2;
+                } else if (isset($chargeData->chrg_type) && $chargeData->chrg_type == 2 ) {
+                    $typeFlag = 2;
+                }
+
+                @endphp
+
+                    <option value="1" {{ $typeFlag == 1 ? 'selected' : '' }}>Fixed</option>
+                    <option value="2" {{ $typeFlag == 2 ? 'selected' : '' }}>Percentage</option>
                 </select> 
 
             </div>
@@ -20,7 +34,16 @@
                 <label for="txtCreditPeriod">Amount/Percentage
                     <span class="mandatory">*</span>
                 </label>
-                <input type="text" class="form-control" id="chrg_value" name="chrg_value" placeholder="Enter Amount/Percentage" value="{{ (isset($data->chrg_value) && $data->chrg_value) ? $data->chrg_value : '' }}">
+                @php 
+
+                if(!isset($chargeData->chrg_value) && $offerData->invoice_processingfee_value) {
+                    $valueAmt = $offerData->invoice_processingfee_value;
+                } else if (isset($chargeData->chrg_value) && $chargeData->chrg_value) {
+                    $valueAmt = $chargeData->chrg_value;
+                }
+
+                @endphp
+                <input type="text" class="form-control" id="chrg_value" name="chrg_value" placeholder="Enter Amount/Percentage" value="{{ (isset($valueAmt) && $valueAmt) ? $valueAmt : '' }}">
 
             </div>
             <div class="form-group">
@@ -28,8 +51,8 @@
                     <span class="mandatory">*</span>
                 </label>
                 <select type="text" class="form-control" id="is_active" name="is_active"> 
-                    <option value="1" {{ (isset($data->is_active) && $data->is_active == 1)  ? 'selected' : '' }}>Active</option>
-                    <option value="0" {{ (isset($data->is_active) && $data->is_active == 0)  ? 'selected' : '' }}>Inactive</option>
+                    <option value="1" {{ (isset($chargeData->is_active) && $chargeData->is_active == 1)  ? 'selected' : '' }}>Active</option>
+                    <option value="0" {{ (isset($chargeData->is_active) && $chargeData->is_active == 0)  ? 'selected' : '' }}>Inactive</option>
                 </select> 
             </div>
         </div>

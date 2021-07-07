@@ -89,6 +89,8 @@ class AppProgramOffer extends BaseModel {
         'cash_flow_xirr',
         'addl_security',
         'is_invoice_processingfee',
+        'invoice_processingfee_type',
+        'invoice_processingfee_value',
         'comment',
         'is_approve',
         'payment_frequency',

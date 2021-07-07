@@ -1843,7 +1843,7 @@ class CamController extends Controller
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
         //}
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
-
+        
         $limitData = $this->appRepo->getLimit($aplid);
         if($limitData->product_id == 1){
             $this->addOfferPrimarySecurity($request, $offerData->prgm_offer_id);

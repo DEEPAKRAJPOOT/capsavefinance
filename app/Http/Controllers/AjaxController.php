@@ -2755,6 +2755,7 @@ if ($err) {
      public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {
         ini_set('memory_limit',-1);
         $invoice_data = $this->invRepo->getAllManageInvoice($this->request,8);
+        // dd($invoice_data->first());
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
         return $invoice;
     } 

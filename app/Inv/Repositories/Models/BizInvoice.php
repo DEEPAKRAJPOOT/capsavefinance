@@ -326,7 +326,7 @@ class BizInvoice extends BaseModel
      
     function processing_fee()
     {
-       return $this->hasOne('App\Inv\Repositories\Models\Lms\InvoiceCharge','invoice_id')->where(['charge_id' => 1, 'is_active' => 1]);  
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\InvoiceCharge','invoice_id')->where(['charge_id' => 12, 'is_active' => 1]);  
     }
 
     function userDetail()
