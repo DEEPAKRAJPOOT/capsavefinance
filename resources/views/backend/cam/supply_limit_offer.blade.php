@@ -1515,8 +1515,10 @@
 //            '</div>';
 //            //value="'+program_charge.chrg_calculation_amt+'"
 //        }
-
-        if(program_charge.charge_name.chrg_tiger_id == appType){
+        console.log(program_charge, appType);
+        var mst_chrg_tiger_id = program_charge.charge_name.chrg_tiger_id;
+        //charges triggered on limit assignment will always popoulated
+        if(mst_chrg_tiger_id == appType || mst_chrg_tiger_id == 1){
             html += '<div class="col-md-6">'+
                 '<div class="form-group">'+
                     '<label for="txtPassword">'+program_charge.charge_name.chrg_name+((program_charge.chrg_calculation_type == 2)? ' (%)':' (&#8377;)')+'</label>'+

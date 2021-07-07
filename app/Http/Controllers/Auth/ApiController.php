@@ -12,6 +12,7 @@ use App\Libraries\Bsa_lib;
 use App\Libraries\Perfios_lib;
 use App\Inv\Repositories\Models\Master\TallyEntry;
 use App\Helpers\Helper;
+use App\Inv\Repositories\Models\Master\EmailTemplate;
 use Storage;
 
 /**
@@ -31,6 +32,21 @@ class ApiController
 
 
   public function tally_recover() {
+      $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT");
+
+      $activeMailemail = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+      $activeMailbcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+      $activeMailcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+      $envMails = ['email' => $activeMailemail, 'cc' => $activeMailcc, 'bcc' => $activeMailbcc];
+
+      $dynamicEmail = $data["email"] ?? 'anyId';
+      $dynamiccc = array_filter(explode(',', $email_content->cc));
+      $dynamicbcc = array_filter(explode(',', $email_content->bcc));
+      $dynamicMails = ['email' => $dynamicEmail, 'cc' => $dynamiccc, 'bcc' => $dynamicbcc];
+      
+      $mailIds = ['envMails' => $envMails, 'dynamicMails' => $dynamicMails, 'sendigFrom' => (env('SEND_MAIL_ACTIVE') == 1) ? 'ENV' : 'Dynamically'];
+      dd($mailIds);
+
     $disbursedRec= TallyEntry::where(['trans_type' => 'Payment Disbursed'])->whereNotNull('transactions_id')->get();
     $count = 0;
     foreach ($disbursedRec as $key => $value) {

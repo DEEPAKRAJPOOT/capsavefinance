@@ -204,6 +204,7 @@ function checkValidation(){
 	unsetError('input[name=biz_pin]');
 	unsetError('#check_block');
 	unsetError('input[name=share_holding_date]');
+        unsetError('input[name=busi_pan_comm_date]');
 	
 	unsetError('#product_type_1_loan');
 	unsetError('#product_type_2_loan');
@@ -254,6 +255,7 @@ function checkValidation(){
 	let biz_pin = $('input[name=biz_pin]').val().trim();
 	
 	let share_holding_date = $('input[name=share_holding_date]').val();
+        let busi_pan_comm_date = $('input[name=busi_pan_comm_date]').val();
 	let msme_type = $('select[name=msme_type]').val();
 	let msme_number = $('input[name=msme_no]').val().trim();
 
@@ -305,6 +307,11 @@ function checkValidation(){
 		flag = false;
 	}
 
+    //     if(busi_pan_comm_date == ''){
+	// 	setError('input[name=busi_pan_comm_date]', 'Date of commencement of business is required.');
+	// 	flag = false;
+	// }
+        
 	if(biz_constitution == ''){
 		setError('select[name=biz_constitution]', 'Business constitution is required');
 		flag = false;

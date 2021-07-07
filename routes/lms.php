@@ -491,6 +491,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'update_invoice_chrg',
                         'uses' => 'Backend\InvoiceController@saveInvoiceProcessingFee',
                     ]);
+                    Route::POST('update_invoice_tenor', [
+                        'as' => 'update_invoice_tenor',
+                        'uses' => 'Backend\InvoiceController@saveInvoiceTenor',
+                    ]);
                 }
             });
 
@@ -945,5 +949,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             });
         });
     });
+        Route::get('/maturityOverdueAlertReport', [
+            'as' => 'maturityOverdueAlertReport',
+            'uses' => 'Backend\ReportController@maturityOverdueAlertReport'
+        ]);
     //end of application
 });

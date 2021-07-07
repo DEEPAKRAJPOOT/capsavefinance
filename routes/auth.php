@@ -181,25 +181,25 @@ Route::domain(config('proin.lenevo_frontend_uri'))->group(function () {
    Route::group(['prefix' => 'password'],
         function () {
         
-        $this->get('email',
+        $this->get('lenovo-email',
             [
             'as' => 'password.email',
-            'uses' => 'Auth\LenevoRegisterController@showResetLinkEmail'
+            'uses' => 'Auth\LenovoForgotPasswordController@showResetLinkEmail'
             ]
         );
-        $this->post('email',
+        $this->post('lenovo-email',
             [
             'as' => 'password.email',
-            'uses' => 'Auth\ForgotPasswordController@sendResetLinkEmail'
+            'uses' => 'Auth\LenovoForgotPasswordController@sendResetLinkEmail'
             ]
         );
         $this->get('reset',
             [
-            'as' => 'password.reset',
-            'uses' => 'Auth\ResetPasswordController@showResetForm'
+            'as' => 'password.lenevo-reset',
+            'uses' => 'Auth\LenovoForgotPasswordController@showResetForm'
             ]
         );
-        $this->post('reset',
+        $this->post('reset-lenevo',
             [
             'as' => 'password.reset',
             'uses' => 'Auth\ResetPasswordController@reset'

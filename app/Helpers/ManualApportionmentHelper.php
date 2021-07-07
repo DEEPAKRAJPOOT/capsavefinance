@@ -55,6 +55,14 @@ class ManualApportionmentHelper{
 
             $actualAmount = InterestAccrual::where('interest_date', '>=',$trans->fromIntDate)
                     ->where('interest_date','<=',$trans->toIntDate)
+                    ->where(function($query) use($trans){
+                        if($trans->trans_type == 9){
+                            $query->whereNotNull('interest_rate'); 
+                        }
+                        elseif($trans->trans_type == 33){
+                            $query->whereNotNull('overdue_interest_rate');
+                        }
+                    })
                     ->where('invoice_disbursed_id', $trans->invoice_disbursed_id)
                     ->sum('accrued_interest');
             $actualAmount = round($actualAmount,2);

@@ -171,10 +171,10 @@ class ApplicationController extends Controller
 				Session::flash('message',trans('success_messages.update_company_detail_successfully'));
 				return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId]);
 			} else {
-				return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+				return redirect()->back()->withInput()->withErrors(trans('auth.oops_something_went_wrong'));
 			}
 		} catch (Exception $ex) {
-			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+			return redirect()->back()->withInput()->withErrors(Helpers::getExceptionMessage($ex));
 		}
 	}
 
@@ -252,7 +252,6 @@ class ApplicationController extends Controller
 				$appId = $arrFileData['app_id']; 
 				$appData = $this->appRepo->getAppDataByAppId($appId);               
 				$userId = $appData ? $appData->user_id : null;     
-				
 				$prgmDocsWhere = [];
 				$prgmDocsWhere['stage_code'] = 'doc_upload';
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
@@ -336,6 +335,7 @@ class ApplicationController extends Controller
 					
 				} else {
 					$appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+					$appDocData['is_ovd_enabled'] = 1;
 					$appDocResponse = $this->docRepo->saveAppDoc($appDocData);
 					$fileId = $appDocResponse->file_id;
 					$response = $this->docRepo->getFileByFileId($fileId);
@@ -2022,6 +2022,14 @@ class ApplicationController extends Controller
 		try {
 			$fileId = $request->file_id;
 			$fileId = $request;
+
+			$where = [
+				'app_id' => $fileId['app_id'],
+				'biz_owner_id' => $fileId['owner_id'],
+				'doc_id' => $fileId['doc_id'],
+				'file_id' => $fileId['file_id']
+			];
+			$this->docRepo->disableIsOVD($where);
 			$response = $this->docRepo->deleteFile($fileId);
 			
 			if ($response) {

@@ -947,7 +947,8 @@ class DataRenderer implements DataProviderInterface
                         }
                      if($customer!=3)
                      {  
-                      $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                      $action .='<a title="Edit Amount" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                      $action .='<a title="Edit Tenor" href="#" data-tenor="'.(($invoice->tenor) ? $invoice->tenor : '' ).'" data-offertenor="'.(($invoice->program_offer->tenor) ? $invoice->program_offer->tenor : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#changeInvoiceTenorModal" class="btn btn-action-btn btn-sm changeInvoiceTenor"><i class="fa fa-edit" aria-hidden="true"></i></a>';
                      }
                       $expl  =  explode(",",$invoice->program->invoice_approval); 
                       if(in_array($customer, $expl)) 
@@ -3785,7 +3786,7 @@ class DataRenderer implements DataProviderInterface
                                 $fundedAmount = $this->calculateFundedAmount($invoice, $margin);
                                 
                                 $tenorDays = $this->calculateTenorDays($invoice);
-                                $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenorDays);
+                                $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate'], $tenorDays);
                                 if( $invoice['program']['interest_borne_by'] == 2 && ($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) ) {
                                     $interest = $tInterest;
                                 }

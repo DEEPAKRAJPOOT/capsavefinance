@@ -51,7 +51,7 @@
                                         @error('password')
                                         <span class="colorRed"> {{$message}} </span>
                                         @enderror
-                                        <a href="{{ url('password/email') }}" style="display:block; margin-top:5px; text-decoration:underline;">Forgot Password</a>
+                                        <a href="{{ url('password/lenovo-email') }}" style="display:block; margin-top:5px; text-decoration:underline;">Forgot Password</a>
                                     </div>
                                 </div>
                             </div>

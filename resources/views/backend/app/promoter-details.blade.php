@@ -90,52 +90,68 @@
                                 /* for get document file data   */
 
                                 $main1[$key]['panNoFileStatus'] = 0;
+                                $main1[$key]['panNoFileOVD'] = 0;
                                 $main1[$key]['dlNoFileStatus'] = 0;
+                                $main1[$key]['dlNoFileOVD'] = 0;
                                 $main1[$key]['voterNoFileStatus'] = 0;
+                                $main1[$key]['voterNoFileOVD'] = 0;
                                 $main1[$key]['passNoFileStatus'] = 0;
+                                $main1[$key]['passNoFileOVD'] = 0;
                                 $main1[$key]['photoFileStatus'] = 0;
+                                $main1[$key]['photoFileOVD'] = 0;
                                 $main1[$key]['aadharFileStatus'] = 0;
+                                $main1[$key]['aadharFileOVD'] = 0;
                                 $main1[$key]['electricityFileStatus'] = 0;
+                                $main1[$key]['electricityFileOVD'] = 0;
                                 $main1[$key]['telephoneFileStatus'] = 0;
+                                $main1[$key]['telephoneFileOVD'] = 0;
                             foreach ($row->document as $row2) {
                                 if ($row2->doc_id == 2) {
                                     $main1[$key]['panNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['panNoFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['panNoFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['panNoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 31) {
 
                                     $main1[$key]['dlNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['dlNoFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['dlNoFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['dlNoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 30) {
 
                                     $main1[$key]['voterNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['voterNoFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['voterNoFileStatus'] = ($row2->userFile->is_active)?1:0;
+                                    $main1[$key]['voterNoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 32) {
                                     $main1[$key]['passNoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['passNoFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['passNoFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['passNoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 22) {
 
                                     $main1[$key]['photoFile'] = $row2->userFile->file_path;
                                     $main1[$key]['photoFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['photoFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['photoFileOVD'] = $row2->is_ovd_enabled;
                                 } else if ($row2->doc_id == 34) {
 
                                     $main1[$key]['aadharFile'] = $row2->userFile->file_path;
                                     $main1[$key]['aadharFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['aadharFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['aadharFileOVD'] = $row2->is_ovd_enabled;
                                 }else if ($row2->doc_id == 37) {
 
                                     $main1[$key]['electricityFile'] = $row2->userFile->file_path;
                                     $main1[$key]['electricityFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['electricityFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['electricityFileOVD'] = $row2->is_ovd_enabled;
                                 }else if ($row2->doc_id == 38) {
 
                                     $main1[$key]['telephoneFile'] = $row2->userFile->file_path;
                                     $main1[$key]['telephoneFileID'] = $row2->userFile->file_id;
                                     $main1[$key]['telephoneFileStatus'] = $row2->userFile->is_active;
+                                    $main1[$key]['telephoneFileOVD'] = $row2->is_ovd_enabled;
                                 }
                             }
                             ?>
@@ -149,20 +165,34 @@
 
                                                 <span class="mandatory">*</span>
                                                 
-                                                <span class="pull-right d-flex align-items-center"><input type="checkbox" name="is_promoter[]" data-id="{{isset($row->first_name) ? $i : '1'}}" id="is_promoter{{isset($row->first_name) ? $i : '1'}}" {{($row->is_promoter==1) ?  "checked='checked'" : ''}} value="{{($row->is_promoter==1) ?  '1' : '0'}}" class="is_promoter mr-2">
-                                                    <span class="white-space-nowrap">Is Promoter</span></span>
+<!--                                                <span class="pull-right d-flex align-items-center"><input type="checkbox" name="is_promoter[]" data-id="{{isset($row->first_name) ? $i : '1'}}" id="is_promoter{{isset($row->first_name) ? $i : '1'}}" {{($row->is_promoter==1) ?  "checked='checked'" : ''}} value="{{($row->is_promoter==1) ?  '1' : '0'}}" class="is_promoter mr-2">
+                                                    <span class="white-space-nowrap">Is Promoter</span></span>-->
                                             </label>
                                             <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}">   
                                             <input type="text" name="first_name[]" id="first_name{{isset($row->first_name) ? $i : '1'}}" vname="first_name1" value="{{$row->first_name}}" class="form-control first_name" placeholder="Enter First Name" >
                                         </div>
                                     </div>
-                                      <div class="col-md-4">
+                                    <div class="col-md-2">
+                                      <div class="form-group password-input">
+                                          <label for="txtPassword">Owner Type
+                                          </label>
+                                          <select class="form-control is_promoter" name="applicant_type[]" id="applicant_type{{isset($row->first_name) ? $i : '1'}}">
+
+                                              <option value="" selected="selected"> Select Owner Type</option>
+                                              <option value="1" @if($row->applicant_type==1)  selected="selected" @endif> Is Promoter </option>
+                                              <option value="2" @if($row->applicant_type==2)  selected="selected" @endif> Key Management Person </option>
+                                              <option value="3" @if($row->applicant_type==3)  selected="selected" @endif> Co-Borrower </option>
+                                              <option value="4" @if($row->applicant_type==4)  selected="selected" @endif> Guarantor </option>
+                                          </select>
+                                      </div>
+                                    </div>
+                                      <div class="col-md-2">
                                         <div class="form-group password-input">
                                             <label for="txtPassword">Shareholding (%)
 
                                               
                                             </label>
-                                              <input type="hidden" name="isShareCheck[]" id="isShareCheck{{isset($row->first_name) ? $i : '1'}}" value="{{($row->is_promoter==1) ?  '1' : '0'}}">
+                                              <input type="hidden" name="isShareCheck[]" id="isShareCheck{{isset($row->first_name) ? $i : '1'}}" value="{{($row->applicant_type==1) ?  '1' : '0'}}">
                                             
                                             <input type="text"  id="share_per{{isset($row->first_name) ? $i : '1'}}" name="share_per[]" data-id="{{isset($row->first_name) ? $i : '1'}}" maxlength="6"  value="{{($row->share_per=='0.00') ? '' : $row->share_per}}" class="form-control share_per"  placeholder="Enter Shareholder" >
                                             <span class="error" id="shareCheck{{isset($row->first_name) ? $i : '1'}}"></span> 
@@ -323,7 +353,16 @@
 
                            
                                 </div>
-
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="txtCreditPeriod">CKYC Ref No
+                                              
+                                            </label>
+                                            <input type="text" name="ckyc_ref_no[]" id="ckyc_ref_no{{isset($row->first_name) ? $i : '1'}}" value="{{$row->ckyc_ref_no ? $row->ckyc_ref_no : ''}}" class="form-control" placeholder="Enter CKYC Ref No." >
+                                        </div>
+                                    </div> 
+                                </div>
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -403,7 +442,14 @@
                                                                     @endif
                                                                     <input type="file" class="panfile" data-id="{{isset($row->first_name) ? $i : '1'}}"  name="panfile[]" id="panfile{{isset($row->first_name) ? $i : '1'}}" onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 2)">
                                                                     <span class="fileUpload"></span>
-                                                                </div>   
+
+                                                                    @if($main1[$key]['panNoFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="2" {{ $main1[$key]['panNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>  
+                                                                    @endif
+                                                                </div> 
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -458,6 +504,14 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" name="dlfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  id="dlfile{{isset($row->first_name) ? $i : '1'}}" class="dlfile"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 31)">
+
+                                                                    @if($main1[$key]['dlNoFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="31" {{ $main1[$key]['dlNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>                                                                      
+                                                                    @endif
+                                                                    
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -507,6 +561,14 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" name="voterfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}"  class="voterfile" id="voterfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 30)">
+
+                                                                    @if($main1[$key]['voterNoFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="30" {{ $main1[$key]['voterNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>   
+                                                                    @endif
+
                                                                 </div>
 
                                                             </td>
@@ -560,6 +622,14 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" name="passportfile[]" data-id="{{isset($row->first_name) ? $i : '1'}}" class="passportfile" id="passportfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 32)">
+
+                                                                    @if($main1[$key]['passNoFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="32" {{ $main1[$key]['passNoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>
+                                                                    @endif
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -597,6 +667,14 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" class="photofile"  name="photofile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="photofile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 22)">
+
+                                                                    @if($main1[$key]['photoFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="22" {{ $main1[$key]['photoFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>  
+                                                                    @endif
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -635,6 +713,14 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" class="aadharfile"  name="aadharfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="aadharfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 34)">
+
+                                                                    @if($main1[$key]['aadharFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="34" {{ $main1[$key]['aadharFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>
+                                                                    @endif
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -671,6 +757,14 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" class="electricityfile"  name="electricityfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="electricityfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 37)">
+
+                                                                    @if($main1[$key]['electricityFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="37" {{ $main1[$key]['electricityFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span> 
+                                                                    @endif
+
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -708,6 +802,13 @@
                                                                     @endcan
                                                                     @endif
                                                                     <input type="file" class="telephonefile"  name="telephonefile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="telephonefile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 38)">
+
+                                                                    @if($main1[$key]['telephoneFileStatus'] == 1)
+                                                                    <span class="d-flex align-items-center">
+                                                                        <input type="checkbox" name="is_ovd[]" value="38" {{ $main1[$key]['telephoneFileOVD'] == 1 ? 'checked' : 'disabled'}} class="mr-2" disabled>
+                                                                        <span class="white-space-nowrap">IS OVD Enabled</span>
+                                                                    </span>
+                                                                    @endif                                                                      
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -985,7 +1086,7 @@
      ///// validation for where is checked then shareholder is mandaterory/////
         $(".is_promoter").each(function (k, v) {
         promoCount++;
-        var is_promoter = $("#is_promoter" + promoCount).val();
+        var is_promoter = $("#applicant_type" + promoCount).val();
         if (is_promoter == 1)
         {
            
@@ -996,7 +1097,7 @@
                 e.preventDefault();
                 return false;
             }
-            else if (shareHolder == 0 || shareHolder > 100)
+            else if (shareHolder < 1 || shareHolder > 100)
             {
                 $("#shareCheck" + promoCount).text('Enter correct value 1 to 100 range');
                 e.preventDefault();
@@ -1039,7 +1140,6 @@
                 cache: false,
                 success: function (res)
                 {
-                
                   $('.isloader').hide();
                  window.location.href = "{{ route('promoter_details', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id') ]) }}";
                   
@@ -1106,7 +1206,7 @@
         $(document).on('keyup', '.share_per', function(){
         var shareHolder = $(this).val();
         var promoCount = $(this).attr('data-id');
-        var is_promoter = $("#is_promoter" + promoCount).val();
+        var is_promoter = $("#applicant_type" + promoCount).val();
        
         if (is_promoter == 1)
         {
@@ -1116,7 +1216,7 @@
                         $("#shareCheck" + promoCount).text('This field is required.');
                         return false;
                 }
-                else if (shareHolder == 0 || shareHolder > 100)
+                else if (shareHolder < 1 || shareHolder > 100)
                 {
                         $("#shareCheck" + promoCount).text('Enter correct value 1 to 100 range');
                         return false;
@@ -1142,19 +1242,17 @@
       $(document).on('click', '.is_promoter', function () {
         var res = $(this).val();
         var count = $(this).attr('data-id');
-      
+        
         if (res==1)
         { 
-                $(this).val(0);
-                $("#isShareCheck"+count).val(0);
+                $("#isShareCheck"+count).val(1);
                 $("#shareCheck"+count).text('');
               
                 return true;
         }
         else
         {
-                $(this).val(1);
-                $("#isShareCheck"+count).val(1);
+                $("#isShareCheck"+count).val(0);
                 if($("#share_per"+count).val()=='')
                 {
                   $("#shareCheck"+count).text('This field is required.');
@@ -1189,7 +1287,7 @@
            {
                 var close  = "<button class='close clsdiv' type='button'>x</button>";
            }
-           $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><div class='col-md-12'>"+close+"<h5 class='card-title form-head'>Management Information (" + x + ") </h5></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' class='d-block'> Name  <span class='mandatory'>*</span><span class='pull-right d-flex align-items-center'><input type='checkbox' name='is_promoter[]' data-id='"+x+"'  id='is_promoter"+x+"'  value='0' class='is_promoter mr-2'><span class='white-space-nowrap'>Is Promoter</span></span></label><input type='hidden' class='owneridDynamic' id='ownerid" + x + "'   value=''><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)</label><input type='hidden' name='isShareCheck[]' id='isShareCheck"+ x +"' value='0'><input type='text'  id='share_per" + x + "' data-id='" + x + "' maxlength='6' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per'  placeholder='Enter Shareholder' ><span class='error' id='shareCheck" + x + "'></span></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' readonly='readonly' value='' class='form-control date_of_birth datepicker-dis-fdate'  placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option><option value='3'>Other</option></select></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><div class='relative'><a href='javascript:void(0);' class='remaining'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' maxlength='15' name='networth[]' id='networth" + x + "' value='' class='form-control networth'  placeholder='Enter Networth'></div><input name='response[]' id='response" + x + "' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Designation</label><input type='text' name='designation[]'  id='designation" + x + "' value='' class='form-control designation'  placeholder='Enter Designation'></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership'  placeholder='Enter Other Ownership'></div></div><div class='col-md-8'><div class='form-group'><label for='txtCreditPeriod'>Address<span class='mandatory'>*</span></label><textarea  style='height: 35px;' class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address'"+ x +"'></textarea></div></div></div><div class='row'><div class='col-md-12'><div class='form-group'><label for='txtCreditPeriod'>Comment</label><textarea class='form-control textarea' placeholder='Enter Comment' name='comment[]' id='comment"+x+"'></textarea></div></div></div></div><span id='disableDocumentPart"+x+"' style='display:none'><h5 class='card-title form-head-h5 mt-3'>Document </h5><div class='row mt-2 mb-4'><div class='col-md-12'> <div class='prtm-full-block'><div class='prtm-block-content'> <div class='table-responsive ps ps--theme_default' data-ps-id='9615ce02-be28-0492-7403-d251d7f6339e'><table class='table text-center table-striped table-hover'><thead class='thead-primary'><tr><th class='text-left'>S.No</th><th>Document Name</th><th>Document ID No.</th><th>Action</th></tr></thead><tbody><tr><td class='text-left'>1</td><td width='30%'>Pan Card</td><td width='30%'><div class='col-md-12'><span class='text-success' id='v1successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v1failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppan" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripan' style='top:0px'>Verify</a><input type='text'  name='veripan[]' id='veripan" + x + "' value='' class='form-control'  placeholder='Enter PAN Number'></div></td><td width='28%'><div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details' data-id='" + x + "' data-type='3'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button><input type='file' name='verifyfile[]' class='verifyfile' id='verifyfile" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='panfile[]' data-id='" + x + "' class='panfile' id='panfile" + x + "'> </div> </td> </tr><tr> <td class='text-left'>2</td> <td width='30%'>Driving License</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v2successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v2failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='ddriving" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show veridl' style='top:0px;'>Verify</a> <input type='text' name='verifydl[]' id='verifydl" + x + "' value='' class='form-control verifydl'  placeholder='Enter DL Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "' data-type='5'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' id='downloaddl" + x + "' name='downloaddl[]' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple='' class='downloaddl'> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='dlfile[]' data-id='" + x + "' class='dlfile' id='dlfile" + x + "'> </div> </td> </tr> <tr> <td class='text-left'>3</td> <td width='30%'>Voter ID</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v3successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v3failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='vvoter" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show verivoter' style='top:0px;'>Verify</a> <input type='text' name='verifyvoter[]' id='verifyvoter" + x + "' value='' class='form-control verifyvoter'  placeholder='Enter Voter's Epic Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='4'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadvoter[]' class='downloadvoter' id='downloadvoter" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  class='voterfile' name='voterfile[]' id='voterfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>4</td> <td width='30%'>Passport</td> <td width='30%' ><div class='col-md-12'> <span class='text-success' id='v4successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v4failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppassport" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripass' style='top:0px;'>Verify</a> <input type='text' name='verifypassport[]' id='verifypassport" + x + "' value='' class='form-control verifypassport'  placeholder='Enter File Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='6'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadpassport[]' class='downloadpassport'  id='downloadpassport" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'   name='passportfile[]' class='passportfile' id='passportfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>5</td> <td width='30%'>Photo</td> <td width='30%' > </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadphoto[]' class='downloadphoto' id='downloadphoto" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  name='photofile[]' name='photofile' id='photofile" + x + "'> </div> </td> </tr> </tbody> </table> </span> <div class='ps__scrollbar-x-rail' style='left: 0px; bottom: 0px;'><div class='ps__scrollbar-x'  style='left: 0px; width: 0px;'></div></div><div class='ps__scrollbar-y-rail' style='top: 0px; right: 0px;'><div class='ps__scrollbar-y'  style='top: 0px; height: 0px;'></div></div> </div> </div> </div> </div></div> </div></div></div>"); 
+           $(".form-fields-appand").append("<div class='fornm-sections'><div class='row'><div class='col-md-12'><div class='col-md-12'>"+close+"<h5 class='card-title form-head'>Management Information (" + x + ") </h5></div><div class='col-md-12'><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod' for='first_name' class='d-block'> Name  <span class='mandatory'>*</span></label><input type='hidden' class='owneridDynamic' id='ownerid" + x + "'   value=''><input type='text' name='first_name[]' vname='first_name" + x + "' id='first_name" + x + "' value='' class='form-control first_name' placeholder='Enter First Name' ></div></div><div class='col-md-2'><div class='form-group password-input'><label for='txtPassword'>Owner Type</label><select class='form-control is_promoter' name='applicant_type[]' id='applicant_type"+x+"'><option value='' selected='selected'>Select Owner Type</option><option value='1'>Is Promoter</option><option value='2'>Key Management Person</option><option value='3'>Co-Borrower</option><option value='4'>Guarantor </option></select></div></div><div class='col-md-2'><div class='form-group password-input'><label for='txtPassword'>Shareholding (%)</label><input type='hidden' name='isShareCheck[]' id='isShareCheck"+ x +"' value='0'><input type='text'  id='share_per" + x + "' data-id='" + x + "' maxlength='6' name='share_per[]' id='share_per" + x + "' id='employee' value='' class='form-control share_per'  placeholder='Enter Shareholder' ><span class='error' id='shareCheck" + x + "'></span></div></div><div class='col-md-4'><div class='form-group password-input'><label for='txtPassword'>DOB<span class='mandatory'>*</span></label><input type='text' name='date_of_birth[]'  id='date_of_birth" + x + "' readonly='readonly' value='' class='form-control date_of_birth datepicker-dis-fdate'  placeholder='Enter Date Of Birth' ></div></div></div><div class='row'><div class='col-md-4'><div class='form-group password-input'><label for='gender'>Gender<span class='mandatory'>*</span></label><select class='form-control gender' name='gender[]'   id='gender" + x + "'><option value=''> Select Gender</option><option value='1'> Male </option><option value='2'>Female </option><option value='3'>Other</option></select></div></div><div class='col-md-4'><div class='form-group INR'><label for='txtEmail'>Networth </label><div class='relative'><a href='javascript:void(0);' class='remaining'><i class='fa fa-inr' aria-hidden='true'></i></a><input type='text' maxlength='15' name='networth[]' id='networth" + x + "' value='' class='form-control networth'  placeholder='Enter Networth'></div><input name='response[]' id='response" + x + "' type='hidden' value=''></div></div><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Designation</label><input type='text' name='designation[]'  id='designation" + x + "' value='' class='form-control designation'  placeholder='Enter Designation'></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtEmail'>Other Ownerships</label><input type='text' name='other_ownership[]' id='other_ownership" + x + "' value='' class='form-control other_ownership'  placeholder='Enter Other Ownership'></div></div><div class='col-md-8'><div class='form-group'><label for='txtCreditPeriod'>Address<span class='mandatory'>*</span></label><textarea  style='height: 35px;' class='form-control textarea address' placeholder='Enter Address' name='owner_addr[]' id='address'"+ x +"'></textarea></div></div></div><div class='row'><div class='col-md-4'><div class='form-group'><label for='txtCreditPeriod'>CKYC Ref No</label><input type='text' name='ckyc_ref_no[]' id='ckyc_ref_no"+x+"' value='' class='form-control' placeholder='Enter CKYC Ref No.' ></div></div></div><div class='row'><div class='col-md-12'><div class='form-group'><label for='txtCreditPeriod'>Comment</label><textarea class='form-control textarea' placeholder='Enter Comment' name='comment[]' id='comment"+x+"'></textarea></div></div></div></div><span id='disableDocumentPart"+x+"' style='display:none'><h5 class='card-title form-head-h5 mt-3'>Document </h5><div class='row mt-2 mb-4'><div class='col-md-12'> <div class='prtm-full-block'><div class='prtm-block-content'> <div class='table-responsive ps ps--theme_default' data-ps-id='9615ce02-be28-0492-7403-d251d7f6339e'><table class='table text-center table-striped table-hover'><thead class='thead-primary'><tr><th class='text-left'>S.No</th><th>Document Name</th><th>Document ID No.</th><th>Action</th></tr></thead><tbody><tr><td class='text-left'>1</td><td width='30%'>Pan Card</td><td width='30%'><div class='col-md-12'><span class='text-success' id='v1successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v1failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppan" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripan' style='top:0px'>Verify</a><input type='text'  name='veripan[]' id='veripan" + x + "' value='' class='form-control'  placeholder='Enter PAN Number'></div></td><td width='28%'><div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details' data-id='" + x + "' data-type='3'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button><input type='file' name='verifyfile[]' class='verifyfile' id='verifyfile" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='panfile[]' data-id='" + x + "' class='panfile' id='panfile" + x + "'> </div> </td> </tr><tr> <td class='text-left'>2</td> <td width='30%'>Driving License</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v2successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v2failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='ddriving" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show veridl' style='top:0px;'>Verify</a> <input type='text' name='verifydl[]' id='verifydl" + x + "' value='' class='form-control verifydl'  placeholder='Enter DL Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "' data-type='5'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' id='downloaddl" + x + "' name='downloaddl[]' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple='' class='downloaddl'> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file'  name='dlfile[]' data-id='" + x + "' class='dlfile' id='dlfile" + x + "'> </div> </td> </tr> <tr> <td class='text-left'>3</td> <td width='30%'>Voter ID</td> <td width='30%' ><div class='col-md-12'><span class='text-success' id='v3successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v3failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span> <a href='javascript:void(0);' id='vvoter" + x + "' data-id='" + x + "'  class='verify-owner-no verify-show verivoter' style='top:0px;'>Verify</a> <input type='text' name='verifyvoter[]' id='verifyvoter" + x + "' value='' class='form-control verifyvoter'  placeholder='Enter Voter's Epic Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'><button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='4'> <i class='fa fa-eye'></i></button> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadvoter[]' class='downloadvoter' id='downloadvoter" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  class='voterfile' name='voterfile[]' id='voterfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>4</td> <td width='30%'>Passport</td> <td width='30%' ><div class='col-md-12'> <span class='text-success' id='v4successpanverify" + x + "' style='display:none;'><i class='fa fa-check-circle' aria-hidden='true'></i> <i>Verified Successfully</i> </span><span class=' text-danger' id='v4failurepanverify" + x + "' style='display:none;''><i class='fa fa-close' aria-hidden='true'></i> <i>Not Verified</i></span><a href='javascript:void(0);' id='ppassport" + x + "' data-id='" + x + "' class='verify-owner-no verify-show veripass' style='top:0px;'>Verify</a> <input type='text' name='verifypassport[]' id='verifypassport" + x + "' value='' class='form-control verifypassport'  placeholder='Enter File Number'> </div> </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm viewDocument' type='button' title='view Details'  data-id='" + x + "'  data-type='6'> <i class='fa fa-eye'></i></button><button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadpassport[]' class='downloadpassport'  id='downloadpassport" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'   name='passportfile[]' class='passportfile' id='passportfile" + x + "'> </div> </td> </tr> </tr> <tr> <td class='text-left'>5</td> <td width='30%'>Photo</td> <td width='30%' > </td> <td width='28%'> <div class='file-browse float-left position-seta'> <button class='btn-upload btn-sm' type='button'> <i class='fa fa-download'></i></button> <input type='file' name='downloadphoto[]' class='downloadphoto' id='downloadphoto" + x + "' dir='1' onchange='FileDetails(this.getAttribute('dir'))' multiple=''> </div> <div class='upload-btn-wrapper setupload-btn'> <button class='btn'>Upload</button> <input type='file' data-id='" + x + "'  name='photofile[]' name='photofile' id='photofile" + x + "'> </div> </td> </tr> </tbody> </table> </span> <div class='ps__scrollbar-x-rail' style='left: 0px; bottom: 0px;'><div class='ps__scrollbar-x'  style='left: 0px; width: 0px;'></div></div><div class='ps__scrollbar-y-rail' style='top: 0px; right: 0px;'><div class='ps__scrollbar-y'  style='top: 0px; height: 0px;'></div></div> </div> </div> </div> </div></div> </div></div></div>"); 
            x++;
         datepickerDisFdate();
        

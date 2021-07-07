@@ -587,6 +587,34 @@ function uploadFile(app_id,id)
         //     return true;
         // }
     });
+///////////////////////////////////////// change invoice tenor////////////////
+    $(document).on('click', '.changeInvoiceTenor', function () {
+
+        var tenor = $(this).attr('data-tenor').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        var offertenor = $(this).attr('data-offertenor').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        console.log(tenor);
+        var invoiceId = $(this).attr('data-id');
+        $("#tenor_invoice_id").val(invoiceId);
+        $("#invoice_tenor").val(tenor);
+        $("#offer_invoice_tenor").val(offertenor);
+
+    });
+
+///////////////////////////////////////// change invoice tenor////////////////
+    $(document).on('click', '#UpdateInvoiceTenor', function () {
+
+        var tenor = parseFloat($("#invoice_tenor").val().replace(/,/g, ''));
+        if (tenor > 365)
+        {
+            $(".model7msg").show();
+            $(".model7msg").html('Invoice Tenor should not greater 365 days');
+            return false;
+        } else
+        {
+            $(".model7msg").hide();
+            return true;
+        }
+    });
     
     
      ///////////////////////For Invoice Approve////////////////////////

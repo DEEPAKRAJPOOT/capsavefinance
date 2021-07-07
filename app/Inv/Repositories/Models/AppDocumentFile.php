@@ -68,6 +68,7 @@ class AppDocumentFile extends BaseModel
         'file_id',
         'comment',
         'is_upload',
+        'is_ovd_enabled',
         'created_by',
         'created_at',
         'updated_by',
