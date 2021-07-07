@@ -1101,11 +1101,11 @@ class DataRenderer implements DataProviderInterface
                     $id = Auth::user()->user_id;
                     $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                     $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                    if($chkUser->id!=11 && !empty($invoice->processing_fee)) 
+                    if($chkUser->id!=11 && (!empty($invoice->processing_fee) || $invoice->program_offer->is_invoice_processingfee == 0)) 
                         {
                            return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
                 
-                        } else if (empty($invoice->processing_fee)) {
+                        } else if (empty($invoice->processing_fee && $invoice->program_offer->is_invoice_processingfee == 1)) {
                             return '<span style="color : red;"> Add/Update Processing Fee</span>';
                         }
                         })

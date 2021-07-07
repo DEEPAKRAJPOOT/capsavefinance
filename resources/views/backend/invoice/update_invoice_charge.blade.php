@@ -25,8 +25,8 @@
 
                 @endphp
 
-                    <option value="1" {{ $typeFlag == 1 ? 'selected' : '' }}>Fixed</option>
-                    <option value="2" {{ $typeFlag == 2 ? 'selected' : '' }}>Percentage</option>
+                    <option value="1" {{ isset($typeFlag) && $typeFlag == 1 ? 'selected' : '' }}>Fixed</option>
+                    <option value="2" {{ isset($typeFlag) && $typeFlag == 2 ? 'selected' : '' }}>Percentage</option>
                 </select> 
 
             </div>
