@@ -601,6 +601,10 @@
         $(selector2).hide();
     }
   })
+  
+  $(document).on('change', '#invoice_processingfee_type', function(){
+    $('#invoice_processingfee_value').val('');
+  })
 
 </script>
 @endsection

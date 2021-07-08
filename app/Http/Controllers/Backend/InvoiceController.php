@@ -437,7 +437,7 @@ class InvoiceController extends Controller {
                 $intrstDbtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], $transData, config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'));
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
-                $transData['invoice_disbursed_id'] = $createTransaction->trans_id;
+                $transData['parent_trans_id'] = $createTransaction->trans_id;
                 $transData['link_trans_id'] = $createTransaction->trans_id;
                 $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], $transData, config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'), 1);
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);

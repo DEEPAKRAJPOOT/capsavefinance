@@ -292,6 +292,10 @@ trait LmsTrait
         $transactionData['pay_from'] = ($transType == 16) ? 3 : $this->appRepo->getUserTypeByUserId($userId);
         $transactionData['is_settled'] = 0;
         $transactionData['is_posted_in_tally'] = 0;
+        $transactionData['base_amt'] = $data['base_amt'] ?? null;
+        $transactionData['gst_amt'] = $data['gst_amt'] ?? null;
+        $transactionData['chrg_gst_id'] = $data['chrg_gst_id'] ?? null;
+        $transactionData['trans_mode'] = $data['trans_mode'] ?? null;
 
         $curData = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
                         
