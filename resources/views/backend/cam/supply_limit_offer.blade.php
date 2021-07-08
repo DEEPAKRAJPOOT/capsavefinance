@@ -1084,6 +1084,9 @@
     unsetError('select[name=benchmark_date]');
     unsetError('select[name=payment_frequency]');
     unsetError('input[name*=charge_names]');
+    unsetError('select[name=is_invoice_processingfee]');
+    unsetError('select[name=invoice_processingfee_type]');
+    unsetError('input[name=invoice_processingfee_value]');
 
     let flag = true;
     let anchor_id = $('select[name=anchor_id]').val();
