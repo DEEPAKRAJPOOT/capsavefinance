@@ -33,6 +33,7 @@ foreach ($apps as $app) {
             $processingFee = $invoice['processing_fee']['chrg_value'];
 
         }
+        $processingFee = $invoice['processing_fee']['gst_chrg_value'];
 		$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
 		if($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
 			$interest = $fundedAmount * $tenor * (($interestRate/100) / config('common.DCC')) ;                
@@ -242,6 +243,7 @@ foreach ($apps as $app) {
 
 						                    }
 
+					                        $processingFee = $invoice['processing_fee']['gst_chrg_value'];
 											$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
 											if ($invoice['program_offer']['payment_frequency'] == 1 ) {
     											$interest = $fundedAmount * $tenor * (($interestRate/100) / config('common.DCC')) ;                

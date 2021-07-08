@@ -44,6 +44,7 @@ use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Crypt;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 
 class AjaxController extends Controller {
 
@@ -58,6 +59,7 @@ class AjaxController extends Controller {
     protected $invRepo;
     protected $docRepo;
     protected $lms_repo;
+    use LmsTrait;
 
 
     function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo, ReportInterface $reportsRepo) {
@@ -5067,5 +5069,42 @@ if ($err) {
         } else {
             return $respose = ['status'=>'0'];
         }
+    }
+
+    public function backendGetInvoiceProcessingGstAmount(Request $request) {
+        $invoiceId = $request->get('invoice_id');
+        $typeFlag = $request->get('chrg_type');
+        $valueAmt = $request->get('chrg_value');
+        $invoiceData = $this->invRepo->getInvoiceById($invoiceId);
+        $chargeData = $this->invRepo->getInvoiceProcessingFee(['invoice_id' =>$invoiceId]);
+        // $offerData = $this->appRepo->getOfferData(['prgm_offer_id' =>$invoiceData->prgm_offer_id]);
+        $chrgData = $this->application->getInvoiceProcessingFeeCharge();
+        $getPercentage  = $this->lmsRepo->getLastGSTRecord();
+
+        $tax_value  =0;
+
+        if (isset($typeFlag) && $typeFlag == 2) {
+            $processingFee = $this->calPercentage($invoiceData->invoice_margin_amount, $valueAmt);
+        } else {
+            $processingFee = $valueAmt;
+        }
+
+        if($chrgData->is_gst_applicable == 1) {
+            if($getPercentage)
+            {
+                $tax_value  = $getPercentage['tax_value'];
+            }
+            else
+            {
+                $tax_value  =0; 
+            }
+        }
+
+        $fWGst = round((($processingFee*$tax_value)/100),2);
+        $gstChrgValue = $processingFee + $fWGst;
+        return new JsonResponse(['gstChrgValue' => $gstChrgValue]);
+        // return [
+        // 'status' => 
+        // 'gstChrgValue' => $gstChrgValue];
     }
 }

@@ -29,6 +29,7 @@ class InvoiceCharge extends BaseModel {
 		'charge_id',
 		'chrg_type',
 		'chrg_value',
+		'gst_chrg_value',
 		'deductable',
 		'is_active',
 		'created_at',

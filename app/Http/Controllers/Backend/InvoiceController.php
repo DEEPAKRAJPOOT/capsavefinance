@@ -414,7 +414,9 @@ class InvoiceController extends Controller {
 
             if ($value['processing_fee'] > 0.00) {
                 $transData['amount'] = $value['processing_fee'];
+                $chrgData = $this->appRepo->getInvoiceProcessingFeeCharge();
                 $getPercentage  = $this->lmsRepo->getLastGSTRecord();
+
                 if($getPercentage)
                 {
                     $tax_value  = $getPercentage['tax_value'];
@@ -425,15 +427,18 @@ class InvoiceController extends Controller {
                     $tax_value  =0; 
                     $chid  = 0;
                 }
-                $fWGst = round((($value['processing_fee']*$tax_value)/100),2);
-                $transData['gst'] = 1;
-                $transData['amount'] += $fWGst;
-                $transData['base_amt'] = $value['processing_fee'];
-                $transData['gst_amt']  = $tax_value;
-                $transData['chrg_gst_id']  = $chid;
+                $fWGst = $value['processing_fee_gst'];
+                
+                $transData['invoice_disbursed_id'] = $value['invoice_disbursed_id'];
                 $transData['trans_mode']  = 1;
                 $transData['trans_date'] = $fundedDate;
-                $transData['invoice_disbursed_id'] = $value['invoice_disbursed_id'];
+                if($chrgData->is_gst_applicable == 1) {
+                    $transData['amount'] += $fWGst;
+                    $transData['base_amt'] = $value['processing_fee'];
+                    $transData['chrg_gst_id']  = $chid;
+                    $transData['gst_amt']  = $tax_value;
+                    $transData['gst'] = 1;
+                }
                 $intrstDbtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], $transData, config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'));
                 $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
 
@@ -741,12 +746,13 @@ class InvoiceController extends Controller {
                         }
 
                         $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
-                        if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
-                            $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
-                        } else {
-                            $processingFee = $invoice['processing_fee']['chrg_value'];
+                        // if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
+                        //     $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
+                        // } else {
+                        //     $processingFee = $invoice['processing_fee']['chrg_value'];
 
-                        }
+                        // }
+                        $processingFee = $invoice['processing_fee']['gst_chrg_value'];
 
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -917,11 +923,13 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                             $processingFee = $invoice['processing_fee']['chrg_value'];
 
                         }
+                        $processingFeeGst = $invoice['processing_fee']['gst_chrg_value'] - $processingFee;
 
                         $invoice['batch_id'] = $batchId;
                         $invoice['disburse_date'] = $disburseDate;
                         $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
-                        $invoice['processing_fee'] = $createDisbursal->processingFee;
+                        $invoice['processing_fee'] = $processingFee ?? 0;
+                        $invoice['processing_fee_gst'] = $processingFeeGst ?? 0;
                        
                         $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
                         $createInvoiceDisbursed = $this->lmsRepo->saveUpdateInvoiceDisbursed($invoiceDisbursedRequest);
@@ -968,7 +976,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
                     $totalInterest += $interest;
                     $totalMargin += $margin;
-                    $amount = round($fundedAmount - $interest - $processingFee, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
+                    $amount = round($fundedAmount - $interest - $processingFee - $processingFeeGst, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                     $disburseAmount += $amount;
                 }
             }
@@ -1066,7 +1074,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                           $actIntRate = $interestRate;
                         }
                         $interest= 0;
-                        $processingFee= 0;
                         $margin= 0;
 
                         $tenor = $this->calculateTenorDays($invoice);
@@ -1078,12 +1085,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
                         }
                         $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
-                        if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
-                            $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
-                        } else {
-                            $processingFee = $invoice['processing_fee']['chrg_value'];
-                        }
                         
+                        $processingFee = $invoice['processing_fee']['gst_chrg_value'] ?? 0;
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
                         $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);   
@@ -1169,8 +1172,10 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                                 $processingFee = $invoice['processing_fee']['chrg_value'];
 
                             }
+                            $processingFeeGst = $invoice['processing_fee']['gst_chrg_value'] - $processingFee;
                             $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
                             $invoice['processing_fee'] = $processingFee;
+                            $invoice['processing_fee_gst'] = $processingFeeGst;
                             
                             $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
                             $createInvoiceDisbursed = $this->lmsRepo->saveUpdateInvoiceDisbursed($invoiceDisbursedRequest);
@@ -1214,7 +1219,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $totalInterest += $interest;
                         $totalProcessingFee += $processingFee;
                         $totalMargin += $margin;
-                        $amount = round($fundedAmount - $interest - $processingFee, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
+                        $amount = round($fundedAmount - $interest - $processingFee - $processingFeeGst, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                         $disburseAmount += $amount;
 
                         
@@ -1978,12 +1983,54 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $invoiceData = $this->invRepo->getInvoiceById($invoiceId);
         $chargeData = $this->invRepo->getInvoiceProcessingFee(['invoice_id' =>$invoiceId]);
         $offerData = $this->appRepo->getOfferData(['prgm_offer_id' =>$invoiceData->prgm_offer_id]);
+        $chrgData = $this->appRepo->getInvoiceProcessingFeeCharge();
+        $getPercentage  = $this->lmsRepo->getLastGSTRecord();
+
+        $tax_value  =0; 
+
+        if(!isset($chargeData->chrg_value) && $offerData->invoice_processingfee_value) {
+            $valueAmt = $offerData->invoice_processingfee_value;
+        } else if (isset($chargeData->chrg_value) && $chargeData->chrg_value) {
+            $valueAmt = $chargeData->chrg_value;
+        }
+
+        if(!isset($chargeData->chrg_type) && $offerData->invoice_processingfee_type == 1) {
+            $typeFlag = 1;
+        } else if (isset($chargeData->chrg_type) && $chargeData->chrg_type == 1 ) {
+            $typeFlag = 1;
+        } else if(!isset($chargeData->chrg_type) && $offerData->invoice_processingfee_type == 2) {
+            $typeFlag = 2;
+        } else if (isset($chargeData->chrg_type) && $chargeData->chrg_type == 2 ) {
+            $typeFlag = 2;
+        }
+
+        if (isset($typeFlag) && $typeFlag == 2) {
+            $processingFee = $this->calPercentage($invoiceData->invoice_margin_amount, $valueAmt);
+        } else {
+            $processingFee = $valueAmt;
+        }
+
+        if($chrgData->is_gst_applicable == 1) {
+            if($getPercentage)
+            {
+                $tax_value  = $getPercentage['tax_value'];
+            }
+            else
+            {
+                $tax_value  =0; 
+            }
+        }
+
+        $fWGst = round((($processingFee*$tax_value)/100),2);
+        $gstChrgValue = $processingFee + $fWGst;
 
         return view('backend.invoice.update_invoice_charge')
                 ->with([
                     'invoiceId' => $invoiceId,
                     'chargeData' => $chargeData,
                     'offerData' => $offerData,
+                    'chrgData' => $chrgData,
+                    'gstChrgValue' => $gstChrgValue,
                 ]);;              
     }
 
@@ -1995,7 +2042,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $data['charge_id'] = 12; // processing fee charge id
         $data['chrg_value'] = $request->chrg_value;
         $data['chrg_type'] = $request->chrg_type;
-        $data['is_active'] = $request->is_active;
+        $data['gst_chrg_value'] = $request->invoice_gst_chrg_value;
+        $data['is_active'] = 1;
         $data['deductable'] = 1;
 
         $invoiceData = $this->invRepo->getInvoiceById($invoiceId);

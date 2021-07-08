@@ -199,6 +199,7 @@ trait LmsTrait
         $disbursalData['interest_rate'] = $actIntRate ?? null;
         $disbursalData['total_interest'] = $interest;
         $disbursalData['processing_fee'] = $invoice['processing_fee'] ?? 0.00;
+        $disbursalData['processing_fee_gst'] = $invoice['processing_fee_gst'] ?? 0.00;
         $disbursalData['margin'] = $invoice['program_offer']['margin'] ?? null;
         $disbursalData['status_id'] = 10;
         

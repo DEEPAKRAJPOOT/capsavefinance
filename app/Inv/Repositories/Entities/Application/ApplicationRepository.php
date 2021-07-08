@@ -2559,6 +2559,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
             ->orderBy('created_at', 'DESC')
             ->get();
     }
+
+    public function getInvoiceProcessingFeeCharge(){
+        return Charges::find(12);
+    }
 }
 
 

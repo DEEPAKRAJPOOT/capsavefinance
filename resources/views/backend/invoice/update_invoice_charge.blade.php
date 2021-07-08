@@ -5,6 +5,7 @@
     <div class="row">
         <div class="col-md-12">
             <input type="hidden" name="invoice_id" id="invoice_id" value="{{ $invoiceId }}">
+            <input type="hidden" name="invoice_gst_chrg_value" id="invoice_gst_chrg_value" value="{{ $gstChrgValue ?? ''}}">
             
             <div class="form-group">
                 <label for="txtCreditPeriod">Charge Type
@@ -46,6 +47,16 @@
                 <input type="text" class="form-control" id="chrg_value" name="chrg_value" placeholder="Enter Amount/Percentage" value="{{ (isset($valueAmt) && $valueAmt) ? $valueAmt : '' }}">
 
             </div>
+            @if($chrgData->is_gst_applicable == 1)
+            <div class="form-group">
+                <label for="txtCreditPeriod">GST Charge Amount
+                    <span class="mandatory">*</span>
+                </label>
+                <input type="text" class="form-control" id="gst_chrg_value" name="gst_chrg_value" placeholder="GST Charge Amount" value="{{ $gstChrgValue ?? ''}}" disabled="">
+
+            </div>
+            @endif
+            {{--
             <div class="form-group">
                 <label for="txtCreditPeriod">Processing Fee
                     <span class="mandatory">*</span>
@@ -55,6 +66,7 @@
                     <option value="0" {{ (isset($chargeData->is_active) && $chargeData->is_active == 0)  ? 'selected' : '' }}>Inactive</option>
                 </select> 
             </div>
+            --}}
         </div>
 
 
@@ -68,7 +80,13 @@
 
 @section('jscript')
 <script>
+ var messages = {
+        change_gst_amount: "{{ URL::route('backend_get_invoice_processing_gst_amount') }}",
+        token: "{{ csrf_token() }}",
+    };
 
+
+   
 $(document).ready(function () {
 
 	$('#InvoiceChrg').validate({ // initialize the plugin
@@ -100,6 +118,28 @@ $(document).ready(function () {
 		}  
 	});            
 
-	});
+});
+$('#chrg_value').change(function () {
+    var chrg_value = $(this).val();
+    var chrg_type = $('#chrg_type').val();
+    var invoice_id = $('#invoice_id').val();
+    var postData = ({'chrg_value':chrg_value,'chrg_type':chrg_type,'invoice_id': invoice_id, '_token': messages.token});
+
+    jQuery.ajax({
+        url: messages.change_gst_amount,
+        method: 'post',
+        dataType: 'json',
+        data: postData,
+        error: function (xhr, status, errorThrown) {
+            alert(errorThrown);
+        },
+        success: function (data) {
+            // console.log(data.gstChrgValue);
+            $('#gst_chrg_value').val(data.gstChrgValue);
+            $('#invoice_gst_chrg_value').val(data.gstChrgValue);
+        }
+    });
+});
+
 </script>
 @endsection
