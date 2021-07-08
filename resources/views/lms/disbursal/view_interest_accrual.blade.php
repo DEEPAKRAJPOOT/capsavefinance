@@ -58,7 +58,7 @@
                 <td><b>Total accured interest till date:</b></td>
                 <td>{{number_format((float)$disbursal->accruedInterest->sum('accrued_interest'), 2, '.', '')  }}</td>
                 <td><b>Total Invoice Processing Fee:</b></td>
-                <td>{{ number_format(($disbursal->processing_fee),2)}}</td>
+                <td>{{ number_format(($disbursal->processing_fee + ($disbursal->processing_fee_gst ?? 0)),2)}}</td>
             </tr>
             <tr>
                 <td><b>Payment Frequency:</b></td>

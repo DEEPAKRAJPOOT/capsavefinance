@@ -5082,9 +5082,10 @@ if ($err) {
         $getPercentage  = $this->lmsRepo->getLastGSTRecord();
 
         $tax_value  =0;
-
+        $marginAmt = $this->calMargin($invoiceData->invoice_approve_amount, $invoiceData->program_offer->margin);
+        $principleAmt = $invoiceData->invoice_approve_amount - $marginAmt;
         if (isset($typeFlag) && $typeFlag == 2) {
-            $processingFee = $this->calPercentage($invoiceData->invoice_margin_amount, $valueAmt);
+            $processingFee = $this->calPercentage($principleAmt, $valueAmt);
         } else {
             $processingFee = $valueAmt;
         }

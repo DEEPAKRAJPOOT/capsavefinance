@@ -1183,7 +1183,7 @@ class DataRenderer implements DataProviderInterface
                         $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv2"><option value="0">Change Status</option><option value="7">Pending</option><option value="14"> Reject</option></select></div>';
                       }
                      }
-                     if (empty($invoice->processing_fee && $invoice->program_offer->is_invoice_processingfee == 1)) {
+                     if (empty($invoice->processing_fee) && $invoice->program_offer->is_invoice_processingfee == 1) {
                             $action .= '<span style="color : red;"> Update Charge</span>';
                         }
                      return  $action;
