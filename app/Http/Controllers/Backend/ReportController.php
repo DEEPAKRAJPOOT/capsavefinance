@@ -578,7 +578,7 @@ class ReportController extends Controller
         $anchorList = $anchorList->get();
 
 
-        /*
+	      	
         $sendMail = false;
         $data = $this->reportsRepo->getMaturityReport([],$sendMail);
         if($sendMail){
@@ -604,7 +604,7 @@ class ReportController extends Controller
                     \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
                 }
             }
-        }*/
+        }
 
         $sendMail = false;
         $data = $this->reportsRepo->getUtilizationReport( [],$sendMail);
@@ -616,7 +616,7 @@ class ReportController extends Controller
             $emailData['body'] = 'PFA';
             $emailData['attachment'] = $filePath;
             $emailData['subject'] ="Utilization Report";
-           // \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
+            \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
             
             foreach($anchorList as $anchor){
                 $sendMail = false;
@@ -629,11 +629,11 @@ class ReportController extends Controller
                     $emailData['body'] = 'PFA';
                     $emailData['attachment'] = $filePath;
                     $emailData['subject'] ="Utilization Report (".$anchor->comp_name.")";
-                   // \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
+                    \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
                 }
             }
         }        
-		/*
+
         $sendMail = false;
         $data = $this->reportsRepo->getDisbursalReport([],$sendMail);
         if($sendMail){
@@ -687,7 +687,6 @@ class ReportController extends Controller
             $emailData['subject'] ="Disbursal Report";
             \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
         }
-		*/
         
         dump('end....');
     }
@@ -942,7 +941,7 @@ class ReportController extends Controller
             ->setCellValue('F'.$rows, 'Invoice Date')
             ->setCellValue('G'.$rows, 'Invoice Amount')
             ->setCellValue('H'.$rows, 'Margin Amount')
-            ->setCellValue('I'.$rows, 'Amount Disbursed')
+            ->setCellValue('I'.$rows, 'Amount Disbrused')
             ->setCellValue('J'.$rows, 'UTR')
             ->setCellValue('K'.$rows, 'Remark while uploading Invoice')
             ->setCellValue('L'.$rows, 'Beneficiary Credit Account No.')	
