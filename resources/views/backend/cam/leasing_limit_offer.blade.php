@@ -215,7 +215,7 @@
                 </select>
             </div>
         </div>
-        <div class="col-md-6" id="invoice_processingfee_type" style="display: {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1) ? 'block' : 'none' }};">
+        <div class="col-md-6" id="invoice_processingfee_type_div" style="display: {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1) ? 'block' : 'none' }};">
             <div class="form-group">
             <label for="txtCreditPeriod">Charge Type
                 <span class="mandatory">*</span>
@@ -226,7 +226,7 @@
             </select> 
             </div>
         </div>
-        <div class="col-md-6"  id="invoice_processingfee_value" style="display: {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1) ? 'block' : 'none' }};">
+        <div class="col-md-6"  id="invoice_processingfee_value_div" style="display: {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1) ? 'block' : 'none' }};">
             <div class="form-group">
                 <label for="txtCreditPeriod">Amount/Percentage
                     <span class="mandatory">*</span>
@@ -590,8 +590,8 @@
   
   $(document).on('change', '#invoice_processingfee', function(){
     let selected_val = $(this).find('option:selected').val();
-    let selector1 = $('#invoice_processingfee_type');
-    let selector2 = $('#invoice_processingfee_value');
+    let selector1 = $('#invoice_processingfee_type_div');
+    let selector2 = $('#invoice_processingfee_value_div');
 
     if(selected_val == 1){
         $(selector1).show();

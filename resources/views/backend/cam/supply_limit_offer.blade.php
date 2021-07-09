@@ -168,7 +168,7 @@
             </select> 
             </div>
         </div>
-        <div class="col-md-6"  id="invoice_processingfee_div" style="display: {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1) ? 'block' : 'none' }};">
+        <div class="col-md-6"  id="invoice_processingfee_value_div" style="display: {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1) ? 'block' : 'none' }};">
             <div class="form-group">
                 <label for="txtCreditPeriod">Amount/Percentage
                     <span class="mandatory">*</span>
