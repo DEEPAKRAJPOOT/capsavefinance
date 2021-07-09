@@ -12,7 +12,7 @@
                         <td><b>Invoice Approved Amount:</b></td>
                         <td>{{ number_format($invoiceData->invoice_approve_amount, 2) }}</td>
                         <td><b>Margin(%):</b></td>
-                        <td>{{ number_format($marginAmt,2)}}</td>
+                        <td>{{ number_format($invoiceData->program_offer->margin, 2) }}</td>
                     </tr>
                     <tr>
                         <td><b>Principle Amount:</b></td>
