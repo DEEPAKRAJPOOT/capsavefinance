@@ -893,6 +893,8 @@
     var bizOwners = {!! json_encode($bizOwners) !!};
     var anchors = {!! json_encode($anchors) !!};
     var appType = {{ config('common.app_type')[$appType] }};
+    var offerData = '{{ isset($offerData->prgm_offer_id) ? $offerData->prgm_offer_id : "" }}'
+    
 
     function anchorDropdown(anchors){
         let $html='<option value="">Select Debtor</option>';
@@ -1468,26 +1470,30 @@
   function fillProgramData(anchorPrgms){
     let program_id = $('#program_id option:selected').val();
     if(typeof program_id == 'undefined' || program_id == '' || program_id == null){
-        //$('input[name=tenor]').val();
-        //$('input[name=tenor_old_invoice]').val();
-        $('input[name=margin]').val('');
-        $('input[name=overdue_interest_rate]').val('');
-        $('input[name=adhoc_interest_rate]').val('');
-        $('input[name=grace_period]').val('');
-        //$('input[name=processing_fee]').val('');
-        //$('input[name=document_fee]').val();
+        if(offerData == "") { 
+            //$('input[name=tenor]').val();
+            //$('input[name=tenor_old_invoice]').val();
+            $('input[name=margin]').val('');
+            $('input[name=overdue_interest_rate]').val('');
+            $('input[name=adhoc_interest_rate]').val('');
+            $('input[name=grace_period]').val('');
+            //$('input[name=processing_fee]').val('');
+            //$('input[name=document_fee]').val();
+        }
         return;
     }
     $.each(anchorPrgms, function(i,program){
         if(program.prgm_id == program_id){
-            //$('input[name=tenor]').val();
-            //$('input[name=tenor_old_invoice]').val();
-            $('input[name=margin]').val(program.margin);
-            $('input[name=overdue_interest_rate]').val(program.overdue_interest_rate);
-            $('input[name=adhoc_interest_rate]').val(program.adhoc_interest_rate);
-            $('input[name=grace_period]').val(program.grace_period);
-            //$('input[name=processing_fee]').val(program.processing_fee);
-            //$('input[name=document_fee]').val();
+            if(offerData == "") { 
+                //$('input[name=tenor]').val();
+                //$('input[name=tenor_old_invoice]').val();
+                $('input[name=margin]').val(program.margin);
+                $('input[name=overdue_interest_rate]').val(program.overdue_interest_rate);
+                $('input[name=adhoc_interest_rate]').val(program.adhoc_interest_rate);
+                $('input[name=grace_period]').val(program.grace_period);
+                //$('input[name=processing_fee]').val(program.processing_fee);
+                //$('input[name=document_fee]').val();
+            }
             fillChargesBlock(program);
         }
     });
@@ -1519,7 +1525,9 @@
         }
 
     });
-    $('.charges_block').html(html);
+    if(offerData == "") { 
+        $('.charges_block').html(html);
+    }
     //$(html).insertAfter(".charges_block");
   }
 </script>
