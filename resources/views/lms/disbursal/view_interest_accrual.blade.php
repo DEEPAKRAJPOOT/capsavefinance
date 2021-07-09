@@ -64,7 +64,7 @@
                 <td><b>Payment Frequency:</b></td>
                 <td>{{$paymentFrequency == 1 ? 'Up Front' : ($paymentFrequency == 2 ? 'Monthly' : 'Rear Ended') }}</td>
                 <td><b>Actual Disburse/Principal Amount:</b></td>
-                <td>{{ number_format(($disbursal->disburse_amt - $disbursal->total_interest - $disbursal->processing_fee),2)}}</td>
+                <td>{{ number_format(($disbursal->disburse_amt - $disbursal->total_interest - $disbursal->processing_fee - ($disbursal->processing_fee_gst ?? 0)),2)}}</td>
             </tr>
            {{--<tr>
                 <td><b>Outstanding Amount:</b></td>
