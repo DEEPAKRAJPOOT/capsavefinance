@@ -140,7 +140,7 @@
         @foreach($offerData->offerCharges as $key=>$offerCharge)
         <div class="col-md-6">
           <div class="form-group">
-              <label for="txtPassword">{!!$offerCharge->chargeName->chrg_name.(($offerCharge->chrg_type == 2)? ' (%)': ' (&#8377;)')!!}</label>
+              <label for="txtPassword">{!!$offerCharge->chargeName->chrg_name.(($offerCharge->chrg_type == 2)? ' (%)': ' (&#8377;)')!!} @Sanction level</label>
                 <input type="text" name="charge_names[{{$offerCharge->charge_id.'#'.$offerCharge->chrg_type}}]" class="form-control" data-type="{{$offerCharge->chrg_type}}" data-name="{{$offerCharge->chargeName->chrg_name}}" value="{{$offerCharge->chrg_value}}" maxlength="6">
           </div>
         </div>

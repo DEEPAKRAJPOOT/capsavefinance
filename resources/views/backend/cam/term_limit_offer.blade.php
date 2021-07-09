@@ -195,7 +195,7 @@
 
         <div class="col-md-6">
           <div class="form-group">
-            <label for="txtPassword"><b>Processing Fee (%)</b> <span style="color: red;"> *</span></label>
+            <label for="txtPassword"><b>Processing Fee (%) @Sanction level</b> <span style="color: red;"> *</span></label>
             <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
           </div>
         </div>

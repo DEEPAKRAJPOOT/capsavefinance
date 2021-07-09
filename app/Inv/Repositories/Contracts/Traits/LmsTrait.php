@@ -38,7 +38,7 @@ trait LmsTrait
     }  
 
     protected function calPercentage($amount, $percenttage){
-        return ($amount*$percenttage)/100;
+        return round(($amount*$percenttage)/100,2);
     }  
 
     protected function calMargin($amt, $val)

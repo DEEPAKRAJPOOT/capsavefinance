@@ -5102,8 +5102,13 @@ if ($err) {
         }
 
         $fWGst = round((($processingFee*$tax_value)/100),2);
-        $gstChrgValue = $processingFee + $fWGst;
-        return new JsonResponse(['gstChrgValue' => $gstChrgValue]);
+        $gstChrgValue = round($processingFee + $fWGst,2);
+        return new JsonResponse(
+            [
+                'gstChrgValue' => $gstChrgValue,
+                'processingFee' => $processingFee,
+                'fWGst' => $fWGst
+            ]);
         // return [
         // 'status' => 
         // 'gstChrgValue' => $gstChrgValue];

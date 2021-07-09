@@ -6,7 +6,22 @@
         <div class="col-md-12">
             <input type="hidden" name="invoice_id" id="invoice_id" value="{{ $invoiceId }}">
             <input type="hidden" name="invoice_gst_chrg_value" id="invoice_gst_chrg_value" value="{{ $gstChrgValue ?? ''}}">
-            
+            <table class="table table-striped cell-border no-footer"  cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+                <tbody> 
+                    <tr>
+                        <td><b>Invoice Approved Amount:</b></td>
+                        <td>{{ number_format($invoiceData->invoice_approve_amount, 2) }}</td>
+                        <td><b>Margin(%):</b></td>
+                        <td>{{ number_format($marginAmt,2)}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Principle Amount:</b></td>
+                        <td>{{ number_format(($invoiceData->invoice_approve_amount - $marginAmt), 2) }}</td>
+                        <td><b>GST Percentage:</b></td>
+                        <td>{{ $getPercentage['tax_value'] ?? ''}}</td>
+                    </tr>
+                </tbody>
+            </table>
             <div class="form-group">
                 <label for="txtCreditPeriod">Charge Type
                     <span class="mandatory">*</span>
@@ -32,7 +47,7 @@
 
             </div>
             <div class="form-group">
-                <label for="txtCreditPeriod">Amount/Percentage
+                <label for="txtCreditPeriod">Charge Amount/Percentage
                     <span class="mandatory">*</span>
                 </label>
                 @php 
@@ -47,9 +62,16 @@
                 <input type="text" class="form-control" id="chrg_value" name="chrg_value" placeholder="Enter Amount/Percentage" value="{{ (isset($valueAmt) && $valueAmt) ? $valueAmt : '' }}">
 
             </div>
+            <div class="form-group">
+                <label for="txtCreditPeriod">Processing Fee Amount
+                    <span class="mandatory">*</span>
+                </label>
+                <input type="text" class="form-control" id="processing_fee_amount" name="processing_fee_amount" placeholder="GST Charge Amount" value="{{ $processingFee ?? ''}}" disabled="">
+
+            </div>
             @if($chrgData->is_gst_applicable == 1)
             <div class="form-group">
-                <label for="txtCreditPeriod">GST Charge Amount
+                <label for="txtCreditPeriod">Processing Fee with GST
                     <span class="mandatory">*</span>
                 </label>
                 <input type="text" class="form-control" id="gst_chrg_value" name="gst_chrg_value" placeholder="GST Charge Amount" value="{{ $gstChrgValue ?? ''}}" disabled="">
@@ -137,6 +159,7 @@ $('#chrg_value').change(function () {
             // console.log(data.gstChrgValue);
             $('#gst_chrg_value').val(data.gstChrgValue);
             $('#invoice_gst_chrg_value').val(data.gstChrgValue);
+            $('#processing_fee_amount').val(data.processingFee);
         }
     });
 });

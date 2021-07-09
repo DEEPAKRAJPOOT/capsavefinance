@@ -2024,7 +2024,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
         $fWGst = round((($processingFee*$tax_value)/100),2);
         $gstChrgValue = $processingFee + $fWGst;
-
+        // dd($invoiceData, $marginAmt);
         return view('backend.invoice.update_invoice_charge')
                 ->with([
                     'invoiceId' => $invoiceId,
@@ -2032,6 +2032,10 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     'offerData' => $offerData,
                     'chrgData' => $chrgData,
                     'gstChrgValue' => $gstChrgValue,
+                    'invoiceData' => $invoiceData,
+                    'marginAmt' => $marginAmt,
+                    'getPercentage' => $getPercentage,
+                    'processingFee' => $processingFee,
                 ]);;              
     }
 
