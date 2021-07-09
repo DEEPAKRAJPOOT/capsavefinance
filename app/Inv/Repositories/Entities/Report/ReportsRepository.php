@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Helpers\Helper;
 use App\Http\Requests\Request;
 use App\Inv\Repositories\Models\Payment;
+use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Models\Lms\UserInvoice;
@@ -178,74 +179,70 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		return $result;
 	}
 
-	public function getUtilizationReport($whereCondition=[], &$sendMail){
+    public function getUtilizationReport($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
 
-		$invDisbList = InvoiceDisbursed::with(['transactions' => function($query2){
-			$query2->whereNull('payment_id')
-			->whereNull('link_trans_id')
-			->whereNull('parent_trans_id')
-			->where('trans_type',config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))
-			->where('entry_type','0');
-		},
-		'invoice'=>function($query2) use($whereCondition, $curdate){
-			if(isset($whereCondition['anchor_id'])){
-				$query2->where('anchor_id',$whereCondition['anchor_id']);
-			}
-			/*$query2->whereHas('invoiceStatusLog', function($query3) use($curdate){
-				$query3->whereDate('disburse_date',$curdate)
-				->where('status_id',12);
-			});*/
-		},
-		'invoice.lms_user', 'invoice.business', 'disbursal','invoice.app.appLimit'])
-		->whereIn('status_id', [12,13,15,47])
-		->whereHas('invoice', function($query3) use($whereCondition){
-			if(isset($whereCondition['anchor_id'])){
-				$query3->where('anchor_id',$whereCondition['anchor_id']);
-			}
-		})
-		->get();
+        $invList = BizInvoice::whereNotIn('status_id',[7,11,14,28])
+        ->with('invoice_disbursed');
+        if(isset($whereCondition['anchor_id'])){
+			$invList->where('anchor_id',$whereCondition['anchor_id']);
+		}
 
-		$sendMail = ($invDisbList->count() > 0)?true:false;
+        $invList = $invList->get();
+
+		
+		$sendMail = ($invList->count() > 0)?true:false;
 
 		$result = [];
-		foreach($invDisbList as $invDisb){
+		foreach($invList as $inv){
+            $overdueAmt = 0;
+            $overdueDays = 0;
+            $marginRate = null;
+            if($inv->invoice_disbursed){
+                $overdueAmt = $inv->invoice_disbursed->accruedInterest()->whereNotNull('overdue_interest_rate')->sum('accrued_interest');
+                $overdueDays = $inv->invoice_disbursed->accruedInterest()->whereNotNull('overdue_interest_rate')->get()->count();
+                $marginRate = $inv->invoice_disbursed->margin;
+            }
+            
+            $invDetails =  $inv;
+            $offerDetails = $invDetails->program_offer->toArray();
+            $offerDetails['user_id'] = $invDetails->supplier_id;
+            $prgmDetails = $invDetails->program;
+            $anchorDetails = $invDetails->anchor;
+            $salesUserDetails = $anchorDetails->salesUser;
 
-			$sanctionCase[$invDisb->invoice->program_id][] = $invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id;
+            if(!$marginRate){
+                $marginRate = $offerDetails['margin'];
+            }
 
-			$test[$invDisb->invoice->program_id][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id][] = $invDisb->invoice_id;
-
-			$result[$invDisb->invoice->program_id]['anchor_name'] =  $invDisb->invoice->anchor->comp_name;
-			$result[$invDisb->invoice->program_id]['prgm_name'] =  $invDisb->invoice->program->parentProgram->prgm_name;
-			$result[$invDisb->invoice->program_id]['sub_prgm_name'] =  $invDisb->invoice->program->prgm_name;
-			$result[$invDisb->invoice->program_id]['client_sanction'] =  count(array_unique($sanctionCase[$invDisb->invoice->program_id]));
-			$result[$invDisb->invoice->program_id]['ttl_od_customer'] =  0;
-			$result[$invDisb->invoice->program_id]['ttl_od_amt'] = 0;
-
-			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['client_name'] = $invDisb->invoice->business->biz_entity_name;
-			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['loan_ac'] = config('common.idprefix.APP').$invDisb->invoice->app_id;
-			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['virtual_ac'] = $invDisb->invoice->lms_user->virtual_acc_id;
-			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['client_sanction_limit'] = AppProgramLimit::getProductLimit($invDisb->invoice->lms_user->app_id, 1)->sum('product_limit');
-			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['limit_utilize'] = AppProgramLimit::getUtilizeLimit($invDisb->invoice->lms_user->app_id, 1)->sum('utilize_limit');
-			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['end_date'] = $invDisb->invoice->app->appLimit->end_date??'';
-			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['sub_prgm_name']= $invDisb->invoice->program->prgm_name;
-
-			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['limit_available'] = $result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['client_sanction_limit'] - $result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['limit_utilize'];
-
-			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['sales_person_name']= ($invDisb->invoice->anchor->salesUser->f_name.' '. $invDisb->invoice->anchor->salesUser->m_name.' '. $invDisb->invoice->anchor->salesUser->l_name);
-
-			$result[$invDisb->invoice->program_id]['disbursement'][$invDisb->invoice->supplier_id.'-'.$invDisb->invoice->app_id]['invoice'][$invDisb->invoice_id] = [
-				'invoice_no' => $invDisb->invoice->invoice_no,
-				'invoice_date' => $invDisb->invoice->invoice_date,
-				'invoice_amt' => $invDisb->invoice->invoice_amount,
-				'margin_amt' => $invDisb->invoice->invoice_approve_amount*$invDisb->margin/100,
-				'disb_amt' => $invDisb->invoice->invoice_amount,
-				'od_days'=>$invDisb->accruedInterest()->whereNotNull('overdue_interest_rate')->get()->count(),
-				'od_amt'=>$invDisb->accruedInterest()->whereNotNull('overdue_interest_rate')->sum('accrued_interest'),
+			$sanctionCase[$invDetails->program_id][] = $invDetails->supplier_id.'-'.$invDetails->app_id;
+			$test[$invDetails->program_id][$invDetails->supplier_id.'-'.$invDetails->app_id][] = $invDetails->invoice_id;
+			$result[$invDetails->program_id]['anchor_name'] =  $anchorDetails->comp_name;
+			$result[$invDetails->program_id]['prgm_name'] =  $prgmDetails->parentProgram->prgm_name;
+			$result[$invDetails->program_id]['sub_prgm_name'] =  $prgmDetails->prgm_name;
+			$result[$invDetails->program_id]['client_sanction'] =  count(array_unique($sanctionCase[$invDetails->program_id]));
+			$result[$invDetails->program_id]['ttl_od_customer'] =  0;
+			$result[$invDetails->program_id]['ttl_od_amt'] = ($result[$invDetails->program_id]['ttl_od_amt']??0) + $overdueAmt;
+			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['client_name'] = $invDetails->business->biz_entity_name;
+			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['loan_ac'] = config('common.idprefix.APP').$invDetails->app_id;
+			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['virtual_ac'] = $invDetails->lms_user->virtual_acc_id;
+			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['client_sanction_limit'] = $offerDetails['prgm_limit_amt'];
+			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['limit_utilize'] = Helper::invoiceAnchorLimitApprove($offerDetails);
+			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['end_date'] = $invDetails->app->appLimit->end_date??'';
+			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['sub_prgm_name']= $prgmDetails->prgm_name;
+			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['limit_available'] = $result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['client_sanction_limit'] - $result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['limit_utilize'];
+			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['sales_person_name']= ($salesUserDetails->f_name.' '. $salesUserDetails->m_name.' '. $salesUserDetails->l_name);
+			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['invoice'][$invDetails->invoice_id] = [
+				'invoice_no' => $invDetails->invoice_no,
+				'invoice_date' => $invDetails->invoice_date,
+				'invoice_amt' => $invDetails->invoice_amount,
+				'margin_amt' => $invDetails->invoice_approve_amount*$marginRate/100,
+				'disb_amt' => $invDetails->invoice_amount,
+				'od_days'=>$overdueDays,
+				'od_amt'=> $overdueAmt,
 			];
 			
-			$invDisb->invoice->toArray(); 
 		}
 		
 		return $result;

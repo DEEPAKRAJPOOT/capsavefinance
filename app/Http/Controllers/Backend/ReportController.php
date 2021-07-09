@@ -92,7 +92,7 @@ class ReportController extends Controller
 				->setCellValue('A'.$rows, 'Loan #')
 				->setCellValue('B'.$rows, 'Cutomer ID')
 				->setCellValue('C'.$rows, 'Client Name')
-				->setCellValue('D'.$rows, 'Amount Disbrused (₹)')
+				->setCellValue('D'.$rows, 'Amount Disbursed (₹)')
 				->setCellValue('E'.$rows, 'From Date')
 				->setCellValue('F'.$rows, 'To date')
 				->setCellValue('G'.$rows, 'Days')
@@ -578,7 +578,7 @@ class ReportController extends Controller
         $anchorList = $anchorList->get();
 
 
-        
+        /*
         $sendMail = false;
         $data = $this->reportsRepo->getMaturityReport([],$sendMail);
         if($sendMail){
@@ -604,7 +604,7 @@ class ReportController extends Controller
                     \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
                 }
             }
-        }
+        }*/
 
         $sendMail = false;
         $data = $this->reportsRepo->getUtilizationReport( [],$sendMail);
@@ -616,7 +616,7 @@ class ReportController extends Controller
             $emailData['body'] = 'PFA';
             $emailData['attachment'] = $filePath;
             $emailData['subject'] ="Utilization Report";
-            \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
+           // \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
             
             foreach($anchorList as $anchor){
                 $sendMail = false;
@@ -629,11 +629,11 @@ class ReportController extends Controller
                     $emailData['body'] = 'PFA';
                     $emailData['attachment'] = $filePath;
                     $emailData['subject'] ="Utilization Report (".$anchor->comp_name.")";
-                    \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
+                   // \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
                 }
             }
         }        
-
+		/*
         $sendMail = false;
         $data = $this->reportsRepo->getDisbursalReport([],$sendMail);
         if($sendMail){
@@ -687,6 +687,7 @@ class ReportController extends Controller
             $emailData['subject'] ="Disbursal Report";
             \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
         }
+		*/
         
         dump('end....');
     }
@@ -704,7 +705,7 @@ class ReportController extends Controller
             ->setCellValue('G'.$rows, 'Invoice Date')
             ->setCellValue('H'.$rows, 'Invoice Amount')
             ->setCellValue('I'.$rows, 'Margin Amount')
-            ->setCellValue('J'.$rows, 'Amount Disbrused')
+            ->setCellValue('J'.$rows, 'Amount Disbursed')
             ->setCellValue('K'.$rows, 'O/s Amount')
             ->setCellValue('L'.$rows, 'O/s Days')
             ->setCellValue('M'.$rows, 'Credit Period')
@@ -762,7 +763,7 @@ class ReportController extends Controller
             ->setCellValue('F'.$rows, 'Invoice Date')
             ->setCellValue('G'.$rows, 'Invoice Amount')
             ->setCellValue('H'.$rows, 'Margin Amount')
-            ->setCellValue('I'.$rows, 'Amount Disbrused')
+            ->setCellValue('I'.$rows, 'Amount Disbursed')
             ->setCellValue('J'.$rows, 'UTR')
             ->setCellValue('K'.$rows, 'Remark while uploading Invoice');
         $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
@@ -853,7 +854,7 @@ class ReportController extends Controller
                         ->setCellValue('C'.$rows,'Invoice Date')
                         ->setCellValue('D'.$rows,'Invoice Amount')
                         ->setCellValue('E'.$rows,'Margin Amount')
-                        ->setCellValue('F'.$rows,'Amount Disbrused')
+                        ->setCellValue('F'.$rows,'Amount Disbursed')
                         ->setCellValue('G'.$rows,'Over Due Days')
                         ->setCellValue('H'.$rows,'Over Due Amount');
                         $sheet->getActiveSheet()->getStyle('A'.$rows.':H'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
@@ -941,7 +942,7 @@ class ReportController extends Controller
             ->setCellValue('F'.$rows, 'Invoice Date')
             ->setCellValue('G'.$rows, 'Invoice Amount')
             ->setCellValue('H'.$rows, 'Margin Amount')
-            ->setCellValue('I'.$rows, 'Amount Disbrused')
+            ->setCellValue('I'.$rows, 'Amount Disbursed')
             ->setCellValue('J'.$rows, 'UTR')
             ->setCellValue('K'.$rows, 'Remark while uploading Invoice')
             ->setCellValue('L'.$rows, 'Beneficiary Credit Account No.')	

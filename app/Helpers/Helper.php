@@ -1607,7 +1607,7 @@ class Helper extends PaypalHelper
     }
     
     
-           public   function invoiceAnchorLimitApprove($attr)
+           public static  function invoiceAnchorLimitApprove($attr)
         {
                 $prgmData = Program::where('prgm_id', $attr['prgm_id'])->first();
                 if (isset($prgmData->parent_prgm_id)) {
