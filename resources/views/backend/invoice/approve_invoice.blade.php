@@ -125,6 +125,7 @@
         </div>
     </div>
 </div>
+{!!Helpers::makeIframePopup('iframeUpdateInvoiceCharge','Add/Update Processing Fee', 'modal-md')!!}
 
 @endsection
 @section('jscript')

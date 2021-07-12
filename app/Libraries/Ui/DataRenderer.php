@@ -1101,7 +1101,7 @@ class DataRenderer implements DataProviderInterface
                     $id = Auth::user()->user_id;
                     $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                     $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                    if($chkUser->id!=11) 
+                    if($chkUser->id!=11 && (!empty($invoice->processing_fee) || $invoice->program_offer->is_invoice_processingfee == 0)) 
                         {
                            return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
                 
@@ -1171,6 +1171,11 @@ class DataRenderer implements DataProviderInterface
                      $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
                       if($chkUser->id!=11) 
                      {
+                      if(Helpers::checkPermission('iframe_update_invoice_chrg') && ($invoice->program_offer->is_invoice_processingfee == 1)){
+
+                        $action .= '<a  data-toggle="modal" data-target="#iframeUpdateInvoiceCharge" data-url ="' . route('iframe_update_invoice_chrg', ['invoice_id' => $invoice->invoice_id ?? 0]) . '" data-height="400px" data-width="100%" class="btn btn-action-btn btn-sm" title="Add Processing Fee"><i class="fa fa-plus-square"></i></a>';
+
+                      }
                       if(Helpers::checkPermission('update_invoice_approve_single_tab') ){
                         $action .='<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm disburseInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
                       }
@@ -1178,6 +1183,9 @@ class DataRenderer implements DataProviderInterface
                         $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv2"><option value="0">Change Status</option><option value="7">Pending</option><option value="14"> Reject</option></select></div>';
                       }
                      }
+                     if (empty($invoice->processing_fee) && $invoice->program_offer->is_invoice_processingfee == 1) {
+                            $action .= '<span style="color : red;"> Update Charge</span>';
+                        }
                      return  $action;
                 })
                  ->filter(function ($query) use ($request) {

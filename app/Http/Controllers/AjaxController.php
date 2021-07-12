@@ -44,6 +44,7 @@ use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Crypt;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 
 class AjaxController extends Controller {
 
@@ -58,6 +59,7 @@ class AjaxController extends Controller {
     protected $invRepo;
     protected $docRepo;
     protected $lms_repo;
+    use LmsTrait;
 
 
     function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo, ReportInterface $reportsRepo) {
@@ -2755,6 +2757,7 @@ if ($err) {
      public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {
         ini_set('memory_limit',-1);
         $invoice_data = $this->invRepo->getAllManageInvoice($this->request,8);
+        // dd($invoice_data->first());
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
         return $invoice;
     } 
@@ -5066,5 +5069,48 @@ if ($err) {
         } else {
             return $respose = ['status'=>'0'];
         }
+    }
+
+    public function backendGetInvoiceProcessingGstAmount(Request $request) {
+        $invoiceId = $request->get('invoice_id');
+        $typeFlag = $request->get('chrg_type');
+        $valueAmt = $request->get('chrg_value');
+        $invoiceData = $this->invRepo->getInvoiceById($invoiceId);
+        $chargeData = $this->invRepo->getInvoiceProcessingFee(['invoice_id' =>$invoiceId]);
+        // $offerData = $this->appRepo->getOfferData(['prgm_offer_id' =>$invoiceData->prgm_offer_id]);
+        $chrgData = $this->application->getInvoiceProcessingFeeCharge();
+        $getPercentage  = $this->lmsRepo->getLastGSTRecord();
+
+        $tax_value  =0;
+        $marginAmt = $this->calMargin($invoiceData->invoice_approve_amount, $invoiceData->program_offer->margin);
+        $principleAmt = $invoiceData->invoice_approve_amount - $marginAmt;
+        if (isset($typeFlag) && $typeFlag == 2) {
+            $processingFee = $this->calPercentage($principleAmt, $valueAmt);
+        } else {
+            $processingFee = $valueAmt;
+        }
+
+        if($chrgData->is_gst_applicable == 1) {
+            if($getPercentage)
+            {
+                $tax_value  = $getPercentage['tax_value'];
+            }
+            else
+            {
+                $tax_value  =0; 
+            }
+        }
+
+        $fWGst = round((($processingFee*$tax_value)/100),2);
+        $gstChrgValue = round($processingFee + $fWGst,2);
+        return new JsonResponse(
+            [
+                'gstChrgValue' => $gstChrgValue,
+                'processingFee' => $processingFee,
+                'fWGst' => $fWGst
+            ]);
+        // return [
+        // 'status' => 
+        // 'gstChrgValue' => $gstChrgValue];
     }
 }

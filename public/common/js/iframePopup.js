@@ -136,6 +136,7 @@ var iframe_ids = [
     'addBankMaster',
     'editBankMaster',
     'viewOnlineDisbursalRollback',
+    'iframeUpdateInvoiceCharge',
 ];
 
 iframe_ids.forEach(function (id) {

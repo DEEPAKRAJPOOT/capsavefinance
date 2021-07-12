@@ -37,6 +37,10 @@ trait LmsTrait
         return $tenorDays * $interest;        
     }  
 
+    protected function calPercentage($amount, $percenttage){
+        return round(($amount*$percenttage)/100,2);
+    }  
+
     protected function calMargin($amt, $val)
     {
         return ($amt*$val)/100;
@@ -194,6 +198,8 @@ trait LmsTrait
         $disbursalData['tenor_days'] =  $tenor ?? null;
         $disbursalData['interest_rate'] = $actIntRate ?? null;
         $disbursalData['total_interest'] = $interest;
+        $disbursalData['processing_fee'] = $invoice['processing_fee'] ?? 0.00;
+        $disbursalData['processing_fee_gst'] = $invoice['processing_fee_gst'] ?? 0.00;
         $disbursalData['margin'] = $invoice['program_offer']['margin'] ?? null;
         $disbursalData['status_id'] = 10;
         
@@ -287,6 +293,10 @@ trait LmsTrait
         $transactionData['pay_from'] = ($transType == 16) ? 3 : $this->appRepo->getUserTypeByUserId($userId);
         $transactionData['is_settled'] = 0;
         $transactionData['is_posted_in_tally'] = 0;
+        $transactionData['base_amt'] = $data['base_amt'] ?? null;
+        $transactionData['gst_amt'] = $data['gst_amt'] ?? null;
+        $transactionData['chrg_gst_id'] = $data['chrg_gst_id'] ?? null;
+        $transactionData['trans_mode'] = $data['trans_mode'] ?? null;
 
         $curData = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
                         

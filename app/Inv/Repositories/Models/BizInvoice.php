@@ -99,21 +99,21 @@ class BizInvoice extends BaseModel
      *
      * @return boolean
      */
-public static function saveInvoice($arrInvoice)
+    public static function saveInvoice($arrInvoice)
     {
         return  self::create($arrInvoice);
         
     } 
     
     
-public static function saveBulkInvoice($arrInvoice)
+    public static function saveBulkInvoice($arrInvoice)
     {
         $arrInvoiceVal = self::insert($arrInvoice);
         return ($arrInvoiceVal ?: false);
     } 
     
         
-  public static function updateInvoice($invoiceId,$status)
+    public static function updateInvoice($invoiceId,$status)
     {
         $updated_at  = Carbon::now()->toDateTimeString();
         $id = Auth::user()->user_id;
@@ -323,7 +323,12 @@ public static function saveBulkInvoice($arrInvoice)
     {
        return $this->hasOne('App\Inv\Repositories\Models\User','user_id');  
     }
-    
+     
+    function processing_fee()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\InvoiceCharge','invoice_id')->where(['charge_id' => 12, 'is_active' => 1]);  
+    }
+
     function userDetail()
     {
        return $this->belongsTo('App\Inv\Repositories\Models\UserDetail','supplier_id','user_id'); 
