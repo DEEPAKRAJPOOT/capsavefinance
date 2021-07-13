@@ -1619,14 +1619,34 @@ class Helper extends PaypalHelper
 
                 if($is_enhance==1)
                 { 
-                    $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->where('app_id' , '<=', $attr['app_id'])->sum('invoice_margin_amount');
-                    $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->where('app_id' , '<=', $attr['app_id'])->sum('repayment_amt');
+                    $marginApprAmt   =   BizInvoice::whereIn('program_id', $prgm_ids)
+                    ->where('prgm_offer_id',$attr->prgm_offer_id)
+                    ->whereIn('status_id',[8,9,10,12])
+                    ->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+                    ->where('app_id' , '<=', $attr['app_id'])
+                    ->sum('invoice_margin_amount');
+                    $marginReypayAmt =   BizInvoice::whereIn('program_id', $prgm_ids)
+                    ->where('prgm_offer_id',$attr->prgm_offer_id)
+                    ->whereIn('status_id',[8,9,10,12])
+                    ->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+                    ->where('app_id' , '<=', $attr['app_id'])
+                    ->sum('repayment_amt');
                     return $marginApprAmt-$marginReypayAmt;
-                 }
+                }
                 else
                 {
-                     $marginApprAmt   =  BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->sum('invoice_margin_amount');
-                     $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->sum('repayment_amt');
+                    $marginApprAmt   =  BizInvoice::whereIn('program_id', $prgm_ids)
+                    ->where('prgm_offer_id',$attr->prgm_offer_id)
+                    ->whereIn('status_id',[8,9,10,12])                    
+                    ->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+                    ->sum('invoice_margin_amount');
+                     
+                    $marginReypayAmt =  BizInvoice::whereIn('program_id', $prgm_ids)
+                    ->where('prgm_offer_id',$attr->prgm_offer_id)
+                    ->whereIn('status_id',[8,9,10,12])
+                    ->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+                    ->sum('repayment_amt');
+
                      return $marginApprAmt-$marginReypayAmt;
                 }
         }      
