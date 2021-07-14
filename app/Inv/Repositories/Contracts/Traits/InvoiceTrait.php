@@ -401,7 +401,7 @@ trait InvoiceTrait
        return self::twoDateDiff($CFrom,$app_id['end_date']);
    }
 
-     public static  function    invoiceApproveLimit($attr)
+    public static function invoiceApproveLimit($attr)
    {  
         $prgmData = Program::where('prgm_id', $attr['prgm_id'])->first();
         if (isset($prgmData->parent_prgm_id)) {
@@ -916,9 +916,17 @@ trait InvoiceTrait
    /* Created by gajendra chahan  */
   public static function adhocLimit($attr)
   {
-     $marginApprAmt =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1,'is_repayment' =>0])->sum('invoice_margin_amount');
-     $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1,'is_repayment' =>0])->sum('invoice_margin_amount');
-     return $marginApprAmt-$marginReypayAmt;
+    $sql   =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id']??$attr['supplier_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1,'is_repayment' =>0]);
+    if (isset($attr['app_offer_adhoc_limit_id'])) {
+      $sql = $sql->where(['app_offer_adhoc_limit_id' => $attr['app_offer_adhoc_limit_id']]);
+    }
+    $marginApprAmt = $sql->sum('invoice_margin_amount');
+    $sql =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id']??$attr['supplier_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1,'is_repayment' =>0]);
+    if (isset($attr['app_offer_adhoc_limit_id'])) {
+      $sql = $sql->where(['app_offer_adhoc_limit_id' => $attr['app_offer_adhoc_limit_id']]);
+    }
+    $marginReypayAmt = $sql->sum('principal_repayment_amt');
+    return $marginApprAmt-$marginReypayAmt;
    }
    
    public static function checkUserAdhoc($attr)

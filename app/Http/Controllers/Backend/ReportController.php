@@ -566,7 +566,7 @@ class ReportController extends Controller
     public function maturityReport(){
         ini_set("memory_limit", "-1");
         dump('start....');
-        $anchor_id = null;
+		$anchor_id = null;
         $emailTo =  config('lms.DAILY_REPORT_MAIL');
         if(empty($emailTo)){
             dd('DAILY_REPORT_MAIL is missing');
@@ -825,7 +825,7 @@ class ReportController extends Controller
                     $rows++;
                     $sheet->setActiveSheetIndex(0)
                     ->setCellValue('A'.$rows, 'Client Name')
-                    ->setCellValue('B'.$rows, 'Loan #')
+                    ->setCellValue('B'.$rows, 'Customer ID')
                     ->setCellValue('C'.$rows, 'Virtual Account #')
                     ->setCellValue('D'.$rows, 'Client Sanction Limit')
                     ->setCellValue('E'.$rows, 'Limit Utilized Limit')
@@ -837,7 +837,7 @@ class ReportController extends Controller
                     $rows++;
                     $sheet->setActiveSheetIndex(0)
                     ->setCellValue('A'.$rows, $disb['client_name'])
-                    ->setCellValue('B'.$rows, $disb['loan_ac'])
+                    ->setCellValue('B'.$rows, $disb['user_id'])
                     ->setCellValue('C'.$rows, $disb['virtual_ac'])
                     ->setCellValue('D'.$rows, number_format($disb['client_sanction_limit'],2))
                     ->setCellValue('E'.$rows, number_format($disb['limit_utilize'],2))
@@ -852,11 +852,15 @@ class ReportController extends Controller
                         ->setCellValue('B'.$rows,'Invoice #')
                         ->setCellValue('C'.$rows,'Invoice Date')
                         ->setCellValue('D'.$rows,'Invoice Amount')
-                        ->setCellValue('E'.$rows,'Margin Amount')
-                        ->setCellValue('F'.$rows,'Amount Disbursed')
-                        ->setCellValue('G'.$rows,'Over Due Days')
-                        ->setCellValue('H'.$rows,'Over Due Amount');
-                        $sheet->getActiveSheet()->getStyle('A'.$rows.':H'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+						->setCellValue('E'.$rows,'Invoice Approved')
+                        ->setCellValue('F'.$rows,'Margin Amount')
+                        ->setCellValue('G'.$rows,'Amount Disbursed')
+                        ->setCellValue('H'.$rows,'Principal OverDue Days')
+						->setCellValue('I'.$rows,'Principal OverDue Amount')
+						->setCellValue('J'.$rows,'Over Due Days')
+                        ->setCellValue('K'.$rows,'Over Due Interest Amount');
+
+                        $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
                         $rows++;
 
                         foreach($disb['invoice'] as $inv){
@@ -864,10 +868,13 @@ class ReportController extends Controller
                             ->setCellValue('B'.$rows,$inv['invoice_no'])
                             ->setCellValue('C'.$rows,Carbon::parse($inv['invoice_date'])->format('d/m/Y') ?? NULL)
                             ->setCellValue('D'.$rows,number_format($inv['invoice_amt'],2))
-                            ->setCellValue('E'.$rows,number_format($inv['margin_amt'],2))
-                            ->setCellValue('F'.$rows,number_format($inv['disb_amt'],2))
-                            ->setCellValue('G'.$rows,$inv['od_days'])
-                            ->setCellValue('H'.$rows,number_format($inv['od_amt'],2));
+							->setCellValue('E'.$rows,number_format($inv['approve_amt']))
+                            ->setCellValue('F'.$rows,number_format($inv['margin_amt'],2))
+                            ->setCellValue('G'.$rows,number_format($inv['disb_amt'],2))
+							->setCellValue('H'.$rows,$inv['principal_od_days'])
+							->setCellValue('I'.$rows,number_format($inv['principal_od_amount']))
+                            ->setCellValue('J'.$rows,$inv['od_days'])
+                            ->setCellValue('K'.$rows,number_format($inv['od_amt'],2));
                             $rows++;
                         }
                     }

@@ -1236,6 +1236,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			$response['case'] = $invDisbursed->invoice->program_offer->payment_frequency;
 			$response['is_settled'] = false;
 			$response['receipt'] = 0;
+			$response['principal_repayment_amt'] = 0;
 
 			$transactions = Transactions::whereNull('parent_trans_id')
 			->whereNull('payment_id')
@@ -1261,7 +1262,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 							'trans_running_id' => $transRunning->trans_running_id,
 							'amount'=> $transRunning->amount,
 							'outstanding'=>$transRunning->outstanding,
-							'trans_date'=>$transRunning->trans_date
+							'trans_date'=>$transRunning->trans_date,
+							'payment_frequency'=>$transRunning->invoiceDisbursed->invoice->program_offer->payment_frequency,
+							'interest_borne_by'=>$transRunning->invoiceDisbursed->invoice->program->interest_borne_by,
 						];
 						break;
 					case config('lms.TRANS_TYPE.INTEREST_OVERDUE'):
@@ -1290,7 +1293,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 							'trans_id' => $trans->trans_id,
 							'amount'=> $trans->amount,
 							'outstanding'=>$trans->outstanding,
-							'trans_date'=>$trans->trans_date
+							'trans_date'=>$trans->trans_date,
+							'payment_frequency'=>$trans->invoiceDisbursed->invoice->program_offer->payment_frequency,
+							'interest_borne_by'=>$trans->invoiceDisbursed->invoice->program->interest_borne_by,
+							'trans_running_id' => $trans->trans_running_id,
 						];
 						break;
 					case config('lms.TRANS_TYPE.MARGIN'):
@@ -1315,11 +1321,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			foreach($response['principal'] as $val){
 				$response['payment'] += (float) $val['amount'];
 				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
+				$response['principal_repayment_amt'] += (float) $val['amount'] - (float) $val['outstanding'];
 			}
 			
 			foreach($response['interest'] as $val){
 				$response['payment'] += (float) $val['amount'];
 				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
+				if($val['payment_frequency'] == 1 && $val['interest_borne_by'] == 2 && $val['trans_running_id'] == NULL)
+				{
+					$response['principal_repayment_amt'] += (float) $val['amount'] - (float) $val['outstanding'];
+				}
 			}
 
 			foreach($response['overdue'] as $val){
