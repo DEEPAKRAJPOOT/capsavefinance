@@ -195,16 +195,27 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		$sendMail = ($invList->count() > 0)?true:false;
 
 		$result = [];
+		$odCustCnt = [];
 		foreach($invList as $inv){
-            $overdueAmt = 0;
+			$overdueAmt = 0;
             $overdueDays = 0;
             $marginRate = null;
+			$principalOdAmount = 0;
+			$principalOdDays = 0;
             if($inv->invoice_disbursed){
-                $overdueAmt = $inv->invoice_disbursed->accruedInterest()->whereNotNull('overdue_interest_rate')->sum('accrued_interest');
+				$overdueAmt = $inv->invoice_disbursed->accruedInterest()->whereNotNull('overdue_interest_rate')->sum('accrued_interest');
                 $overdueDays = $inv->invoice_disbursed->accruedInterest()->whereNotNull('overdue_interest_rate')->get()->count();
                 $marginRate = $inv->invoice_disbursed->margin;
-            }
-            
+				$principalOdAmount = round(($inv->invoice_disbursed->disburse_amt + $inv->invoice_disbursed->total_interest - $inv->principal_repayment_amt),2);
+				$principalOdAmount = $principalOdAmount>0?$principalOdAmount:0;
+				if(strtotime($inv->invoice_disbursed->payment_due_date) <= strtotime($curdate) && $principalOdAmount>0){
+					$date = Carbon::parse($inv->invoice_disbursed->payment_due_date);
+					$now = Carbon::parse($curdate);
+					$principalOdDays = $date->diffInDays($now);
+				}
+
+			}
+
             $invDetails =  $inv;
             $offerDetails = $invDetails->program_offer->toArray();
             $offerDetails['user_id'] = $invDetails->supplier_id;
@@ -213,8 +224,12 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
             $salesUserDetails = $anchorDetails->salesUser;
 
             if(!$marginRate){
-                $marginRate = $offerDetails['margin'];
+				$marginRate = $offerDetails['margin'];
             }
+
+			if($overdueDays > 0){
+				$odCustCnt[$invDetails->program_id][$invDetails->supplier_id] = 1; 
+			}
 
 			$sanctionCase[$invDetails->program_id][] = $invDetails->supplier_id.'-'.$invDetails->app_id;
 			$test[$invDetails->program_id][$invDetails->supplier_id.'-'.$invDetails->app_id][] = $invDetails->invoice_id;
@@ -222,10 +237,11 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$result[$invDetails->program_id]['prgm_name'] =  $prgmDetails->parentProgram->prgm_name;
 			$result[$invDetails->program_id]['sub_prgm_name'] =  $prgmDetails->prgm_name;
 			$result[$invDetails->program_id]['client_sanction'] =  count(array_unique($sanctionCase[$invDetails->program_id]));
-			$result[$invDetails->program_id]['ttl_od_customer'] =  0;
+			$result[$invDetails->program_id]['ttl_od_customer'] =  count($odCustCnt[$invDetails->program_id]??[]);
 			$result[$invDetails->program_id]['ttl_od_amt'] = ($result[$invDetails->program_id]['ttl_od_amt']??0) + $overdueAmt;
 			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['client_name'] = $invDetails->business->biz_entity_name;
 			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['loan_ac'] = config('common.idprefix.APP').$invDetails->app_id;
+			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['user_id'] = $invDetails->lms_user->customer_id;
 			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['virtual_ac'] = $invDetails->lms_user->virtual_acc_id;
 			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['client_sanction_limit'] = $offerDetails['prgm_limit_amt'];
 			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['limit_utilize'] = Helper::invoiceAnchorLimitApprove($offerDetails);
@@ -238,9 +254,12 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'invoice_date' => $invDetails->invoice_date,
 				'invoice_amt' => $invDetails->invoice_amount,
 				'margin_amt' => $invDetails->invoice_approve_amount*$marginRate/100,
-				'disb_amt' => $invDetails->invoice_amount,
+				'approve_amt' => $invDetails->invoice_approve_amount,
+				'disb_amt' => in_array($invDetails->status_id, [12,13,15])?$invDetails->invoice_approve_amount:0,
 				'od_days'=>$overdueDays,
 				'od_amt'=> $overdueAmt,
+				'principal_od_days' => $principalOdDays,
+				'principal_od_amount' => $principalOdAmount,
 			];
 			
 		}
