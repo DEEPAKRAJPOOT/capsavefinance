@@ -80,4 +80,24 @@ class Bank extends BaseModel {
     }
 
 
+    /**
+     * Check Bank name
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function checkBankName($bankName, $banktId=null)
+    {
+        $query = self::select('id')
+                ->where('bank_name', $bankName);
+        if (!is_null($banktId)) {
+            $query->where('id', '!=', $banktId);
+        }
+        $res = $query->get();        
+        return $res ?: [];
+    }    
+
+
 }

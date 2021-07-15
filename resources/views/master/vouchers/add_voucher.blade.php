@@ -37,6 +37,49 @@
 @endsection
 @section('jscript')
 <script type="text/javascript">
+$(document).ready(function () {
+    var messages={
+        unique_voucher_url:"{{ route('check_unique_voucher_url') }}",
+        token: "{{ csrf_token() }}"
+    }
 
+    $.validator.addMethod("uniqueVoucher",
+        function(value, element) {
+            var result = true;
+            var data = {voucher_name : value, _token: messages.token};
+            $.ajax({
+                type:"POST",
+                async: false,
+                url: messages.unique_voucher_url, // script to validate in server side
+                data: data,
+                success: function(data) {                        
+                    result = (data.status == 1) ? false : true;
+                }
+            });                
+            return result;                
+        },'Voucher name is already exists'
+    );    
+  // validation
+  $('#voucherForm').validate({ // initialize the plugin
+      rules: {
+          'trans_type_id': {
+              required: true,
+          },
+          'voucher_name': {
+              required: true,
+              uniqueVoucher: true
+          }
+      },
+      messages: {
+          'trans_type_id': {
+              required: "Please select transaction type",
+          },
+          'voucher_name': {
+              required: "Please enter voucher Name",
+          }
+      }
+  });
+  
+});
 </script>
 @endsection

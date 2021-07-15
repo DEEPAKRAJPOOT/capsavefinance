@@ -1277,13 +1277,54 @@ Route::group(
         'as' => 'get_ajax_bank_list',
         'uses' => 'AjaxController@getAllBankList'
     ]);
+
     Route::post('chk_anchor_phy_inv_req',[
         'as' => 'chk_anchor_phy_inv_req',
         'uses' => 'AjaxController@chkAnchorPhyInvReq'
     ]);
+
     Route::post('backend_get_invoice_processing_gst_amount',[
         'as' => 'backend_get_invoice_processing_gst_amount',
         'uses' => 'AjaxController@backendGetInvoiceProcessingGstAmount'
     ]);
     
+    Route::post('unique-industry-url', [
+        'as' => 'check_unique_industry_url',
+        'uses' => 'AjaxController@checkUniqueIndustries'
+    ]);
+    
+    Route::post('unique-voucher-url', [
+        'as' => 'check_unique_voucher_url',
+        'uses' => 'AjaxController@checkUniqueVoucher'
+    ]);
+    
+    Route::post('unique-segment-url', [
+        'as' => 'check_unique_segment_url',
+        'uses' => 'AjaxController@checkUniqueSegment'
+    ]);
+    
+    Route::post('unique-entity-url', [
+        'as' => 'check_unique_entity_url',
+        'uses' => 'AjaxController@checkUniqueEntity'
+    ]);
+    
+    Route::post('unique-constitution-url', [
+        'as' => 'check_unique_constitution_url',
+        'uses' => 'AjaxController@checkUniqueConstitution'
+    ]);
+    
+    Route::post('unique-equipment-url', [
+        'as' => 'check_unique_equipment_url',
+        'uses' => 'AjaxController@checkUniqueEquipment'
+    ]);
+    
+    Route::post('unique-bank-master-url', [
+        'as' => 'check_unique_bank_master_url',
+        'uses' => 'AjaxController@checkUniqueBankMaster'
+    ]);
+    
+    Route::match(['get', 'post'], '/check_document_name_exist_ajax', 'AjaxController@checkDocumentNametAjax');
+    Route::match(['get', 'post'], '/check_document_name_exist_edit_ajax', 'AjaxController@checkDocumentNameEdittAjax');
+    Route::match(['get', 'post'], '/check_doa_name_exist_ajax', 'AjaxController@checkDOANametAjax');
+    Route::match(['get', 'post'], '/check_doa_name_exist_edit_ajax', 'AjaxController@checkDOANametEditAjax');
 });

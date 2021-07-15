@@ -5113,4 +5113,160 @@ if ($err) {
         // 'status' => 
         // 'gstChrgValue' => $gstChrgValue];
     }
+    // Manage Document
+    public function checkDocumentNametAjax(Request $request) {
+        $data = $request->all();
+        $where = [
+            'doc_name' => $data['doc_name'],
+        ];
+        $checkDocName = $this->masterRepo->checkDocumentExist($where); 
+        if($checkDocName > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }      
+    }
+
+    public function checkDocumentNameEdittAjax(Request $request) {
+        $data = $request->all();
+        $where = [
+            'doc_name' => $data['doc_name'],
+        ];
+        $id = [
+            'id' => $data['id']
+        ];
+        $checkDocName = $this->masterRepo->checkDocumentExistEditCase($where, $id); 
+        if($checkDocName > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }      
+    }
+
+    // Manage DOA Level
+    public function checkDOANametAjax(Request $request) {
+        $data = $request->all();
+        $where = [
+            'level_name' => $data['level_name']
+        ];
+        $doaCheckNameExists = $this->masterRepo->getDoaNameExists($where);
+        if($doaCheckNameExists > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }      
+    }
+
+    public function checkDOANametEditAjax(Request $request) {
+        $data = $request->all();
+        $where = [
+            'level_name' => $data['doa_name']
+        ];
+        $doa_id = [
+            'doa_level_id' => $data['doa_id']
+        ];  
+        $doaCheckNameExists = $this->masterRepo->getDoaNameEditCaseExists($where, $doa_id);
+        if($doaCheckNameExists > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }      
+    }
+    
+    // Check Unique Industry
+    public function checkUniqueIndustries(Request $request) 
+    {        
+        $IndustryName = $request->get('name');
+        $industryId = $request->has('industry_id') ? $request->get('industry_id'): null ;
+        $result = $this->masterRepo->checkIndustryName($IndustryName, $industryId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Voucher
+    public function checkUniqueVoucher(Request $request) 
+    {        
+        $voucherName = $request->get('voucher_name');
+        $result = $this->masterRepo->checkVoucherName($voucherName);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Segment
+    public function checkUniqueSegment(Request $request) 
+    {        
+        $segmentName = $request->get('name');
+        $segmentId = $request->has('id') ? $request->get('id'): null ;
+        $result = $this->masterRepo->checkSegmentName($segmentName, $segmentId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Entity
+    public function checkUniqueEntity(Request $request) 
+    {        
+        $entityName = $request->get('entity_name');
+        $entitytId = $request->has('id') ? $request->get('id'): null ;
+        $result = $this->masterRepo->checkEntityName($entityName, $entitytId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Consitution
+    public function checkUniqueConstitution(Request $request) 
+    {        
+        $constiName = $request->get('name');
+        $constitId = $request->has('id') ? $request->get('id'): null ;
+        $result = $this->masterRepo->checkConsitutionName($constiName, $constitId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Equipment
+    public function checkUniqueEquipment(Request $request) 
+    {        
+        $equipmentName = $request->get('equipment_name');
+        $equipmentId = $request->has('id') ? $request->get('id'): null ;
+        $result = $this->masterRepo->checkEquipmentName($equipmentName, $equipmentId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Bank name
+    public function checkUniqueBankMaster(Request $request) 
+    {        
+        $bankName = $request->get('bank_name');
+        $banktId = $request->has('bank_id') ? \Crypt::decrypt($request->get('bank_id')) : null ;
+        $result = $this->masterRepo->checkBankName($bankName, $banktId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
 }

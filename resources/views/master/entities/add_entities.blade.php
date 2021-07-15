@@ -33,13 +33,39 @@
 @endsection
 @section('jscript')
 <script type="text/javascript">
+
+    var messages={
+        unique_entity_url:"{{ route('check_unique_entity_url') }}",
+        token: "{{ csrf_token() }}"
+    }
+
     $(document).ready(function () {
 
+        $.validator.addMethod("uniqueEntity",
+            function(value, element, params) {
+                var result = true;
+                var data = {entity_name : value, _token: messages.token};
+                if (params.id) {
+                    data['id'] = params.id;
+                }
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.unique_entity_url, // script to validate in server side
+                    data: data,
+                    success: function(data) {                        
+                        result = (data.status == 1) ? false : true;
+                    }
+                });                
+                return result;                
+            },'Entity name is already exists'
+        );
 
         $('#entityForm').validate({ // initialize the plugin
             rules: {
                 'entity_name' : {
                     required : true,
+                    uniqueEntity: true
                 },
                 'is_active' : {
                     required : true,
