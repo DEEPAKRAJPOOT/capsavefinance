@@ -412,30 +412,30 @@ trait InvoiceTrait
         $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['user_id' => $attr['user_id'],'status' =>2])->count();  
        if($is_enhance==1)
        {
-        $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])
+        $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
         ->where('prgm_offer_id',$attr['prgm_offer_id'])
         ->whereIn('program_id', $prgm_ids)
-        ->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
-        ->sum('invoice_margin_amount');
+        ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+        ->sum('invoice_approve_amount');
         
-        $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])
+        $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
         ->where('prgm_offer_id',$attr['prgm_offer_id'])
         ->whereIn('program_id', $prgm_ids)
-        ->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
-        ->sum('repayment_amt');
+        ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+        ->sum('principal_repayment_amt');
             return $marginApprAmt-$marginReypayAmt;
        }
        else
        {
-        $marginApprAmt   =  BizInvoice::whereIn('status_id',[8,9,10,12])
+        $marginApprAmt   =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
         ->where('prgm_offer_id',$attr['prgm_offer_id'])
-        ->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])
-        ->sum('invoice_margin_amount');
+        ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])
+        ->sum('invoice_approve_amount');
         
-        $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12])
+        $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
         ->where('prgm_offer_id',$attr['prgm_offer_id'])
-        ->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])
-        ->sum('repayment_amt');
+        ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])
+        ->sum('principal_repayment_amt');
             return $marginApprAmt-$marginReypayAmt;
        }
    }
@@ -918,12 +918,12 @@ trait InvoiceTrait
    /* Created by gajendra chahan  */
   public static function adhocLimit($attr)
   {
-    $sql   =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id']??$attr['supplier_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1,'is_repayment' =>0]);
+    $sql   =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])->where(['supplier_id' =>$attr['user_id']??$attr['supplier_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1]);
     if (isset($attr['app_offer_adhoc_limit_id'])) {
       $sql = $sql->where(['app_offer_adhoc_limit_id' => $attr['app_offer_adhoc_limit_id']]);
     }
-    $marginApprAmt = $sql->sum('invoice_margin_amount');
-    $sql =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id']??$attr['supplier_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1,'is_repayment' =>0]);
+    $marginApprAmt = $sql->sum('invoice_approve_amount');
+    $sql =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])->where(['supplier_id' =>$attr['user_id']??$attr['supplier_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1]);
     if (isset($attr['app_offer_adhoc_limit_id'])) {
       $sql = $sql->where(['app_offer_adhoc_limit_id' => $attr['app_offer_adhoc_limit_id']]);
     }
