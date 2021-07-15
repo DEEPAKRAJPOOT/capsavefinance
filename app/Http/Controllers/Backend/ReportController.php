@@ -578,7 +578,7 @@ class ReportController extends Controller
         $anchorList = $anchorList->get();
 
 
-	      	
+		      
         $sendMail = false;
         $data = $this->reportsRepo->getMaturityReport([],$sendMail);
         if($sendMail){
@@ -617,7 +617,7 @@ class ReportController extends Controller
             $emailData['attachment'] = $filePath;
             $emailData['subject'] ="Utilization Report";
             \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
-            
+			         
             foreach($anchorList as $anchor){
                 $sendMail = false;
                 $data = $this->reportsRepo->getUtilizationReport( ['anchor_id'=>$anchor->anchor_id],$sendMail);
