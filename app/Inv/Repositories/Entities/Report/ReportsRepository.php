@@ -183,7 +183,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
 
-        $invList = BizInvoice::whereNotIn('status_id',[7,11,14,28])
+        $invList = BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
         ->with('invoice_disbursed');
         if(isset($whereCondition['anchor_id'])){
 			$invList->where('anchor_id',$whereCondition['anchor_id']);
@@ -208,7 +208,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
                 $marginRate = $inv->invoice_disbursed->margin;
 				$principalOdAmount = round(($inv->invoice_disbursed->disburse_amt + $inv->invoice_disbursed->total_interest - $inv->principal_repayment_amt),2);
 				$principalOdAmount = $principalOdAmount>0?$principalOdAmount:0;
-				if(strtotime($inv->invoice_disbursed->payment_due_date) <= strtotime($curdate) && $principalOdAmount>0){
+				if(strtotime($inv->invoice_disbursed->payment_due_date) <= strtotime($curdate) && $principalOdAmount > 0){
 					$date = Carbon::parse($inv->invoice_disbursed->payment_due_date);
 					$now = Carbon::parse($curdate);
 					$principalOdDays = $date->diffInDays($now);

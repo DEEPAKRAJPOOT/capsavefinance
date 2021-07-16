@@ -1327,7 +1327,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			foreach($response['interest'] as $val){
 				$response['payment'] += (float) $val['amount'];
 				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
-				if($val['payment_frequency'] == 1 && $val['interest_borne_by'] == 2 && $val['trans_running_id'] == NULL)
+				if($val['payment_frequency'] == 1 && $val['interest_borne_by'] == 1 && $val['trans_running_id'] == NULL)
 				{
 					$response['principal_repayment_amt'] += (float) $val['amount'] - (float) $val['outstanding'];
 				}
