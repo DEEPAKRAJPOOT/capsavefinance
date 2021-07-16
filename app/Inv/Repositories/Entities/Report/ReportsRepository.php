@@ -206,7 +206,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				$overdueAmt = $inv->invoice_disbursed->accruedInterest()->whereNotNull('overdue_interest_rate')->sum('accrued_interest');
                 $overdueDays = $inv->invoice_disbursed->accruedInterest()->whereNotNull('overdue_interest_rate')->get()->count();
                 $marginRate = $inv->invoice_disbursed->margin;
-				$principalOdAmount = round(($inv->invoice_disbursed->disburse_amt + $inv->invoice_disbursed->total_interest - $inv->principal_repayment_amt),2);
+				$principalOdAmount = round(($inv->invoice_disbursed->invoice_approve_amount - $inv->principal_repayment_amt),2);
 				$principalOdAmount = $principalOdAmount>0?$principalOdAmount:0;
 				if(strtotime($inv->invoice_disbursed->payment_due_date) <= strtotime($curdate) && $principalOdAmount > 0){
 					$date = Carbon::parse($inv->invoice_disbursed->payment_due_date);
