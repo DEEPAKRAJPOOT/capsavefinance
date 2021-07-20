@@ -576,9 +576,7 @@ class ReportController extends Controller
             $anchorList->where('anchor_id',$anchor_id);
         }
         $anchorList = $anchorList->get();
-
-
-		      
+		/*
         $sendMail = false;
         $data = $this->reportsRepo->getMaturityReport([],$sendMail);
         if($sendMail){
@@ -661,13 +659,14 @@ class ReportController extends Controller
                 }
             }
         }
+		*/
 
         $sendMail = false;
         $data = $this->reportsRepo->getOverdueReport([],$sendMail);
         if($sendMail){
             $filePath = $this->downloadOverdueReport($data);
             //$emailData['email'] = $anchor->comp_email;
-            $emailData['email'] = $emailTo;
+            $emailData['email'] = ["vilesh.modi@rentalpha.com","rakesh.yadav@capsavefinance.com","sudesh.kumar@zuron.in","hirdesh@zuron.in"];
             $emailData['name'] = 'Capsave Team';
             $emailData['body'] = 'PFA';
             $emailData['attachment'] = $filePath;
@@ -675,6 +674,7 @@ class ReportController extends Controller
             \Event::dispatch("NOTIFY_OVERDUE_REPORT", serialize($emailData));
         }
         
+		/*
         $sendMail = false;
         $data = $this->reportsRepo->getAccountDisbursalReport([],$sendMail);
         if($sendMail){
@@ -687,6 +687,7 @@ class ReportController extends Controller
             $emailData['subject'] ="Disbursal Report";
             \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
         }
+		*/
         
         dump('end....');
     }
