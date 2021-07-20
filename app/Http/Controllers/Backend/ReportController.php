@@ -578,7 +578,7 @@ class ReportController extends Controller
         $anchorList = $anchorList->get();
 
 
-		      
+		/*   
         $sendMail = false;
         $data = $this->reportsRepo->getMaturityReport([],$sendMail);
         if($sendMail){
@@ -605,19 +605,20 @@ class ReportController extends Controller
                 }
             }
         }
-
+		*/
         $sendMail = false;
         $data = $this->reportsRepo->getUtilizationReport( [],$sendMail);
         if($sendMail){
             $filePath = $this->downloadUtilizationExcel($data);
             //$emailData['email'] = $anchor->comp_email;
-            $emailData['email'] = $emailTo;
+            $emailData['email'] = [ "vilesh.modi@rentalpha.com", "rakesh.yadav@capsavefinance.com","sudesh.kumar@zuron.in","hirdesh@zuron.in"];
             $emailData['name'] = 'Sudesh Kumar';
             $emailData['body'] = 'PFA';
             $emailData['attachment'] = $filePath;
             $emailData['subject'] ="Utilization Report";
             \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
-			         
+			 
+			/*
             foreach($anchorList as $anchor){
                 $sendMail = false;
                 $data = $this->reportsRepo->getUtilizationReport( ['anchor_id'=>$anchor->anchor_id],$sendMail);
@@ -631,9 +632,9 @@ class ReportController extends Controller
                     $emailData['subject'] ="Utilization Report (".$anchor->comp_name.")";
                     \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
                 }
-            }
+            }*/
         }        
-
+		/*
         $sendMail = false;
         $data = $this->reportsRepo->getDisbursalReport([],$sendMail);
         if($sendMail){
@@ -687,7 +688,7 @@ class ReportController extends Controller
             $emailData['subject'] ="Disbursal Report";
             \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
         }
-        
+        */
         dump('end....');
     }
 
