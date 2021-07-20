@@ -201,7 +201,7 @@ Route::domain(config('proin.lenevo_frontend_uri'))->group(function () {
         );
         $this->post('reset-lenevo',
             [
-            'as' => 'password.reset',
+            'as' => 'password.reset-lenevo',
             'uses' => 'Auth\ResetPasswordController@reset'
             ]
         );
