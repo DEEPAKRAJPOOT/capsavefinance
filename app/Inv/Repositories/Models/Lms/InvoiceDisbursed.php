@@ -164,7 +164,7 @@ class InvoiceDisbursed extends BaseModel {
 	 }
 	 function transaction()
 	 {
-	   return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions','invoice_disbursed_id','invoice_disbursed_id')->where(['trans_type' =>16,'entry_type' =>1]);
+	   return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions','invoice_disbursed_id','invoice_disbursed_id')->where(['trans_type' =>16,'entry_type' =>0]);
 	 }
 	  function isRepayment()
 	{

@@ -303,14 +303,23 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 
 		$result = [];
 		foreach($invDisbList as $invDisb){
-			$limit = AppProgramLimit::getProductLimit($invDisb->invoice->lms_user->app_id, 1)->sum('product_limit');
-			$limit_utilize = AppProgramLimit::getUtilizeLimit($invDisb->invoice->lms_user->app_id, 1)->sum('utilize_limit');
+			$invDetails = $invDisb->invoice;
+			$offerDetails = $invDetails->program_offer->toArray();
+			$offerDetails['user_id'] = $invDetails->supplier_id;
+			$prgmDetails = $invDetails->program;
+			
+			$limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::invoiceAnchorLimitApprove($offerDetails),2);
+			$limitAvl[$offerDetails['prgm_offer_id']] = $limitAvl[$offerDetails['prgm_offer_id']] ?? $offerDetails['prgm_limit_amt'] - $limitUsed[$offerDetails['prgm_offer_id']];
+			$limitAvl[$offerDetails['prgm_offer_id']] = ($limitAvl[$offerDetails['prgm_offer_id']] > 0) ? $limitUsed[$offerDetails['prgm_offer_id']] : 0; 
 			$result[] = [
 				'cust_name'=>$invDisb->invoice->business->biz_entity_name,
 				'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
+				'customer_id'=>$invDetails->lms_user->customer_id,
+				'prgm_name' => $prgmDetails->parentProgram->prgm_name,
+				'sub_prgm_name' => $prgmDetails->prgm_name,
 				'virtual_ac'=>$invDisb->invoice->lms_user->virtual_acc_id,
-				'client_sanction_limit'=>$limit,
-				'limit_available'=>($limit-$limit_utilize),
+				'client_sanction_limit'=>$offerDetails['prgm_limit_amt'],
+				'limit_available'=> $limitAvl[$offerDetails['prgm_offer_id']],
 				'out_amt'=>$invDisb->transactions->sum('outstanding'),
 				'od_days'=>$invDisb->accruedInterest()->whereNotNull('overdue_interest_rate')->get()->count(),
 				'od_amt'=>$invDisb->accruedInterest()->whereNotNull('overdue_interest_rate')->sum('accrued_interest'),

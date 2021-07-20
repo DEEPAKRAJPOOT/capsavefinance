@@ -900,7 +900,9 @@ class ReportController extends Controller
         $sheet =  new PHPExcel();
         $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, 'Customer Name')
-            ->setCellValue('B'.$rows, 'Loan Account #')
+            ->setCellValue('B'.$rows, 'Customer ID')
+			//->setCellValue('C'.$rows, 'Program Name')
+            //->setCellValue('D'.$rows, 'Sub Program Name')
             ->setCellValue('C'.$rows, 'Virtual Account #')
             ->setCellValue('D'.$rows, 'Sanction Limit')
             ->setCellValue('E'.$rows, 'Limit Available')
@@ -913,7 +915,9 @@ class ReportController extends Controller
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
             ->setCellValue('A'.$rows, $rowData['cust_name'])
-            ->setCellValue('B'.$rows, $rowData['loan_ac'])
+            ->setCellValue('B'.$rows, $rowData['customer_id'])
+			//->setCellValue('C'.$rows, $rowData['prgm_name'])
+			//->setCellValue('D'.$rows, $rowData['sub_prgm_name'])
             ->setCellValue('C'.$rows, $rowData['virtual_ac'])
             ->setCellValue('D'.$rows, number_format($rowData['client_sanction_limit'],2))
             ->setCellValue('E'.$rows, number_format($rowData['limit_available'],2))
