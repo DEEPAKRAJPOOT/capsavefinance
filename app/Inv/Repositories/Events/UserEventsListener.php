@@ -270,7 +270,7 @@ class UserEventsListener extends BaseEvent
     public function onResetPasswordSuccess($user) {
         $this->func_name = __FUNCTION__;
         $user = unserialize($user);
-        if ($user['anchor_id'] == config('common.LENEVO_ANCHOR_ID')) {
+        if (isset($user['anchor_id']) && ($user['anchor_id'] == config('common.LENEVO_ANCHOR_ID'))) {
             $email_content = EmailTemplate::getEmailTemplate("LENOVO_RESET_PASSWORD_SUCCESSS");
         } else {
             $email_content = EmailTemplate::getEmailTemplate("RESET_PASSWORD_SUCCESSS");
