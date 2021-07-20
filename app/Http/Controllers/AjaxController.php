@@ -4041,6 +4041,8 @@ if ($err) {
         $transactionList = $transactionList->whereHas('lmsUser',function ($query) use ($request) {
             $customer_id = trim($request->get('customer_id')) ?? null ;
             $query->where('customer_id', '=', "$customer_id");
+        })->get()->filter(function($item){
+            return $item->IsTransaction;
         });
 
         $users = $dataProvider->getSoaList($this->request, $transactionList);

@@ -4458,11 +4458,9 @@ class DataRenderer implements DataProviderInterface
                     return $data;
                 }
             )
-            ->filter(function ($query) use ($request) {
-                $query->get()->filter(function($item){
-                    return $item->IsTransaction;
-                });
-            })
+            // ->filter(function ($query) use ($request) {
+                
+            // })
             ->make(true);
     }
 
