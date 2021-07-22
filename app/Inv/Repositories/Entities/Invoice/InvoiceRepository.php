@@ -1353,8 +1353,8 @@ use CommonRepositoryTraits;
         $result = [];
 
         foreach($invoiceData as $inv){ 
-            $balance = ($inv->disburse_amt - $inv->invoice->repayment_amt );
-
+        $discounted_amt = round(($inv->invoice->invoice_approve_amount - round(($inv->invoice->invoice_approve_amount*$inv->margin)/100,2) /*- $inv->total_interest*/),2);
+            $balance = round(($discounted_amt  - $inv->invoice->principal_repayment_amt),2);
             $result[$inv->invoice_disbursed_id] = [
                 'cust_id'=> $inv->customer_id,
                 'batch_no'=> $inv->disbursal->disbursal_batch->batch_id,
@@ -1364,7 +1364,7 @@ use CommonRepositoryTraits;
                 'due_date'=> Carbon::parse($inv->payment_due_date)->format('d/m/Y'),
                 'bill_amt'=> number_format($inv->invoice->invoice_amount),
                 'approve_amt'=> number_format($inv->invoice->invoice_approve_amount),
-                'discounted_amt'=> number_format($inv->invoice->invoice_approve_amount - round(($inv->invoice->invoice_approve_amount*$inv->margin)/100,2)),
+                'discounted_amt'=> $discounted_amt,
                 'balance'=> $balance,
             ];
 
