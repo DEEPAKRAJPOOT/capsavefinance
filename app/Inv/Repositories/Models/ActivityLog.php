@@ -61,6 +61,7 @@ class ActivityLog extends BaseModel {
         'app_id',
         'activity_id',
         'activity_desc',
+        'data',
         'email',
         'ip_address',
         'browser_info',

@@ -26,24 +26,28 @@ use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Models\Master\City as CityModel;
 use App\Inv\Repositories\Models\User;
 use DB;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 
 class LeadController extends Controller {
 
     protected $userRepo;
     protected $appRepo;
+    use ActivityLogTrait;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo,InvDocumentRepoInterface $doc_repo) {
+    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo,InvDocumentRepoInterface $doc_repo, InvMasterRepoInterface $mstRepo) {
         $this->middleware('guest')->except('logout');
         $this->middleware('checkBackendLeadAccess');
 
         $this->userRepo = $user;
         $this->appRepo = $app_repo;
         $this->docRepo = $doc_repo;
+        $this->mstRepo = $mstRepo;
     }
 
     /**
@@ -336,6 +340,7 @@ class LeadController extends Controller {
                     'comp_zip' => $arrAnchorVal['pin_code'],
                     'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req']
                 ];
+
                 $anchor_info = $this->userRepo->saveAnchor($arrAnchorData);
 
                 $arrAnchUserData = [
@@ -380,6 +385,12 @@ class LeadController extends Controller {
                         }
                         self::uploadAnchorLogo($request->all(), $role['user_id'] ,$anchor_info);
                     }
+
+                    $whereCond['activity_code'] = 'add_anchor_reg';
+                    $activity = $this->mstRepo->getActivity($whereCond);
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Add Anchor';
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAnchorData));
 
                     Session::flash('message', trans('backend_messages.anchor_registration_success'));
                     return redirect()->route('get_anchor_list');
