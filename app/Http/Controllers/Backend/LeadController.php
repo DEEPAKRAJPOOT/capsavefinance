@@ -120,6 +120,15 @@ class LeadController extends Controller {
                 $userId = $request->get('userId'); 
                 $attributes['f_name'] = $request->get('f_name'); 
                 $attributes['biz_name'] = $request->get('biz_name'); 
+
+                $whereActivi['activity_code'] = 'update_backend_lead';
+                $activity = $this->mstRepo->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Update Non-Anchor Lead registration';
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($attributes));
+                }                
+                
                 $userInfo = $this->userRepo->updateUser($attributes, $userId);
                 Session::flash('operation_status', 1); 
                 //return view('backend.lead.index');
@@ -166,7 +175,14 @@ class LeadController extends Controller {
                     'created_at' => \Carbon\Carbon::now(),
                 ];
                 $this->userRepo->createLeadAssign($arrLeadAssingData);
-                
+
+                $whereActivi['activity_code'] = 'save_backend_lead';
+                $activity = $this->mstRepo->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Add Non-Anchor Lead registration';
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['arrLeadAssingData' => $arrLeadAssingData, 'arrUserData' => $arrUserData]));
+                }                
                 //Add application workflow stages
                 Helpers::addWfAppStage('new_case', $userDataArray->user_id);
 
@@ -276,7 +292,15 @@ class LeadController extends Controller {
             $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]); 
             $this->appRepo->updateAppAssignById($app_id, ['is_owner'=>0]);
             $application = $this->appRepo->saveShaircase($dataArr); 
-             
+
+            $whereActivi['activity_code'] = 'accept_application_pool';
+            $activity = $this->mstRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Pick Up Lead in Application Pool of AppId. '. $app_id;
+                $arrActivity['app_id'] = $app_id;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($dataArr), $arrActivity);
+            }               
              Session::flash('is_accept', 1);
              return redirect()->back();
              

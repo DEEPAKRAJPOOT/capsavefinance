@@ -30,6 +30,7 @@ use App\Inv\Repositories\Models\AppAssignment;
 use Mail;
 use App\Helpers\Helper;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class ApplicationController extends Controller
 {
@@ -41,6 +42,8 @@ class ApplicationController extends Controller
 	protected $docRepo;
 	protected $masterRepo;
 	protected $lmsRepo;
+
+	use ActivityLogTrait;
 
 	/**
 	 * The pdf instance.
@@ -782,6 +785,16 @@ class ApplicationController extends Controller
 			];
 			
 			$this->appRepo->saveAppNote($noteData);
+
+            $whereActivi['activity_code'] = 'save_app_note';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Add App Note in action tap of My Application in Manage Application. AppID '. $app_id;
+                $arrActivity['app_id'] = $app_id;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($noteData), $arrActivity);
+            } 			
+			
 			Session::flash('message',trans('backend_messages.add_note'));
 			//return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
 			return redirect()->route('application_list');
@@ -1674,6 +1687,16 @@ class ApplicationController extends Controller
 			$emailData['subject'] ="Sanction Letter for SupplyChain";
 			\Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
 			Session::flash('message',trans('Sanction Letter for Supply Chain sent successfully.'));
+
+            $whereActivi['activity_code'] = 'send_sanction_letter_supplychain';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Send mail Sanction Letter Of Supplychain My Application in Manage Application. AppID '. $appId;
+                $arrActivity['app_id'] = $appId;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData]), $arrActivity);
+            }			
+			
 			return redirect()->back()->with('is_send',1);
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -1885,7 +1908,16 @@ class ApplicationController extends Controller
 			$filepath = storage_path('app/public/user/'.$appId.'_supplychain.json');
 			\File::put($filepath, base64_encode(json_encode($arrFileData)));
                         
-                        Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.SANCTION_LETTER_GENERATED'));
+						Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.SANCTION_LETTER_GENERATED'));
+						
+            $whereActivi['activity_code'] = 'save_sanction_letter_supplychain';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Sanction Letter Of Supplychain My Application in Manage Application. AppID '. $appId;
+                $arrActivity['app_id'] = $appId;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($supplyChaindata), $arrActivity);
+            } 						
                         
 			Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
 			return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);  
@@ -2153,7 +2185,14 @@ class ApplicationController extends Controller
                     \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));                    
                 }
             }
-                
+				$whereActivi['activity_code'] = 'save_app_rejection';
+				$activity = $this->masterRepo->getActivity($whereActivi);
+				if(!empty($activity)) {
+					$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+					$activity_desc = 'App Rejection of My Application in Manage Application. AppID '. $app_id;
+					$arrActivity['app_id'] = $app_id;
+					$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['noteData'=>$noteData, 'saveAppStatusLog' => $appStatusData]), $arrActivity);
+				} 			
                 Session::flash('message',trans('backend_messages.reject_app'));
                 return redirect()->route('application_list');
             } catch (Exception $ex) {

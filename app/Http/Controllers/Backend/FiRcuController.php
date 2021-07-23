@@ -12,17 +12,21 @@ use Session;
 use Helpers;
 use Auth;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class FiRcuController extends Controller
 {
     protected $appRepo;
     protected $userRepo;
+    use ActivityLogTrait;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocRepoInterface $doc_repo){
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocRepoInterface $doc_repo, InvMasterRepoInterface $mstRepo){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
         $this->middleware('checkBackendLeadAccess');
+        $this->mstRepo = $mstRepo;
     }
     
     /**
@@ -103,6 +107,16 @@ class FiRcuController extends Controller
            return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);  
         }
         $this->appRepo->insertFIAddress($request->all());  
+
+        $whereActivi['activity_code'] = 'save_assign_fi';
+        $activity = $this->mstRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Trigger for FI in FI Residence AppID ' . $request->get('app_id');
+            $arrActivity['app_id'] = $request->get('app_id');
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+        }                        
+        
         return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
 
