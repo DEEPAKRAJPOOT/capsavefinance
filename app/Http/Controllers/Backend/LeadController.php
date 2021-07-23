@@ -386,12 +386,13 @@ class LeadController extends Controller {
                         self::uploadAnchorLogo($request->all(), $role['user_id'] ,$anchor_info);
                     }
 
-                    $whereCond['activity_code'] = 'add_anchor_reg';
-                    $activity = $this->mstRepo->getActivity($whereCond);
-                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
-                    $activity_desc = 'Add Anchor';
-                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAnchorData));
-
+                    $whereActivi['activity_code'] = 'add_anchor_reg';
+                    $activity = $this->mstRepo->getActivity($whereActivi);
+                    if(!empty($activity)) {
+                        $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                        $activity_desc = 'Add Anchor';
+                        $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAnchorData));
+                    }
                     Session::flash('message', trans('backend_messages.anchor_registration_success'));
                     return redirect()->route('get_anchor_list');
                 }        
@@ -662,6 +663,15 @@ class LeadController extends Controller {
             ];
 
             $this->appRepo->saveBankAccount($prepareData, $bank_acc_id);
+
+            $whereActivi['activity_code'] = 'save_anchor_bank_account';
+            $activity = $this->mstRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Anchor Bank Details';
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($prepareData));
+            }
+            
             $messges = $bank_acc_id ? trans('success_messages.update_bank_account_successfully') : trans('success_messages.save_bank_account_successfully');
             Session::flash('message', $messges);
             Session::flash('operation_status', 1);
@@ -729,6 +739,13 @@ class LeadController extends Controller {
                 self::uploadAnchorLogo($request->all(), $anchorInfo->user_id ,$anchId);
             }
 
+            $whereActivi['activity_code'] = 'update_anchor_reg';
+            $activity = $this->mstRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Update Anchor';
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAnchorData));            
+            }
             if ($updateAnchInfo && $Updateanchorinfo) {
                 Session::flash('message', trans('backend_messages.anchor_registration_updated'));
                 return redirect()->route('get_anchor_list');
@@ -817,7 +834,14 @@ class LeadController extends Controller {
                     'anchor_id' => $anchorId,
                     // 'supplier_code' => isset($arrAnchorVal['supplier_code']) ? trim($arrAnchorVal['supplier_code']) : null,
                 ];
-            
+                
+                $whereActivi['activity_code'] = 'add_manual_anchor_lead';
+                $activity = $this->mstRepo->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Add Anchor Lead Manually in Manage Anchor';
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAnchorData));
+                }
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
                 /*
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);

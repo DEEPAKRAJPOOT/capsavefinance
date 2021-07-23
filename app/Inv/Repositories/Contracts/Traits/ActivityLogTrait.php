@@ -8,6 +8,9 @@ use Session;
 trait ActivityLogTrait
 {
     public function activityLogByTrait($activity_type_id, $activity_desc, $data, $arrActivity=null) {
+        $loginId = \Auth::user()->user_id;
+        $userDetils = $this->userRepo->getUserDetail($loginId);
+        
         $arrActivity['session_id'] = \Session::get('uuid') ? \Session::get('uuid') : null;
  
         $arrActivity['activity_id'] = $activity_type_id;
@@ -22,6 +25,8 @@ trait ActivityLogTrait
         $arrActivity['source'] = Request::server('HTTP_REFERER');
         $arrActivity['browser_info'] = Request::server('HTTP_USER_AGENT');
         $arrActivity['route_name'] = Request::route()->getName();
+        $arrActivity['user_id'] = $loginId;
+        $arrActivity['email'] = $userDetils->email;
 
         $objActivity = new ActivityLog($arrActivity);
         $saved = $objActivity->save();
