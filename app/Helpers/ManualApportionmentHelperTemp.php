@@ -152,8 +152,8 @@ class ManualApportionmentHelperTemp{
 
     public function intAccrual(int $invDisbId, $startDate = null, $endDate = null, $paymentId){
         try{
-            $curdate =  Helpers::getSysStartDate();
-            $curdate = Carbon::parse($curdate)->format('Y-m-d');
+            //$curdate =  Helpers::getSysStartDate();
+            $curdate = Carbon::parse($endDate)->format('Y-m-d');
             
             $invDisbDetail = InvoiceDisbursed::find($invDisbId);
             $offerDetails = $invDisbDetail->invoice->program_offer;
