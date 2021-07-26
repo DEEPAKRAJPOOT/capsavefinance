@@ -12,11 +12,13 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class CoLenderControllers extends Controller {
 
     protected $userRepo;
     protected $lmsRepo;
+    use ActivityLogTrait;
 
     public function __construct(InvMasterRepoInterface $master, InvUserRepoInterface $user, InvAppRepoInterface $app_repo, InvLmsRepoInterface $lms_repo)
     {
@@ -175,6 +177,16 @@ class CoLenderControllers extends Controller {
             }else{
                 $this->appRepo->updateColenderData(['is_active' => 0, 'end_date' => \carbon\Carbon::now()], ['user_id' => $arrShareColenderData['user_id'], 'co_lender_id' => $arrShareColenderData['co_lender_id']]);
                 $status = $this->appRepo->saveShareToColender($arrShareColenderData);
+
+                $whereActivi['activity_code'] = 'save_share_to_colender';
+                $activity = $this->masterRepo->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Share with Co-Lender. AppID '. $arrShareColenderData['app_id'];
+                    $arrActivity['app_id'] = $arrShareColenderData['app_id'];
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrShareColenderData), $arrActivity);
+                }                   
+                
                 if($status){
                     Session::flash('message', 'Offer shared successfully');
                     Session::flash('operation_status', 1); 

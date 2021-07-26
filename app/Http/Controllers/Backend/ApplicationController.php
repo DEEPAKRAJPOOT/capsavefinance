@@ -171,6 +171,14 @@ class ApplicationController extends Controller
                                 $arrAnchUser['biz_id'] = $bizId;                                     
                                 $this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => $appData->user_id]); 
 
+            $whereActivi['activity_code'] = 'company_details_save';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Company Details (Business Information) Application Information. AppID '. $appId;
+                $arrActivity['app_id'] = $appId;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrFileData), $arrActivity);
+            } 								
 				Session::flash('message',trans('success_messages.update_company_detail_successfully'));
 				return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId]);
 			} else {
@@ -273,6 +281,15 @@ class ApplicationController extends Controller
 					}                    
 				}                
 				Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1); 
+
+				$whereActivi['activity_code'] = 'promoter_detail_save';
+				$activity = $this->masterRepo->getActivity($whereActivi);
+				if(!empty($activity)) {
+					$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+					$activity_desc = 'Save Promoter Details (Management Information) Application Information. AppID '. $appId;
+					$arrActivity['app_id'] = $appId;
+					$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrFileData), $arrActivity);
+				}				
 				
 				return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1]);
 			}
@@ -538,6 +555,15 @@ class ApplicationController extends Controller
 				//$wf_status = $response->count() < 1 ? 1 : 2;
 				//$wf_status = 1;                
 				//Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+
+				$whereActivi['activity_code'] = 'document_save';
+				$activity = $this->masterRepo->getActivity($whereActivi);
+				if(!empty($activity)) {
+					$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+					$activity_desc = 'Save Documents (Documents) Application Information. AppID '. $appId;
+					$arrActivity['app_id'] = $appId;
+					$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrFileData), $arrActivity);
+				}				
 				
 				Session::flash('message',trans('success_messages.uploaded'));
 				return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);

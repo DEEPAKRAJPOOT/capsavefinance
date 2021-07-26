@@ -186,6 +186,16 @@ class FiRcuController extends Controller
         //dd($request->all());
         $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
         $this->appRepo->insertFIAddress($request->all());  
+
+        $whereActivi['activity_code'] = 'save_assign_inspection';
+        $activity = $this->mstRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Trigger for FI in Assign Inspection AppID ' . $request->get('app_id');
+            $arrActivity['app_id'] = $request->get('app_id');
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+        }          
+        
         return redirect()->route('backend_inspection', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
 
@@ -279,6 +289,15 @@ class FiRcuController extends Controller
             }
                 
         }
+        
+        $whereActivi['activity_code'] = 'save_assign_rcu';
+        $activity = $this->mstRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Trigger for FI in RCU Document AppID ' . $requestAll['app_id'];
+            $arrActivity['app_id'] = $requestAll['app_id'];
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['requestAll' => $requestAll, 'rcuDocArr' => $rcuDocArr, 'rcuStatusLogArr' => $rcuStatusLogArr]), $arrActivity);
+        }          
         
         Session::flash('message',trans('success_messages.rcu.assigned'));
         return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
