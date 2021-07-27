@@ -298,9 +298,9 @@ class InvoiceDisbursed extends BaseModel {
 		}
 	 }
 
-	 public static function getDisbursedAmountForSupplier($supplier_id){
-	 	return self::whereHas('invoice', function ($q) use ($supplier_id){
-	 		$q->where(['supplier_id' => $supplier_id])->whereIn('status_id', [12,13,15]);
+	 public static function getDisbursedAmountForSupplier($supplier_id, $prgm_offer_id){
+	 	return self::whereHas('invoice', function ($q) use ($supplier_id, $prgm_offer_id){
+	 		$q->where(['supplier_id' => $supplier_id, 'prgm_offer_id' => $prgm_offer_id])->whereIn('status_id', [12,13,15]);
 	 	})->sum('disburse_amt');
 	 }  
 }

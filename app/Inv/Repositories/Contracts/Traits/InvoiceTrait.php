@@ -410,7 +410,7 @@ trait InvoiceTrait
             $prgm_ids = [$attr['prgm_id']];
         }
         $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['user_id' => $attr['user_id'],'status' =>2])->count();  
-       $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id']);
+       $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id']);
        
        if($is_enhance==1)
        {

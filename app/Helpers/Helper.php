@@ -1617,7 +1617,7 @@ class Helper extends PaypalHelper
         }
         $is_enhance =Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();
 
-        $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id']);
+        $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id']);
 
         if($is_enhance==1)
         { 
