@@ -39,6 +39,7 @@ use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\LmsUsersLog;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 
 class Helper extends PaypalHelper
 {
@@ -1616,11 +1617,13 @@ class Helper extends PaypalHelper
         }
         $is_enhance =Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();
 
+        $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id']);
+
         if($is_enhance==1)
         { 
-            $marginApprAmt   =   BizInvoice::whereIn('program_id', $prgm_ids)
+            $marginApprAmt   +=   BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
-            ->whereIn('status_id',[8,9,10,12,13,15])
+            ->whereIn('status_id',[8,9,10])
             ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
             ->where('app_id' , '<=', $attr['app_id'])
             ->sum('invoice_approve_amount');
@@ -1635,9 +1638,9 @@ class Helper extends PaypalHelper
         }
         else
         {
-            $marginApprAmt   =  BizInvoice::whereIn('program_id', $prgm_ids)
+            $marginApprAmt   +=  BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
-            ->whereIn('status_id',[8,9,10,12,13,15])                    
+            ->whereIn('status_id',[8,9,10])                    
             ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
             ->sum('invoice_approve_amount');
                 

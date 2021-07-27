@@ -296,5 +296,11 @@ class InvoiceDisbursed extends BaseModel {
 			 return self::whereHas('isRepayment')->where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['transaction.payment','Invoice.anchor.anchorAccount','InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
 
 		}
+	 }
+
+	 public static function getDisbursedAmountForSupplier($supplier_id){
+	 	return self::whereHas('invoice', function ($q) use ($supplier_id){
+	 		$q->where(['supplier_id' => $supplier_id])->whereIn('status_id', [12,13,15]);
+	 	})->sum('disburse_amt');
 	 }  
 }

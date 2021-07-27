@@ -26,7 +26,7 @@ use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Program;
-
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 
 
 trait InvoiceTrait
@@ -410,9 +410,11 @@ trait InvoiceTrait
             $prgm_ids = [$attr['prgm_id']];
         }
         $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['user_id' => $attr['user_id'],'status' =>2])->count();  
+       $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id']);
+       
        if($is_enhance==1)
        {
-        $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
+        $marginApprAmt   +=   BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
         ->where('prgm_offer_id',$attr['prgm_offer_id'])
         ->whereIn('program_id', $prgm_ids)
         ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
@@ -427,7 +429,7 @@ trait InvoiceTrait
        }
        else
        {
-        $marginApprAmt   =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
+        $marginApprAmt   +=  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
         ->where('prgm_offer_id',$attr['prgm_offer_id'])
         ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])
         ->sum('invoice_approve_amount');
