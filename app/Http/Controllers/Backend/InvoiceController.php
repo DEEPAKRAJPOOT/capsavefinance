@@ -27,11 +27,13 @@ use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use App\Libraries\Idfc_lib;
 use App\Helpers\ManualApportionmentHelper;
 use Event;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class InvoiceController extends Controller {
 
     use ApplicationTrait;
     use LmsTrait;
+    use ActivityLogTrait;
 
     protected $appRepo;
     protected $invRepo;
@@ -1669,6 +1671,15 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
              }
              else
              {
+                $master = \App::make('App\Inv\Repositories\Contracts\MasterInterface');
+                $whereActivi['activity_code'] = 'account_closure';
+                $activity = $master->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Account Clousre in Limit Management (Manage Sanction Cases) '. null;
+                    $arrActivity['app_id'] = null;
+                    ActivityLogTrait::staticActivityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+                }                  
                Session::flash('message', 'Customer account has been successfully closed');
                return back();
              }

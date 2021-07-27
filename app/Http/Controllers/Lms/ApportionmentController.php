@@ -29,15 +29,19 @@ use App\Inv\Repositories\Models\Lms\TransactionsRunning;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use App\Inv\Repositories\Contracts\MasterInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class ApportionmentController extends Controller
 {
+    use ActivityLogTrait;
 
-    public function __construct(InvLmsRepoInterface $lms_repo ,DataProviderInterface $dataProvider, InvUserRepoInterface $user_repo,InvAppRepoInterface $app_repo){
+    public function __construct(InvLmsRepoInterface $lms_repo ,DataProviderInterface $dataProvider, InvUserRepoInterface $user_repo,InvAppRepoInterface $app_repo, MasterInterface $master){
         $this->lmsRepo = $lms_repo;
         $this->dataProvider = $dataProvider;
         $this->userRepo = $user_repo;
         $this->appRepo = $app_repo;
+        $this->master = $master;
         $this->middleware('checkBackendLeadAccess');
 	}
 
@@ -906,6 +910,16 @@ class ApportionmentController extends Controller
                     $this->lmsRepo->saveTransaction($newTrans);
                 }
             }
+
+            $whereActivi['activity_code'] = 'apport_running_save';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Mark Posted Running Transsaction (Manage Sanction Cases) '. null;
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($transactionList), $arrActivity);
+            }             
+            
             return redirect()->route('apport_unsettled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked posted']);
         } catch (Exception $ex) {
              return redirect()->route('apport_settled_view',['payment_id' => $paymentId, 'user_id' =>$userId, 'sanctionPageView'=>$sanctionPageView])->withErrors(Helpers::getExceptionMessage($ex));

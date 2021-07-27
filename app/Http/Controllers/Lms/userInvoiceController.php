@@ -18,10 +18,12 @@ use PDF;
 use Session;
 use Helpers;
 // use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class userInvoiceController extends Controller
 {
     //use ApplicationTrait;
+    use ActivityLogTrait;
 
     protected $appRepo;
     protected $userRepo;

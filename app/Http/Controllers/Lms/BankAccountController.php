@@ -13,10 +13,12 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Libraries\Storage\Contract\StorageManagerInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class BankAccountController extends Controller {
 
     //  use ApplicationTrait;
+    use ActivityLogTrait;
 
     protected $appRepo;
     protected $userRepo;
@@ -130,6 +132,16 @@ class BankAccountController extends Controller {
 
             $lastInsertId = $this->appRepo->saveBankAccount($prepareData, $acc_id);
             $this->uploadBankDoc($request, $lastInsertId);
+
+            $whereActivi['activity_code'] = 'save_bank_account';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Bank Account (Manage Sanction Cases) '. null;
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($prepareData), $arrActivity);
+            }             
+            
             $messges = $acc_id ? trans('success_messages.update_bank_account_successfully') : trans('success_messages.save_bank_account_successfully');
             Session::flash('message', $messges);
             Session::flash('operation_status', 1);
