@@ -27,6 +27,7 @@ use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use App\Libraries\Idfc_lib;
 use App\Helpers\ManualApportionmentHelper;
 use Event;
+use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class InvoiceController extends Controller {
@@ -41,14 +42,16 @@ class InvoiceController extends Controller {
     protected $lmsRepo;
     protected $userRepo;
     protected $application;
+    protected $master;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvAppRepoInterface $application, InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
+    public function __construct(InvAppRepoInterface $app_repo, InvAppRepoInterface $application, InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo, MasterInterface $master) {
         $this->appRepo = $app_repo;
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->lmsRepo = $lms_repo;
         $this->userRepo = $user_repo;
         $this->application  =  $application;
+        $this->master = $master;
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
         $this->middleware('checkEodProcess');
@@ -611,6 +614,16 @@ class InvoiceController extends Controller {
                $is_margin_deduct =  1;  
                $this->invRepo->updateFileId(['invoice_margin_amount'=>$inv_apprv_margin_amount,'is_margin_deduct' =>1],$result['invoice_id']);
             }
+
+            $whereActivi['activity_code'] = 'backend_save_invoice';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Add Backend Invoice Invoice Upload (Manage Invoice) AppID. ' . $appId;
+                $arrActivity['app_id'] = $appId;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arr), $arrActivity);
+            }             
+            
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {
@@ -1637,6 +1650,15 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $res =  $this->invRepo->saveInvoice($ins);
                        
                     } 
+
+                        $whereActivi['activity_code'] = 'upload_bulk_csv_Invoice';
+                        $activity = $this->master->getActivity($whereActivi);
+                        if(!empty($activity)) {
+                            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                            $activity_desc = 'Upload Bulk Invoice, (Manage Invoice)';
+                            $arrActivity['app_id'] = null;
+                            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['data'=>$data, 'request'=>$request->all()]), $arrActivity);
+                        } 
             
                          Session::flash('message', 'Invoice data successfully sent to under reviewer process');
                          return back();  

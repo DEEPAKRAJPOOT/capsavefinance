@@ -496,6 +496,16 @@ class userInvoiceController extends Controller
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
                 // $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions);
                 if ($UserInvoiceTxns == true) {
+
+                    $whereActivi['activity_code'] = 'save_user_invoice';
+                    $activity = $this->master->getActivity($whereActivi);
+                    if(!empty($activity)) {
+                        $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                        $activity_desc = 'Create Invoice Int/Charge Invoice (Manage Sanction Cases) ';
+                        $arrActivity['app_id'] = null;
+                        $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['userInvoiceData'=>$userInvoiceData, 'intrest_charges'=>$intrest_charges]), $arrActivity);
+                    }                     
+                    
                    return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('message', 'Invoice generated Successfully');
                 }
             }else{

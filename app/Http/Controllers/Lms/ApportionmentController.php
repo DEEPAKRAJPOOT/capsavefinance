@@ -286,6 +286,16 @@ class ApportionmentController extends Controller
                     $this->updateInvoiceRepaymentFlag($invoiceList);
                 }
                 $comment = $this->lmsRepo->saveTxnComment($commentData);
+
+                $whereActivi['activity_code'] = 'apport_waiveoff_save';
+                $activity = $this->master->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Unsettled Transaction Waived Off (Manage Sanction Cases) '. null;
+                    $arrActivity['app_id'] = null;
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($txnInsertData), $arrActivity);
+                }                 
+                
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Amount successfully waived off']);
             }
         } catch (Exception $ex) {
@@ -425,6 +435,15 @@ class ApportionmentController extends Controller
                     $Obj = new ManualApportionmentHelper($this->lmsRepo);
                     $Obj->intAccrual($TransDetail->invoice_disbursed_id, $paymentDetails->date_of_payment);
                 }
+
+                $whereActivi['activity_code'] = 'apport_reversal_save';
+                $activity = $this->master->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Settled Transaction Reverse Amount (Manage Sanction Cases) '. null;
+                    $arrActivity['app_id'] = null;
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['txnInsertData'=>$txnInsertData, 'paymentData'=>$paymentData]), $arrActivity);
+                }                 
 
                 return redirect()->route('apport_settled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Amount successfully reversed']);
             }
@@ -1397,7 +1416,14 @@ class ApportionmentController extends Controller
                     ];
                     $paymentId = Payment::insertPayments($paymentData);
                 }
-
+                $whereActivi['activity_code'] = 'apport_mark_adjustment_save';
+                $activity = $this->master->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Adjustment Transaction Confirm (Manage Sanction Cases) '. null;
+                    $arrActivity['app_id'] = null;
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['transactions'=>$transactions, 'payments'=>$payments]), $arrActivity);
+                }   
                 $request->session()->forget('apportionment');
                 return redirect()->route('apport_refund_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully Mark Adjusted']);
             }

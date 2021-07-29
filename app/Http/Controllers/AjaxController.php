@@ -45,6 +45,7 @@ use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Crypt;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class AjaxController extends Controller {
 
@@ -60,6 +61,7 @@ class AjaxController extends Controller {
     protected $docRepo;
     protected $lms_repo;
     use LmsTrait;
+    use ActivityLogTrait;
 
 
     function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo, ReportInterface $reportsRepo) {
@@ -3755,6 +3757,14 @@ if ($err) {
         }
             if($updateBulk)
             {
+                    $whereActivi['activity_code'] = 'upload_invoice_csv';
+                    $activity = $this->masterRepo->getActivity($whereActivi);
+                    if(!empty($activity)) {
+                        $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                        $activity_desc = 'Upload Bulk Invoice, Final Submit (Manage Invoice)';
+                        $arrActivity['app_id'] = null;
+                        $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($res), $arrActivity);
+                    } 
 
                      return response()->json(['status' => 1,'message' => 'Invoice successfully saved']); 
 
