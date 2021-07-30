@@ -3083,6 +3083,14 @@ if ($err) {
                 } else {               
                     $res =   $this->invRepo->updateInvoice($request->invoice_id,$request->status);   
                 }
+                $whereActivi['activity_code'] = 'update_invoice_approve_single_tab';
+                $activity = $this->masterRepo->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Update Invoice Approve, Approve Tab (Manage Invoice)';
+                    $arrActivity['app_id'] = null;
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+                }                
               return \Response::json(['status' => $res]);
            }
    }
@@ -3866,6 +3874,15 @@ if ($err) {
                          
            }
        }
+
+        $whereActivi['activity_code'] = 'update_bulk_invoice';
+        $activity = $this->masterRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Update bulk and Disburse Invoice (Pending, Approved Tab), Approve (Manage Invoice)';
+            $arrActivity['app_id'] = null;
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+        } 
        
       return \response()->json(['status' => 1,'msg' => substr($result,0,-1)]); 
        

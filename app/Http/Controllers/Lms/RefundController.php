@@ -22,22 +22,26 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use Carbon\Carbon;
 use App\Helpers\RefundHelper;
+use App\Inv\Repositories\Contracts\MasterInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class RefundController extends Controller
 {
 	use ApplicationTrait;
-	use LmsTrait;
+    use LmsTrait;
+    use ActivityLogTrait;
         
     protected $appRepo;
     protected $userRepo;
 	protected $lmsRepo;
     protected $docRepo;
 
-	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvLmsRepoInterface $lms_repo, InvDocumentRepoInterface $docRepo){
+	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvLmsRepoInterface $lms_repo, InvDocumentRepoInterface $docRepo, MasterInterface $master){
 		$this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
 		$this->lmsRepo = $lms_repo;
         $this->docRepo = $docRepo;
+        $this->master = $master;
 		$this->middleware('checkBackendLeadAccess');
                 $this->middleware('checkEodProcess');
     }
@@ -72,6 +76,17 @@ class RefundController extends Controller
             ]);
             $paymentId = $request->get('paymentId');
             $data = RefundHelper::createRefundRequest($paymentId);
+
+
+            $whereActivi['activity_code'] = 'lms_refund_request_create';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Payment Refund(Manage Payment) '. null;
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['data'=>$data, 'request'=>$request->all()]), $arrActivity);
+            }               
+            
             Session::flash('is_accept', 1);
             return view('lms.refund.viewRefundRequest', $data);
         }catch(Exception $exception){

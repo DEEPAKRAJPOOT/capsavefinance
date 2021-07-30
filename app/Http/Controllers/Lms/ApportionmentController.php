@@ -859,6 +859,16 @@ class ApportionmentController extends Controller
                 if($paymentId){
                     InterestAccrualTemp::where('payment_id',$paymentId)->delete();
                 }
+
+                $whereActivi['activity_code'] = 'apport_mark_settle_save';
+                $activity = $this->master->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Mark Settle Save (Manage Payment) '. null;
+                    $arrActivity['app_id'] = null;
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['request'=>$request->all(), 'invoiceList'=>$invoiceList, 'transactionList'=>$transactionList]), $arrActivity);
+                }                 
+                
                 $request->session()->forget('apportionment');
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
@@ -1481,6 +1491,16 @@ class ApportionmentController extends Controller
                         if($aporUndoPro['status']){
                             $payment->is_settled = '0';
                             $payment->save();
+
+                            $whereActivi['activity_code'] = 'undo_apportionment';
+                            $activity = $this->master->getActivity($whereActivi);
+                            if(!empty($activity)) {
+                                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                                $activity_desc = 'Undo Apportionment (Manage Payment)';
+                                $arrActivity['app_id'] = null;
+                                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+                            }                               
+                            
                             return response()->json(['status' => 1,'message' => 'Successfully Apportionment Reverted']); 
                         }else{
                             return response()->json(['status' => 0,'message' => $aporUndoPro['error']]);

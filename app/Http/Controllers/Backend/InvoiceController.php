@@ -360,6 +360,15 @@ class InvoiceController extends Controller {
             }
             $updateTransaction = $this->updateTransactionInvoiceDisbursed($disbursalIds, $fundedDate);
 
+            $whereActivi['activity_code'] = 'updateDisburseInvoice';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Update Disburse Invoice, Send To Bank (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+            }            
+            
             Session::flash('message',trans('backend_messages.disburseMarked'));
             return redirect()->route('backend_get_sent_to_bank');
 
@@ -510,7 +519,14 @@ class InvoiceController extends Controller {
         $attributes = $request->all();
         $res = $this->invRepo->updateInvoiceAmount($attributes);
        if ($res) {
-
+            $whereActivi['activity_code'] = 'update_invoice_amount';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Update Invoice Amount (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($attributes), $arrActivity);
+            } 
             Session::flash('message', 'Invoice Amount successfully Updated ');
             return back();
         } else {
@@ -884,6 +900,15 @@ class InvoiceController extends Controller {
                     return redirect()->route('backend_get_disbursed_invoice');
                 }
             }
+
+            $whereActivi['activity_code'] = 'disburse_online';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Disburse Online, Disbursement Queue (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['supplierIds'=>$supplierIds, 'request'=>$request->all()]), $arrActivity);
+            }             
                     
             Session::flash('message',trans('backend_messages.disbursed'));
             return redirect()->route('backend_get_disbursed_invoice')->withErrors('message',trans('backend_messages.disbursed'));
@@ -1249,7 +1274,14 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 }
 
             }
-
+            $whereActivi['activity_code'] = 'disburse_offline';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Disburse offline, Disbursement Queue (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['supplierIds'=>$supplierIds, 'request'=>$request->all()]), $arrActivity);
+            } 
             Session::flash('message',trans('backend_messages.disbursed'));
             return redirect()->route('backend_get_disbursed_invoice');
         } catch (Exception $ex) {
@@ -1945,6 +1977,15 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $this->lmsRepo->deleteDisbursalStatusLogByDidArr($disbursalIdsArr);
                     $this->lmsRepo->deleteDisbursalByDBId($disbursalBatchId);
                     $this->lmsRepo->deleteDisbursalBatchByDBId($disbursalBatchId);
+
+                    $whereActivi['activity_code'] = 'rollback_disbursal_batch_request';
+                    $activity = $this->master->getActivity($whereActivi);
+                    if(!empty($activity)) {
+                        $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                        $activity_desc = 'Rollback Disbursal Request tab (Manage Invoice)';
+                        $arrActivity['app_id'] = null;
+                        $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+                    }                     
                     
                     Session::flash('message', 'Online disbursal successfully rollbacked');
                     return redirect()->route('backend_get_disbursal_batch_request');
@@ -2101,6 +2142,14 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $res = $this->invRepo->updateInvoiceCharge($data, $invoiceId);
 
        if ($res) {
+            $whereActivi['activity_code'] = 'update_invoice_chrg';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Invoice Processing Fee, Approved tab (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+            }             
             Session::flash('message', 'processing fee successfully Updated ');
             return redirect()->route('backend_get_approve_invoice');
         } else {
@@ -2123,6 +2172,14 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $res = $this->invRepo->updateInvoiceTenor($data, $invoiceId);
         
        if ($res) {
+            $whereActivi['activity_code'] = 'update_invoice_tenor';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Update Invoice Tenor (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+            }            
             Session::flash('message', 'Invoice Tenor successfully Updated ');
             return back();
         } else {
