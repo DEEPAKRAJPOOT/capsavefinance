@@ -179,6 +179,16 @@ class RefundController extends Controller
                 $message = "Successfully Refunded your Request!";
                     break;
             }
+
+            $whereActivi['activity_code'] = 'lms_refund_request_udate';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Update Request Status (Manage Refund) '. null;
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+            }             
+            
             Session::flash('message',$message);
             return redirect()->route($redirectRoute);
         }catch(Exception $exception){
@@ -249,7 +259,14 @@ class RefundController extends Controller
             }
 
             $this->refundUpdation($allrecords, $supplierIds, $allAprvls, $disburseDate, $refundType);
-
+            $whereActivi['activity_code'] = 'refund_offline';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Refund Offline, Refund Queue (Manage Refund) '. null;
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['allrecords'=>$allrecords, 'supplierIds'=>$supplierIds, 'allAprvls'=>$allAprvls, 'disburseDate'=>$disburseDate, 'refundType'=>$refundType]), $arrActivity);
+            } 
             Session::flash('message',trans('backend_messages.proccessed'));
             return redirect()->route('lms_refund_sentbank');
         }catch(Exception $exception){
@@ -386,7 +403,14 @@ class RefundController extends Controller
                     return redirect()->route('request_list')->withErrors('message',trans('backend_messages.disbursed_error'));
                 }
             }
-
+            $whereActivi['activity_code'] = 'refund_online';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Refund Online, Refund Queue (Manage Refund) '. null;
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['allrecords'=>$allrecords, 'supplierIds'=>$supplierIds, 'allAprvls'=>$allAprvls, 'disburseDate'=>$disburseDate, 'refundType'=>$refundType, 'disbursalApiLogId'=>$disbursalApiLogId]), $arrActivity);
+            } 
             Session::flash('message',trans('backend_messages.proccessed'));
             return redirect()->route('lms_refund_sentbank');
         }catch(Exception $exception){
@@ -642,7 +666,14 @@ class RefundController extends Controller
             
             $this->lmsRepo->updateAprvlRqst($apiLogData,$refund_req_id);
             $this->finalRefundTransactions($refund_req_id, $actual_refund_date);
-    
+            $whereActivi['activity_code'] = 'updateDisburseRefund';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Update Disbursal Refund, Send TO Bank (Manage Refund) '. null;
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['apiLogData'=>$apiLogData, 'Request'=>$request->all()]), $arrActivity);
+            }     
             Session::flash('message',trans('backend_messages.refundedMarked'));
             return redirect()->route('lms_refund_refunded');
         }catch(Exception $exception){
@@ -1033,7 +1064,14 @@ class RefundController extends Controller
                 }
                  
             }
-                    
+            $whereActivi['activity_code'] = 'refund_payment_enquiry';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Refund Payment Enquery, Refund Request (Manage Refund) '. null;
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['reqData'=>$reqData]), $arrActivity);
+            }                      
             Session::flash('message',trans('backend_messages.disbursed'));
             return redirect()->back()->withErrors('message',trans('backend_messages.disbursed'));
         } catch (Exception $ex) {
