@@ -577,7 +577,6 @@ class ReportController extends Controller
         }
         $anchorList = $anchorList->get();
 		
-		/*
         $sendMail = false;
         $data = $this->reportsRepo->getMaturityReport([],$sendMail);
         if($sendMail){
@@ -604,7 +603,6 @@ class ReportController extends Controller
                 }
             }
         }
-		*/
 
         $sendMail = false;
         $data = $this->reportsRepo->getUtilizationReport( [],$sendMail);
@@ -632,9 +630,8 @@ class ReportController extends Controller
                     \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
                 }
             }
-        } 
-		       
-		/*
+        }        
+
         $sendMail = false;
         $data = $this->reportsRepo->getDisbursalReport([],$sendMail);
         if($sendMail){
@@ -688,7 +685,6 @@ class ReportController extends Controller
             $emailData['subject'] ="Disbursal Report";
             \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
         }
-		*/
         
         dump('end....');
     }
