@@ -410,10 +410,11 @@ trait InvoiceTrait
             $prgm_ids = [$attr['prgm_id']];
         }
         $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['user_id' => $attr['user_id'],'status' =>2])->count();  
-       $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id']);
-       
-       if($is_enhance==1)
-       {
+      
+        if($is_enhance==1)
+        {
+        $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],NULL);
+        $marginApprAmt = $marginApprAmt??0;
         $marginApprAmt   +=   BizInvoice::whereIn('status_id',[8,9,10])
         ->where('prgm_offer_id',$attr['prgm_offer_id'])
         ->whereIn('program_id', $prgm_ids)
@@ -429,6 +430,8 @@ trait InvoiceTrait
        }
        else
        {
+        $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplierIsEnhance($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],$attr['app_id']);
+        $marginApprAmt = $marginApprAmt??0;
         $marginApprAmt   +=  BizInvoice::whereIn('status_id',[8,9,10])
         ->where('prgm_offer_id',$attr['prgm_offer_id'])
         ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])

@@ -1617,10 +1617,11 @@ class Helper extends PaypalHelper
         }
         $is_enhance =Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();
 
-        $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id']);
 
         if($is_enhance==1)
         { 
+            $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],$attr['app_id']);
+            $marginApprAmt = $marginApprAmt??0;
             $marginApprAmt   +=   BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
             ->whereIn('status_id',[8,9,10])
@@ -1638,6 +1639,8 @@ class Helper extends PaypalHelper
         }
         else
         {
+            $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplierIsEnhance($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'], $attr['app_id']);
+            $marginApprAmt = $marginApprAmt??0;
             $marginApprAmt   +=  BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
             ->whereIn('status_id',[8,9,10])                    
