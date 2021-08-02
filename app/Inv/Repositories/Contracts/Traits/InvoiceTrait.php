@@ -419,12 +419,14 @@ trait InvoiceTrait
         ->where('prgm_offer_id',$attr['prgm_offer_id'])
         ->whereIn('program_id', $prgm_ids)
         ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+        ->where('app_id' , '<=', $attr['app_id'])
         ->sum('invoice_approve_amount');
         
         $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
         ->where('prgm_offer_id',$attr['prgm_offer_id'])
         ->whereIn('program_id', $prgm_ids)
         ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+        ->where('app_id' , '<=', $attr['app_id'])
         ->sum('principal_repayment_amt');
             return $marginApprAmt-$marginReypayAmt;
        }
