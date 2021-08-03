@@ -868,11 +868,11 @@ class ReportController extends Controller
                             ->setCellValue('B'.$rows,$inv['invoice_no'])
                             ->setCellValue('C'.$rows,Carbon::parse($inv['invoice_date'])->format('d/m/Y') ?? NULL)
                             ->setCellValue('D'.$rows,number_format($inv['invoice_amt'],2))
-							->setCellValue('E'.$rows,number_format($inv['approve_amt']))
+							->setCellValue('E'.$rows,number_format($inv['approve_amt'],2))
                             ->setCellValue('F'.$rows,number_format($inv['margin_amt'],2))
                             ->setCellValue('G'.$rows,number_format($inv['disb_amt'],2))
 							->setCellValue('H'.$rows,$inv['principal_od_days'])
-							->setCellValue('I'.$rows,number_format($inv['principal_od_amount']))
+							->setCellValue('I'.$rows,number_format($inv['principal_od_amount'],2))
                             ->setCellValue('J'.$rows,$inv['od_days'])
                             ->setCellValue('K'.$rows,number_format($inv['od_amt'],2));
                             $rows++;
