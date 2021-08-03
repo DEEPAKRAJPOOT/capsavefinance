@@ -202,14 +202,15 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
             $marginRate = null;
 			$principalOdAmount = 0;
 			$principalOdDays = 0;
-            if($inv->invoice_disbursed){
-				$overdueAmt = $inv->invoice_disbursed->accruedInterest()->whereNotNull('overdue_interest_rate')->sum('accrued_interest');
-                $overdueDays = $inv->invoice_disbursed->accruedInterest()->whereNotNull('overdue_interest_rate')->get()->count();
-                $marginRate = $inv->invoice_disbursed->margin;
-				$principalOdAmount = round(($inv->invoice_disbursed->invoice_approve_amount - $inv->principal_repayment_amt),2);
+			$invDisb = $inv->invoice_disbursed;
+            if($invDisb){
+				$overdueAmt = $invDisb->accruedInterest()->whereNotNull('overdue_interest_rate')->sum('accrued_interest');
+                $overdueDays = $invDisb->accruedInterest()->whereNotNull('overdue_interest_rate')->get()->count();
+                $marginRate = $invDisb->margin;
+				$principalOdAmount = round(($invDisb->invoice_approve_amount - $inv->principal_repayment_amt),2);
 				$principalOdAmount = $principalOdAmount>0?$principalOdAmount:0;
-				if(strtotime($inv->invoice_disbursed->payment_due_date) <= strtotime($curdate) && $principalOdAmount > 0){
-					$date = Carbon::parse($inv->invoice_disbursed->payment_due_date);
+				if(strtotime($invDisb->payment_due_date) <= strtotime($curdate) && $principalOdAmount > 0){
+					$date = Carbon::parse($invDisb->payment_due_date);
 					$now = Carbon::parse($curdate);
 					$principalOdDays = $date->diffInDays($now);
 				}
@@ -255,7 +256,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'invoice_amt' => $invDetails->invoice_amount,
 				'margin_amt' => $invDetails->invoice_approve_amount*$marginRate/100,
 				'approve_amt' => $invDetails->invoice_approve_amount,
-				'disb_amt' => in_array($invDetails->status_id, [12,13,15])?$invDetails->invoice_approve_amount:0,
+				'disb_amt' => in_array($invDetails->status_id, [12,13,15])?$invDisb->disburse_amt:0,
 				'od_days'=>$overdueDays,
 				'od_amt'=> $overdueAmt,
 				'principal_od_days' => $principalOdDays,
