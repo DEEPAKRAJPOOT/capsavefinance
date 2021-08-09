@@ -941,11 +941,11 @@ class Transactions extends BaseModel {
           $sql->where('is_invoice_generated', '=', 0);
        }
        return $sql->whereHas('transType', function($query) use ($invoiceType) { 
-            if($invoiceType == 'I') {
-                 $query->where('id','=','9');
-             }  else {
-                $query->where('chrg_master_id','!=','0');
-            }
+            // if($invoiceType == 'I') {
+            //      $query->where('id','=','9');
+            //  }  else {
+            //     $query->where('chrg_master_id','!=','0');
+            // }
         })->get();
     }
     
