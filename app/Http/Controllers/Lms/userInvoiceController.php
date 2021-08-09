@@ -226,7 +226,7 @@ class userInvoiceController extends Controller
         $curr_date = date('y-m-d');
         $origin_of_recipient = [
             'reference_no' => 'RENT'. $reference_no,
-            'financial_year' => getFinancialYear($curr_date),
+            'financial_year' => preg_replace('#[^0-9]+#' , '', getFinancialYear($curr_date)),
             // 'rand_4_no' => sprintf('%04d', $invoice_no_id ?? rand(0, 9999)),
             'rand_4_no' => '----',
         ];

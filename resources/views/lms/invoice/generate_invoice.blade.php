@@ -8,7 +8,7 @@
       <span><strong>Email:</strong></span><span style="font-size: small;"> <a href="mailto:{{$registeredCompany['cmp_email']}}">{{$registeredCompany['cmp_email']}}</a></span>
    </h2>
    <hr />
-   <h2  style="font-size: 10px;text-align: center; margin: 5px 0 5px;"><strong><u>GST TAX INVOICE</u></strong></h2>
+   <h2  style="font-size: 12px;text-align: center; margin: 5px 0 5px;"><strong><u>Bill of Supply</u></strong></h2>
    <span style="font-family:Book Antiqua;padding-left: 6px;margin-bottom: 10px;border-left: 6px; float: left;width: 50%; font-size: 9px;">
       <strong>
       <span>BILLING ADDRESS:</span><br />
@@ -26,7 +26,7 @@
       @if(!empty($origin_of_recipient['due_date']))
       <span>Due Date: {{$origin_of_recipient['due_date']}}</span><br />
       @endif
-      <span>Reference No: #{{$origin_of_recipient['reference_no']}}</span><br />
+      {{-- <span>Reference No: #{{$origin_of_recipient['reference_no']}}</span><br /> --}}
       <span>Place of Supply: {{$billingDetails['state_name']}}</span><br />
    </span>
    <table border="1px" style="width: 100%;clear: both;" align="center" cellspacing="0" cellpadding="1">
@@ -53,7 +53,7 @@
             <span style="font-size: 9px;font-family: Calibri;"><strong>IGST</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 2px;" rowspan="2" bgcolor="#f2f2f2">
-            <span style="font-size: 9px;font-family: Calibri;"><strong>Total Rental</strong></span>
+            <span style="font-size: 9px;font-family: Calibri;"><strong>Total</strong></span>
          </td>
       </tr>
       <tr>
