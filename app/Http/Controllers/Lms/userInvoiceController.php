@@ -665,17 +665,17 @@ class userInvoiceController extends Controller
             if (isset($invoiceNoFound)) {
                $invoice_no = "($invoiceNoFound)";
             }
-
+            $sac_code = $txn->transType->charge->sac_code ?? '0000';           
             $desc = $txn->transType->trans_name;
             if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST')) {
-                $desc =  "Interest for period " . $txn->fromIntDate . " To " . $txn->toIntDate;
-            }            
+                $desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
+                $sac_code = config('lms.SAC_CODE_FOR_INT_INVOICE');
+            } 
             
             $intrest_charges[$key] = array(
                 'trans_id' => $txn->trans_id,
-                // 'desc' => $txn->transType->trans_name . " $invoice_no",
                 'desc' => $desc . " $invoice_no",
-                'sac' => $txn->transType->charge->sac_code ?? '0000',
+                'sac' => $sac_code,
                 'base_amt' => round($base_amt,2),
                 'sgst_rate' => $sgst_rate,
                 'sgst_amt' => $sgst_amt,
