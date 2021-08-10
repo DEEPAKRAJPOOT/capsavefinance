@@ -48,6 +48,7 @@ class Transactions extends BaseModel {
      * @var array
      */
     protected $fillable = [
+        'trans_id',
         'payment_id',
         'link_trans_id',
         'parent_trans_id',
