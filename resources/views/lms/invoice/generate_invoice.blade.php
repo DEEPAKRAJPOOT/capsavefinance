@@ -22,9 +22,9 @@
    <span style="font-family:Book Antiqua;float: right;width: 45%;text-align: right;font-size: 9px;">
       <span><strong>Original for Recipient:</strong></span><br />
       <span>Invoice No: {{$origin_of_recipient['invoice_no']}}</span><br />
-      <span>Invoice Date: {{$origin_of_recipient['invoice_date']}}</span><br />
+      <span>Invoice Date: {{date('d-M-Y', strtotime(str_replace('/', '-', $origin_of_recipient['invoice_date'])))}}</span><br />
       @if(!empty($origin_of_recipient['due_date']))
-      <span>Due Date: {{$origin_of_recipient['due_date']}}</span><br />
+      <span>Due Date: {{date('d-M-Y', strtotime(str_replace('/', '-', $origin_of_recipient['due_date'])))}}</span><br />
       @endif
       {{-- <span>Reference No: #{{$origin_of_recipient['reference_no']}}</span><br /> --}}
       <span>Place of Supply: {{$billingDetails['state_name']}}</span><br />
