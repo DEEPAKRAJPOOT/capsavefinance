@@ -524,10 +524,10 @@ class userInvoiceController extends Controller
         $registered_comp_id = $invData->registered_comp_id;
 
         $bank_account_id = $invData->bank_id;
-        $totalTxnsInInvoice = $invData->userInvoiceTxns->toArray();
+        $totalTxnsInInvoice = $invData->userInvoiceTxns;
         $trans_ids = [];
         foreach ($totalTxnsInInvoice as $key => $value) {
-           $trans_ids[] =  $value['trans_id'];
+           $trans_ids[] =  $value->trans_id;
         }
         if (!in_array($invoice_type, ['I', 'C'])) {
            return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Invalid Invoice Type found.'); 
@@ -573,21 +573,36 @@ class userInvoiceController extends Controller
         $intrest_charges = [];
         $total_sum_of_rental = 0;
         foreach ($totalTxnsInInvoice as  $key => $invTrans) {
-            $transDetail = $this->UserInvRepo->getTxnByTransId($invTrans['trans_id']);
+            $transDetail = $this->UserInvRepo->getTxnByTransId($invTrans->trans_id);
             if (empty($transDetail->transType)) {
                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Transaction Type detail not found for the used transaction.');
             }
-            $igst_amt = $invTrans['igst_amount'];
-            $igst_rate = $invTrans['igst_rate'];
-            $cgst_amt = $invTrans['cgst_amount'];
-            $cgst_rate = $invTrans['cgst_rate'];
-            $sgst_amt = $invTrans['sgst_amount'];
-            $sgst_rate = $invTrans['sgst_rate'];
-            $base_amt = $invTrans['base_amount'];
-            $sac_code = $invTrans['sac_code'];
+            $igst_amt = $invTrans->igst_amount;
+            $igst_rate = $invTrans->igst_rate;
+            $cgst_amt = $invTrans->cgst_amount;
+            $cgst_rate = $invTrans->cgst_rate;
+            $sgst_amt = $invTrans->sgst_amount;
+            $sgst_rate = $invTrans->sgst_rate;
+            $base_amt = $invTrans->base_amount;
+            $sac_code = $invTrans->sac_code;
+
+            $txn = $invTrans->trans;
+            $invoice_no = NULL;
+            $invoiceNoFound = $txn->invoiceDisbursed->invoice->invoice_no ?? NULL;
+
+            if (isset($invoiceNoFound)) {
+               $invoice_no = "($invoiceNoFound)";
+            }
+            $desc = $txn->transType->trans_name;
+            if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST')) {
+                $desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
+            } 
+
+
+
             $intrest_charges[$key] = array(
-                'trans_id' => $invTrans['trans_id'],
-                'desc' => $transDetail->transType->trans_name,
+                'trans_id' => $invTrans->trans_id,
+                'desc' => $desc,
                 'sac' => $sac_code,
                 'base_amt' => round($base_amt,2),
                 'sgst_rate' => ($sgst_rate != 0 ? $sgst_rate : 0),
