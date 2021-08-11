@@ -5276,8 +5276,6 @@ if ($err) {
     public function checkUniqueTdsCertificate(Request $request) 
     {        
         $tdsCertificate = (int) $request->get('tds_certificate_no');
-        $userId = 1149;
-        // $id = $request->has('id') ? $request->get('id'): null ;
         $result =  Payment::select('payment_id')
                             // ->where(['tds_certificate_no' => $tdsCertificate])->get();
                         ->where(function ($q) use ($tdsCertificate) {

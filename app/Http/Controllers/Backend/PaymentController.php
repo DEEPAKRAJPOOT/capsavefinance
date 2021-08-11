@@ -178,8 +178,7 @@ class PaymentController extends Controller {
 			} 
 			
 			if(isset($request->tds_certificate_no)) {
-				$tdsCertificate = Payment::where('tds_certificate_no', $request->tds_certificate_no)
-						->count();
+				$tdsCertificate = Payment::where('tds_certificate_no', $request->tds_certificate_no)->count();
 				if($tdsCertificate > 0) {
 					Session::flash('error', 'Please enter Unique TDS Certificate No.');
 					return back();	
