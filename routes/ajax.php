@@ -1327,4 +1327,10 @@ Route::group(
     Route::match(['get', 'post'], '/check_document_name_exist_edit_ajax', 'AjaxController@checkDocumentNameEdittAjax');
     Route::match(['get', 'post'], '/check_doa_name_exist_ajax', 'AjaxController@checkDOANametAjax');
     Route::match(['get', 'post'], '/check_doa_name_exist_edit_ajax', 'AjaxController@checkDOANametEditAjax');
+
+    Route::post('unique-tds-certi-no', [
+        'as' => 'check_unique_tds_certificate_no',
+        'uses' => 'AjaxController@checkUniqueTdsCertificate'
+    ]);
+
 });

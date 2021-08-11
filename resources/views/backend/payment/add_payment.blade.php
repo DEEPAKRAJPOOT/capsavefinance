@@ -259,7 +259,8 @@ cursor: pointer;
         get_customer: "{{ route('get_customer') }}",
         get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}",
         get_interest_paid_amount:"{{ route('get_interest_paid_amount') }}",
-        sysDate:"{{ Carbon\Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d') }}"
+        sysDate:"{{ Carbon\Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d') }}",
+        unique_tds_certificate_no:"{{URL::route('check_unique_tds_certificate_no')}}"
     };
 
     var userData = '';
@@ -416,7 +417,26 @@ cursor: pointer;
             }
         });
         
-        
+        $.validator.addMethod("uniqueTdsCertificate",
+            function(value, element, params) {
+                var result = true;
+                var data = {tds_certificate_no : value, _token: messages.token};
+                if (params.id) {
+                    data['id'] = params.id;
+                }
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.unique_tds_certificate_no, // script to validate in server side
+                    data: data,
+                    success: function(data) {                        
+                        result = (data.status == 1) ? false : true;
+                    }
+                });                
+                return result;                
+            },'Please enter Unique TDS Certificate No.'
+        );
+
         $('#savePayFrm').validate( {
                 rules: {
                 search_bus: {
@@ -457,6 +477,7 @@ cursor: pointer;
                     },
                     tds_certificate_no:{
                         required:false,
+                        uniqueTdsCertificate: true
                     },
                     cheque:{
                         required:true,

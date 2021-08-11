@@ -175,7 +175,16 @@ class PaymentController extends Controller {
                 $arrFileData['doc_file'] = $arrFileData['cheque'];
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
-			}                        
+			} 
+			
+			if(isset($request->tds_certificate_no)) {
+				$tdsCertificate = Payment::where('tds_certificate_no', $request->tds_certificate_no)
+						->count();
+				if($tdsCertificate > 0) {
+					Session::flash('error', 'Please enter Unique TDS Certificate No.');
+					return back();	
+				}
+			}			
 
 			$paymentData = [
 				'user_id' => $request->user_id,

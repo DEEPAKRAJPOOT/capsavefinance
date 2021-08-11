@@ -289,4 +289,15 @@ class Payment extends BaseModel {
         }
         return $query;
     }
+
+    /**
+     * get Payment data list
+     * 
+     * @return type mixed
+     */
+    public static function tdsNameUnique(array $where = []) {
+        $res = self::where($where);
+        $res = $res->get();
+        return $res->isEmpty() ? [] :  $res;
+    }    
 }

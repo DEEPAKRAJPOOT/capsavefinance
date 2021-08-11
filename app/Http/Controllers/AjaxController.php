@@ -5270,5 +5270,24 @@ if ($err) {
             $result = ['status' => 0];
         }
         return response()->json($result); 
-    }    
+    }
+    
+    // Check Unique Entity
+    public function checkUniqueTdsCertificate(Request $request) 
+    {        
+        $tdsCertificate = (int) $request->get('tds_certificate_no');
+        $userId = 1149;
+        // $id = $request->has('id') ? $request->get('id'): null ;
+        $result =  Payment::select('payment_id')
+                            // ->where(['tds_certificate_no' => $tdsCertificate])->get();
+                        ->where(function ($q) use ($tdsCertificate) {
+                            $q->where('tds_certificate_no', 'like','%' .$tdsCertificate. '%');
+                        })->get();
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }      
 }
