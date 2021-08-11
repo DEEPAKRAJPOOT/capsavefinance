@@ -240,7 +240,7 @@ class SoaController extends Controller
                     $transactionList->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
+                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
                     });
                 }
                 if($request->has('trans_entry_type')){
@@ -290,7 +290,7 @@ class SoaController extends Controller
                 $transactionList->where(function ($query) use ($request) {
                     $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                     $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                    $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
+                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
                 });
             }
             if($request->has('trans_entry_type')){
