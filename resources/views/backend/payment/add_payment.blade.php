@@ -477,7 +477,7 @@ cursor: pointer;
                     },
                     tds_certificate_no:{
                         required:false,
-                        // uniqueTdsCertificate: true
+                        uniqueTdsCertificate: true
                     },
                     cheque:{
                         required:true,

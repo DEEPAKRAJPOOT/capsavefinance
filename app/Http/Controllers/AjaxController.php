@@ -5275,12 +5275,9 @@ if ($err) {
     // Check Unique Entity
     public function checkUniqueTdsCertificate(Request $request) 
     {        
-        $tdsCertificate = (int) $request->get('tds_certificate_no');
+        $tdsCertificate = $request->get('tds_certificate_no');
         $result =  Payment::select('payment_id')
-                            // ->where(['tds_certificate_no' => $tdsCertificate])->get();
-                        ->where(function ($q) use ($tdsCertificate) {
-                            $q->where('tds_certificate_no', 'like','%' .$tdsCertificate. '%');
-                        })->get();
+                            ->where(['tds_certificate_no' => $tdsCertificate])->get();
         if (isset($result[0])) {
             $result = ['status' => 1];
         } else {
