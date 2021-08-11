@@ -464,12 +464,19 @@ class ReportController extends Controller
 		$payment  = [];                   
 		$chk  = [];                   
 		foreach($invoice->transaction as $row) {
-		   if( $row->payment->date_of_payment) {
+		   if(!empty($row->payment->date_of_payment)) {
 			 $payment[] = Carbon::parse($row->payment->date_of_payment)->format('d/m/Y');
 		   }
-		   if (($chk_no = $row->payment->utr_no) || ($chk_no = $row->payment->unr_no) || ($chk_no = $row->payment->cheque_no)) {
-			  $chk[] =  $chk_no;
-		   }  
+		   if (!empty($row->payment->utr_no)) {
+		   		$chk_no = $row->payment->utr_no;
+		   }
+		   if (!empty($row->payment->unr_no)) {
+		   		$chk_no = $row->payment->unr_no;
+		   }
+		   if (!empty($row->payment->cheque_no)) {
+		   		$chk_no = $row->payment->cheque_no;
+		   }
+		   $chk[] =  $chk_no ?? '';
 		}
 		$realisationOnDate = implode(', ', $payment);
 		$cheque = implode(', ', $chk);
