@@ -230,8 +230,11 @@ class UserEventsListener extends BaseEvent
     public function onForgotPassword($user) {
         $this->func_name = __FUNCTION__;
         $user = unserialize($user);
-        if ($user['anchor_id'] == config('common.LENEVO_ANCHOR_ID')) {
-            $email_content = EmailTemplate::getEmailTemplate("FORGOT_PASSWORD_LENOVO");
+
+        if(isset($user['anchor_id'])) {
+            if ($user['anchor_id'] == config('common.LENEVO_ANCHOR_ID')) {
+                $email_content = EmailTemplate::getEmailTemplate("FORGOT_PASSWORD_LENOVO");
+            }
         } else {
             $email_content = EmailTemplate::getEmailTemplate("FORGOT_PASSWORD");
         }

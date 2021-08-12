@@ -165,7 +165,7 @@ use AuthenticatesUsers;
         if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) {
             $redirect_route = 'lenevo_login_open';
         } else {
-            $redirect_route = '/login';
+            $redirect_route = 'login_open';
         }
         $this->guard()->logout();
 
