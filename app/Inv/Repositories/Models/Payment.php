@@ -298,11 +298,11 @@ class Payment extends BaseModel {
     public static function checkTdsCertificate($tdsCertiName, $id=null)
     {
         $query = self::select('payment_id')
-                // ->where('tds_certificate_no', $tdsCertiName);
-                ->where(function($q) use($tdsCertiName) {
-                    $search_keyword = trim($tdsCertiName);
-                    $q->where('tds_certificate_no', 'like', "%$search_keyword%");
-                });
+                ->where('tds_certificate_no', $tdsCertiName);
+                // ->where(function($q) use($tdsCertiName) {
+                //     $search_keyword = trim($tdsCertiName);
+                //     $q->where('tds_certificate_no', 'like', "%$search_keyword%");
+                // });
         if (!is_null($id)) {
             $query->where('payment_id', '!=', $id);
         }
