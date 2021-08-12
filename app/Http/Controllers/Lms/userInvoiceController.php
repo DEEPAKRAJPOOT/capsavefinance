@@ -524,6 +524,9 @@ class userInvoiceController extends Controller
         $user_id = $request->get('user_id');
         $user_invoice_id = $request->get('user_invoice_id');
         $invData = $this->UserInvRepo->getInvoiceById($user_invoice_id);
+        if (empty($invData)) {
+           return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No Detail found for the Invoice.'); 
+        }
         $reference_no = $invData->reference_no;
         $invoice_no = $invData->invoice_no;
         $state_name = $invData->place_of_supply;
