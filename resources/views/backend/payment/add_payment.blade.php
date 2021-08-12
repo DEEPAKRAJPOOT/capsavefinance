@@ -434,7 +434,7 @@ cursor: pointer;
                     }
                 });                
                 return result;                
-            },'Please enter Unique TDS Certificate No.'
+            },'Please enter another TDS Certificate No.'
         );
 
         $('#savePayFrm').validate( {

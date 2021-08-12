@@ -5276,7 +5276,7 @@ if ($err) {
     public function checkUniqueTdsCertificate(Request $request) 
     {        
         $tdsCertificate = $request->get('tds_certificate_no');
-        $id = $request->has('payment_id') ? \Crypt::decrypt($request->get('payment_id')) : null ;
+        $id = $request->has('payment_id') ? $request->get('payment_id') : null ;
         $result =  Payment::checkTdsCertificate($tdsCertificate, $id);
         if (isset($result[0])) {
             $result = ['status' => 1];

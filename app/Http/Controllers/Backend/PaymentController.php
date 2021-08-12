@@ -155,7 +155,7 @@ class PaymentController extends Controller {
 			if(isset($request->tds_certificate_no)) {
 				$tdsCertificate = Payment::where('tds_certificate_no', $request->tds_certificate_no)->count();
 				if($tdsCertificate > 0) {
-					Session::flash('error', 'Please enter Unique TDS Certificate No.');
+					Session::flash('error', 'Please enter another TDS Certificate No.');
 					return back();	
 				}
 			}	
@@ -311,6 +311,14 @@ class PaymentController extends Controller {
 			$arrFileData = $request->all();
 			// $fileId = '';
 
+			if(isset($request->tds_certificate_no)) {
+				$tdsCertificate = Payment::where('tds_certificate_no', $request->tds_certificate_no)->count();
+				if($tdsCertificate > 0) {
+					Session::flash('error', 'Please enter another TDS Certificate No.');
+					return back();	
+				}
+			}
+			
 			if(isset($arrFileData['doc_file']) && !is_null($arrFileData['doc_file'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
