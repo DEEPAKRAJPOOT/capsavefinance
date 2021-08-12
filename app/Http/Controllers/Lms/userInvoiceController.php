@@ -295,6 +295,14 @@ class userInvoiceController extends Controller
         $trans_ids = $request->get('trans_id');
         $trans_ids = $request->get('trans_id');
 
+        if (!empty($invoice_date)) {
+            $invoice_date = \DateTime::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d');
+        }
+
+        if (!empty($due_date)) {
+            $due_date = \DateTime::createFromFormat('d/m/Y', $due_date)->format('Y-m-d');
+        }
+
         $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoice_type);
         $invSerialNo = sprintf('%04d', ((!empty($lastInvData->inv_serial_no) ?? 0) + 1) ?? rand(0, 9999));
         $InvoiceNoArr = explode('/',$invoice_no);
@@ -612,7 +620,7 @@ class userInvoiceController extends Controller
 
             $intrest_charges[$key] = array(
                 'trans_id' => $invTrans->trans_id,
-                'desc' => $desc,
+                'desc' => $desc. " $invoice_no",
                 'sac' => $sac_code,
                 'base_amt' => round($base_amt,2),
                 'sgst_rate' => ($sgst_rate != 0 ? $sgst_rate : 0),
