@@ -346,8 +346,10 @@ class Apportionment {
     selectAllChecks(checkallId){
       if ($('#' + checkallId).is(':checked')) {
         $('.check[type="checkbox"]').prop('checked', true);
+        $('.pay[type="text"]').removeAttr('readonly');
       }else{
          $('.check[type="checkbox"]').prop('checked', false);
+         $('.pay[type="text"]').attr('readonly',true);
       }
       $('.pay[type="text"]').val('');
       this.calculateUnAppliedAmt()
