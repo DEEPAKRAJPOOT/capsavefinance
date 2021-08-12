@@ -312,8 +312,9 @@ class PaymentController extends Controller {
 			// $fileId = '';
 
 			if(isset($request->tds_certificate_no)) {
-				$tdsCertificate = Payment::where('tds_certificate_no', $request->tds_certificate_no)->count();
-				if($tdsCertificate > 0) {
+				$id = $request->has('payment_id') ? $request->get('payment_id') : null ;
+				$result =  Payment::checkTdsCertificate($request->tds_certificate_no, $id);
+				if(isset($result[0])) {
 					Session::flash('error', 'Please enter another TDS Certificate No.');
 					return back();	
 				}
