@@ -295,9 +295,14 @@ class Payment extends BaseModel {
      * 
      * @return type mixed
      */
-    public static function tdsNameUnique(array $where = []) {
-        $res = self::where($where);
-        $res = $res->get();
-        return $res->isEmpty() ? [] :  $res;
-    }    
+    public static function checkTdsCertificate($tdsCertiName, $id=null)
+    {
+        $query = self::select('payment_id')
+                ->where('tds_certificate_no', $tdsCertiName);
+        if (!is_null($id)) {
+            $query->where('payment_id', '!=', $id);
+        }
+        $res = $query->get();        
+        return $res ?: [];
+    }   
 }

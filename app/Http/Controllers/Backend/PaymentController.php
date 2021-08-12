@@ -151,6 +151,14 @@ class PaymentController extends Controller {
 				'amount.gt' => 'Transaction amount must be greater than zero',
 				'date_of_payment.before_or_equal' => 'The Transaction Date must be a date before or equal to '.$curdateMesg.'.',
 			]);
+
+			if(isset($request->tds_certificate_no)) {
+				$tdsCertificate = Payment::where('tds_certificate_no', $request->tds_certificate_no)->count();
+				if($tdsCertificate > 0) {
+					Session::flash('error', 'Please enter Unique TDS Certificate No.');
+					return back();	
+				}
+			}	
 			
 			$utr ="";
 			$check  ="";
@@ -177,14 +185,6 @@ class PaymentController extends Controller {
 				$userFile = $this->docRepo->saveFile($uploadData);
 			} 
 			
-			if(isset($request->tds_certificate_no)) {
-				$tdsCertificate = Payment::where('tds_certificate_no', $request->tds_certificate_no)->count();
-				if($tdsCertificate > 0) {
-					Session::flash('error', 'Please enter Unique TDS Certificate No.');
-					return back();	
-				}
-			}			
-
 			$paymentData = [
 				'user_id' => $request->user_id,
 				'biz_id' => $request->biz_id,
