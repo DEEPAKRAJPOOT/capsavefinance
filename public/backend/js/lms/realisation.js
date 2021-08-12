@@ -30,9 +30,9 @@ try {
             "drawCallback": function( settings ) {
                 if (settings.json) {
                     excelUrl = settings.json.excelUrl;
-                    $('#dwnldEXCEL').attr('href', excelUrl)
+                    $('#dwnldEXCEL').attr('href', excelUrl);
                     pdfUrl = settings.json.pdfUrl;
-                    $('#dwnldPDF').attr('href', pdfUrl)
+                    $('#dwnldPDF').attr('href', pdfUrl);
                 }
             },
             columns: [

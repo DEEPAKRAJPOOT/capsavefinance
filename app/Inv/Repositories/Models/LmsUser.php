@@ -183,5 +183,10 @@ class LmsUser extends Authenticatable
     {
         return $this->belongsTo('App\Inv\Repositories\Models\Business', 'app_id');
     }
+
+    public static function getLmsDetailByUserId($userId) 
+    {
+        return self::where(['user_id' => $userId])->get();
+    }
     
 }

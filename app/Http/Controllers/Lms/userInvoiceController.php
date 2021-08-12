@@ -12,6 +12,7 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterface;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Master\GstTax;
+use App\Inv\Repositories\Models\LmsUser;
 use DB;
 use Carbon\Carbon;
 use PDF;
@@ -346,12 +347,19 @@ class userInvoiceController extends Controller
         if(empty($txnsData) ||  $txnsData->isEmpty()){
             return response()->json(['status' => 0,'message' => 'No transaction found for the user.']); 
         }
+
+        $lmsDetails = LmsUser::getLmsDetailByUserId($user_id);
+        if (empty($lmsDetails) ||  $lmsDetails->isEmpty()) {
+            return response()->json(['status' => 0,'message' => 'Lms Detail not found for the user.']);
+        }
+        $virtual_acc_id = $lmsDetails[0]->virtual_acc_id;
         $origin_of_recipient = [
             'reference_no' => $reference_no,
             'invoice_no' => $invoice_no,
             'place_of_supply' => $state_name,
             'invoice_date' => $invoice_date,
             'due_date' => $due_date,
+            'virtual_acc_id' => $virtual_acc_id,
         ];
         $is_state_diffrent = ($userStateId != $companyStateId);
         $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
@@ -512,19 +520,15 @@ class userInvoiceController extends Controller
         $invoice_no = $invData->invoice_no;
         $state_name = $invData->place_of_supply;
         $invoice_type = $invData->invoice_type;
-        $invoice_date = $this->dateFormat($invData->invoice_date);
-        $due_date = $invData->due_date ? $this->dateFormat($invData->due_date) :'';
-        // $invoice_date_arr = explode('-',$invData->invoice_date);
-        // $temp = $invoice_date_arr[0];
-        // $invoice_date_arr[0] = $invoice_date_arr[2];
-        // $invoice_date_arr[2] = $temp;
-        // $invoice_date = implode('-',$invoice_date_arr);
+        $invoice_date = $invData->invoice_date;
+        $due_date = $invData->due_date;
 
         $company_id = $invData->comp_addr_id;
         $registered_comp_id = $invData->registered_comp_id;
 
         $bank_account_id = $invData->bank_id;
         $totalTxnsInInvoice = $invData->userInvoiceTxns;
+
         $trans_ids = [];
         foreach ($totalTxnsInInvoice as $key => $value) {
            $trans_ids[] =  $value->trans_id;
@@ -535,7 +539,6 @@ class userInvoiceController extends Controller
         if (empty(preg_replace('#[^0-9]+#', '', $user_id))) {
            return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Invalid UserId Found.');
         }
-
         $userStateId = $invData->user_gst_state_id;
         $companyStateId = $invData->comp_gst_state_id;
 
@@ -543,6 +546,12 @@ class userInvoiceController extends Controller
         if (empty($stateDetail)) {
            return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'State detail not found for the user address.');
         }
+
+        $lmsDetails = LmsUser::getLmsDetailByUserId($user_id);
+        if (empty($lmsDetails) ||  $lmsDetails->isEmpty()) {
+            return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Lms Detail not found for the user.');
+        }
+        $virtual_acc_id = $lmsDetails[0]->virtual_acc_id;
         $billingDetails = [
             'name' => $invData->biz_entity_name,
             'address' => $invData->gst_addr,
@@ -559,6 +568,7 @@ class userInvoiceController extends Controller
             'place_of_supply' => $state_name,
             'invoice_date' => $invoice_date,
             'due_date' => $due_date,
+            'virtual_acc_id' => $virtual_acc_id,
         ];
         if (empty($invData->inv_comp_data)) {
             $companyDetail = $this->_getCompanyDetail($company_id, $bank_account_id);
