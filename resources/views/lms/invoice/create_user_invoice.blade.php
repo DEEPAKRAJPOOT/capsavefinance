@@ -170,7 +170,7 @@
                                            <span style="font-size: 9px;font-family: Calibri;"><strong>IGST</strong></span>
                                         </td>
                                         <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" rowspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Total Rental</strong></span>
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Total</strong></span>
                                         </td>
                                      </tr>
                                      <tr>
