@@ -151,6 +151,14 @@ class PaymentController extends Controller {
 				'amount.gt' => 'Transaction amount must be greater than zero',
 				'date_of_payment.before_or_equal' => 'The Transaction Date must be a date before or equal to '.$curdateMesg.'.',
 			]);
+
+			if(isset($request->tds_certificate_no)) {
+				$tdsCertificate = Payment::where('tds_certificate_no', $request->tds_certificate_no)->count();
+				if($tdsCertificate > 0) {
+					Session::flash('error', 'Please enter another TDS Certificate No.');
+					return back();	
+				}
+			}	
 			
 			$utr ="";
 			$check  ="";
@@ -175,8 +183,8 @@ class PaymentController extends Controller {
                 $arrFileData['doc_file'] = $arrFileData['cheque'];
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
-			}                        
-
+			} 
+			
 			$paymentData = [
 				'user_id' => $request->user_id,
 				'biz_id' => $request->biz_id,
@@ -303,6 +311,15 @@ class PaymentController extends Controller {
 			$arrFileData = $request->all();
 			// $fileId = '';
 
+			if(isset($request->tds_certificate_no)) {
+				$id = $request->has('payment_id') ? $request->get('payment_id') : null ;
+				$result =  Payment::checkTdsCertificate($request->tds_certificate_no, $id);
+				if(isset($result[0])) {
+					Session::flash('error', 'Please enter another TDS Certificate No.');
+					return back();	
+				}
+			}
+			
 			if(isset($arrFileData['doc_file']) && !is_null($arrFileData['doc_file'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);

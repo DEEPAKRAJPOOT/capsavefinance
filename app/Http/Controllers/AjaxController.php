@@ -5270,5 +5270,19 @@ if ($err) {
             $result = ['status' => 0];
         }
         return response()->json($result); 
-    }    
+    }
+    
+    // Check Unique Entity
+    public function checkUniqueTdsCertificate(Request $request) 
+    {        
+        $tdsCertificate = $request->get('tds_certificate_no');
+        $id = $request->has('payment_id') ? $request->get('payment_id') : null ;
+        $result =  Payment::checkTdsCertificate($tdsCertificate, $id);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }      
 }

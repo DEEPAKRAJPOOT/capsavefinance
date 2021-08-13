@@ -289,4 +289,24 @@ class Payment extends BaseModel {
         }
         return $query;
     }
+
+    /**
+     * get Payment data list
+     * 
+     * @return type mixed
+     */
+    public static function checkTdsCertificate($tdsCertiName, $id=null)
+    {
+        $query = self::select('payment_id')
+                ->where('tds_certificate_no', $tdsCertiName);
+                // ->where(function($q) use($tdsCertiName) {
+                //     $search_keyword = trim($tdsCertiName);
+                //     $q->where('tds_certificate_no', 'like', "%$search_keyword%");
+                // });
+        if (!is_null($id)) {
+            $query->where('payment_id', '!=', $id);
+        }
+        $res = $query->get();        
+        return $res ?: [];
+    }   
 }
