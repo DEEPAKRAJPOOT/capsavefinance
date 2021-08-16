@@ -4033,7 +4033,7 @@ if ($err) {
                     $transactionList = $transactionList->where('trans_type',$trans_type);
                 }
                 if($entry_type != ''){
-                    $transactionList = $transactionList->where('entry_type',$entry_type);
+                    // $transactionList = $transactionList->where('entry_type',$entry_type);
                 }
             }
         }
@@ -4042,7 +4042,7 @@ if ($err) {
             $customer_id = trim($request->get('customer_id')) ?? null ;
             $query->where('customer_id', '=', "$customer_id");
         })->get()->filter(function($item){
-            return $item->IsTransaction;
+            return $item->transaction->is_transaction;
         });
 
         $users = $dataProvider->getSoaList($this->request, $transactionList);

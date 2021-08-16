@@ -70,12 +70,17 @@ class Transactions extends BaseModel {
         'is_settled',
         'is_posted_in_tally',
         'is_invoice_generated',
+        'is_transaction',
         'sys_created_at',
         'sys_updated_at',
         'created_at',
         'created_by',
         'updated_at',
         'updated_by'
+    ];
+
+    protected $casts = [
+        'is_transaction' => 'boolean',
     ];
 
     public function childTransactions(){
@@ -434,7 +439,7 @@ class Transactions extends BaseModel {
         }
         return $query->get()
                 ->filter(function($item) {
-                    return ($item->outstanding > 0 && $item->isTransaction);
+                    return ($item->outstanding > 0 && $item->is_transaction);
                 });
     }
 
@@ -448,7 +453,7 @@ class Transactions extends BaseModel {
                 ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
                 ->where('user_id','=',$userId)->get()
                 ->filter(function($item){
-                    return ($item->refundoutstanding > 0 && $item->IsTransaction);
+                    return ($item->refundoutstanding > 0 && $item->is_transaction);
                 });
     }
 
@@ -584,7 +589,7 @@ class Transactions extends BaseModel {
         $query = $query->orderByRaw("FIELD(trans_type, '".config('lms.TRANS_TYPE.INTEREST')."', '".config('lms.TRANS_TYPE.PAYMENT_DISBURSED')."', '".config('lms.TRANS_TYPE.INTEREST_OVERDUE')."', '".config('lms.TRANS_TYPE.MARGIN')."' ), trans_id");
  
         return $query->get()->filter(function($item) {
-            return ($item->outstanding > 0 && $item->IsTransaction);
+            return ($item->outstanding > 0 && $item->is_transaction);
         });
     }
 
@@ -606,7 +611,7 @@ class Transactions extends BaseModel {
         $query->orderBy('trans_date','ASC');
 
         return $query->get()->filter(function($item) {
-            return ($item->outstanding > 0 && $item->IsTransaction);
+            return ($item->outstanding > 0 && $item->is_transaction);
         });
     }
 
@@ -709,7 +714,7 @@ class Transactions extends BaseModel {
                 $q->whereIn('trans_type', [config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.TDS')])->where('entry_type', '=', '1');
             });
         })->where($where)->orderBy('trans_date', 'ASC')->get()->filter(function($item){
-            return ( $item->IsTransaction);
+            return ( $item->is_transaction);
 }); 
     }
 
@@ -909,7 +914,7 @@ class Transactions extends BaseModel {
         ->where('entry_type',0)
         ->get()
         ->filter(function($item) {
-            return ($item->IsTransaction);
+            return ($item->is_transaction);
         });
     }
     
@@ -1358,7 +1363,7 @@ class Transactions extends BaseModel {
 
         return $query->get()
             ->filter(function($item) {
-                return ($item->outstanding > 0 && $item->isTransaction && $item->paymentDueDate < date('Y-m-d'));
+                return ($item->outstanding > 0 && $item->is_transaction && $item->paymentDueDate < date('Y-m-d'));
             });
     }
 }

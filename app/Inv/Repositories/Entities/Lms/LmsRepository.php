@@ -739,7 +739,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     
     public function getSoaList()
     {
-        return Transactions::getSoaList();
+        // return Transactions::getSoaList();
+		return CustomerTransactionSOA::getSoaList();
     }
     
     public function getColenderSoaList() {

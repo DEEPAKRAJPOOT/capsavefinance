@@ -4335,11 +4335,10 @@ class DataRenderer implements DataProviderInterface
      */
     public function getSoaList(Request $request, $data)
     {
-        $this->soa_balance = 0;
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])
             ->addColumn('payment_id', function($trans){
-                return $trans->payment_id;
+                return $trans->transaction->payment_id;
             })
             ->addColumn('customer_id', function($trans){
                 $data = '';
@@ -4356,10 +4355,10 @@ class DataRenderer implements DataProviderInterface
                 return $data;
             })
             ->addColumn('invoice_no',function($trans){
-                return $trans->invoiceno;
+                return $trans->invoice_no;
             })
             ->addColumn('batch_no',function($trans){
-                return $trans->batchNo;
+                return $trans->batch_no;
             })
             ->addColumn('narration',function($trans){
                 return "<b>".$trans->narration."<b>";
@@ -4373,29 +4372,25 @@ class DataRenderer implements DataProviderInterface
             ->addColumn(
                 'value_date',
                 function ($trans) {
-                    return date('d-m-Y',strtotime($trans->trans_date));
+                    return date('d-m-Y',strtotime($trans->value_date));
                 }
             )
             ->editColumn(
                 'trans_date',
                 function ($trans) {
-                    return \Helpers::convertDateTimeFormat($trans->sys_created_at ?? $trans->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
+                    return \Helpers::convertDateTimeFormat($trans->trans_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
                 }
             )
             ->editColumn(
                 'trans_type',
                 function ($trans) {
-                    return $trans->transname;
+                    return $trans->transaction->transname;
                 }
             )
             ->editColumn(
                 'currency',
                 function ($trans) {
-                    if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
-                        return '';
-                    }else{
-                        return 'INR';
-                    }
+                    return $trans->currency;
                 }
             )
             ->addColumn(
@@ -4404,35 +4399,17 @@ class DataRenderer implements DataProviderInterface
                     if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REPAYMENT')])){
                         return number_format($trans->amount,2);
                     }
-                }   
+                }
             )->editColumn(
                 'debit',
                 function ($trans) {
-                    /*if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
-                        return '';
-                    }
-                    else*/
-                    if($trans->entry_type=='0' && $trans->amount > '0'){
-                        $this->soa_balance += $trans->amount;
-                        return number_format($trans->amount,2);
-                    }else{
-                        return '';
-                    }
+                    return $trans->debit_amount > 0 ? $trans->debit_amount : '' ;
                 }
             )
             ->editColumn(
                 'credit',
                 function ($trans) {
-                    /*if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
-                        return '';
-                    }
-                    else*/
-                    if($trans->entry_type=='1' && $trans->amount > '0'){
-                        $this->soa_balance -= $trans->amount;
-                        return '('.number_format($trans->amount,2).')';
-                    }else{
-                        return '';
-                    }
+                    return $trans->credit_amount > 0 ? $trans->credit_amount : '' ;
                 }
             )
             ->addColumn(
@@ -4444,23 +4421,13 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'balance',
                 function ($trans) {
-
-                    $data = '';
-                    /*if($trans->payment_id && in_array($trans->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
-                        $data = '';
+                    if($trans->transaction->entry_type == 1){
+                        return '<span style="color:red">'.number_format(abs($trans->balance_amount), 2).'</span>';
+                    } else {
+                        return '<span style="color:green">'.number_format(abs($trans->balance_amount), 2).'</span>';
                     }
-                    else*/
-                    if($this->soa_balance<0){
-                        $data = '<span style="color:red">'.number_format(abs($this->soa_balance), 2).'</span>';
-                    }else{
-                        $data = '<span style="color:green">'.number_format(abs($this->soa_balance), 2).'</span>';
-                    }
-                    return $data;
                 }
             )
-            // ->filter(function ($query) use ($request) {
-                
-            // })
             ->make(true);
     }
 

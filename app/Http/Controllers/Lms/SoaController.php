@@ -198,24 +198,25 @@ class SoaController extends Controller
         foreach($expecteddata as $key => $expData){
             foreach ($expData as $k => $data) {
                 $balance = $this->getBalance($data, $balance??0);
-                $preparedData[$key][$k]['payment_id'] = $data->payment_id;
-                $preparedData[$key][$k]['parent_trans_id'] = $data->parent_trans_id;      
+                $preparedData[$key][$k]['payment_id'] = $data->transaction->payment_id;
+                $preparedData[$key][$k]['parent_trans_id'] = $data->transaction->parent_trans_id;
                 $preparedData[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
-                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->sys_created_at ?? $data->created_at));
-                $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->trans_date));
-                $preparedData[$key][$k]['trans_type'] = trim($data->transname);
-                $preparedData[$key][$k]['batch_no'] = $data->batchNo;
-                $preparedData[$key][$k]['invoice_no'] = $data->invoiceno;
+                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->trans_date));
+                $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->value_date));
+                $preparedData[$key][$k]['trans_type'] = trim($data->transaction->transname);
+                $preparedData[$key][$k]['batch_no'] = $data->batch_no;
+                $preparedData[$key][$k]['invoice_no'] = $data->invoice_no;
                 $preparedData[$key][$k]['narration'] = $data->narration;
-                $preparedData[$key][$k]['currency'] = trim($data->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')]) ? '' : 'INR');
-                $preparedData[$key][$k]['debit'] = $this->getDebit($data);
-                $preparedData[$key][$k]['credit'] = $this->getCredit($data);
-                $preparedData[$key][$k]['balance'] = ($balance<=0)?number_format(abs($balance),2):'('.number_format(abs($balance),2).')';
+                $preparedData[$key][$k]['currency'] = trim($data->transaction->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')]) ? '' : 'INR');
+                $preparedData[$key][$k]['debit'] = $data->debit_amount;
+                $preparedData[$key][$k]['credit'] = $data->credit_amount;
+                $preparedData[$key][$k]['balance'] = $data->balance_amount;
                 $preparedData[$key][$k]['soabackgroundcolor'] = $data->soabackgroundcolor;
             }
         }
         return $preparedData;
     }
+    
 
     public function soaPdfDownload(Request $request){
         try{
@@ -251,7 +252,7 @@ class SoaController extends Controller
                         $transactionList->where('trans_type',$trans_type);
                     }
                     if($entry_type){
-                        $transactionList->where('entry_type',$entry_type);
+                        // $transactionList->where('entry_type',$entry_type);
                     }
                 }
                 $transactionList->whereHas('lmsUser',function ($query) use ($request) {
@@ -260,7 +261,7 @@ class SoaController extends Controller
                 });
 
                 $soaRecord = $this->prepareDataForRendering($transactionList->get()->filter(function($item){
-                    return $item->IsTransaction;
+                    return $item->transaction->is_transaction;
                 })->chunk(25));
             } 
             ini_set('memory_limit', -1);
@@ -302,7 +303,7 @@ class SoaController extends Controller
                     $transactionList->where('trans_type',$trans_type);
                 }
                 if($entry_type){
-                    $transactionList->where('entry_type',$entry_type);
+                    // $transactionList->where('entry_type',$entry_type);
                 }
             }
 
@@ -313,7 +314,7 @@ class SoaController extends Controller
         
         }
         $exceldata = $this->prepareDataForRendering($transactionList->get()->filter(function($item){
-            return $item->IsTransaction;
+            return $item->transaction->is_transaction;
         })->chunk(25));
         $sheet =  new PHPExcel();
         $sheet->getActiveSheet()->mergeCells('A2:K2');

@@ -10,6 +10,7 @@ use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterface;
+use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Master\GstTax;
 use DB;
@@ -489,6 +490,9 @@ class userInvoiceController extends Controller
                    $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
                    $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
                    $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'amount' => ($txnsRec['base_amt'] + $totalGst), 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
+                   if ($invoice_type == 'C')
+                        $data = $this->checkIsTransactionUpdatable($data);
+
                    $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
@@ -502,6 +506,23 @@ class userInvoiceController extends Controller
         } catch (Exception $ex) {
              return redirect()->route('view_user_invoice', ['user_id' => $user_id])->withErrors(Helpers::getExceptionMessage($ex));
         }
+    }
+
+    private function checkIsTransactionUpdatable($data)
+    {
+        if (isset($data['trans_id'])) {
+            $transaction = Transactions::where('trans_id', $data['trans_id'])->first();
+            if($transaction->parentTransactions){
+                if($transaction->parentTransactions->transType->chrg_master_id && !$transaction->parentTransactions->is_invoice_generated){
+                    $data['is_transaction'] = false;
+                }
+            }else{
+                if($transaction->transType->chrg_master_id && !$transaction->is_invoice_generated){
+                    $data['is_transaction'] = false;
+                }
+            }
+        }
+        return $data;
     }
 
     public function downloadUserInvoice(Request $request){
