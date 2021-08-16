@@ -3,6 +3,7 @@
 namespace App\Inv\Repositories\Observers;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
+use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
 
 class TransactionsObserver
 {
@@ -15,6 +16,7 @@ class TransactionsObserver
     public function created(Transactions $transaction)
     {
         InvoiceDisbursedDetail::createTransactionDetails($transaction);
+        CustomerTransactionSOA::createTransactionSOADetails($transaction);
     }
 
     /**
@@ -26,6 +28,7 @@ class TransactionsObserver
     public function updated(Transactions $transaction)
     {
         InvoiceDisbursedDetail::updateTransactionDetails($transaction);
+        CustomerTransactionSOA::updateTransactionSOADetails($transaction);
     }
 
     /**
@@ -37,6 +40,7 @@ class TransactionsObserver
     public function deleted(Transactions $transaction)
     {
         InvoiceDisbursedDetail::deleteTransactionDetails($transaction);
+        CustomerTransactionSOA::deleteTransactionSOADetails($transaction);
     }
 
     /**
@@ -48,6 +52,7 @@ class TransactionsObserver
     public function forceDeleted(Transactions $transaction)
     {
         InvoiceDisbursedDetail::forceDeletedTransactionDetails($transaction);
+        CustomerTransactionSOA::forceDeletedTransactionSOADetails($transaction);
     }
 }
 ?>
