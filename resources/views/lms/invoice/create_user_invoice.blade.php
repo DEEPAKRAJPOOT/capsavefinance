@@ -198,7 +198,7 @@
                                      </tr>
                                   </thead>
                                   <tbody id="table_tbody">
-                                    <tr><td colspan="12">No records found</td></tr>
+                                    <tr><td colspan="13">No records found</td></tr>
                                   </tbody>
                               </table>
                           </div>
