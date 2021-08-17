@@ -706,9 +706,7 @@ class PaymentController extends Controller {
 			if($paymentId){
 				$payment = Payment::find($paymentId);
 				if($payment){
-					if($payment->is_settled == '0' && $payment->action_type == '1' && $payment->trans_type == '17' && 
-					strtotime(\Helpers::convertDateTimeFormat($payment->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d'))
-					){
+					if($payment->is_settled == '0' && $payment->action_type == '1' && $payment->trans_type == '17'){
 						$payment->delete();
 						InterestAccrualTemp::where('payment_id',$paymentId)->delete();
 						return response()->json(['status' => 1,'message' => 'Successfully Deleted Payment']); 
