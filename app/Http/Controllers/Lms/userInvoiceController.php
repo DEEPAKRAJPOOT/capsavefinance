@@ -280,6 +280,7 @@ class userInvoiceController extends Controller
         $intrest_charges = $inv_data[0];
         view()->share(['intrest_charges' => $intrest_charges, 'checkbox' => true]);
         $view = view('lms.invoice.generate_invoice_txns');
+        // dd($inv_data);
         return response()->json(['status' => 1,'view' => base64_encode($view)]); 
     }
 
@@ -683,6 +684,7 @@ class userInvoiceController extends Controller
                 'cgst_amt' =>  $cgst_amt,
                 'igst_rate' => $igst_rate,
                 'igst_amt' =>  $igst_amt,
+                'trans_date' =>  $txn->trans_date,
             );
             $total_rental = round($base_amt + $sgst_amt + $cgst_amt + $igst_amt, 2);
             $total_sum_of_rental += $total_rental; 

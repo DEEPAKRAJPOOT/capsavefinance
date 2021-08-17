@@ -158,6 +158,9 @@
                                            <span style="font-size: 9px;font-family: Calibri;"><strong>SAC</strong></span>
                                         </td>
                                         <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Settle Payment</strong></span>
+                                        </td>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" rowspan="2" bgcolor="#f2f2f2">
                                            <span style="font-size: 9px;font-family: Calibri;"><strong>Base Amount (Rs)</strong></span>
                                         </td>
                                         <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" colspan="2" bgcolor="#f2f2f2">
