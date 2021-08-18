@@ -32,7 +32,7 @@
             <span style="font-size: 9px;font-family: Calibri;">{{$txns['sac']}}</span>
          </td>
          <td style="border: 1px solid #ddd;padding: 2px;">
-            <span style="font-size: 9px;font-family: Calibri;">{{ \Carbon\Carbon::parse($txns['trans_date'])->format('d-m-Y') }}</span>
+            <span style="font-size: 9px;font-family: Calibri;">{{ $txns['trans_date'] }}</span>
          </td>
          <td style="border: 1px solid #ddd;padding: 2px;">
             <span style="font-size: 9px;font-family: Calibri;"><strong>{{sprintf('%.2F', $txns['base_amt'])}}</strong></span>
