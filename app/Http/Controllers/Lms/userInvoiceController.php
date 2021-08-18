@@ -633,6 +633,7 @@ class userInvoiceController extends Controller
                 'cgst_amt' =>  ($cgst_amt != 0 ? $cgst_amt : 0),
                 'igst_rate' => ($igst_rate != 0 ? $igst_rate : 0),
                 'igst_amt' =>  ($igst_amt != 0 ? $igst_amt : 0),
+                'trans_date' =>  ($txn->trans_date) ? $txn->trans_date : '',
             );
             $total_rental = round($base_amt + $sgst_amt + $cgst_amt + $igst_amt, 2);
             $total_sum_of_rental += $total_rental; 
