@@ -66,7 +66,12 @@ Route::any(
         ]
     );
 
-    Route::any('api/change/year',[
+    Route::get('api/change/year',[
+        'as' => 'api_change_year',
+        'uses' => 'Auth\ApiController@changeFinancialYear'
+        ]
+    );
+    Route::post('api/change/year',[
         'as' => 'api_change_year',
         'uses' => 'Auth\ApiController@changeFinancialYear'
         ]
