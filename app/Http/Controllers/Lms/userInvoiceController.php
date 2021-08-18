@@ -713,7 +713,7 @@ class userInvoiceController extends Controller
                 $dueDate = strtotime($txn->toIntDate); // or your date as well
                 $now = strtotime($txn->fromIntDate);
                 $datediff = ($dueDate - $now);
-                $days = round($datediff / (60 * 60 * 24)) . ' From ' . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @';
+                $days = round($datediff / (60 * 60 * 24)) . 'days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @';
             } else {
                 $days = '---';
             }
