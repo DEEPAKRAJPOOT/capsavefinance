@@ -762,7 +762,7 @@ class ApportionmentController extends Controller
 
                 if($amtToSettle > $repaymentAmt){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
-                    return redirect()->back()->withInput();
+                    return redirect()->route('unsettled_payments')->withInput();
                 }
 
                 if(!empty($transactionList)){
@@ -840,7 +840,7 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 
