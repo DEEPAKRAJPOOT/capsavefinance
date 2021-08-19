@@ -61,6 +61,18 @@
         $('input[name="app_id"]').mask('0000000000');
         $('input[name="year"]').mask('0000-0000-0000');
 
+        $.validator.addMethod("yearsOrder",
+            function(value, element, params) {
+                var result = true;
+                var year = value.split('-');
+
+                if (year.length != 3 || (year[0]-year[1]) != (year[1]-year[2]) || (year[0]-year[1]) != 1) {
+                    result = false;
+                }                
+                return result;                
+            },'Three consecutive years in Desc Order are required to Change the years'
+        );        
+
         $('#entityForm').validate({ // initialize the plugin
             rules: {
                 'app_id' : {
@@ -69,7 +81,8 @@
                 },
                 'year' : {
                     required : true,
-                    maxlength: 14
+                    maxlength: 14,
+                    yearsOrder: $('#year').val()
                 },
             },
             messages: {
