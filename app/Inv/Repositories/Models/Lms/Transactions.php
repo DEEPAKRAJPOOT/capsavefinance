@@ -168,6 +168,21 @@ class Transactions extends BaseModel {
         return $invNo;
     }
 
+    public function getsettledAmtWoCanAttribute(){
+       
+        $dr = self::where('parent_trans_id','=',$this->trans_id)
+        ->where('entry_type','=','0')
+        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')])
+        ->sum('amount');
+
+        $cr = self::where('parent_trans_id','=',$this->trans_id)
+        ->where('entry_type','=','1')        
+        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.REVERSE')])
+        ->sum('amount');
+
+        return (float)$cr - (float)$dr;
+    }
+
     public function getsettledAmtAttribute(){
        
         $dr = self::where('parent_trans_id','=',$this->trans_id)
@@ -1120,7 +1135,7 @@ class Transactions extends BaseModel {
         $from = self::getFromIntDateAttribute();
         $to = self::getToIntDateAttribute();
         $outstanding = self::getOutstandingAttribute();
-        $amtDiff = $this->amount - $outstanding; 
+        $amtDiff = $this->amount - $this->settledAmtWoCan; 
         $invoice_disbursed_id = $this->invoice_disbursed_id;
         if($from && $to && $invoice_disbursed_id && in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
             $amount = InterestAccrualTemp::whereDate('interest_date','>=',$from)
