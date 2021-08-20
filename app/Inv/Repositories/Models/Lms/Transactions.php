@@ -155,7 +155,7 @@ class Transactions extends BaseModel {
     }
 
     public function getInvoiceNoAttribute(){
-        
+          
         $invNo = '';
         if($this->userInvTrans){
             $invNo = $this->userInvTrans->getUserInvoice->invoice_no;
