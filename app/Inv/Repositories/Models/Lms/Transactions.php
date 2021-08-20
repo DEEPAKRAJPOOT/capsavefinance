@@ -1135,7 +1135,7 @@ class Transactions extends BaseModel {
         $from = self::getFromIntDateAttribute();
         $to = self::getToIntDateAttribute();
         $outstanding = self::getOutstandingAttribute();
-        $amtDiff = $this->amount - $this->settledAmtWoCan; 
+        $amtDiff = $this->amount - $this->outstanding; 
         $invoice_disbursed_id = $this->invoice_disbursed_id;
         if($from && $to && $invoice_disbursed_id && in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
             $amount = InterestAccrualTemp::whereDate('interest_date','>=',$from)
