@@ -281,6 +281,7 @@ class userInvoiceController extends Controller
         $intrest_charges = $inv_data[0];
         view()->share(['intrest_charges' => $intrest_charges, 'checkbox' => true]);
         $view = view('lms.invoice.generate_invoice_txns');
+        // dd($inv_data);
         return response()->json(['status' => 1,'view' => base64_encode($view)]); 
     }
 
@@ -619,7 +620,15 @@ class userInvoiceController extends Controller
                 $desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
             } 
 
-
+            if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+                $dueDate = strtotime($txn->toIntDate); // or your date as well
+                $now = strtotime($txn->fromIntDate);
+                $datediff = ($dueDate - $now);
+                $OdandInterestRate = $txn->InvoiceDisbursed->invoice->program_offer->overdue_interest_rate + $txn->InvoiceDisbursed->invoice->program_offer->interest_rate;
+                $days = round($datediff / (60 * 60 * 24)) . 'days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';
+            } else {
+                $days = '---';
+            }
 
             $intrest_charges[$key] = array(
                 'trans_id' => $invTrans->trans_id,
@@ -632,6 +641,7 @@ class userInvoiceController extends Controller
                 'cgst_amt' =>  ($cgst_amt != 0 ? $cgst_amt : 0),
                 'igst_rate' => ($igst_rate != 0 ? $igst_rate : 0),
                 'igst_amt' =>  ($igst_amt != 0 ? $igst_amt : 0),
+                'trans_date' =>  $days,
             );
             $total_rental = round($base_amt + $sgst_amt + $cgst_amt + $igst_amt, 2);
             $total_sum_of_rental += $total_rental; 
@@ -707,6 +717,15 @@ class userInvoiceController extends Controller
                 $desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
                 $sac_code = config('lms.SAC_CODE_FOR_INT_INVOICE');
             } 
+            if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+                $dueDate = strtotime($txn->toIntDate); // or your date as well
+                $now = strtotime($txn->fromIntDate);
+                $datediff = ($dueDate - $now);
+                $OdandInterestRate = $txn->InvoiceDisbursed->invoice->program_offer->overdue_interest_rate + $txn->InvoiceDisbursed->invoice->program_offer->interest_rate;
+                $days = round($datediff / (60 * 60 * 24)) . 'days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';                
+            } else {
+                $days = '---';
+            }
             
             $intrest_charges[$key] = array(
                 'trans_id' => $txn->trans_id,
@@ -719,6 +738,7 @@ class userInvoiceController extends Controller
                 'cgst_amt' =>  $cgst_amt,
                 'igst_rate' => $igst_rate,
                 'igst_amt' =>  $igst_amt,
+                'trans_date' =>  $days,
             );
             $total_rental = round($base_amt + $sgst_amt + $cgst_amt + $igst_amt, 2);
             $total_sum_of_rental += $total_rental; 
