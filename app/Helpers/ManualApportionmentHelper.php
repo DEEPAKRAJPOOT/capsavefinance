@@ -306,9 +306,9 @@ class ManualApportionmentHelper{
         $intrest = 0;
         $disbTransIds = null;
         $intTransIds = null;
-        $Dr = 0 ;
+        $Dr = 0;
         
-        $invDisbDetails = InvoiceDisbursed::find($invDisbId);
+        $invDisbDetails = InvoiceDisbursed::where('int_accrual_start_dt','<=',$transDate)->where('invoice_disbursed_id',$invDisbId)->first();
         if($invDisbDetails){
             $margin = ($invDisbDetails->invoice->invoice_approve_amount*$invDisbDetails->margin)/100;
             $Dr = $invDisbDetails->invoice->invoice_approve_amount - $margin;
@@ -573,6 +573,7 @@ class ManualApportionmentHelper{
             }
             
             $loopStratDate = $startDate ?? $maxAccrualDate ?? $intAccrualStartDate;
+            
              
             if (is_null($invDisbDetail->int_accrual_start_dt)) {
                 throw new InvalidArgumentException('Interest Accrual Start Date is missing for invoice Disbursed Id: ' . $invDisbId);
