@@ -112,6 +112,13 @@ tr.border_bottom td {
                                                     <td colspan="3">{{getInvestmentPaymentFrequency($supplyOffer->payment_frequency)}}</td>
                                                 </tr>
                                                 <tr>
+                                                    <td></td>
+                                                    <td><b>Invoice Level Procesing Fee: </b></td>
+                                                    <td>{{($supplyOffer->is_invoice_processingfee ?? 0) }}</td>
+                                                    <td></td>
+                                                    <td colspan="3"></td>
+                                                </tr>
+                                                <tr>
                                                 <td></td>
                                                     <td><b>Comment: </b></td>
                                                     <td colspan="3">{{$supplyOffer->comment}}</td>
