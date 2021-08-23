@@ -434,13 +434,17 @@ class ApportionmentController extends Controller
      * @param int $userId
      * @return \Illuminate\Http\Response
      */
-    private function getUnsettledTrans(int $userId){
+    private function getUnsettledTrans(int $userId, $payment_date = null){
         
         //$invoiceList = $this->lmsRepo->getUnsettledInvoices(['user_id','=',$userId]);
 
         $transactionList = new Collection();
         
-        $invoiceTrans = $this->lmsRepo->getUnsettledInvoiceTransactions([ 'user_id'=>$userId ]);   
+        $condition = ['user_id' => $userId];
+        if(isset($payment_date)){
+            $condition['invoiceDisbursed'] = ['int_accrual_start_dt'=> $payment_date];
+        }
+        $invoiceTrans = $this->lmsRepo->getUnsettledInvoiceTransactions($condition);   
         $invoiceTrans = $invoiceTrans->sortBy('paymentDueDate');
 
         foreach($invoiceTrans as $trans){
@@ -563,12 +567,14 @@ class ApportionmentController extends Controller
         $transactions = null;
         $unInvCnt = BizInvoice::where('supplier_id', $userId)->whereHas('invoice_disbursed')->where('is_repayment','0')->count();
         $showSuggestion = ($unInvCnt <= 50) ?true:false; 
+        $date_of_payment = null;
         if($request->has('payment_id')){
             $paymentId = $request->payment_id;
             $payment = $this->lmsRepo->getPaymentDetail($paymentId,$userId);    
+            $date_of_payment = $payment->date_of_payment;
         }
         
-        $transactions = $this->getUnsettledTrans($userId);
+        $transactions = $this->getUnsettledTrans($userId, $date_of_payment);
         return $this->dataProvider->getUnsettledTrans($request,$transactions,$payment,$showSuggestion);
     }
     

@@ -564,6 +564,16 @@ class Transactions extends BaseModel {
     {
        
         $query =  self::whereNull('parent_trans_id')->whereNull('payment_id');
+        $invoiceDisbursed = $data['invoiceDisbursed']??null;
+        if(isset($invoiceDisbursed)){
+            $query->where(function($query2) use($invoiceDisbursed){
+                $query2->whereHas('invoiceDisbursed',function($query3) use ($invoiceDisbursed) {
+                    if(isset($invoiceDisbursed['int_accrual_start_dt'])){
+                        $query3->where('int_accrual_start_dt','<=',$invoiceDisbursed['int_accrual_start_dt']);
+                    }
+                })->orWhereNull('invoice_disbursed_id');
+            });
+        }
 
         if(isset($data['invoice_disbursed_id'])){
             $query = $query->where('invoice_disbursed_id',$data['invoice_disbursed_id']);
