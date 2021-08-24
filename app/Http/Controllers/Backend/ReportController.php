@@ -839,8 +839,9 @@ class ReportController extends Controller
                     ->setCellValue('F'.$rows, 'Available Limit')
                     ->setCellValue('G'.$rows, 'Expiry Date')
                     ->setCellValue('H'.$rows, 'Sales Person Name')
-                    ->setCellValue('I'.$rows, 'Sub Program Name');
-                    $sheet->getActiveSheet()->getStyle('A'.$rows.':I'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+                    ->setCellValue('I'.$rows, 'Sub Program Name')
+					->setCellValue('J'.$rows, 'Anchor Name');
+                    $sheet->getActiveSheet()->getStyle('A'.$rows.':J'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
                     $rows++;
                     $sheet->setActiveSheetIndex(0)
                     ->setCellValue('A'.$rows, $disb['client_name'])
@@ -850,8 +851,9 @@ class ReportController extends Controller
                     ->setCellValue('E'.$rows, number_format($disb['limit_utilize'],2))
                     ->setCellValue('F'.$rows, number_format($disb['limit_available'],2))
                     ->setCellValue('G'.$rows, Carbon::parse($disb['end_date'])->format('d/m/Y') ?? NULL)
-                    ->setCellValue('H'.$rows, '')
-                    ->setCellValue('I'.$rows, $disb['sub_prgm_name']);
+                    ->setCellValue('H'.$rows, $disb['sales_person_name'])
+                    ->setCellValue('I'.$rows, $disb['sub_prgm_name'])
+					->setCellValue('J'.$rows, $rowData['anchor_name']);
                     $rows++;
                     $rows++;
                     if(!empty($disb['invoice'])){
