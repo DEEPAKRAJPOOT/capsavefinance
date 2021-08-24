@@ -113,8 +113,8 @@ tr.border_bottom td {
                                                 </tr>
                                                 <tr>
                                                     <td></td>
-                                                    <td><b>Invoice Level Procesing Fee: </b></td>
-                                                    <td>{{($supplyOffer->is_invoice_processingfee ?? 0) }}</td>
+                                                    <td><b>Invoice Processing Fee: </b></td>
+                                                    <td>{{ ($supplyOffer->BizInvoice->invoice_disbursed->processing_fee ?? 0) + ($supplyOffer->BizInvoice->invoice_disbursed->processing_fee_gst ?? 0) }}</td>
                                                     <td></td>
                                                     <td colspan="3"></td>
                                                 </tr>
