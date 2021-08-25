@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Jobs\MaturityReport;
+use App\Jobs\UtilizationReport;
 
 class DailyReport extends Command
 {    
@@ -47,5 +48,8 @@ class DailyReport extends Command
         MaturityReport::dispatch($needConsolidatedReport = true, $anchor_id = 'all')
                     ->onConnection('database')
                     ->delay(now()->addSeconds(10));
+        UtilizationReport::dispatch($needConsolidatedReport = true, $anchor_id = 'all')
+                        ->onConnection('database')
+                        ->delay(now()->addSeconds(10));
     }
 }

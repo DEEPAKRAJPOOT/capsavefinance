@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 use App\Inv\Repositories\Contracts\ReportInterface;
+use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\Anchor;
 use PHPExcel_IOFactory;
 use Carbon\Carbon;
@@ -154,12 +155,12 @@ class MaturityReport implements ShouldQueue
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
 
         $dirPath = 'public/report/temp/maturityReport/'.date('Ymd');
-        if (!\Storage::exists($dirPath)) {
-            \Storage::makeDirectory($dirPath);
+        if (!Storage::exists($dirPath)) {
+            Storage::makeDirectory($dirPath);
         }
 
         $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Maturity Report'.time().'.xlsx';
+        $filePath = $storage_path.'/Maturity Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
         $objWriter->save($filePath);
         return $filePath;
     }
