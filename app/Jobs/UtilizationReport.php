@@ -8,9 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
-use App\Inv\Repositories\Models\Anchor;
 use PHPExcel_IOFactory;
 use Carbon\Carbon;
 use PHPExcel;
@@ -19,22 +17,19 @@ class UtilizationReport implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private $data;
     private $emailTo;
-    private $sendMail;
-    private $reportsRepo;
-    private $needConsolidatedReport;
-    private $anchor_id;
+    private $anchor;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($needConsolidatedReport, $anchor_id)
+    public function __construct($data, $emailTo, $anchor = null)
     {
-        $this->needConsolidatedReport = $needConsolidatedReport;
-        $this->anchor_id              = $anchor_id;
-        $this->emailTo                = config('lms.DAILY_REPORT_MAIL');
-        $this->sendMail               = false;
+        $this->data     = $data;
+        $this->emailTo  = $emailTo;
+        $this->anchor   = $anchor;
     }
 
     /**
@@ -42,70 +37,19 @@ class UtilizationReport implements ShouldQueue
      *
      * @return void
      */
-    public function handle(ReportInterface $reportsRepo)
+    public function handle()
     {
-        $this->reportsRepo = $reportsRepo;
-
-        if(empty($this->emailTo)){
-            dd('DAILY_REPORT_MAIL is missing');
-        }
-
-        $data = $this->reportsRepo->getUtilizationReport([], $this->sendMail);
-
-        if($this->sendMail){
-            // consolidated anchors report
-            if ($this->needConsolidatedReport) {
-                $this->generateConsolidatedReport($data);
-            }
-
-            $query = Anchor::active()
-                           ->whereNotNull('comp_email');
-
-            // single anchor report
-            if (is_numeric($this->anchor_id)) {
-                $anchor = $query->where('anchor_id', $this->anchor_id)->first();
-                if ($anchor)
-                    $this->generateAnchorReport($anchor);
-            } else {
-                // all anchors report
-                $anchorList = $query->get();
-                foreach($anchorList as $anchor){
-                    $this->generateAnchorReport($anchor);
-                }
-            }
-        }
-    }
-
-    private function generateConsolidatedReport($data)
-    {
-        $filePath                = $this->downloadUtilizationExcel($data);
+        $filePath                = $this->downloadUtilizationExcel($this->data);
         $emailData['email']      = $this->emailTo;
-        $emailData['name']       = 'Capsave Team';
+        $emailData['name']       = $this->anchor ? $this->anchor->comp_name : 'Capsave Team';
         $emailData['body']       = 'PFA';
         $emailData['attachment'] = $filePath;
-        $emailData['subject']    = "Utilization Report";
-        // \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
+        $emailData['subject']    = $this->anchor ? "Utilization Report (".$this->anchor->comp_name.")" : "Utilization Report";
+        \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
     }
 
-    private function generateAnchorReport($anchor)
+    private function downloadUtilizationExcel($exceldata) 
     {
-        $this->sendMail = false;
-        $data           = $this->reportsRepo->getUtilizationReport(['anchor_id' => $anchor->anchor_id], $this->sendMail);
-
-        if($this->sendMail){
-            $filePath                = $this->downloadUtilizationExcel($data);
-            // $emailData['email']      = $anchor->comp_email;
-            $emailData['email']      = $this->emailTo;
-            $emailData['name']       = $anchor->comp_name;
-            $emailData['body']       = 'PFA';
-            $emailData['attachment'] = $filePath;
-            $emailData['subject']    = "Utilization Report (".$anchor->comp_name.")";
-            // \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
-        }
-    }
-
-    private function downloadUtilizationExcel($exceldata) {
-    
         $rows = 5;
 
         $sheet =  new PHPExcel();
