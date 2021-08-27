@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 use App\Jobs\UtilizationReport as UtilizationReportJob;
-use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\Anchor;
 
 class UtilizationReport extends Command
@@ -13,8 +12,6 @@ class UtilizationReport extends Command
     private $needConsolidatedReport;
     private $anchorId;
     private $emailTo;
-    private $sendMail;
-    private $reportsRepo;
     /**
      * The name and signature of the console command.
      *
@@ -27,7 +24,7 @@ class UtilizationReport extends Command
      *
      * @var string
      */
-    protected $description = 'To Generate Utilization Report Based On Parameters';
+    protected $description = 'To Generate Utilization Report';
 
     /**
      * Create a new command instance.
@@ -36,8 +33,7 @@ class UtilizationReport extends Command
      */
     public function __construct()
     {
-        $this->emailTo    = config('lms.DAILY_REPORT_MAIL');
-        $this->sendMail   = false;
+        $this->emailTo  = config('lms.DAILY_REPORT_MAIL');
         parent::__construct();
     }
 
@@ -46,9 +42,8 @@ class UtilizationReport extends Command
      *
      * @return mixed
      */
-    public function handle(ReportInterface $reportsRepo)
+    public function handle()
     {
-        $this->reportsRepo            = $reportsRepo;
         $this->needConsolidatedReport = filter_var($this->argument('need_consolidated_report'), FILTER_VALIDATE_BOOLEAN);
         $this->anchorId               = $this->argument('anchor_id');
 
@@ -56,48 +51,48 @@ class UtilizationReport extends Command
             dd('DAILY_REPORT_MAIL is missing');
         }
 
-        $data = $this->reportsRepo->getUtilizationReport([], $this->sendMail);
+        // consolidated anchors report
+        if ($this->needConsolidatedReport) {
+            $this->addToJobQueue($needConsolidatedReport = true);
+        }
 
-        if($this->sendMail){
-            // consolidated anchors report
-            if ($this->needConsolidatedReport) {
-                UtilizationReportJob::dispatch($data, $this->emailTo)
-                        ->onConnection('database')
-                        ->delay(now()->addSeconds(10));
-            }
+        $query = Anchor::active()
+                        ->whereNotNull('comp_email');
 
-            $query = Anchor::active()
-                           ->whereNotNull('comp_email');
-
+        if ($this->anchorId == 'all') {
             // all anchors report
-            if ($this->anchorId == 'all') {
-                $anchorList = $query->get();
-                foreach($anchorList as $anchor){
-                    $this->generateAnchorReport($anchor);
-                }
-            } else {
-                // single anchor report
-                $this->anchorId = (int) $this->anchorId;
+            $anchorList = $query->get();
+            foreach($anchorList as $anchor) {
+                $this->generateAnchorReport($anchor);
+            }
+        } else {
+            // single anchor report
+            $this->generateSingleAnchorReport($query);
+        }
+    }
 
-                if (is_numeric($this->anchorId) && $this->anchorId > 0) {
-                    $anchor     = $query->where('anchor_id', $this->anchorId)->first();
-                    if ($anchor) {
-                        $this->generateAnchorReport($anchor);
-                    }
-                }
+    private function generateSingleAnchorReport($query)
+    {
+        $this->anchorId = (int) $this->anchorId;
+
+        if (is_numeric($this->anchorId) && $this->anchorId > 0) {
+            $anchor     = $query->where('anchor_id', $this->anchorId)->first();
+            if ($anchor) {
+                $this->generateAnchorReport($anchor);
             }
         }
     }
 
-    private function generateAnchorReport($anchor)
+    private function addToJobQueue($needConsolidatedReport, $anchor = null)
     {
-        $this->sendMail = false;
-        $data           = $this->reportsRepo->getUtilizationReport(['anchor_id' => $anchor->anchor_id], $this->sendMail);
+        UtilizationReportJob::dispatch($needConsolidatedReport, $this->emailTo, $anchor)
+                            ->onConnection('database')
+                            ->delay(now()->addSeconds(10));
+    }
 
-        if ($this->sendMail) {
-            UtilizationReportJob::dispatch($data, $this->emailTo, $anchor)
-                ->onConnection('database')
-                ->delay(now()->addSeconds(10));
-        }
+    public function generateAnchorReport($anchor)
+    {
+        $payLoad = ['anchor_id' => $anchor->anchor_id, 'comp_name' => $anchor->comp_name];
+        $this->addToJobQueue($needConsolidatedReport = false, $payLoad);
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
 use PHPExcel_IOFactory;
 use Carbon\Carbon;
@@ -17,19 +18,22 @@ class UtilizationReport implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $data;
+    private $needConsolidatedReport;
     private $emailTo;
     private $anchor;
+    private $sendMail;
+    private $reportsRepo;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($data, $emailTo, $anchor = null)
+    public function __construct($needConsolidatedReport, $emailTo, $anchor = null)
     {
-        $this->data     = $data;
-        $this->emailTo  = $emailTo;
-        $this->anchor   = $anchor;
+        $this->needConsolidatedReport = $needConsolidatedReport;
+        $this->emailTo                = $emailTo;
+        $this->anchor                 = $anchor;
+        $this->sendMail               = false;
     }
 
     /**
@@ -37,14 +41,47 @@ class UtilizationReport implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(ReportInterface $reportsRepo)
     {
-        $filePath                = $this->downloadUtilizationExcel($this->data);
+        $this->reportsRepo = $reportsRepo;
+
+        if ($this->needConsolidatedReport) {
+            ini_set("memory_limit", "-1");
+            $this->generateConsolidatedReport();
+        }
+
+        if (is_array($this->anchor) && isset($this->anchor['anchor_id'])) {
+            $this->generateAnchorReport($this->anchor);
+        }
+    }
+
+    private function generateConsolidatedReport()
+    {
+        $data = $this->reportsRepo->getUtilizationReport([], $this->sendMail);
+        if ($this->sendMail) {
+            $this->reportGenerateAndSendWithEmail($data);
+        }
+    }
+
+    private function generateAnchorReport($anchorId)
+    {
+        $this->sendMail = false;
+        $data           = $this->reportsRepo->getUtilizationReport(['anchor_id' => $anchorId], $this->sendMail);
+
+        if ($this->sendMail) {
+            $this->reportGenerateAndSendWithEmail($data);
+        }
+    }
+
+    private function reportGenerateAndSendWithEmail($data)
+    {
+        $compName                = is_array($this->anchor) && isset($this->anchor['comp_name']) ? $this->anchor['comp_name'] : '';
+        $filePath                = $this->downloadUtilizationExcel($data);
         $emailData['email']      = $this->emailTo;
-        $emailData['name']       = $this->anchor ? $this->anchor->comp_name : 'Capsave Team';
+        $emailData['name']       = $compName ?? 'Capsave Team';
         $emailData['body']       = 'PFA';
         $emailData['attachment'] = $filePath;
-        $emailData['subject']    = $this->anchor ? "Utilization Report (".$this->anchor->comp_name.")" : "Utilization Report";
+        $emailData['subject']    = $compName ? "Utilization Report (".$compName.")" : "Utilization Report";
         \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
     }
 
