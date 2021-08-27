@@ -3915,10 +3915,12 @@ if ($err) {
 
         $whereActivi['activity_code'] = 'set_default_account';
         $activity = $this->masterRepo->getActivity($whereActivi);
+
         if(!empty($activity)) {
             $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
             $activity_desc = 'Set Default Bank';
-            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['res' => $res, 'updateBankAccount' => $updateBankAccount]));
+            $arrActivity['app_id'] = null;
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['request' => $request->all(), 'userId' => $userId]), $arrActivity);
         }
                 
         
