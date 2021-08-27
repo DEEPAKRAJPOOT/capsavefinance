@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Jobs\MaturityReport;
 use App\Jobs\UtilizationReport;
+use App\Jobs\DisbursalReport;
 
 class DailyReport extends Command
 {    
@@ -39,17 +40,6 @@ class DailyReport extends Command
      */
     public function handle()
     {
-        // \App::make('App\Http\Controllers\Backend\ReportController')->maturityReport();
-
-        /**
-        * @ get all anchors report use $anchor_id = 'all'
-        * @ get single anchor report use $anchor_id = 1(anchor_id in numeric)
-        */
-        MaturityReport::dispatch($needConsolidatedReport = true, $anchor_id = 'all')
-                    ->onConnection('database')
-                    ->delay(now()->addSeconds(10));
-        UtilizationReport::dispatch($needConsolidatedReport = true, $anchor_id = 'all')
-                        ->onConnection('database')
-                        ->delay(now()->addSeconds(10));
+        \App::make('App\Http\Controllers\Backend\ReportController')->maturityReport();
     }
 }
