@@ -157,23 +157,66 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
 		foreach($invDisbList as $invDisb){
+
+			$salesDetails = isset($invDisb->invoice->anchor->sales_user_id) ? $this->getCustomerDetail($invDisb->invoice->anchor->sales_user_id) : null;
+			// dd(config('common.idprefix.APP').$invDisb->invoice->app_id);
 			$result[] = [
 			'cust_name'=>$invDisb->invoice->business->biz_entity_name,
-			'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
-			'trans_date'=>$invDisb->disbursal->disburse_date,
-			'trans_no'=>$invDisb->disbursal->tran_id,
-			'invoice_no'=>$invDisb->invoice->invoice_no,
-			'invoice_date'=>$invDisb->invoice->invoice_date,
-			'invoice_amt'=>$invDisb->invoice->invoice_amount,
+			'rm_sales'=>isset($salesDetails) ? $salesDetails->f_name . ' ' . $salesDetails->l_name : '',
+			'anchor_name'=>isset($invDisb->invoice->anchor) ? $invDisb->invoice->anchor->comp_name : '',
+			'anchor_prgm_name'=>isset($invDisb->invoice->program) ? $invDisb->invoice->program->prgm_name : '',
+			'vendor_ben_name'=>'',
+			'region'=>'',
+			'sanction_number'=>$invDisb->invoice->app_id,
+			'sanction_date'=>'',
+			'sanction_amount'=>'',
+			'disbursal_month'=>'',
+			'disburse_amount'=>$invDisb->invoice->invoice_amount,
+			'disbursement_date'=>'',
+			'disbursal_utr'=>$invDisb->disbursal->tran_id,
+			'disbursal_act_no'=>'',
+			'disbursal_ifc'=>'',
+			'type_finance'=>'',
+			'supl_chan_type'=>'',
+			'tenor'=>$invDisb->tenor_days,
+			'interest_rate'=>'',
+			'interest_amt'=>'',
+			'from'=>'',
+			'to'=>'',
+			'tds_intrst'=>'',
+			'net_intrst'=>'',
+			'intrst_rec_date'=>'',
+			'proce_fee'=>'',
+			'proce_amt'=>'',
+			'proce_fee_gst'=>'',
+			'tds_proce_fee'=>'',
+			'net_proc_fee_rec'=>'',
+			'proce_fee_rec'=>'',
+			'proce_fee_amt_date'=>'',
+			'balance'=>'',
 			'margin_amt'=>$invDisb->invoice->invoice_approve_amount*$invDisb->margin/100,
-			'disb_amt'=>$invDisb->invoice->invoice_amount,
+			'due_date'=>$invDisb->invoice->invoice_date,
+			'principal_rece'=>'',
+			'received'=>'',
+			'net_receivalble'=>'', /* AL-AM */
+			'adhoc_int'=>'',
+			'net_disbursement'=>$invDisb->invoice->invoice_amount,
+
+			// 'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
+			// 'trans_date'=>$invDisb->disbursal->disburse_date,
+			// 'trans_no'=>$invDisb->disbursal->tran_id,
+			// 'invoice_no'=>$invDisb->invoice->invoice_no,
+			// 'invoice_date'=>$invDisb->invoice->invoice_date,
+			// 'invoice_amt'=>$invDisb->invoice->invoice_amount,
+			// 'margin_amt'=>$invDisb->invoice->invoice_approve_amount*$invDisb->margin/100,
+			// 'disb_amt'=>$invDisb->invoice->invoice_amount,
 			/*'out_amt'=>$invDisb->transactions->sum('outstanding'),
 			'out_days'=>(strtotime($invDisb->payment_due_date) - strtotime($curdate))/86400,
 			'tenor'=>$invDisb->tenor_days,
 			'due_date'=>$invDisb->payment_due_date,
 			'due_amt'=>$invDisb->invoice->invoice_amount,*/
-			'trans_utr'=>$invDisb->disbursal->tran_id,
-			'remark'=>$invDisb->invoice->remark
+			// 'trans_utr'=>$invDisb->disbursal->tran_id,
+			// 'remark'=>$invDisb->invoice->remark
 			];
 		}
 		return $result;
