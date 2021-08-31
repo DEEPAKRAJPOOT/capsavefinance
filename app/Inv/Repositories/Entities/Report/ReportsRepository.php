@@ -129,7 +129,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 
 	public function getDisbursalReport($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
-		$curdate = Carbon::parse($curdate)->addDays(1)->format('Y-m-d');
+		$curdate = Carbon::parse($curdate)->subDays(30)->format('Y-m-d');
                 $fromdate = Carbon::parse($curdate)->subDays(30)->format('Y-m-d');
 
                 $invDisbList = InvoiceDisbursed::with(['transactions' => function($query2){
@@ -157,9 +157,16 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
 		foreach($invDisbList as $invDisb){
-
+			// dd($invDisb->invoice->program_offer->processing_fee);
+			
 			$salesDetails = isset($invDisb->invoice->anchor->sales_user_id) ? $this->getCustomerDetail($invDisb->invoice->anchor->sales_user_id) : null;
-			// dd(config('common.idprefix.APP').$invDisb->invoice->app_id);
+			if($invDisb->invoice->program->prgm_type == 1) {
+				$financeType = 'Vendor Finance';
+			}
+			if($invDisb->invoice->program->prgm_type == 2) {
+				$financeType = 'Channel Finance';
+			}
+
 			$result[] = [
 			'cust_name'=>$invDisb->invoice->business->biz_entity_name,
 			'rm_sales'=>isset($salesDetails) ? $salesDetails->f_name . ' ' . $salesDetails->l_name : '',
@@ -168,19 +175,19 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'vendor_ben_name'=>'',
 			'region'=>'',
 			'sanction_number'=>$invDisb->invoice->app_id,
-			'sanction_date'=>'',
-			'sanction_amount'=>'',
-			'disbursal_month'=>'',
+			'sanction_date'=> $invDisb->invoice->invoiceStatusLogLatest->first()->created_at,
+			'sanction_amount'=>$invDisb->disburse_amt,
+			'disbursal_month'=>$invDisb->disbursal->funded_date,
 			'disburse_amount'=>$invDisb->invoice->invoice_amount,
-			'disbursement_date'=>'',
+			'disbursement_date'=>$invDisb->disbursal->funded_date,
 			'disbursal_utr'=>$invDisb->disbursal->tran_id,
-			'disbursal_act_no'=>'',
-			'disbursal_ifc'=>'',
-			'type_finance'=>'',
+			'disbursal_act_no'=>$invDisb->disbursal->acc_no,
+			'disbursal_ifc'=>$invDisb->disbursal->ifsc_code,
+			'type_finance'=>$financeType,
 			'supl_chan_type'=>'',
 			'tenor'=>$invDisb->tenor_days,
-			'interest_rate'=>'',
-			'interest_amt'=>'',
+			'interest_rate'=>$invDisb->interest_rate,
+			'interest_amt'=>$invDisb->total_interest,
 			'from'=>'',
 			'to'=>'',
 			'tds_intrst'=>'',
@@ -219,6 +226,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			// 'remark'=>$invDisb->invoice->remark
 			];
 		}
+		// dd($result);
 		return $result;
 	}
 

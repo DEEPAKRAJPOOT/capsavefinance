@@ -825,7 +825,7 @@ class ReportController extends Controller
             ->setCellValue('G'.$rows, $rowData['sanction_number'])
             ->setCellValue('H'.$rows, Carbon::parse($rowData['sanction_date'])->format('d-m-Y') ?? NULL)
             ->setCellValue('I'.$rows, !empty($rowData['sanction_amount']) ? number_format($rowData['sanction_amount'],2) : '')
-            ->setCellValue('J'.$rows, $rowData['disbursal_month'])
+            ->setCellValue('J'.$rows, Carbon::parse($rowData['disbursal_month'])->format('F') ?? NULL)
             ->setCellValue('K'.$rows, !empty($rowData['disburse_amount']) ? number_format($rowData['disburse_amount'],2) : '')
             ->setCellValue('L'.$rows, Carbon::parse($rowData['disbursement_date'])->format('d-m-Y') ?? NULL)
             ->setCellValue('M'.$rows, $rowData['disbursal_utr'])
