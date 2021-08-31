@@ -1091,6 +1091,7 @@ class ReportController extends Controller
 	}
 
 	public function sendAnStringFromArr($array=[], $subject) {
+		$email_content = '';
 		if (empty($array) || !is_array($array)) {
 			return;
 		}
