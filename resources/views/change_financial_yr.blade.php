@@ -21,7 +21,7 @@
         <div class="card-body">
 
             <div class="" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
+                {{-- <div class="modal-dialog" role="document"> --}}
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Change Financial Year</h5>
@@ -37,23 +37,18 @@
                                     @csrf
 
                                     <div class="row">
-                                        <div class="form-group col-md-12">
+                                        <div class="form-group col-md-4">
                                             <label for="app_id">Enter App ID</label>
                                             <input type="text" class="form-control" id="app_id" name="app_id"
                                                 placeholder="Enter App ID" maxlength="50">
                                         </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="form-group col-md-12">
+                                        <div class="form-group col-md-4">
                                             <label for="year">Enter Three Consecutive Year</label>
                                             <input type="text" class="form-control" id="year" name="year"
                                                 placeholder="2020 2019 2018" required pattern="(8 6)\d{2} \d{2} \d{3}">
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-md-12">
-                                            <input type="submit" class="btn btn-success btn-sm pull-right"
+                                        <div class="form-group" style="margin-top: 1.6rem">
+                                            <input type="submit" class="btn btn-success btn-sm"
                                                 name="add_entity" id="add_entity" value="Submit" />
                                         </div>
                                     </div>
@@ -63,7 +58,7 @@
                         </div>
 
                     </div>
-                </div>
+                {{-- </div> --}}
             </div>
         </div>
     </div>
