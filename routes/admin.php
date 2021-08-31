@@ -66,16 +66,16 @@ Route::any(
         ]
     );
 
-    Route::get('api/change/year',[
-        'as' => 'api_change_year',
-        'uses' => 'Auth\ApiController@changeFinancialYear'
-        ]
-    );
-    Route::post('api/change/year',[
-        'as' => 'api_change_year',
-        'uses' => 'Auth\ApiController@changeFinancialYear'
-        ]
-    );
+    // Route::get('api/change/year',[
+    //     'as' => 'api_change_year',
+    //     'uses' => 'Auth\ApiController@changeFinancialYear'
+    //     ]
+    // );
+    // Route::post('api/change/year',[
+    //     'as' => 'api_change_year',
+    //     'uses' => 'Auth\ApiController@changeFinancialYear'
+    //     ]
+    // );
 
 
 
