@@ -45,7 +45,7 @@
                                         <div class="form-group col-md-4">
                                             <label for="year">Enter Three Consecutive Year</label>
                                             <input type="text" class="form-control" id="year" name="year"
-                                                placeholder="2020 2019 2018" required pattern="(8 6)\d{2} \d{2} \d{3}">
+                                                placeholder="{{date('Y')}} {{date('Y') - 1}} {{date('Y') - 2}}" required pattern="(8 6)\d{2} \d{2} \d{3}">
                                         </div>
                                         <div class="form-group" style="margin-top: 1.6rem">
                                             <input type="submit" class="btn btn-success btn-sm"
