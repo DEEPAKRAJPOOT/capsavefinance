@@ -1449,7 +1449,6 @@ class ApportionmentController extends Controller
         $result = false;
         $error  = null;
         $query  = Transactions::where('payment_id', $payment->payment_id);
-        $query1 = clone $query;
         $transactions = $query->get();
         
         if($transactions){
@@ -1464,7 +1463,6 @@ class ApportionmentController extends Controller
         }
         
         if(!$error){
-            $result = $query1->get()->each->delete();
             $result = $this->processApportionmentUndoTrans($payment, $result);
             return ['status' => $result];
         }else{
