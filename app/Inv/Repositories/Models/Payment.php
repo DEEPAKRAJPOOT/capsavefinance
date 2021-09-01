@@ -10,6 +10,7 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 class Payment extends BaseModel {
     
