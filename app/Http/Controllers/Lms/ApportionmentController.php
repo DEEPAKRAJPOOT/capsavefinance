@@ -1433,6 +1433,7 @@ class ApportionmentController extends Controller
                                             ->whereNull('apportionment_id')
                                             ->get();
             $trans->each->delete();
+            $result = true;
         }
 
         if ($result) {
