@@ -725,6 +725,7 @@ class ApportionmentController extends Controller
 
                 $transactionList[] = [
                     'payment_id' => $paymentId,
+                    'apportionment_id'=> $paymentId,
                     'link_trans_id' => null,
                     'parent_trans_id' => null,
                     'invoice_disbursed_id' => null,
@@ -750,6 +751,7 @@ class ApportionmentController extends Controller
                     }
                     $transactionList[] = [
                         'payment_id' => $paymentId,
+                        'apportionment_id'=> $paymentId,
                         'link_trans_id' => $trans->trans_id,
                         'parent_trans_id' => $trans->trans_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
@@ -786,6 +788,7 @@ class ApportionmentController extends Controller
                 if($unAppliedAmt > 0){
                     $transactionList[] = [
                         'payment_id' => $paymentId,
+                        'apportionment_id'=> $paymentId,
                         'link_trans_id' => null,
                         'parent_trans_id' => null,
                         'invoice_disbursed_id' => null,
@@ -824,6 +827,7 @@ class ApportionmentController extends Controller
                     if($refundAmt > 0 && $refundParentTrans){
                         $transactionList[] = [
                             'payment_id' => $paymentId,
+                            'apportionment_id'=> $paymentId,
                             'link_trans_id' => $refundParentTrans->trans_id,
                             'parent_trans_id' => $refundParentTrans->trans_id,
                             'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
