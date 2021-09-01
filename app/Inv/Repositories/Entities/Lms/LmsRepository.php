@@ -71,6 +71,7 @@ use App\Inv\Repositories\Models\Lms\NachRepaymentReqBatch;
 use App\Inv\Repositories\Models\Lms\NachTransReq;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
+use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
 
 /**
  * Lms Repository class

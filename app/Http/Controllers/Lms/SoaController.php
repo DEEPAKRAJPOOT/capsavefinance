@@ -260,9 +260,9 @@ class SoaController extends Controller
                     $query->where('customer_id', '=', "$customer_id");
                 });
 
-                $soaRecord = $this->prepareDataForRendering($transactionList->get()->filter(function($item){
-                    return $item->transaction->is_transaction;
-                })->chunk(25));
+                $soaRecord = $this->prepareDataForRendering($transactionList->whereHas('transaction', function ($q) {
+                    $q->where('is_transaction', true);
+                })->get()->chunk(25));
             } 
             ini_set('memory_limit', -1);
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
@@ -313,9 +313,9 @@ class SoaController extends Controller
             });
         
         }
-        $exceldata = $this->prepareDataForRendering($transactionList->get()->filter(function($item){
-            return $item->transaction->is_transaction;
-        })->chunk(25));
+        $exceldata = $this->prepareDataForRendering($transactionList->whereHas('transaction', function ($q) {
+            $q->where('is_transaction', true);
+        })->get()->chunk(25));
         $sheet =  new PHPExcel();
         $sheet->getActiveSheet()->mergeCells('A2:K2');
         $sheet->getActiveSheet()->mergeCells('A3:K3');
