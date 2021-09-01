@@ -17,7 +17,7 @@ class UtilizationReport extends Command
      *
      * @var string
      */
-    protected $signature = 'utilization:report {need_consolidated_report=true} {anchor_id=all}';
+    protected $signature = 'report:utilization {need_consolidated_report=true} {anchor_id=all}';
 
     /**
      * The console command description.

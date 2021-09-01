@@ -13,7 +13,7 @@ class OverdueReport extends Command
      *
      * @var string
      */
-    protected $signature = 'overdue:report';
+    protected $signature = 'report:overdue';
 
     /**
      * The console command description.

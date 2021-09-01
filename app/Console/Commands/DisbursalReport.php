@@ -17,7 +17,7 @@ class DisbursalReport extends Command
      *
      * @var string
      */
-    protected $signature = 'disbursal:report {need_consolidated_report=true} {anchor_id=all}';
+    protected $signature = 'report:disbursal {need_consolidated_report=true} {anchor_id=all}';
 
     /**
      * The console command description.

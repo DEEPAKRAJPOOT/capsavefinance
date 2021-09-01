@@ -13,7 +13,7 @@ class AccountDisbursalReport extends Command
      *
      * @var string
      */
-    protected $signature = 'account_disbursal:report';
+    protected $signature = 'report:account_disbursal';
 
     /**
      * The console command description.

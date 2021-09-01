@@ -17,7 +17,7 @@ class MaturityReport extends Command
      *
      * @var string
      */
-    protected $signature = 'maturity:report {need_consolidated_report=true} {anchor_id=all}';
+    protected $signature = 'report:maturity {need_consolidated_report=true} {anchor_id=all}';
 
     /**
      * The console command description.
