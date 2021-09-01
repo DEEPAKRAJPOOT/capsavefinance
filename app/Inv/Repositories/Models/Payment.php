@@ -148,8 +148,7 @@ class Payment extends BaseModel {
                 $res = $res->orderBy($key, $val);
             }
         }
-        $res = $res->get();
-        return $res->isEmpty() ? [] :  $res;
+        return $res;
     }
 
 
