@@ -82,6 +82,11 @@ class Payment extends BaseModel {
         'updated_by',
         'deleted_at',
     ];
+
+    CONST PAYMENT_SETTLED_PENDING    = 0;
+    CONST PAYMENT_SETTLED_PROCESSING = 2;
+    CONST PAYMENT_SETTLED_PROCESSED  = 3;
+    CONST PAYMENT_SETTLED            = 1;
     
     public function biz() {
        return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
@@ -148,7 +153,9 @@ class Payment extends BaseModel {
                 $res = $res->orderBy($key, $val);
             }
         }
-        $res = $res->get();
+        $res = $res->settledProcessing()
+                   ->settledProcessed()
+                   ->get();
         return $res->isEmpty() ? [] :  $res;
     }
 
@@ -308,5 +315,15 @@ class Payment extends BaseModel {
         }
         $res = $query->get();        
         return $res ?: [];
-    }   
+    }
+
+    public function scopeSettledProcessing($query)
+    {
+        return $query->orWhere('is_settled', self::PAYMENT_SETTLED_PROCESSING);
+    }
+
+    public function scopeSettledProcessed($query)
+    {
+        return $query->orWhere('is_settled', self::PAYMENT_SETTLED_PROCESSED);
+    }
 }

@@ -672,6 +672,11 @@ class ApportionmentController extends Controller
                 'payment' => $payments,
                 'check' => $checks,
             ]);
+
+            Payment::where(['user_id' => $userId, 'payment_id' => $paymentId])
+                    ->update([
+                        'is_settled' => Payment::PAYMENT_SETTLED_PROCESSING
+                    ]);
         
             return view('lms.apportionment.markSettledConfirm',[
                 'paymentId' => $paymentId,
@@ -690,6 +695,14 @@ class ApportionmentController extends Controller
 
     public function markSettleSave(Request $request){
         try {
+            $payment = Payment::where(['user_id' => $request->user_id, 'payment_id' => $request->payment_id])->first();
+            if ($payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSING && auth()->id() !== $payment->updated_by)
+            {
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+            }
+            $payment->update([
+                'is_settled' => Payment::PAYMENT_SETTLED_PROCESSED
+            ]);
             $Obj = new ManualApportionmentHelper($this->lmsRepo);
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
@@ -777,7 +790,7 @@ class ApportionmentController extends Controller
                     }
                     /** Mark Payment Settled */
                     $payment = Payment::find($paymentId);
-                    $payment->is_settled = 1;
+                    $payment->is_settled = Payment::PAYMENT_SETTLED;
                     $payment->save();
                 }
 
@@ -846,6 +859,10 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
+            Payment::where(['user_id' => $request->user_id, 'payment_id' => $request->payment_id])
+                    ->update([
+                        'is_settled' => Payment::PAYMENT_SETTLED_PENDING
+                    ]);
             return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
