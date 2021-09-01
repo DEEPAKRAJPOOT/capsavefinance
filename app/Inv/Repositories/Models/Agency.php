@@ -87,6 +87,21 @@ class Agency extends BaseModel
         }
     }
 
+    // get all agency
+    public static function getAgenciByAgenciId(int $id)
+    {
+       
+         if (empty($id)) {
+            throw new BlankDataExceptions(trans('error_messages.no_data_found'));
+        }
+
+        if (!is_int($id)) {
+            throw new InvalidDataTypeExceptions(trans('error_messages.invalid_data_type'));
+        }
+        $result = self::where('agency_id', $id)->first();
+               
+        return ($result ? : false);
+    }
 
     public static function updateAgencyStatus($attributes = [], $conditions = [])
     {

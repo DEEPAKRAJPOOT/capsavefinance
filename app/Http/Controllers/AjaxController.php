@@ -44,7 +44,9 @@ use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Crypt;
+use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class AjaxController extends Controller {
 
@@ -60,6 +62,7 @@ class AjaxController extends Controller {
     protected $docRepo;
     protected $lms_repo;
     use LmsTrait;
+    use ActivityLogTrait;
 
 
     function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo, ReportInterface $reportsRepo) {
@@ -3081,6 +3084,14 @@ if ($err) {
                 } else {               
                     $res =   $this->invRepo->updateInvoice($request->invoice_id,$request->status);   
                 }
+                $whereActivi['activity_code'] = 'update_invoice_approve_single_tab';
+                $activity = $this->masterRepo->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Update Invoice Approve, Approve Tab (Manage Invoice)';
+                    $arrActivity['app_id'] = null;
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+                }                
               return \Response::json(['status' => $res]);
            }
    }
@@ -3116,8 +3127,53 @@ if ($err) {
      * @param Request $request
      */
     public function changeAgentFiStatus(Request $request){
-      $status = $this->application->changeAgentFiStatus($request);
-      return $status;
+        $fiAddId = $request->get('fi_addr_id');
+        $changeStatus = $request->get('status');
+        $agencyName;
+        $trigger_email;
+        $where = [];
+        $where['fi_addr_id'] = $fiAddId;
+        $status = $this->application->changeAgentFiStatus($request);
+        $app_id = $request->get('app_id');
+        $biz_id = $request->get('biz_id');
+        $request_info = $request->get('address_id');
+        $roleData = \Auth::user()->user_id;
+        $assignees = AppAssignment::getAppAssigneWithRoleId((int) $app_id);
+        $fiLists = $this->application->getAddressforAgencyFI($biz_id);
+        $getFiAddData = $this->application->getFiAddressData($where);
+        $checkRoleUserCRCPA = AppAssignment::getAllRoleDataByUserIdAppID($getFiAddData[0]->from_id, $app_id);
+        if(!empty($checkRoleUserCRCPA[0])) {
+            $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->from_id);
+            $trigger_email = $triggerUserCreData;
+        }
+        foreach ($fiLists as $key => $fiList) {
+            foreach($fiList->fiAddress as $fiAdd) {
+                $agencyName = $fiAdd->agency->comp_name;
+            }
+        }
+
+        $userCreDataMail = array();
+        if(!empty($assignees[0])) {
+            foreach ($assignees as $key => $value) {
+                $userCreData = $this->userRepo->getUserDetail($value->to_user_id);
+                $userCreDataMail[] = $userCreData->email;
+            }
+            $currUserData = $this->userRepo->getUserDetail($roleData);
+
+            $emailDatas['email'] = isset($userCreDataMail) ? $userCreDataMail : '';
+            $emailDatas['name'] = isset($trigger_email) ? $trigger_email->f_name . ' ' . $trigger_email->l_name : '';
+            $emailDatas['curr_user'] = isset($currUserData) ? $currUserData->f_name . ' ' . $currUserData->l_name : '';
+            $emailDatas['curr_email'] = isset($currUserData) ? $currUserData->email : '';
+            $emailDatas['comment'] = isset($comment) ? $comment : '';
+            $emailDatas['trigger_type'] = 'FI';
+            $emailDatas['subject'] = 'Case Id '. $request_info .' of Agency ' . $agencyName .' updated the status';
+            $emailDatas['agency_name'] = $agencyName;
+            $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email->email : '';
+            $emailDatas['change_status'] = config('common.FI_RCU_STATUS')[$changeStatus];
+            \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailDatas));
+            
+        }
+        return $status;
     }
 
     /**
@@ -3176,6 +3232,56 @@ if ($err) {
      */
     public function changeAgentRcuStatus(Request $request){
       $status = $this->application->changeAgentRcuStatus($request);
+        $docId = $request->get('rcu_doc_id');
+        $changeStatus = $request->get('status');
+        $where = [];
+        $where['rcu_doc_id'] = $docId;
+
+        $app_id = $request->get('app_id');
+        $biz_id = $request->get('biz_id');
+        $request_info = $request->get('address_id');
+        $roleData = \Auth::user()->user_id;
+
+        $assignees = AppAssignment::getAppAssigneWithRoleId((int) $app_id);
+        if(Auth::user()->agency_id != null)
+            $fiLists = $this->application->getRcuActiveLists($app_id);
+        else
+            $fiLists = $this->application->getRcuLists($app_id);
+
+        foreach ($fiLists as $key => $value) {
+            if(Auth::user()->agency_id != null)
+                $fiLists[$key]['agencies'] = $this->application->getRcuActiveAgencies($app_id, $value->doc_id);
+            else
+                $fiLists[$key]['agencies'] = $this->application->getRcuAgencies($app_id, $value->doc_id);        
+        }
+        $getFiAddData = $this->application->getRcuDocumentData($where);
+        $checkRoleUserCRCPA = AppAssignment::getAllRoleDataByUserIdAppID($getFiAddData[0]->from_id, $app_id);
+        if(!empty($checkRoleUserCRCPA[0])) {
+            $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->from_id);
+            $trigger_email = $triggerUserCreData;
+        }
+
+        $userCreDataMail = array();
+        if(!empty($assignees[0])) {
+            foreach ($assignees as $key => $value) {
+                $userCreData = $this->userRepo->getUserDetail($value->to_user_id);
+                $userCreDataMail[] = $userCreData->email;
+            }
+
+                $currUserData = $this->userRepo->getUserDetail($roleData);
+
+                $emailDatas['email'] = isset($userCreDataMail) ? $userCreDataMail : '';
+                $emailDatas['name'] = isset($trigger_email) ? $trigger_email->f_name . ' ' . $trigger_email->l_name : '';
+                $emailDatas['curr_user'] = isset($currUserData) ? $currUserData->f_name . ' ' . $currUserData->l_name : '';
+                $emailDatas['curr_email'] = isset($currUserData) ? $currUserData->email : '';
+                $emailDatas['comment'] = isset($comment) ? $comment : '';
+                $emailDatas['trigger_type'] = 'RCU';
+                $emailDatas['subject'] = 'Case Id '. $request_info .' of Agency ' . $fiLists[0]['agencies'][0]->agency->comp_name .' updated the status';
+                $emailDatas['agency_name'] = $fiLists[0]['agencies'][0]->agency->comp_name;
+                $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email->email : '';
+                $emailDatas['change_status'] = config('common.FI_RCU_STATUS')[$changeStatus];
+                \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailDatas));
+        }
       return $status;
     }
 
@@ -3755,6 +3861,14 @@ if ($err) {
         }
             if($updateBulk)
             {
+                    $whereActivi['activity_code'] = 'upload_invoice_csv';
+                    $activity = $this->masterRepo->getActivity($whereActivi);
+                    if(!empty($activity)) {
+                        $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                        $activity_desc = 'Upload Bulk Invoice, Final Submit (Manage Invoice)';
+                        $arrActivity['app_id'] = null;
+                        $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($res), $arrActivity);
+                    } 
 
                      return response()->json(['status' => 1,'message' => 'Invoice successfully saved']); 
 
@@ -3856,6 +3970,15 @@ if ($err) {
                          
            }
        }
+
+        $whereActivi['activity_code'] = 'update_bulk_invoice';
+        $activity = $this->masterRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Update bulk and Disburse Invoice (Pending, Approved Tab), Approve (Manage Invoice)';
+            $arrActivity['app_id'] = null;
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+        } 
        
       return \response()->json(['status' => 1,'msg' => substr($result,0,-1)]); 
        
@@ -3885,6 +4008,18 @@ if ($err) {
         $userId = $this->application->getUserIdByBankAccId($acc_id);
         $updateBankAccount = $this->application->updateBankAccount(['is_default' => 0], ['user_id' => $userId]);
         $res = $this->application->updateBankAccount(['is_default' => 1], ['bank_account_id' => $acc_id]);
+
+        $whereActivi['activity_code'] = 'set_default_account';
+        $activity = $this->masterRepo->getActivity($whereActivi);
+
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Set Default Bank';
+            $arrActivity['app_id'] = null;
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['request' => $request->all(), 'userId' => $userId]), $arrActivity);
+        }
+                
+        
         return \response()->json(['success' => $res]);
     }
     

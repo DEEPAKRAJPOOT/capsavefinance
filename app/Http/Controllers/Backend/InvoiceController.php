@@ -27,11 +27,14 @@ use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use App\Libraries\Idfc_lib;
 use App\Helpers\ManualApportionmentHelper;
 use Event;
+use App\Inv\Repositories\Contracts\MasterInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class InvoiceController extends Controller {
 
     use ApplicationTrait;
     use LmsTrait;
+    use ActivityLogTrait;
 
     protected $appRepo;
     protected $invRepo;
@@ -39,14 +42,16 @@ class InvoiceController extends Controller {
     protected $lmsRepo;
     protected $userRepo;
     protected $application;
+    protected $master;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvAppRepoInterface $application, InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo) {
+    public function __construct(InvAppRepoInterface $app_repo, InvAppRepoInterface $application, InvoiceInterface $invRepo, InvUserRepoInterface $user_repo,InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo, MasterInterface $master) {
         $this->appRepo = $app_repo;
         $this->invRepo = $invRepo;
         $this->docRepo = $docRepo;
         $this->lmsRepo = $lms_repo;
         $this->userRepo = $user_repo;
         $this->application  =  $application;
+        $this->master = $master;
         $this->middleware('auth');
         $this->middleware('checkBackendLeadAccess');
         $this->middleware('checkEodProcess');
@@ -355,6 +360,15 @@ class InvoiceController extends Controller {
             }
             $updateTransaction = $this->updateTransactionInvoiceDisbursed($disbursalIds, $fundedDate);
 
+            $whereActivi['activity_code'] = 'updateDisburseInvoice';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Update Disburse Invoice, Send To Bank (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+            }            
+            
             Session::flash('message',trans('backend_messages.disburseMarked'));
             return redirect()->route('backend_get_sent_to_bank');
 
@@ -539,7 +553,14 @@ class InvoiceController extends Controller {
         $attributes = $request->all();
         $res = $this->invRepo->updateInvoiceAmount($attributes);
        if ($res) {
-
+            $whereActivi['activity_code'] = 'update_invoice_amount';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Update Invoice Amount (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($attributes), $arrActivity);
+            } 
             Session::flash('message', 'Invoice Amount successfully Updated ');
             return back();
         } else {
@@ -643,6 +664,16 @@ class InvoiceController extends Controller {
                $is_margin_deduct =  1;  
                $this->invRepo->updateFileId(['invoice_margin_amount'=>$inv_apprv_margin_amount,'is_margin_deduct' =>1],$result['invoice_id']);
             }
+
+            $whereActivi['activity_code'] = 'backend_save_invoice';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Add Backend Invoice Invoice Upload (Manage Invoice) AppID. ' . $appId;
+                $arrActivity['app_id'] = $appId;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arr), $arrActivity);
+            }             
+            
             Session::flash('message', 'Invoice successfully saved');
             return back();
         } else {
@@ -901,6 +932,15 @@ class InvoiceController extends Controller {
                     return redirect()->route('backend_get_disbursed_invoice');
                 }
             }
+
+            $whereActivi['activity_code'] = 'disburse_online';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Disburse Online, Disbursement Queue (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['supplierIds'=>$supplierIds, 'request'=>$request->all()]), $arrActivity);
+            }             
                     
             Session::flash('message',trans('backend_messages.disbursed'));
             return redirect()->route('backend_get_disbursed_invoice')->withErrors('message',trans('backend_messages.disbursed'));
@@ -1169,7 +1209,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $disbursalBatchId = $createDisbursalBatch->disbursal_batch_id;
                 }
             }
-
+	    $processingFeeGst = 0;
             foreach ($supplierIds as $userid) {
                 $disburseAmount = 0;
                 $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
@@ -1262,7 +1302,14 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 }
 
             }
-
+            $whereActivi['activity_code'] = 'disburse_offline';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Disburse offline, Disbursement Queue (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['supplierIds'=>$supplierIds, 'request'=>$request->all()]), $arrActivity);
+            } 
             Session::flash('message',trans('backend_messages.disbursed'));
             return redirect()->route('backend_get_disbursed_invoice');
         } catch (Exception $ex) {
@@ -1663,6 +1710,15 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $res =  $this->invRepo->saveInvoice($ins);
                        
                     } 
+
+                        $whereActivi['activity_code'] = 'upload_bulk_csv_Invoice';
+                        $activity = $this->master->getActivity($whereActivi);
+                        if(!empty($activity)) {
+                            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                            $activity_desc = 'Upload Bulk Invoice, (Manage Invoice)';
+                            $arrActivity['app_id'] = null;
+                            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['data'=>$data, 'request'=>$request->all()]), $arrActivity);
+                        } 
             
                          Session::flash('message', 'Invoice data successfully sent to under reviewer process');
                          return back();  
@@ -1697,6 +1753,15 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
              }
              else
              {
+                $master = \App::make('App\Inv\Repositories\Contracts\MasterInterface');
+                $whereActivi['activity_code'] = 'account_closure';
+                $activity = $master->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Account Clousre in Limit Management (Manage Sanction Cases) '. null;
+                    $arrActivity['app_id'] = null;
+                    ActivityLogTrait::staticActivityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+                }                  
                Session::flash('message', 'Customer account has been successfully closed');
                return back();
              }
@@ -1940,6 +2005,15 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $this->lmsRepo->deleteDisbursalStatusLogByDidArr($disbursalIdsArr);
                     $this->lmsRepo->deleteDisbursalByDBId($disbursalBatchId);
                     $this->lmsRepo->deleteDisbursalBatchByDBId($disbursalBatchId);
+
+                    $whereActivi['activity_code'] = 'rollback_disbursal_batch_request';
+                    $activity = $this->master->getActivity($whereActivi);
+                    if(!empty($activity)) {
+                        $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                        $activity_desc = 'Rollback Disbursal Request tab (Manage Invoice)';
+                        $arrActivity['app_id'] = null;
+                        $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+                    }                     
                     
                     Session::flash('message', 'Online disbursal successfully rollbacked');
                     return redirect()->route('backend_get_disbursal_batch_request');
@@ -1975,7 +2049,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $latestData = $disbursalBatchData->disbursal_api_log;
                 $idfc_res_text = $latestData->res_text;
             }
-            $disbursal = $disbursalBatchData->disbursal;
+            $disbursal = $disbursalBatchData->disbursal ?? [];
             $tCust = $disbursal->count();
             $tAmt = number_format($disbursal->sum('disburse_amount'),2);
             foreach($disbursal as $data){
@@ -2096,6 +2170,14 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $res = $this->invRepo->updateInvoiceCharge($data, $invoiceId);
 
        if ($res) {
+            $whereActivi['activity_code'] = 'update_invoice_chrg';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Invoice Processing Fee, Approved tab (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+            }             
             Session::flash('message', 'processing fee successfully Updated ');
             return redirect()->route('backend_get_approve_invoice');
         } else {
@@ -2118,6 +2200,14 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $res = $this->invRepo->updateInvoiceTenor($data, $invoiceId);
         
        if ($res) {
+            $whereActivi['activity_code'] = 'update_invoice_tenor';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Update Invoice Tenor (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+            }            
             Session::flash('message', 'Invoice Tenor successfully Updated ');
             return back();
         } else {
