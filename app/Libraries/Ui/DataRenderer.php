@@ -5317,7 +5317,7 @@ class DataRenderer implements DataProviderInterface
                                 $btn .= '<button class="btn btn-action-btn btn-sm"  title="Delete Payment" onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
                             }
 
-                            if(Helpers::checkPermission('undo_apportionment') && $dataRecords->is_settled == '1' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && $dataRecords->validRevertPaymentId == $dataRecords->payment_id ){
+                            if(Helpers::checkPermission('undo_apportionment') && $dataRecords->is_settled == '1' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && $dataRecords->validRevertPayment){
                                 $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
                             }
 

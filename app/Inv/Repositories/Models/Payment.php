@@ -310,7 +310,7 @@ class Payment extends BaseModel {
         return $res ?: [];
     }   
     
-    public function getValidRevertPaymentIdAttribute() {
+    public function getValidRevertPaymentAttribute() {
         $returnId = NULL;
         $payment_id = Transactions::where('user_id',$this->user_id)->max('payment_id');
         if($payment_id){
@@ -319,7 +319,7 @@ class Payment extends BaseModel {
                 $returnId = $payment_id;
             }
         }
-        return $returnId;
+        return ($returnId == $this->payment_id);
     }
     
 }
