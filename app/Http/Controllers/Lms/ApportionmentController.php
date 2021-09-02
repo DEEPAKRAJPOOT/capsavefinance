@@ -673,10 +673,9 @@ class ApportionmentController extends Controller
                 'check' => $checks,
             ]);
 
-            Payment::where(['user_id' => $userId, 'payment_id' => $paymentId])
-                    ->update([
-                        'is_settled' => Payment::PAYMENT_SETTLED_PROCESSING
-                    ]);
+            $payment = Payment::find($paymentId);
+            if ($payment)
+                $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
         
             return view('lms.apportionment.markSettledConfirm',[
                 'paymentId' => $paymentId,
