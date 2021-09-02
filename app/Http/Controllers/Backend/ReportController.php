@@ -578,8 +578,8 @@ class ReportController extends Controller
         if(empty($emailTo)){
             dd('DAILY_REPORT_MAIL is missing');
         }
-		// array_push($emailTo,"sudesh.kumar@zuron.in");
-		array_push($emailTo,"aditya.kumar@prolitus.com");
+		array_push($emailTo,"sudesh.kumar@zuron.in");
+		// array_push($emailTo,"aditya.kumar@prolitus.com");
 		
         $anchorList = Anchor::where('is_active','1');
         if($anchor_id){
@@ -589,58 +589,58 @@ class ReportController extends Controller
 		
         $sendMail = false;
         $data = $this->reportsRepo->getMaturityReport([],$sendMail);
-        // if($sendMail){
-        //     $filePath = $this->downloadMaturityReport($data);
-        //     $emailData['email'] = $emailTo;
-        //     $emailData['name'] = 'Capsave Team';
-        //     $emailData['body'] = 'PFA';
-        //     $emailData['attachment'] = $filePath;
-        //     $emailData['subject'] ="Maturity Report";
-        //     \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
+        if($sendMail){
+            $filePath = $this->downloadMaturityReport($data);
+            $emailData['email'] = $emailTo;
+            $emailData['name'] = 'Capsave Team';
+            $emailData['body'] = 'PFA';
+            $emailData['attachment'] = $filePath;
+            $emailData['subject'] ="Maturity Report";
+            \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
             
-        //     foreach($anchorList as $anchor){
-        //         $sendMail = false;
-        //         $data = $this->reportsRepo->getMaturityReport(['anchor_id'=>$anchor->anchor_id],$sendMail);
-        //         if($sendMail && $anchor->comp_email){
-        //             $filePath = $this->downloadMaturityReport($data);
-        //             //$emailData['email'] = $anchor->comp_email;
-        //             $emailData['email'] = $emailTo;
-        //             $emailData['name'] = $anchor->comp_name;
-        //             $emailData['body'] = 'PFA';
-        //             $emailData['attachment'] = $filePath;
-        //             $emailData['subject'] ="Maturity Report (".$anchor->comp_name.")";
-        //             \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
-        //         }
-        //     }
-        // }
+            foreach($anchorList as $anchor){
+                $sendMail = false;
+                $data = $this->reportsRepo->getMaturityReport(['anchor_id'=>$anchor->anchor_id],$sendMail);
+                if($sendMail && $anchor->comp_email){
+                    $filePath = $this->downloadMaturityReport($data);
+                    //$emailData['email'] = $anchor->comp_email;
+                    $emailData['email'] = $emailTo;
+                    $emailData['name'] = $anchor->comp_name;
+                    $emailData['body'] = 'PFA';
+                    $emailData['attachment'] = $filePath;
+                    $emailData['subject'] ="Maturity Report (".$anchor->comp_name.")";
+                    \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
+                }
+            }
+        }
 
         $sendMail = false;
         $data = $this->reportsRepo->getUtilizationReport( [],$sendMail);
-        // if($sendMail){
-        //     $filePath = $this->downloadUtilizationExcel($data);
-        //     //$emailData['email'] = $anchor->comp_email;
-        //     $emailData['email'] = $emailTo;
-        //     $emailData['name'] = 'Capsave Team';
-        //     $emailData['body'] = 'PFA';
-        //     $emailData['attachment'] = $filePath;
-        //     $emailData['subject'] ="Utilization Report";
-        //     \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
+        if($sendMail){
+            $filePath = $this->downloadUtilizationExcel($data);
+            //$emailData['email'] = $anchor->comp_email;
+            $emailData['email'] = $emailTo;
+            $emailData['name'] = 'Capsave Team';
+            $emailData['body'] = 'PFA';
+            $emailData['attachment'] = $filePath;
+            $emailData['subject'] ="Utilization Report";
+            \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
 			         
-        //     foreach($anchorList as $anchor){
-        //         $sendMail = false;
-        //         $data = $this->reportsRepo->getUtilizationReport( ['anchor_id'=>$anchor->anchor_id],$sendMail);
-        //         if($sendMail && $anchor->comp_email){
-        //             $filePath = $this->downloadUtilizationExcel($data);
-        //             //$emailData['email'] = $anchor->comp_email;
-        //             $emailData['email'] = $emailTo;
-        //             $emailData['name'] = $anchor->comp_name;
-        //             $emailData['body'] = 'PFA';
-        //             $emailData['attachment'] = $filePath;
-        //             $emailData['subject'] ="Utilization Report (".$anchor->comp_name.")";
-        //             \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
-        //         }
-        //     }
-        // }        
+            foreach($anchorList as $anchor){
+                $sendMail = false;
+                $data = $this->reportsRepo->getUtilizationReport( ['anchor_id'=>$anchor->anchor_id],$sendMail);
+                if($sendMail && $anchor->comp_email){
+                    $filePath = $this->downloadUtilizationExcel($data);
+                    //$emailData['email'] = $anchor->comp_email;
+                    $emailData['email'] = $emailTo;
+                    $emailData['name'] = $anchor->comp_name;
+                    $emailData['body'] = 'PFA';
+                    $emailData['attachment'] = $filePath;
+                    $emailData['subject'] ="Utilization Report (".$anchor->comp_name.")";
+                    \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
+                }
+            }
+        }        
 
         $sendMail = false;
         $data = $this->reportsRepo->getDisbursalReport([],$sendMail);
@@ -652,7 +652,7 @@ class ReportController extends Controller
             $emailData['body'] = 'PFA';
             $emailData['attachment'] = $filePath;
             $emailData['subject'] ="Disbursal Report";
-            // \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
+            \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
             
             foreach($anchorList as $anchor){
                 $sendMail = false;
@@ -668,8 +668,8 @@ class ReportController extends Controller
                     \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
                 }
             }
-        }
-		dd("disbursal");
+		}
+		
         $sendMail = false;
         $data = $this->reportsRepo->getOverdueReport([],$sendMail);
         if($sendMail){
@@ -771,47 +771,42 @@ class ReportController extends Controller
             ->setCellValue('G'.$rows, 'Sanction no.')
             ->setCellValue('H'.$rows, 'Sanction date')
             ->setCellValue('I'.$rows, 'Sanction Amount')
-            ->setCellValue('J'.$rows, 'Disbrusal Month')
-            ->setCellValue('K'.$rows, 'Disburse amount')
-            ->setCellValue('L'.$rows, 'Disbursement date')
-            ->setCellValue('M'.$rows, 'Disbursal UTR No')
-            ->setCellValue('N'.$rows, 'Disbursal Act No')
-            ->setCellValue('O'.$rows, 'Disbursal IFSC Code')
-            ->setCellValue('P'.$rows, 'Type of Finance')
-            ->setCellValue('Q'.$rows, 'Supply chain type (upfront, Rare or monthly interest)')
-            ->setCellValue('R'.$rows, 'Tenure (Days)')
-            ->setCellValue('S'.$rows, 'Interest rate')
-            ->setCellValue('T'.$rows, 'Interest amount')
-            ->setCellValue('U'.$rows, 'From ')
-            ->setCellValue('V'.$rows, 'To')
-            ->setCellValue('W'.$rows, 'TDS on Interest')
-            ->setCellValue('X'.$rows, 'Net Interest')
-            ->setCellValue('Y'.$rows, 'Interest received date')
-            ->setCellValue('Z'.$rows, 'Processing fees')
-            ->setCellValue('AA'.$rows, 'Processing amount')
-            ->setCellValue('AB'.$rows, 'Processing fee with GST')
-            ->setCellValue('AC'.$rows, 'TDS on Processing fee')
-            ->setCellValue('AD'.$rows, 'Net Processing fee receivable')
-            ->setCellValue('AE'.$rows, 'Processing fee received')
-            ->setCellValue('AF'.$rows, 'Processing Fee Amount received date')
-            ->setCellValue('AG'.$rows, 'Balance')
-            ->setCellValue('AH'.$rows, 'Margin')
-            ->setCellValue('AI'.$rows, 'Due date')
-            ->setCellValue('AJ'.$rows, 'Funds to be received from Anchor or client')
-            ->setCellValue('AK'.$rows, 'Principal receivable')
-            ->setCellValue('AL'.$rows, 'Received')
-            ->setCellValue('AM'.$rows, 'Net Receivable')
-            ->setCellValue('AN'.$rows, 'Adhoc interest')
-            ->setCellValue('AO'.$rows, 'Net Disbursement');
-            // ->setCellValue('D'.$rows, 'tranction #')
-            // ->setCellValue('E'.$rows, 'Invoice #')
-            // ->setCellValue('F'.$rows, 'Invoice Date')
-            // ->setCellValue('G'.$rows, 'Invoice Amount')
-            // ->setCellValue('H'.$rows, 'Margin Amount')
-            // ->setCellValue('I'.$rows, 'Amount Disbursed')
-            // ->setCellValue('J'.$rows, 'UTR')
-            // ->setCellValue('K'.$rows, 'Remark while uploading Invoice');
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':AO'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+            ->setCellValue('J'.$rows, 'Status')
+            ->setCellValue('K'.$rows, 'Disbrusal Month')
+            ->setCellValue('L'.$rows, 'Disburse amount')
+            ->setCellValue('M'.$rows, 'Disbursement date')
+            ->setCellValue('N'.$rows, 'Disbursal UTR No')
+            ->setCellValue('O'.$rows, 'Disbursal Act No')
+            ->setCellValue('P'.$rows, 'Disbursal IFSC Code')
+            ->setCellValue('Q'.$rows, 'Type of Finance')
+            ->setCellValue('R'.$rows, 'Supply chain type (upfront, Rare or monthly interest)')
+            ->setCellValue('S'.$rows, 'Tenure (Days)')
+            ->setCellValue('T'.$rows, 'Interest rate')
+            ->setCellValue('U'.$rows, 'Interest amount')
+            ->setCellValue('V'.$rows, 'From ')
+            ->setCellValue('W'.$rows, 'To')
+            ->setCellValue('X'.$rows, 'TDS on Interest')
+            ->setCellValue('Y'.$rows, 'Net Interest')
+            ->setCellValue('Z'.$rows, 'Interest received date')
+            ->setCellValue('AA'.$rows, 'Processing fees')
+            ->setCellValue('AB'.$rows, 'Processing amount')
+            ->setCellValue('AC'.$rows, 'Processing fee with GST')
+            ->setCellValue('AD'.$rows, 'TDS on Processing fee')
+            ->setCellValue('AE'.$rows, 'Net Processing fee receivable')
+            ->setCellValue('AF'.$rows, 'Processing fee received')
+            ->setCellValue('AG'.$rows, 'Processing Fee Amount received date')
+            ->setCellValue('AH'.$rows, 'Balance')
+            ->setCellValue('AI'.$rows, 'Margin')
+            ->setCellValue('AJ'.$rows, 'Due date')
+            ->setCellValue('AK'.$rows, 'Funds to be received from Anchor or client')
+            ->setCellValue('AL'.$rows, 'Principal receivable')
+            ->setCellValue('AM'.$rows, 'Received')
+            ->setCellValue('AN'.$rows, 'Net Receivable')
+            ->setCellValue('AO'.$rows, 'Adhoc interest')
+            ->setCellValue('AP'.$rows, 'Net Disbursement')
+            ->setCellValue('AQ'.$rows, 'Gross')
+            ->setCellValue('AR'.$rows, 'Net of interest, PF & Stamp');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':AR'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
 			
@@ -824,38 +819,42 @@ class ReportController extends Controller
             ->setCellValue('F'.$rows, $rowData['region'])
             ->setCellValue('G'.$rows, $rowData['sanction_number'])
             ->setCellValue('H'.$rows, Carbon::parse($rowData['sanction_date'])->format('d-m-Y') ?? NULL)
-            ->setCellValue('I'.$rows, !empty($rowData['sanction_amount']) ? number_format($rowData['sanction_amount'],2) : '')
-            ->setCellValue('J'.$rows, Carbon::parse($rowData['disbursal_month'])->format('F') ?? NULL)
-            ->setCellValue('K'.$rows, !empty($rowData['disburse_amount']) ? number_format($rowData['disburse_amount'],2) : '')
-            ->setCellValue('L'.$rows, Carbon::parse($rowData['disbursement_date'])->format('d-m-Y') ?? NULL)
-            ->setCellValue('M'.$rows, $rowData['disbursal_utr'])
-            ->setCellValue('N'.$rows, $rowData['disbursal_act_no'])
-            ->setCellValue('O'.$rows, $rowData['disbursal_ifc'])
-            ->setCellValue('P'.$rows, $rowData['type_finance'])
-            ->setCellValue('Q'.$rows, $rowData['supl_chan_type'])
-            ->setCellValue('R'.$rows, $rowData['tenor'])
+            ->setCellValue('I'.$rows, number_format($rowData['sanction_amount'],2))
+            ->setCellValue('J'.$rows, !empty($rowData['status']) ? $rowData['status'] : '---')
+            ->setCellValue('K'.$rows, Carbon::parse($rowData['disbursal_month'])->format('F') ?? NULL)
+            ->setCellValue('L'.$rows, !empty($rowData['disburse_amount']) ? number_format($rowData['disburse_amount'],2) : '')
+            ->setCellValue('M'.$rows, Carbon::parse($rowData['disbursement_date'])->format('d-m-Y') ?? NULL)
+            ->setCellValue('N'.$rows, $rowData['disbursal_utr'])
+            ->setCellValue('O'.$rows, $rowData['disbursal_act_no'])
+            ->setCellValue('P'.$rows, $rowData['disbursal_ifc'])
+            ->setCellValue('Q'.$rows, $rowData['type_finance'])
+            ->setCellValue('R'.$rows, $rowData['supl_chan_type'])
+            ->setCellValue('S'.$rows, $rowData['tenor'])
             ->setCellValue('T'.$rows, $rowData['interest_rate'])
-            ->setCellValue('U'.$rows, !empty($rowData['interest_amt']) ? number_format($rowData['interest_amt'],2) : '')
+            ->setCellValue('U'.$rows, number_format($rowData['interest_amt'],2))
             ->setCellValue('V'.$rows, Carbon::parse($rowData['from'])->format('d-m-Y') ?? NULL)
             ->setCellValue('W'.$rows, Carbon::parse($rowData['to'])->format('d-m-Y') ?? NULL)
-            ->setCellValue('X'.$rows, !empty($rowData['tds_intrst']) ? number_format($rowData['tds_intrst'],2) : '')
-            ->setCellValue('Y'.$rows, !empty($rowData['net_intrst']) ? number_format($rowData['net_intrst'],2) : '')
-            ->setCellValue('Z'.$rows, Carbon::parse($rowData['intrst_rec_date'])->format('d-m-Y') ?? NULL)
-            ->setCellValue('AA'.$rows, !empty($rowData['proce_fee']) ? number_format($rowData['proce_fee'],2) : '')
-            ->setCellValue('AB'.$rows, !empty($rowData['proce_amt']) ? number_format($rowData['proce_amt'],2) : '')
-            ->setCellValue('AC'.$rows, !empty($rowData['proce_fee_gst']) ? number_format($rowData['proce_fee_gst'],2) : '')
-            ->setCellValue('AD'.$rows, !empty($rowData['tds_proce_fee']) ? number_format($rowData['tds_proce_fee'],2) : '')
-            ->setCellValue('AE'.$rows, !empty($rowData['net_proc_fee_rec']) ? number_format($rowData['net_proc_fee_rec'],2) : '')
-            ->setCellValue('AF'.$rows, !empty($rowData['proce_fee_rec']) ? number_format($rowData['proce_fee_rec'],2) : '')
-            ->setCellValue('AG'.$rows, !empty($rowData['proce_fee_amt_date']) ? number_format($rowData['proce_fee_amt_date'],2) : '')
-            ->setCellValue('AH'.$rows, !empty($rowData['balance']) ? number_format($rowData['balance'],2) : '')
-            ->setCellValue('AI'.$rows, !empty($rowData['margin_amt']) ? number_format($rowData['margin_amt'],2) : '')
+            ->setCellValue('X'.$rows, number_format($rowData['tds_intrst'],2))
+            ->setCellValue('Y'.$rows, number_format($rowData['net_intrst'],2))
+            ->setCellValue('Z'.$rows, !empty($rowData['intrst_rec_date']) ? Carbon::parse($rowData['intrst_rec_date'])->format('d-m-Y') : '---')
+            ->setCellValue('AA'.$rows, number_format($rowData['proce_fee'],2))
+            ->setCellValue('AB'.$rows, number_format($rowData['proce_amt'],2))
+            ->setCellValue('AC'.$rows, number_format($rowData['proce_fee_gst'],2))
+            ->setCellValue('AD'.$rows, number_format($rowData['tds_proce_fee'],2))
+            ->setCellValue('AE'.$rows, number_format($rowData['net_proc_fee_rec'],2))
+            ->setCellValue('AF'.$rows, number_format($rowData['proce_fee_rec'],2))
+            ->setCellValue('AG'.$rows, !empty($rowData['proce_fee_amt_date']) ? ($rowData['proce_fee_amt_date']) : '---')
+            ->setCellValue('AH'.$rows, number_format($rowData['balance'],2))
+            ->setCellValue('AI'.$rows, number_format($rowData['margin_amt'],2))
             ->setCellValue('AJ'.$rows, Carbon::parse($rowData['due_date'])->format('d-m-Y') ?? NULL)
-            ->setCellValue('AK'.$rows, !empty($rowData['principal_rece']) ? number_format($rowData['principal_rece'],2) : '')
-            ->setCellValue('AL'.$rows, !empty($rowData['received']) ? number_format($rowData['received'],2) : '')
-            ->setCellValue('AM'.$rows, !empty($rowData['net_receivalble']) ? number_format($rowData['net_receivalble'],2) : '')
-            ->setCellValue('AN'.$rows, !empty($rowData['adhoc_int']) ? number_format($rowData['adhoc_int'],2) : '')
-            ->setCellValue('AO'.$rows, !empty($rowData['net_disbursement']) ? number_format($rowData['net_disbursement'],2) : '');
+            ->setCellValue('AK'.$rows, !empty($rowData['funds_received']) ? $rowData['funds_received'] : '---')
+            ->setCellValue('AL'.$rows, number_format($rowData['principal_rece'],2))
+            ->setCellValue('AM'.$rows, number_format($rowData['received'],2))
+            ->setCellValue('AN'.$rows, number_format($rowData['net_receivalble'],2))
+            ->setCellValue('AO'.$rows, !empty($rowData['adhoc_int']) ? number_format($rowData['adhoc_int'],2) : '---')
+            ->setCellValue('AP'.$rows, number_format($rowData['net_disbursement'],2))
+            ->setCellValue('AQ'.$rows, !empty($rowData['gross']) ? $rowData['gross'] : '---')
+            ->setCellValue('AR'.$rows, !empty($rowData['net_of_interest']) ? $rowData['net_of_interest'] : '---');
             $rows++;
         }
         

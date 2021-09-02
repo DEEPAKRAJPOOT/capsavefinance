@@ -129,7 +129,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 
 	public function getDisbursalReport($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
-		$curdate = Carbon::parse($curdate)->subDays(30)->format('Y-m-d');
+		$curdate = Carbon::parse($curdate)->addDays(1)->format('Y-m-d');
                 $fromdate = Carbon::parse($curdate)->subDays(30)->format('Y-m-d');
 
                 $invDisbList = InvoiceDisbursed::with(['transactions' => function($query2){
@@ -156,10 +156,11 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
+		
 		foreach($invDisbList as $invDisb){
-			// dd($invDisb->invoice->program_offer->processing_fee);
 			
 			$salesDetails = isset($invDisb->invoice->anchor->sales_user_id) ? $this->getCustomerDetail($invDisb->invoice->anchor->sales_user_id) : null;
+			$financeType = '';
 			if($invDisb->invoice->program->prgm_type == 1) {
 				$financeType = 'Vendor Finance';
 			}
@@ -167,47 +168,65 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				$financeType = 'Channel Finance';
 			}
 
+			$interestAmount = 0;
+			$fromDate = null;
+			$toDate = null;
+			if(($invDisb->invoice->program_offer->payment_frequency == 1) && (strtotime($invDisb->payment_due_date) <= strtotime($curdate)) ) {
+				$interestAmount = $invDisb->total_interest;
+				$fromDate = $invDisb->int_accrual_start_dt;
+				$toDate = $invDisb->payment_due_date;
+			} else {
+				$interestAmount = $invDisb->sumInterestAccured($invDisb->invoice_disbursed_id);
+				$fromDate = $invDisb->interests->min('interest_date');
+				$toDate = $invDisb->interests->max('interest_date');
+			}
+
+			
 			$result[] = [
 			'cust_name'=>$invDisb->invoice->business->biz_entity_name,
 			'rm_sales'=>isset($salesDetails) ? $salesDetails->f_name . ' ' . $salesDetails->l_name : '',
 			'anchor_name'=>isset($invDisb->invoice->anchor) ? $invDisb->invoice->anchor->comp_name : '',
 			'anchor_prgm_name'=>isset($invDisb->invoice->program) ? $invDisb->invoice->program->prgm_name : '',
-			'vendor_ben_name'=>'',
-			'region'=>'',
+			'vendor_ben_name'=>$invDisb->invoice->supplier_bank_detail->acc_name, // Amit sir
+			'region'=>$invDisb->invoice->supplier_bank_detail->branch_name, // Amit sir
 			'sanction_number'=>$invDisb->invoice->app_id,
-			'sanction_date'=> $invDisb->invoice->invoiceStatusLogLatest->first()->created_at,
-			'sanction_amount'=>$invDisb->disburse_amt,
+			'sanction_date'=> $invDisb->invoice->appStatusLog->first()->created_at,
+			'sanction_amount'=>$invDisb->invoice->program_offer->programLimit->limit_amt,
+			'status'=>'', // blank
 			'disbursal_month'=>$invDisb->disbursal->funded_date,
-			'disburse_amount'=>$invDisb->invoice->invoice_amount,
+			'disburse_amount'=>$invDisb->disburse_amt,
 			'disbursement_date'=>$invDisb->disbursal->funded_date,
 			'disbursal_utr'=>$invDisb->disbursal->tran_id,
 			'disbursal_act_no'=>$invDisb->disbursal->acc_no,
 			'disbursal_ifc'=>$invDisb->disbursal->ifsc_code,
 			'type_finance'=>$financeType,
-			'supl_chan_type'=>'',
+			'supl_chan_type'=>$invDisb->invoice->program_offer->getFrequencyName(),
 			'tenor'=>$invDisb->tenor_days,
 			'interest_rate'=>$invDisb->interest_rate,
-			'interest_amt'=>$invDisb->total_interest,
-			'from'=>'',
-			'to'=>'',
-			'tds_intrst'=>'',
-			'net_intrst'=>'',
-			'intrst_rec_date'=>'',
-			'proce_fee'=>'',
-			'proce_amt'=>'',
-			'proce_fee_gst'=>'',
-			'tds_proce_fee'=>'',
-			'net_proc_fee_rec'=>'',
-			'proce_fee_rec'=>'',
-			'proce_fee_amt_date'=>'',
-			'balance'=>'',
+			'interest_amt'=>$interestAmount,
+			'from'=>$fromDate,
+			'to'=>$toDate,
+			'tds_intrst'=>$invDisb->transactions->where('trans_type',7)->where('entry_type',1)->sum('amount'),
+			'net_intrst'=>$interestAmount - ($invDisb->transactions->where('trans_type',7)->where('entry_type',1)->sum('amount')),
+			'intrst_rec_date'=>'', // blank
+			'proce_fee'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('base_amt'),
+			'proce_amt'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('base_amt'),
+			'proce_fee_gst'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('amount'),
+			'tds_proce_fee'=>$invDisb->transactions[0]->tdsProcessingFee,
+			'net_proc_fee_rec'=>($invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('amount')) - ($invDisb->transactions[0]->tdsProcessingFee),
+			'proce_fee_rec'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',1)->sum('amount'),
+			'proce_fee_amt_date'=>'', // blank
+			'balance'=> $invDisb->invoice->program_offer->programLimit->limit_amt - (($invDisb->transactions->where('trans_type',16)->where('entry_type',0)->sum('amount')) - ($invDisb->invoice->principal_repayment_amt)),
 			'margin_amt'=>$invDisb->invoice->invoice_approve_amount*$invDisb->margin/100,
-			'due_date'=>$invDisb->invoice->invoice_date,
-			'principal_rece'=>'',
-			'received'=>'',
-			'net_receivalble'=>'', /* AL-AM */
+			'due_date'=>$invDisb->payment_due_date,
+			'funds_received'=>'', // blank
+			'principal_rece'=>$invDisb->transactions->where('trans_type',16)->where('entry_type',0)->sum('amount'),
+			'received'=>$invDisb->invoice->principal_repayment_amt,
+			'net_receivalble'=> ($invDisb->transactions->where('trans_type',16)->where('entry_type',0)->sum('amount')) - ($invDisb->invoice->principal_repayment_amt), /* AL-AM */
 			'adhoc_int'=>'',
 			'net_disbursement'=>$invDisb->invoice->invoice_amount,
+			'gross'=>'', // blank
+			'net_of_interest'=>'', // blank
 
 			// 'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
 			// 'trans_date'=>$invDisb->disbursal->disburse_date,
@@ -226,7 +245,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			// 'remark'=>$invDisb->invoice->remark
 			];
 		}
-		// dd($result);
+		
 		return $result;
 	}
 

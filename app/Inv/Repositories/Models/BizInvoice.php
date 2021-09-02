@@ -582,9 +582,9 @@ class BizInvoice extends BaseModel
     } 
     
     
-    function invoiceStatusLogLatest()
+    function appStatusLog()
     {
-        return $this->hasMany('App\Inv\Repositories\Models\InvoiceStatusLog','invoice_id','invoice_id')->latest();
+        return $this->hasMany('App\Inv\Repositories\Models\AppStatusLog','app_id','app_id')->where('status_id',50)->latest();
     }    
     
 }
