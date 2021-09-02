@@ -82,7 +82,7 @@ class DisbursalReport implements ShouldQueue
             $compName                = is_array($this->anchor) && isset($this->anchor['comp_name']) ? $this->anchor['comp_name'] : '';
             $emailData               = Helpers::getDailyReportsEmailData($emailTemplate, $compName);
             $filePath                = $this->downloadDailyDisbursalReport($data);
-            $emailData['email']      = $this->emailTo;
+            $emailData['to']      = $this->emailTo;
             $emailData['attachment'] = $filePath;
             \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
         }

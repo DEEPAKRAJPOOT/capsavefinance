@@ -51,7 +51,7 @@ class OverdueReport implements ShouldQueue
                 $compName                = is_array($this->anchor) && isset($this->anchor['comp_name']) ? $this->anchor['comp_name'] : '';
                 $emailData               = Helpers::getDailyReportsEmailData($emailTemplate, $compName);
                 $filePath                = $this->downloadOverdueReport($data);
-                $emailData['email']      = $this->emailTo;
+                $emailData['to']      = $this->emailTo;
                 $emailData['attachment'] = $filePath;
                 \Event::dispatch("NOTIFY_OVERDUE_REPORT", serialize($emailData));
             }
