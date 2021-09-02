@@ -86,7 +86,6 @@ class UtilizationReport extends Command
     private function addToJobQueue($needConsolidatedReport, $anchor = null)
     {
         UtilizationReportJob::dispatch($needConsolidatedReport, $this->emailTo, $anchor)
-                            ->onConnection('database')
                             ->delay(now()->addSeconds(10));
     }
 

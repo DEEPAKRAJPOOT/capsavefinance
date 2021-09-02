@@ -86,7 +86,6 @@ class DisbursalReport extends Command
     private function addToJobQueue($needConsolidatedReport, $anchor = null)
     {
         DisbursalReportJob::dispatch($needConsolidatedReport, $this->emailTo, $anchor)
-                        ->onConnection('database')
                         ->delay(now()->addSeconds(10));
     }
 

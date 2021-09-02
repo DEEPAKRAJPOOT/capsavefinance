@@ -46,7 +46,6 @@ class AccountDisbursalReport extends Command
 
         // consolidated report
         AccountDisbursalReportJob::dispatch($this->emailTo)
-                                ->onConnection('database')
                                 ->delay(now()->addSeconds(10));
     }
 }

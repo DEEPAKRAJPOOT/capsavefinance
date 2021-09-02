@@ -86,7 +86,6 @@ class MaturityReport extends Command
     private function addToJobQueue($needConsolidatedReport, $anchor = null)
     {
         MaturityReportJob::dispatch($needConsolidatedReport, $this->emailTo, $anchor)
-                        ->onConnection('database')
                         ->delay(now()->addSeconds(10));
     }
 
