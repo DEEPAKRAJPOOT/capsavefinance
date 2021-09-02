@@ -13,6 +13,7 @@ use App\Inv\Repositories\Models\User;
 use Illuminate\Support\Facades\Crypt;
 use App\Inv\Repositories\Models\Anchor;
 use Illuminate\Support\Facades\Storage;
+use App\Inv\Repositories\Models\Payment;
 use App\Libraries\Ui\DataRendererHelper;
 use App\Contracts\Ui\DataProviderInterface;
 use App\Inv\Repositories\Models\AnchorUser;
@@ -22,9 +23,9 @@ use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\AppProgramLimit;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Master\DoaLevelRole;
+use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
-use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -5329,7 +5330,7 @@ class DataRenderer implements DataProviderInterface
                                 }
                             }elseif (in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && $dataRecords->updated_by != Auth::user()->user_id) {
                                 $user = User::find($dataRecords->updated_by);
-                                $btn .= ($user->f_name ?? 'Someone') . ' is already trying to settle transactions';
+                                $btn .= ($user->fullname ?? 'Someone') . ' is already trying to settle transactions';
                             }elseif(Helpers::checkPermission('lms_refund_payment_advise') && $dataRecords->is_refundable && !$dataRecords->refundReq && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED])){
                                 $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
                             }

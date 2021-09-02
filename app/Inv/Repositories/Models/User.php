@@ -841,5 +841,8 @@ class User extends Authenticatable
                       FROM rta_invoice a
                       WHERE a.supplier_id = $supplierId;");
         return ($res ? $res : []);
-    }    
+    }   
+    public function getFullNameAttribute(){ 
+        return $this->f_name.' '.$this->m_name.' '.$this->l_name;
+    }
 }

@@ -147,16 +147,13 @@ class Payment extends BaseModel {
      * @return type mixed
      */
     public static function getPayments(array $where = [], $orderBy = []) {
-        $res = self::where($where);
+        $res = self::where($where)->settledProcessing()->settledProcessed();
         if(!empty($orderBy)){
             foreach($orderBy as $key => $val){
                 $res = $res->orderBy($key, $val);
             }
         }
-        $res = $res->settledProcessing()
-                   ->settledProcessed()
-                   ->get();
-        return $res->isEmpty() ? [] :  $res;
+        return $res;
     }
 
 

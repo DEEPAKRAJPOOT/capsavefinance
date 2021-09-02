@@ -4557,14 +4557,13 @@ if ($err) {
 
     public function getSettledPayments(DataProviderInterface $dataProvider) {
         $user_id = $this->request->user_id;
-        $this->dataRecords = [];
+        $dataRecords = [];
         if (!empty($user_id)) {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id],['updated_at'=>'desc']);
+            $dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id],['updated_at'=>'desc']);
         } else {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 1],['updated_at'=>'desc']);
+            $dataRecords = Payment::getPayments(['is_settled' => 1],['updated_at'=>'desc']);
         }
-        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
-        return $this->providerResult;
+        return $dataProvider->getToSettlePayments($this->request, $dataRecords);
     }
     
     public function checkBankAccExist(Request $req){
@@ -4765,6 +4764,7 @@ if ($err) {
         $dataRecords = [];
         if ($userId) {
             $payments = Payment::getPayments(['is_settled' => 0, 'user_id' => $userId, 'payment_type' => $paymentType]);
+            $payments = $payments->get();
             foreach ($payments as $payment) {
                 $dataRecords[] =[
                     'id'=>Crypt::encryptString($payment->payment_id),
