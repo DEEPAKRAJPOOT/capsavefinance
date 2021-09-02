@@ -5322,8 +5322,10 @@ class DataRenderer implements DataProviderInterface
                                 $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
                             }
 
-                            if(Helpers::checkPermission('apport_unsettled_view') && (($dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING) || ($dataRecords->is_settled == Payment::PAYMENT_SETTLED_PROCESSING && Auth::user()->user_id == $dataRecords->updated_by))){
-                                if($dataRecords->isApportPayValid['isValid']){
+                            if(Helpers::checkPermission('apport_unsettled_view') && $dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING
+                            || (Helpers::checkPermission('apport_unsettled_view') && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && Auth::user()->user_id == $dataRecords->updated_by)
+                            ){
+                                if($dataRecords->isApportPayValid['isValid'] || (in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && Auth::user()->user_id == $dataRecords->updated_by)){
                                     $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
                                 }elseif($dataRecords->isApportPayValid['error']){
                                     $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
