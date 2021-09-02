@@ -222,7 +222,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'principal_rece'=>$invDisb->transactions->where('trans_type',16)->where('entry_type',0)->sum('amount'),
 			'received'=>$invDisb->invoice->principal_repayment_amt,
 			'net_receivalble'=> ($invDisb->transactions->where('trans_type',16)->where('entry_type',0)->sum('amount')) - ($invDisb->invoice->principal_repayment_amt), /* AL-AM */
-			'adhoc_int'=>$invDisb->invoice->program_offer->adhoc_interest_rate,
+			'adhoc_int'=>'',
 			'net_disbursement'=>$invDisb->invoice->invoice_amount,
 			'gross'=>'', // blank
 			'net_of_interest'=>'', // blank

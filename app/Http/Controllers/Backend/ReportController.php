@@ -851,7 +851,7 @@ class ReportController extends Controller
             ->setCellValue('AL'.$rows, number_format($rowData['principal_rece'],2))
             ->setCellValue('AM'.$rows, number_format($rowData['received'],2))
             ->setCellValue('AN'.$rows, number_format($rowData['net_receivalble'],2))
-            ->setCellValue('AO'.$rows, !empty($rowData['adhoc_int']) ? number_format($rowData['adhoc_int'],2) : '---')
+            ->setCellValue('AO'.$rows, '---')
             ->setCellValue('AP'.$rows, number_format($rowData['net_disbursement'],2))
             ->setCellValue('AQ'.$rows, !empty($rowData['gross']) ? $rowData['gross'] : '---')
             ->setCellValue('AR'.$rows, !empty($rowData['net_of_interest']) ? $rowData['net_of_interest'] : '---');
