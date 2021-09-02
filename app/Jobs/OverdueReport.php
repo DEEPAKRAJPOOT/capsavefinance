@@ -8,11 +8,13 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
 use PHPExcel_IOFactory;
 use Carbon\Carbon;
 use PHPExcel;
+use Helpers;
 
 class OverdueReport implements ShouldQueue
 {
@@ -44,14 +46,15 @@ class OverdueReport implements ShouldQueue
         $data              = $this->reportsRepo->getOverdueReport([], $this->sendMail);
 
         if ($this->sendMail) {
-            $filePath                = $this->downloadOverdueReport($data);
-            $emailData['email']      = $this->emailTo;
-            $emailData['name']       = 'Capsave Team';
-            $emailData['body']       = 'PFA';
-            $emailData['attachment'] = $filePath;
-            $emailData['subject']    = "Overdue Report";
-
-            \Event::dispatch("NOTIFY_OVERDUE_REPORT", serialize($emailData));
+            $emailTemplate  = EmailTemplate::getEmailTemplate("REPORT_OVERDUE");
+            if ($emailTemplate) {
+                $compName                = is_array($this->anchor) && isset($this->anchor['comp_name']) ? $this->anchor['comp_name'] : '';
+                $emailData               = Helpers::getDailyReportsEmailData($emailTemplate, $compName);
+                $filePath                = $this->downloadOverdueReport($data);
+                $emailData['email']      = $this->emailTo;
+                $emailData['attachment'] = $filePath;
+                \Event::dispatch("NOTIFY_OVERDUE_REPORT", serialize($emailData));
+            }
         }
     }
 

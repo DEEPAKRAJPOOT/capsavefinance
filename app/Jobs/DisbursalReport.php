@@ -8,11 +8,13 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
 use PHPExcel_IOFactory;
 use Carbon\Carbon;
 use PHPExcel;
+use Helpers;
 
 class DisbursalReport implements ShouldQueue
 {
@@ -75,14 +77,15 @@ class DisbursalReport implements ShouldQueue
 
     private function reportGenerateAndSendWithEmail($data)
     {
-        $compName                = is_array($this->anchor) && isset($this->anchor['comp_name']) ? $this->anchor['comp_name'] : '';
-        $filePath                = $this->downloadDailyDisbursalReport($data);
-        $emailData['email']      = $this->emailTo;
-        $emailData['name']       = $compName ?? 'Capsave Team';
-        $emailData['body']       = 'PFA';
-        $emailData['attachment'] = $filePath;
-        $emailData['subject']    = $compName ? "Disbursal Report (".$compName.")" : "Disbursal Report";
-        \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
+        $emailTemplate  = EmailTemplate::getEmailTemplate("REPORT_DISBURSAL");
+        if ($emailTemplate) {
+            $compName                = is_array($this->anchor) && isset($this->anchor['comp_name']) ? $this->anchor['comp_name'] : '';
+            $emailData               = Helpers::getDailyReportsEmailData($emailTemplate, $compName);
+            $filePath                = $this->downloadDailyDisbursalReport($data);
+            $emailData['email']      = $this->emailTo;
+            $emailData['attachment'] = $filePath;
+            \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
+        }
     }
 
     private function downloadDailyDisbursalReport($exceldata)

@@ -2307,4 +2307,15 @@ class Helper extends PaypalHelper
        return $appData = Application::getAppData((int) $app_id)->status;
        
     }
+
+    public static function getDailyReportsEmailData($emailTemplate, $compName)
+    {
+        $emailData['cc']       = $emailTemplate->cc ? explode(',', $emailTemplate->cc) : '';
+        $emailData['bcc']      = $emailTemplate->bcc ? explode(',', $emailTemplate->bcc) : '';
+        $emailData['name']     = $emailTemplate->name;
+        $emailData['body']     = $emailTemplate->message;
+        $emailData['subject']  = $compName ? trim(str_replace('%compName', $compName, $emailTemplate->subject)) : trim(str_replace('(%compName)', '', $emailTemplate->subject));
+
+        return $emailData;
+    }
 }

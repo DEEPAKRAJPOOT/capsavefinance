@@ -8,11 +8,13 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+use App\Inv\Repositories\Models\Master\EmailTemplate;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
 use PHPExcel_IOFactory;
 use Carbon\Carbon;
 use PHPExcel;
+use Helpers;
 
 class MaturityReport implements ShouldQueue
 {
@@ -75,14 +77,15 @@ class MaturityReport implements ShouldQueue
 
     private function reportGenerateAndSendWithEmail($data)
     {
-        $compName                = is_array($this->anchor) && isset($this->anchor['comp_name']) ? $this->anchor['comp_name'] : '';
-        $filePath                = $this->downloadMaturityReport($data);
-        $emailData['email']      = $this->emailTo;
-        $emailData['name']       = $compName ?? 'Capsave Team';
-        $emailData['body']       = 'PFA';
-        $emailData['attachment'] = $filePath;
-        $emailData['subject']    = $compName ? "Maturity Report (".$compName.")" : "Maturity Report";
-        \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
+        $emailTemplate  = EmailTemplate::getEmailTemplate("REPORT_MATURITY");
+        if ($emailTemplate) {
+            $compName                = is_array($this->anchor) && isset($this->anchor['comp_name']) ? $this->anchor['comp_name'] : '';
+            $emailData               = Helpers::getDailyReportsEmailData($emailTemplate, $compName);
+            $filePath                = $this->downloadMaturityReport($data);
+            $emailData['email']      = $this->emailTo;
+            $emailData['attachment'] = $filePath;
+            \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
+        }
     }
 
     private function downloadMaturityReport($exceldata)
