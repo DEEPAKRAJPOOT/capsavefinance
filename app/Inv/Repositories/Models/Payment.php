@@ -244,7 +244,7 @@ class Payment extends BaseModel {
         ->where('is_settled','1')->max('date_of_payment');
         
         $validPayment = self::where('user_id',$this->user_id)
-        ->where('is_settled','0');
+        ->whereIn('is_settled',[0,2,3]);
         //->whereIn('action_type',['1','5']);
 
         if($lastSettledPaymentDate){
