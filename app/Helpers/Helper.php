@@ -2312,9 +2312,9 @@ class Helper extends PaypalHelper
     {
         $emailData['cc']       = $emailTemplate->cc ? explode(',', $emailTemplate->cc) : '';
         $emailData['bcc']      = $emailTemplate->bcc ? explode(',', $emailTemplate->bcc) : '';
-        $emailData['name']     = 'Capsave Team';
+        $emailData['name']     = $compName ? trim(str_replace('%compName', $compName, $emailTemplate->name)) : trim(str_replace('%compName', '', $emailTemplate->name));
         $emailData['body']     = $emailTemplate->message;
-        $emailData['subject']  = $compName ? trim(str_replace('%compName', $compName, $emailTemplate->subject)) : trim(str_replace('(%compName)', '', $emailTemplate->subject));
+        $emailData['subject']  = $compName ? trim(str_replace('%compName', $compName, $emailTemplate->subject)) : trim(str_replace('%compName', '', $emailTemplate->subject));
 
         return $emailData;
     }

@@ -50,7 +50,7 @@ class AccountDisbursalReport implements ShouldQueue
             if ($emailTemplate) {
                 $emailData               = Helpers::getDailyReportsEmailData($emailTemplate);
                 $filePath                = $this->downloadAccountDailyDisbursalReport($data);
-                $emailData['email']      = $this->emailTo;
+                $emailData['to']      = $this->emailTo;
                 $emailData['attachment'] = $filePath;
                 \Event::dispatch("NOTIFY_ACCOUNT_DISBURSAL_REPORT", serialize($emailData));
             }
