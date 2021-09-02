@@ -2308,11 +2308,11 @@ class Helper extends PaypalHelper
        
     }
 
-    public static function getDailyReportsEmailData($emailTemplate, $compName)
+    public static function getDailyReportsEmailData($emailTemplate, $compName = null)
     {
         $emailData['cc']       = $emailTemplate->cc ? explode(',', $emailTemplate->cc) : '';
         $emailData['bcc']      = $emailTemplate->bcc ? explode(',', $emailTemplate->bcc) : '';
-        $emailData['name']     = $emailTemplate->name;
+        $emailData['name']     = 'Capsave Team';
         $emailData['body']     = $emailTemplate->message;
         $emailData['subject']  = $compName ? trim(str_replace('%compName', $compName, $emailTemplate->subject)) : trim(str_replace('(%compName)', '', $emailTemplate->subject));
 

@@ -53,7 +53,7 @@ class DisbursalReport implements ShouldQueue
         }
 
         if (is_array($this->anchor) && isset($this->anchor['anchor_id'])) {
-            $this->generateAnchorReport($this->anchor);
+            $this->generateAnchorReport($this->anchor['anchor_id']);
         }
     }
 
