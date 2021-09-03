@@ -674,18 +674,11 @@ class ApportionmentController extends Controller
             ]);
 
             $payment = Payment::find($paymentId);
-            if ($payment) {
 
-                
-            if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSING && $payment->updated_by)
-            {
-                $paymentUpdatedBy = intval($payment->updated_by);
-                if (Auth::user()->user_id !== $paymentUpdatedBy) {
-                    return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
-                }
-            }
-                $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
-            }
+            if (!$this->verifyUnSettleTransInitiator($payment, $settleConfirmation = true))
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+
+            $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
         
             return view('lms.apportionment.markSettledConfirm',[
                 'paymentId' => $paymentId,
@@ -702,19 +695,34 @@ class ApportionmentController extends Controller
         }
     }
 
+    private function verifyUnSettleTransInitiator($payment, $settleConfirmation = false)
+    {
+        $paymentUpdatedBy = $payment->updated_by;
+        if ($payment && $paymentUpdatedBy) {
+            if (gettype($paymentUpdatedBy) === 'string') {
+                $paymentUpdatedBy = intval($payment->updated_by);
+            }
+
+            if ($payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSING && Auth::user()->user_id !== $paymentUpdatedBy) {
+                return false;
+            }
+
+            if ($settleConfirmation && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSED && Auth::user()->user_id !== $paymentUpdatedBy) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function markSettleSave(Request $request){
         try {
             $payment = Payment::find($request->payment_id);
-            if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSING && $payment->updated_by)
-            {
-                $paymentUpdatedBy = intval($payment->updated_by);
-                if (Auth::user()->user_id !== $paymentUpdatedBy) {
-                    return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
-                }
-            }
-            $payment->update([
-                'is_settled' => Payment::PAYMENT_SETTLED_PROCESSED
-            ]);
+
+            if (!$this->verifyUnSettleTransInitiator($payment))
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+
+            $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSED]);
+
             $Obj = new ManualApportionmentHelper($this->lmsRepo);
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
