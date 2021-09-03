@@ -675,9 +675,15 @@ class ApportionmentController extends Controller
 
             $payment = Payment::find($paymentId);
             if ($payment) {
-                if ($payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSING)
+
+                
+            if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSING && $payment->updated_by)
+            {
+                $paymentUpdatedBy = intval($payment->updated_by);
+                if (Auth::user()->user_id !== $paymentUpdatedBy) {
                     return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
- 
+                }
+            }
                 $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
             }
         
