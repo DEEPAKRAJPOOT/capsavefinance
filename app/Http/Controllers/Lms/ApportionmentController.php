@@ -1399,6 +1399,9 @@ class ApportionmentController extends Controller
     }
 
     private function apportionmentUndoProcess($payment_id){
+        Session::flash('error', trans('Please try after some time, Service is stop due to some technical error!'));
+        return redirect()->back()->withInput();
+        
         $result = false;
         $error = null;        
         $Obj = new ManualApportionmentHelper($this->lmsRepo);
