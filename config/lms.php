@@ -260,4 +260,5 @@ return [
         'EXCEPTION_CASE' => 28
     ],
     'INVOICE_MATURITY_ALERT_DAYS' => 7,
+    'SAC_CODE_FOR_INT_INVOICE' => '997119',
 ];

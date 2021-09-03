@@ -644,5 +644,9 @@ class AppProgramOffer extends BaseModel {
         }
         $query->where($whereCond);
         return $query->count();
+    }
+    
+    public function BizInvoice(){
+        return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice', 'prgm_offer_id', 'prgm_offer_id');
     }    
 }

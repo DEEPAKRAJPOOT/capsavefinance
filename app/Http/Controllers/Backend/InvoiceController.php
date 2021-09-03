@@ -732,7 +732,6 @@ class InvoiceController extends Controller {
             }
 
             $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
-
             $fundedAmount = 0;
             $interest = 0;
             $disburseAmount = 0;
@@ -806,7 +805,6 @@ class InvoiceController extends Controller {
 
                     }
                 }
-
                 if($disburseType == 1) {
                     $modePay = ($disburseAmount < 200000) ? 'NEFT' : 'RTGS' ;
                     $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
@@ -920,7 +918,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $file['file_path'] = $result['file_path'] ?? '';
         $disbusalApiLogData = [];
         $whereCondition = [];
-
         if ($file) {
             $createBatchFileData = $this->createBatchFileData($file);
             $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
@@ -948,14 +945,17 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             foreach ($allinvoices as $invoice) {
                 if($invoice['supplier_id'] == $userid) {
                     $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
-
+                    $interest= 0;
+                    $margin= 0;
+                    $tenor = $this->calculateTenorDays($invoice);
+                    $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
+                    $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                     if (empty($invoiceDisbursedData)) {
                         $processingFee= 0;
                         if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
                             $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
                         } else {
                             $processingFee = $invoice['processing_fee']['chrg_value'];
-
                         }
                         $processingFeeGst = $invoice['processing_fee']['gst_chrg_value'] - $processingFee;
 
@@ -972,12 +972,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                    
                     $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
                     $this->invRepo->saveInvoiceStatusLog($invoice['invoice_id'], 10);
-                    $interest= 0;
-                    $margin= 0;
-
-                    $tenor = $this->calculateTenorDays($invoice);
-                    $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
-                    $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                     if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$disburseDate)) {
                         $str_to_time_date = strtotime($disburseDate);
                     } else {
