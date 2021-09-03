@@ -766,7 +766,7 @@ class ApportionmentController extends Controller
 
                 $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
 
-                if($amtToSettle > $repaymentAmt){
+                if((float) round($amtToSettle,2) > (float) round($repaymentAmt,2)){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
                     return redirect()->route('unsettled_payments')->withInput();
                 }
