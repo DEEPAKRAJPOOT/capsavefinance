@@ -54,6 +54,7 @@ class Transactions extends BaseModel {
         'invoice_disbursed_id',
         'trans_running_id',
         'user_id',
+        'apportionment_id',
         'trans_date',
         'trans_type',
         'trans_mode',
