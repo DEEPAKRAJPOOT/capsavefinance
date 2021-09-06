@@ -1175,7 +1175,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $disbursalBatchId = $createDisbursalBatch->disbursal_batch_id;
                 }
             }
-
+	    $processingFeeGst = 0;
             foreach ($supplierIds as $userid) {
                 $disburseAmount = 0;
                 $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
