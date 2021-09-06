@@ -238,7 +238,6 @@ class DocumentRepository implements DocumentInterface
         if (empty($attributes)) {
             throw new BlankDataExceptions('No Data Found');
         }
-        
         return AppDocumentFile::create($attributes);
     }
     
@@ -254,6 +253,7 @@ class DocumentRepository implements DocumentInterface
         if($doc)
         {
             $doc->file_id = $fileId;
+            $doc->is_ovd_enabled = 1;
             $doc->save();
         }
         
@@ -428,4 +428,25 @@ class DocumentRepository implements DocumentInterface
         }
         return UserFile::saveNachFile($attributes, $userId);
     }
+
+    /**
+     * Update method diabled is_ovd check
+     *
+     * @param array $attributes
+     */
+    public function disableIsOVD($where)
+    {
+        $result = AppDocumentFile::where($where)->orderBy('app_doc_file_id', 'DESC')->first()->toArray();
+
+        if($result) {
+            $updateData = [
+                'is_ovd_enabled' => 0
+            ];
+            $where = [
+                'app_doc_file_id' => $result['app_doc_file_id']
+            ];
+            AppDocumentFile::where($where)->update($updateData); 
+        }
+        return $result ?: false;
+    }    
 }

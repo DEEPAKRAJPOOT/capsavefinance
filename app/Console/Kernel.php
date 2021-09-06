@@ -21,6 +21,9 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\TallyPosting::class,
         \App\Console\Commands\InterestAccrual::class,
         \App\Console\Commands\RenewApplications::class,
+        \App\Console\Commands\LenovoNewUser::class,
+        \App\Console\Commands\MaturityInvoiceDueAlert::class,
+        \App\Console\Commands\MaturityInvoiceOverDueAlert::class,
     ];
 
     /**
@@ -38,6 +41,7 @@ class Kernel extends ConsoleKernel
         
         if(config('lms.LMS_STATUS')){
             $schedule->command('lms:interestaccrual')->timezone(config('common.timezone'))->dailyAt('00:01');
+            $schedule->command('lms:interestaccrual')->dailyAt('00:01');
         }
 
         if(config('lms.LMS_STATUS') && !\Helpers::checkEodProcess() && \Helpers::getInterestAccrualCronStatus() && !\Helpers::getEodProcessCronStatus()){
@@ -49,9 +53,12 @@ class Kernel extends ConsoleKernel
         }
         
         if(config('lms.LMS_STATUS') && !empty('lms.DAILY_REPORT_MAIL')){
+
             $schedule->command('lms:dailyReport')->timezone(config('common.timezone'))->dailyAt('20:00');
         }
-        
+        $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt('23:00');
+        $schedule->command('lms:maturityinvoicedueAlert')->timezone(config('common.timezone'))->dailyAt('21:30');
+        $schedule->command('lms:maturityinvoiceoverdueAlert')->timezone(config('common.timezone'))->dailyAt('22:00');
     }
     
     /**

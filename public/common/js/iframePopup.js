@@ -132,8 +132,11 @@ var iframe_ids = [
     'createNachFrame',
     'importNachExcelResponse',
     'importNachTransResponse',
+    'importExcelPayments',
     'addBankMaster',
-    'editBankMaster'
+    'editBankMaster',
+    'viewOnlineDisbursalRollback',
+    'iframeUpdateInvoiceCharge',
 ];
 
 iframe_ids.forEach(function (id) {

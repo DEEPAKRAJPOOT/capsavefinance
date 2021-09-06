@@ -155,7 +155,7 @@ class Apportionment {
             }
         });
         var unapplied_amt = payment_amt.toFixed(2)-settled_amt.toFixed(2);
-        if(unapplied_amt.toFixed(2) < 0 ){
+        if(parseFloat(unapplied_amt.toFixed(2)) < 0 ){
             replaceAlert("Sum of your total entries is Greater than Re-payment amount", 'error');
         } 
         $('#unappliledAmt').text('₹ '+unapplied_amt.toFixed(2));
@@ -213,7 +213,7 @@ class Apportionment {
             }
     
             if(status){
-                if(totalSettledAmt > paymentAmt){
+                if(parseFloat(totalSettledAmt.toFixed(2)) > parseFloat(paymentAmt.toFixed(2))){
                     message =  "Sum of your total entries is Greater than Re-payment amount";
                     status = false;
                 }
@@ -346,8 +346,10 @@ class Apportionment {
     selectAllChecks(checkallId){
       if ($('#' + checkallId).is(':checked')) {
         $('.check[type="checkbox"]').prop('checked', true);
+        $('.pay[type="text"]').removeAttr('readonly');
       }else{
          $('.check[type="checkbox"]').prop('checked', false);
+         $('.pay[type="text"]').attr('readonly',true);
       }
       $('.pay[type="text"]').val('');
       this.calculateUnAppliedAmt()

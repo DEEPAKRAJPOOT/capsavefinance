@@ -947,7 +947,8 @@ class DataRenderer implements DataProviderInterface
                         }
                      if($customer!=3)
                      {  
-                      $action .='<a title="Edit" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                      $action .='<a title="Edit Amount" href="#" data-amount="'.(($invoice->invoice_amount) ? $invoice->invoice_amount : '' ).'" data-approve="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#myModal7" class="btn btn-action-btn btn-sm changeInvoiceAmount"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                      $action .='<a title="Edit Tenor" href="#" data-tenor="'.(($invoice->tenor) ? $invoice->tenor : '' ).'" data-offertenor="'.(($invoice->program_offer->tenor) ? $invoice->program_offer->tenor : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" data-toggle="modal" data-target="#changeInvoiceTenorModal" class="btn btn-action-btn btn-sm changeInvoiceTenor"><i class="fa fa-edit" aria-hidden="true"></i></a>';
                      }
                       $expl  =  explode(",",$invoice->program->invoice_approval); 
                       if(in_array($customer, $expl)) 
@@ -1100,7 +1101,7 @@ class DataRenderer implements DataProviderInterface
                     $id = Auth::user()->user_id;
                     $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
                     $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
-                    if($chkUser->id!=11) 
+                    if($chkUser->id!=11 && (!empty($invoice->processing_fee) || $invoice->program_offer->is_invoice_processingfee == 0)) 
                         {
                            return '<input type="checkbox" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
                 
@@ -1170,6 +1171,11 @@ class DataRenderer implements DataProviderInterface
                      $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
                       if($chkUser->id!=11) 
                      {
+                      if(Helpers::checkPermission('iframe_update_invoice_chrg') && ($invoice->program_offer->is_invoice_processingfee == 1)){
+
+                        $action .= '<a  data-toggle="modal" data-target="#iframeUpdateInvoiceCharge" data-url ="' . route('iframe_update_invoice_chrg', ['invoice_id' => $invoice->invoice_id ?? 0]) . '" data-height="400px" data-width="100%" class="btn btn-action-btn btn-sm" title="Add Processing Fee"><i class="fa fa-plus-square"></i></a>';
+
+                      }
                       if(Helpers::checkPermission('update_invoice_approve_single_tab') ){
                         $action .='<a title="Disbursed Que" data-status="9"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm disburseInv"><i class="fa fa-share-square" aria-hidden="true"></i></a>';
                       }
@@ -1177,6 +1183,9 @@ class DataRenderer implements DataProviderInterface
                         $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv2"><option value="0">Change Status</option><option value="7">Pending</option><option value="14"> Reject</option></select></div>';
                       }
                      }
+                     if (empty($invoice->processing_fee) && $invoice->program_offer->is_invoice_processingfee == 1) {
+                            $action .= '<span style="color : red;"> Update Charge</span>';
+                        }
                      return  $action;
                 })
                  ->filter(function ($query) use ($request) {
@@ -1217,12 +1226,12 @@ class DataRenderer implements DataProviderInterface
 
                         $this->overDueFlag = 0;
                         $disburseAmount = 0;
-                        $apps = $invoice->supplier->apps;
+                        $apps = $invoice['supplier']['apps'];
                         if ($this->overDueFlag == 0) {
                             foreach ($apps as $app) {
-                                foreach ($app->disbursed_invoices as $inv) {
-                                    $invc = $inv->toArray();
-                                    $invc['invoice_disbursed'] = $inv->invoice_disbursed->toArray();
+                                foreach ($app['disbursed_invoices'] as $inv) {
+                                    $invc = $inv;
+                                    $invc['invoice_disbursed'] = $inv['invoice_disbursed'];
                                     if ((isset($invc['invoice_disbursed']['payment_due_date']))) {
                                         if (!is_null($invc['invoice_disbursed']['payment_due_date'])) {
                                             $calDay = $invc['invoice_disbursed']['grace_period'];
@@ -1232,7 +1241,7 @@ class DataRenderer implements DataProviderInterface
                                             $datediff = ($dueDate - $now);
                                             $days = round($datediff / (60 * 60 * 24));
                                             if ($this->overDueFlag == 0 && $days < 0 && $invc['is_repayment'] == 0) {
-                                                $this->overDueFlag = 1;
+                                                $this->overDueFlag = 0;
                                             }
                                         }
                                     }
@@ -1244,8 +1253,7 @@ class DataRenderer implements DataProviderInterface
                         $this->isLimitExpired = $isLimitExpired;  
                         $this->isLimitExceed  = $isLimitExceed;                          
                        // return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
-                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
-
+                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";   
                      })
                 ->addColumn(
                     'anchor_id',
@@ -2040,7 +2048,7 @@ class DataRenderer implements DataProviderInterface
      public function getAllManualTransaction(Request $request,$trans)
      {
          return DataTables::of($trans)
-               ->rawColumns(['trans_by', 'customer_name', 'customer_id','customer_detail','created_by', 'action'])
+               ->rawColumns(['trans_by', 'customer_name', 'customer_id','customer_detail','trans_type','created_by', 'action'])
                 ->addIndexColumn()
                 
                 ->addColumn(
@@ -2077,7 +2085,14 @@ class DataRenderer implements DataProviderInterface
                  ->addColumn(
                     'trans_type',
                     function ($trans) {
-                        return $trans->paymentname;
+                     $tType = '';
+                     if($trans->is_manual == 3) {
+                         $tType = '<br><span><b>Import Payment</b></span>';
+                     } else if($trans->is_manual == 1) {
+                         $tType = '<br><span><b>Manual Payment</b></span>';
+                     }
+
+                        return $trans->paymentname.$tType;
                 })
                  ->addColumn(
                     'comment',
@@ -2901,7 +2916,7 @@ class DataRenderer implements DataProviderInterface
     {
         
         return DataTables::of($agency)
-                ->rawColumns(['agency_id', 'action'])
+                ->rawColumns(['agency_id', 'action','status'])
                 ->addColumn(
                     'agency_id',
                     function ($agency) {
@@ -2936,13 +2951,29 @@ class DataRenderer implements DataProviderInterface
                     function ($agency) {
                     return ($agency->created_at)? date('d-M-Y',strtotime($agency->created_at)) : '---';
                 })
+                ->editColumn(
+                    'status',
+                    function ($agency) {
+                    return ($agency->is_active == 0)?
+                    '<div class="btn-group ">
+                    <label class="badge badge-warning current-status">In Active</label>
+                    </div></b>':'<div class="btn-group ">
+                    <label class="badge badge-success current-status">Active</label>
+                    </div></b>';
+                }) 
                 ->addColumn(
                     'action',
                     function ($agency) {
                        $act = '';
                      //if(Helpers::checkPermission('edit_anchor_reg')){
-                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyFrame\" data-url =\"" . route('edit_agency_reg', ['agency_id' => $agency->agency_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency Detail\"><i class=\"fa fa-edit\"></a>";
+                        $act = "<a  data-toggle=\"modal\" data-target=\"#editAgencyFrame\" data-url =\"" . route('edit_agency_reg', ['agency_id' => $agency->agency_id]) . "\" data-height=\"400px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Agency Detail\"><i class=\"fa fa-edit\"></i></a>";
                      //}
+                        if($agency->is_active){
+                             $act.='<a title="In Active" href="'.route('change_agency_status', ['agency_id' => $agency->agency_id, 'is_active' => 0]).'"  class="btn btn-action-btn btn-sm agency_status "><i class="fa fa-eye" aria-hidden="true"></i></a>';
+                        }else{
+                             $act.='<a title="Active" href="'.route('change_agency_status', ['agency_id' => $agency->agency_id, 'is_active' => 1]).'"  class="btn btn-action-btn btn-sm  agency_status"><i class="fa fa-eye-slash" aria-hidden="true"></i></a>';
+                        }
+                       // $act.'amit';
                      return $act;
                     }
                 )
@@ -3758,7 +3789,7 @@ class DataRenderer implements DataProviderInterface
                                 $fundedAmount = $this->calculateFundedAmount($invoice, $margin);
                                 
                                 $tenorDays = $this->calculateTenorDays($invoice);
-                                $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate']/100, $tenorDays);
+                                $tInterest = $this->calInterest($fundedAmount, $invoice['program_offer']['interest_rate'], $tenorDays);
                                 if( $invoice['program']['interest_borne_by'] == 2 && ($invoice['program_offer']['payment_frequency'] == 1 || empty($invoice['program_offer']['payment_frequency'])) ) {
                                     $interest = $tInterest;
                                 }
@@ -4427,8 +4458,9 @@ class DataRenderer implements DataProviderInterface
                     return $data;
                 }
             )
-            ->filter(function ($query) use ($request) {
-            })
+            // ->filter(function ($query) use ($request) {
+                
+            // })
             ->make(true);
     }
 
@@ -5217,7 +5249,7 @@ class DataRenderer implements DataProviderInterface
 
         public function getToSettlePayments(Request $request, $dataRecords){
             return DataTables::of($dataRecords)
-                    ->rawColumns(['customer_id','updated_by','action'])
+                    ->rawColumns(['customer_id','trans_type','updated_by','action'])
                     ->addColumn(
                     'customer_id',
                         function ($dataRecords) {
@@ -5252,8 +5284,16 @@ class DataRenderer implements DataProviderInterface
                     }) 
                     ->editColumn(
                         'trans_type',
-                        function ($dataRecords) {   
-                            return $dataRecords->paymentname;
+                        function ($dataRecords) {
+
+                            $tType = '';
+                            if($dataRecords->is_manual == 3) {
+                                $tType = '<br><span><b>Import Payment</b></span>';
+                            } else if($dataRecords->is_manual == 1) {
+                                $tType = '<br><span><b>Manual Payment</b></span>';
+                            }
+
+                            return $dataRecords->paymentname.$tType;
                     }) 
                     ->addColumn(
                         'date_of_payment', 
@@ -5273,7 +5313,7 @@ class DataRenderer implements DataProviderInterface
                         function ($dataRecords) {
                             $btn = '';
 
-                            if(Helpers::checkPermission('delete_payment') && $dataRecords->is_settled == '0' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($dataRecords->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
+                            if(Helpers::checkPermission('delete_payment') && $dataRecords->is_settled == '0' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' ){
                                 $btn .= '<button class="btn btn-action-btn btn-sm"  title="Delete Payment" onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
                             }
 
@@ -6235,7 +6275,7 @@ class DataRenderer implements DataProviderInterface
      * 
      * Get All Unsettled Transactions
      */
-    public function getUnsettledTrans(Request $request, $trans,$payment)
+    public function getUnsettledTrans(Request $request, $trans,$payment, $showSuggestion)
     {
         return DataTables::of($trans)
             ->rawColumns(['select', 'pay','outstanding_amt'])
@@ -6253,9 +6293,9 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('total_repay_amt', function($trans){
                 return "₹ ".number_format($trans->amount,2);
             })
-            ->addColumn('outstanding_amt', function($trans)use($payment){
+            ->addColumn('outstanding_amt', function($trans)use($payment,$showSuggestion){
                 $outResult = "₹ ".number_format($trans->outstanding,2);
-                if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                if($showSuggestion && $payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                     $accuredInterest = $trans->tempInterest;
                     if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
                            $outResult .= " <span style=\"color:red\">(".number_format($accuredInterest,2).")</span>";
@@ -6268,10 +6308,10 @@ class DataRenderer implements DataProviderInterface
                     return Carbon::parse($payment->date_of_payment)->format('d-m-Y');
                 }
             })
-            ->addColumn('pay', function($trans)use($payment){
+            ->addColumn('pay', function($trans)use($payment,$showSuggestion){
                 $result = '';
                 if($payment){
-                    if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                    if($showSuggestion && $payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                         $accuredInterest = $trans->tempInterest;
                         if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
                             return  "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($accuredInterest,2)."' name='payment[".$trans->trans_id."]'>";
@@ -6881,7 +6921,7 @@ class DataRenderer implements DataProviderInterface
                       $payment  = '';                   
                        foreach($invoice->transaction as $row)
                       {
-                           if( $row->payment->date_of_payment)
+                           if(!empty($row->payment->date_of_payment))
                            {
                              $payment.= Carbon::parse($row->payment->date_of_payment)->format('d/m/Y')."</br>";
                            }
@@ -6908,15 +6948,15 @@ class DataRenderer implements DataProviderInterface
                       $chk  = '';                   
                        foreach($invoice->transaction as $row)
                       {
-                           if( $row->payment->utr_no)
+                           if(!empty($row->payment->utr_no))
                            {
                              $chk.$row->payment->utr_no.",";
                            }
-                            if( $row->payment->unr_no)
+                            if(!empty($row->payment->unr_no))
                            {
                              $chk.= $row->payment->unr_no.",";
                            }
-                            if( $row->payment->cheque_no)
+                            if(!empty($row->payment->cheque_no))
                            {
                              $chk.= $row->payment->cheque_no.",";
                            }
@@ -6988,7 +7028,15 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'action',
                     function ($disbursalBatchRequest) {
-                        $act = '<a   href="' . route('disbursal_payment_enquiry', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';
+                        $act = '';
+                        if(Helpers::checkPermission('online_disbursal_rollback')){
+                            $act .='</br><a data-toggle="modal"  data-height="400px" 
+                            data-width="100%" 
+                            data-target="#viewOnlineDisbursalRollback"
+                            data-url="' . route('online_disbursal_rollback', ['disbursal_batch_id' =>$disbursalBatchRequest->disbursal_batch_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Online Disbursal Rollback"><i class="fa fa-eye"></i></a>';
+                        }
+
+                        $act .= '<a   href="' . route('disbursal_payment_enquiry', ['disbursal_batch_id' => $disbursalBatchRequest->disbursal_batch_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="IDFC Batch Enquiry Trigger Api"><i class="fa fa-rotate-right"></i></a>';
                         
                         return $act;
                 })

@@ -36,6 +36,10 @@ use ZanySoft\Zip\Zip;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\UserFile;
+use App\Inv\Repositories\Models\Program;
+use App\Inv\Repositories\Models\ColenderShare;
+use App\Inv\Repositories\Models\LmsUsersLog;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 
 class Helper extends PaypalHelper
 {
@@ -1603,39 +1607,67 @@ class Helper extends PaypalHelper
         return $field;
     }
     
+    public static function invoiceAnchorLimitApprove($attr){
+
+        $prgmData = Program::where('prgm_id', $attr['prgm_id'])->first();
+        if (isset($prgmData->parent_prgm_id)) {
+            $prgm_ids = Program::where('parent_prgm_id', $prgmData->parent_prgm_id)->pluck('prgm_id')->toArray();
+        }else{
+            $prgm_ids = [$attr['prgm_id']];
+        }
+        $is_enhance =Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();
+
+
+        if($is_enhance==1)
+        { 
+            $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],$attr['app_id']);
+            $marginApprAmt = $marginApprAmt??0;
+            $marginApprAmt   +=   BizInvoice::whereIn('program_id', $prgm_ids)
+            ->where('prgm_offer_id',$attr['prgm_offer_id'])
+            ->whereIn('status_id',[8,9,10])
+            ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+            ->where('app_id' , '<=', $attr['app_id'])
+            ->sum('invoice_approve_amount');
+            $marginReypayAmt =   BizInvoice::whereIn('program_id', $prgm_ids)
+            ->where('prgm_offer_id',$attr['prgm_offer_id'])
+            ->whereIn('status_id',[8,9,10,12,13,15])
+            ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+            ->where('app_id' , '<=', $attr['app_id'])
+            ->sum('principal_repayment_amt');
+
+            return $marginApprAmt-$marginReypayAmt;
+        }
+        else
+        {
+            $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplierIsEnhance($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'], $attr['app_id']);
+            $marginApprAmt = $marginApprAmt??0;
+            $marginApprAmt   +=  BizInvoice::whereIn('program_id', $prgm_ids)
+            ->where('prgm_offer_id',$attr['prgm_offer_id'])
+            ->whereIn('status_id',[8,9,10])                    
+            ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+            ->sum('invoice_approve_amount');
+                
+            $marginReypayAmt =  BizInvoice::whereIn('program_id', $prgm_ids)
+            ->where('prgm_offer_id',$attr['prgm_offer_id'])
+            ->whereIn('status_id',[8,9,10,12,13,15])
+            ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+            ->sum('principal_repayment_amt');
+            return $marginApprAmt-$marginReypayAmt;
+        }
+    }      
+        
+    public function ProgramProductLimit($limit_id)
+    {
+        return  AppProgramLimit::where(['status'=> 1,'app_limit_id' =>$limit_id])->sum('limit_amt');
+    } 
     
-           public   function invoiceAnchorLimitApprove($attr)
-        {
-            
-                $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id'],'status' =>2])->count();  
-                if($is_enhance==1)
-                { 
-                    $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_margin_amount');
-                    $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('repayment_amt');
-                    return $marginApprAmt-$marginReypayAmt;
-                 }
-                else
-                {
-                     $marginApprAmt   =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_margin_amount');
-                     $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('repayment_amt');
-                     return $marginApprAmt-$marginReypayAmt;
-                }
-        }      
-        
-         public   function ProgramProductLimit($limit_id)
-        {
-             
-            return  AppProgramLimit::where(['status'=> 1,'app_limit_id' =>$limit_id])->sum('limit_amt');
-        } 
-        
-         public   function getAdhoc($attr)
-        {
-             
-            return  AppOfferAdhocLimit::with('prgm_offer')->where(['prgm_offer_id' =>$attr['prgm_offer_id']])->orderBy('created_at', 'DESC')->get();
-        } 
+    public function getAdhoc($attr)
+    {
+        return  AppOfferAdhocLimit::with('prgm_offer')->where(['prgm_offer_id' =>$attr['prgm_offer_id']])->orderBy('created_at', 'DESC')->get();
+    } 
          
-     public static function checkLimitAmount($appId, $productId, $inputLimitAmt=0, $excludeId=[])
-     {
+    public static function checkLimitAmount($appId, $productId, $inputLimitAmt=0, $excludeId=[])
+    {
         $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface');
         
         //Validate Enchancement Limit                        
@@ -2140,7 +2172,13 @@ class Helper extends PaypalHelper
 
         return $inputArr;
     }
-    
+
+    public static function getCompanyBankAccList()
+    {
+        $bank_acc = UserBankAccount::getCompanyBankAccList();
+        return  $bank_acc;
+    }    
+        
     /**
      * uploading document data
      *
@@ -2193,8 +2231,80 @@ class Helper extends PaypalHelper
         return $fileArr;
     }
 
+    public static function getProgram($prgm_id)
+    {
+        $prgmData = Program::getProgram($prgm_id);
+        return $prgmData;
+    }
+
     public static function getPerfiosBankById($id){
         $bankData = Bank::find($id);
         return $bankData['bank_name'];
+    }
+
+    // Check app status for Reactivate 
+    public static function isChangeAppStatusReactivate ($curStatusId) 
+    {
+        $appStatusList = [
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CLOSED'),
+            config('common.mst_status_id.APP_HOLD'),
+        ];
+        $isChangeAppStatusAllowed = in_array($curStatusId, $appStatusList);
+        return $isChangeAppStatusAllowed;
+    }    
+    /**
+     * check colender
+     *
+     * 
+     */
+    public static function getColenderListByAppID($colenderwherCond)
+    {
+        return ColenderShare::getColenderListByAppID($colenderwherCond);
+    }
+    public static function formatCurrency($amount, $decimal = true, $prefixCurrency = true)
+    {
+        if(is_numeric($amount)){
+
+            $currency = '₹';
+            $amount = $decimal ? round($amount,2) : round($amount);
+            $formattedAmount = preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $amount);
+            if ($prefixCurrency) {
+                $formattedAmount = $currency ."$formattedAmount";
+            }
+            return $formattedAmount;
+        }
+        return null;
+    }
+    
+    public static function getInvoiceStatusByPrgmOfferId($prgmOfferId){
+        $appRepo = \App::make('App\Inv\Repositories\Contracts\ApplicationInterface'); 
+        $offerData = $appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
+        $status = FALSE;
+        if($offerData && isset($offerData->invoice) && $offerData->invoice->isNotEmpty()){
+             foreach($offerData->invoice as $invoice){
+                if($invoice->status_id > 9){
+                    $status = FALSE;
+                    break;
+                }else if($invoice->status_id >= 7 && $invoice->status_id <= 9){
+                    $status = TRUE;
+                }
+            }
+        }
+        return $status;
+    }
+
+    public static function getLatestLmsUserLogByUserId($userId){
+        $lmsUserLog = LmsUsersLog::where('user_id',$userId)->orderBy('created_at','desc')->first();
+
+        return $lmsUserLog->status_id ?? '';
+    }
+
+
+    public static function appStatus($app_id)
+    {
+
+       return $appData = Application::getAppData((int) $app_id)->status;
+       
     }
 }

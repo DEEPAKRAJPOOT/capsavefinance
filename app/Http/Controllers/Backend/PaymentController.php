@@ -14,6 +14,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Models\BizApi;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Models\Payment;
+use App\Inv\Repositories\Models\PaymentExcel;
 use Session;
 use Helpers;
 use DB;
@@ -27,18 +28,21 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Helpers\ApportionmentHelper;
 use Illuminate\Validation\Rule;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
+use App\Helpers\FileHelper;
+use App\Inv\Repositories\Models\UserFile;
 
 class PaymentController extends Controller {
 
 	protected $invRepo;
 	protected $docRepo;
 	use LmsTrait;
-	public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo) {
+	public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo, FileHelper $file_helper) {
 		$this->invRepo = $invRepo;
 		$this->docRepo = $docRepo;
 		$this->lmsRepo = $lms_repo;
 		$this->userRepo = $user_repo;
 		$this->appRepo = $appRepo;
+                $this->fileHelper = $file_helper;
 		$this->middleware('auth');
         $this->middleware('checkEodProcess');
         $this->middleware('checkBackendLeadAccess');
@@ -147,6 +151,14 @@ class PaymentController extends Controller {
 				'amount.gt' => 'Transaction amount must be greater than zero',
 				'date_of_payment.before_or_equal' => 'The Transaction Date must be a date before or equal to '.$curdateMesg.'.',
 			]);
+
+			if(isset($request->tds_certificate_no)) {
+				$tdsCertificate = Payment::where('tds_certificate_no', $request->tds_certificate_no)->count();
+				if($tdsCertificate > 0) {
+					Session::flash('error', 'Please enter another TDS Certificate No.');
+					return back();	
+				}
+			}	
 			
 			$utr ="";
 			$check  ="";
@@ -171,8 +183,8 @@ class PaymentController extends Controller {
                 $arrFileData['doc_file'] = $arrFileData['cheque'];
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
-			}                        
-
+			} 
+			
 			$paymentData = [
 				'user_id' => $request->user_id,
 				'biz_id' => $request->biz_id,
@@ -299,6 +311,15 @@ class PaymentController extends Controller {
 			$arrFileData = $request->all();
 			// $fileId = '';
 
+			if(isset($request->tds_certificate_no)) {
+				$id = $request->has('payment_id') ? $request->get('payment_id') : null ;
+				$result =  Payment::checkTdsCertificate($request->tds_certificate_no, $id);
+				if(isset($result[0])) {
+					Session::flash('error', 'Please enter another TDS Certificate No.');
+					return back();	
+				}
+			}
+			
 			if(isset($arrFileData['doc_file']) && !is_null($arrFileData['doc_file'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
@@ -702,9 +723,7 @@ class PaymentController extends Controller {
 			if($paymentId){
 				$payment = Payment::find($paymentId);
 				if($payment){
-					if($payment->is_settled == '0' && $payment->action_type == '1' && $payment->trans_type == '17' && 
-					strtotime(\Helpers::convertDateTimeFormat($payment->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d'))
-					){
+					if($payment->is_settled == '0' && $payment->action_type == '1' && $payment->trans_type == '17'){
 						$payment->delete();
 						InterestAccrualTemp::where('payment_id',$paymentId)->delete();
 						return response()->json(['status' => 1,'message' => 'Successfully Deleted Payment']); 
@@ -740,4 +759,196 @@ class PaymentController extends Controller {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
+
+
+    /**
+     * Upload excel file for import
+     *
+     * @param Request $request
+     * @return type
+     */
+    public function uploadExcelPayments(Request $request)
+    {
+        return view('backend.payment.upload_xlsx_payments');
+    }
+
+
+    /**
+     * Import uploaded excel file
+     *
+     * @param Request $request
+     * @return type
+     */
+    public function importExcelPayment(Request $request)
+    {
+        try {
+            $arrFileData = $request->files;
+            $inputArr = [];
+            $path = '';
+            $userId = Auth::user()->user_id;
+            if ($request['doc_file']) {
+                if (!Storage::exists('/public/nachexcel/response')) {
+                    Storage::makeDirectory('/public/nachexcel/response');
+                }
+                $path = Storage::disk('public')->put('/nachexcel/response', $request['doc_file'], null);
+            }
+            $uploadedFile = $request->file('doc_file');
+            $destinationPath = storage_path() . '/app/public/nachexcel/response';
+            $date = new DateTime;
+            $currentDate = $date->format('Y-m-d H:i:s');
+            $fileName = $currentDate.'_nachexcel.xlsx';
+            if ($uploadedFile->isValid()) {
+                $uploadedFile->move($destinationPath, $fileName);
+                $filePath = $destinationPath.'/'.$fileName;
+                $fileContent = $this->fileHelper->readFileContent($filePath);
+                $fileData = $this->fileHelper->uploadFileWithContent($filePath, $fileContent);
+                $file = UserFile::create($fileData);
+                $nachBatchData['res_file_id'] = $file->file_id;
+                $this->appRepo->saveNachBatch($nachBatchData, null);
+                $file_id = $file->file_id;
+            }
+            $fullFilePath  = $destinationPath . '/' . $fileName;
+            //echo $fullFilePath; exit;
+
+            $header = [
+                0,1,2,3,4,5,6,7,8,9,10,11,12,13,14
+            ];
+            $fileArrayData = $this->fileHelper->excelNcsv_to_array($fullFilePath, $header);
+
+           // dd($fileArrayData);
+            if($fileArrayData['status'] != 'success'){
+                Session::flash('message', 'Please import correct format sheet,');
+                return redirect()->route('payment_list');
+            }
+            $rowData = $fileArrayData['data'];
+            if (empty($rowData)) {
+                Session::flash('message', 'File does not contain any record');
+                return redirect()->route('payment_list');
+            }
+            foreach ($rowData as $key => $value) {
+                if(!empty($value[0])){
+                    $virtual_acc = trim($value[1]);
+                    if (!empty($virtual_acc) && $virtual_acc != null) {
+                         $wherCond['virtual_acc_id'] = $virtual_acc;
+                         $lmsData = $this->appRepo->getLmsUsers($wherCond)->first();
+
+                       // $date="2012-09-12";
+                        $txn_date = $value[10];
+
+                        if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-[0-9]{4}$/",$txn_date)) {
+                            
+                        } else {
+                            Session::flash('error','Date formate is not correct(txnDate), Use only dd-mm-yyyy formate');
+                            //Session::flash('operation_status', 1);
+                            return redirect()->route('payment_list');
+                        }
+
+                        $TrnTimeStampArray = explode(' ',$value[13]);
+                        $TrnTimeStamp  = $TrnTimeStampArray[0];
+
+                        if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-[0-9]{4}$/",$TrnTimeStamp)) {
+
+                        } else {
+                            Session::flash('error','Date formate is not correct(Trn TimeStamp), Use only dd-mm-yyyy formate');
+                            //Session::flash('operation_status', 1);
+                            return redirect()->route('payment_list');
+                        }
+
+                           $paymentExcelData = [
+				'user_id' => $lmsData ? $lmsData->user_id : '',
+				'bankcode' => $value[0],
+				'virtual_acc' => $virtual_acc,
+				'instrument_type' => $value[2],
+				'remitter_account_number' => $value[3],
+				'remitter_ifsc_code' => $value[4],
+				'remitter_name' => $value[5],
+				'contact_no' => $value[6],
+				'email' => $value[7],
+				'is_status' => $value[8],
+				'txn_amount' => $value[9],
+				'txn_date' => ($value[10]) ? Carbon::createFromFormat('d-m-Y', $value[10])->format('Y-m-d') : '',
+				'txn_ref_number' => $value[11],
+				'client_code' => $value[12],
+				'trn_time_stamp' => ($value[13]) ? date('Y-m-d H:i:s', strtotime($value[13])) : '',
+				'file_id' => $file_id
+                            ];
+                           
+
+                         $paymentExcelId = PaymentExcel::insertPaymentsExcel($paymentExcelData);
+                         //echo "==>".$paymentExcelId; exit;
+
+                         if($value[8] == 'Success') {
+                            $wherCond['virtual_acc_id'] = $virtual_acc;
+                            $lmsData = $this->appRepo->getLmsUsers($wherCond)->first();
+                            $user_id = $lmsData ? $lmsData->user_id : '';
+
+                            $BizDataArray = $this->appRepo->getBizDataByUserId($user_id)->first();
+                            $biz_id = $BizDataArray ? $BizDataArray->biz_id : '';
+                            $biz_id = $biz_id;
+                            $virtual_acc = $virtual_acc;
+                            $action_type = 1;
+                            $trans_type = 17; //17 for Repayment
+                            $parent_trans_id = '';
+                            $amount = $value[9];
+                            $date_of_payment = ($value[10]) ? Carbon::createFromFormat('d-m-Y', $value[10])->format('Y-m-d') : '';
+                           // $date_of_payment = '';
+                            $gst = '';
+                            $sgst_amt = 0;
+                            $cgst_amt = 0;
+                            $igst_amt = 0;
+                            $payment_type = '2';
+                            $utr_no = '';
+                            $unr_no = '';
+                            $cheque_no = '';
+                            $tds_certificate_no = '';
+                            $file_id = $file_id;
+                            $description = '';
+                            $is_settled = '0';
+                            $is_manual = '3'; // Automatic
+                            $sys_date = \Helpers::getSysStartDate();
+                            $generated_by = 1;
+                            
+                            $paymentData = [
+				'user_id' => $user_id,
+				'biz_id' => $biz_id,
+				'virtual_acc' => $virtual_acc,
+				'action_type' => $action_type,
+				'trans_type' => $trans_type,
+				'parent_trans_id' => $parent_trans_id,
+				'amount' => $amount,
+				'date_of_payment' => $date_of_payment,
+				'gst' => $gst,
+				'sgst_amt' => $sgst_amt,
+				'cgst_amt' => $cgst_amt,
+				'igst_amt' => $igst_amt,
+				'payment_type' => $payment_type,
+				'utr_no' => $utr_no,
+				'unr_no' => $unr_no,
+				'cheque_no' => $cheque_no,
+				'tds_certificate_no' => $tds_certificate_no,
+				'file_id' => $file_id,
+				'description' => $description,
+				'is_settled' => $is_settled,
+				'is_manual' => $is_manual,
+				'sys_date'=> $sys_date,
+				'generated_by' => $generated_by,
+                                'generated_by' => 1,
+                                'is_refundable' => 1,
+                                'payment_excel_id' => $paymentExcelId
+			];
+                           // dd($paymentData);
+			$paymentId = Payment::insertPayments($paymentData);
+
+                        }
+                    }
+                }
+            }
+            Session::flash('message',trans('Excel Data Imported successfully.'));
+            Session::flash('operation_status', 1);
+            return redirect()->route('payment_list');
+        } catch (\Exception $ex) {
+            return Helpers::getExceptionMessage($ex);
+        }
+    }
+
 }

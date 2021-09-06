@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Lms;
 
+use App\Inv\Repositories\Models\BizInvoice;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
@@ -44,6 +45,9 @@ class ApportionmentRequest extends FormRequest
 
             $lmsUser = $this->userRepo->lmsGetCustomer($formData['user_id']);
             $payment = $this->lmsRepo->getPaymentDetail($formData['payment_id'], $formData['user_id']);
+            $unInvCnt = BizInvoice::where('supplier_id', $formData['user_id'])->whereHas('invoice_disbursed')->where('is_repayment','0')->count();
+            $showSuggestion = ($unInvCnt <= 50) ?true:false; 
+        
             if(!$lmsUser){
                 $validator->errors()->add("check.required", trans('error_messages.apport_invalid_user_id'));
             }
@@ -69,7 +73,7 @@ class ApportionmentRequest extends FormRequest
                     if ($outstandingAmount < $selectedPayment) {
                         $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the outsanding amount');
                     }
-                    if($transDetail->invoice_disbursed_id && !($transDetail->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $transDetail->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $transDetail->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
+                    if($showSuggestion && $transDetail->invoice_disbursed_id && !($transDetail->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $transDetail->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $transDetail->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
                         if ($realOurstandingAmount < $selectedPayment && in_array($transDetail->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])) {
                             $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the Suggested outsanding amount'); 
                         }
@@ -78,7 +82,7 @@ class ApportionmentRequest extends FormRequest
                 }
             }
             
-            if ($totalselectedAmount > $totalRePayAmount) {
+            if ( round($totalselectedAmount,2) > round($totalRePayAmount,2)) {
                     $validator->errors()->add("totalRepayAmount", 'Sum of pay must be less than: '. $totalRePayAmount);
             }
         });

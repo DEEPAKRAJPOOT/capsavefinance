@@ -29,13 +29,39 @@
 @endsection
 @section('jscript')
 <script type="text/javascript">
+
+    var messages={
+        unique_segment_url:"{{ route('check_unique_segment_url') }}",
+        token: "{{ csrf_token() }}"
+    }
+
     $(document).ready(function () {
 
+        $.validator.addMethod("uniqueSegment",
+            function(value, element, params) {
+                var result = true;
+                var data = {name : value, _token: messages.token};
+                if (params.id) {
+                    data['id'] = params.id;
+                }
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.unique_segment_url, // script to validate in server side
+                    data: data,
+                    success: function(data) {                        
+                        result = (data.status == 1) ? false : true;
+                    }
+                });                
+                return result;                
+            },'Segment name is already exists'
+        );
 
         $('#SegmentForm').validate({ // initialize the plugin
             rules: {
                 'name' : {
                     required : true,
+                    uniqueSegment: true
                 },
                 'is_active' : {
                     required : true,

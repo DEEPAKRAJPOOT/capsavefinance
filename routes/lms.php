@@ -282,6 +282,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'delete_payment',
                         'uses' => 'Backend\PaymentController@deletePayment',
                     ]);
+
+
+                    Route::get('/upload-excel-payments', [
+                        'as' => 'upload_excel_payments',
+                        'uses' => 'Backend\PaymentController@uploadExcelPayments'
+                    ]);
+                    Route::post('/import-excel-payments', [
+                        'as' => 'import_excel_payments',
+                        'uses' => 'Backend\PaymentController@importExcelPayment'
+                    ]);
                 }
             });
 
@@ -460,6 +470,30 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::get('disbursal-payment-enquiry', [
                         'as' => 'disbursal_payment_enquiry',
                         'uses' => 'Backend\InvoiceController@disbursalPaymentEnquiry',
+                    ]);
+
+                    Route::post('delete-disbursal-batch-request', [
+                        'as' => 'rollback_disbursal_batch_request',
+                        'uses' => 'Backend\InvoiceController@rollbackDisbursalBatchRequest',
+                    ]);
+
+                    Route::get('online-disbursal-rollback', [
+                        'as' => 'online_disbursal_rollback',
+                        'uses' => 'Backend\InvoiceController@onlineDisbursalRollback',
+                    ]);
+
+                    Route::get('/update-invoice-chrg', [
+                        'as' => 'iframe_update_invoice_chrg',
+                        'uses' => 'Backend\InvoiceController@iframeUpdateInvoiceChrg',
+                    ]);
+
+                    Route::POST('update-invoice-chrg', [
+                        'as' => 'update_invoice_chrg',
+                        'uses' => 'Backend\InvoiceController@saveInvoiceProcessingFee',
+                    ]);
+                    Route::POST('update_invoice_tenor', [
+                        'as' => 'update_invoice_tenor',
+                        'uses' => 'Backend\InvoiceController@saveInvoiceTenor',
                     ]);
                 }
             });
@@ -915,5 +949,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             });
         });
     });
+        Route::get('/maturityOverdueAlertReport', [
+            'as' => 'maturityOverdueAlertReport',
+            'uses' => 'Backend\ReportController@maturityOverdueAlertReport'
+        ]);
     //end of application
 });

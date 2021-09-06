@@ -98,4 +98,23 @@ class Equipment extends BaseModel
 
         return self::where('id', $equipment_id)->first()->update($arrEquipmentData);
     }
+
+    /**
+     * Check Equipment name
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function checkEquipmentName($equipmentName, $equipmentId=null)
+    {
+        $query = self::select('id')
+                ->where('equipment_name', $equipmentName);
+        if (!is_null($equipmentId)) {
+            $query->where('id', '!=', $equipmentId);
+        }
+        $res = $query->get();        
+        return $res ?: [];
+    }     
 }

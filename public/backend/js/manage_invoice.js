@@ -558,6 +558,63 @@ function uploadFile(app_id,id)
             return true;
         }
     });
+///////////////////////////////////////// change invoice amount////////////////
+    $(document).on('click', '.changeInvoiceProcessingFee', function () {
+
+        // var limit = $(this).attr('data-limit');
+        // var approveAmount = $(this).attr('data-approve').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        // var amount = $(this).attr('data-amount').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        var invoiceId = $(this).attr('data-id');
+        $("#invoice_id").val(invoiceId);
+        // $("#invoice_amount").val(amount);
+        // $("#invoice_approve_amount").val(approveAmount);
+
+    });
+
+///////////////////////////////////////// change invoice amount////////////////
+    $(document).on('click', '#UpdateInvoiceChrg', function () {
+
+        // var amount = parseFloat($("#invoice_amount").val().replace(/,/g, ''));
+        // var approveAmount = parseFloat($("#invoice_approve_amount").val().replace(/,/g, ''));
+        // if (approveAmount > amount)
+        // {
+        //     $(".model7msg").show();
+        //     $(".model7msg").html('Invoice Approve Amount should not greater amount');
+        //     return false;
+        // } else
+        // {
+        //     $(".model7msg").hide();
+        //     return true;
+        // }
+    });
+///////////////////////////////////////// change invoice tenor////////////////
+    $(document).on('click', '.changeInvoiceTenor', function () {
+
+        var tenor = $(this).attr('data-tenor').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        var offertenor = $(this).attr('data-offertenor').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        console.log(tenor);
+        var invoiceId = $(this).attr('data-id');
+        $("#tenor_invoice_id").val(invoiceId);
+        $("#invoice_tenor").val(tenor);
+        $("#offer_invoice_tenor").val(offertenor);
+
+    });
+
+///////////////////////////////////////// change invoice tenor////////////////
+    $(document).on('click', '#UpdateInvoiceTenor', function () {
+
+        var tenor = parseFloat($("#invoice_tenor").val().replace(/,/g, ''));
+        if (tenor > 365)
+        {
+            $(".model7msg").show();
+            $(".model7msg").html('Invoice Tenor should not greater 365 days');
+            return false;
+        } else
+        {
+            $(".model7msg").hide();
+            return true;
+        }
+    });
     
     
      ///////////////////////For Invoice Approve////////////////////////

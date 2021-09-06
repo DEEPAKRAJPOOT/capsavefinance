@@ -190,6 +190,20 @@ class DoaController extends Controller {
             ];
 
             $doa_level_id = $reqData['doa_level_id'] ? $reqData['doa_level_id'] : null;
+            if($doa_level_id != null) {
+                $where = [
+                    'level_name' => $reqData['level_name']
+                ];
+                $doa_id = [
+                    'doa_level_id' => $doa_level_id
+                ];                
+                $doaCheckNameExists = $this->masterRepo->getDoaNameEditCaseExists($where, $doa_id);
+                if($doaCheckNameExists > 0) {
+                    Session::flash('error', 'DOA Name already present.');
+                    return redirect()->back();
+                } 
+            }
+
             if (is_null($doa_level_id)) {
                 $whereCond = [
                     'city_id' => $reqData['city_id'],
@@ -206,6 +220,15 @@ class DoaController extends Controller {
                     Session::flash('is_data_found', '1');
                     return redirect()->back();
                 }
+
+                $where = [
+                    'level_name' => $reqData['level_name']
+                ];
+                $doaCheckNameExists = $this->masterRepo->getDoaNameExists($where);
+                if($doaCheckNameExists > 0) {
+                    Session::flash('error', 'DOA Name already present.');
+                    return redirect()->back();
+                }                
             }
 
             $lastInsertId = $this->masterRepo->saveDoaLevelData($data, $doa_level_id);

@@ -365,6 +365,8 @@ return [
         '4' => 'Negative',
         '5' => 'Cancelled',
         '6' => 'Refer to credit'
-    ]   
+    ],
+    'LENEVO_ANCHOR_ID' => '53',
+    'LENOVO_NEW_LEAD_CRON_MAIL_TO' => env('LENOVO_NEW_LEAD_CRON_MAIL_TO', ''),
 ];
  

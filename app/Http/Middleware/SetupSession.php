@@ -23,6 +23,10 @@ class SetupSession
                 config(['session.cookie' => config('proin.frontend_cookie_name')]);
                 config(['session.domain' => null]);
                 break;
+            case config('proin.lenevo_frontend_uri'):
+                config(['session.cookie' => config('proin.lenevo_frontend_cookie_name')]);
+                config(['session.domain' => null]);
+                break;
             case config('proin.backend_uri'):
                 config(['session.cookie' => config('proin.backend_cookie_name')]);
                 config(['session.domain' => null]);

@@ -204,6 +204,7 @@ function checkValidation(){
 	unsetError('input[name=biz_pin]');
 	unsetError('#check_block');
 	unsetError('input[name=share_holding_date]');
+        unsetError('input[name=busi_pan_comm_date]');
 	
 	unsetError('#product_type_1_loan');
 	unsetError('#product_type_2_loan');
@@ -254,6 +255,7 @@ function checkValidation(){
 	let biz_pin = $('input[name=biz_pin]').val().trim();
 	
 	let share_holding_date = $('input[name=share_holding_date]').val();
+        let busi_pan_comm_date = $('input[name=busi_pan_comm_date]').val();
 	let msme_type = $('select[name=msme_type]').val();
 	let msme_number = $('input[name=msme_no]').val().trim();
 
@@ -305,6 +307,11 @@ function checkValidation(){
 		flag = false;
 	}
 
+    //     if(busi_pan_comm_date == ''){
+	// 	setError('input[name=busi_pan_comm_date]', 'Date of commencement of business is required.');
+	// 	flag = false;
+	// }
+        
 	if(biz_constitution == ''){
 		setError('select[name=biz_constitution]', 'Business constitution is required');
 		flag = false;
@@ -346,7 +353,11 @@ function checkValidation(){
 		flag = false;
 	}
 	if(product_id_leasing && (loan_amount_leasing == 0 || Number.isNaN(loan_amount_leasing) == true )){
-		setError('#product_type_3_loan', 'Leasing Loan Amount is required');
+                if (messages.is_anchor_lenevo ==1){
+                    setError('#product_type_3_loan', 'Total value of Asset is required');
+                } else {
+                    setError('#product_type_3_loan', 'Leasing Loan Amount is required');
+                }
 		flag = false;
 	}
 

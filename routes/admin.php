@@ -66,6 +66,12 @@ Route::any(
         ]
     );
 
+    Route::any('api/change/year',[
+        'as' => 'api_change_year',
+        'uses' => 'Auth\ApiController@changeFinancialYear'
+        ]
+    );
+
 
 
     Route::group(['middleware' => []],

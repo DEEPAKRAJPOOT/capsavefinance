@@ -385,10 +385,10 @@ class InvoiceController extends Controller {
             $interest= 0;
             $margin= 0;
 
-            $tenor = $this->calculateTenorDays($value['invoice']);
+            // $tenor = $this->calculateTenorDays($value['invoice']);
             $margin = $this->calMargin($value['invoice']['invoice_approve_amount'], $value['margin']);
             $fundedAmount = $value['invoice']['invoice_approve_amount'] - $margin;
-            $tInterest = $this->calInterest($fundedAmount, (float)$value['interest_rate']/100, $tenor);
+            $tInterest = $this->calInterest($fundedAmount, (float)$value['interest_rate'], $tenor);
 
             if($value['invoice']['program_offer']['payment_frequency'] == 1) {
                 $interest = $tInterest;
@@ -410,6 +410,42 @@ class InvoiceController extends Controller {
                     $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], ['parent_trans_id' => $createTransaction->trans_id, 'link_trans_id' => $createTransaction->trans_id, 'amount' => $intrstAmt, 'trans_date' => $fundedDate, 'invoice_disbursed_id' => $value['invoice_disbursed_id']], config('lms.TRANS_TYPE.INTEREST'), 1);
                     $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
                 }
+            }
+
+            if ($value['processing_fee'] > 0.00) {
+                $transData['amount'] = $value['processing_fee'];
+                $chrgData = $this->appRepo->getInvoiceProcessingFeeCharge();
+                $getPercentage  = $this->lmsRepo->getLastGSTRecord();
+
+                if($getPercentage)
+                {
+                    $tax_value  = $getPercentage['tax_value'];
+                    $chid  = $getPercentage['tax_id'];
+                }
+                else
+                {
+                    $tax_value  =0; 
+                    $chid  = 0;
+                }
+                $fWGst = $value['processing_fee_gst'];
+                
+                $transData['invoice_disbursed_id'] = $value['invoice_disbursed_id'];
+                $transData['trans_mode']  = 1;
+                $transData['trans_date'] = $fundedDate;
+                if($chrgData->is_gst_applicable == 1) {
+                    $transData['amount'] += $fWGst;
+                    $transData['base_amt'] = $value['processing_fee'];
+                    $transData['chrg_gst_id']  = $chid;
+                    $transData['gst_amt']  = $tax_value;
+                    $transData['gst'] = 1;
+                }
+                $intrstDbtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], $transData, config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'));
+                $createTransaction = $this->lmsRepo->saveTransaction($intrstDbtTrnsData);
+
+                $transData['parent_trans_id'] = $createTransaction->trans_id;
+                $transData['link_trans_id'] = $createTransaction->trans_id;
+                $intrstCdtTrnsData = $this->createTransactionData($value['disbursal']['user_id'], $transData, config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE'), 1);
+                $createTransaction = $this->lmsRepo->saveTransaction($intrstCdtTrnsData);
             }
 
             // Margin transaction $tranType = 10
@@ -662,11 +698,11 @@ class InvoiceController extends Controller {
             }
 
             $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
-
             $fundedAmount = 0;
             $interest = 0;
             $disburseAmount = 0;
             $totalInterest = 0;
+            $totalProcessingFee = 0;
             $totalFunded = 0;
             $totalMargin = 0;
             $exportData = [];
@@ -683,12 +719,39 @@ class InvoiceController extends Controller {
                     if($invoice['supplier_id'] == $userid) {
                         
                         $interest= 0;
+                        $processingFee= 0;
                         $margin= 0;
 
                         $tenor = $this->calculateTenorDays($invoice);
                         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-                        $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+                        if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$disburseDate)) {
+                            $str_to_time_date = strtotime($disburseDate);
+                        } else {
+                            $str_to_time_date = strtotime(\Carbon\Carbon::createFromFormat('d/m/Y', $disburseDate)->setTimezone(config('common.timezone'))->format('Y-m-d'));
+                        }
+                        $bankId = $invoice['program_offer']['bank_id'];
+                        $oldIntRate = $invoice['program_offer']['interest_rate'] - $invoice['program_offer']['base_rate'];
+                        $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
+                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                        $bankRatesArr = $Obj->getBankBaseRates($bankId);
+                        if ($bankRatesArr && $invoice['is_adhoc'] != 1) {
+                          $actIntRate = $Obj->getIntRate($oldIntRate, $bankRatesArr, $str_to_time_date);
+                        } else {
+                          $actIntRate = $interestRate;
+                        }
+                        if ($invoice['program_offer']['benchmark_date'] == 1) {
+                            $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
+                        }
+
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
+                        // if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
+                        //     $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
+                        // } else {
+                        //     $processingFee = $invoice['processing_fee']['chrg_value'];
+
+                        // }
+                        $processingFee = $invoice['processing_fee']['gst_chrg_value'];
 
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -700,7 +763,7 @@ class InvoiceController extends Controller {
 
                         $totalInterest += $interest;
                         $totalMargin += $margin;
-                        $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
+                        $amount = round($fundedAmount - $interest - $processingFee, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                         $disburseAmount += $amount;
 
 
@@ -717,7 +780,7 @@ class InvoiceController extends Controller {
                     $acc_no = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_no'] : $userData['supplier_bank_detail']['acc_no'];
                     $acc_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_name'] : $userData['supplier_bank_detail']['acc_name'];
                     $exportData[$userid]['RefNo'] = $refNo;
-                    $exportData[$userid]['Amount'] = $disburseAmount;
+                    $exportData[$userid]['Amount'] = "$disburseAmount";
                     $exportData[$userid]['Debit_Acct_No'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NO'];
                     $exportData[$userid]['Debit_Acct_Name'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_ACC_NAME'];
                     $exportData[$userid]['Debit_Mobile'] = config('lms.IDFC_DEBIT_BANK')['DEBIT_MOBILE'];
@@ -821,7 +884,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         $file['file_path'] = $result['file_path'] ?? '';
         $disbusalApiLogData = [];
         $whereCondition = [];
-
         if ($file) {
             $createBatchFileData = $this->createBatchFileData($file);
             $createBatchFile = $this->lmsRepo->saveBatchFile($createBatchFileData);
@@ -849,11 +911,25 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             foreach ($allinvoices as $invoice) {
                 if($invoice['supplier_id'] == $userid) {
                     $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
-
+                    $interest= 0;
+                    $margin= 0;
+                    $tenor = $this->calculateTenorDays($invoice);
+                    $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
+                    $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                     if (empty($invoiceDisbursedData)) {
+                        $processingFee= 0;
+                        if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
+                            $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
+                        } else {
+                            $processingFee = $invoice['processing_fee']['chrg_value'];
+                        }
+                        $processingFeeGst = $invoice['processing_fee']['gst_chrg_value'] - $processingFee;
+
                         $invoice['batch_id'] = $batchId;
                         $invoice['disburse_date'] = $disburseDate;
                         $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
+                        $invoice['processing_fee'] = $processingFee ?? 0;
+                        $invoice['processing_fee_gst'] = $processingFeeGst ?? 0;
                        
                         $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
                         $createInvoiceDisbursed = $this->lmsRepo->saveUpdateInvoiceDisbursed($invoiceDisbursedRequest);
@@ -862,13 +938,27 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                    
                     $updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
                     $this->invRepo->saveInvoiceStatusLog($invoice['invoice_id'], 10);
-                    $interest= 0;
-                    $margin= 0;
-
-                    $tenor = $this->calculateTenorDays($invoice);
-                    $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
-                    $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-                    $tInterest = $this->calInterest($fundedAmount, (float)$invoice['program_offer']['interest_rate']/100, $tenor);
+                    if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$disburseDate)) {
+                        $str_to_time_date = strtotime($disburseDate);
+                    } else {
+                        $str_to_time_date = strtotime(\Carbon\Carbon::createFromFormat('d/m/Y', $disburseDate)->setTimezone(config('common.timezone'))->format('Y-m-d'));
+                    }
+                    $bankId = $invoice['program_offer']['bank_id'];
+                    $oldIntRate = $invoice['program_offer']['interest_rate'] - $invoice['program_offer']['base_rate'];
+                    $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
+                    $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                    $bankRatesArr = $Obj->getBankBaseRates($bankId);
+                    if ($bankRatesArr && $invoice['is_adhoc'] != 1) {
+                      $actIntRate = $Obj->getIntRate($oldIntRate, $bankRatesArr, $str_to_time_date);
+                    } else {
+                      $actIntRate = $interestRate;
+                    }
+                    $banchMarkDateFlag = $invoice['program_offer']['benchmark_date'];
+        
+                    if ($banchMarkDateFlag == 1) {
+                        $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
+                    }
+                    $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
 
                     $prgmWhere=[];
                     $prgmWhere['prgm_id'] = $invoice['program_id'];
@@ -880,9 +970,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
                     $totalInterest += $interest;
                     $totalMargin += $margin;
-                    $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
+                    $amount = round($fundedAmount - $interest - $processingFee - $processingFeeGst, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                     $disburseAmount += $amount;
-
                 }
             }
            
@@ -953,6 +1042,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $interest = 0;
             $disburseAmount = 0;
             $totalInterest = 0;
+            $totalProcessingFee = 0;
             $totalFunded = 0;
             $totalMargin = 0;
             $exportData = [];
@@ -983,8 +1073,14 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $tenor = $this->calculateTenorDays($invoice);
                         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
-                        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
-
+                        $banchMarkDateFlag = $invoice['program_offer']['benchmark_date'];
+        
+                        if ($banchMarkDateFlag == 1) {
+                            $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
+                        }
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
+                        
+                        $processingFee = $invoice['processing_fee']['gst_chrg_value'] ?? 0;
                         $prgmWhere=[];
                         $prgmWhere['prgm_id'] = $invoice['program_id'];
                         $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);   
@@ -992,10 +1088,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
-
                         $totalInterest += $interest;
                         $totalMargin += $margin;
-                        $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
+                        $amount = round($fundedAmount - $interest - $processingFee, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                         $disburseAmount += $amount;
 
 
@@ -1055,10 +1150,26 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $invoiceDisbursedData = $this->lmsRepo->findInvoiceDisbursedByInvoiceId($invoice['invoice_id'])->toArray();
 
                         if ($invoiceDisbursedData == null) {
+                            $processingFee= 0;
                             $invoice['batch_id'] = $batchId;
                             $disburseNewDate = \Carbon\Carbon::createFromFormat('d/m/Y', $disburseDate)->setTimezone(config('common.timezone'))->format('Y-m-d');
                             $invoice['disburse_date'] = $disburseNewDate;
                             $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
+                            if ($bankRatesArr && $invoice['is_adhoc'] != 1) {
+                              $actIntRate = $Obj->getIntRate($oldIntRate, $bankRatesArr, $str_to_time_date);
+                            } else {
+                              $actIntRate = $interestRate;
+                            }
+                            if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
+                                $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
+                            } else {
+                                $processingFee = $invoice['processing_fee']['chrg_value'];
+
+                            }
+                            $processingFeeGst = $invoice['processing_fee']['gst_chrg_value'] - $processingFee;
+                            $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
+                            $invoice['processing_fee'] = $processingFee;
+                            $invoice['processing_fee_gst'] = $processingFeeGst;
                             
                             $invoiceDisbursedRequest = $this->createInvoiceDisbursedData($invoice, $disburseType);
                             $createInvoiceDisbursed = $this->lmsRepo->saveUpdateInvoiceDisbursed($invoiceDisbursedRequest);
@@ -1093,16 +1204,16 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         if ($banchMarkDateFlag == 1) {
                             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $fundDate);
                         }
-
-                        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
 
                         if(isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
                             $interest = $tInterest;
                         }
 
                         $totalInterest += $interest;
+                        $totalProcessingFee += $processingFee;
                         $totalMargin += $margin;
-                        $amount = round($fundedAmount - $interest, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
+                        $amount = round($fundedAmount - $interest - $processingFee - $processingFeeGst, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
                         $disburseAmount += $amount;
 
                         
@@ -1586,6 +1697,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $sysDate =  \Helpers::getSysStartDate();
             date_default_timezone_set("Asia/Kolkata");
             $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
+            $disburseDate = date("Y-m-d", strtotime($data->disbursalOne->disburse_date));
             $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
             $transId = $reqData['txn_id'];
             // $transId = '2RGIK4436OUMXHZGXH';
@@ -1593,10 +1705,12 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
             $transDisbursalIds = [];
             $tranNewIds = [];
-            // dd($data);
             if (!isset($data) || empty($data)) {
                 return redirect()->route('backend_get_disbursal_batch_request')->withErrors('Something went wrong please try again.');
-            } else {
+            } elseif ($fundedDate != $disburseDate) {
+                return redirect()->route('backend_get_disbursal_batch_request')->withErrors('funded date can not marked '.$fundedDate.'.');
+            } 
+             else {
                 $data = $data->toArray();
             }
 
@@ -1675,11 +1789,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                                 
                                 if ($value['RefStatus'] == 'SUCCESS') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['DISBURSED'];
-                                } else if($value['RefStatus'] == 'Pending for Authorization') {
+                                } else if($value['RefStatus'] == 'Pending for Authorization' || $value['RefStatus'] == 'Pending Auth' || $value['RefStatus'] == 'UNDER PROCESS') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'];
-                                } else if($value['RefStatus'] == 'REJECT') {
-                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
-                                } else if($value['RefStatus'] == 'Rejected by Checker') {
+                                } else if($value['RefStatus'] == 'Rejected by Checker' || $value['RefStatus'] == 'Rejected' || $value['RefStatus'] == 'Rejected by Authorizer' || $value['RefStatus'] == 'Rejected online' || $value['RefStatus'] == 'Cancelled') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
                                 } else if($value['RefStatus'] == 'FAILED') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED'];
@@ -1694,7 +1806,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                                     ], ['ref_no' => $value['RefNo']]);
                                 // dd($transDisbursalIds);
                                 foreach ($transDisbursalIds as $key => $value1) {
-                                    $this->lmsRepo->createDisbursalStatusLog($value1, $disburseStatus, 'online disbursed', $createdBy);
+                                    $this->lmsRepo->createDisbursalStatusLog($value1, $disburseStatus, '', $createdBy);
                                     
                                     $invoiceDisburseIds = $this->lmsRepo->findInvoiceDisburseByDisbursalId(['disbursal_id' => $value1])->toArray();
                                     $updateInvoiceDisburseStatus = $this->lmsRepo->updateInvoiceDisburseStatus($invoiceDisburseIds, $disburseStatus);
@@ -1760,5 +1872,223 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
 
+    }
+
+    public function rollbackDisbursalBatchRequest(Request $request)
+	{
+		try 
+        {
+            $disbursalIdsArr = [];
+            $invoiceIdsArr = [];
+            if($request->has('disbursal_batch_id')){
+                $disbursalBatchId = $request->get('disbursal_batch_id');
+            }
+            
+            if($disbursalBatchId && is_numeric($disbursalBatchId)){
+                $disbursalBatchData = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
+                $disbursalData = $this->lmsRepo->getDisbursalByDBId($disbursalBatchId);
+                foreach($disbursalData as $data){
+                    $disbursalIdsArr[] = $data->disbursal_id;
+                }
+                $disbursedInvoices = $this->lmsRepo->getInvoiceDisbursed($disbursalIdsArr);
+                foreach($disbursedInvoices as $data){
+                    $invoiceIdsArr[] = $data->invoice_id;
+                }
+
+                
+                if($disbursalBatchData && $disbursalData && $disbursedInvoices){
+                    
+                    $this->lmsRepo->deleteInvoiceStatusLogByInvIdArr($invoiceIdsArr);
+                    foreach($invoiceIdsArr as $invoice_id){
+                        $this->lmsRepo->updateInvoiceStatus($invoice_id, 9);
+                    }
+                    $this->lmsRepo->deleteInvoiceDisbursed($disbursalIdsArr);
+                    $this->lmsRepo->deleteDisbursalStatusLogByDidArr($disbursalIdsArr);
+                    $this->lmsRepo->deleteDisbursalByDBId($disbursalBatchId);
+                    $this->lmsRepo->deleteDisbursalBatchByDBId($disbursalBatchId);
+                    
+                    Session::flash('message', 'Online disbursal successfully rollbacked');
+                    return redirect()->route('backend_get_disbursal_batch_request');
+                }
+                
+                Session::flash('message', 'Record Not Found / Already deleted!');
+                return redirect()->route('backend_get_disbursal_batch_request');
+            }            
+            
+            Session::flash('error', 'Invalid Request');
+            return redirect()->route('backend_get_disbursal_batch_request');
+        } catch (Exception $ex) {
+			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+		}  
+	}
+
+    public function onlineDisbursalRollback(Request $req) {
+        try {
+            
+            if ($req->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+
+            $tInv = 0;
+            $appId = '';
+            $userId = '';
+            $invNo = [];
+            $idfc_res_text = '';
+            $disbursalBatchId = $req->get('disbursal_batch_id');
+            $disbursalBatchData = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
+            if(isset($disbursalBatchData->disbursal_api_log) && !empty($disbursalBatchData->disbursal_api_log)){
+                $latestData = $disbursalBatchData->disbursal_api_log;
+                $idfc_res_text = $latestData->res_text;
+            }
+            $disbursal = $disbursalBatchData->disbursal;
+            $tCust = $disbursal->count();
+            $tAmt = number_format($disbursal->sum('disburse_amount'),2);
+            foreach($disbursal as $data){
+                foreach($data->invoice_disbursed as $invData) {
+                    $invNo[] = $invData->invoice->invoice_no ?? '';
+                    $appId = $invData->invoice->lms_user->app_id ?? '';
+                }
+                $tInv += $data->invoice_disbursed->count();
+                $userId = $data->user_id;
+            }
+            
+            $invNoString = implode(', ',$invNo); 
+            if($appId){
+                $appData = $this->appRepo->getAppDataByAppId($appId); 
+            }
+            $custName = HelperS::getUserInfo($userId);
+            $fullCustName = $custName->f_name." ".$custName->l_name;
+
+            return view('backend.invoice.online_disbursal_rollback')->with(['disbursal_batch_id' => $disbursalBatchId, 'fullCustName' => $fullCustName, 'invNoString' => $invNoString, 'tInv' => $tInv, 'tAmt' => $tAmt, 'tCust' => $tCust, 'appId' => $appData->app_code ?? '', 'res_text' => $idfc_res_text]);
+            } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    /**
+     * Display a pop up iframe for disburse check
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function iframeUpdateInvoiceChrg(Request $request)
+    {
+        $invoiceId = $request->get('invoice_id');
+        $invoiceData = $this->invRepo->getInvoiceById($invoiceId);
+        $chargeData = $this->invRepo->getInvoiceProcessingFee(['invoice_id' =>$invoiceId]);
+        $offerData = $this->appRepo->getOfferData(['prgm_offer_id' =>$invoiceData->prgm_offer_id]);
+        $chrgData = $this->appRepo->getInvoiceProcessingFeeCharge();
+        $getPercentage  = $this->lmsRepo->getLastGSTRecord();
+
+        $tax_value  =0; 
+
+        if(!isset($chargeData->chrg_value) && $offerData->invoice_processingfee_value) {
+            $valueAmt = $offerData->invoice_processingfee_value;
+        } else if (isset($chargeData->chrg_value) && $chargeData->chrg_value) {
+            $valueAmt = $chargeData->chrg_value;
+        }
+
+        if(!isset($chargeData->chrg_type) && $offerData->invoice_processingfee_type == 1) {
+            $typeFlag = 1;
+        } else if (isset($chargeData->chrg_type) && $chargeData->chrg_type == 1 ) {
+            $typeFlag = 1;
+        } else if(!isset($chargeData->chrg_type) && $offerData->invoice_processingfee_type == 2) {
+            $typeFlag = 2;
+        } else if (isset($chargeData->chrg_type) && $chargeData->chrg_type == 2 ) {
+            $typeFlag = 2;
+        }
+        $marginAmt = $this->calMargin($invoiceData->invoice_approve_amount, $invoiceData->program_offer->margin);
+        $principleAmt = $invoiceData->invoice_approve_amount - $marginAmt;
+        if (isset($typeFlag) && $typeFlag == 2) {
+            $processingFee = $this->calPercentage($principleAmt, $valueAmt);
+        } else {
+            $processingFee = $valueAmt;
+        }
+
+        if($chrgData->is_gst_applicable == 1) {
+            if($getPercentage)
+            {
+                $tax_value  = $getPercentage['tax_value'];
+            }
+            else
+            {
+                $tax_value  =0; 
+            }
+        }
+
+        $fWGst = round((($processingFee*$tax_value)/100),2);
+        $gstChrgValue = $processingFee + $fWGst;
+        // dd($invoiceData, $marginAmt);
+        return view('backend.invoice.update_invoice_charge')
+                ->with([
+                    'invoiceId' => $invoiceId,
+                    'chargeData' => $chargeData,
+                    'offerData' => $offerData,
+                    'chrgData' => $chrgData,
+                    'gstChrgValue' => $gstChrgValue,
+                    'invoiceData' => $invoiceData,
+                    'marginAmt' => $marginAmt,
+                    'getPercentage' => $getPercentage,
+                    'processingFee' => $processingFee,
+                ]);;              
+    }
+
+    /* update invoice amount  */
+
+    public function saveInvoiceProcessingFee(Request $request) {
+        $id = Auth::user()->user_id;
+        $invoiceId = $request->invoice_id;
+        $data['charge_id'] = 12; // processing fee charge id
+        $data['chrg_value'] = $request->chrg_value;
+        $data['chrg_type'] = $request->chrg_type;
+        $data['gst_chrg_value'] = $request->invoice_gst_chrg_value;
+        $data['is_active'] = 1;
+        $data['deductable'] = 1;
+
+        $invoiceData = $this->invRepo->getInvoiceById($invoiceId);
+        
+        if($request->chrg_type == 2&& $data['chrg_value'] > 50) {
+            Session::flash('message', 'Charge value can not be greater than 50%.');
+            return redirect()->route('backend_get_approve_invoice');
+        }  
+        if($request->chrg_type == 1&& $data['chrg_value'] > $invoiceData->invoice_approve_amount) {
+            Session::flash('message', 'Charge value can not be greater than invoice approve amount. ');
+            return redirect()->route('backend_get_approve_invoice');
+        }                
+        // $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+        // $data['created_by'] = Auth::user()->user_id;
+        // $data['created_at'] = $curData;
+
+        $res = $this->invRepo->updateInvoiceCharge($data, $invoiceId);
+
+       if ($res) {
+            Session::flash('message', 'processing fee successfully Updated ');
+            return redirect()->route('backend_get_approve_invoice');
+        } else {
+            Session::flash('message', 'Something wrong, Tenor is not Updated');
+            return redirect()->route('backend_get_approve_invoice');
+        }
+    }
+
+    public function saveInvoiceTenor(Request $request) {
+        $id = Auth::user()->user_id;
+        $data['tenor'] = $request->tenor_invoice_tenor;
+        $data['is_tenor_mannual'] = 1;
+        $invoiceId = $request->tenor_invoice_id;
+        $invoiceDetail = $this->invRepo->getInvoiceById($invoiceId);
+        $data['invoice_due_date'] = date('Y-m-d', strtotime(str_replace('/','-',$invoiceDetail->invoice_date). "+ $request->tenor_invoice_tenor Days"));
+        if (strtotime($data['invoice_due_date']) <= strtotime(date("Y-m-d"))) {
+            Session::flash('message', 'Invoice due date should be greater than current date.');
+            return back();
+        }
+        $res = $this->invRepo->updateInvoiceTenor($data, $invoiceId);
+        
+       if ($res) {
+            Session::flash('message', 'Invoice Tenor successfully Updated ');
+            return back();
+        } else {
+            Session::flash('message', 'Something wrong, Tenor is not Updated');
+            return back();
+        }
     }
 }

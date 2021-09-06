@@ -88,6 +88,9 @@ class AppProgramOffer extends BaseModel {
         'ruby_sheet_xirr',
         'cash_flow_xirr',
         'addl_security',
+        'is_invoice_processingfee',
+        'invoice_processingfee_type',
+        'invoice_processingfee_value',
         'comment',
         'is_approve',
         'payment_frequency',
@@ -641,5 +644,9 @@ class AppProgramOffer extends BaseModel {
         }
         $query->where($whereCond);
         return $query->count();
+    }
+    
+    public function BizInvoice(){
+        return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice', 'prgm_offer_id', 'prgm_offer_id');
     }    
 }

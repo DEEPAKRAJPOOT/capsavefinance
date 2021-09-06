@@ -75,6 +75,7 @@ class Payment extends BaseModel {
         'generated_by',
         'sys_created_at',
         'sys_updated_at',
+        'payment_excel_id',
         'created_at',
         'created_by',
         'updated_at',
@@ -95,7 +96,7 @@ class Payment extends BaseModel {
     }
 
     public function transaction(){
-        return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','payment_id','payment_id');
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions','payment_id','payment_id');
     }
     
     public function creator(){
@@ -147,8 +148,7 @@ class Payment extends BaseModel {
                 $res = $res->orderBy($key, $val);
             }
         }
-        $res = $res->get();
-        return $res->isEmpty() ? [] :  $res;
+        return $res;
     }
 
 
@@ -239,12 +239,14 @@ class Payment extends BaseModel {
         ->where('is_settled','1')->max('date_of_payment');
         
         $validPayment = self::where('user_id',$this->user_id)
-        ->where('is_settled','0')
-        ->where('action_type','1');
+        ->where('is_settled','0');
+        //->whereIn('action_type',['1','5']);
 
         if($lastSettledPaymentDate){
-            $validPayment = $validPayment->whereDate('date_of_payment','>=',$lastSettledPaymentDate);
-            if(strtotime($lastSettledPaymentDate) > strtotime($this->date_of_payment)){
+            $date_of_payment = date('Y-m-d', strtotime($this->date_of_payment));
+            $lastSettledPaymentDate = date('Y-m-d', strtotime($lastSettledPaymentDate));
+            $validPayment = $validPayment->where('date_of_payment','>=',$lastSettledPaymentDate);
+            if(strtotime($lastSettledPaymentDate) > strtotime($date_of_payment)){
                 $error = 'Invalid Payment: The backdated payment from the last settled payment!';
             }
         }
@@ -286,4 +288,24 @@ class Payment extends BaseModel {
         }
         return $query;
     }
+
+    /**
+     * get Payment data list
+     * 
+     * @return type mixed
+     */
+    public static function checkTdsCertificate($tdsCertiName, $id=null)
+    {
+        $query = self::select('payment_id')
+                ->where('tds_certificate_no', $tdsCertiName);
+                // ->where(function($q) use($tdsCertiName) {
+                //     $search_keyword = trim($tdsCertiName);
+                //     $q->where('tds_certificate_no', 'like', "%$search_keyword%");
+                // });
+        if (!is_null($id)) {
+            $query->where('payment_id', '!=', $id);
+        }
+        $res = $query->get();        
+        return $res ?: [];
+    }   
 }

@@ -27,10 +27,11 @@ return [
        'NON_FACTORED_AMT' => '35',
        'WAVED_OFF'=>'36',
        'WRITE_OFF'=>'37',
+       'INVOICE_PROCESSING_FEE' => '62',
         /*
+       'PROCESSING_FEE' => '51',
         'PAYMENT_RECEIVED' => '1',
         'DISCOUNT_ON_PAYMENT' => '3',
-        'PROCESSING_FEE' => '4',
         'CHEQUE_BOUNCE'=>'5',
         'LOAN_DISBURSED'=>'6',
         'INCOME'=>'8',
@@ -246,4 +247,18 @@ return [
     'CURLOPT_SSLKEY_FILE' => env('CURLOPT_SSLKEY_FILE', ''),
     'CURLOPT_CAINFO_FILE' => env('CURLOPT_CAINFO_FILE', ''),
     'UAT_ACTIVE' => env('UAT_ACTIVE', ''),
+    'mst_status_invoice' => [
+        'PENDING'=>7,
+        'APPROVED'=>8,
+        'DISBURSMENT_QUE'=>9,
+        'SENT_TO_BANK'=>10,
+        'FAILED_DISBURSMENT'=>11,
+        'DISBURSED'=>12,
+        'PARTIALLY_PAYMENT_SETTLED'=>13,
+        'REJECT'=>14,
+        'PAYMENT_SETTLED'=>15,
+        'EXCEPTION_CASE' => 28
+    ],
+    'INVOICE_MATURITY_ALERT_DAYS' => 7,
+    'SAC_CODE_FOR_INT_INVOICE' => '997119',
 ];

@@ -34,6 +34,7 @@ use App\Inv\Repositories\Models\Master\BaseRate;
 use App\Inv\Repositories\Models\Master\Activity;
 use App\Inv\Repositories\Models\Master\ChargeGST;
 use App\Inv\Repositories\Models\Master\Tds;
+use App\Inv\Repositories\Models\Master\Voucher;
 
 
 /**
@@ -833,5 +834,60 @@ class MasterRepository extends BaseRepositories implements MasterInterface
 
     public function saveBank($attributes, $id = null){
         return Bank::saveBank($attributes, $id);
+    }
+
+    // Check Docuement Exists or not
+    public function checkDocumentExist($where){
+        return Documents::checkDocumentExist($where);
+    }
+
+    // Check Docuement Exists in case of Edit
+    public function checkDocumentExistEditCase($where, $document_id){
+        return Documents::checkDocumentExistEditCase($where, $document_id);
+    }
+
+    // Check DOA name exists
+    public function getDoaNameExists($where){
+        return DoaLevel::getDoaNameExists($where);
+    }
+
+    // Check DOA name exists in Edit case
+    public function getDoaNameEditCaseExists($where, $doa_id){
+        return DoaLevel::getDoaNameEditCaseExists($where, $doa_id);
+    }
+
+    // Check DOA name exists in Edit case
+    public function checkIndustryName($IndustryName, $industryId){
+        return Industry::checkIndustryName($IndustryName, $industryId);
+    }
+
+    // Check DOA name exists in Edit case
+    public function checkVoucherName($voucherName){
+        return Voucher::checkVoucherName($voucherName);
+    }
+
+    // Check Segment name exists in Edit case
+    public function checkSegmentName($segmentName, $segmentId){
+        return Segment::checkSegmentName($segmentName, $segmentId);
+    }
+
+    // Check Entity name exists in Edit case
+    public function checkEntityName($entityName, $entitytId){
+        return Entity::checkEntityName($entityName, $entitytId);
+    }
+
+    // Check Constution name exists in Edit case
+    public function checkConsitutionName($constiName, $constitId){
+        return Constitution::checkConsitutionName($constiName, $constitId);
+    }
+
+    // Check Equipment name exists in Edit case
+    public function checkEquipmentName($equipmentName, $equipmentId){
+        return Equipment::checkEquipmentName($equipmentName, $equipmentId);
+    }
+
+    // Check Bank name exists in Edit case
+    public function checkBankName($bankName, $banktId) {
+        return Bank::checkBankName($bankName, $banktId);
     }
 }

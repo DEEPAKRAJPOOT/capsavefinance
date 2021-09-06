@@ -171,10 +171,10 @@ class ApplicationController extends Controller
 				Session::flash('message',trans('success_messages.update_company_detail_successfully'));
 				return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId]);
 			} else {
-				return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+				return redirect()->back()->withInput()->withErrors(trans('auth.oops_something_went_wrong'));
 			}
 		} catch (Exception $ex) {
-			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+			return redirect()->back()->withInput()->withErrors(Helpers::getExceptionMessage($ex));
 		}
 	}
 
@@ -252,7 +252,6 @@ class ApplicationController extends Controller
 				$appId = $arrFileData['app_id']; 
 				$appData = $this->appRepo->getAppDataByAppId($appId);               
 				$userId = $appData ? $appData->user_id : null;     
-				
 				$prgmDocsWhere = [];
 				$prgmDocsWhere['stage_code'] = 'doc_upload';
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
@@ -336,6 +335,7 @@ class ApplicationController extends Controller
 					
 				} else {
 					$appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+					$appDocData['is_ovd_enabled'] = 1;
 					$appDocResponse = $this->docRepo->saveAppDoc($appDocData);
 					$fileId = $appDocResponse->file_id;
 					$response = $this->docRepo->getFileByFileId($fileId);
@@ -609,15 +609,15 @@ class ApplicationController extends Controller
                                     if ($appData && in_array($appData->app_type, [1,2,3]) ) {
                                         $parentAppId = $appData->parent_app_id;
                                         $actualEndDate = $curDate;
-                                        //$appLimitData = $this->appRepo->getAppLimitData(['user_id' => $userId, 'app_id' => $parentAppId]);
-                                        //if (in_array($appType, [2,3])) {
-                                        //    $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
-                                        //    $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
-                                        //}
-//                                        $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
-//                                        $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
-//                                        $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
-//                                        \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                    
+                                        $appLimitData = $this->appRepo->getAppLimitData(['user_id' => $userId, 'app_id' => $parentAppId]);
+                                        if (in_array($appData->app_type, [2,3])) {
+                                           $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
+                                           $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
+                                        }
+                                       $this->appRepo->updateAppData($parentAppId, ['status' => 3, 'is_child_sanctioned' => 1]);
+                                       $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
+                                       $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
+                                       \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));
                                     }            
                                     /*
                                     if (!is_null($appLimitId)) {
@@ -954,16 +954,16 @@ class ApplicationController extends Controller
                                 if ($appData && in_array($appData->app_type, [1,2,3]) ) {
                                     $parentAppId = $appData->parent_app_id;
                                     $actualEndDate = $curDate;
-                                    $appLimitData = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $parentAppId]);
+                                    /*$appLimitData = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $parentAppId]);
                                     if (in_array($appData->app_type, [2,3])) {
                                         $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
                                         $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
                                     }
                                     
-                                    $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
                                     $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
                                     $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
-                                    \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                    
+                                    \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));*/                                    
+                                    $this->appRepo->updateAppData($parentAppId, ['is_child_sanctioned' => 2]);
                                 }
                                 
         		if (!is_null($appLimitId)) {
@@ -2022,6 +2022,14 @@ class ApplicationController extends Controller
 		try {
 			$fileId = $request->file_id;
 			$fileId = $request;
+
+			$where = [
+				'app_id' => $fileId['app_id'],
+				'biz_owner_id' => $fileId['owner_id'],
+				'doc_id' => $fileId['doc_id'],
+				'file_id' => $fileId['file_id']
+			];
+			$this->docRepo->disableIsOVD($where);
 			$response = $this->docRepo->deleteFile($fileId);
 			
 			if ($response) {
@@ -2128,7 +2136,13 @@ class ApplicationController extends Controller
                     ];
 			
                     $this->appRepo->updateAppDetails($app_id,  $arrUpdateApp);
-                    
+                    if (in_array($appStatus, ['APP_REJECTED', 'APP_CANCEL'])) {
+                    	$updtData = [
+                    		'status' => 2, 
+                    		'is_active' => 0,
+                    	];
+                    	$this->appRepo->updateOfferByAppId($app_id, $updtData);
+                    }
                     
                     $appStatusList = Helpers::getAppStatusList();
                     $arrActivity = [];

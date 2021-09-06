@@ -69,6 +69,7 @@ use App\Inv\Repositories\Models\UserNach;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReq;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReqBatch;
 use App\Inv\Repositories\Models\Lms\NachTransReq;
+use App\Inv\Repositories\Models\InvoiceStatusLog;
 
 /**
  * Lms Repository class
@@ -293,7 +294,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function getInvoices($invoiceIds)
 	{
 		return BizInvoice::whereIn('invoice_id', $invoiceIds)
-			   ->with(['program_offer','lms_user' , 'supplier.anchor_bank_details.bank', 'supplier_bank_detail.bank', 'program'])
+			   ->with(['program_offer','lms_user' , 'supplier.anchor_bank_details.bank', 'supplier_bank_detail.bank', 'program', 'processing_fee'])
 			   ->get();
 	}  
 
@@ -326,7 +327,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function lmsGetInvoiceClubCustomer($userIds, $invoiceIds)
 	{
 	  
-		return $data =  LmsUser::with(['bank_details.bank', 'app.invoices.program_offer', 'user.anchor_bank_details.bank', 'app.invoices.program'])
+		return $data =  LmsUser::with(['bank_details.bank', 'app.invoices.program_offer', 'user.anchor_bank_details.bank', 'app.invoices.program', 'app.invoices.processing_fee'])
 				->with(['app.invoices' => function ($query) use($invoiceIds) {
 					  if (!empty($invoiceIds)) { 
 						  $query->whereIn('invoice_id', $invoiceIds);
@@ -1235,6 +1236,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			$response['case'] = $invDisbursed->invoice->program_offer->payment_frequency;
 			$response['is_settled'] = false;
 			$response['receipt'] = 0;
+			$response['principal_repayment_amt'] = 0;
 
 			$transactions = Transactions::whereNull('parent_trans_id')
 			->whereNull('payment_id')
@@ -1260,7 +1262,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 							'trans_running_id' => $transRunning->trans_running_id,
 							'amount'=> $transRunning->amount,
 							'outstanding'=>$transRunning->outstanding,
-							'trans_date'=>$transRunning->trans_date
+							'trans_date'=>$transRunning->trans_date,
+							'payment_frequency'=>$transRunning->invoiceDisbursed->invoice->program_offer->payment_frequency,
+							'interest_borne_by'=>$transRunning->invoiceDisbursed->invoice->program->interest_borne_by,
 						];
 						break;
 					case config('lms.TRANS_TYPE.INTEREST_OVERDUE'):
@@ -1289,7 +1293,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 							'trans_id' => $trans->trans_id,
 							'amount'=> $trans->amount,
 							'outstanding'=>$trans->outstanding,
-							'trans_date'=>$trans->trans_date
+							'trans_date'=>$trans->trans_date,
+							'payment_frequency'=>$trans->invoiceDisbursed->invoice->program_offer->payment_frequency,
+							'interest_borne_by'=>$trans->invoiceDisbursed->invoice->program->interest_borne_by,
+							'trans_running_id' => $trans->trans_running_id,
 						];
 						break;
 					case config('lms.TRANS_TYPE.MARGIN'):
@@ -1314,11 +1321,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			foreach($response['principal'] as $val){
 				$response['payment'] += (float) $val['amount'];
 				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
+				$response['principal_repayment_amt'] += (float) $val['amount'] - (float) $val['outstanding'];
 			}
 			
 			foreach($response['interest'] as $val){
 				$response['payment'] += (float) $val['amount'];
 				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
+				// if($val['payment_frequency'] == 1 && $val['interest_borne_by'] == 1 && $val['trans_running_id'] == NULL)
+				// {
+				// 	$response['principal_repayment_amt'] += (float) $val['amount'] - (float) $val['outstanding'];
+				// }
 			}
 
 			foreach($response['overdue'] as $val){
@@ -1327,7 +1339,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			}
 			
 			foreach($response['margin'] as $val){
-				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
+				//$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
 			}
 
 			if($response['payment'] <= $response['receipt']){
@@ -1613,9 +1625,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      */
 	public function getdisbursalBatchByDBId($disbursalBatchId)
 	{
-		return DisbursalBatch::with('disbursal_api_log')
+		return DisbursalBatch::with('disbursal_api_log', 'disbursalOne')
 				->where('disbursal_batch_id', $disbursalBatchId)
 				->where('batch_status', 1)
+				->latest()
 				->first();
 	}
 
@@ -1772,4 +1785,35 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				->whereIn('status_id', [10,12])
 				->get();
 	}
+
+	public function getDisbursalByDBId($disbursalBatchId){
+		return Disbursal::where('disbursal_batch_id',$disbursalBatchId)->get();
+	}
+
+	public function deleteDisbursalStatusLogByDidArr($IdsArr){
+		return DisbursalStatusLog::whereIn('disbursal_id',$IdsArr)->where('status_id',10)->delete();
+	}
+
+	public function deleteInvoiceStatusLogByInvIdArr($IdsArr){
+		return InvoiceStatusLog::whereIn('invoice_id',$IdsArr)->where('status_id',10)->delete();
+	}
+
+	public static  function deleteInvoiceDisbursed($disbursalIds)
+	{
+		return InvoiceDisbursed::whereIn('disbursal_id',$disbursalIds)->delete();
+	}
+
+	public function deleteDisbursalByDBId($disbursalBatchId){
+		return Disbursal::where('disbursal_batch_id',$disbursalBatchId)->delete();
+	}
+
+	public function deleteDisbursalBatchByDBId($disbursalBatchId)
+	{
+		return DisbursalBatch::where('disbursal_batch_id', $disbursalBatchId)->delete();
+	}
+	// END TDS
+    public function getLastGSTRecord()
+    {
+        return GstTax::getLastGSTRecord();
+    }
 }

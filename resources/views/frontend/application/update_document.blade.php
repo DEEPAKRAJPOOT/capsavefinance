@@ -20,7 +20,7 @@
             @endforeach
             <div class="form-heading pb-3 d-flex pr-0">
                 <h2>Document
-                    <small> ( Maximum file upload size : 2 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX,XLS,XLSX )</small>
+                    <small> ( Maximum file upload size : 2 MB. Allowed Formats : JPG,PNG,PDF,DOC,DOCX,XLS,XLSX,MP4 )</small>
                 </h2>
             </div>
 
@@ -88,7 +88,7 @@
                                         <td width="20%"> {{ (isset($value->comment)) ? $value->comment : ''}} </td>
 
                                         <td width="20%">
-                                        <a title="Download Document" href="{{  route('download_storage_file', ['file_id' => $value->userFile->file_id ]) }}"><i class="fa fa-download"></i></a>
+                                        <a title="Download Document" href="{{  route('frontend_download_storage_file', ['file_id' => $value->userFile->file_id ]) }}"><i class="fa fa-download"></i></a>
                                         </td>
                                         <td align="center" width="20%">
                                             <a title="Delete Document" onclick="return confirm('Are you sure you want to delete this file?')" href="{{ Route('document-delete', $value->app_doc_file_id) }}" ><i class="fa fa-times-circle-o error"></i></a>

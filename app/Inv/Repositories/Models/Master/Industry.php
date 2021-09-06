@@ -64,4 +64,24 @@ class Industry extends BaseModel {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /**
+     * Check Industry name
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function checkIndustryName($industryName, $excludeIndusId=null)
+    {
+
+        $query = self::select('id')
+                ->where('name', $industryName);
+        if (!is_null($excludeIndusId)) {
+            $query->where('id', '!=', $excludeIndusId);
+        }
+        $res = $query->get();        
+        return $res ?: [];
+    }        
+
 }

@@ -83,7 +83,7 @@ class Agency extends BaseModel
         if(is_null($type) || $type == ''){
             return Agency::get();
         }else{
-            return Agency::whereHas('agencyType', function(Builder $query) use($type){$query->where('status_name', $type);})->get();
+            return Agency::where('is_active',1)->whereHas('agencyType', function(Builder $query) use($type){$query->where('status_name', $type);})->get();
         }
     }
 
@@ -102,6 +102,35 @@ class Agency extends BaseModel
                
         return ($result ? : false);
     }
+
+    public static function updateAgencyStatus($attributes = [], $conditions = [])
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($conditions)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($conditions)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        $res = self::where($conditions)->update($attributes);
+
+        return ($res ?: false);
+    }
+
 
 
 }

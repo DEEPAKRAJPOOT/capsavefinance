@@ -339,7 +339,9 @@ class AppProgramLimit extends BaseModel {
    
    public static function getAvaliableUserLimit($attr)
    {
-       
+       if (!isset($attr)) {
+           return 0;
+       }
        return self::where(['app_limit_id' => $attr['app_limit_id'],'app_id' => $attr['app_id'],'biz_id' => $attr['biz_id']])->sum('limit_amt');
    }
  

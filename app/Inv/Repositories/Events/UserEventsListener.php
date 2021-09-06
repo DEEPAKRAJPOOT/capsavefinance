@@ -230,7 +230,14 @@ class UserEventsListener extends BaseEvent
     public function onForgotPassword($user) {
         $this->func_name = __FUNCTION__;
         $user = unserialize($user);
-        $email_content = EmailTemplate::getEmailTemplate("FORGOT_PASSWORD");
+
+        if(isset($user['anchor_id'])) {
+            if ($user['anchor_id'] == config('common.LENEVO_ANCHOR_ID')) {
+                $email_content = EmailTemplate::getEmailTemplate("FORGOT_PASSWORD_LENOVO");
+            }
+        } else {
+            $email_content = EmailTemplate::getEmailTemplate("FORGOT_PASSWORD");
+        }
         if ($email_content) {
             $mail_body = str_replace(
                 ['%name', '%reset_link'],
@@ -266,7 +273,11 @@ class UserEventsListener extends BaseEvent
     public function onResetPasswordSuccess($user) {
         $this->func_name = __FUNCTION__;
         $user = unserialize($user);
-        $email_content = EmailTemplate::getEmailTemplate("RESET_PASSWORD_SUCCESSS");
+        if (isset($user['anchor_id']) && ($user['anchor_id'] == config('common.LENEVO_ANCHOR_ID'))) {
+            $email_content = EmailTemplate::getEmailTemplate("LENOVO_RESET_PASSWORD_SUCCESSS");
+        } else {
+            $email_content = EmailTemplate::getEmailTemplate("RESET_PASSWORD_SUCCESSS");
+        }
         if ($email_content) {
             $mail_body = str_replace(
                 ['%name'],
@@ -662,62 +673,23 @@ class UserEventsListener extends BaseEvent
             }else{
                 $email_cc = '';
             }
-        }  
-            
-        /*
-        $email_content = EmailTemplate::getEmailTemplate("APPLICATION_APPROVER_MAIL");
-        if ($email_content) {
-            $mail_body = str_replace(
-                ['%receiver_user_name','%receiver_role_name','%app_id','%cover_note','%url'],
-                [$user['receiver_user_name'],$user['receiver_role_name'],$user['app_id'],$user['cover_note'],config('proin.backend_uri')],
-                $email_content->message
-            );
-            $mail_subject = str_replace(['%app_id'], $user['app_id'],$email_content->subject);
-            if( env('SEND_MAIL_ACTIVE') == 1){
-                $email = $user["receiver_email"];    //explode(',', env('SEND_MAIL'));
-                //$email_bcc = explode(',', env('SEND_MAIL_BCC'));
-                $email_cc = explode(',', env('SEND_APPROVER_MAIL_CC'));
-            }else{
-                $email = $user["receiver_email"];
-            }  
-                
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject, $mail_body, $email, $email_cc) {
-                if( env('SEND_MAIL_ACTIVE') == 1){
-                    $email = $email;
-                    //$message->bcc($email_bcc);
-                    $message->cc($email_cc);
-                }else{
-                    $email = $user["receiver_email"];
-                }                
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email, $user["receiver_user_name"]);
-                $message->subject($mail_subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => array($email),
-                    'email_type' => $this->func_name,
-                    'name' => $user['receiver_user_name'],
-                    'subject' => $mail_subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
-            });
-        }
-        */           
-           $mailObj = Mail::to($email, ''); //$user["receiver_user_name"]
-           if (!empty($email_cc)) {
-               $mailObj->cc($email_cc);
-           }
-           $mailObj->send(new ReviewerSummary($this->mstRepo, $user));
+        }        
+       $mailObj = Mail::to($email, ''); //$user["receiver_user_name"]
+       if (!empty($email_cc)) {
+           $mailObj->cc($email_cc);
+       }
+       $mailObj->send(new ReviewerSummary($this->mstRepo, $user));
 
-           $mailContent = [
-            'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-            'email_to' => $email,
-            'email_type' => $this->func_name,
-            'name' => "Move to Approver",
-            'subject' => "Application Approver Mail",
-            'body' => '',
+       $ccMails = is_array($email_cc) ? $email_cc : explode(',', $email_cc);
+       $cc = array_filter($ccMails);
+       $mailContent = [
+        'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+        'email_to' => $email,
+        'email_cc' => $cc ?? NULL,
+        'email_type' => $this->func_name,
+        'name' => "Move to Approver",
+        'subject' => "Application Approver Mail",
+        'body' => '',
         ];
         FinanceModel::logEmail($mailContent);
         
@@ -792,7 +764,7 @@ class UserEventsListener extends BaseEvent
                 [ucwords($user['name'])],
                 $email_content->message
             );
-            Mail::send('email', ['varContent' => $mail_body,
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content, $mail_body) {
                     if( env('SEND_MAIL_ACTIVE') == 1){
@@ -1102,6 +1074,203 @@ class UserEventsListener extends BaseEvent
     }
 
     
+    public function onLenevoRegdSuccess($user) {
+        $this->func_name = __FUNCTION__;
+        $user = unserialize($user);
+        $email_content = EmailTemplate::getEmailTemplate("LENEVO_USER_REGISTERED");
+        if ($email_content) {
+            $link = \Helpers::getServerProtocol() . config('proin.lenevo_frontend_uri').'/lenevo-login';
+            $mail_body = str_replace(
+                ['%name', '%email', '%login_link'],
+                [ucwords($user['name']),$user['email'], $link],
+                $email_content->message
+            );
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+                ],
+                function ($message) use ($user, $email_content, $mail_body) {
+                $email = $user["email"];
+                $message->cc(explode(',', $email_content->cc));                    
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $user["name"])->subject($email_content->subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_type' => $this->func_name,
+                    'name' => $user['name'],
+                    'subject' => $email_content->subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }
+    
+    public function onLenevoDailyNewUser($anchorUserData) {
+        $rowData = '';
+        foreach ($anchorUserData as $value) {
+            $rowData .= '<tr><td>'.ucwords($value->name) .' '. $value->l_name . '</td><td>'.$value->email. '</td><td>'.$value->pan_no. '</td><td>Lenovo</td></tr>';
+        }
+        $this->func_name = __FUNCTION__;
+        $email_content = EmailTemplate::getEmailTemplate("LENEVO_LEAD_REGISTRATION_DETAILS");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%name', '%rowdata'],
+                ['', $rowData],
+                $email_content->message
+            );
+            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
+                ],
+                function ($message) use ($email_content, $mail_body) {
+                $eSubj = $email_content->subject . \Carbon\Carbon::today();
+                $email = explode(',', config('common.LENOVO_NEW_LEAD_CRON_MAIL_TO'));
+                $message->cc(explode(',', $email_content->cc));                    
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, '')->subject($eSubj);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_type' => $this->func_name,
+                    'name' => '',
+                    'subject' => $eSubj,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }
+     
+    /**
+     * Supply chain limit activation
+     * 
+     * @param Array $attributes
+     */
+    public function supplyChainInvDueAlert($attributes) {
+        $data = unserialize($attributes); 
+        $this->func_name = __FUNCTION__;
+        $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_DUE_ALERT");
+        if ($email_content) {
+            $testingAllow = true;
+            if ($testingAllow == true) {
+              $activeMailemail = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+              $activeMailbcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+              $activeMailcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+              $envMails = ['email' => $activeMailemail, 'cc' => $activeMailcc, 'bcc' => $activeMailbcc];
+
+              $dynamicEmail = $data["email"] ?? 'gaurav.agarwal@zuron.in';
+              $dynamiccc = array_filter(explode(',', $email_content->cc));
+              $dynamicbcc = array_filter(explode(',', $email_content->bcc));
+              $dynamicMails = ['email' => $dynamicEmail, 'cc' => $dynamiccc, 'bcc' => $dynamicbcc];
+              
+              $mailIds = ['envMails' => $envMails, 'dynamicMails' => $dynamicMails, 'sendigFrom' => (env('SEND_MAIL_ACTIVE') == 1) ? 'ENV' : 'Dynamically'];
+              dump($mailIds);
+            }
+            $userData['user_name'] = $data['user_name'];
+            $userData['email'] = $data['email'];
+            $offerData = view('reports.invoice_due_alrt')->with(['data' => $data['data'], 'userData' => $userData])->render();
+            $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
+            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $offerData],
+                function ($message) use ($data, $mail_subject, $offerData, $email_content) {
+                    if( env('SEND_MAIL_ACTIVE') == 1){
+                        $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+                        $bcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+                        $cc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+                    }else{
+                        $email = 'gaurav.agarwal@zuron.in';//$data["email"];
+                        $cc = array_filter(explode(',', $email_content->cc));
+                        $bcc = array_filter(explode(',', $email_content->bcc));
+                    }
+                    if (!empty($bcc)) {
+                        $message->bcc($bcc);
+                    }
+                    if (!empty($cc)) {
+                        $message->cc($cc);
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $data["user_name"]);
+                $message->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_cc' => $cc ?? NULL,
+                    'email_bcc' => $bcc ?? NULL,
+                    'email_type' => $this->func_name,
+                    'user_name' => $data['user_name'],
+                    'subject' => $mail_subject,
+                    'body' => $offerData,
+                    // 'att_name' => $att_name ?? NULL,
+                    // 'attachment' => $data['attachment'] ?? NULL,
+                ];
+                FinanceModel::logEmail($mailContent);
+            }); 
+        }
+    }
+     
+    /**
+     * Supply chain limit activation
+     * 
+     * @param Array $attributes
+     */
+    public function supplyChainInvOverDueAlert($attributes) {
+        $data = unserialize($attributes); 
+        $this->func_name = __FUNCTION__;
+        $userData['user_name'] = $data['user_name'];
+        $userData['email'] = $data['email'];
+        $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT");
+        if ($email_content) {
+            $testingAllow = true;
+            if ($testingAllow == true) {
+              $activeMailemail = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+              $activeMailbcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+              $activeMailcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+              $envMails = ['email' => $activeMailemail, 'cc' => $activeMailcc, 'bcc' => $activeMailbcc];
+
+              $dynamicEmail = $data["email"] ?? 'gaurav.agarwal@zuron.in';
+              $dynamiccc = array_filter(explode(',', $email_content->cc));
+              $dynamicbcc = array_filter(explode(',', $email_content->bcc));
+              $dynamicMails = ['email' => $dynamicEmail, 'cc' => $dynamiccc, 'bcc' => $dynamicbcc];
+              
+              $mailIds = ['envMails' => $envMails, 'dynamicMails' => $dynamicMails, 'sendigFrom' => (env('SEND_MAIL_ACTIVE') == 1) ? 'ENV' : 'Dynamically'];
+              dump($mailIds);
+            }
+            $offerData = view('reports.invoice_overdue_alrt')->with(['data' => $data['data'], 'userData' => $userData])->render();
+            $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
+            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $offerData],
+                function ($message) use ($data, $mail_subject, $offerData, $email_content) {
+                    if( env('SEND_MAIL_ACTIVE') == 1){
+                        $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+                        $bcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+                        $cc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+                    }else{
+                        $email = 'gaurav.agarwal@zuron.in';//$data["email"];
+                        $bcc = array_filter(explode(',', $email_content->bcc));
+                        $cc = array_filter(explode(',', $email_content->cc));
+                    }
+                    if (!empty($bcc)) {
+                        $message->bcc($bcc);
+                    }
+                    if (!empty($cc)) {
+                        $message->cc($cc);
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, $data["user_name"]);
+                $message->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_cc' => $cc ?? NULL,
+                    'email_bcc' => $bcc ?? NULL,
+                    'email_type' => $this->func_name,
+                    'user_name' => $data['user_name'],
+                    'subject' => $mail_subject,
+                    'body' => $offerData,
+                    // 'att_name' => $att_name ?? NULL,
+                    // 'attachment' => $data['attachment'] ?? NULL,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }
+
     /**
      * Event subscribers
      *
@@ -1261,6 +1430,26 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'AGENCY_UPDATE_MAIL_TO_CPA_CR', 
             'App\Inv\Repositories\Events\UserEventsListener@AgencyUpdateToCPAandCR'
+        );
+        
+        $events->listen(
+            'user.LENEVO_REGISTERED_SUCCESS',
+            'App\Inv\Repositories\Events\UserEventsListener@onLenevoRegdSuccess'
+        );
+        
+        $events->listen(
+            'user.LENEVO_DAILY_NEW_USER_CRON',
+            'App\Inv\Repositories\Events\UserEventsListener@onLenevoDailyNewUser'
+        );
+
+        $events->listen(
+            'SUPPLY_CHAIN_INVOICE_DUE_ALERT', 
+            'App\Inv\Repositories\Events\UserEventsListener@supplyChainInvDueAlert'
+        );
+
+        $events->listen(
+            'SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT', 
+            'App\Inv\Repositories\Events\UserEventsListener@supplyChainInvOverDueAlert'
         );
     }
 }

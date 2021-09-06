@@ -52,4 +52,12 @@ return [
     'GUPSHUP_PASS' => env('GUPSHUP_PASS', ''),   
     'CONFIGURE_API' => env('CONFIGURE_API', 1),   
       
+    /**
+     * URL for Lenevo front-end
+     */
+    'lenevo_frontend_uri' => env('LENEVO_FRONTEND_URI', 'localhost'),
+    /**
+     * Session cookie name for lenevo front-end
+     */
+    'lenevo_frontend_cookie_name' => env('LENEVO_FRONTEND_COOKIE_NAME', 'localhost'),
 ];

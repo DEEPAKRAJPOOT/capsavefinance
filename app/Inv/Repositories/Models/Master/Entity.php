@@ -51,7 +51,24 @@ class Entity extends BaseModel
         'updated_at'
     ];
 
-
+    /**
+     * Check Entity name
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function checkEntityName($entityName, $entitytId=null)
+    {
+        $query = self::select('id')
+                ->where('entity_name', $entityName);
+        if (!is_null($entitytId)) {
+            $query->where('id', '!=', $entitytId);
+        }
+        $res = $query->get();        
+        return $res ?: [];
+    } 
 
     
 }

@@ -155,7 +155,7 @@ class Transactions extends BaseModel {
     }
 
     public function getInvoiceNoAttribute(){
-        
+          
         $invNo = '';
         if($this->userInvTrans){
             $invNo = $this->userInvTrans->getUserInvoice->invoice_no;
@@ -183,7 +183,8 @@ class Transactions extends BaseModel {
     }
 
     public function getOutstandingAttribute(){
-        return round(($this->amount - $this->getsettledAmtAttribute()),2);
+        $amount = round(($this->amount - $this->getsettledAmtAttribute()),2); 
+        return $amount > 0?$amount:0;
     }
 
     public function getRevertedAmtAttribute(){
@@ -563,6 +564,16 @@ class Transactions extends BaseModel {
     {
        
         $query =  self::whereNull('parent_trans_id')->whereNull('payment_id');
+        $invoiceDisbursed = $data['invoiceDisbursed']??null;
+        if(isset($invoiceDisbursed)){
+            $query->where(function($query2) use($invoiceDisbursed){
+                $query2->whereHas('invoiceDisbursed',function($query3) use ($invoiceDisbursed) {
+                    if(isset($invoiceDisbursed['int_accrual_start_dt'])){
+                        $query3->where('int_accrual_start_dt','<=',$invoiceDisbursed['int_accrual_start_dt']);
+                    }
+                })->orWhereNull('invoice_disbursed_id');
+            });
+        }
 
         if(isset($data['invoice_disbursed_id'])){
             $query = $query->where('invoice_disbursed_id',$data['invoice_disbursed_id']);
@@ -1038,39 +1049,80 @@ class Transactions extends BaseModel {
     public function getFromIntDateAttribute(){
         $fromDate = null;
         if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
-            $fromDate = self::where('invoice_disbursed_id',$this->invoice_disbursed_id)
+            $intBorneBy = $this->invoiceDisbursed->invoice->program->interest_borne_by;
+            $paymentFrequency = $this->invoiceDisbursed->invoice->program_offer->payment_frequency;
+            $disbursedDate = date('Y-m-d', strtotime($this->invoiceDisbursed->int_accrual_start_dt));
+            $paymentDate = date('Y-m-d', strtotime($this->invoiceDisbursed->payment_due_date));
+            $transDate = date('Y-m-d', strtotime($this->trans_date));
+            
+            $lastTrans = self::where('invoice_disbursed_id',$this->invoice_disbursed_id)
             ->whereDate('trans_date','<=',$this->trans_date)
             ->where('trans_id','<',$this->trans_id)
             ->where('trans_type',$this->trans_type)
             ->whereNull('link_trans_id')
             ->whereNull('parent_trans_id')
             ->where('entry_type','0')
-            ->max('trans_date');
-            
-            if((!$fromDate && $this->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
-                $fromDate = $this->disburse->int_accrual_start_dt;
-            }elseif((!$fromDate && $this->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE'))){
-                $fromDate = $this->disburse->payment_due_date;
+            ->orderBy('trans_date','DESC')
+            ->limit(1)->get()->first();
+
+            $lastTransToDate = ($lastTrans)?date('Y-m-d', strtotime($lastTrans->trans_date)):null;
+
+            if(!$lastTransToDate){
+                if($paymentFrequency == 1){
+                    if($transDate == $disbursedDate){
+                        $fromDate = $disbursedDate;
+                    }
+                    elseif($transDate == $paymentDate){
+                        $fromDate = date('Y-m-d', strtotime($paymentDate . "- 1 days"));
+                    }elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+                        $fromDate = $this->trans_date;
+                    }elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                        $fromDate = $paymentDate;
+                    }
+                }else{
+                    $fromDate = $disbursedDate;
+                }
             }else{
-                $fromDate = date('Y-m-d', strtotime($fromDate . "+ 1 days"));
+                if($paymentFrequency == 1){
+                    if($lastTransToDate == $disbursedDate){
+                        $fromDate = $disbursedDate;
+                    }
+                    elseif($lastTransToDate == $paymentDate && $this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+                        $fromDate = date('Y-m-d', strtotime($paymentDate . "- 1 days"));
+                    }elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+                        $fromDate = $lastTransToDate;
+                    }elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                        $fromDate = date('Y-m-d', strtotime($lastTransToDate . "+ 1 days"));
+                    }
+                }else{
+                    $fromDate = date('Y-m-d', strtotime($lastTransToDate . "+ 1 days"));
+                }
             }
+
         }
-        return date('Y-m-d', strtotime($fromDate));
+        return $fromDate;
     }
 
     public function getToIntDateAttribute(){
         $toDate = null;
-
-        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST')])){
-            if($this->invoiceDisbursed->invoice->program_offer->payment_frequency == 1){
-                $toDate = $this->invoiceDisbursed->payment_due_date;
+        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+            $intBorneBy = $this->invoiceDisbursed->invoice->program->interest_borne_by;
+            $paymentFrequency = $this->invoiceDisbursed->invoice->program_offer->payment_frequency;
+            $disbursedDate = date('Y-m-d', strtotime($this->invoiceDisbursed->int_accrual_start_dt));
+            $paymentDate = date('Y-m-d', strtotime($this->invoiceDisbursed->payment_due_date));
+            $transDate = date('Y-m-d', strtotime($this->trans_date));
+            
+            if($paymentFrequency == 1){
+               if($transDate == $disbursedDate){
+                    $toDate = date('Y-m-d', strtotime($paymentDate . "- 1 days"));
+                }else{
+                    $toDate = date('Y-m-d', strtotime($this->trans_date));
+                }
             }else{
-                $toDate = $this->trans_date;
+                $toDate = date('Y-m-d', strtotime($this->trans_date));
             }
-        }elseif(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
-            $toDate = $this->trans_date;
         }
-        return date('Y-m-d', strtotime($toDate));
+        return $toDate;
     }
 
     public function getTempInterestAttribute(){

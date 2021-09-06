@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Auth;
 use App\Http\Requests\Request;
 
 class BusinessInformationRequest extends Request
@@ -49,7 +50,7 @@ class BusinessInformationRequest extends Request
             //'biz_city' => 'required|string|max:50',
             //'biz_state' => 'required|string|max:50',
             //'biz_pin' => 'required|numeric|digits:6',
-            'share_holding_date' =>'required|date_format:d/m/Y',
+//            'share_holding_date' =>'required|date_format:d/m/Y',
             'product_id' => 'required'
             // 'biz_corres_address' => 'required|string|max:100',
             // 'biz_corres_city' => 'required|string|max:50',
@@ -57,6 +58,11 @@ class BusinessInformationRequest extends Request
             // 'biz_corres_pin' => 'required|numeric|digits:6',
         ];
 
+        if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) {
+            $rules['share_holding_date'] = 'date_format:d/m/Y';
+        } else {
+            $rules['share_holding_date'] = 'required|date_format:d/m/Y';
+        }
         if(isset(request()->product_id)){
             if(isset(request()->product_id[1]['checkbox'])){
                 $rules['product_id.1.loan_amount'] = ['required','regex:/[0-9 \,]/'];
