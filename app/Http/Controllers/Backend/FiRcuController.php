@@ -101,6 +101,7 @@ class FiRcuController extends Controller
     {
         $roleData = \Auth::user()->user_id;
         $userId = $request->all('to_id');
+        $app_id = $request->all('app_id');
         $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
         if((int)$userId['to_id'] == $roleData) {
             Session::flash('error',trans('You can not assign to same user'));
@@ -117,6 +118,22 @@ class FiRcuController extends Controller
             $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
         }                        
         
+        $comment = $request->get('comment');
+        $agencyId = $request->get('agency_id');
+        $userId = $request->get('to_id');
+        $request_info = $request->get('address_ids');
+
+        $agencyDatas = $this->appRepo->getAgenciByAgenciId((int) $agencyId);
+        $userData = $this->userRepo->getUserDetail($userId);
+
+        $emailData['email'] = isset($agencyDatas) ? $agencyDatas->comp_email : '';
+        $emailData['name'] = isset($agencyDatas) ? $agencyDatas->comp_name : '';
+        $emailData['user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
+        $emailData['user_email'] = isset($userData) ? $userData->email : '';
+        $emailData['comment'] = isset($comment) ? $comment : '';
+        $emailData['trigger_type'] = 'FI';
+        $emailData['subject'] = 'Capsave has requested FI for this FI ID '. $request_info;
+        \Event::dispatch("FI_FCU_PD_CONCERN_MAIL", serialize($emailData));
         return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
 
@@ -289,6 +306,22 @@ class FiRcuController extends Controller
             }
                 
         }
+
+        $comment = $request->get('comment');
+        $agencyId = $request->get('agency_id');
+        $userId = $request->get('to_id');
+        $request_info = $request->get('document_ids');
+        $agencyDatas = $this->appRepo->getAgenciByAgenciId((int) $agencyId);
+        $userData = $this->userRepo->getUserDetail($userId);
+
+        $emailData['email'] = isset($agencyDatas) ? $agencyDatas->comp_email : '';
+        $emailData['name'] = isset($agencyDatas) ? $agencyDatas->comp_name : '';
+        $emailData['user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
+        $emailData['user_email'] = isset($userData) ? $userData->email : '';
+        $emailData['comment'] = isset($comment) ? $comment : '';
+        $emailData['trigger_type'] = 'RCU';
+        $emailData['subject'] = 'Capsave has requested RCU for this RCU ID '. $request_info;
+        \Event::dispatch("FI_FCU_PD_CONCERN_MAIL", serialize($emailData));
         
         $whereActivi['activity_code'] = 'save_assign_rcu';
         $activity = $this->mstRepo->getActivity($whereActivi);

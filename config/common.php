@@ -357,7 +357,15 @@ return [
     ],
     'SEND_APPROVER_MAIL_CC_SCF' => env('SEND_APPROVER_MAIL_CC_SCF', ''), 
     'SEND_APPROVER_MAIL_CC_TERM' => env('SEND_APPROVER_MAIL_CC_TERM', ''), 
-    'SEND_APPROVER_MAIL_CC_LEASE' => env('SEND_APPROVER_MAIL_CC_LEASE', ''),
+    'SEND_APPROVER_MAIL_CC_LEASE' => env('SEND_APPROVER_MAIL_CC_LEASE', ''),  
+    'FI_RCU_STATUS' => [
+        '1' => 'Pending',
+        '2' => 'In Progress',
+        '3' => 'Positive',
+        '4' => 'Negative',
+        '5' => 'Cancelled',
+        '6' => 'Refer to credit'
+    ],
     'LENEVO_ANCHOR_ID' => '53',
     'LENOVO_NEW_LEAD_CRON_MAIL_TO' => env('LENOVO_NEW_LEAD_CRON_MAIL_TO', ''),
 ];
