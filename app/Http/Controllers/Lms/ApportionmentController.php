@@ -1398,6 +1398,36 @@ class ApportionmentController extends Controller
         }
     }
 
+    private function processApportionmentUndoTrans($payment)
+    {
+        $userId             =   Auth::user()->user_id;
+        $query              =   Transactions::where('apportionment_id', $payment->payment_id)
+                                            ->where('user_id', $userId);
+        $query1             =   clone $query;
+        $uniqInvDisbIds     =   $query->whereNotNull('invoice_disbursed_id')
+                                    ->distinct('invoice_disbursed_id')
+                                    ->pluck('invoice_disbursed_id')
+                                    ->toArray();
+
+        $paymentDate        =   $payment->date_of_payment;
+        $from               =   Carbon::parse($paymentDate)->format('Y-m-d');
+        $to                 =   now()->format('Y-m-d');
+        $interestAccruals   =   InterestAccrual::whereBetween('interest_date', [$from, $to])
+                                            ->whereIn('invoice_disbursed_id', $uniqInvDisbIds)
+                                            ->get();
+        $interestAccruals->each->delete();
+
+        $transactions       =   $query1->get();
+        $transactions->each->delete();
+
+        $trans              =   Transactions::whereIn('invoice_disbursed_id', $uniqInvDisbIds)
+                                            ->where('user_id', $userId)
+                                            ->whereNull('payment_id')
+                                            ->whereNull('apportionment_id')
+                                            ->get();
+        $trans->each->delete();
+    }
+
     private function apportionmentUndoProcess($payment_id){
         $result = false;
         $error = null;        
@@ -1443,6 +1473,7 @@ class ApportionmentController extends Controller
 				if($payment){
                     if($payment->is_settled == '1' && $payment->action_type == '1' && $payment->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($payment->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d'))
                     ){
+                        $this->processApportionmentUndoTrans($payment);
 						$aporUndoPro = self::apportionmentUndoProcess($paymentId);
                         if($aporUndoPro['status']){
                             $payment->is_settled = '0';
