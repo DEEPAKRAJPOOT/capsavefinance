@@ -18,10 +18,12 @@ use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use Illuminate\Support\Facades\Crypt;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 class ChargeController extends Controller
 {
 	use ApplicationTrait;
-	use LmsTrait;
+    use LmsTrait;
+    use ActivityLogTrait;
         protected $invRepo;
 	protected $appRepo;
 	protected $userRepo;
@@ -265,6 +267,15 @@ class ChargeController extends Controller
                         
                           if($res)
                         {
+                                $whereActivi['activity_code'] = 'save_manual_charges';
+                                $activity = $this->masterRepo->getActivity($whereActivi);
+                                if(!empty($activity)) {
+                                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                                    $activity_desc = 'Save Manual Charge in Charges  (Manage Sanction Cases) '. $request->get('app_id');
+                                    $arrActivity['app_id'] = $request->get('app_id');
+                                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+                                } 
+                            
                                 Session::flash('message', 'Data has been saved');
                                 return redirect()->route('manage_charge', ['user_id' => $request->user_id]);
                                  

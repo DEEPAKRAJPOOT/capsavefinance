@@ -30,19 +30,24 @@ use Illuminate\Validation\Rule;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Helpers\FileHelper;
 use App\Inv\Repositories\Models\UserFile;
+use App\Inv\Repositories\Contracts\MasterInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class PaymentController extends Controller {
 
 	protected $invRepo;
 	protected $docRepo;
+	protected $master;
 	use LmsTrait;
-	public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo, FileHelper $file_helper) {
+	use ActivityLogTrait;
+	public function __construct(InvoiceInterface $invRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo,InvUserRepoInterface $user_repo, ApplicationInterface $appRepo, FileHelper $file_helper, MasterInterface $master) {
 		$this->invRepo = $invRepo;
 		$this->docRepo = $docRepo;
 		$this->lmsRepo = $lms_repo;
 		$this->userRepo = $user_repo;
 		$this->appRepo = $appRepo;
-                $this->fileHelper = $file_helper;
+				$this->fileHelper = $file_helper;
+		$this->master = $master;
 		$this->middleware('auth');
         $this->middleware('checkEodProcess');
         $this->middleware('checkBackendLeadAccess');
@@ -229,6 +234,16 @@ class PaymentController extends Controller {
 			
 			if (in_array($request->action_type, [1,3])) {
 				$paymentId = Payment::insertPayments($paymentData);
+			
+				$whereActivi['activity_code'] = 'save_payment';
+				$activity = $this->master->getActivity($whereActivi);
+				if(!empty($activity)) {
+					$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+					$activity_desc = 'Add Repayment & Waived Off TDS (Manage Repayment)';
+					$arrActivity['app_id'] = null;
+					$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($paymentData), $arrActivity);
+				}   				
+				
 				if(!is_int($paymentId)){
 					Session::flash('error', $paymentId);
 					return back();
@@ -284,6 +299,14 @@ class PaymentController extends Controller {
                   ];
 			if($request->action_type == 3){
 				$res = $this->invRepo->saveRepaymentTrans($tran);
+				$whereActivi['activity_code'] = 'save_payment';
+				$activity = $this->master->getActivity($whereActivi);
+				if(!empty($activity)) {
+					$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+					$activity_desc = 'Add Repayment & Waived Off TDS (Manage Repayment)';
+					$arrActivity['app_id'] = null;
+					$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($tran), $arrActivity);
+				} 				
 			}
 
 			if($paymentId)
@@ -354,6 +377,15 @@ class PaymentController extends Controller {
 			
 			$response =  $this->invRepo->updatePayment($paymentData, $request->payment_id);
 
+			$whereActivi['activity_code'] = 'update_payment';
+			$activity = $this->master->getActivity($whereActivi);
+			if(!empty($activity)) {
+				$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+				$activity_desc = 'Update Payment, Repayment List (Manage Repayment)';
+				$arrActivity['app_id'] = null;
+				$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['paymentData'=>$paymentData, 'request'=>$request->all()]), $arrActivity);
+			}   			
+			
 			Session::flash('message',trans('success_messages.paymentUpdated'));
         	return redirect()->route('payment_list');
 	   	} catch (Exception $ex) {
@@ -726,6 +758,16 @@ class PaymentController extends Controller {
 					if($payment->is_settled == '0' && $payment->action_type == '1' && $payment->trans_type == '17'){
 						$payment->delete();
 						InterestAccrualTemp::where('payment_id',$paymentId)->delete();
+
+						$whereActivi['activity_code'] = 'delete_payment';
+						$activity = $this->master->getActivity($whereActivi);
+						if(!empty($activity)) {
+							$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+							$activity_desc = 'Delete Payment (Manage Payment)';
+							$arrActivity['app_id'] = null;
+							$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+						}						
+						
 						return response()->json(['status' => 1,'message' => 'Successfully Deleted Payment']); 
 					}
 					else{

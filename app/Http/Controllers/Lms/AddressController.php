@@ -12,10 +12,12 @@ use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
 use Session;
 use Helpers;
 // use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class AddressController extends Controller
 {
     //use ApplicationTrait;
+    use ActivityLogTrait;
 
     protected $appRepo;
     protected $userRepo;
@@ -136,6 +138,15 @@ class AddressController extends Controller
             } else {
                 Session::flash('error', trans('master_messages.something_went_wrong'));
             }
+
+            $whereActivi['activity_code'] = 'save_addr';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Address (Manage Sanction Cases) '. null;
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAddressData), $arrActivity);
+            }              
             return redirect()->route('addr_get_customer_list', ['user_id' => $user_id]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

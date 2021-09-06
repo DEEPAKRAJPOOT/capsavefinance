@@ -13,10 +13,12 @@ use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class WriteOffController extends Controller
 {
     //use ApplicationTrait;
+    use ActivityLogTrait;
 
     protected $master;
     protected $docRepo;
@@ -90,6 +92,16 @@ class WriteOffController extends Controller
             $updateData = [];
             $updateData['wo_status_log_id'] = $woStatusLogId->wo_status_log_id;
             $this->lmsRepo->updateWriteOffReqById((int) $woReqId->wo_req_id, $updateData);
+
+            $whereActivi['activity_code'] = 'generate_write_off';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Generate Write off (Manage Sanction Cases) '. null;
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['user_id'=>$user_id, 'woLogData'=>$woLogData, 'updateData'=>$updateData]), $arrActivity);
+            }            
+            
             return redirect()->route('write_off_customer_list', ['user_id' => $user_id]);
         }catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -183,6 +195,16 @@ class WriteOffController extends Controller
             if($status_id == config('lms.WRITE_OFF_STATUS.APPROVED')){
                 $this->lmsRepo->writeOff($custId);
             }
+
+            $whereActivi['activity_code'] = 'wo_save_appr_dissappr';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Move Back/Next Write off (Manage Sanction Cases) '. null;
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['RequestData'=>$request->all(), 'woLogData'=>$woLogData, 'updateData'=>$updateData]), $arrActivity);
+            }             
+            
             Session::flash('message', $messges);
             Session::flash('operation_status', 1);
             return redirect()->route('write_off_customer_list', ['user_id' => $custId]);

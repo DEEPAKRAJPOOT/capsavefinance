@@ -24,22 +24,27 @@ use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as AppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class NACHController extends Controller {
 
     use LmsTrait;
+    use ActivityLogTrait;
 
 	protected $appRepo;
 	protected $docRepo;
     protected $lmsRepo;
-	protected $userRepo;
+    protected $userRepo;
+    protected $masterRepo;
 
-	public function __construct(AppRepoInterface $appRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo, InvUserRepoInterface $user_repo, FileHelper $file_helper) {
+	public function __construct(AppRepoInterface $appRepo, InvDocumentRepoInterface $docRepo, InvLmsRepoInterface $lms_repo, InvUserRepoInterface $user_repo, FileHelper $file_helper, InvMasterRepoInterface $master_repo) {
 		$this->appRepo  =  $appRepo;
 		$this->docRepo  =  $docRepo;
         $this->lmsRepo = $lms_repo;
         $this->fileHelper = $file_helper;
-		$this->userRepo = $user_repo;
+        $this->userRepo = $user_repo;
+        $this->masterRepo = $master_repo;
 		$this->middleware('auth');
 		// $this->middleware('checkBackendLeadAccess');
 	}
@@ -203,7 +208,17 @@ class NACHController extends Controller {
             		'nach_status_log_id' => $logData->nach_status_log_id
             	];
             	$this->appRepo->updateNach($updateNachData, $users_nach_id);
-			}
+            }
+            
+            $whereActivi['activity_code'] = 'backend_save_nach_detail';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Backend NACH in Manage NACH (Register Request)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($nachData), $arrActivity);
+            }             
+            
 			Session::flash('message',trans('success_messages.nach_updated'));
 			return redirect()->route('backend_nach_list');
 		} catch (\Exception $ex) {
@@ -299,7 +314,14 @@ class NACHController extends Controller {
                 	'is_active' => 1
                 	];
                 $this->appRepo->updateNach($nachData, $users_nach_id);
-
+                $whereActivi['activity_code'] = 'backend_nach_document_save';
+                $activity = $this->masterRepo->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Upload Document Backend NACH in Manage NACH (Register Request)';
+                    $arrActivity['app_id'] = null;
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['arrFileData' => $arrFileData, 'uploadData' => $uploadData, 'nachData' => $nachData]), $arrActivity);
+                } 
                 Session::flash('message',trans('success_messages.uploaded'));
                 Session::flash('operation_status', 1);
                 return redirect()->route('backend_nach_detail_preview', ['users_nach_id' => $users_nach_id, 'user_id' => $user_id]);
@@ -390,7 +412,14 @@ class NACHController extends Controller {
                     }
                 }
             }
-
+            $whereActivi['activity_code'] = 'create_nach_repayment_req';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Generate NACH Request in Manage NACH (NACH Repayment)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($nachReqIds), $arrActivity);
+            }  
             Session::flash('message',trans('backend_messages.disbursed'));
             return redirect()->route('nach_repayment_list');
         } catch (Exception $ex) {

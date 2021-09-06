@@ -21,10 +21,12 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Libraries\Storage\Contract\StorageManagerInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\DocumentInterface as InvDocumentRepoInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class NachController extends Controller {
 
     //  use ApplicationTrait;
+    use ActivityLogTrait;
 
     protected $appRepo;
     protected $userRepo;
@@ -218,6 +220,16 @@ class NachController extends Controller {
                     }
                 }
             }
+
+            $whereActivi['activity_code'] = 'import_nach_response';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Upload NACH Response LMS in Manage NACH (Manage NACH List)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrFileData), $arrActivity);
+            }            
+            
             Session::flash('message',trans('Excel Data Imported successfully.'));
             Session::flash('operation_status', 1);
             return redirect()->route('users_nach_list');
