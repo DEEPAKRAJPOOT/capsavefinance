@@ -102,7 +102,7 @@
                            <!--  <li style="font-family: calibri !important;font-size: 0.917rem !important;"><b class="bold">Credit Head Status :</b> Reject</li> -->
                         </ul>
                         @php 
-                           $limitValidityEndDate = $appLimit->actual_end_date ?? $appLimit->end_date;
+                           $limitValidityEndDate = $appLimit->actual_end_date ?? $appLimit->end_date ?? NULL;
                         @endphp
                         <span class="badge badge-info float-right">
                            Limit Validity: From Date 
