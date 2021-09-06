@@ -1398,17 +1398,20 @@ class ApportionmentController extends Controller
         }
     }
 
-    private function processApportionmentUndoTrans($payment)
+    private function processApportionmentUndoTrans($payment, $result)
     {
-        $userId             =   Auth::user()->user_id;
-        $query              =   Transactions::where('apportionment_id', $payment->payment_id)
+        $userId             =   $payment->user_id;
+        $paymentId          =   $payment->payment_id;
+
+        $query              =   Transactions::where('apportionment_id', $paymentId)
                                             ->where('user_id', $userId);
         $query1             =   clone $query;
-        $uniqInvDisbIds     =   $query->whereNotNull('invoice_disbursed_id')
+        $data               =   $query->whereNotNull('invoice_disbursed_id')
                                     ->distinct('invoice_disbursed_id')
-                                    ->pluck('invoice_disbursed_id')
+                                    ->pluck('sys_created_at', 'invoice_disbursed_id')
                                     ->toArray();
 
+        $uniqInvDisbIds     =   array_keys($data);
         $paymentDate        =   $payment->date_of_payment;
         $from               =   Carbon::parse($paymentDate)->format('Y-m-d');
         $to                 =   now()->format('Y-m-d');
@@ -1417,27 +1420,37 @@ class ApportionmentController extends Controller
                                             ->get();
         $interestAccruals->each->delete();
 
+        $maxTransId         =   $query1->max('trans_id');
         $transactions       =   $query1->get();
         $transactions->each->delete();
 
-        $trans              =   Transactions::whereIn('invoice_disbursed_id', $uniqInvDisbIds)
+        if ($maxTransId) {
+            $trans          =   Transactions::whereIn('invoice_disbursed_id', $uniqInvDisbIds)
                                             ->where('user_id', $userId)
+                                            ->where('trans_id', '<', $maxTransId)
+                                            ->whereNotNull('invoice_disbursed_id')
                                             ->whereNull('payment_id')
                                             ->whereNull('apportionment_id')
                                             ->get();
-        $trans->each->delete();
+            $trans->each->delete();
+        }
+
+        if ($result) {
+            $Obj  = new ManualApportionmentHelper($this->lmsRepo);
+            foreach ($data as $invDisb => $sysCreatedAt) {
+                $Obj->intAccrual($invDisb, $sysCreatedAt);
+            }
+        }
+
+        return $result;
     }
 
-    private function apportionmentUndoProcess($payment_id){
+    private function apportionmentUndoProcess($payment){
         $result = false;
-        $error = null;        
-        $Obj = new ManualApportionmentHelper($this->lmsRepo);
-        $invoiceDisbursedId = Transactions::where('payment_id',$payment_id)
-        ->groupBy('invoice_disbursed_id')
-        ->whereNotNull('invoice_disbursed_id')
-        ->pluck('sys_created_at','invoice_disbursed_id')
-        ->toArray();
-        $transactions = Transactions::where('payment_id',$payment_id)->get();
+        $error  = null;
+        $query  = Transactions::where('payment_id', $payment->payment_id);
+        $query1 = clone $query;
+        $transactions = $query->get();
         
         if($transactions){
             foreach($transactions as $trans){
@@ -1451,13 +1464,8 @@ class ApportionmentController extends Controller
         }
         
         if(!$error){
-            $result = Transactions::where('payment_id',$payment_id)->delete();
-            if($result){
-                $result = true;
-                foreach ($invoiceDisbursedId as $invDisb => $sysCreatedAt) {
-                    $Obj->intAccrual($invDisb, $sysCreatedAt);
-                }
-            }
+            $result = $query1->get()->each->delete();
+            $result = $this->processApportionmentUndoTrans($payment, $result);
             return ['status' => $result];
         }else{
             return ['status' => $result, 'error' => $error];
@@ -1473,8 +1481,7 @@ class ApportionmentController extends Controller
 				if($payment){
                     if($payment->is_settled == '1' && $payment->action_type == '1' && $payment->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($payment->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d'))
                     ){
-                        $this->processApportionmentUndoTrans($payment);
-						$aporUndoPro = self::apportionmentUndoProcess($paymentId);
+						$aporUndoPro = self::apportionmentUndoProcess($payment);
                         if($aporUndoPro['status']){
                             $payment->is_settled = '0';
                             $payment->save();
