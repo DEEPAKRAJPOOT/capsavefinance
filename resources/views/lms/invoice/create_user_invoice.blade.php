@@ -158,6 +158,9 @@
                                            <span style="font-size: 9px;font-family: Calibri;"><strong>SAC</strong></span>
                                         </td>
                                         <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" rowspan="2" bgcolor="#f2f2f2">
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Settle Payment</strong></span>
+                                        </td>
+                                        <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" rowspan="2" bgcolor="#f2f2f2">
                                            <span style="font-size: 9px;font-family: Calibri;"><strong>Base Amount (Rs)</strong></span>
                                         </td>
                                         <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" colspan="2" bgcolor="#f2f2f2">
@@ -170,7 +173,7 @@
                                            <span style="font-size: 9px;font-family: Calibri;"><strong>IGST</strong></span>
                                         </td>
                                         <td style="border: 1px solid #ddd;padding: 5px; text-align: center;" rowspan="2" bgcolor="#f2f2f2">
-                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Total Rental</strong></span>
+                                           <span style="font-size: 9px;font-family: Calibri;"><strong>Total</strong></span>
                                         </td>
                                      </tr>
                                      <tr>
@@ -195,7 +198,7 @@
                                      </tr>
                                   </thead>
                                   <tbody id="table_tbody">
-                                    <tr><td colspan="12">No records found</td></tr>
+                                    <tr><td colspan="13">No records found</td></tr>
                                   </tbody>
                               </table>
                           </div>

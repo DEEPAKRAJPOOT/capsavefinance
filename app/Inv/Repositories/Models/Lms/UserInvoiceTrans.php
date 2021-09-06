@@ -50,8 +50,8 @@ class UserInvoiceTrans extends BaseModel {
         'trans_id',
     ];
 
-    public function userInvTrans(){
-        return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceTrans','trans_id','trans_id');
+    public function trans(){
+        return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','trans_id','trans_id');
     } 
 
     /**

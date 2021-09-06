@@ -3,6 +3,8 @@ try {
     jQuery(document).ready(function ($) {   
         //User Listing code
         oTable = $('#lmsSoaList').DataTable({
+            destroy: true,
+            deferLoading: false,
             processing: true,
             serverSide: true,
             pageLength: 50,
@@ -26,10 +28,12 @@ try {
                 }
             },
             "drawCallback": function( settings ) {
-                excelUrl = settings.json.excelUrl;
-                $('#dwnldEXCEL').attr('href', excelUrl)
-                pdfUrl = settings.json.pdfUrl;
-                $('#dwnldPDF').attr('href', pdfUrl)
+                if (settings.json) {
+                    excelUrl = settings.json.excelUrl;
+                    $('#dwnldEXCEL').attr('href', excelUrl);
+                    pdfUrl = settings.json.pdfUrl;
+                    $('#dwnldPDF').attr('href', pdfUrl);
+                }
             },
             columns: [
                 {data: 'customer_id'},

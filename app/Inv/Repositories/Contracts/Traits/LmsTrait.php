@@ -939,7 +939,7 @@ trait LmsTrait
     protected function calculateRefund($transId)
     {
         $repayment = Payment::getPayments(['is_settled' => 1, 'payment_id' => $transId])->first();
-        
+        $repayment = $repayment->get();
         $repaymentTrails = $this->lmsRepo->getTransactions(['payment_id'=>$transId]);
         
         $interestRefundTotal = 0;

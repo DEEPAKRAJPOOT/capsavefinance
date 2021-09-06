@@ -112,6 +112,13 @@ tr.border_bottom td {
                                                     <td colspan="3">{{getInvestmentPaymentFrequency($supplyOffer->payment_frequency)}}</td>
                                                 </tr>
                                                 <tr>
+                                                    <td></td>
+                                                    <td><b>Invoice Processing Fee: </b></td>
+                                                    <td>{{ ($supplyOffer->BizInvoice->invoice_disbursed->processing_fee ?? 0) + ($supplyOffer->BizInvoice->invoice_disbursed->processing_fee_gst ?? 0) }}</td>
+                                                    <td></td>
+                                                    <td colspan="3"></td>
+                                                </tr>
+                                                <tr>
                                                 <td></td>
                                                     <td><b>Comment: </b></td>
                                                     <td colspan="3">{{$supplyOffer->comment}}</td>

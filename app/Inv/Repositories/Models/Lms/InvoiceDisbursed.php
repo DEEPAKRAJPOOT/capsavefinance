@@ -296,5 +296,31 @@ class InvoiceDisbursed extends BaseModel {
 			 return self::whereHas('isRepayment')->where(['status_id' => 12])->where('payment_due_date', '>=', $currentDate)->with(['transaction.payment','Invoice.anchor.anchorAccount','InterestAccrual','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC')->get();
 
 		}
-	 }  
+	 }
+
+	 public static function getDisbursedAmountForSupplier($supplier_id, $prgm_offer_id, $anchor_id, $app_id ,$is_adhoc = false){
+		return self::whereHas('invoice', function ($q) use ($supplier_id, $prgm_offer_id, $anchor_id, $app_id){
+	 		$q->where('supplier_id', $supplier_id)
+			->where('prgm_offer_id', $prgm_offer_id)
+			->where('is_adhoc',0)
+			->where('anchor_id', $anchor_id)
+			->whereIn('status_id', [12,13,15]);
+			if($app_id){
+				$q->where('app_id' , '<=', $app_id);
+			}
+	 	})->sum('disburse_amt');
+	 }
+	 
+	 public static function getDisbursedAmountForSupplierIsEnhance($supplier_id, $prgm_offer_id, $anchor_id, $app_id ,$is_adhoc = false){
+		return self::whereHas('invoice', function ($q) use ($supplier_id, $prgm_offer_id, $anchor_id, $app_id){
+			$q->where('supplier_id', $supplier_id)
+		   ->where('prgm_offer_id', $prgm_offer_id)
+		   ->where('is_adhoc',0)
+		   ->where('anchor_id', $anchor_id)
+		   ->whereIn('status_id', [12,13,15]);
+		   if($app_id){
+				$q->where('app_id', $app_id);
+			}
+		})->sum('disburse_amt');
+	}
 }

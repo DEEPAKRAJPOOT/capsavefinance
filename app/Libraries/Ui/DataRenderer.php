@@ -5313,7 +5313,7 @@ class DataRenderer implements DataProviderInterface
                         function ($dataRecords) {
                             $btn = '';
 
-                            if(Helpers::checkPermission('delete_payment') && $dataRecords->is_settled == '0' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($dataRecords->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) ){
+                            if(Helpers::checkPermission('delete_payment') && $dataRecords->is_settled == '0' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' ){
                                 $btn .= '<button class="btn btn-action-btn btn-sm"  title="Delete Payment" onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
                             }
 
@@ -6921,7 +6921,7 @@ class DataRenderer implements DataProviderInterface
                       $payment  = '';                   
                        foreach($invoice->transaction as $row)
                       {
-                           if( $row->payment->date_of_payment)
+                           if(!empty($row->payment->date_of_payment))
                            {
                              $payment.= Carbon::parse($row->payment->date_of_payment)->format('d/m/Y')."</br>";
                            }
@@ -6948,15 +6948,15 @@ class DataRenderer implements DataProviderInterface
                       $chk  = '';                   
                        foreach($invoice->transaction as $row)
                       {
-                           if( $row->payment->utr_no)
+                           if(!empty($row->payment->utr_no))
                            {
                              $chk.$row->payment->utr_no.",";
                            }
-                            if( $row->payment->unr_no)
+                            if(!empty($row->payment->unr_no))
                            {
                              $chk.= $row->payment->unr_no.",";
                            }
-                            if( $row->payment->cheque_no)
+                            if(!empty($row->payment->cheque_no))
                            {
                              $chk.= $row->payment->cheque_no.",";
                            }

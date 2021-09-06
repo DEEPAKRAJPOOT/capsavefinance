@@ -240,7 +240,7 @@ class SoaController extends Controller
                     $transactionList->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
+                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
                     });
                 }
                 if($request->has('trans_entry_type')){
@@ -263,7 +263,7 @@ class SoaController extends Controller
                     return $item->IsTransaction;
                 })->chunk(25));
             } 
-
+            ini_set('memory_limit', -1);
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
             $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
                     ->loadView('lms.soa.downloadSoaReport', ['userInfo' => $userInfo, 'soaRecord' => $soaRecord, 'fromdate' => $request->get('from_date'), 'todate' => $request->get('to_date'),'customerId' => $customerId],[],'UTF-8');
@@ -290,7 +290,7 @@ class SoaController extends Controller
                 $transactionList->where(function ($query) use ($request) {
                     $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                     $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                    $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
+                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
                 });
             }
             if($request->has('trans_entry_type')){

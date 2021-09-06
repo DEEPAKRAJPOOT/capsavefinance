@@ -65,7 +65,7 @@ class Idfc_lib{
 			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
 			return $resp;
 		}
-		if (empty($response['error_no']) && $response['curl_info']['http_code'] != 200) {
+		if (empty($response['error_no']) && isset($response['curl_info']['http_code']) && $response['curl_info']['http_code'] != 200) {
 			$resp['code'] 	 = "HTTPCode : " . $response['curl_info']['http_code'];
 			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
 			return $resp;

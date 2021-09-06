@@ -464,12 +464,19 @@ class ReportController extends Controller
 		$payment  = [];                   
 		$chk  = [];                   
 		foreach($invoice->transaction as $row) {
-		   if( $row->payment->date_of_payment) {
+		   if(!empty($row->payment->date_of_payment)) {
 			 $payment[] = Carbon::parse($row->payment->date_of_payment)->format('d/m/Y');
 		   }
-		   if (($chk_no = $row->payment->utr_no) || ($chk_no = $row->payment->unr_no) || ($chk_no = $row->payment->cheque_no)) {
-			  $chk[] =  $chk_no;
-		   }  
+		   if (!empty($row->payment->utr_no)) {
+		   		$chk_no = $row->payment->utr_no;
+		   }
+		   if (!empty($row->payment->unr_no)) {
+		   		$chk_no = $row->payment->unr_no;
+		   }
+		   if (!empty($row->payment->cheque_no)) {
+		   		$chk_no = $row->payment->cheque_no;
+		   }
+		   $chk[] =  $chk_no ?? '';
 		}
 		$realisationOnDate = implode(', ', $payment);
 		$cheque = implode(', ', $chk);
@@ -571,6 +578,8 @@ class ReportController extends Controller
         if(empty($emailTo)){
             dd('DAILY_REPORT_MAIL is missing');
         }
+		array_push($emailTo,"sudesh.kumar@zuron.in");
+		
         $anchorList = Anchor::where('is_active','1');
         if($anchor_id){
             $anchorList->where('anchor_id',$anchor_id);
@@ -830,8 +839,9 @@ class ReportController extends Controller
                     ->setCellValue('F'.$rows, 'Available Limit')
                     ->setCellValue('G'.$rows, 'Expiry Date')
                     ->setCellValue('H'.$rows, 'Sales Person Name')
-                    ->setCellValue('I'.$rows, 'Sub Program Name');
-                    $sheet->getActiveSheet()->getStyle('A'.$rows.':I'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+                    ->setCellValue('I'.$rows, 'Sub Program Name')
+					->setCellValue('J'.$rows, 'Anchor Name');
+                    $sheet->getActiveSheet()->getStyle('A'.$rows.':J'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
                     $rows++;
                     $sheet->setActiveSheetIndex(0)
                     ->setCellValue('A'.$rows, $disb['client_name'])
@@ -841,8 +851,9 @@ class ReportController extends Controller
                     ->setCellValue('E'.$rows, number_format($disb['limit_utilize'],2))
                     ->setCellValue('F'.$rows, number_format($disb['limit_available'],2))
                     ->setCellValue('G'.$rows, Carbon::parse($disb['end_date'])->format('d/m/Y') ?? NULL)
-                    ->setCellValue('H'.$rows, '')
-                    ->setCellValue('I'.$rows, $disb['sub_prgm_name']);
+                    ->setCellValue('H'.$rows, $disb['sales_person_name'])
+                    ->setCellValue('I'.$rows, $disb['sub_prgm_name'])
+					->setCellValue('J'.$rows, $rowData['anchor_name']);
                     $rows++;
                     $rows++;
                     if(!empty($disb['invoice'])){
@@ -866,11 +877,11 @@ class ReportController extends Controller
                             ->setCellValue('B'.$rows,$inv['invoice_no'])
                             ->setCellValue('C'.$rows,Carbon::parse($inv['invoice_date'])->format('d/m/Y') ?? NULL)
                             ->setCellValue('D'.$rows,number_format($inv['invoice_amt'],2))
-							->setCellValue('E'.$rows,number_format($inv['approve_amt']))
+							->setCellValue('E'.$rows,number_format($inv['approve_amt'],2))
                             ->setCellValue('F'.$rows,number_format($inv['margin_amt'],2))
                             ->setCellValue('G'.$rows,number_format($inv['disb_amt'],2))
 							->setCellValue('H'.$rows,$inv['principal_od_days'])
-							->setCellValue('I'.$rows,number_format($inv['principal_od_amount']))
+							->setCellValue('I'.$rows,number_format($inv['principal_od_amount'],2))
                             ->setCellValue('J'.$rows,$inv['od_days'])
                             ->setCellValue('K'.$rows,number_format($inv['od_amt'],2));
                             $rows++;
@@ -1080,6 +1091,7 @@ class ReportController extends Controller
 	}
 
 	public function sendAnStringFromArr($array=[], $subject) {
+		$email_content = '';
 		if (empty($array) || !is_array($array)) {
 			return;
 		}

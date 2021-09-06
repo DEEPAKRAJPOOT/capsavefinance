@@ -152,8 +152,8 @@ class ManualApportionmentHelperTemp{
 
     public function intAccrual(int $invDisbId, $startDate = null, $endDate = null, $paymentId){
         try{
-            $curdate =  Helpers::getSysStartDate();
-            $curdate = Carbon::parse($curdate)->format('Y-m-d');
+            //$curdate =  Helpers::getSysStartDate();
+            $curdate = Carbon::parse($endDate)->format('Y-m-d');
             
             $invDisbDetail = InvoiceDisbursed::find($invDisbId);
             $offerDetails = $invDisbDetail->invoice->program_offer;
@@ -268,7 +268,7 @@ class ManualApportionmentHelperTemp{
                 InterestAccrualTemp::where('payment_id',$paymentId)->delete();
                 $paymentDate = $payment->date_of_payment;
                 $userId = $payment->user_id;
-                $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt') ->whereNotNull('payment_due_date') ->whereHas('invoice', function($query) use($userId){ $query->where('supplier_id',$userId)->where('is_repayment',0); }) ->pluck('invoice_disbursed_id','invoice_disbursed_id');
+                $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt') ->where('int_accrual_start_dt','<=',$paymentDate) ->whereNotNull('payment_due_date') ->whereHas('invoice', function($query) use($userId){ $query->where('supplier_id',$userId)->where('is_repayment','0'); }) ->pluck('invoice_disbursed_id','invoice_disbursed_id');
                 foreach ($invoiceList as $invId => $trans) {
                     $this->intAccrual($invId, null, $paymentDate, $paymentId);
                 }

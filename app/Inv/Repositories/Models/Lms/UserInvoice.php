@@ -10,6 +10,7 @@ use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Master\State;
+use App\Inv\Repositories\Models\LmsUser;
 
 class UserInvoice extends BaseModel {
     /* The database table used by the model.
@@ -155,5 +156,9 @@ class UserInvoice extends BaseModel {
 
     public static function getLastInvoiceSerialNo($inv_type){
         return self::where('invoice_type',$inv_type)->latest()->first();
+    }
+
+    public function lmsUser(){
+        return $this->belongsTo(LmsUser::class, 'user_id', 'user_id'); //don't change to hasMany
     }
 }

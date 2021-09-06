@@ -4059,7 +4059,7 @@ if ($err) {
             $transactionList = $transactionList->where(function ($query) use ($request) {
                 $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                 $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
+                $query->WhereBetween('trans_date', [$from_date, $to_date]);
             });
         }
 
@@ -4596,14 +4596,13 @@ if ($err) {
 
     public function getSettledPayments(DataProviderInterface $dataProvider) {
         $user_id = $this->request->user_id;
-        $this->dataRecords = [];
+        $dataRecords = [];
         if (!empty($user_id)) {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id],['updated_at'=>'desc']);
+            $dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id],['updated_at'=>'desc']);
         } else {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 1],['updated_at'=>'desc']);
+            $dataRecords = Payment::getPayments(['is_settled' => 1],['updated_at'=>'desc']);
         }
-        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
-        return $this->providerResult;
+        return $dataProvider->getToSettlePayments($this->request, $dataRecords);
     }
     
     public function checkBankAccExist(Request $req){
@@ -4804,6 +4803,7 @@ if ($err) {
         $dataRecords = [];
         if ($userId) {
             $payments = Payment::getPayments(['is_settled' => 0, 'user_id' => $userId, 'payment_type' => $paymentType]);
+            $payments = $payments->get();
             foreach ($payments as $payment) {
                 $dataRecords[] =[
                     'id'=>Crypt::encryptString($payment->payment_id),
@@ -5309,5 +5309,19 @@ if ($err) {
             $result = ['status' => 0];
         }
         return response()->json($result); 
-    }    
+    }
+    
+    // Check Unique Entity
+    public function checkUniqueTdsCertificate(Request $request) 
+    {        
+        $tdsCertificate = $request->get('tds_certificate_no');
+        $id = $request->has('payment_id') ? $request->get('payment_id') : null ;
+        $result =  Payment::checkTdsCertificate($tdsCertificate, $id);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }      
 }

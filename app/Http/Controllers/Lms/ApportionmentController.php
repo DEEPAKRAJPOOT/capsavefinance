@@ -457,13 +457,17 @@ class ApportionmentController extends Controller
      * @param int $userId
      * @return \Illuminate\Http\Response
      */
-    private function getUnsettledTrans(int $userId){
+    private function getUnsettledTrans(int $userId, $payment_date = null){
         
         //$invoiceList = $this->lmsRepo->getUnsettledInvoices(['user_id','=',$userId]);
 
         $transactionList = new Collection();
         
-        $invoiceTrans = $this->lmsRepo->getUnsettledInvoiceTransactions([ 'user_id'=>$userId ]);   
+        $condition = ['user_id' => $userId];
+        if(isset($payment_date)){
+            $condition['invoiceDisbursed'] = ['int_accrual_start_dt'=> $payment_date];
+        }
+        $invoiceTrans = $this->lmsRepo->getUnsettledInvoiceTransactions($condition);   
         $invoiceTrans = $invoiceTrans->sortBy('paymentDueDate');
 
         foreach($invoiceTrans as $trans){
@@ -586,12 +590,14 @@ class ApportionmentController extends Controller
         $transactions = null;
         $unInvCnt = BizInvoice::where('supplier_id', $userId)->whereHas('invoice_disbursed')->where('is_repayment','0')->count();
         $showSuggestion = ($unInvCnt <= 50) ?true:false; 
+        $date_of_payment = null;
         if($request->has('payment_id')){
             $paymentId = $request->payment_id;
             $payment = $this->lmsRepo->getPaymentDetail($paymentId,$userId);    
+            $date_of_payment = $payment->date_of_payment;
         }
         
-        $transactions = $this->getUnsettledTrans($userId);
+        $transactions = $this->getUnsettledTrans($userId, $date_of_payment);
         return $this->dataProvider->getUnsettledTrans($request,$transactions,$payment,$showSuggestion);
     }
     
@@ -783,9 +789,9 @@ class ApportionmentController extends Controller
 
                 $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
 
-                if($amtToSettle > $repaymentAmt){
+                if((float) round($amtToSettle,2) > (float) round($repaymentAmt,2)){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
-                    return redirect()->back()->withInput();
+                    return redirect()->route('unsettled_payments')->withInput();
                 }
 
                 if(!empty($transactionList)){
@@ -873,7 +879,7 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 
@@ -1132,14 +1138,14 @@ class ApportionmentController extends Controller
             if($flag['is_settled']){
                 $inv->is_repayment = 1;
                 $inv->status_id = 15;
-                $inv->repayment_amt = $flag['repayment_amt'];
+                $inv->repayment_amt = $flag['receipt'];
                 $inv->principal_repayment_amt = $flag['principal_repayment_amt'];
             }else{
                 if($inv->is_repayment == 1)
                 $inv->is_repayment = 0;
                 if($inv->status_id == 15)
                 $inv->status_id = 12;
-                $inv->repayment_amt = $flag['repayment_amt'];
+                $inv->repayment_amt = $flag['receipt'];
                 $inv->principal_repayment_amt = $flag['principal_repayment_amt'];
             }
             $inv->save();
@@ -1443,6 +1449,9 @@ class ApportionmentController extends Controller
     }
 
     private function apportionmentUndoProcess($payment_id){
+        Session::flash('error', trans('Please try after some time, Service is stop due to some technical error!'));
+        return redirect()->back()->withInput();
+        
         $result = false;
         $error = null;        
         $Obj = new ManualApportionmentHelper($this->lmsRepo);
