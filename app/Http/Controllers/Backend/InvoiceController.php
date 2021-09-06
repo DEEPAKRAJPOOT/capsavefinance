@@ -2015,7 +2015,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $latestData = $disbursalBatchData->disbursal_api_log;
                 $idfc_res_text = $latestData->res_text;
             }
-            $disbursal = $disbursalBatchData->disbursal;
+            $disbursal = $disbursalBatchData->disbursal ?? [];
             $tCust = $disbursal->count();
             $tAmt = number_format($disbursal->sum('disburse_amount'),2);
             foreach($disbursal as $data){
