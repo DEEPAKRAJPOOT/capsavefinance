@@ -136,8 +136,8 @@ class CustomerTransactionSOA extends BaseModel
 
     public static function getSoaList(){
         return self::orderBy('user_id', 'asc')
-                    ->orderBy('trans_date', 'asc')
-                    ->orderBy('trans_id', 'asc');
+        ->orderBy('value_date', 'asc')
+        ->orderBy('trans_id', 'asc');
     }
 
     public function getSoaBackgroundColorAttribute(){
