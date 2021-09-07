@@ -35,6 +35,22 @@
             </div>
         </div>
         @endif
+        
+        @if($data->is_settled == 0)
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="txtCreditPeriod">Transaction Date <span class="error_message_label">*</span></label>
+                <input type="text" id="date_of_payment" name="date_of_payment" class="form-control datepicker-dis-fdate" value="{{ \Carbon\Carbon::parse($data->date_of_payment)->format('d/m/Y') }}">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="txtCreditPeriod">Transaction Amount <span class="error_message_label">*</span></label>
+                <input type="text" id="amount" name="amount" class="form-control formatCurrency" value="{{ $data->amount }}">
+            </div>
+        </div>
+        @endif
+
         <div class="modal-body text-left">
             <div class="row">
                 <div class="col-md-12">
@@ -102,8 +118,16 @@
                 },
                 'cheque_no' : {
                     required: true,
+                    minlength: 6,
+                    maxlength: 6
                 },
                 'cheque': {
+                    required: true,
+                },
+                'date_of_payment': {
+                    required: true,
+                },
+                'amount': {
                     required: true,
                 }
             },

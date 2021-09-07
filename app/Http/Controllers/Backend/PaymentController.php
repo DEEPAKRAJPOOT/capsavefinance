@@ -113,9 +113,7 @@ class PaymentController extends Controller {
  	public function EditPayment(Request $request) {
 		 $paymentId = $request->payment_id;
 		 $paymentType = $request->payment_type;
-		//  dd($request->all(),$paymentType);
 		  $data  =  $this->invRepo->getPaymentById($paymentId);
-		//   dd($data);
 	   	return view('backend.payment.edit_payment')->with(['data' => $data]);
  	}
 	 
@@ -124,7 +122,8 @@ class PaymentController extends Controller {
 	{
 		try {
 			$transaction = null;
-			// dd($request->all());
+			$request['amount'] = str_replace(',', '', $request->amount);
+
 			if ($request->get('eod_process')) {
 				Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
 				return back();
@@ -136,35 +135,30 @@ class PaymentController extends Controller {
 				'payment_type' => Rule::requiredIf(function () use ($request) {
 					return ($request->action_type == 1)?true:false;
 				}),
-				'charges' => Rule::requiredIf(function () use ($request) {
-					return ($request->action_type == 3)?true:false;
-				}),
+				// 'charges' => Rule::requiredIf(function () use ($request) {
+				// 	return ($request->action_type == 3)?true:false;
+				// }),
 				'utr_no' => Rule::requiredIf(function () use ($request) {
 					return ($request->action_type == 1)?true:false;
 				}),
-				'trans_type' => 'required',
+				'trans_type' => Rule::requiredIf(function () use ($request) {
+					return ($request->action_type == 1)?true:false;
+				}),
 				'customer_id' => 'required', 
 				'virtual_acc' => 'required',  
 				'date_of_payment' => 'required|date_format:d/m/Y|before_or_equal:'.$curdate,
 				'amount' => 'required|numeric|gt:0', 
-				'description' => 'required'
+				'description' => 'required',
+				'doc_file' => 'checkmime'
 			],
 			[
-				'charges.required' => 'TDS Submitted on field is required.',
 				'amount.required' => 'Transaction amount is required',
 				'amount.numeric' => 'Transaction amount must be number',
 				'amount.gt' => 'Transaction amount must be greater than zero',
 				'date_of_payment.before_or_equal' => 'The Transaction Date must be a date before or equal to '.$curdateMesg.'.',
+				'doc_file.checkmime' => 'Invalid file format'
 			]);
 
-			if(isset($request->tds_certificate_no)) {
-				$tdsCertificate = Payment::where('tds_certificate_no', $request->tds_certificate_no)->count();
-				if($tdsCertificate > 0) {
-					Session::flash('error', 'Please enter another TDS Certificate No.');
-					return back();	
-				}
-			}	
-			
 			$utr ="";
 			$check  ="";
 			$unr  ="";
@@ -188,8 +182,8 @@ class PaymentController extends Controller {
                 $arrFileData['doc_file'] = $arrFileData['cheque'];
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
 				$userFile = $this->docRepo->saveFile($uploadData);
-			} 
-			
+			}                        
+
 			$paymentData = [
 				'user_id' => $request->user_id,
 				'biz_id' => $request->biz_id,
@@ -210,7 +204,7 @@ class PaymentController extends Controller {
 				'tds_certificate_no' => $request->tds_certificate_no ?? '',
 				'file_id' => $userFile->file_id ?? '',
 				'description' => $request->description,
-				'is_settled' => (in_array($request->action_type, [3])) ? '1':'0',
+				'is_settled' => '0',
 				'is_manual' => '1',
 				'sys_date'=>\Helpers::getSysStartDate(),
 				'generated_by' => 0,
@@ -218,9 +212,10 @@ class PaymentController extends Controller {
 			$paymentId = NULL;
 			
 			if($request->has('charges') && $request->action_type == 3){
+				$paymentData['trans_type'] = '7'; // for tds 7
 				$transaction = Transactions::find($request->charges);
 				if($transaction){
-					if($transaction->TDSAmount < $request->amount){
+					if(round($transaction->TDSAmount, 2) < $request->amount){
 						Session::flash('error', 'TDS amount must be less than or equal to '.$transaction->TDSAmount);
 						return back();
 					}
@@ -231,7 +226,6 @@ class PaymentController extends Controller {
 					$paymentData['is_refundable'] = '0';
 				}
 			}
-			
 			if (in_array($request->action_type, [1,3])) {
 				$paymentId = Payment::insertPayments($paymentData);
 			
@@ -267,48 +261,6 @@ class PaymentController extends Controller {
 				}
 			}
 
-			$sgst=0;
-			$cgst=0;
-			$igst=0;
-			if(isset($request['sgst_amt'])) {
-			  $sgst =   $request['sgst_amt'];  
-			} if(isset($request['cgst_amt'])){
-			  $cgst =   $request['cgst_amt'];  
-			} if(isset($request['igst_amt'])){
-			  $igst =   $request['igst_amt'];  
-			}
-				
-			$tran  = [  
-					'payment_id' => $paymentId,
-					'link_trans_id' =>$request->charges,
-					'parent_trans_id' =>$request->charges,
-					'user_id' => $request['user_id'],
-					'trans_date' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : '',
-					'trans_type' => (in_array($request->action_type, [3])) ? config('lms.TRANS_TYPE.TDS') : $request['trans_type'],
-					'amount' => str_replace(',', '', $request['amount']),
-					'invoice_disbursed_id' => $transaction ? $transaction->invoice_disbursed_id : null,
-					'entry_type' => 1,
-					'gst'=> $request['incl_gst'],
-					'tds_per' => $transaction ? $transaction->TDSRate : null,
-					'gl_flag' => 1,
-					'soa_flag' => 1,
-					'trans_by' => 1,
-					'pay_from' => ($udata)?$udata->is_buyer:'',
-					'is_settled' => 1,
-					'is_posted_in_taaly' => 0
-                  ];
-			if($request->action_type == 3){
-				$res = $this->invRepo->saveRepaymentTrans($tran);
-				$whereActivi['activity_code'] = 'save_payment';
-				$activity = $this->master->getActivity($whereActivi);
-				if(!empty($activity)) {
-					$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
-					$activity_desc = 'Add Repayment & Waived Off TDS (Manage Repayment)';
-					$arrActivity['app_id'] = null;
-					$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($tran), $arrActivity);
-				} 				
-			}
-
 			if($paymentId)
 			{
 		  		Session::flash('message',trans('backend_messages.add_payment_manual'));
@@ -326,11 +278,28 @@ class PaymentController extends Controller {
 	public function updatePayment(Request $request)
 	{
 		try {                    
-                        if ($request->get('eod_process')) {
-                            Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
-                            return back();
-                        }
-                        
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            $validatedData = Validator::make($request->all(),
+				[
+					'doc_file' => 'checkmime',
+					'cheque' => 'checkmime'
+                ],
+				[
+					'doc_file.checkmime' => 'Invalid file format',
+					'cheque.checkmime' => 'Invalid file format'
+                ]);
+			if ($validatedData->fails()) {
+				return redirect()->back()
+					->withErrors($validatedData)
+					->withInput();
+			}
+            $paymentId = $request->get('payment_id');
+			$oldData  =  $this->invRepo->getPaymentById($paymentId);  
+			$oldDateOfPayment = $oldData->date_of_payment;
+			$currDate = Carbon::now()->format('Y-m-d 00:00:00');
 			$arrFileData = $request->all();
 			// $fileId = '';
 
@@ -342,7 +311,7 @@ class PaymentController extends Controller {
 					return back();	
 				}
 			}
-			
+
 			if(isset($arrFileData['doc_file']) && !is_null($arrFileData['doc_file'])) {
 				$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
 			  	$uploadData = Helpers::uploadUserLMSFile($arrFileData, $app_data->app_id);
@@ -367,11 +336,14 @@ class PaymentController extends Controller {
 				// $fileId = $userFile->file_id;
 			}
 
+			$request['amount'] = str_replace(',', '', $request->amount);
 			$paymentData = [
 				'cheque_no' => $request->cheque_no ?? '',
 				'tds_certificate_no' => $request->tds_certificate_no ?? '',
 				'file_id' => $userFile->file_id ?? '',
 				// 'file_id' => $fileId ?? '',
+				'amount' => ($request['amount']) ? $request->amount : $oldData->amount,
+				'date_of_payment' => ($request['date_of_payment']) ? Carbon::createFromFormat('d/m/Y', $request['date_of_payment'])->format('Y-m-d') : $oldData->date_of_payment,
 				'description' => $request->description,
 			];
 			
@@ -755,7 +727,7 @@ class PaymentController extends Controller {
 			if($paymentId){
 				$payment = Payment::find($paymentId);
 				if($payment){
-					if($payment->is_settled == '0' && $payment->action_type == '1' && $payment->trans_type == '17'){
+					if($payment->is_settled == '0' && in_array($payment->action_type, [1,3]) && in_array($payment->trans_type, [17,7])){
 						$payment->delete();
 						InterestAccrualTemp::where('payment_id',$paymentId)->delete();
 

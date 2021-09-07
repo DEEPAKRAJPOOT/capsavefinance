@@ -1563,4 +1563,248 @@ class ApportionmentController extends Controller
 			return response()->json(['status' => 0,'message' => Helpers::getExceptionMessage($ex)]); 
 		}
     }
+
+    public function viewUnsettledTDSTrans(Request $request){
+        try {
+            $oldData = [];
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
+            $oldData['payment'] = (old('payment'))?old('payment'):[];
+            $oldData['check'] = (old('check'))?old('check'):[];
+            $userId = $request->user_id;
+            $paymentId = null;
+            $payment = null;
+            $payment_amt = 0;
+            $userDetails = $this->getUserDetails($userId); 
+            if($request->has('payment_id') && $request->payment_id){
+                $paymentId = $request->payment_id;
+                $payment = $this->getPaymentDetails($paymentId,$userId); 
+                $payment_amt = $payment['payment_amt']; 
+               /* $Obj = new ManualApportionmentHelperTemp($this->lmsRepo);
+                $Obj->setTempInterest($paymentId);*/
+                if(!$payment['isApportPayValid']){
+                    Session::flash('error', trans('Please select Valid Payment!'));
+                    return redirect()->back()->withInput();
+                }
+            }
+
+            $result = $this->getUserLimitDetais($userId);
+            return view('lms.apportionment.unsettledTDSTransactions')
+            ->with('paymentId', $paymentId)  
+            ->with('userId', $userId)
+            ->with('payment',$payment) 
+            ->with('payment_amt', $payment_amt)
+            ->with('userDetails', $userDetails)
+            ->with('oldData',$oldData)
+            ->with('sanctionPageView',$sanctionPageView)
+            ->with(['userInfo' =>  $result['userInfo'],
+                    'application' => $result['application'],
+                    'anchors' =>  $result['anchors']]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        } 
+    }
+
+    public function listUnsettledSettledTDSTrans(Request $request){
+        $userId = $request->user_id;
+        $paymentId = null;
+        $payment_date = null;
+        $payment = null;
+        $transactions = null;
+        if($request->has('payment_id')){
+            $paymentId = $request->payment_id;
+            $payment = $this->lmsRepo->getPaymentDetail($paymentId,$userId);    
+        }
+        if(!$transactions){
+            $transactions = $this->lmsRepo->getUnsettledSettledTDSTrans($userId);
+        }
+        return $this->dataProvider->getUnsettledSettledTDSTrans($request,$transactions,$payment);
+    }
+
+    public function markSettleConfirmationTDS(ApportionmentRequest $request){
+        try {
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
+            $amtToSettle = 0;
+            $unAppliedAmt = 0;
+            $transIds = [];
+            $transactions = [];
+            $transactionList = [];
+            
+            $userId = $request->user_id;
+            $paymentId = $request->payment_id;
+            $payments = ($request->payment)?$request->payment:[];
+            $checks   = ($request->has('check'))?$request->check:[];
+
+            $userDetails = $this->getUserDetails($userId); 
+            $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
+
+            if(!$paymentDetails['isApportPayValid']){
+                if(!$paymentDetails['isApportPayValid']['isValid']){
+                    Session::flash('error', trans('Apportionment is not possible for the selected Payment. Please select valid payment for the unsettled payment screen.'));
+                    return redirect()->back()->withInput();
+                }
+            }
+            $repaymentAmt = $paymentDetails['amount']; 
+            
+            foreach ($checks as $Ckey => $Cval) {
+                if($Cval === 'on' && $payments[$Ckey] > 0){
+                    array_push($transIds, $Ckey);
+                }
+            }
+
+            if(!empty($transIds)){
+                $transactions = Transactions::where('user_id','=',$userId)
+                ->whereIn('trans_id',$transIds)
+                ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
+                ->get();
+            }
+
+            $totalOutstanding = 0;
+
+            foreach ($transactions as $trans){
+                $totalOutstanding += (float)$trans->TDSAmount;
+                $invoiceList[$trans->invoice_disbursed_id] = [
+                    'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
+                    'date_of_payment'=>$paymentDetails['date_of_payment']
+                ];     
+                $transactionList[] = [
+                    'trans_id' => $trans->trans_id,
+                    'trans_date' => $trans->trans_date,
+                    'value_date' => $trans->parenttransdate,
+                    'bill_type' => $trans->bill_type,
+                    'invoice_no' => $trans->invoice_no,
+                    'trans_type' => $trans->trans_type,
+                    'trans_name' =>  $trans->transName,
+                    'total_repay_amt' => (float)$trans->amount,
+                    'outstanding_amt' => (float)$trans->TDSAmount,
+                    'payment_date' =>  $paymentDetails['date_of_payment'],
+                    'pay' => ($payments[$trans->trans_id])?(float)$payments[$trans->trans_id]:null,
+                    'is_valid' => ((float)$payments[$trans->trans_id] <= (float)$trans->TDSAmount)?1:0
+                ];
+                $amtToSettle += $payments[$trans->trans_id];
+            }
+
+            $unAppliedAmt = $repaymentAmt-$amtToSettle;
+
+            if($paymentDetails['action_type'] == '6' &&  $paymentDetails['trans_type'] == '14' && $unAppliedAmt > 0 && $totalOutstanding > 0){
+                Session::flash('error', trans('You cannot settle partial TDS amount, please use full TDS amount for settlement.'));
+                return redirect()->back()->withInput();
+            }
+
+
+            $request->session()->put('apportionment', [
+                'user_id' => $userId,
+                'payment_id' => $paymentId,
+                'payment' => $payments,
+                'check' => $checks,
+            ]);
+        
+            return view('lms.apportionment.markSettledConfirmTDS',[
+                'paymentId' => $paymentId,
+                'userId' => $userId,
+                'payment' => $paymentDetails,
+                'userDetails' => $userDetails,
+                'transactions' => $transactionList,
+                'unAppliedAmt' => $unAppliedAmt,
+                'sanctionPageView'=>$sanctionPageView
+            ]);
+
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    public function TDSMarkSettleSave(Request $request){
+        try {
+            $Obj = new ManualApportionmentHelper($this->lmsRepo);
+            $sanctionPageView = false;
+            if($request->has('sanctionPageView')){
+                $sanctionPageView = $request->get('sanctionPageView');
+            }
+            if($request->session()->has('apportionment')){
+                $amtToSettle = 0; 
+                $transIds = [];
+                $userId = $request->session()->get('apportionment.user_id');
+                $paymentId = $request->session()->get('apportionment.payment_id');
+                $payments = $request->session()->get('apportionment.payment');
+                $checks = $request->session()->get('apportionment.check');
+
+                $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
+                $repaymentAmt = (float) $paymentDetails['amount']; 
+                
+                $invoiceList = [];
+                $transactionList = [];
+
+                foreach ($checks as $Ckey => $Cval) {
+                    if($Cval === 'on' && $payments[$Ckey] > 0){
+                        array_push($transIds, $Ckey);
+                    }
+                }
+
+                $transactions = [];
+                if(!empty($transIds)){
+                    $transactions = Transactions::where('user_id','=',$userId)
+                    ->whereIn('trans_id',$transIds)
+                    ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
+                    ->get();
+                }
+
+                $totalOutstanding = 0;
+                foreach ($transactions as $trans){  
+                    $totalOutstanding += (float)$trans->outstanding; 
+                    
+                    $transactionList[] = [
+                        'payment_id' => $paymentId,
+                        'link_trans_id' => $trans->trans_id,
+                        'parent_trans_id' => $trans->trans_id,
+                        'invoice_disbursed_id' => $trans->invoice_disbursed_id,
+                        'user_id' => $userId,
+                        'trans_date' => $paymentDetails['date_of_payment'],
+                        'amount' => $payments[$trans->trans_id],
+                        'entry_type' => 1,
+                        'soa_flag' => 1,
+                        'trans_type' => config('lms.TRANS_TYPE.TDS'),
+                        'trans_mode' => 2,
+                        'tds_per' => $trans->TDSRate,
+                    ];
+                    $amtToSettle += $payments[$trans->trans_id];
+                }
+
+                $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
+
+                if($paymentDetails['action_type'] == '6' &&  $paymentDetails['trans_type'] == '14' && $unAppliedAmt > 0 && $totalOutstanding > 0){
+                    Session::flash('error', trans('Please use whole unapplied amount.'));
+                    return redirect()->back()->withInput();
+                }
+
+                if(round($amtToSettle, 2) > round($repaymentAmt, 2)){
+                    Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
+                    return redirect()->back()->withInput();
+                }
+
+                if(!empty($transactionList)){
+                    foreach ($transactionList as $key => $newTrans) {
+                        $this->lmsRepo->saveTransaction($newTrans);
+                        if ($newTrans['invoice_disbursed_id']) {
+                            $this->updateInvoiceRepaymentFlag([$newTrans['invoice_disbursed_id']]);
+                        }
+                    }
+                    /** Mark Payment Settled */
+                    $payment = Payment::find($paymentId);
+                    $payment->is_settled = 1;
+                    $payment->save();
+                }
+
+                $request->session()->forget('apportionment');
+                return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
+            }
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
 }

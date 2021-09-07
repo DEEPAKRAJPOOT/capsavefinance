@@ -96,7 +96,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group ">
                                                 <label for="txtCreditPeriod">Transaction Date<span class="error_message_label">*</span> </label>
-                                                <input type="text" name="date_of_payment" id="date_of_payment" readonly="readonly" class="form-control">
+                                                <input type="text" name="date_of_payment" id="date_of_payment" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -349,7 +349,7 @@ cursor: pointer;
                         $('#waiveoff_div').hide();
                         get_repayment_amount();
                     }if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate',  null);
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -382,7 +382,7 @@ cursor: pointer;
             $( "#tds_certificate_no" ).rules( "remove", 'required');
             $("#date_of_payment").val('');
             $("#amount").val('');
-            $("#reflect_amount").html('');
+             $("#reflect_amount").html('')
             var element = $(this).find('option:selected'); 
             var index = element.attr("index"); 
             var chargeData = userData['charges'][index];
@@ -428,26 +428,7 @@ cursor: pointer;
             }
         });
         
-        $.validator.addMethod("uniqueTdsCertificate",
-            function(value, element, params) {
-                var result = true;
-                var data = {tds_certificate_no : value, _token: messages.token};
-                if (params.id) {
-                    data['id'] = params.id;
-                }
-                $.ajax({
-                    type:"POST",
-                    async: false,
-                    url: messages.unique_tds_certificate_no, // script to validate in server side
-                    data: data,
-                    success: function(data) {                        
-                        result = (data.status == 1) ? false : true;
-                    }
-                });                
-                return result;                
-            },'Please enter another TDS Certificate No.'
-        );
-
+        
         $('#savePayFrm').validate( {
                 rules: {
                 search_bus: {
@@ -486,10 +467,6 @@ cursor: pointer;
                     gst:{
                         required:$("#incl_gst:checked").val()>0?false:true,
                     },
-                    tds_certificate_no:{
-                        required:false,
-                        uniqueTdsCertificate: true
-                    },
                     cheque:{
                         required:true,
                     },                    
@@ -509,7 +486,7 @@ cursor: pointer;
         $("#date_of_payment").val('');
         $("#amount").val('');
         $('#txtAmt').text("");
-        $("#reflect_amount").html('');
+        $("#reflect_amount").html('')
         this.userData = data;
         $("#biz_id").val(data.biz_id);
         $("#user_id").val(data.user_id);
@@ -546,7 +523,7 @@ cursor: pointer;
                     $('#charges').html('<option value="">Select Transaction</option>');
                     $('#amount').val(''); 
                     $('#txtAmt').text("");
-                    $("#reflect_amount").html('');
+                    $("#reflect_amount").html('')
                 }
                 $('.isloader').hide();     
             } 
@@ -593,17 +570,13 @@ cursor: pointer;
             success: function(resultData) {                        
                 var amt = parseFloat(resultData.repayment_amount);
                 if (resultData.repayment_amount != ""){
-                    if(userData['action_type']!=3){
-                        $('#amount').val(amt.toFixed(2)); 
-                    }
-                    $("#amount").val(amt.toFixed(2)); 
-
+                    $('#txtAmt').text("( ₹ "+ amt.toFixed(2) +" )");
                     $('#amount').removeAttr('max');
                     $('#amount').removeAttr('max-data');  
                 } else {
                     $('#txtAmt').text("");
                     $("#amount").val("");
-                    $("#reflect_amount").html('');
+                    $("#reflect_amount").html('')
                 }
                 $('.isloader').hide();
             }
@@ -625,7 +598,7 @@ cursor: pointer;
                     $('#amount').attr('max-data',amt.toFixed(2));
                 }else{
                     $('#amount').val(''); 
-                    $("#reflect_amount").html('');
+                    $("#reflect_amount").html('')
                 }
             }
         });
