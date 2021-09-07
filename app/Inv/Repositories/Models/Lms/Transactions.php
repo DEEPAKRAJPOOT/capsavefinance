@@ -1371,4 +1371,28 @@ class Transactions extends BaseModel {
                 return ($item->outstanding > 0 && $item->isTransaction && $item->paymentDueDate < date('Y-m-d'));
             });
     }
+
+    public static function getUnsettledSettledTDSTrans($userId, $where = []){
+        $query = self::whereNull('parent_trans_id')
+                ->whereNull('payment_id')
+                ->where('user_id',$userId);
+        if(!empty($where['trans_type_not_in'])){
+            $query = $query->whereNotIn('trans_type',$where['trans_type_not_in']);
+        }
+        if(!empty($where['trans_type_in'])){
+            $query = $query->whereIn('trans_type', $where['trans_type_in']);
+        }
+        $query->where(function ($query1) {
+            $query1->whereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+            ->orWhere(function ($query3) {
+                $query3->whereHas('transType', function($query4) {
+                    $query4->where('chrg_master_id' , '>', 0);
+                });
+            });
+        });
+        return $query->get()
+                ->filter(function($item) {
+                    return ($item->TDSAmount > 0 && $item->isTransaction);
+                });
+    }
 }

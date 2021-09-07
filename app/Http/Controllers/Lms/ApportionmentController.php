@@ -553,8 +553,12 @@ class ApportionmentController extends Controller
                 'transactionno'=> $payment->transactionno,
                 'payment_amt' => $payment->amount,
                 'is_settled' => $payment->is_settled,
+                'created_at' => $payment->created_at,
+                'invoice_id' => ($payment->invoice_id)?$payment->invoice->parent_invoice_id:null,
                 'isApportPayValid' => $payment->isApportPayValid,
                 'user_id' => $payment->user_id,
+                'action_type' => $payment->action_type,
+                'trans_type' => $payment->trans_type
             ];
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();

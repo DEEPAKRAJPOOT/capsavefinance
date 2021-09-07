@@ -5419,5 +5419,13 @@ if ($err) {
             $result = ['status' => 0];
         }
         return response()->json($result); 
-    }      
+    }
+
+    public function getTDSOutstatingAmount(Request $request)
+    {
+        $userId    = $request->get('user_id');
+        $TDSOutstating = $this->lmsRepo->getTDSOutstatingAmount($userId);
+        $TDSOutstating = ((float)$TDSOutstating<0) ? 0 : $TDSOutstating;
+        return response()->json(['tds_amount' => round($TDSOutstating, 2)]);
+    }
 }

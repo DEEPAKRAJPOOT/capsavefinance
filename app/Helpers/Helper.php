@@ -825,8 +825,6 @@ class Helper extends PaypalHelper
      */
     public static function checkPermission($routePerm)
     {
-
-
         $user_id = \Auth::user()->user_id;
         $roleData = User::getBackendUser($user_id);
 
@@ -2303,8 +2301,28 @@ class Helper extends PaypalHelper
 
     public static function appStatus($app_id)
     {
+       return $appData = Application::getAppData((int) $app_id)->status;       
+    }
 
-       return $appData = Application::getAppData((int) $app_id)->status;
-       
+    /**
+     * Format Currency without symbol
+     * 
+     * @param decimal $amount
+     * @param string $locale | optional
+     * @return string
+     */
+    public static function formatCurrencyNoSymbol($amount, $decimal = true, $prefixCurrency = true)
+    {
+        if(is_numeric($amount)){
+
+            // $currency = '₹';
+            $amount = $decimal ? round($amount,2) : round($amount);
+            $formattedAmount = preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $amount);
+            if ($prefixCurrency) {
+                $formattedAmount = "$formattedAmount";
+            }
+            return $formattedAmount;
+        }
+        return null;
     }
 }

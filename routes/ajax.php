@@ -199,14 +199,15 @@ Route::group(
         ]
     );
 
-     Route::post(
+    Route::post(
         'get-users-wci-single',
         [
         'as' => 'get_users_wci_single',
         'uses' => 'AjaxController@getUsersDetailAPIDummy'
         ]
     );
-   Route::post(
+
+    Route::post(
         'save_repayment',
         [
         'as' => 'save_repayment',
@@ -1321,6 +1322,11 @@ Route::group(
     Route::post('unique-bank-master-url', [
         'as' => 'check_unique_bank_master_url',
         'uses' => 'AjaxController@checkUniqueBankMaster'
+    ]);
+
+    Route::post('get-tdsoutstanding-amount', [
+        'as' => 'get_tdsoutstanding_amount',
+        'uses' => 'AjaxController@getTDSOutstatingAmount'
     ]);
     
     Route::match(['get', 'post'], '/check_document_name_exist_ajax', 'AjaxController@checkDocumentNametAjax');

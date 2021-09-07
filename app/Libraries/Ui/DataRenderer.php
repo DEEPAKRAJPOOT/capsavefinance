@@ -5337,6 +5337,10 @@ class DataRenderer implements DataProviderInterface
                                 $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
                             }
 
+                            if(Helpers::checkPermission('apport_unsettledtds_view') && $dataRecords->is_settled == 0  && in_array($dataRecords->action_type, [3]) && $dataRecords->trans_type == 7 && !$dataRecords->isApportPayValid['error']){
+                                $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettledtds_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled TDS Transactions</a>";
+                            }
+
                             return $btn;
                     }) 
                     ->make(true);
@@ -7794,4 +7798,66 @@ class DataRenderer implements DataProviderInterface
             ->make(true);
     }
 
+    /*
+     *
+     * Get All Unsettled Settled TDS Transactions
+     */
+    public function getUnsettledSettledTDSTrans(Request $request, $trans,$payment)
+    {
+        return DataTables::of($trans)
+            ->rawColumns(['select', 'pay','outstanding_amt'])
+            ->addColumn('disb_date', function($trans){
+                return Carbon::parse($trans->parenttransdate)->format('d-m-Y');
+            })
+            ->addColumn('payment_due_date', function($trans){
+                return Carbon::parse($trans->paymentDueDate)->format('d-m-Y');
+            })
+            ->addColumn('bill_type', function($trans){
+                return $trans->billType;
+            })
+            ->addColumn('invoice_no', function($trans){
+                return $trans->InvoiceNo;
+            })
+            ->addColumn('trans_type', function($trans){
+                return $trans->transName;
+            })
+            ->addColumn('total_repay_amt', function($trans){
+                return "₹ ".\Helpers::formatCurrencyNoSymbol($trans->amount);
+            })
+            ->addColumn('outstanding_amt', function($trans)use($payment){
+                $outResult = "₹ ".\Helpers::formatCurrencyNoSymbol($trans->TDSAmount);
+                // if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST')])){
+                //     $accuredInterest = $trans->tempInterest;
+                //     if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
+                //            $outResult .= " <span style=\"color:red\">(".\Helpers::formatCurrencyNoSymbol($accuredInterest).")</span>";
+                //     }
+                // }
+                return $outResult;
+            })
+            ->addColumn('payment_date', function($trans)use($payment){
+                if($payment){
+                    return Carbon::parse($payment->date_of_payment)->format('d-m-Y');
+                }
+            })
+            ->addColumn('pay', function($trans)use($payment){
+                $result = '';
+                if($payment){
+                    // if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST')])){
+                    //     $accuredInterest = $trans->tempInterest;
+                    //     if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
+                    //         return  "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($accuredInterest,2)."' name='payment[".$trans->trans_id."]'>";
+                    //     }
+                    // }
+                    $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->TDSAmount,2)."' name='payment[".$trans->trans_id."]'>";    
+                }
+                return $result;
+            })
+            ->addColumn('select', function($trans){
+                $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ( in_array($trans->trans_type, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) ? 'interest' : '');
+                $amount = $trans->TDSAmount;
+                $result = "<input class='check' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' amount='$amount' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
+                return $result;
+            })
+            ->make(true);
+    }
 }

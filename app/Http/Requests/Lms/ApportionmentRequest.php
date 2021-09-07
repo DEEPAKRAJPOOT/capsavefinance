@@ -60,30 +60,50 @@ class ApportionmentRequest extends FormRequest
             //if (empty($formData['check']) || !is_array($formData['check'])) {
             //  $validator->errors()->add("check.required", 'Atleast a payment is require to settle');
             //}
-            if(isset($formData['check'])){
-
-                foreach ($formData['check'] as $key => $value) {
-                    $selectedPayment = $formData['payment'][$key] ?? 0;
-                    $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);
-                    $outstandingAmount = $transDetail->getOutstandingAttribute();
-                    $realOurstandingAmount = $transDetail->getTempInterestAttribute();
-                    if (empty($selectedPayment)) {
-                        $validator->errors()->add("payment.{$key}", 'Pay is required against selected transaction');
-                    }
-                    if ($outstandingAmount < $selectedPayment) {
-                        $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the outsanding amount');
-                    }
-                    if($showSuggestion && $transDetail->invoice_disbursed_id && !($transDetail->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $transDetail->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $transDetail->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
-                        if ($realOurstandingAmount < $selectedPayment && in_array($transDetail->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])) {
-                            $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the Suggested outsanding amount'); 
+            if(isset($formData['settlement']) && $formData['settlement'] == 'TDS'){
+                if(isset($formData['check'])){
+                    foreach ($formData['check'] as $key => $value) {
+                        $selectedPayment = $formData['payment'][$key] ?? 0;
+                        $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);
+                        $outstandingAmount = $transDetail->getTDSAmountAttribute();
+                        if (empty($selectedPayment)) {
+                            $validator->errors()->add("payment.{$key}", 'Pay is required against selected transaction');
                         }
+                        if (round($outstandingAmount,2) < round($selectedPayment,2)) {
+                            $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the outsanding amount');
+                        }
+                        $totalselectedAmount += $selectedPayment;
                     }
-                    $totalselectedAmount += $selectedPayment;
                 }
-            }
-            
-            if ( round($totalselectedAmount,2) > round($totalRePayAmount,2)) {
-                    $validator->errors()->add("totalRepayAmount", 'Sum of pay must be less than: '. $totalRePayAmount);
+
+                if (round($totalselectedAmount,2) > round($totalRePayAmount,2)) {
+                        $validator->errors()->add("totalRepayAmount", 'Sum of pay must be less than: '. $totalRePayAmount);
+                }
+            } else {
+                if(isset($formData['check'])){
+                    foreach ($formData['check'] as $key => $value) {
+                        $selectedPayment = $formData['payment'][$key] ?? 0;
+                        $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);
+                        $outstandingAmount = $transDetail->getOutstandingAttribute();
+                        $realOurstandingAmount = $transDetail->getTempInterestAttribute();
+                        if (empty($selectedPayment)) {
+                            $validator->errors()->add("payment.{$key}", 'Pay is required against selected transaction');
+                        }
+                        if ($outstandingAmount < $selectedPayment) {
+                            $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the outsanding amount');
+                        }
+                        if($showSuggestion && $transDetail->invoice_disbursed_id && !($transDetail->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $transDetail->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $transDetail->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
+                            if ($realOurstandingAmount < $selectedPayment && in_array($transDetail->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])) {
+                                $validator->errors()->add("payment.{$key}", 'Pay filed must be less than and equal to the Suggested outsanding amount'); 
+                            }
+                        }
+                        $totalselectedAmount += $selectedPayment;
+                    }
+                }
+
+                if ( round($totalselectedAmount,2) > round($totalRePayAmount,2)) {
+                        $validator->errors()->add("totalRepayAmount", 'Sum of pay must be less than: '. $totalRePayAmount);
+                }
             }
         });
     }

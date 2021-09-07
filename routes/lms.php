@@ -848,6 +848,26 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'undo_apportionment',
                         'uses' => 'Lms\ApportionmentController@undoApportionment',
                     ]);
+
+                    Route::get('/unsettled/tds/view', [
+                        'as' => 'apport_unsettledtds_view',
+                        'uses' => 'Lms\ApportionmentController@viewUnsettledTDSTrans',
+                    ]);
+
+                    Route::post('/settledunsettled/tds/list', [
+                        'as' => 'apport_settledunsettled_tds_list',
+                        'uses' => 'Lms\ApportionmentController@listUnsettledSettledTDSTrans',
+                    ]);
+
+                    Route::post('/mark/settle/confirmation/tds', [
+                        'as' => 'apport_mark_settle_confirmation_tds',
+                        'uses' => 'Lms\ApportionmentController@markSettleConfirmationTDS',
+                    ]);
+
+                    Route::post('/tds/mark/settle/save', [
+                        'as' => 'tds_apport_mark_settle_save',
+                        'uses' => 'Lms\ApportionmentController@TDSMarkSettleSave',
+                    ]);
                 }
             });
 

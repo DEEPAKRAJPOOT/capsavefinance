@@ -1816,4 +1816,15 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return GstTax::getLastGSTRecord();
     }
+
+	public function getTDSOutstatingAmount($userId)
+    {
+        $transaction = Transactions::getUnsettledSettledTDSTrans($userId);
+        return $transaction->sum('TDSAmount');
+    }
+
+	public static function getUnsettledSettledTDSTrans($data)
+	{
+		return Transactions::getUnsettledSettledTDSTrans($data);
+	}
 }
