@@ -315,7 +315,7 @@ class Payment extends BaseModel {
         $payment_id = Transactions::where('user_id',$this->user_id)->max('payment_id');
         if($payment_id){
             $paymentDetails = self::find($payment_id);
-            if($paymentDetails->trans_type == '17' && $paymentDetails->action_type == '1'){
+            if($paymentDetails->trans_type == '17' && $paymentDetails->action_type == '1' && $paymentDetails->apportionment_id){
                 $returnId = $payment_id;
             }
         }
