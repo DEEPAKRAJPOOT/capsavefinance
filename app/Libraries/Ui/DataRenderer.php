@@ -5337,8 +5337,8 @@ class DataRenderer implements DataProviderInterface
                                 $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
                             }
 
-                            if($dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING  && in_array($dataRecords->action_type, [3]) && $dataRecords->trans_type == 7 && !$dataRecords->isApportPayValid['error']
-                                || (in_array($dataRecords->action_type, [3]) && $dataRecords->trans_type == 7 && !$dataRecords->isApportPayValid['error']
+                            if(Helpers::checkPermission('apport_unsettledtds_view') && $dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING  && in_array($dataRecords->action_type, [3]) && $dataRecords->trans_type == 7 && !$dataRecords->isApportPayValid['error']
+                                || (Helpers::checkPermission('apport_unsettledtds_view') && in_array($dataRecords->action_type, [3]) && $dataRecords->trans_type == 7 && !$dataRecords->isApportPayValid['error']
                                     && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && $dataRecords->updated_by == Auth::user()->user_id)
                             ){
                                 $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettledtds_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled TDS Transactions</a>";
