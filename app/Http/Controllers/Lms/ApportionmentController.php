@@ -1700,13 +1700,19 @@ class ApportionmentController extends Controller
                 return redirect()->back()->withInput();
             }
 
-
             $request->session()->put('apportionment', [
                 'user_id' => $userId,
                 'payment_id' => $paymentId,
                 'payment' => $payments,
                 'check' => $checks,
             ]);
+
+            $payment = Payment::find($paymentId);
+
+            if (!$this->verifyUnSettleTransInitiator($payment, $settleConfirmation = true))
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle TDS transactions')->withInput();
+
+            $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
         
             return view('lms.apportionment.markSettledConfirmTDS',[
                 'paymentId' => $paymentId,
@@ -1725,6 +1731,13 @@ class ApportionmentController extends Controller
 
     public function TDSMarkSettleSave(Request $request){
         try {
+            $payment = Payment::find($request->payment_id);
+
+            if (!$this->verifyUnSettleTransInitiator($payment))
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle TDS transactions')->withInput();
+
+            $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSED]);
+
             $Obj = new ManualApportionmentHelper($this->lmsRepo);
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
@@ -1800,7 +1813,7 @@ class ApportionmentController extends Controller
                     }
                     /** Mark Payment Settled */
                     $payment = Payment::find($paymentId);
-                    $payment->is_settled = 1;
+                    $payment->is_settled = Payment::PAYMENT_SETTLED;
                     $payment->save();
                 }
 
@@ -1808,6 +1821,10 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
+            $payment = Payment::find($request->payment_id);
+            if ($payment)
+                $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
+
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
