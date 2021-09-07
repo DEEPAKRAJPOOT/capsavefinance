@@ -195,9 +195,12 @@ class SoaController extends Controller
     
     public function prepareDataForRendering($expecteddata){
         $preparedData = [];
+        $balance = 0;
         foreach($expecteddata as $key => $expData){
             foreach ($expData as $k => $data) {
-                $balance = $this->getBalance($data, $balance??0);
+                $cr = round($data->credit_amount,2);
+                $dr = round($data->debit_amount,2);
+                $balance = round(($balance + $dr - $cr),2);
                 $preparedData[$key][$k]['payment_id'] = $data->transaction->payment_id;
                 $preparedData[$key][$k]['parent_trans_id'] = $data->transaction->parent_trans_id;
                 $preparedData[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
@@ -208,9 +211,9 @@ class SoaController extends Controller
                 $preparedData[$key][$k]['invoice_no'] = $data->invoice_no;
                 $preparedData[$key][$k]['narration'] = $data->narration;
                 $preparedData[$key][$k]['currency'] = trim($data->transaction->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')]) ? '' : 'INR');
-                $preparedData[$key][$k]['debit'] = $data->debit_amount;
-                $preparedData[$key][$k]['credit'] = $data->credit_amount;
-                $preparedData[$key][$k]['balance'] = $data->balance_amount;
+                $preparedData[$key][$k]['debit'] = $dr;
+                $preparedData[$key][$k]['credit'] = '('.$cr.')';
+                $preparedData[$key][$k]['balance'] = ($balance>0)?$balance:'('.abs($balance).')';
                 $preparedData[$key][$k]['soabackgroundcolor'] = $data->soabackgroundcolor;
             }
         }

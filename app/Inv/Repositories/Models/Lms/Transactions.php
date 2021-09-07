@@ -431,7 +431,8 @@ class Transactions extends BaseModel {
     public static function getUnsettledTrans($userId, $where = []){
         $query = self::whereNull('parent_trans_id')
                 ->whereNull('payment_id')
-                ->where('user_id',$userId);
+                ->where('user_id',$userId)
+                ->where('is_transaction', true);
         if(!empty($where['trans_type_not_in'])){
             $query = $query->whereNotIn('trans_type',$where['trans_type_not_in']); 
         }
@@ -440,7 +441,7 @@ class Transactions extends BaseModel {
         }
         return $query->get()
                 ->filter(function($item) {
-                    return ($item->outstanding > 0 && $item->is_transaction);
+                    return ($item->outstanding > 0);
                 });
     }
 
@@ -569,7 +570,7 @@ class Transactions extends BaseModel {
     public static function getUnsettledInvoiceTransactions($data = [])
     {
        
-        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id');
+        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id')->where('is_transaction', true);
         $invoiceDisbursed = $data['invoiceDisbursed']??null;
         if(isset($invoiceDisbursed)){
             $query->where(function($query2) use($invoiceDisbursed){
@@ -600,7 +601,7 @@ class Transactions extends BaseModel {
         $query = $query->orderByRaw("FIELD(trans_type, '".config('lms.TRANS_TYPE.INTEREST')."', '".config('lms.TRANS_TYPE.PAYMENT_DISBURSED')."', '".config('lms.TRANS_TYPE.INTEREST_OVERDUE')."', '".config('lms.TRANS_TYPE.MARGIN')."' ), trans_id");
  
         return $query->get()->filter(function($item) {
-            return ($item->outstanding > 0 && $item->is_transaction);
+            return ($item->outstanding > 0);
         });
     }
 
@@ -711,7 +712,8 @@ class Transactions extends BaseModel {
     }
 
     public static function getJournalTxnTally(array $where = []){
-        return self::with('transType')->where(function ($query) {
+        return self::with('transType')->where('is_transaction', true)
+        ->where(function ($query) {
             $query->whereHas('transType', function($q) { 
                 $q->where('entry_type', '=', '0')->where('is_invoice_generated', '=', '1')->where(function ($qry) {
                    $qry->where('id', '=', config('lms.TRANS_TYPE.INTEREST'))->orWhere('chrg_master_id','!=','0');
@@ -724,9 +726,7 @@ class Transactions extends BaseModel {
             ->orWhere(function ($q) {
                 $q->whereIn('trans_type', [config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.TDS')])->where('entry_type', '=', '1');
             });
-        })->where($where)->orderBy('trans_date', 'ASC')->get()->filter(function($item){
-            return ( $item->is_transaction);
-}); 
+        })->where($where)->orderBy('trans_date', 'ASC')->get();
     }
 
     public static function getDisbursalTxnTally(array $where = []){
@@ -1364,7 +1364,8 @@ class Transactions extends BaseModel {
         $query = self::whereNull('parent_trans_id')
                 ->whereNull('payment_id')
                 ->where('user_id',$userId)
-                ->doesntHave('nachTansReq');
+                ->doesntHave('nachTansReq')
+                ->where('is_transaction', true);
         if(!empty($where['trans_type_not_in'])){
             $query = $query->whereNotIn('trans_type',$where['trans_type_not_in']); 
         }
@@ -1374,7 +1375,7 @@ class Transactions extends BaseModel {
 
         return $query->get()
             ->filter(function($item) {
-                return ($item->outstanding > 0 && $item->is_transaction && $item->paymentDueDate < date('Y-m-d'));
+                return ($item->outstanding > 0  && $item->paymentDueDate < date('Y-m-d'));
             });
     }
 }
