@@ -16,6 +16,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use Event;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class AgencyController extends Controller {
 
@@ -23,6 +24,8 @@ class AgencyController extends Controller {
     protected $appRepo;
     protected $masterRepo;
 
+    use ActivityLogTrait;
+    
     /**
      * Create a new controller instance.
      *
@@ -79,6 +82,14 @@ class AgencyController extends Controller {
             $arrAgencyData['created_at'] = \carbon\Carbon::now();
             $arrAgencyData['created_by'] = Auth::user()->user_id;
             $status = $this->userRepo->saveAgency($arrAgencyData);
+            
+            $whereActivi['activity_code'] = 'save_agency_reg';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Add Agency in Manage Agency';
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAgencyData));                
+            }            
             if($status){
                 Session::flash('message', trans('backend_messages.agency_registration_success'));
                 Session::flash('operation_status', 1); 
@@ -141,6 +152,15 @@ class AgencyController extends Controller {
                         'updated_by'=>Auth::user()->user_id
                     ];
             $status = $this->userRepo->updateAgency($arrAgencyData, $request->agency_id);
+
+            $whereActivi['activity_code'] = 'update_agency_reg';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Update Agency User in Manage Agency AgencyId ' .$request->agency_id;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAgencyData));                
+            }            
+            
             if($status){
                 Session::flash('message', trans('backend_messages.agency_registration_updated'));
                 Session::flash('operation_status', 1); 
@@ -191,6 +211,14 @@ class AgencyController extends Controller {
                     'password' => bcrypt($string)
                 ];
                 $current_user_info = $this->userRepo->save($arrAgencyUserData);
+
+                $whereActivi['activity_code'] = 'save_agency_user_reg';
+                $activity = $this->masterRepo->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Add Agency User in Manage Agency User';
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAgencyUserData));                
+                }
                 $this->userRepo->saveUserDetails([
                     'user_id'=>$current_user_info->user_id,
                     'created_by'=>Auth::user()->user_id,
@@ -252,7 +280,13 @@ class AgencyController extends Controller {
                 'is_active' => $arrAgencyData['is_active']
             ];
             $current_user_info = $this->userRepo->save($arrAgencyUserData, $user_id);
-            
+            $whereActivi['activity_code'] = 'update_agency_user_reg';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Update Agency User in Manage Agency user AgencyId ' .$arrAgencyData['agency_id'];
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAgencyUserData));                
+            }            
             Session::flash('message', trans('backend_messages.agency_user_registration_updated'));
             Session::flash('operation_status', 1);
             return redirect()->route('get_agency_user_list');

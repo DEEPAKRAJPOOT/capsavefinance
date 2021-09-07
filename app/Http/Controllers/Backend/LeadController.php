@@ -26,24 +26,28 @@ use Illuminate\Support\Facades\Validator;
 use App\Inv\Repositories\Models\Master\City as CityModel;
 use App\Inv\Repositories\Models\User;
 use DB;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 
 class LeadController extends Controller {
 
     protected $userRepo;
     protected $appRepo;
+    use ActivityLogTrait;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo,InvDocumentRepoInterface $doc_repo) {
+    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo,InvDocumentRepoInterface $doc_repo, InvMasterRepoInterface $mstRepo) {
         $this->middleware('guest')->except('logout');
         $this->middleware('checkBackendLeadAccess');
 
         $this->userRepo = $user;
         $this->appRepo = $app_repo;
         $this->docRepo = $doc_repo;
+        $this->mstRepo = $mstRepo;
     }
 
     /**
@@ -116,6 +120,15 @@ class LeadController extends Controller {
                 $userId = $request->get('userId'); 
                 $attributes['f_name'] = $request->get('f_name'); 
                 $attributes['biz_name'] = $request->get('biz_name'); 
+
+                $whereActivi['activity_code'] = 'update_backend_lead';
+                $activity = $this->mstRepo->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Update Non-Anchor Lead registration';
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($attributes));
+                }                
+                
                 $userInfo = $this->userRepo->updateUser($attributes, $userId);
                 Session::flash('operation_status', 1); 
                 //return view('backend.lead.index');
@@ -162,7 +175,14 @@ class LeadController extends Controller {
                     'created_at' => \Carbon\Carbon::now(),
                 ];
                 $this->userRepo->createLeadAssign($arrLeadAssingData);
-                
+
+                $whereActivi['activity_code'] = 'save_backend_lead';
+                $activity = $this->mstRepo->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Add Non-Anchor Lead registration';
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['arrLeadAssingData' => $arrLeadAssingData, 'arrUserData' => $arrUserData]));
+                }                
                 //Add application workflow stages
                 Helpers::addWfAppStage('new_case', $userDataArray->user_id);
 
@@ -272,7 +292,15 @@ class LeadController extends Controller {
             $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]); 
             $this->appRepo->updateAppAssignById($app_id, ['is_owner'=>0]);
             $application = $this->appRepo->saveShaircase($dataArr); 
-             
+
+            $whereActivi['activity_code'] = 'accept_application_pool';
+            $activity = $this->mstRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Pick Up Lead in Application Pool of AppId. '. $app_id;
+                $arrActivity['app_id'] = $app_id;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($dataArr), $arrActivity);
+            }               
              Session::flash('is_accept', 1);
              return redirect()->back();
              
@@ -336,6 +364,7 @@ class LeadController extends Controller {
                     'comp_zip' => $arrAnchorVal['pin_code'],
                     'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req']
                 ];
+
                 $anchor_info = $this->userRepo->saveAnchor($arrAnchorData);
 
                 $arrAnchUserData = [
@@ -381,6 +410,13 @@ class LeadController extends Controller {
                         self::uploadAnchorLogo($request->all(), $role['user_id'] ,$anchor_info);
                     }
 
+                    $whereActivi['activity_code'] = 'add_anchor_reg';
+                    $activity = $this->mstRepo->getActivity($whereActivi);
+                    if(!empty($activity)) {
+                        $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                        $activity_desc = 'Add Anchor';
+                        $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAnchorData));
+                    }
                     Session::flash('message', trans('backend_messages.anchor_registration_success'));
                     return redirect()->route('get_anchor_list');
                 }        
@@ -651,6 +687,15 @@ class LeadController extends Controller {
             ];
 
             $this->appRepo->saveBankAccount($prepareData, $bank_acc_id);
+
+            $whereActivi['activity_code'] = 'save_anchor_bank_account';
+            $activity = $this->mstRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Anchor Bank Details';
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($prepareData));
+            }
+            
             $messges = $bank_acc_id ? trans('success_messages.update_bank_account_successfully') : trans('success_messages.save_bank_account_successfully');
             Session::flash('message', $messges);
             Session::flash('operation_status', 1);
@@ -718,6 +763,13 @@ class LeadController extends Controller {
                 self::uploadAnchorLogo($request->all(), $anchorInfo->user_id ,$anchId);
             }
 
+            $whereActivi['activity_code'] = 'update_anchor_reg';
+            $activity = $this->mstRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Update Anchor';
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAnchorData));            
+            }
             if ($updateAnchInfo && $Updateanchorinfo) {
                 Session::flash('message', trans('backend_messages.anchor_registration_updated'));
                 return redirect()->route('get_anchor_list');
@@ -806,7 +858,14 @@ class LeadController extends Controller {
                     'anchor_id' => $anchorId,
                     // 'supplier_code' => isset($arrAnchorVal['supplier_code']) ? trim($arrAnchorVal['supplier_code']) : null,
                 ];
-            
+                
+                $whereActivi['activity_code'] = 'add_manual_anchor_lead';
+                $activity = $this->mstRepo->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Add Anchor Lead Manually in Manage Anchor';
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAnchorData));
+                }
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
                 /*
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);

@@ -2560,6 +2560,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
             ->get();
     }
 
+    // get all agency
+    public function getAgenciByAgenciId($id){
+        $agency = Agency::getAgenciByAgenciId($id);
+        return $agency ?: false;
+    }
+    
     public function getInvoiceProcessingFeeCharge(){
         return Charges::find(12);
     }

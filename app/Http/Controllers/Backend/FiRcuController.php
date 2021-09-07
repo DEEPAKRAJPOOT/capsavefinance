@@ -12,17 +12,21 @@ use Session;
 use Helpers;
 use Auth;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class FiRcuController extends Controller
 {
     protected $appRepo;
     protected $userRepo;
+    use ActivityLogTrait;
 
-    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocRepoInterface $doc_repo){
+    public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocRepoInterface $doc_repo, InvMasterRepoInterface $mstRepo){
         $this->appRepo = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
         $this->middleware('checkBackendLeadAccess');
+        $this->mstRepo = $mstRepo;
     }
     
     /**
@@ -97,12 +101,39 @@ class FiRcuController extends Controller
     {
         $roleData = \Auth::user()->user_id;
         $userId = $request->all('to_id');
+        $app_id = $request->all('app_id');
         $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
         if((int)$userId['to_id'] == $roleData) {
             Session::flash('error',trans('You can not assign to same user'));
            return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);  
         }
         $this->appRepo->insertFIAddress($request->all());  
+
+        $whereActivi['activity_code'] = 'save_assign_fi';
+        $activity = $this->mstRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Trigger for FI in FI Residence AppID ' . $request->get('app_id');
+            $arrActivity['app_id'] = $request->get('app_id');
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+        }                        
+        
+        $comment = $request->get('comment');
+        $agencyId = $request->get('agency_id');
+        $userId = $request->get('to_id');
+        $request_info = $request->get('address_ids');
+
+        $agencyDatas = $this->appRepo->getAgenciByAgenciId((int) $agencyId);
+        $userData = $this->userRepo->getUserDetail($userId);
+
+        $emailData['email'] = isset($agencyDatas) ? $agencyDatas->comp_email : '';
+        $emailData['name'] = isset($agencyDatas) ? $agencyDatas->comp_name : '';
+        $emailData['user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
+        $emailData['user_email'] = isset($userData) ? $userData->email : '';
+        $emailData['comment'] = isset($comment) ? $comment : '';
+        $emailData['trigger_type'] = 'FI';
+        $emailData['subject'] = 'Capsave has requested FI for this FI ID '. $request_info;
+        \Event::dispatch("FI_FCU_PD_CONCERN_MAIL", serialize($emailData));
         return redirect()->route('backend_fi', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
 
@@ -172,6 +203,16 @@ class FiRcuController extends Controller
         //dd($request->all());
         $appData = $this->appRepo->getAppDataByAppId($request->get('app_id'));
         $this->appRepo->insertFIAddress($request->all());  
+
+        $whereActivi['activity_code'] = 'save_assign_inspection';
+        $activity = $this->mstRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Trigger for FI in Assign Inspection AppID ' . $request->get('app_id');
+            $arrActivity['app_id'] = $request->get('app_id');
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+        }          
+        
         return redirect()->route('backend_inspection', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
     }
 
@@ -265,6 +306,31 @@ class FiRcuController extends Controller
             }
                 
         }
+
+        $comment = $request->get('comment');
+        $agencyId = $request->get('agency_id');
+        $userId = $request->get('to_id');
+        $request_info = $request->get('document_ids');
+        $agencyDatas = $this->appRepo->getAgenciByAgenciId((int) $agencyId);
+        $userData = $this->userRepo->getUserDetail($userId);
+
+        $emailData['email'] = isset($agencyDatas) ? $agencyDatas->comp_email : '';
+        $emailData['name'] = isset($agencyDatas) ? $agencyDatas->comp_name : '';
+        $emailData['user'] = isset($userData) ? $userData->f_name . ' ' . $userData->l_name : '';
+        $emailData['user_email'] = isset($userData) ? $userData->email : '';
+        $emailData['comment'] = isset($comment) ? $comment : '';
+        $emailData['trigger_type'] = 'RCU';
+        $emailData['subject'] = 'Capsave has requested RCU for this RCU ID '. $request_info;
+        \Event::dispatch("FI_FCU_PD_CONCERN_MAIL", serialize($emailData));
+        
+        $whereActivi['activity_code'] = 'save_assign_rcu';
+        $activity = $this->mstRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Trigger for FI in RCU Document AppID ' . $requestAll['app_id'];
+            $arrActivity['app_id'] = $requestAll['app_id'];
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['requestAll' => $requestAll, 'rcuDocArr' => $rcuDocArr, 'rcuStatusLogArr' => $rcuStatusLogArr]), $arrActivity);
+        }          
         
         Session::flash('message',trans('success_messages.rcu.assigned'));
         return redirect()->route('backend_rcu', ['app_id' => request()->get('app_id'), 'biz_id' => $appData->biz_id]);   
