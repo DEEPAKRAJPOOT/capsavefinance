@@ -643,6 +643,18 @@ class ApportionmentController extends Controller
             }
 
             foreach ($transactions as $trans){
+
+                $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
+                $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL; 
+                if (isset($userInvoiceDate)) {
+                    $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
+                }
+                if (isset($userInvoiceDate)) {
+                    $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
+                }
+                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                    continue;
+                }
                 $invoiceList[$trans->invoice_disbursed_id] = [
                     'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
                     'date_of_payment'=>$paymentDetails['date_of_payment']
@@ -738,7 +750,18 @@ class ApportionmentController extends Controller
                     'trans_mode' => 2,
                 ];
 
-                foreach ($transactions as $trans){  
+                foreach ($transactions as $trans){
+                    $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
+                    $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL;
+                    if (isset($userInvoiceDate)) {
+                        $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
+                    }
+                    if (isset($userInvoiceDate)) {
+                        $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
+                    } 
+                    if ((isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) || $trans->Outstanding <= 0) {
+                        continue;
+                    }
                     if($trans->invoice_disbursed_id){
 
                         $invoiceList[$trans->invoice_disbursed_id] = [
