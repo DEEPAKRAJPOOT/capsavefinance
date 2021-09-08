@@ -1729,6 +1729,30 @@ class ApportionmentController extends Controller
         }
     }
 
+    private function handleRefundProcess($trans, $payments, $paymentDetails, $userId)
+    {
+        $data             = [];
+        $transOutstanding = (float)$trans->outstanding;
+        if (is_array($payments) && count($payments) && isset($payments[$trans->trans_id]) &&
+            $payments[$trans->trans_id] > $transOutstanding
+        ) {
+            $data[] = [
+                'payment_id'           => $paymentDetails['payment_id'],
+                'link_trans_id'        => $trans->trans_id,
+                'parent_trans_id'      => $trans->parent_trans_id ?? $trans->trans_id,
+                'invoice_disbursed_id' => $trans->invoice_disbursed_id ?? null,
+                'user_id'              => $userId,
+                'trans_date'           => $paymentDetails['date_of_payment'],
+                'amount'               => $payments[$trans->trans_id],
+                'soa_flag'             => 1,
+                'entry_type'           => 1,
+                'trans_type'           => config('lms.TRANS_TYPE.REFUND'),
+                'trans_mode'           => 2,
+            ];
+        }
+        return $data;
+    }
+
     public function TDSMarkSettleSave(Request $request){
         try {
             $payment = Payment::find($request->payment_id);
@@ -1772,7 +1796,9 @@ class ApportionmentController extends Controller
                 }
 
                 $totalOutstanding = 0;
-                foreach ($transactions as $trans){  
+                $refundTrans = [];
+                foreach ($transactions as $trans){
+
                     $totalOutstanding += (float)$trans->outstanding; 
                     
                     $transactionList[] = [
@@ -1790,8 +1816,9 @@ class ApportionmentController extends Controller
                         'tds_per' => $trans->TDSRate,
                     ];
                     $amtToSettle += $payments[$trans->trans_id];
-                }
 
+                    $refundTrans[] = $this->handleRefundProcess($trans, $payments, $paymentDetails, $userId);                    
+                }
                 $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
 
                 if($paymentDetails['action_type'] == '6' &&  $paymentDetails['trans_type'] == '14' && $unAppliedAmt > 0 && $totalOutstanding > 0){
@@ -1816,6 +1843,37 @@ class ApportionmentController extends Controller
                     $payment->is_settled = Payment::PAYMENT_SETTLED;
                     $payment->save();
                 }
+
+                $transactionList = [];
+
+                if($unAppliedAmt > 0){
+                    $transactionList[] = [
+                        'payment_id'           => $paymentId,
+                        'link_trans_id'        => null,
+                        'parent_trans_id'      => null,
+                        'invoice_disbursed_id' => null,
+                        'user_id'              => $userId,
+                        'trans_date'           => $paymentDetails['date_of_payment'],
+                        'amount'               => $unAppliedAmt,
+                        'entry_type'           => 1,
+                        'soa_flag'             => 1,
+                        'trans_type'           => config('lms.TRANS_TYPE.NON_FACTORED_AMT'),
+                        'trans_mode'           => 2,
+                    ];
+                }
+                if(!empty($transactionList)){
+                    foreach ($transactionList as $key => $newTrans) {
+                        $this->lmsRepo->saveTransaction($newTrans);
+                    }
+                }
+
+                /* Refund Process Start */
+                if (count($refundTrans)) {
+                    foreach($refundTrans as $newTrans) {
+                        $this->lmsRepo->saveTransaction($newTrans);
+                    }
+                }
+                /* Refund Process End */
 
                 $request->session()->forget('apportionment');
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
