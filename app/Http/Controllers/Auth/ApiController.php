@@ -14,6 +14,7 @@ use App\Inv\Repositories\Models\Master\TallyEntry;
 use App\Helpers\Helper;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 use Storage;
+use Session;
 
 /**
  * 
@@ -1079,43 +1080,59 @@ class ApiController
   }
 
   public function changeFinancialYear(Request $request) {
-    $response = [
-     'status' => 'fail',
-     'message' => "Some error occured, Please try again later."
-   ];
-    $appId = $request->get('app_id');
-    $year = explode('-', $request->get('year'));
-    if (count($year) != 3 || ($year[0]-$year[1]) != ($year[1]-$year[2]) || ($year[0]-$year[1]) != 1) {
-      $response['message'] = 'Three consecutive years in Desc Order are required to Change the years';
-      return $response;
+    if($request->isMethod('post')) {
+      $response = [
+        'status' => 'fail',
+        'message' => "Some error occured, Please try again later."
+      ];
+      
+      $appId = $request->get('app_id');
+      $year = explode('-', $request->get('year'));
+
+      
+      if (count($year) != 3 || ($year[0]-$year[1]) != ($year[1]-$year[2]) || ($year[0]-$year[1]) != 1) {
+
+        Session::flash('error', trans('Three consecutive years in Desc Order are required to Change the years'));
+        return redirect()->route('api_change_year');        
+        // $response['message'] = 'Three consecutive years in Desc Order are required to Change the years';
+        // return $response;
+      }
+      
+      $nameArr = $this->getLatestFileName($appId, 'finance', 'json');
+      if (empty($nameArr['curr_file'])) {
+        Session::flash('error', trans('No file found to update the year for this application'));
+        return redirect()->route('api_change_year');                
+        // $response['message'] = 'No file found to update the year for this application';
+        // return $response;
+      }
+      $toUploadPath = $this->getToUploadPath($appId, 'finance');
+      $contents = json_decode(base64_decode(file_get_contents($toUploadPath.'/'. $nameArr['curr_file'])),true);
+      $fy = $contents['FinancialStatement']['FY'] ?? [];
+      if (empty($fy)) {
+        Session::flash('error', trans('No Content found to update the year'));
+        return redirect()->route('api_change_year'); 
+        // $response['message'] = 'No Content found to update the year';
+        // return $response;
+      }
+      foreach ($fy as $key => $fyData) {
+        $fy[$key]['year'] = $year[$key];
+      }
+      if (count($fy) == 2) {
+        $fy['2'] = $fyData;
+      }
+      $contents['FinancialStatement']['FY'] = $fy;
+      $json_file_name = $nameArr['new_file'];
+      $myfile = fopen($toUploadPath .'/'.$json_file_name, "w");
+      $changeContent = base64_encode(json_encode($contents));
+      \File::put($toUploadPath .'/'.$json_file_name, $changeContent);
+      dump($nameArr, $toUploadPath .'/'.$json_file_name,$changeContent);
+        Session::flash('message', trans('Year changes successfully'));
+        return redirect()->route('api_change_year'); 
+      // $response['status'] = 'success';
+      // $response['message'] = 'Year changes successfully';
+      // return $response;
     }
-    $nameArr = $this->getLatestFileName($appId, 'finance', 'json');
-    if (empty($nameArr['curr_file'])) {
-      $response['message'] = 'No file found to update the year for this application';
-      return $response;
-    }
-    $toUploadPath = $this->getToUploadPath($appId, 'finance');
-    $contents = json_decode(base64_decode(file_get_contents($toUploadPath.'/'. $nameArr['curr_file'])),true);
-    $fy = $contents['FinancialStatement']['FY'] ?? [];
-    if (empty($fy)) {
-      $response['message'] = 'No Content found to update the year';
-      return $response;
-    }
-    foreach ($fy as $key => $fyData) {
-      $fy[$key]['year'] = $year[$key];
-    }
-    if (count($fy) == 2) {
-      $fy['2'] = $fyData;
-    }
-    $contents['FinancialStatement']['FY'] = $fy;
-    $json_file_name = $nameArr['new_file'];
-    $myfile = fopen($toUploadPath .'/'.$json_file_name, "w");
-    $changeContent = base64_encode(json_encode($contents));
-    \File::put($toUploadPath .'/'.$json_file_name, $changeContent);
-    dump($nameArr, $toUploadPath .'/'.$json_file_name,$changeContent);
-    $response['status'] = 'success';
-    $response['message'] = 'Year changes successfully';
-    return $response;
+    return view('change_financial_yr');
   }
 }
 

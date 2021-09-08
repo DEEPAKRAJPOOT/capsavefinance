@@ -770,6 +770,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::post('create_reduced_limit_app', [
                 'as' => 'create_reduced_limit_app',
                 'uses' => 'Backend\RenewalController@renewApplication'
+            ]);  
+            
+            Route::get('api/change/year',[
+                'as' => 'api_change_year',
+                'uses' => 'Auth\ApiController@changeFinancialYear'
+            ]);
+
+            Route::post('api/change/year',[
+                'as' => 'api_change_year',
+                'uses' => 'Auth\ApiController@changeFinancialYear'
             ]);            
             
         });//end of application
