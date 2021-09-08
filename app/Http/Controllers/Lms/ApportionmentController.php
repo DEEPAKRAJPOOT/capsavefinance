@@ -1737,7 +1737,7 @@ class ApportionmentController extends Controller
             $payments[$trans->trans_id] > $transOutstanding
         ) {
             $refundAmt =  $transOutstanding - $payments[$trans->trans_id];
-            $data[]    = [
+            $data    = [
                 'payment_id'           => $paymentDetails['payment_id'],
                 'link_trans_id'        => $trans->trans_id,
                 'parent_trans_id'      => $trans->parent_trans_id ?? $trans->trans_id,
