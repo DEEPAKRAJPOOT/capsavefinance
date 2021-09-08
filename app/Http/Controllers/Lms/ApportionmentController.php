@@ -1839,6 +1839,7 @@ class ApportionmentController extends Controller
                     
                     $transactionList[] = [
                         'payment_id' => $paymentId,
+                        'apportionment_id'=> $paymentId,
                         'link_trans_id' => $trans->trans_id,
                         'parent_trans_id' => $trans->trans_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
