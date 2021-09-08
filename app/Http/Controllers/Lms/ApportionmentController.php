@@ -670,6 +670,18 @@ class ApportionmentController extends Controller
             }
 
             foreach ($transactions as $trans){
+
+                $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
+                $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL; 
+                if (isset($userInvoiceDate)) {
+                    $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
+                }
+                if (isset($userInvoiceDate)) {
+                    $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
+                }
+                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                    continue;
+                }
                 $invoiceList[$trans->invoice_disbursed_id] = [
                     'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
                     'date_of_payment'=>$paymentDetails['date_of_payment']
@@ -785,6 +797,7 @@ class ApportionmentController extends Controller
 
                 $transactionList[] = [
                     'payment_id' => $paymentId,
+                    'apportionment_id'=> $paymentId,
                     'link_trans_id' => null,
                     'parent_trans_id' => null,
                     'invoice_disbursed_id' => null,
@@ -797,7 +810,18 @@ class ApportionmentController extends Controller
                     'trans_mode' => 2,
                 ];
 
-                foreach ($transactions as $trans){  
+                foreach ($transactions as $trans){
+                    $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
+                    $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL;
+                    if (isset($userInvoiceDate)) {
+                        $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
+                    }
+                    if (isset($userInvoiceDate)) {
+                        $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
+                    } 
+                    if ((isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) || $trans->Outstanding <= 0) {
+                        continue;
+                    }
                     if($trans->invoice_disbursed_id){
 
                         $invoiceList[$trans->invoice_disbursed_id] = [
@@ -810,6 +834,7 @@ class ApportionmentController extends Controller
                     }
                     $transactionList[] = [
                         'payment_id' => $paymentId,
+                        'apportionment_id'=> $paymentId,
                         'link_trans_id' => $trans->trans_id,
                         'parent_trans_id' => $trans->trans_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
@@ -846,6 +871,7 @@ class ApportionmentController extends Controller
                 if($unAppliedAmt > 0){
                     $transactionList[] = [
                         'payment_id' => $paymentId,
+                        'apportionment_id'=> $paymentId,
                         'link_trans_id' => null,
                         'parent_trans_id' => null,
                         'invoice_disbursed_id' => null,
@@ -872,7 +898,7 @@ class ApportionmentController extends Controller
                     }
                     
                     $Obj->intAccrual($invDisb['invoice_disbursed_id'], $date_of_payment);
-                    $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId);
+                    $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId, $useApporCol = true);
                 }
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
 
@@ -884,6 +910,7 @@ class ApportionmentController extends Controller
                     if($refundAmt > 0 && $refundParentTrans){
                         $transactionList[] = [
                             'payment_id' => $paymentId,
+                            'apportionment_id'=> $paymentId,
                             'link_trans_id' => $refundParentTrans->trans_id,
                             'parent_trans_id' => $refundParentTrans->trans_id,
                             'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
@@ -1488,20 +1515,63 @@ class ApportionmentController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
+    
+    private function processApportionmentUndoTrans($payment, $result)
+    {
+        $userId             =   $payment->user_id;
+        $paymentId          =   $payment->payment_id;
 
-    private function apportionmentUndoProcess($payment_id){
+        $query              =   Transactions::where('apportionment_id', $paymentId)
+                                            ->where('user_id', $userId);
+        $query1             =   clone $query;
+        $data               =   $query->whereNotNull('invoice_disbursed_id')
+                                    ->distinct('invoice_disbursed_id')
+                                    ->pluck('sys_created_at', 'invoice_disbursed_id')
+                                    ->toArray();
+
+        $uniqInvDisbIds     =   array_keys($data);
+        $paymentDate        =   $payment->date_of_payment;
+        $from               =   Carbon::parse($paymentDate)->format('Y-m-d');
+        $to                 =   now()->format('Y-m-d');
+        $interestAccruals   =   InterestAccrual::whereBetween('interest_date', [$from, $to])
+                                            ->whereIn('invoice_disbursed_id', $uniqInvDisbIds)
+                                            ->get();
+        $interestAccruals->each->delete();
+
+        $maxTransId         =   $query1->max('trans_id');
+        $transactions       =   $query1->get();
+        $transactions->each->delete();
+
+        if ($maxTransId) {
+            $trans          =   Transactions::whereIn('invoice_disbursed_id', $uniqInvDisbIds)
+                                            ->where('user_id', $userId)
+                                            ->where('trans_id', '<', $maxTransId)
+                                            ->whereNotNull('invoice_disbursed_id')
+                                            ->whereNull('payment_id')
+                                            ->whereNull('apportionment_id')
+                                            ->get();
+            $trans->each->delete();
+            $result = true;
+        }
+
+        if ($result) {
+            $Obj  = new ManualApportionmentHelper($this->lmsRepo);
+            foreach ($data as $invDisb => $sysCreatedAt) {
+                $Obj->intAccrual($invDisb, $sysCreatedAt);
+            }
+        }
+
+        return $result;
+    }
+
+    private function apportionmentUndoProcess($payment){
         Session::flash('error', trans('Please try after some time, Service is stop due to some technical error!'));
         return redirect()->back()->withInput();
         
         $result = false;
-        $error = null;        
-        $Obj = new ManualApportionmentHelper($this->lmsRepo);
-        $invoiceDisbursedId = Transactions::where('payment_id',$payment_id)
-        ->groupBy('invoice_disbursed_id')
-        ->whereNotNull('invoice_disbursed_id')
-        ->pluck('sys_created_at','invoice_disbursed_id')
-        ->toArray();
-        $transactions = Transactions::where('payment_id',$payment_id)->get();
+        $error  = null;
+        $query  = Transactions::where('payment_id', $payment->payment_id);
+        $transactions = $query->get();
         
         if($transactions){
             foreach($transactions as $trans){
@@ -1515,18 +1585,11 @@ class ApportionmentController extends Controller
         }
         
         if(!$error){
-            $result = Transactions::where('payment_id',$payment_id)->delete();
-            if($result){
-                $result = true;
-                foreach ($invoiceDisbursedId as $invDisb => $sysCreatedAt) {
-                    $Obj->intAccrual($invDisb, $sysCreatedAt);
-                }
-            }
+            $result = $this->processApportionmentUndoTrans($payment, $result);
             return ['status' => $result];
         }else{
             return ['status' => $result, 'error' => $error];
-        }
-        
+        }        
     }
 
     public function undoApportionment(Request $request){
@@ -1535,9 +1598,8 @@ class ApportionmentController extends Controller
 			if($paymentId){
 				$payment = Payment::find($paymentId);
 				if($payment){
-                    if($payment->is_settled == '1' && $payment->action_type == '1' && $payment->trans_type == '17' && strtotime(\Helpers::convertDateTimeFormat($payment->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d'))
-                    ){
-						$aporUndoPro = self::apportionmentUndoProcess($paymentId);
+                    if($payment->is_settled == '1' && $payment->action_type == '1' && $payment->trans_type == '17' && $payment->validRevertPayment ){
+						$aporUndoPro = self::apportionmentUndoProcess($payment);
                         if($aporUndoPro['status']){
                             $payment->is_settled = '0';
                             $payment->save();
