@@ -1736,14 +1736,15 @@ class ApportionmentController extends Controller
         if (is_array($payments) && count($payments) && isset($payments[$trans->trans_id]) &&
             $payments[$trans->trans_id] > $transOutstanding
         ) {
-            $data[] = [
+            $refundAmt =  $transOutstanding - $payments[$trans->trans_id];
+            $data[]    = [
                 'payment_id'           => $paymentDetails['payment_id'],
                 'link_trans_id'        => $trans->trans_id,
                 'parent_trans_id'      => $trans->parent_trans_id ?? $trans->trans_id,
                 'invoice_disbursed_id' => $trans->invoice_disbursed_id ?? null,
                 'user_id'              => $userId,
                 'trans_date'           => $paymentDetails['date_of_payment'],
-                'amount'               => $payments[$trans->trans_id],
+                'amount'               => $refundAmt,
                 'soa_flag'             => 1,
                 'entry_type'           => 1,
                 'trans_type'           => config('lms.TRANS_TYPE.REFUND'),
