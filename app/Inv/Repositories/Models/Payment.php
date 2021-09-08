@@ -10,6 +10,7 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 class Payment extends BaseModel {
     
@@ -322,5 +323,17 @@ class Payment extends BaseModel {
     public function scopeSettledProcessed($query)
     {
         return $query->orWhere('is_settled', self::PAYMENT_SETTLED_PROCESSED);
+    }
+
+    public function getValidRevertPaymentAttribute() {
+        $returnId = NULL;
+        $payment_id = Transactions::where('user_id',$this->user_id)->max('payment_id');
+        if($payment_id){
+            $paymentDetails = self::find($payment_id);
+            if($paymentDetails->trans_type == '17' && $paymentDetails->action_type == '1'){
+                $returnId = $payment_id;
+            }
+        }
+        return ($returnId == $this->payment_id);
     }
 }
