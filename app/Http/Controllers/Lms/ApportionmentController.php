@@ -1801,6 +1801,7 @@ class ApportionmentController extends Controller
             $refundAmt =  $transOutstanding - $payments[$trans->trans_id];
             $data    = [
                 'payment_id'           => $paymentDetails['payment_id'],
+                'apportionment_id'     => $paymentDetails['payment_id'],
                 'link_trans_id'        => $trans->trans_id,
                 'parent_trans_id'      => $trans->parent_trans_id ?? $trans->trans_id,
                 'invoice_disbursed_id' => $trans->invoice_disbursed_id ?? null,
@@ -1913,6 +1914,7 @@ class ApportionmentController extends Controller
                 if($unAppliedAmt > 0){
                     $transactionList[] = [
                         'payment_id'           => $paymentId,
+                        'apportionment_id'     => $paymentId,
                         'link_trans_id'        => null,
                         'parent_trans_id'      => null,
                         'invoice_disbursed_id' => null,
