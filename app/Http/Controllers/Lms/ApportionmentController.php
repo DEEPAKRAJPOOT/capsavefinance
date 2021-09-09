@@ -1798,21 +1798,23 @@ class ApportionmentController extends Controller
         if (is_array($payments) && count($payments) && isset($payments[$trans->trans_id]) &&
             $payments[$trans->trans_id] > $transOutstanding
         ) {
-            $refundAmt =  $transOutstanding - $payments[$trans->trans_id];
-            $data    = [
-                'payment_id'           => $paymentDetails['payment_id'],
-                'apportionment_id'     => $paymentDetails['payment_id'],
-                'link_trans_id'        => $trans->trans_id,
-                'parent_trans_id'      => $trans->parent_trans_id ?? $trans->trans_id,
-                'invoice_disbursed_id' => $trans->invoice_disbursed_id ?? null,
-                'user_id'              => $userId,
-                'trans_date'           => $paymentDetails['date_of_payment'],
-                'amount'               => $refundAmt,
-                'soa_flag'             => 1,
-                'entry_type'           => 1,
-                'trans_type'           => config('lms.TRANS_TYPE.REFUND'),
-                'trans_mode'           => 2,
-            ];
+            $refundAmt = $payments[$trans->trans_id] - $transOutstanding;
+            if ($refundAmt > 0) {
+                $data    = [
+                    'payment_id'           => $paymentDetails['payment_id'],
+                    'apportionment_id'     => $paymentDetails['payment_id'],
+                    'link_trans_id'        => $trans->trans_id,
+                    'parent_trans_id'      => $trans->parent_trans_id ?? $trans->trans_id,
+                    'invoice_disbursed_id' => $trans->invoice_disbursed_id ?? null,
+                    'user_id'              => $userId,
+                    'trans_date'           => $paymentDetails['date_of_payment'],
+                    'amount'               => $refundAmt,
+                    'soa_flag'             => 1,
+                    'entry_type'           => 1,
+                    'trans_type'           => config('lms.TRANS_TYPE.REFUND'),
+                    'trans_mode'           => 2,
+                ];
+            }
         }
         return $data;
     }
@@ -1882,7 +1884,9 @@ class ApportionmentController extends Controller
                     ];
                     $amtToSettle += $payments[$trans->trans_id];
 
-                    $refundTrans[] = $this->handleRefundProcess($trans, $payments, $paymentDetails, $userId);                    
+                    $data = $this->handleRefundProcess($trans, $payments, $paymentDetails, $userId);
+                    if (is_array($data) && count($data))
+                        $refundTrans[] = $data;
                 }
                 $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
 
