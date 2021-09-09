@@ -4553,7 +4553,7 @@ if ($err) {
         }
         $this->dataRecords  =   $query->settledProcessing()
                                       ->settledProcessed()
-                                      ->orderByDesc('created_at');
+                                      ->orderBy('created_at', 'desc');
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
         return $this->providerResult;
     }
