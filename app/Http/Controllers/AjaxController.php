@@ -4178,7 +4178,8 @@ if ($err) {
             $query->where('customer_id', '=', "$customer_id");
         })
         ->whereHas('transaction', function ($q) {
-            $q->where('is_transaction', true);
+            $q->where('is_transaction', true)
+            ->where('soa_flag', 1);
         })
         ->get();
 
