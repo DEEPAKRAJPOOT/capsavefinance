@@ -209,7 +209,7 @@ class Transactions extends BaseModel {
         ->sum('amount');
     }
 
-    public function getIsTransactionAttribute(){
+    public function getIsTransactionFlagAttribute(){
         $flag = true;
 
         if($this->parentTransactions){
