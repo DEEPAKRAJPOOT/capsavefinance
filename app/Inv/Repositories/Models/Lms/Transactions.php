@@ -488,6 +488,7 @@ class Transactions extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
         
+        $transactions['is_transaction'] = true;
         $transactions['sys_updated_at'] = Helpers::getSysStartDate();
         if (!empty($whereCondition)) {
             return self::where($whereCondition)->update($transactions);
@@ -1377,5 +1378,17 @@ class Transactions extends BaseModel {
             ->filter(function($item) {
                 return ($item->outstanding > 0  && $item->paymentDueDate < date('Y-m-d'));
             });
+    }
+
+    public function setIsTransactionAttribute($value)
+    {
+        if(is_null($this->trans_id)){
+            $chrg_id = TransType::where('id',$this->trans_type)->value('chrg_master_id');
+            if($chrg_id > 0 || $this->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                $this->attributes['is_transaction'] = false;
+            }else{
+                $this->attributes['is_transaction'] = true;
+            }
+        }
     }
 }
