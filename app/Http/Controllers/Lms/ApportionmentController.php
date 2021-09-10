@@ -912,10 +912,10 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
-            Payment::where(['user_id' => $request->user_id, 'payment_id' => $request->payment_id])
-                    ->update([
-                        'is_settled' => Payment::PAYMENT_SETTLED_PENDING
-                    ]);
+            $payment = Payment::find($request->payment_id);
+            if ($payment)
+                $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PENDING]);
+
             return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
