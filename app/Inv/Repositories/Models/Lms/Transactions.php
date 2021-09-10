@@ -1381,7 +1381,7 @@ class Transactions extends BaseModel {
 
     public function setIsTransactionAttribute($value)
     {
-        if(is_null($this->trans_id)){
+        if(is_null($this->trans_id) || $this->is_transaction == 2){
             $chrg_id = TransType::where('id',$this->trans_type)->value('chrg_master_id');
             if($chrg_id > 0 || $this->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
                 $this->attributes['is_transaction'] = false;
