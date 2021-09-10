@@ -135,7 +135,11 @@ class CustomerTransactionSOA extends BaseModel
     }
 
     public static function getSoaList(){
-        return self::orderBy('user_id', 'asc')
+        return self::whereHas('transaction', function ($q) {
+            $q->where('is_transaction', true)
+            ->where('soa_flag', 1);
+        })
+        ->orderBy('user_id', 'asc')
         ->orderBy('value_date', 'asc')
         ->orderBy('trans_id', 'asc');
     }

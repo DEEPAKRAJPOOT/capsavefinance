@@ -4177,10 +4177,6 @@ if ($err) {
             $customer_id = trim($request->get('customer_id')) ?? null ;
             $query->where('customer_id', '=', "$customer_id");
         })
-        ->whereHas('transaction', function ($q) {
-            $q->where('is_transaction', true)
-            ->where('soa_flag', 1);
-        })
         ->get();
 
         $users = $dataProvider->getSoaList($this->request, $transactionList);
