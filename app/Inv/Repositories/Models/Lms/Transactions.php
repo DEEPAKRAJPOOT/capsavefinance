@@ -396,7 +396,7 @@ class Transactions extends BaseModel {
             $tdsRate = $this->tDSRate;
             $amount -= $this->getWaiveOffAmount();
             
-            if($this->transType->chrg_master_id){
+            if($this->transType->chrg_master_id && $this->transType->charge && $this->transType->charge->gst_percentage){
                 $gst_per = $this->transType->charge->gst_percentage;
             }
             
