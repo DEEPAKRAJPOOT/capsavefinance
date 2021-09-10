@@ -540,7 +540,7 @@ class userInvoiceController extends Controller
     private function checkIsTransactionUpdatable($trans_id)
     {
         if (isset($trans_id)) {
-            Transactions::where('parent_trans_id',$trans_id)->orWhere('trans_id',$trans_id)->update(['is_transaction',1]);
+            Transactions::where('parent_trans_id',$trans_id)->orWhere('trans_id',$trans_id)->update(['is_transaction' => 1]);
         }
     }
 
