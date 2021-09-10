@@ -312,10 +312,10 @@ class Payment extends BaseModel {
     
     public function getValidRevertPaymentAttribute() {
         $returnId = NULL;
-        $payment_id = Transactions::where('user_id',$this->user_id)->max('payment_id');
+        $payment_id = Transactions::where('user_id',1042)->whereNotNull('apportionment_id')->max('payment_id');
         if($payment_id){
             $paymentDetails = self::find($payment_id);
-            if($paymentDetails->trans_type == '17' && $paymentDetails->action_type == '1' && $paymentDetails->apportionment_id){
+            if($paymentDetails->trans_type == '17' && $paymentDetails->action_type == '1'){
                 $returnId = $payment_id;
             }
         }
