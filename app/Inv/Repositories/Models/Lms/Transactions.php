@@ -454,8 +454,9 @@ class Transactions extends BaseModel {
                 //->whereNotNull('parent_trans_id')
                 ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
                 ->where('user_id','=',$userId)->get()
+                ->where('is_transaction',1)
                 ->filter(function($item){
-                    return ($item->refundoutstanding > 0 && $item->is_transaction);
+                    return ($item->refundoutstanding > 0);
                 });
     }
 
@@ -623,8 +624,8 @@ class Transactions extends BaseModel {
         }
         $query->orderBy('trans_date','ASC');
 
-        return $query->get()->filter(function($item) {
-            return ($item->outstanding > 0 && $item->is_transaction);
+        return $query->where('is_transaction',1)->get()->filter(function($item) {
+            return ($item->outstanding > 0);
         });
     }
 
@@ -924,10 +925,8 @@ class Transactions extends BaseModel {
         ->whereNull('link_trans_id')
         ->whereNull('payment_id')
         ->where('entry_type',0)
-        ->get()
-        ->filter(function($item) {
-            return ($item->is_transaction);
-        });
+        ->where('is_transaction',1)
+        ->get();
     }
     
     public static function getTallyTxns(array $where = array()) {
