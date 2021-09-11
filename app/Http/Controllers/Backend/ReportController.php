@@ -578,7 +578,6 @@ class ReportController extends Controller
         if(empty($emailTo)){
             dd('DAILY_REPORT_MAIL is missing');
         }
-		array_push($emailTo,"sudesh.kumar@zuron.in");
 		
         $anchorList = Anchor::where('is_active','1');
         if($anchor_id){
