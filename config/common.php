@@ -330,6 +330,13 @@ return [
         '6' => 'Large',
         '7' => 'Others',
     ],
+    'LEGAL_CONSTITUTION' = [
+            '2' => '11',
+            '3' => '12',
+            '5' => '30',
+            '1' => '40',
+            '4' => '40'
+        ],
     'CREDIT_TYPE' => [
         '0100' => 'Cash credit',
         '0200' => 'Overdraft',

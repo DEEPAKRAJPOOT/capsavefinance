@@ -188,9 +188,9 @@ class CibilReportController extends Controller
             'TIN' => NULL,
             'Service Tax #' => NULL,
             'Other ID' => NULL,
-            'Borrower’s Legal Constitution' => $appBusiness->constitution->name,
-            'Business Category' => config('common.MSMETYPE')[$appBusiness->msme_type] ?? NULL,
-            'Business/ Industry Type' => $appBusiness->industryType->name,
+            'Borrower’s Legal Constitution' => config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution],
+            'Business Category' => $appBusiness->msme_type,//config('common.MSMETYPE')[$appBusiness->msme_type] ?? NULL,
+            'Business/ Industry Type' => $appBusiness->industryType->id,//name
             'Class of Activity 1' => NULL,
             'Class of Activity 2' => NULL,
             'Class of Activity 3' => NULL,
@@ -226,7 +226,7 @@ class CibilReportController extends Controller
         $data[] = [
           'Segment Identifier' => 'AS',
           'Borrower Office Location Type' => $addressType[$addr_data->address_type ?? 0] ?? NULL,
-          'Borrower Office DUNS Number' => '999999999',
+          'Borrower Office DUNS Number' => NULL,
           'Address Line 1' => $fullAddress,
           'Address Line 2' => NULL,
           'Address Line 3' => NULL,
@@ -254,11 +254,11 @@ class CibilReportController extends Controller
         }
         $data[] = [
           'Segment Identifier' => 'RS',
-          'Relationship DUNS Number' => '999999999',
+          'Relationship DUNS Number' => NULL,
           'Related Type' => NULL,
           'Relationship' => $appBusiness->constitution->name,
           'Business Entity Name' => $appBusiness->biz_entity_name,
-          'Business Category' => $appBusiness->msme_type,//config('common.MSMETYPE')[$appBusiness->msme_type],
+          'Business Category' => $appBusiness->msme_type,
           'Business / Industry Type' => $appBusiness->industryType->name,
           'Individual Name Prefix' => NULL,
           'Full Name' => $users->f_name . ' '. $users->m_name . ' ' . $users->l_name,
@@ -361,10 +361,10 @@ class CibilReportController extends Controller
 
         $data[] =  [
             'Segment Identifier' => 'GS',
-            'Guarantor DUNS Number' => '999999999',
+            'Guarantor DUNS Number' => NULL,
             'Guarantor Type' => (strpos(strtolower($constitution), 'private') !== false) ? '1' : '2' ,
             'Business Category' => $appBusiness->msme_type,
-            'Business / Industry Type' => $appBusiness->industryType->name,
+            'Business / Industry Type' => $appBusiness->industryType->id, //name
             'Guarantor Entity Name' => $appBusiness->biz_entity_name,
             'Individual Name Prefix' => NULL,
             'Full Name' => $users->f_name . ' '. $users->m_name . ' ' . $users->l_name,
