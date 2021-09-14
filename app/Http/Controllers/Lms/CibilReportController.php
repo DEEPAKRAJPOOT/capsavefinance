@@ -375,7 +375,7 @@ class CibilReportController extends Controller
             'Segment Identifier' => 'GS',
             'Guarantor DUNS Number' => NULL,
             'Guarantor Type' => (strpos(strtolower($constitution), 'private') !== false) ? '1' : '2' ,
-            'Business Category' => $this->business_category,,
+            'Business Category' => $this->business_category,
             'Business / Industry Type' => $appBusiness->industryType->name,
             'Guarantor Entity Name' => $appBusiness->biz_entity_name,
             'Individual Name Prefix' => NULL,
