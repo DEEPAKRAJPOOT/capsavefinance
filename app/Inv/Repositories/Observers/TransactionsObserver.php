@@ -15,7 +15,6 @@ class TransactionsObserver
      */
     public function created(Transactions $transaction)
     {
-        $transaction->calculateOutstandings();
         InvoiceDisbursedDetail::createTransactionDetails($transaction);
         CustomerTransactionSOA::createTransactionSOADetails($transaction);
     }
@@ -28,7 +27,6 @@ class TransactionsObserver
      */
     public function updated(Transactions $transaction)
     {
-        $transaction->calculateOutstandings();
         InvoiceDisbursedDetail::updateTransactionDetails($transaction);
         CustomerTransactionSOA::updateTransactionSOADetails($transaction);
     }

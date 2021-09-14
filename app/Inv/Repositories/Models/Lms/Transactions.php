@@ -59,8 +59,6 @@ class Transactions extends BaseModel {
         'trans_type',
         'trans_mode',
         'amount',
-        'outstanding',
-        'settled_outstanding',
         'entry_type',
         'gst',
         'gst_per',
@@ -177,47 +175,33 @@ class Transactions extends BaseModel {
     }
 
     public function getsettledAmtAttribute(){
+       
         $dr = self::where('parent_trans_id','=',$this->trans_id)
         ->where('entry_type','=','0')
         ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')])
         ->sum('amount');
 
         $cr = self::where('parent_trans_id','=',$this->trans_id)
-        ->where('entry_type','=','1')
+        ->where('entry_type','=','1')        
         ->sum('amount');
 
         return (float)$cr - (float)$dr;
     }
 
-    // public function getOutstandingAttribute($value)
-    // {
-    //     $amount = round(($this->amount - $this->getsettledAmtAttribute()),2);
-    //     return $amount > 0 ? $amount : 0;
-    // }
-
-    public function calculateOutstandings()
-    {
-        if ($this->entry_type == 0) {
-            $amount = round(($this->amount - $this->getsettledAmtAttribute()),2);
-            $amount = $amount > 0 ? $amount : 0;
-            self::update(['outstanding' => $amount]);
-        }
-
-        if ($this->entry_type == 1) {
-            $amount = round(($this->amount - self::revertedAmt()),2);
-            self::update(['settled_outstanding' => $amount]);
-        }
+    public function getOutstandingAttribute(){
+        $amount = round(($this->amount - $this->getsettledAmtAttribute()),2); 
+        return $amount > 0?$amount:0;
     }
 
-    public function scopeRevertedAmt($query){
-        return $query->where('link_trans_id','=',$this->trans_id)
+    public function getRevertedAmtAttribute(){
+        return self::where('link_trans_id','=',$this->trans_id)
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL')])
-        ->where(function($newQuery){
-            $newQuery->where(function($q){
+        ->where(function($query){
+            $query->where(function($q){
                 $q->where('entry_type','=','0');
                 $q->where('trans_type','=', config('lms.TRANS_TYPE.REVERSE'));
             });
-            $newQuery->orWhere(function($q){
+            $query->orWhere(function($q){
                 $q->where('entry_type','=','1');
                 $q->where('trans_type','=', config('lms.TRANS_TYPE.CANCEL'));
             });
@@ -241,9 +225,9 @@ class Transactions extends BaseModel {
         return $flag;
     }
 
-    // public function getSettledOutstandingAttribute(){
-    //     return round(($this->amount - self::revertedAmt()),2);
-    // }
+    public function getSettledOutstandingAttribute(){
+        return round(($this->amount - $this->getRevertedAmtAttribute()),2);
+    }
 
     public function getDpdAttribute(){
         $to = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
@@ -435,7 +419,7 @@ class Transactions extends BaseModel {
         ->where('entry_type','1')
         ->get();   
         foreach($tds as $tdsTrans){
-            $tdsAmt -= $tdsTrans->settled_outstanding;
+            $tdsAmt -= $tdsTrans->settledOutstanding;
         }
 
         if($tdsAmt < 0 ){
@@ -1161,7 +1145,7 @@ class Transactions extends BaseModel {
         $amount = null;
         $from = self::getFromIntDateAttribute();
         $to = self::getToIntDateAttribute();
-        $outstanding = $this->outstanding;
+        $outstanding = self::getOutstandingAttribute();
         $invoice_disbursed_id = $this->invoice_disbursed_id;
         if($from && $to && $invoice_disbursed_id && in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
             $amount = InterestAccrualTemp::whereDate('interest_date','>=',$from)
