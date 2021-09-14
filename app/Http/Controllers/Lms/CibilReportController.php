@@ -105,6 +105,7 @@ class CibilReportController extends Controller
           $userId = $appBusiness->user_id;
           $this->selectedAppData[] = $appId;
           $this->formatedCustId = Helper::formatIdWithPrefix($userId, 'CUSTID');
+          $this->business_category = config('common.MSMETYPE')[$appBusiness->msme_type] ?? NULL;
           $cibilReportData['bs'] = $this->_getBSData($appBusiness);
           $cibilReportData['as'] = $this->_getASData($appBusiness);
           $cibilReportData['rs'] = $this->_getRSData($appBusiness);
@@ -194,7 +195,7 @@ class CibilReportController extends Controller
             'Service Tax #' => NULL,
             'Other ID' => NULL,
             'Borrower’s Legal Constitution' => config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution],
-            'Business Category' => config('common.MSMETYPE')[$appBusiness->msme_type] ?? NULL,
+            'Business Category' => $this->business_category,
             'Business/ Industry Type' => $appBusiness->industryType->name ?? NULL,
             'Class of Activity 1' => NULL,
             'Class of Activity 2' => NULL,
@@ -265,7 +266,7 @@ class CibilReportController extends Controller
           'Related Type' => NULL,
           'Relationship' => $appBusiness->constitution->name,
           'Business Entity Name' => $appBusiness->biz_entity_name,
-          'Business Category' => config('common.MSMETYPE')[$appBusiness->msme_type] ?? NULL,,
+          'Business Category' => $this->business_category,,
           'Business / Industry Type' => $appBusiness->industryType->name,
           'Individual Name Prefix' => NULL,
           'Full Name' => $users->f_name . ' '. $users->m_name . ' ' . $users->l_name,
@@ -374,7 +375,7 @@ class CibilReportController extends Controller
             'Segment Identifier' => 'GS',
             'Guarantor DUNS Number' => NULL,
             'Guarantor Type' => (strpos(strtolower($constitution), 'private') !== false) ? '1' : '2' ,
-            'Business Category' => config('common.MSMETYPE')[$appBusiness->msme_type] ?? NULL,,
+            'Business Category' => $this->business_category,,
             'Business / Industry Type' => $appBusiness->industryType->name,
             'Guarantor Entity Name' => $appBusiness->biz_entity_name,
             'Individual Name Prefix' => NULL,
