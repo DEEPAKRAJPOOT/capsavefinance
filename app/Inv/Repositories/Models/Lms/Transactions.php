@@ -1371,4 +1371,10 @@ class Transactions extends BaseModel {
                 return ($item->outstanding > 0 && $item->isTransaction && $item->paymentDueDate < date('Y-m-d'));
             });
     }
+
+    public function tdsProcessingFee() {
+        $transId = self::select('trans_id')->where('trans_type',62)->where('entry_type',0)->pluck('trans_id');
+        $getData = self::select('amount')->whereIn('payment_id',$transId)->where('trans_type',7)->where('entry_type',1)->sum('amount');
+        return $getData;
+    }
 }
