@@ -969,4 +969,8 @@ class Application extends BaseModel
                
         return $appData ?? '';
     }
+
+    public function sanctionDate() {
+        return $this->belongsTo('App\Inv\Repositories\Models\AppStatusLog', 'app_id', 'app_id')->where('status_id', '50');
+    }
 }

@@ -101,7 +101,6 @@ class CibilReportController extends Controller
       $cibilReportData['hd'] = $this->_getHDData();
       $cibilReportData['ts'] = $this->_getTSData();
       foreach ($businessData as $key => $appBusiness) {
-          dd($appBusiness);
           $appId = $appBusiness->app->app_id;
           $userId = $appBusiness->user_id;
           $this->selectedAppData[] = $appId;
@@ -195,8 +194,8 @@ class CibilReportController extends Controller
             'Service Tax #' => NULL,
             'Other ID' => NULL,
             'Borrower’s Legal Constitution' => config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution],
-            'Business Category' => $appBusiness->msme_type,//config('common.MSMETYPE')[$appBusiness->msme_type] ?? NULL,
-            'Business/ Industry Type' => $appBusiness->industryType->id,//name
+            'Business Category' => config('common.MSMETYPE')[$appBusiness->msme_type] ?? NULL,
+            'Business/ Industry Type' => $appBusiness->industryType->name ?? NULL,
             'Class of Activity 1' => NULL,
             'Class of Activity 2' => NULL,
             'Class of Activity 3' => NULL,
@@ -308,13 +307,15 @@ class CibilReportController extends Controller
     private function _getCRData($appBusiness) {
         $user = $appBusiness->users;
         $outstanding = Transactions::getUserOutstanding($user->user_id);
+        $sanctionDate = $appBusiness->app->sanctionDate->created_at ?? NULL;
+        $prgmLimit = $appBusiness->app->prgmLimit->limit_amt ?? NULL;
         $data[] = [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'CR',
             'Account Number' => Helper::formatIdWithPrefix($user->user_id, 'CUSTID'),
             'Previous Account Number' => NULL,
-            'Facility / Loan Activation / Sanction Date' => NULL,
-            'Sanctioned Amount/ Notional Amount of Contract' => NULL,
+            'Facility / Loan Activation / Sanction Date' => !empty($sanctionDate) ? date('d M Y', strtotime($sanctionDate)) : NULL,
+            'Sanctioned Amount/ Notional Amount of Contract' => $prgmLimit,
             'Currency Code' => 'INR',
             'Credit Type' => '0100',
             'Tenure / Weighted Average maturity period of Contracts' => NULL,
