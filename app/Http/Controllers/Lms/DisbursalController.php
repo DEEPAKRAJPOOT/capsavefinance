@@ -178,12 +178,13 @@ class DisbursalController extends Controller
 
 				if($disburseType == 1) {
 					$updateInvoiceStatus = $this->lmsRepo->updateInvoiceStatus($invoice['invoice_id'], 10);
-					$requestData[$userid]['RefNo'] = $refId;
+					$bank_name = $invoice['supplier_bank_detail']['bank']['bank_name'];
+                                        $requestData[$userid]['RefNo'] = $refId;
 					$requestData[$userid]['Amount'] = $disburseAmount;
 					$requestData[$userid]['Debit_Acct_No'] = '123344455';
 					$requestData[$userid]['Debit_Acct_Name'] = 'testing name';
 					$requestData[$userid]['Debit_Mobile'] = '9876543210';
-					$requestData[$userid]['Ben_IFSC'] = $invoice['supplier_bank_detail']['ifsc_code'];
+					$requestData[$userid]['Ben_IFSC'] = ($bank_name == 'IDFC Bank') ? null : $invoice['supplier_bank_detail']['ifsc_code'];
 					$requestData[$userid]['Ben_Acct_No'] = $invoice['supplier_bank_detail']['acc_no'];
 					$requestData[$userid]['Ben_Name'] = $invoice['supplier_bank_detail']['acc_name'];
 					$requestData[$userid]['Ben_BankName'] = $invoice['supplier_bank_detail']['bank']['bank_name'];

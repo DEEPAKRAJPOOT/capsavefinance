@@ -598,17 +598,17 @@ class ManualApportionmentHelper{
                     $currentIntRate = $intRate;
                 }
                 
+                if(strtotime($loopStratDate) >= strtotime($odStartDate)){
+                    $currentIntRate = $odIntRate;
+                    $intType = 2;
+                    if(strtotime($loopStratDate) === strtotime($odStartDate)){
+                        $this->updateGracePeriodInt($invDisbId, $gStartDate, $gEndDate, $odIntRate, $payFreq, $userId);
+                    }
+                }
+
                 $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq, $gStartDate);
                 
-
-                if($balancePrincipal > 0){
-                    if(strtotime($loopStratDate) >= strtotime($odStartDate)){
-                        $currentIntRate = $odIntRate;
-                        $intType = 2;
-                        if(strtotime($loopStratDate) === strtotime($odStartDate)){
-                            $this->updateGracePeriodInt($invDisbId, $gStartDate, $gEndDate, $odIntRate, $payFreq, $userId);
-                        }
-                    }
+                if($balancePrincipal > 0){  
                     $interestAmt = round($this->calInterest($balancePrincipal, $currentIntRate, 1),config('lms.DECIMAL_TYPE.AMOUNT'));
                     
                     $interest_accrual_id = InterestAccrual::whereDate('interest_date',$loopStratDate)
@@ -635,7 +635,6 @@ class ManualApportionmentHelper{
                     InterestAccrual::where('invoice_disbursed_id','=',$invDisbId)
                     ->where('interest_date','>=',$loopStratDate)
                     ->delete();
-                    break;
                 }
                 
                 if(strtotime($loopStratDate) <= strtotime($odStartDate))
@@ -644,11 +643,13 @@ class ManualApportionmentHelper{
                 if(strtotime($loopStratDate) >= strtotime($odStartDate))
                 $this->overDuePosting($invDisbId, $userId);
                 
-                $loopStratDate = $this->addDays($loopStratDate,1);
-                
-                $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $loopStratDate)->endOfMonth()->format('Y-m-d');
-
-                $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                if($balancePrincipal > 0){
+                    $loopStratDate = $this->addDays($loopStratDate,1);                    
+                    $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $loopStratDate)->endOfMonth()->format('Y-m-d');
+                    $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
+                }else{
+                    break;
+                }
             }
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);

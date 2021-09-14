@@ -29,15 +29,19 @@ use App\Inv\Repositories\Models\Lms\TransactionsRunning;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
+use App\Inv\Repositories\Contracts\MasterInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class ApportionmentController extends Controller
 {
+    use ActivityLogTrait;
 
-    public function __construct(InvLmsRepoInterface $lms_repo ,DataProviderInterface $dataProvider, InvUserRepoInterface $user_repo,InvAppRepoInterface $app_repo){
+    public function __construct(InvLmsRepoInterface $lms_repo ,DataProviderInterface $dataProvider, InvUserRepoInterface $user_repo,InvAppRepoInterface $app_repo, MasterInterface $master){
         $this->lmsRepo = $lms_repo;
         $this->dataProvider = $dataProvider;
         $this->userRepo = $user_repo;
         $this->appRepo = $app_repo;
+        $this->master = $master;
         $this->middleware('checkBackendLeadAccess');
 	}
 
@@ -282,6 +286,16 @@ class ApportionmentController extends Controller
                     $this->updateInvoiceRepaymentFlag($invoiceList);
                 }
                 $comment = $this->lmsRepo->saveTxnComment($commentData);
+
+                $whereActivi['activity_code'] = 'apport_waiveoff_save';
+                $activity = $this->master->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Unsettled Transaction Waived Off (Manage Sanction Cases) '. null;
+                    $arrActivity['app_id'] = null;
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($txnInsertData), $arrActivity);
+                }                 
+                
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Amount successfully waived off']);
             }
         } catch (Exception $ex) {
@@ -421,6 +435,15 @@ class ApportionmentController extends Controller
                     $Obj = new ManualApportionmentHelper($this->lmsRepo);
                     $Obj->intAccrual($TransDetail->invoice_disbursed_id, $paymentDetails->date_of_payment);
                 }
+
+                $whereActivi['activity_code'] = 'apport_reversal_save';
+                $activity = $this->master->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Settled Transaction Reverse Amount (Manage Sanction Cases) '. null;
+                    $arrActivity['app_id'] = null;
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['txnInsertData'=>$txnInsertData, 'paymentData'=>$paymentData]), $arrActivity);
+                }                 
 
                 return redirect()->route('apport_settled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Amount successfully reversed']);
             }
@@ -672,6 +695,13 @@ class ApportionmentController extends Controller
                 'payment' => $payments,
                 'check' => $checks,
             ]);
+
+            $payment = Payment::find($paymentId);
+
+            if (!$this->verifyUnSettleTransInitiator($payment, $settleConfirmation = true))
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+
+            $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
         
             return view('lms.apportionment.markSettledConfirm',[
                 'paymentId' => $paymentId,
@@ -688,8 +718,34 @@ class ApportionmentController extends Controller
         }
     }
 
+    private function verifyUnSettleTransInitiator($payment, $settleConfirmation = false)
+    {
+        $paymentUpdatedBy = $payment->updated_by;
+        if ($payment && $paymentUpdatedBy) {
+            if (gettype($paymentUpdatedBy) === 'string') {
+                $paymentUpdatedBy = intval($payment->updated_by);
+            }
+
+            if ($payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSING && Auth::user()->user_id !== $paymentUpdatedBy) {
+                return false;
+            }
+
+            if ($settleConfirmation && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSED && Auth::user()->user_id !== $paymentUpdatedBy) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function markSettleSave(Request $request){
         try {
+            $payment = Payment::find($request->payment_id);
+
+            if (!$this->verifyUnSettleTransInitiator($payment))
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+
+            $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSED]);
+
             $Obj = new ManualApportionmentHelper($this->lmsRepo);
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
@@ -766,7 +822,7 @@ class ApportionmentController extends Controller
 
                 $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
 
-                if($amtToSettle > $repaymentAmt){
+                if((float) round($amtToSettle,2) > (float) round($repaymentAmt,2)){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
                     return redirect()->route('unsettled_payments')->withInput();
                 }
@@ -777,7 +833,7 @@ class ApportionmentController extends Controller
                     }
                     /** Mark Payment Settled */
                     $payment = Payment::find($paymentId);
-                    $payment->is_settled = 1;
+                    $payment->is_settled = Payment::PAYMENT_SETTLED;
                     $payment->save();
                 }
 
@@ -842,10 +898,24 @@ class ApportionmentController extends Controller
                 if($paymentId){
                     InterestAccrualTemp::where('payment_id',$paymentId)->delete();
                 }
+
+                $whereActivi['activity_code'] = 'apport_mark_settle_save';
+                $activity = $this->master->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Mark Settle Save (Manage Payment) '. null;
+                    $arrActivity['app_id'] = null;
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['request'=>$request->all(), 'invoiceList'=>$invoiceList, 'transactionList'=>$transactionList]), $arrActivity);
+                }                 
+                
                 $request->session()->forget('apportionment');
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
+            Payment::where(['user_id' => $request->user_id, 'payment_id' => $request->payment_id])
+                    ->update([
+                        'is_settled' => Payment::PAYMENT_SETTLED_PENDING
+                    ]);
             return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
@@ -912,6 +982,16 @@ class ApportionmentController extends Controller
                     $this->lmsRepo->saveTransaction($newTrans);
                 }
             }
+
+            $whereActivi['activity_code'] = 'apport_running_save';
+            $activity = $this->master->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Mark Posted Running Transsaction (Manage Sanction Cases) '. null;
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($transactionList), $arrActivity);
+            }             
+            
             return redirect()->route('apport_unsettled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked posted']);
         } catch (Exception $ex) {
              return redirect()->route('apport_settled_view',['payment_id' => $paymentId, 'user_id' =>$userId, 'sanctionPageView'=>$sanctionPageView])->withErrors(Helpers::getExceptionMessage($ex));
@@ -1389,7 +1469,14 @@ class ApportionmentController extends Controller
                     ];
                     $paymentId = Payment::insertPayments($paymentData);
                 }
-
+                $whereActivi['activity_code'] = 'apport_mark_adjustment_save';
+                $activity = $this->master->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Adjustment Transaction Confirm (Manage Sanction Cases) '. null;
+                    $arrActivity['app_id'] = null;
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['transactions'=>$transactions, 'payments'=>$payments]), $arrActivity);
+                }   
                 $request->session()->forget('apportionment');
                 return redirect()->route('apport_refund_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully Mark Adjusted']);
             }
@@ -1399,6 +1486,9 @@ class ApportionmentController extends Controller
     }
 
     private function apportionmentUndoProcess($payment_id){
+        Session::flash('error', trans('Please try after some time, Service is stop due to some technical error!'));
+        return redirect()->back()->withInput();
+        
         $result = false;
         $error = null;        
         $Obj = new ManualApportionmentHelper($this->lmsRepo);
@@ -1447,6 +1537,16 @@ class ApportionmentController extends Controller
                         if($aporUndoPro['status']){
                             $payment->is_settled = '0';
                             $payment->save();
+
+                            $whereActivi['activity_code'] = 'undo_apportionment';
+                            $activity = $this->master->getActivity($whereActivi);
+                            if(!empty($activity)) {
+                                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                                $activity_desc = 'Undo Apportionment (Manage Payment)';
+                                $arrActivity['app_id'] = null;
+                                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+                            }                               
+                            
                             return response()->json(['status' => 1,'message' => 'Successfully Apportionment Reverted']); 
                         }else{
                             return response()->json(['status' => 0,'message' => $aporUndoPro['error']]);

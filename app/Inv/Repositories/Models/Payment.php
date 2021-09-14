@@ -82,6 +82,11 @@ class Payment extends BaseModel {
         'updated_by',
         'deleted_at',
     ];
+
+    CONST PAYMENT_SETTLED_PENDING    = 0;
+    CONST PAYMENT_SETTLED_PROCESSING = 2;
+    CONST PAYMENT_SETTLED_PROCESSED  = 3;
+    CONST PAYMENT_SETTLED            = 1;
     
     public function biz() {
        return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
@@ -142,14 +147,13 @@ class Payment extends BaseModel {
      * @return type mixed
      */
     public static function getPayments(array $where = [], $orderBy = []) {
-        $res = self::where($where);
+        $res = self::where($where)->settledProcessing()->settledProcessed();
         if(!empty($orderBy)){
             foreach($orderBy as $key => $val){
                 $res = $res->orderBy($key, $val);
             }
         }
-        $res = $res->get();
-        return $res->isEmpty() ? [] :  $res;
+        return $res;
     }
 
 
@@ -240,7 +244,7 @@ class Payment extends BaseModel {
         ->where('is_settled','1')->max('date_of_payment');
         
         $validPayment = self::where('user_id',$this->user_id)
-        ->where('is_settled','0');
+        ->whereIn('is_settled',[0,2,3]);
         //->whereIn('action_type',['1','5']);
 
         if($lastSettledPaymentDate){
@@ -308,5 +312,15 @@ class Payment extends BaseModel {
         }
         $res = $query->get();        
         return $res ?: [];
-    }   
+    }
+
+    public function scopeSettledProcessing($query)
+    {
+        return $query->orWhere('is_settled', self::PAYMENT_SETTLED_PROCESSING);
+    }
+
+    public function scopeSettledProcessed($query)
+    {
+        return $query->orWhere('is_settled', self::PAYMENT_SETTLED_PROCESSED);
+    }
 }
