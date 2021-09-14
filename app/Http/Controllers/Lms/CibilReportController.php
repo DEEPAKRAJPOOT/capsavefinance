@@ -266,7 +266,7 @@ class CibilReportController extends Controller
           'Related Type' => NULL,
           'Relationship' => $appBusiness->constitution->name,
           'Business Entity Name' => $appBusiness->biz_entity_name,
-          'Business Category' => $this->business_category,,
+          'Business Category' => $this->business_category,
           'Business / Industry Type' => $appBusiness->industryType->name,
           'Individual Name Prefix' => NULL,
           'Full Name' => $users->f_name . ' '. $users->m_name . ' ' . $users->l_name,
