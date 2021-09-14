@@ -106,6 +106,9 @@ class CibilReportController extends Controller
           $this->selectedAppData[] = $appId;
           $this->formatedCustId = Helper::formatIdWithPrefix($userId, 'CUSTID');
           $this->business_category = config('common.MSMETYPE')[$appBusiness->msme_type] ?? NULL;
+          $this->constitutionName = $appBusiness->constitution->name; //config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution]
+
+
           $cibilReportData['bs'] = $this->_getBSData($appBusiness);
           $cibilReportData['as'] = $this->_getASData($appBusiness);
           $cibilReportData['rs'] = $this->_getRSData($appBusiness);
@@ -194,7 +197,7 @@ class CibilReportController extends Controller
             'TIN' => NULL,
             'Service Tax #' => NULL,
             'Other ID' => NULL,
-            'Borrower’s Legal Constitution' => config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution],
+            'Borrower’s Legal Constitution' => $this->constitutionName,
             'Business Category' => $this->business_category,
             'Business/ Industry Type' => $appBusiness->industryType->name ?? NULL,
             'Class of Activity 1' => NULL,
@@ -264,7 +267,7 @@ class CibilReportController extends Controller
           'Segment Identifier' => 'RS',
           'Relationship DUNS Number' => NULL,
           'Related Type' => NULL,
-          'Relationship' => $appBusiness->constitution->name,
+          'Relationship' => $this->constitutionName,
           'Business Entity Name' => $appBusiness->biz_entity_name,
           'Business Category' => $this->business_category,
           'Business / Industry Type' => $appBusiness->industryType->name,
@@ -368,13 +371,11 @@ class CibilReportController extends Controller
         if (isset($addr_data->addr_1)) {
            $fullAddress = $addr_data->addr_1 . ' ' . $addr_data->addr_2. ' ' . $addr_data->city_name. ' ' .($addr_data->state->name ?? NULL) . ' ' . $addr_data->pin_code;
         }
-        $constitution = $appBusiness->constitution->name;
-
         $data[] =  [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'GS',
             'Guarantor DUNS Number' => NULL,
-            'Guarantor Type' => (strpos(strtolower($constitution), 'private') !== false) ? '1' : '2' ,
+            'Guarantor Type' => (strpos(strtolower($this->constitutionName), 'private') !== false) ? '1' : '2' ,
             'Business Category' => $this->business_category,
             'Business / Industry Type' => $appBusiness->industryType->name,
             'Guarantor Entity Name' => $appBusiness->biz_entity_name,
