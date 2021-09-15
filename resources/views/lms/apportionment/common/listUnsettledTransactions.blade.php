@@ -11,9 +11,19 @@
                                     <th>Invoice No</th>       
                                     <th>Trans Type</th>		
                                     <th>Total Repay Amt</th>
-                                    <th>Outstanding Amt</th>
+                                    @if($payment['action_type'] == 3)
+                                            <th>Outstanding TDS Amt</th>
+                                    @else`
+                                        <th>Outstanding Amt</th>
+                                    @endif
                                     {{-- @if($paymentId)<th>Payment Date</th>@endif --}}
-                                    @if($paymentId)<th>Pay</th>@endif
+                                    @if($paymentId)
+                                        @if($payment['action_type'] == 3)
+                                            <th>TDS Payment</th>
+                                        @else`
+                                            <th>Payment</th>
+                                        @endif
+                                    @endif
                                     <th><input type="checkbox" id="checkAll" onchange="apport.selectAllChecks(this.id)"></th>
                                 </tr>
                             </thead>
