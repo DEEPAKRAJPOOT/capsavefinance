@@ -414,13 +414,13 @@ class Transactions extends BaseModel {
         ->where('entry_type','1')
         ->get();   
         foreach($tds as $tdsTrans){
-            $tdsAmt -= $tdsTrans->settledOutstanding;
+            $tdsAmt -= round($tdsTrans->settledOutstanding,2);
         }
 
         if($tdsAmt < 0 ){
             $tdsAmt = 0;
         }
-        return $tdsAmt;
+        return round($tdsAmt,2);
     }
 
     public static function getUnsettledTrans($userId, $where = []){
