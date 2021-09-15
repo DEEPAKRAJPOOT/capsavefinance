@@ -862,12 +862,22 @@ class UserEventsListener extends BaseEvent
             }
             
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
-            ->to($data["email"], $data["name"])
+            ->to($data["to"], $data["name"])
             ->subject($data['subject']);
+
+            if (!empty($data["cc"])) {
+                $message->cc($data["cc"]);
+            }
+
+            if (!empty($data["bcc"])) {
+                $message->bcc($data["bcc"]);
+            }
 
             $mailContent = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $data["email"],
+                'email_to' => $data["to"],
+                'email_cc' => $data["cc"],
+                'email_bcc' => $data["bcc"],
                 'email_type' => $this->func_name,
                 'name' => $data['name'],
                 'subject' => $data['subject'],
@@ -890,12 +900,22 @@ class UserEventsListener extends BaseEvent
             }
             
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
-            ->to($data["email"], $data["name"])
+            ->to($data["to"], $data["name"])
             ->subject($data['subject']);
+            
+            if (!empty($data["cc"])) {
+                $message->cc($data["cc"]);
+            }
+
+            if (!empty($data["bcc"])) {
+                $message->bcc($data["bcc"]);
+            }
 
             $mailContent = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $data["email"],
+                'email_to' => $data["to"],
+                'email_cc' => $data["cc"],
+                'email_bcc' => $data["bcc"],
                 'email_type' => $this->func_name,
                 'name' => $data['name'],
                 'subject' => $data['subject'],
@@ -918,12 +938,22 @@ class UserEventsListener extends BaseEvent
             }
             
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
-            ->to($data["email"], $data["name"])
+            ->to($data["to"], $data["name"])
             ->subject($data['subject']);
+
+            if (!empty($data["cc"])) {
+                $message->cc($data["cc"]);
+            }
+
+            if (!empty($data["bcc"])) {
+                $message->bcc($data["bcc"]);
+            }
 
             $mailContent = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $data["email"],
+                'email_to' => $data["to"],
+                'email_cc' => $data["cc"],
+                'email_bcc' => $data["bcc"],
                 'email_type' => $this->func_name,
                 'name' => $data['name'],
                 'subject' => $data['subject'],
@@ -946,12 +976,22 @@ class UserEventsListener extends BaseEvent
             }
             
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
-            ->to($data["email"], $data["name"])
+            ->to($data["to"], $data["name"])
             ->subject($data['subject']);
+
+            if (!empty($data["cc"])) {
+                $message->cc($data["cc"]);
+            }
+
+            if (!empty($data["bcc"])) {
+                $message->bcc($data["bcc"]);
+            }
 
             $mailContent = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $data["email"],
+                'email_to' => $data["to"],
+                'email_cc' => $data["cc"],
+                'email_bcc' => $data["bcc"],
                 'email_type' => $this->func_name,
                 'name' => $data['name'],
                 'subject' => $data['subject'],
@@ -969,17 +1009,27 @@ class UserEventsListener extends BaseEvent
         Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
         function ($message) use ($data) {
             if(!empty($data['attachment'])){
-                $att_name = 'Disbursal Report.xlsx';
+                $att_name = 'Account Disbursal Report.xlsx';
                 $message->attach($data['attachment'] ,['as' => $att_name]);
             }
             
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
-            ->to($data["email"], $data["name"])
+            ->to($data["to"], $data["name"])
             ->subject($data['subject']);
+
+            if (!empty($data["cc"])) {
+                $message->cc($data["cc"]);
+            }
+
+            if (!empty($data["bcc"])) {
+                $message->bcc($data["bcc"]);
+            }
 
             $mailContent = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                'email_to' => $data["email"],
+                'email_to' => $data["to"],
+                'email_cc' => $data["cc"],
+                'email_bcc' => $data["bcc"],
                 'email_type' => $this->func_name,
                 'name' => $data['name'],
                 'subject' => $data['subject'],

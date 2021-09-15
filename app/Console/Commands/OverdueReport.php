@@ -3,25 +3,24 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Jobs\MaturityReport;
-use App\Jobs\UtilizationReport;
-use App\Jobs\DisbursalReport;
+use App\Jobs\OverdueReport as OverdueReportJob;
 
-class DailyReport extends Command
-{    
+class OverdueReport extends Command
+{
+    private $emailTo;
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'lms:dailyReport';
+    protected $signature = 'report:overdue';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Daily Report';
+    protected $description = 'To Generate Overdue Report';
 
     /**
      * Create a new command instance.
@@ -30,6 +29,7 @@ class DailyReport extends Command
      */
     public function __construct()
     {
+        $this->emailTo = config('lms.DAILY_REPORT_MAIL');
         parent::__construct();
     }
 
@@ -40,6 +40,12 @@ class DailyReport extends Command
      */
     public function handle()
     {
-        \App::make('App\Http\Controllers\Backend\ReportController')->maturityReport();
+        if (empty($this->emailTo)) {
+            dd('DAILY_REPORT_MAIL is missing');
+        }
+
+        // consolidated report
+        OverdueReportJob::dispatch($this->emailTo)
+                        ->delay(now()->addSeconds(10));
     }
 }
