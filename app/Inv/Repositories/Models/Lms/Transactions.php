@@ -189,7 +189,7 @@ class Transactions extends BaseModel {
         return (float)$cr - (float)$dr;
     }
 
-    // public function getOutstandingAttribute($value)
+    // public function getOutstandingAttribute()
     // {
     //     $amount = round(($this->amount - $this->getsettledAmtAttribute()),2);
     //     return $amount > 0 ? $amount : 0;
@@ -200,12 +200,12 @@ class Transactions extends BaseModel {
         if ($this->entry_type == 0) {
             $amount = round(($this->amount - $this->getsettledAmtAttribute()),2);
             $amount = $amount > 0 ? $amount : 0;
-            self::update(['outstanding' => $amount]);
+            self::where('trans_id', $this->trans_id)->update(['outstanding' => $amount]);
         }
 
         if ($this->entry_type == 1) {
             $amount = round(($this->amount - self::revertedAmt()),2);
-            self::update(['settled_outstanding' => $amount]);
+            self::where('trans_id', $this->trans_id)->update(['settled_outstanding' => $amount]);
         }
     }
 
