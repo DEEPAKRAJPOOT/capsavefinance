@@ -648,5 +648,27 @@ class AppProgramOffer extends BaseModel {
     
     public function BizInvoice(){
         return $this->belongsTo('App\Inv\Repositories\Models\BizInvoice', 'prgm_offer_id', 'prgm_offer_id');
-    }    
+    }
+    
+    public function getFrequencyName() {
+
+        $getData = $this->payment_frequency;
+
+        switch ($getData) {
+            case '1':
+                $frequencyType = 'Upfront';
+                break;
+            case '2':
+                $frequencyType = 'Monthly Interest';
+                break;
+            case '1':
+                $frequencyType = 'Rare';
+                break;
+            
+            default:
+                $frequencyType = '';
+                break;
+        }
+        return $frequencyType;
+    }
 }

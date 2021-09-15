@@ -579,6 +579,12 @@ class BizInvoice extends BaseModel
 
         return  self::where(['invoice_id' => $invoiceId])->update($data);
         
+    } 
+    
+    
+    function appStatusLog()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\AppStatusLog','app_id','app_id')->where('status_id',50)->latest();
     }    
     
 }

@@ -316,10 +316,10 @@ return [
         2 => 'Reduce Limit'
     ],
     'cibil_report' => [
-        'MEMBER_ID' => 'PROLITUSUP',
-        'PREV_MEMBER_ID' => 'PROLITUSDL',
-        'MEMBER_BRANCH_CODE' => 'PROLITUSCG',
-        'PREV_MEMBER_BRANCH_CODE' => 'PROLITUSMP',
+        'MEMBER_ID' => '001',
+        'PREV_MEMBER_ID' => '001',
+        'MEMBER_BRANCH_CODE' => '001',
+        'PREV_MEMBER_BRANCH_CODE' => '001',
     ],
     'MSMETYPE' => [
         '1' => 'MSME',
@@ -329,6 +329,13 @@ return [
         '5' => 'Medium',
         '6' => 'Large',
         '7' => 'Others',
+    ],
+    'LEGAL_CONSTITUTION' => [
+            '2' => '11',
+            '3' => '12',
+            '5' => '30',
+            '1' => '40',
+            '4' => '40'
     ],
     'CREDIT_TYPE' => [
         '0100' => 'Cash credit',

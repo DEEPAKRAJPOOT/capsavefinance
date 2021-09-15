@@ -42,7 +42,7 @@ class CibilUserData extends BaseModel {
      * @var array
      */
     protected $fillable = [
-        'ac_no',
+        'batch_no',
         'segment_identifier',
         'segment_data',
         'created_at',

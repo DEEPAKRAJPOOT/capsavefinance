@@ -323,4 +323,12 @@ class InvoiceDisbursed extends BaseModel {
 			}
 		})->sum('disburse_amt');
 	}
+
+	public function sumInterestAccured($disbursalIds) { 
+		$sumData = self::select('interest_accrual.accrued_interest')
+						->join('interest_accrual', 'interest_accrual.invoice_disbursed_id', '=', 'invoice_disbursed.invoice_disbursed_id' )
+						->where('interest_accrual.invoice_disbursed_id', $disbursalIds)
+						->sum('interest_accrual.accrued_interest');
+		return $sumData;
+	}	
 }

@@ -558,7 +558,7 @@ class InvoiceController extends Controller {
         $chkUser  = $this->application->chkUser();
         $customer  = 4;
         $expl  =  explode(",",$getPrgm->invoice_approval); 
-        if ($attributes['exception']) {
+        if (!empty($attributes['exception'])) {
             $statusId = 28;
             $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';
            
