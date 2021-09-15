@@ -5330,7 +5330,7 @@ class DataRenderer implements DataProviderInterface
                                 }elseif($dataRecords->isApportPayValid['error']){
                                     $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
                                 }
-                            }elseif ($dataRecords->action_type == '1' && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && $dataRecords->updated_by != Auth::user()->user_id) {
+                            }elseif (Helpers::checkPermission('apport_unsettled_view') && $dataRecords->action_type == '1' && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && $dataRecords->updated_by != Auth::user()->user_id) {
                                 $user = User::find($dataRecords->updated_by);
                                 $btn .= ($user->fullname ?? 'Someone') . ' is already trying to settle transactions';
                             }elseif(Helpers::checkPermission('lms_refund_payment_advise') && $dataRecords->is_refundable && !$dataRecords->refundReq && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED])){
@@ -5342,7 +5342,7 @@ class DataRenderer implements DataProviderInterface
                                     && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && $dataRecords->updated_by == Auth::user()->user_id)
                             ){
                                 $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettledtds_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled TDS Transactions</a>";
-                            }elseif (in_array($dataRecords->action_type, [3]) && $dataRecords->trans_type == 7 && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && $dataRecords->updated_by != Auth::user()->user_id) {
+                            }elseif (Helpers::checkPermission('apport_unsettledtds_view') && in_array($dataRecords->action_type, [3]) && $dataRecords->trans_type == 7 && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && $dataRecords->updated_by != Auth::user()->user_id) {
                                 $user = User::find($dataRecords->updated_by);
                                 $btn .= ($user->fullname ?? 'Someone') . ' is already trying to settle TDS transactions';
                             }
