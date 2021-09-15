@@ -37,7 +37,7 @@ class ManualApportionmentHelper{
         return $calDate;
     }
 
-    public function transactionPostingAdjustment($invDisbId, $startDate, $payFreq, $paymentId = null){
+    public function transactionPostingAdjustment($invDisbId, $startDate, $payFreq, $paymentId = null, $useApporCol = false){
         $transactionList = [];
         $amount = 0.00;
 
@@ -117,7 +117,8 @@ class ManualApportionmentHelper{
                                 'amount' => $cAmt,
                                 'entry_type' => 1,
                                 'soa_flag' => 1,
-                                'trans_type' => config('lms.TRANS_TYPE.CANCEL')
+                                'trans_type' => config('lms.TRANS_TYPE.CANCEL'),
+                                'apportionment_id' => $useApporCol ? $paymentId : null,
                             ];
                         }
                     }
@@ -167,7 +168,8 @@ class ManualApportionmentHelper{
                                         'amount' => $rAmt,
                                         'entry_type' => 1,
                                         'soa_flag' => 1,
-                                        'trans_type' => config('lms.TRANS_TYPE.REFUND')
+                                        'trans_type' => config('lms.TRANS_TYPE.REFUND'),
+                                        'apportionment_id' => $useApporCol ? $paymentId : null,
                                     ];
                                 }
                             }
