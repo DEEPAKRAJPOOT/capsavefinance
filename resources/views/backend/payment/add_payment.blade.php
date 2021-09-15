@@ -554,9 +554,7 @@ cursor: pointer;
     }
 
     function get_all_unsettled_trans_type(data) {
-        console.log(data);
         if(data.action_type == "1") {
-
             $.ajax({
                 type: 'POST',
                 async: false,
@@ -566,6 +564,7 @@ cursor: pointer;
                     $('.isloader').show();
                 },
                 success: function(res) {
+                    $('#trans_type').parent().parent().show();
                     $('#trans_type').html('<option value="">Select Transaction Type</option>');
                     if (res.status == 'success') {
                         chargeResult = res.result;

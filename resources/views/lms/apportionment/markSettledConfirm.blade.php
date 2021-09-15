@@ -49,7 +49,7 @@
                                                     <th>Trans Type</th>		
                                                     <th>Total Repay Amt</th>
                                                     <th>Outstanding Amt</th>
-                                                    <th>Pay</th>
+                                                    <th>Payment</th>
                                                     <th>Validated</th>
                                                 </tr>
                                             </thead>

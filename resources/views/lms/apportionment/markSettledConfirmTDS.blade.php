@@ -49,8 +49,8 @@
                                                     <th>Bill No</th>       
                                                     <th>Trans Type</th>		
                                                     <th>Total Repay Amt</th>
-                                                    <th>TDS Outstanding Amt</th>
-                                                    <th>Pay</th>
+                                                    <th>Outstanding TDS Amt</th>
+                                                    <th>TDS Payment</th>
                                                     {{--
                                                     <th>Validated</th>
                                                     --}}
