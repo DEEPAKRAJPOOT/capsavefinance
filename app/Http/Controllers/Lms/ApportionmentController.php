@@ -1693,9 +1693,9 @@ class ApportionmentController extends Controller
                 $amtToSettle += $payments[$trans->trans_id];
             }
 
-            $unAppliedAmt = $repaymentAmt-$amtToSettle;
+            $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
 
-            if($paymentDetails['action_type'] == '6' &&  $paymentDetails['trans_type'] == '14' && $unAppliedAmt > 0 && $totalOutstanding > 0){
+            if($paymentDetails['action_type'] == '3' &&  $paymentDetails['trans_type'] == '7' && round($unAppliedAmt,2) > 0 && round($totalOutstanding,2) > 0){
                 Session::flash('error', trans('You cannot settle partial TDS amount, please use full TDS amount for settlement.'));
                 return redirect()->back()->withInput();
             }
