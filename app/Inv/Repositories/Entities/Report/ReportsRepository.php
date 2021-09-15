@@ -249,6 +249,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 	}
 
     public function getUtilizationReport($whereCondition=[], &$sendMail){
+		ini_set("memory_limit", "-1");
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
 

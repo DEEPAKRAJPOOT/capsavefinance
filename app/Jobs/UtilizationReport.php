@@ -45,10 +45,10 @@ class UtilizationReport implements ShouldQueue
      */
     public function handle(ReportInterface $reportsRepo)
     {
+        ini_set("memory_limit", "-1");
         $this->reportsRepo = $reportsRepo;
 
         if ($this->needConsolidatedReport) {
-            ini_set("memory_limit", "-1");
             $this->generateConsolidatedReport();
         }
 
