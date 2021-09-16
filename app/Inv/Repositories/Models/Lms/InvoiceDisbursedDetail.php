@@ -1006,7 +1006,7 @@ class InvoiceDisbursedDetail extends BaseModel
   
     public static function createTransactionDetails($transDetails)
     {
-        $this->processTransDetails($transDetails);
+        self::processTransDetails($transDetails);
     }
 
     public static function updateTransactionDetails($transDetails)
@@ -1016,7 +1016,7 @@ class InvoiceDisbursedDetail extends BaseModel
 
     public static function deleteTransactionDetails($transDetails)
     {
-        $this->processTransDetails($transDetails, $isActionDelete = true);
+        self::processTransDetails($transDetails, $isActionDelete = true);
     }
 
     public static function forceDeletedTransactionDetails($transDetails)
@@ -1024,44 +1024,46 @@ class InvoiceDisbursedDetail extends BaseModel
         //
     }
 
-    private function processTransDetails($transDetails, $isActionDelete = false)
+    private static function processTransDetails($transDetails, $isActionDelete = false)
     {
         if($transDetails && $transDetails->invoice_disbursed_id){
-            $invDisbDetail = self::where('invoice_disbursed_id', $transDetails->invoice_disbursed_id)->first(); 
-            switch ($transDetails->trans_type){
-                case config('lms.TRANS_TYPE.PAYMENT_DISBURSED'):
-                    self::updatePrincipalTrans($transDetails, $invDisbDetail, $isActionDelete);
-                    break;
-                case config('lms.TRANS_TYPE.MARGIN'):
-                    self::updateMarginTrans($transDetails, $invDisbDetail, $isActionDelete);
-                    break;
-                case config('lms.TRANS_TYPE.INTEREST'):
-                    self::updateInterestTrans($transDetails, $invDisbDetail, $isActionDelete);
-                    break;
-                case config('lms.TRANS_TYPE.INTEREST_OVERDUE'):
-                    self::updateOverdueTrans($transDetails, $invDisbDetail, $isActionDelete);
-                    break;
-                case config('lms.TRANS_TYPE.TDS'):
-                    self::updateTdsTrans($transDetails, $invDisbDetail, $isActionDelete);
-                    break;
-                case config('lms.TRANS_TYPE.WAVED_OFF'):
-                    self::updateWaivedOffTrans($transDetails, $invDisbDetail, $isActionDelete);
-                    break;
-                case config('lms.TRANS_TYPE.WRITE_OFF'):
-                    self::updateWriteOffTrans($transDetails, $invDisbDetail, $isActionDelete);
-                    break;
-                case config('lms.TRANS_TYPE.REFUND'):
-                    self::updateRefundTrans($transDetails, $invDisbDetail, $isActionDelete);
-                    break;
-                case config('lms.TRANS_TYPE.REVERSE'):
-                    self::updateReverseTrans($transDetails, $invDisbDetail, $isActionDelete);
-                    break;
-                case config('lms.TRANS_TYPE.CANCEL'):
-                    self::updateCancelTrans($transDetails, $invDisbDetail, $isActionDelete);
-                    break;
-                default:
-                    self::updateChargeTrans($transDetails, $invDisbDetail, $isActionDelete);
-                    break;
+            $invDisbDetail = self::where('invoice_disbursed_id', $transDetails->invoice_disbursed_id)->first();
+            if ($invDisbDetail) {
+                switch ($transDetails->trans_type){
+                    case config('lms.TRANS_TYPE.PAYMENT_DISBURSED'):
+                        self::updatePrincipalTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        break;
+                    case config('lms.TRANS_TYPE.MARGIN'):
+                        self::updateMarginTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        break;
+                    case config('lms.TRANS_TYPE.INTEREST'):
+                        self::updateInterestTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        break;
+                    case config('lms.TRANS_TYPE.INTEREST_OVERDUE'):
+                        self::updateOverdueTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        break;
+                    case config('lms.TRANS_TYPE.TDS'):
+                        self::updateTdsTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        break;
+                    case config('lms.TRANS_TYPE.WAVED_OFF'):
+                        self::updateWaivedOffTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        break;
+                    case config('lms.TRANS_TYPE.WRITE_OFF'):
+                        self::updateWriteOffTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        break;
+                    case config('lms.TRANS_TYPE.REFUND'):
+                        self::updateRefundTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        break;
+                    case config('lms.TRANS_TYPE.REVERSE'):
+                        self::updateReverseTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        break;
+                    case config('lms.TRANS_TYPE.CANCEL'):
+                        self::updateCancelTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        break;
+                    default:
+                        self::updateChargeTrans($transDetails, $invDisbDetail, $isActionDelete);
+                        break;
+                }
             }
         }
     }
