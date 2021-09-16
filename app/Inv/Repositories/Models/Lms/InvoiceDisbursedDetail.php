@@ -176,391 +176,598 @@ class InvoiceDisbursedDetail extends BaseModel
         }
     }
 
-    public static function updatePrincipalTrans($transDetail, $invDisbDetail){
+    public static function updatePrincipalTrans($transDetail, $invDisbDetail, $isActionDelete){
         if($transDetail && $invDisbDetail){
             if($transDetail->entry_type){
-                $invDisbDetails = [ 
-                    'principal_repayment' => $invDisbDetail->principal_repayment + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'principal_repayment' => $invDisbDetail->principal_repayment - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'principal_repayment' => $invDisbDetail->principal_repayment + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }else{
-                $invDisbDetails = [ 
-                    'principal_amount' => $invDisbDetail->principal_amount + $transDetail->amount,
-                    'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'principal_amount' => $invDisbDetail->principal_amount - $transDetail->amount,
+                        'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'principal_amount' => $invDisbDetail->principal_amount + $transDetail->amount,
+                        'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount + $transDetail->amount,
+                    ];
+                }
             }
             $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
             self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
         }
     }
 
-    public static function updateMarginTrans($transDetail, $invDisbDetail){
+    public static function updateMarginTrans($transDetail, $invDisbDetail, $isActionDelete){
         if($transDetail && $invDisbDetail){
             if($transDetail->entry_type){
-                $invDisbDetails = [ 
-                    'margin_repayment' => $invDisbDetail->margin_repayment + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'margin_repayment' => $invDisbDetail->margin_repayment - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'margin_repayment' => $invDisbDetail->margin_repayment + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }else{
-                $invDisbDetails = [ 
-                    'margin_amount' => $invDisbDetail->margin_amount + $transDetail->amount,
-                    'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'margin_amount' => $invDisbDetail->margin_amount - $transDetail->amount,
+                        'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'margin_amount' => $invDisbDetail->margin_amount + $transDetail->amount,
+                        'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount + $transDetail->amount,
+                    ];
+                }
             }
             $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
             self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
         }
     }
 
-    public static function updateInterestTrans($transDetail, $invDisbDetail){
+    public static function updateInterestTrans($transDetail, $invDisbDetail, $isActionDelete){
         if($transDetail && $invDisbDetail){
             if($transDetail->entry_type){
-                $invDisbDetails = [ 
-                    'interest_repayment' => $invDisbDetail->interest_repayment + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'interest_repayment' => $invDisbDetail->interest_repayment - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'interest_repayment' => $invDisbDetail->interest_repayment + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }else{
-                $invDisbDetails = [ 
-                    'interest_capitalized' => $invDisbDetail->interest_capitalized + $transDetail->amount,
-                    'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'interest_capitalized' => $invDisbDetail->interest_capitalized - $transDetail->amount,
+                        'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'interest_capitalized' => $invDisbDetail->interest_capitalized + $transDetail->amount,
+                        'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount + $transDetail->amount,
+                    ];
+                }
             }
             $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
             self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
         }
     }
 
-    public static function updateOverdueTrans($transDetail, $invDisbDetail){
+    public static function updateOverdueTrans($transDetail, $invDisbDetail, $isActionDelete){
         if($transDetail && $invDisbDetail){
             if($transDetail->entry_type){
-                $invDisbDetails = [ 
-                    'overdue_repayment' => $invDisbDetail->overdue_repayment + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'overdue_repayment' => $invDisbDetail->overdue_repayment - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'overdue_repayment' => $invDisbDetail->overdue_repayment + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }else{
-                $invDisbDetails = [ 
-                    'overdue_capitalized' => $invDisbDetail->overdue_capitalized + $transDetail->amount,
-                    'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'overdue_capitalized' => $invDisbDetail->overdue_capitalized - $transDetail->amount,
+                        'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'overdue_capitalized' => $invDisbDetail->overdue_capitalized + $transDetail->amount,
+                        'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount + $transDetail->amount,
+                    ];
+                }
             }
             $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
             self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
         }
     }
 
-    public static function updateChargeTrans($transDetail, $invDisbDetail){
+    public static function updateChargeTrans($transDetail, $invDisbDetail, $isActionDelete){
         if($transDetail && $invDisbDetail){
             if($transDetail->entry_type && $transDetail->transType->chrg_master_id){
-                $invDisbDetails = [ 
-                    'charge_repayment' => $invDisbDetail->charge_repayment + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'charge_repayment' => $invDisbDetail->charge_repayment - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'charge_repayment' => $invDisbDetail->charge_repayment + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }else{
-                $invDisbDetails = [ 
-                    'charge_amount' => $invDisbDetail->charge_amount + $transDetail->amount,
-                    'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'charge_amount' => $invDisbDetail->charge_amount - $transDetail->amount,
+                        'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'charge_amount' => $invDisbDetail->charge_amount + $transDetail->amount,
+                        'total_outstanding_amount' => $invDisbDetail->total_outstanding_amount + $transDetail->amount,
+                    ];
+                }
             }
             $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
             self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
         }
     }
 
-    public static function updateTdsTrans($transDetail, $invDisbDetail){
+    public static function updateTdsTrans($transDetail, $invDisbDetail, $isActionDelete){
         $pTransDetails = $transDetail->parentTransactions;
         if($pTransDetails && $transDetail->entry_type == 1){
             if($pTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-                $invDisbDetails = [ 
-                    'principal_tds' => $invDisbDetail->principal_tds + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'principal_tds' => $invDisbDetail->principal_tds - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'principal_tds' => $invDisbDetail->principal_tds + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $invDisbDetails = [ 
-                    'interest_tds' => $invDisbDetail->interest_tds + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'interest_tds' => $invDisbDetail->interest_tds - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'interest_tds' => $invDisbDetail->interest_tds + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $invDisbDetails = [ 
-                    'overdue_tds' => $invDisbDetail->overdue_tds + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'overdue_tds' => $invDisbDetail->overdue_tds - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'overdue_tds' => $invDisbDetail->overdue_tds + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
-                $invDisbDetails = [ 
-                    'margin_tds' => $invDisbDetail->margin_tds + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'margin_tds' => $invDisbDetail->margin_tds - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'margin_tds' => $invDisbDetail->margin_tds + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->transType->chrg_master_id){
-                $invDisbDetails = [ 
-                    'charge_tds' => $invDisbDetail->charge_tds + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'charge_tds' => $invDisbDetail->charge_tds - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'charge_tds' => $invDisbDetail->charge_tds + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
             self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
         }
     }
 
-    public static function updateWaivedOffTrans($transDetail, $invDisbDetail){
+    public static function updateWaivedOffTrans($transDetail, $invDisbDetail, $isActionDelete){
         $pTransDetails = $transDetail->parentTransactions;
         if($pTransDetails && $transDetail->entry_type == 1){
             if($pTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-                $invDisbDetails = [ 
-                    'principal_waived_off' => $invDisbDetail->principal_waived_off + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'principal_waived_off' => $invDisbDetail->principal_waived_off - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'principal_waived_off' => $invDisbDetail->principal_waived_off + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $invDisbDetails = [ 
-                    'interest_waived_off' => $invDisbDetail->interest_waived_off + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'interest_waived_off' => $invDisbDetail->interest_waived_off - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'interest_waived_off' => $invDisbDetail->interest_waived_off + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $invDisbDetails = [ 
-                    'overdue_waived_off' => $invDisbDetail->overdue_waived_off + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'overdue_waived_off' => $invDisbDetail->overdue_waived_off - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'overdue_waived_off' => $invDisbDetail->overdue_waived_off + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
-                $invDisbDetails = [ 
-                    'margin_waived_off' => $invDisbDetail->margin_waived_off + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'margin_waived_off' => $invDisbDetail->margin_waived_off - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'margin_waived_off' => $invDisbDetail->margin_waived_off + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->transType->chrg_master_id){
-                $invDisbDetails = [ 
-                    'charge_waived_off' => $invDisbDetail->charge_waived_off + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'charge_waived_off' => $invDisbDetail->charge_waived_off - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'charge_waived_off' => $invDisbDetail->charge_waived_off + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
             self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
         }
     }
 
-    public static function updateWriteOffTrans($transDetail, $invDisbDetail){
+    public static function updateWriteOffTrans($transDetail, $invDisbDetail, $isActionDelete){
         $pTransDetails = $transDetail->parentTransactions;
         if($pTransDetails && $transDetail->entry_type == 1){
             if($pTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-                $invDisbDetails = [ 
-                    'principal_write_off' => $invDisbDetail->principal_write_off + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'principal_write_off' => $invDisbDetail->principal_write_off - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'principal_write_off' => $invDisbDetail->principal_write_off + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $invDisbDetails = [ 
-                    'interset_write_off' => $invDisbDetail->interset_write_off + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'interset_write_off' => $invDisbDetail->interset_write_off - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'interset_write_off' => $invDisbDetail->interset_write_off + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $invDisbDetails = [ 
-                    'overdue_write_off' => $invDisbDetail->overdue_write_off + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'overdue_write_off' => $invDisbDetail->overdue_write_off - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'overdue_write_off' => $invDisbDetail->overdue_write_off + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
-                $invDisbDetails = [ 
-                    'margin_write_off' => $invDisbDetail->margin_write_off + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'margin_write_off' => $invDisbDetail->margin_write_off - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'margin_write_off' => $invDisbDetail->margin_write_off + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->transType->chrg_master_id){
-                $invDisbDetails = [ 
-                    'charge_write_off' => $invDisbDetail->charge_write_off + $transDetail->amount,
-                    'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'charge_write_off' => $invDisbDetail->charge_write_off - $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'charge_write_off' => $invDisbDetail->charge_write_off + $transDetail->amount,
+                        'total_repayment_amount' => $invDisbDetail->total_repayment_amount + $transDetail->amount,
+                    ];
+                }
             }
             $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
             self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
         }
     }
 
-    public static function updateRefundTrans($transDetail, $invDisbDetail){
+    public static function updateRefundTrans($transDetail, $invDisbDetail, $isActionDelete){
         $pTransDetails = $transDetail->parentTransactions;
         if($pTransDetails && $transDetail->entry_type == 1){
             if($pTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-                $invDisbDetails = [ 
-                    'principal_refundable' => $invDisbDetail->principal_refundable + $transDetail->amount,
-                    'refundable_amount' => $invDisbDetail->refundable_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'principal_refundable' => $invDisbDetail->principal_refundable - $transDetail->amount,
+                        'refundable_amount' => $invDisbDetail->refundable_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'principal_refundable' => $invDisbDetail->principal_refundable + $transDetail->amount,
+                        'refundable_amount' => $invDisbDetail->refundable_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $invDisbDetails = [ 
-                    'interest_refundable' => $invDisbDetail->interest_refundable + $transDetail->amount,
-                    'refundable_amount' => $invDisbDetail->refundable_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'interest_refundable' => $invDisbDetail->interest_refundable - $transDetail->amount,
+                        'refundable_amount' => $invDisbDetail->refundable_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'interest_refundable' => $invDisbDetail->interest_refundable + $transDetail->amount,
+                        'refundable_amount' => $invDisbDetail->refundable_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $invDisbDetails = [ 
-                    'overdue_refundable' => $invDisbDetail->overdue_refundable + $transDetail->amount,
-                    'refundable_amount' => $invDisbDetail->refundable_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'overdue_refundable' => $invDisbDetail->overdue_refundable - $transDetail->amount,
+                        'refundable_amount' => $invDisbDetail->refundable_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'overdue_refundable' => $invDisbDetail->overdue_refundable + $transDetail->amount,
+                        'refundable_amount' => $invDisbDetail->refundable_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
-                $invDisbDetails = [ 
-                    'margin_refundable' => $invDisbDetail->margin_refundable + $transDetail->amount,
-                    'refundable_amount' => $invDisbDetail->refundable_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'margin_refundable' => $invDisbDetail->margin_refundable - $transDetail->amount,
+                        'refundable_amount' => $invDisbDetail->refundable_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'margin_refundable' => $invDisbDetail->margin_refundable + $transDetail->amount,
+                        'refundable_amount' => $invDisbDetail->refundable_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->transType->chrg_master_id){
-                $invDisbDetails = [ 
-                    'charge_refundable' => $invDisbDetail->charge_refundable + $transDetail->amount,
-                    'refundable_amount' => $invDisbDetail->refundable_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'charge_refundable' => $invDisbDetail->charge_refundable - $transDetail->amount,
+                        'refundable_amount' => $invDisbDetail->refundable_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'charge_refundable' => $invDisbDetail->charge_refundable + $transDetail->amount,
+                        'refundable_amount' => $invDisbDetail->refundable_amount + $transDetail->amount,
+                    ];
+                }
             }
             $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
             self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
         }
         if($pTransDetails && $transDetail->entry_type == 0){
             if($pTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-                $invDisbDetails = [ 
-                    'principal_refunded' => $invDisbDetail->principal_refunded + $transDetail->amount,
-                    'refunded_amount' => $invDisbDetail->refunded_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'principal_refunded' => $invDisbDetail->principal_refunded - $transDetail->amount,
+                        'refunded_amount' => $invDisbDetail->refunded_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'principal_refunded' => $invDisbDetail->principal_refunded + $transDetail->amount,
+                        'refunded_amount' => $invDisbDetail->refunded_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $invDisbDetails = [ 
-                    'interest_refunded' => $invDisbDetail->interest_refunded + $transDetail->amount,
-                    'refunded_amount' => $invDisbDetail->refunded_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'interest_refunded' => $invDisbDetail->interest_refunded - $transDetail->amount,
+                        'refunded_amount' => $invDisbDetail->refunded_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'interest_refunded' => $invDisbDetail->interest_refunded + $transDetail->amount,
+                        'refunded_amount' => $invDisbDetail->refunded_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $invDisbDetails = [ 
-                    'overdue_refunded' => $invDisbDetail->overdue_refunded + $transDetail->amount,
-                    'refunded_amount' => $invDisbDetail->refunded_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'overdue_refunded' => $invDisbDetail->overdue_refunded - $transDetail->amount,
+                        'refunded_amount' => $invDisbDetail->refunded_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'overdue_refunded' => $invDisbDetail->overdue_refunded + $transDetail->amount,
+                        'refunded_amount' => $invDisbDetail->refunded_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
-                $invDisbDetails = [ 
-                    'margin_refunded' => $invDisbDetail->margin_refunded + $transDetail->amount,
-                    'refunded_amount' => $invDisbDetail->refunded_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'margin_refunded' => $invDisbDetail->margin_refunded - $transDetail->amount,
+                        'refunded_amount' => $invDisbDetail->refunded_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'margin_refunded' => $invDisbDetail->margin_refunded + $transDetail->amount,
+                        'refunded_amount' => $invDisbDetail->refunded_amount + $transDetail->amount,
+                    ];
+                }
             }
             elseif($pTransDetails->transType->chrg_master_id){
-                $invDisbDetails = [ 
-                    'charge_refunded' => $invDisbDetail->charge_refunded + $transDetail->amount,
-                    'refunded_amount' => $invDisbDetail->refunded_amount + $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'charge_refunded' => $invDisbDetail->charge_refunded - $transDetail->amount,
+                        'refunded_amount' => $invDisbDetail->refunded_amount - $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'charge_refunded' => $invDisbDetail->charge_refunded + $transDetail->amount,
+                        'refunded_amount' => $invDisbDetail->refunded_amount + $transDetail->amount,
+                    ];
+                }
             }
             $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
             self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
         }
     }
 
-    public static function updateReverseTrans($transDetail, $invDisbDetail){
+    public static function updateReverseTrans($transDetail, $invDisbDetail, $isActionDelete){
         $lTransDetails = $transDetail->linkTransactions;
         $pTransDetails = $transDetail->parentTransactions;
         if($lTransDetails && $transDetail->entry_type == 1){
             if($lTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-                $invDisbDetails = [ 
-                    'principal_amount' => $invDisbDetail->principal_amount - $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'principal_amount' => $invDisbDetail->principal_amount + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'principal_amount' => $invDisbDetail->principal_amount - $transDetail->amount,
+                    ];
+                }
             }
             elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $invDisbDetails = [ 
-                    'interest_capitalized' => $invDisbDetail->interest_capitalized - $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'interest_capitalized' => $invDisbDetail->interest_capitalized + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'interest_capitalized' => $invDisbDetail->interest_capitalized - $transDetail->amount,
+                    ];
+                }
             }
             elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $invDisbDetails = [ 
-                    'overdue_capitalized' => $invDisbDetail->overdue_capitalized - $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'overdue_capitalized' => $invDisbDetail->overdue_capitalized + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'overdue_capitalized' => $invDisbDetail->overdue_capitalized - $transDetail->amount,
+                    ];
+                }
             }
             elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
-                $invDisbDetails = [ 
-                    'margin_amount' => $invDisbDetail->margin_amount - $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'margin_amount' => $invDisbDetail->margin_amount + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'margin_amount' => $invDisbDetail->margin_amount - $transDetail->amount,
+                    ];
+                }
             }
             elseif($lTransDetails->transType->chrg_master_id){
-                $invDisbDetails = [ 
-                    'charge_amount' => $invDisbDetail->charge_amount - $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'charge_amount' => $invDisbDetail->charge_amount + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'charge_amount' => $invDisbDetail->charge_amount - $transDetail->amount,
+                    ];
+                }
             }
+            if ($isActionDelete) {
+                $invDisbDetails['total_outstanding_amount'] = $invDisbDetail->total_outstanding_amount + $transDetail->amount;
 
-            $invDisbDetails['total_outstanding_amount'] = $invDisbDetail->total_outstanding_amount - $transDetail->amount;
+                if($lTransDetails->payment_id || $pTransDetails->payment_id){
+                    $invDisbDetails['total_repayment_amount'] = $invDisbDetail->total_repayment_amount - $transDetail->amount;
+                }
+            } else {
+                $invDisbDetails['total_outstanding_amount'] = $invDisbDetail->total_outstanding_amount - $transDetail->amount;
             
-            if($lTransDetails->payment_id || $pTransDetails->payment_id){
-                $invDisbDetails['total_repayment_amount'] = $invDisbDetail->total_repayment_amount + $transDetail->amount;
-            }
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
-        }
-        
-        if($lTransDetails && $transDetail->entry_type == 0){
-            if($lTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-                $invDisbDetails = [ 
-                    'principal_repayment' => $invDisbDetail->principal_repayment - $transDetail->amount,
-                ];
-            }
-            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $invDisbDetails = [ 
-                    'interest_repayment' => $invDisbDetail->interest_repayment - $transDetail->amount,
-                ];
-            }
-            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $invDisbDetails = [ 
-                    'overdue_repayment' => $invDisbDetail->overdue_repayment - $transDetail->amount,
-                ];
-            }
-            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
-                $invDisbDetails = [ 
-                    'margin_repayment' => $invDisbDetail->margin_repayment - $transDetail->amount,
-                ];
-            }
-            elseif($lTransDetails->transType->chrg_master_id){
-                $invDisbDetails = [ 
-                    'charge_repayment' => $invDisbDetail->charge_repayment - $transDetail->amount,
-                ];
-            }
-
-            $invDisbDetails['total_outstanding_amount'] = $invDisbDetail->total_outstanding_amount + $transDetail->amount;
-            
-            if($lTransDetails->payment_id || $pTransDetails->payment_id){
-                $invDisbDetails['total_repayment_amount'] = $invDisbDetail->total_repayment_amount - $transDetail->amount;
-            }
-            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
-            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
-        }
-    }
-
-    public static function updateCancelTrans($transDetail, $invDisbDetail){
-        $lTransDetails = $transDetail->linkTransactions;
-        $pTransDetails = $transDetail->parentTransactions;
-        if($lTransDetails && $transDetail->entry_type == 1){
-            if($lTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-                $invDisbDetails = [ 
-                    'principal_amount' => $invDisbDetail->principal_amount - $transDetail->amount,
-                ];
-            }
-            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $invDisbDetails = [ 
-                    'interest_capitalized' => $invDisbDetail->interest_capitalized - $transDetail->amount,
-                ];
-            }
-            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $invDisbDetails = [ 
-                    'overdue_capitalized' => $invDisbDetail->overdue_capitalized - $transDetail->amount,
-                ];
-            }
-            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
-                $invDisbDetails = [ 
-                    'margin_amount' => $invDisbDetail->margin_amount - $transDetail->amount,
-                ];
-            }
-            elseif($lTransDetails->transType->chrg_master_id){
-                $invDisbDetails = [ 
-                    'charge_amount' => $invDisbDetail->charge_amount - $transDetail->amount,
-                ];
-            }
-            $invDisbDetails['total_outstanding_amount'] = $invDisbDetail->total_outstanding_amount - $transDetail->amount;
-            
-            if($lTransDetails->payment_id || $pTransDetails->payment_id){
-                $invDisbDetails['total_repayment_amount'] = $invDisbDetail->total_repayment_amount + $transDetail->amount;
+                if($lTransDetails->payment_id || $pTransDetails->payment_id){
+                    $invDisbDetails['total_repayment_amount'] = $invDisbDetail->total_repayment_amount + $transDetail->amount;
+                }
             }
 
             $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
@@ -569,35 +776,227 @@ class InvoiceDisbursedDetail extends BaseModel
         
         if($lTransDetails && $transDetail->entry_type == 0){
             if($lTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-                $invDisbDetails = [ 
-                    'principal_repayment' => $invDisbDetail->principal_repayment - $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'principal_repayment' => $invDisbDetail->principal_repayment + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'principal_repayment' => $invDisbDetail->principal_repayment - $transDetail->amount,
+                    ];
+                }
             }
             elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-                $invDisbDetails = [ 
-                    'interest_repayment' => $invDisbDetail->interest_repayment - $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'interest_repayment' => $invDisbDetail->interest_repayment + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'interest_repayment' => $invDisbDetail->interest_repayment - $transDetail->amount,
+                    ];
+                }
             }
             elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $invDisbDetails = [ 
-                    'overdue_repayment' => $invDisbDetail->overdue_repayment - $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'overdue_repayment' => $invDisbDetail->overdue_repayment + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'overdue_repayment' => $invDisbDetail->overdue_repayment - $transDetail->amount,
+                    ];
+                }
             }
             elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
-                $invDisbDetails = [ 
-                    'margin_repayment' => $invDisbDetail->margin_repayment - $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'margin_repayment' => $invDisbDetail->margin_repayment + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'margin_repayment' => $invDisbDetail->margin_repayment - $transDetail->amount,
+                    ];
+                }
             }
             elseif($lTransDetails->transType->chrg_master_id){
-                $invDisbDetails = [ 
-                    'charge_repayment' => $invDisbDetail->charge_repayment - $transDetail->amount,
-                ];
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'charge_repayment' => $invDisbDetail->charge_repayment + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'charge_repayment' => $invDisbDetail->charge_repayment - $transDetail->amount,
+                    ];
+                }
             }
 
-            $invDisbDetails['total_outstanding_amount'] = $invDisbDetail->total_outstanding_amount + $transDetail->amount;
-            
-            if($lTransDetails->payment_id || $pTransDetails->payment_id){
-                $invDisbDetails['total_repayment_amount'] = $invDisbDetail->total_repayment_amount - $transDetail->amount;
+            if ($isActionDelete) {
+                $invDisbDetails['total_outstanding_amount'] = $invDisbDetail->total_outstanding_amount - $transDetail->amount;
+
+                if($lTransDetails->payment_id || $pTransDetails->payment_id){
+                    $invDisbDetails['total_repayment_amount'] = $invDisbDetail->total_repayment_amount + $transDetail->amount;
+                }
+            } else {
+                $invDisbDetails['total_outstanding_amount'] = $invDisbDetail->total_outstanding_amount + $transDetail->amount;
+
+                if($lTransDetails->payment_id || $pTransDetails->payment_id){
+                    $invDisbDetails['total_repayment_amount'] = $invDisbDetail->total_repayment_amount - $transDetail->amount;
+                }
+            }
+
+            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
+            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+        }
+    }
+
+    public static function updateCancelTrans($transDetail, $invDisbDetail, $isActionDelete){
+        $lTransDetails = $transDetail->linkTransactions;
+        $pTransDetails = $transDetail->parentTransactions;
+        if($lTransDetails && $transDetail->entry_type == 1){
+            if($lTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'principal_amount' => $invDisbDetail->principal_amount + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'principal_amount' => $invDisbDetail->principal_amount - $transDetail->amount,
+                    ];
+                }
+            }
+            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'interest_capitalized' => $invDisbDetail->interest_capitalized + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'interest_capitalized' => $invDisbDetail->interest_capitalized - $transDetail->amount,
+                    ];
+                }
+            }
+            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'overdue_capitalized' => $invDisbDetail->overdue_capitalized + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'overdue_capitalized' => $invDisbDetail->overdue_capitalized - $transDetail->amount,
+                    ];
+                }
+            }
+            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'margin_amount' => $invDisbDetail->margin_amount + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'margin_amount' => $invDisbDetail->margin_amount - $transDetail->amount,
+                    ];
+                }
+            }
+            elseif($lTransDetails->transType->chrg_master_id){
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'charge_amount' => $invDisbDetail->charge_amount + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'charge_amount' => $invDisbDetail->charge_amount - $transDetail->amount,
+                    ];
+                }
+            }
+
+            if ($isActionDelete) {
+                $invDisbDetails['total_outstanding_amount'] = $invDisbDetail->total_outstanding_amount + $transDetail->amount;
+
+                if($lTransDetails->payment_id || $pTransDetails->payment_id){
+                    $invDisbDetails['total_repayment_amount'] = $invDisbDetail->total_repayment_amount - $transDetail->amount;
+                }
+            } else {
+                $invDisbDetails['total_outstanding_amount'] = $invDisbDetail->total_outstanding_amount - $transDetail->amount;
+
+                if($lTransDetails->payment_id || $pTransDetails->payment_id){
+                    $invDisbDetails['total_repayment_amount'] = $invDisbDetail->total_repayment_amount + $transDetail->amount;
+                }
+            }
+
+            $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
+            self::saveInvoiceDisbursedDetails($invDisbDetails,$invDisbDetailsWhere);
+        }
+        
+        if($lTransDetails && $transDetail->entry_type == 0){
+            if($lTransDetails->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'principal_repayment' => $invDisbDetail->principal_repayment + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'principal_repayment' => $invDisbDetail->principal_repayment - $transDetail->amount,
+                    ];
+                }
+            }
+            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'interest_repayment' => $invDisbDetail->interest_repayment + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'interest_repayment' => $invDisbDetail->interest_repayment - $transDetail->amount,
+                    ];
+                }
+            }
+            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'overdue_repayment' => $invDisbDetail->overdue_repayment + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'overdue_repayment' => $invDisbDetail->overdue_repayment - $transDetail->amount,
+                    ];
+                }
+            }
+            elseif($lTransDetails->trans_type == config('lms.TRANS_TYPE.MARGIN')){
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'margin_repayment' => $invDisbDetail->margin_repayment + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'margin_repayment' => $invDisbDetail->margin_repayment - $transDetail->amount,
+                    ];
+                }
+            }
+            elseif($lTransDetails->transType->chrg_master_id){
+                if ($isActionDelete) {
+                    $invDisbDetails = [
+                        'charge_repayment' => $invDisbDetail->charge_repayment + $transDetail->amount,
+                    ];
+                } else {
+                    $invDisbDetails = [
+                        'charge_repayment' => $invDisbDetail->charge_repayment - $transDetail->amount,
+                    ];
+                }
+            }
+
+            if ($isActionDelete) {
+                $invDisbDetails['total_outstanding_amount'] = $invDisbDetail->total_outstanding_amount - $transDetail->amount;
+
+                if($lTransDetails->payment_id || $pTransDetails->payment_id){
+                    $invDisbDetails['total_repayment_amount'] = $invDisbDetail->total_repayment_amount + $transDetail->amount;
+                }
+            } else {
+                $invDisbDetails['total_outstanding_amount'] = $invDisbDetail->total_outstanding_amount + $transDetail->amount;
+
+                if($lTransDetails->payment_id || $pTransDetails->payment_id){
+                    $invDisbDetails['total_repayment_amount'] = $invDisbDetail->total_repayment_amount - $transDetail->amount;
+                }
             }
 
             $invDisbDetailsWhere = ['invoice_disbursed_id' => $transDetail->invoice_disbursed_id];
@@ -605,58 +1004,65 @@ class InvoiceDisbursedDetail extends BaseModel
         }
     }
   
-    public static function createTransactionDetails($transDetails){
+    public static function createTransactionDetails($transDetails)
+    {
+        $this->processTransDetails($transDetails);
+    }
+
+    public static function updateTransactionDetails($transDetails)
+    {
+        //
+    }
+
+    public static function deleteTransactionDetails($transDetails)
+    {
+        $this->processTransDetails($transDetails, $isActionDelete = true);
+    }
+
+    public static function forceDeletedTransactionDetails($transDetails)
+    {
+        //
+    }
+
+    private function processTransDetails($transDetails, $isActionDelete = false)
+    {
         if($transDetails && $transDetails->invoice_disbursed_id){
-            $invDisbDetail = self::where('invoice_disbursed_id',$transDetails->invoice_disbursed_id)->first(); 
+            $invDisbDetail = self::where('invoice_disbursed_id', $transDetails->invoice_disbursed_id)->first(); 
             switch ($transDetails->trans_type){
                 case config('lms.TRANS_TYPE.PAYMENT_DISBURSED'):
-                    self::updatePrincipalTrans($transDetails,$invDisbDetail);
+                    self::updatePrincipalTrans($transDetails, $invDisbDetail, $isActionDelete);
                     break;
                 case config('lms.TRANS_TYPE.MARGIN'):
-                    self::updateMarginTrans($transDetails,$invDisbDetail);
+                    self::updateMarginTrans($transDetails, $invDisbDetail, $isActionDelete);
                     break;
                 case config('lms.TRANS_TYPE.INTEREST'):
-                    self::updateInterestTrans($transDetails,$invDisbDetail);
+                    self::updateInterestTrans($transDetails, $invDisbDetail, $isActionDelete);
                     break;
                 case config('lms.TRANS_TYPE.INTEREST_OVERDUE'):
-                    self::updateOverdueTrans($transDetails,$invDisbDetail);
+                    self::updateOverdueTrans($transDetails, $invDisbDetail, $isActionDelete);
                     break;
                 case config('lms.TRANS_TYPE.TDS'):
-                    self::updateTdsTrans($transDetails,$invDisbDetail);
+                    self::updateTdsTrans($transDetails, $invDisbDetail, $isActionDelete);
                     break;
                 case config('lms.TRANS_TYPE.WAVED_OFF'):
-                    self::updateWaivedOffTrans($transDetails,$invDisbDetail);
+                    self::updateWaivedOffTrans($transDetails, $invDisbDetail, $isActionDelete);
                     break;
                 case config('lms.TRANS_TYPE.WRITE_OFF'):
-                    self::updateWriteOffTrans($transDetails,$invDisbDetail);
+                    self::updateWriteOffTrans($transDetails, $invDisbDetail, $isActionDelete);
                     break;
                 case config('lms.TRANS_TYPE.REFUND'):
-                    self::updateRefundTrans($transDetails,$invDisbDetail);
+                    self::updateRefundTrans($transDetails, $invDisbDetail, $isActionDelete);
                     break;
                 case config('lms.TRANS_TYPE.REVERSE'):
-                    self::updateReverseTrans($transDetails,$invDisbDetail);
+                    self::updateReverseTrans($transDetails, $invDisbDetail, $isActionDelete);
                     break;
                 case config('lms.TRANS_TYPE.CANCEL'):
-                    self::updateCancelTrans($transDetails,$invDisbDetail);
+                    self::updateCancelTrans($transDetails, $invDisbDetail, $isActionDelete);
                     break;
                 default:
-                    self::updateChargeTrans($transDetails,$invDisbDetail);
+                    self::updateChargeTrans($transDetails, $invDisbDetail, $isActionDelete);
                     break;
             }
         }
     }
-
-    public static function updateTransactionDetails($transId){
-
-    }
-
-    public static function deleteTransactionDetails($transId){
-
-    }
-
-    public static function forceDeletedTransactionDetails($transId){
-
-    }
-
-
 }
