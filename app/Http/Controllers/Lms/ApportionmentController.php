@@ -1552,7 +1552,7 @@ class ApportionmentController extends Controller
         if ($maxTransId) {
             $trans          =   Transactions::whereIn('invoice_disbursed_id', $uniqInvDisbIds)
                                             ->where('user_id', $userId)
-                                            ->where('trans_id', '<', $maxTransId)
+                                            ->where('trans_id', '>', $maxTransId)
                                             ->whereNotNull('invoice_disbursed_id')
                                             ->whereNull('payment_id')
                                             ->whereNull('apportionment_id')
