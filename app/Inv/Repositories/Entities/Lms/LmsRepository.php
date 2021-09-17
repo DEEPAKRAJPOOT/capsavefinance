@@ -69,7 +69,9 @@ use App\Inv\Repositories\Models\UserNach;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReq;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReqBatch;
 use App\Inv\Repositories\Models\Lms\NachTransReq;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
+use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
 
 /**
  * Lms Repository class
@@ -739,7 +741,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     
     public function getSoaList()
     {
-        return Transactions::getSoaList();
+        // return Transactions::getSoaList();
+		return CustomerTransactionSOA::getSoaList();
     }
     
     public function getColenderSoaList() {
@@ -1765,6 +1768,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function getUnsettledRunningTrans(){
         return TransactionsRunning::getUnsettledRunningTrans();
     }
+
+	public function saveInvoiceDisbursedDetails($attr, $whereCond){
+		return InvoiceDisbursedDetail::saveInvoiceDisbursedDetails($attr, $whereCond);
+	}
 	
 	public function findInvoiceDisburseByDisbursalId($data)
 	{
