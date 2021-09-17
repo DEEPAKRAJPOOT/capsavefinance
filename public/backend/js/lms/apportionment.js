@@ -95,6 +95,11 @@ class Apportionment {
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}],
             drawCallback: function( settings ) {
                 if(id == 'unsettledTransactions'){
+                    if($(".pay").length){
+                        $('#mark_settle_btn').removeAttr("disabled");
+                    }else{
+                        $('#mark_settle_btn').prop("disabled", true);
+                    }
                     parentRef.setTransactionAmt();
                 }
                 var rows = this.fnGetData();
