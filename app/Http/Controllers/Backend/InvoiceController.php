@@ -417,8 +417,6 @@ class InvoiceController extends Controller {
                 'invoice_disbursed_id' => $value['invoice_disbursed_id'],
                 'request_amount' => $value['invoice']['invoice_amount'],
                 'approve_amount' => $value['invoice']['invoice_approve_amount'],
-                'margin_amount' => $marginAmt,
-                'principal_amount' => $value['invoice']['invoice_approve_amount'] - $marginAmt,
                 'upfront_interest' => $intrstAmt,
                 'disbursed_amount' => ($value['invoice']['program_offer']['payment_frequency'] == 1 && $value['invoice']['program_offer']['program']['interest_borne_by'] == 2)? ($value['invoice']['invoice_approve_amount'] - $marginAmt - $intrstAmt): ($value['invoice']['invoice_approve_amount'] - $marginAmt),
                 'final_disbursed_amount' => $value['disburse_amt'],
