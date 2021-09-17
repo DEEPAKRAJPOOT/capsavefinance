@@ -1469,9 +1469,9 @@ class Transactions extends BaseModel {
                 });
             });
         });
-        return $query->get()
+        return $query->get()->where('is_transaction', ture)
                 ->filter(function($item) {
-                    return ($item->TDSAmount > 0 && $item->isTransaction);
+                    return ($item->TDSAmount > 0 );
                 });
     }
     
