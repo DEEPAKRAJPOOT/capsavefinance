@@ -245,11 +245,20 @@ class Transactions extends BaseModel {
         }
         
         if($this->link_trans_id){
+            if($this->link_trans_id == $this->parent_trans_id && $this->payment_id && $this->entry_type = 1){
+                $revertedAmt = self::calculateRevertedAmt($this->trans_id);
+                $revtAmt = round(($linkTrans->amount - $revertedAmt),2);
+                $revtAmt = $revtAmt > 0 ? $revtAmt : 0;
+                self::where('trans_id', $this->trans_id)->update(['settled_outstanding' => $revtAmt]);
+            }
+
             $linkTrans = $this->linkTransactions;
-            $revertedAmt = self::calculateRevertedAmt($this->link_trans_id);
-            $revtAmt = round(($linkTrans->amount - $revertedAmt),2);
-            $revtAmt = $revtAmt > 0 ? $revtAmt : 0;
-            self::where('trans_id', $this->link_trans_id)->update(['settled_outstanding' => $revtAmt]);
+            if($linkTrans->link_trans_id == $linkTrans->parent_trans_id && $linkTrans->payment_id && $linkTrans->entry_type = 1){
+                $revertedAmt = self::calculateRevertedAmt($this->link_trans_id);
+                $revtAmt = round(($linkTrans->amount - $revertedAmt),2);
+                $revtAmt = $revtAmt > 0 ? $revtAmt : 0;
+                self::where('trans_id', $this->link_trans_id)->update(['settled_outstanding' => $revtAmt]);
+            }
         }
     }
 
