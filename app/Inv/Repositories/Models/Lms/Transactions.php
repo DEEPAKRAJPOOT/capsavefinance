@@ -196,17 +196,60 @@ class Transactions extends BaseModel {
     //     return $amount > 0 ? $amount : 0;
     // }
 
+    public function calculateSettledAmt($trans_id){
+        $dr = self::where('parent_trans_id','=',$trans_id)
+        ->where('entry_type','=','0')
+        ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.ADJUSTMENT')])
+        ->sum('amount');
+
+        $cr = self::where('parent_trans_id','=',$trans_id)
+        ->where('entry_type','=','1')
+        ->sum('amount');
+
+        return (float)$cr - (float)$dr;
+    }
+
+    public function calculateRevertedAmt($trans_id){
+        return self::where('link_trans_id','=',$trans_id)
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.CANCEL')])
+        ->where(function($newQuery){
+            $newQuery->where(function($q){
+                $q->where('entry_type','=','0');
+                $q->where('trans_type','=', config('lms.TRANS_TYPE.REVERSE'));
+            });
+            $newQuery->orWhere(function($q){
+                $q->where('entry_type','=','1');
+                $q->where('trans_type','=', config('lms.TRANS_TYPE.CANCEL'));
+            });
+        })
+        ->sum('amount');
+    }
+
     public function calculateOutstandings()
     {
-        if ($this->entry_type == 0 && is_null($this->parent_trans_id)) {
-            $amount = round(($this->amount - $this->getsettledAmtAttribute()),2);
-            $amount = $amount > 0 ? $amount : 0;
-            self::where('trans_id', $this->trans_id)->update(['outstanding' => $amount]);
+        if($this->parent_trans_id){
+            $parentTrans = $this->parentTransactions();
+            if($parentTrans->entry_type == 0){
+                $settledAmt = self::calculateSettledAmt($this->parent_trans_id);
+                $outAmt = round(($parentTrans->amount - $settledAmt),2);
+                $outAmt = $outAmt > 0 ? $outAmt : 0;
+                self::where('trans_id', $this->parent_trans_id)->update(['outstanding' => $outAmt]);
+            }
+        }else{
+            if($this->entry_type == 0){
+                $settledAmt = self::calculateSettledAmt($this->trans_id);
+                $outAmt = round(($this->amount - $settledAmt),2);
+                $outAmt = $outAmt > 0 ? $outAmt : 0;
+                self::where('trans_id', $this->trans_id)->update(['outstanding' => $outAmt]);
+            }
         }
-
-        if ($this->entry_type == 1 && $this->payment_id > 0) {
-            $amount = round(($this->amount - self::revertedAmt()),2);
-            self::where('trans_id', $this->trans_id)->update(['settled_outstanding' => $amount]);
+        
+        if($this->link_trans_id){
+            $linkTrans = $this->linkTransactions();
+            $revertedAmt = self::calculateRevertedAmt($this->link_trans_id);
+            $revtAmt = round(($linkTrans->amount - $revertedAmt),2);
+            $revtAmt = $revtAmt > 0 ? $revtAmt : 0;
+            self::where('trans_id', $this->link_trans_id)->update(['settled_outstanding' => $revtAmt]);
         }
     }
 
