@@ -4405,14 +4405,18 @@ class DataRenderer implements DataProviderInterface
             )->editColumn(
                 'debit',
                 function ($trans) {
-                    $this->soa_balance += $trans->debit_amount;
+                    if($trans->debit_amount > 0){
+                        $this->soa_balance += $trans->debit_amount;
+                    }
                     return $trans->debit_amount > 0 ? $trans->debit_amount : '' ;
                 }
             )
             ->editColumn(
                 'credit',
                 function ($trans) {
-                    $this->soa_balance -= $trans->debit_amount;
+                    if($trans->debit_amount > 0){
+                        $this->soa_balance -= $trans->debit_amount;
+                    }
                     return $trans->credit_amount > 0 ? $trans->credit_amount : '' ;
                 }
             )
