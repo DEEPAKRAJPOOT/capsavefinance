@@ -146,7 +146,7 @@ class ManualApportionmentHelper{
                         ->get();
 
                         foreach($paidTransactions as $paidTrans){
-                            $paidAmt = $paidTrans->settledOutstanding;
+                            $paidAmt = $paidTrans->settled_outstanding;
                             if($paidAmt > 0.00 && $amount > 0.00){
                                 if($amount >= $paidAmt){
                                     $rAmt = $paidAmt;

@@ -1374,10 +1374,8 @@ use CommonRepositoryTraits;
                 ->whereNull('payment_id')
                 ->where('entry_type', 0)
                 ->whereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
-                ->get()
-                ->filter(function($item) {
-                    return $item->outstanding > 0;
-                });
+                ->where('outstanding', '>', 0)
+                ->get();
 
 
             foreach ($transactionData as $key => $value) {
