@@ -76,7 +76,7 @@ class CustomerTransactionSOA extends BaseModel
     }
 
     public static function updateTransactionSOADetails($transaction){
-        $customerAllTranSoa = self::where('user_id', $transaction->user_id)->get();
+        /*$customerAllTranSoa = self::where('user_id', $transaction->user_id)->get();
         $balance = 0;
         foreach ($customerAllTranSoa as $customerTranSoa) {
         $data    = self::makeCustomerTransactionSOA($customerTranSoa->transaction, $balance);
@@ -85,7 +85,7 @@ class CustomerTransactionSOA extends BaseModel
             'user_id'         =>  $customerTranSoa->user_id,
             'trans_id'        =>  $customerTranSoa->trans_id,
         ])->update($data);
-        }
+        }*/
     }
 
     public static function deleteTransactionSOADetails($transaction){
