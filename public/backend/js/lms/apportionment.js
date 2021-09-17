@@ -113,8 +113,8 @@ class Apportionment {
         if($.isEmptyObject(oldData.payment) && $.isEmptyObject(oldData.check)) {
             $(".pay").each(function (index, element) {
                 let id = $(this).attr('id');
-                let payEnabled = $('#check_' + id).attr('payenabled');
-                if(paymentAmt>0 && payEnabled == 1){
+                //let payEnabled = $('#check_' + id).attr('payenabled');
+                if(paymentAmt > 0 /*&& payEnabled == 1*/){
                     let value =  parseFloat($(this).attr('max'));
                     if(paymentAmt>=value){
                         $(this).val(value.toFixed(2));
