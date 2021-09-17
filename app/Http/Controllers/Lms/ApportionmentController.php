@@ -755,8 +755,17 @@ class ApportionmentController extends Controller
         try {
             $payment = Payment::find($request->payment_id);
 
-            if (!$this->verifyUnSettleTransInitiator($payment))
+            if (!$this->verifyUnSettleTransInitiator($payment)) {
                 return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+            }
+
+            if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSED) {
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+            }
+
+            if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED) {
+                return redirect()->route('unsettled_payments')->withErrors('Transactions already settled')->withInput();
+            }
 
             $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSED]);
 
