@@ -4336,6 +4336,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getSoaList(Request $request, $data)
     {
+        $this->soa_balance = 0;
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])
             ->addColumn('payment_id', function($trans){
@@ -4405,12 +4406,14 @@ class DataRenderer implements DataProviderInterface
                 'debit',
                 function ($trans) {
                     return $trans->debit_amount > 0 ? $trans->debit_amount : '' ;
+                    $this->soa_balance += $trans->debit_amount;
                 }
             )
             ->editColumn(
                 'credit',
                 function ($trans) {
                     return $trans->credit_amount > 0 ? $trans->credit_amount : '' ;
+                    $this->soa_balance -= $trans->debit_amount;
                 }
             )
             ->addColumn(
@@ -4422,10 +4425,10 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'balance',
                 function ($trans) {
-                    if($trans->transaction->entry_type == 1){
-                        return '<span style="color:red">'.number_format(abs($trans->balance_amount), 2).'</span>';
+                    if($this->soa_balance < 0){
+                        return '<span style="color:red">'.number_format(abs($this->soa_balance), 2).'</span>';
                     } else {
-                        return '<span style="color:green">'.number_format(abs($trans->balance_amount), 2).'</span>';
+                        return '<span style="color:green">'.number_format(abs($this->soa_balance), 2).'</span>';
                     }
                 }
             )
