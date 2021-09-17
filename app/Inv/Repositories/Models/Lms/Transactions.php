@@ -197,13 +197,13 @@ class Transactions extends BaseModel {
 
     public function calculateOutstandings()
     {
-        if ($this->entry_type == 0) {
+        if ($this->entry_type == 0 && is_null($this->parent_trans_id)) {
             $amount = round(($this->amount - $this->getsettledAmtAttribute()),2);
             $amount = $amount > 0 ? $amount : 0;
             self::where('trans_id', $this->trans_id)->update(['outstanding' => $amount]);
         }
 
-        if ($this->entry_type == 1) {
+        if ($this->entry_type == 1 && $this->payment_id > 0) {
             $amount = round(($this->amount - self::revertedAmt()),2);
             self::where('trans_id', $this->trans_id)->update(['settled_outstanding' => $amount]);
         }
