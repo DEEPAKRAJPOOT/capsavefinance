@@ -228,7 +228,7 @@ class Transactions extends BaseModel {
     public function calculateOutstandings()
     {
         if($this->parent_trans_id){
-            $parentTrans = $this->parentTransactions();
+            $parentTrans = $this->parentTransactions;
             if($parentTrans->entry_type == 0){
                 $settledAmt = self::calculateSettledAmt($this->parent_trans_id);
                 $outAmt = round(($parentTrans->amount - $settledAmt),2);
@@ -245,7 +245,7 @@ class Transactions extends BaseModel {
         }
         
         if($this->link_trans_id){
-            $linkTrans = $this->linkTransactions();
+            $linkTrans = $this->linkTransactions;
             $revertedAmt = self::calculateRevertedAmt($this->link_trans_id);
             $revtAmt = round(($linkTrans->amount - $revertedAmt),2);
             $revtAmt = $revtAmt > 0 ? $revtAmt : 0;
