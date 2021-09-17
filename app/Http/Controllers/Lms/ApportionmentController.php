@@ -247,7 +247,7 @@ class ApportionmentController extends Controller
             if(!$is_interest_charges){
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Waived off is possible only Interest and Charges.']);
             }
-            $outstandingAmount = $TransDetail->getOutstandingAttribute();
+            $outstandingAmount = $TransDetail->outstanding;
             if ($amount > $outstandingAmount)  {
                 return redirect()->route('apport_unsettled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Amount to be Waived Off must be less than or equal to '. $outstandingAmount]);
             }
@@ -370,10 +370,8 @@ class ApportionmentController extends Controller
                 ->where('entry_type',1)
                 ->where('invoice_disbursed_id', $TransDetail->invoice_disbursed_id)
                 ->where('payment_id', $TransDetail->payment->payment_id)
-                ->get()
-                ->filter(function($item) {
-                    return $item->settledOutstanding > 0;
-                });
+                ->where('settled_outstanding','>',0)
+                ->get();
                 
                 foreach ($cancelRevTrans as $crt) {
                     $newTransactions[] = [
@@ -383,7 +381,7 @@ class ApportionmentController extends Controller
                         'invoice_disbursed_id' => $TransDetail->invoice_disbursed_id ?? NULL,
                         'user_id' => $TransDetail->user_id,
                         'trans_date' => $paymentDetails->date_of_payment,
-                        'amount' => $crt->settledOutstanding,
+                        'amount' => $crt->settled_outstanding,
                         'entry_type' => 0,
                         'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
                         'trans_mode' => 1,

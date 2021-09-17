@@ -448,17 +448,16 @@ class Transactions extends BaseModel {
         $query = self::whereNull('parent_trans_id')
                 ->whereNull('payment_id')
                 ->where('user_id',$userId)
+                ->where('outstanding', '>', 0)
                 ->where('is_transaction', true);
+
         if(!empty($where['trans_type_not_in'])){
             $query = $query->whereNotIn('trans_type',$where['trans_type_not_in']); 
         }
         if(!empty($where['trans_type_in'])){
             $query = $query->whereIn('trans_type',$where['trans_type_in']); 
         }
-        return $query->get()
-                ->filter(function($item) {
-                    return ($item->outstanding > 0);
-                });
+        return $query->get();
     }
 
     public static function getUserOutstanding($userId){
@@ -628,9 +627,7 @@ class Transactions extends BaseModel {
         
         $query = $query->orderByRaw("FIELD(trans_type, '".config('lms.TRANS_TYPE.INTEREST')."', '".config('lms.TRANS_TYPE.PAYMENT_DISBURSED')."', '".config('lms.TRANS_TYPE.INTEREST_OVERDUE')."', '".config('lms.TRANS_TYPE.MARGIN')."' ), trans_id");
  
-        return $query->get()->filter(function($item) {
-            return ($item->outstanding > 0);
-        });
+        return $query->where('outstanding','>', 0)->get();
     }
 
     public static function getUnsettledChargeTransactions($data = [])
@@ -650,9 +647,9 @@ class Transactions extends BaseModel {
         }
         $query->orderBy('trans_date','ASC');
 
-        return $query->where('is_transaction',1)->get()->filter(function($item) {
-            return ($item->outstanding > 0);
-        });
+        return $query->where('is_transaction',1)
+        ->where('outstanding','>', 0)
+        ->get();
     }
 
     public static function calInvoiceRefund($invDesbId,$payment_date=null)
@@ -776,11 +773,9 @@ class Transactions extends BaseModel {
         ->whereNull('payment_id')
         ->where('user_id','=',$userId)
         ->where('trans_type','=',$transType)        
+        ->where('outstanding', '>', 0)
         ->orderByRaw("FIELD(trans_type, '".config('lms.TRANS_TYPE.INTEREST')."', '".config('lms.TRANS_TYPE.PAYMENT_DISBURSED')."', '".config('lms.TRANS_TYPE.INTEREST_OVERDUE')."', '".config('lms.TRANS_TYPE.MARGIN')."' )")
-        ->get()
-        ->filter(function($item) {
-            return $item->outstanding > 0;
-        });
+        ->get();
         $maxDPD = $transactions->max('dpd');
         return $transactions->where('dpd','=',$maxDPD)->first();
     }
@@ -1022,10 +1017,8 @@ class Transactions extends BaseModel {
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
         ->where('trans_mode','2')
         ->whereNotNull('trans_running_id')
-        ->get()
-        ->filter(function($item) {
-            return $item->outstanding > 0;
-        });
+        ->where('outstanding','>',0)
+        ->get();
 
     }
 
@@ -1042,10 +1035,8 @@ class Transactions extends BaseModel {
         ->where('entry_type','0')
         ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED')])
         ->where('user_id',$userId)
-        ->get()
-        ->filter(function($item) {
-            return $item->outstanding > 0;
-        });
+        ->where('outstanding', '>', 0)
+        ->get();
 
         $interestList = self::whereNull('parent_trans_id')
         ->whereNull('payment_id')
@@ -1399,9 +1390,11 @@ class Transactions extends BaseModel {
             $query = $query->whereIn('trans_type',$where['trans_type_in']); 
         }
 
-        return $query->get()
+        return $query
+        ->where('outstanding','>',0)
+        ->get()
             ->filter(function($item) {
-                return ($item->outstanding > 0  && $item->paymentDueDate < date('Y-m-d'));
+                return ($item->paymentDueDate < date('Y-m-d'));
             });
     }
 }
