@@ -678,9 +678,9 @@ class ApportionmentController extends Controller
                 if (isset($userInvoiceDate)) {
                     $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
                 }
-                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
-                    continue;
-                }
+                // if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                //     continue;
+                // }
                 $invoiceList[$trans->invoice_disbursed_id] = [
                     'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
                     'date_of_payment'=>$paymentDetails['date_of_payment']
@@ -827,7 +827,9 @@ class ApportionmentController extends Controller
                     if (isset($userInvoiceDate)) {
                         $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
                     } 
-                    
+                    // if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                    //     continue;
+                    // }
                     if($trans->invoice_disbursed_id){
 
                         $invoiceList[$trans->invoice_disbursed_id] = [
