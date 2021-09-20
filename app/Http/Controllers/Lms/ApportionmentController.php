@@ -1572,9 +1572,6 @@ class ApportionmentController extends Controller
     }
 
     private function apportionmentUndoProcess($payment){
-        Session::flash('error', trans('Please try after some time, Service is stop due to some technical error!'));
-        return redirect()->back()->withInput();
-        
         $result = false;
         $error  = null;
         $query  = Transactions::where('payment_id', $payment->payment_id);
