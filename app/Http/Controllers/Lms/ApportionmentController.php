@@ -31,6 +31,7 @@ use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
 
 class ApportionmentController extends Controller
 {
@@ -1562,6 +1563,7 @@ class ApportionmentController extends Controller
         }
 
         if ($result) {
+            CustomerTransactionSOA::updateTransactionSOADetails($userId);
             $Obj  = new ManualApportionmentHelper($this->lmsRepo);
             foreach ($data as $invDisb => $sysCreatedAt) {
                 $Obj->intAccrual($invDisb, $sysCreatedAt);
