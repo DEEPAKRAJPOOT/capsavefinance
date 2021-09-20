@@ -84,7 +84,7 @@ class ApportionmentRequest extends FormRequest
                     foreach ($formData['check'] as $key => $value) {
                         $selectedPayment = $formData['payment'][$key] ?? 0;
                         $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);
-                        $outstandingAmount = $transDetail->getOutstandingAttribute();
+                        $outstandingAmount = $transDetail->outstanding;
                         $realOurstandingAmount = $transDetail->getTempInterestAttribute();
                         if (empty($selectedPayment)) {
                             $validator->errors()->add("payment.{$key}", 'Pay is required against selected transaction');
