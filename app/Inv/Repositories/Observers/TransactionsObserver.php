@@ -30,7 +30,7 @@ class TransactionsObserver
     {
         $transaction->calculateOutstandings();
         InvoiceDisbursedDetail::updateTransactionDetails($transaction);
-        CustomerTransactionSOA::updateTransactionSOADetails($transaction);
+        CustomerTransactionSOA::updateTransactionSOADetails($transaction->user_id);
     }
 
     /**
