@@ -643,6 +643,7 @@ class ManualApportionmentHelper{
                 $this->interestPosting($invDisbId, $userId, $payFreq, $loopStratDate, $gStartDate, $gEndDate);
                 
                 if(strtotime($loopStratDate) >= strtotime($odStartDate))
+                $this->overDuePosting($invDisbId, $userId);
                 
                 $loopStratDate = $this->addDays($loopStratDate,1);  
                 $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
