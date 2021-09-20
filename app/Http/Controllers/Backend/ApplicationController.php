@@ -31,6 +31,7 @@ use Mail;
 use App\Helpers\Helper;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use App\Inv\Repositories\Models\Master\LocationType;
 
 class ApplicationController extends Controller
 {
@@ -123,6 +124,7 @@ class ApplicationController extends Controller
 				);
 			}
 			$states = State::getStateList()->get();
+			$locationType = LocationType::getLocationDropDown();
 			$product_types = $this->masterRepo->getProductDataList();
 			//dd($business_info->gst->pan_gst_hash);
 			$industryList = $this->appRepo->getIndustryDropDown()->toArray();
@@ -137,7 +139,8 @@ class ApplicationController extends Controller
 						->with('biz_id',$bizId)
 						->with('industryList',$industryList)
 						->with('constitutionList',$constitutionList)
-						->with('segmentList',$segmentList);
+						->with('segmentList',$segmentList)
+						->with('locationType',$locationType);
 			} else {
 				return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
 			}
@@ -1208,8 +1211,8 @@ class ApplicationController extends Controller
 
                 $anchUserData = $this->userRepo->getAnchorUserData(['user_id' => $userId]);        
                 $pan = isset($anchUserData[0]) ? $anchUserData[0]->pan_no : '';
-        
-		return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList', 'segmentList', 'pan']));
+        $locationType = LocationType::getLocationDropDown();
+		return view('backend.app.business_information',compact(['states', 'product_types','industryList','constitutionList', 'segmentList', 'pan', 'locationType']));
 	}
 
 	/**
@@ -1234,7 +1237,7 @@ class ApplicationController extends Controller
 			if(request()->is_gst_manual == 1){
 				$arrFileData['biz_gst_number'] = request()->get('biz_gst_number_text');
 			}
-
+			
 			$user_id = $request->user_id;
 			$business_info = $this->appRepo->saveBusinessInfo($arrFileData, $user_id);
 			//$appId  = Session::put('appId', $business_info['app_id']);

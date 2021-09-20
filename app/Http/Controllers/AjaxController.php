@@ -5315,7 +5315,22 @@ if ($err) {
     {        
         $IndustryName = $request->get('name');
         $industryId = $request->has('industry_id') ? $request->get('industry_id'): null ;
-        $result = $this->masterRepo->checkIndustryName($IndustryName, $industryId);
+        $result = $this->masterRepo->checkIndustryName(['name' => $IndustryName], $industryId);
+        dd($result);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Industry code
+    public function checkUniqueIndustriesCode(Request $request) 
+    {        
+        $IndustryName = $request->get('cibil_indus_code');
+        $industryId = $request->has('industry_id') ? $request->get('industry_id'): null ;
+        $result = $this->masterRepo->checkIndustryName(['cibil_indus_code' => $IndustryName], $industryId);
         if (isset($result[0])) {
             $result = ['status' => 1];
         } else {
@@ -5370,7 +5385,21 @@ if ($err) {
     {        
         $constiName = $request->get('name');
         $constitId = $request->has('id') ? $request->get('id'): null ;
-        $result = $this->masterRepo->checkConsitutionName($constiName, $constitId);
+        $result = $this->masterRepo->checkConsitutionName(['name' => $constiName], $constitId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Consitution Code
+    public function checkUniqueConstitutionCode(Request $request) 
+    {        
+        $constiName = $request->get('cibil_lc_code');
+        $constitId = $request->has('id') ? $request->get('id'): null ;
+        $result = $this->masterRepo->checkConsitutionName(['cibil_lc_code' => $constiName], $constitId);
         if (isset($result[0])) {
             $result = ['status' => 1];
         } else {
@@ -5428,4 +5457,38 @@ if ($err) {
         $TDSOutstating = ((float)$TDSOutstating<0) ? 0 : $TDSOutstating;
         return response()->json(['tds_amount' => round($TDSOutstating, 2)]);
     }
+
+    public function getLocationTypeLists(DataProviderInterface $dataProvider) { 
+     $industriesList = $this->masterRepo->getAllLocationType();
+     $industries = $dataProvider->getLocationTypeLists($this->request, $industriesList);
+     return $industries;
+    } 
+    
+    // Check Unique Location
+    public function checkUniqueLocationType(Request $request) 
+    {        
+        $locationType = $request->get('name');
+        $locationId = $request->has('location_id') ? $request->get('location_id'): null ;
+        $result = $this->masterRepo->checkLocationType(['name' => $locationType], $locationId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }      
+    // Check Unique Location Code
+    public function checkUniqueLocationCode(Request $request) 
+    {        
+        $locationType = $request->get('location_code');
+        $locationId = $request->has('location_id') ? $request->get('location_id'): null ;
+        $result = $this->masterRepo->checkLocationType(['location_code' => $locationType], $locationId);
+        
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }      
 }

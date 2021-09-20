@@ -204,7 +204,7 @@ class Business extends BaseModel
 
         //insert address into rta_biz_addr
         $address_data=[];
-        array_push($address_data, array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0,'created_at'=>\Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id,'rcu_status'=>0));
+        array_push($address_data, array('biz_id'=>$business->biz_id, 'addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'address_type'=>0, 'location_id'=>$attributes['location_id'], 'created_at'=>\Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id,'rcu_status'=>0));
         if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) {
             for($i=0; $i <=3 ; $i++) { 
                 $temp = array('biz_id'=>$business->biz_id, 'addr_1'=> null,'city_name'=> null,'state_id'=>null,'pin_code'=>null,'address_type'=>($i+1),'created_at'=>\Carbon\Carbon::now(),'created_by'=>Auth::user()->user_id,'rcu_status'=>0);
@@ -408,7 +408,7 @@ class Business extends BaseModel
         $biz_addr_ids = BusinessAddress::where('biz_id',$bizId)->pluck('biz_addr_id');
         $address_data=[];
         BusinessAddress::where('biz_addr_id',$biz_addr_ids[0])->update(
-            array('addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'],'updated_at' => \Carbon\Carbon::now(),'updated_by'=>Auth::user()->user_id)
+            array('addr_1'=> $attributes['biz_address'],'city_name'=>$attributes['biz_city'],'state_id'=>$attributes['biz_state'],'pin_code'=>$attributes['biz_pin'], 'location_id'=>$attributes['location_id'], 'updated_at' => \Carbon\Carbon::now(),'updated_by'=>Auth::user()->user_id)
             );
         if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID')) {
             for ($i=0; $i <=3 ; $i++) { 

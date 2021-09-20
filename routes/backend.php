@@ -1335,6 +1335,30 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Master\BankController@saveNewBank'
             ]);
 
+            Route::get('/list-location', [
+                'as' => 'list_location_type',
+                'uses' => 'Master\LocationTypeController@index'
+            ]);
+            
+            Route::get('/add-location', [
+                'as' => 'add_location_type',
+                'uses' => 'Master\LocationTypeController@addLocationType'
+            ]);
+
+            Route::post('/add-location', [
+                'as' => 'add_location_type',
+                'uses' => 'Master\LocationTypeController@saveLocationType'
+            ]);
+
+            Route::get('/edit-location', [
+                'as' => 'edit_location_type',
+                'uses' => 'Master\LocationTypeController@editLocationType'
+            ]);
+
+            Route::post('/edit-location', [
+                'as' => 'edit_location_type',
+                'uses' => 'Master\LocationTypeController@saveLocationType'
+            ]);
             
         });
 

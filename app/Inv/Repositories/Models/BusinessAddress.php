@@ -49,6 +49,7 @@ class BusinessAddress extends BaseModel
         'rcu_status',
         'is_default',
         'is_active',
+        'location_id',
         'created_by',
         'created_at',
         'updated_at',

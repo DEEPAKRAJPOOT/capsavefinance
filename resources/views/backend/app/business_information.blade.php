@@ -531,6 +531,32 @@
 										</div>
 									</div>
 
+									<div class="form-sections">
+										<div class="row">
+											<div class="col-md-12">
+												<h5 class="form-head">Address Type</h5>
+												<div class="row">
+													<div class="col-md-3">
+														<div class="form-group password-input">
+															<label for="txtPassword">Address Label
+																<span class="mandatory gst_address">*</span>
+															</label>
+															<select class="form-control" name="location_id" tabindex="13" >
+																<option value="" disabled> Address Label</option>
+																@foreach($locationType as $key => $location)
+																<option value="{{ $key }}" {{old('location_id')}}> {{$location}} </option>
+																@endforeach
+															</select>
+															@error('location_id')
+																<span class="text-danger error">{{ $message }}</span>
+															@enderror
+														</div>
+													</div>
+												</div>	
+											</div>
+										</div>
+									</div>										
+
 									<div class="card card-color mb-0">
 										<div class="sameas"><input type="checkbox" class="mr-2" onchange="copyAddress('#collapseThree', this)"> <span> Same as GST Address
 										</span></div>

@@ -27,7 +27,7 @@
                     <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
                 </div>
                 <div class="col-md-7 text-right">
-                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addConstiFrame" data-url ="{{route('add_constitution')}}" data-height="150px" data-width="100%" data-placement="top" >
+                    <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addConstiFrame" data-url ="{{route('add_constitution')}}" data-height="220px" data-width="100%" data-placement="top" >
                             <i class="fa fa-plus"></i> Add Constitution
                     </a>
                 </div>

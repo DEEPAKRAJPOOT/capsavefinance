@@ -105,8 +105,8 @@ class CibilReportController extends Controller
           $userId = $appBusiness->user_id;
           $this->selectedAppData[] = $appId;
           $this->formatedCustId = Helper::formatIdWithPrefix($userId, 'CUSTID');
-          $this->business_category = config('common.MSMETYPE')[$appBusiness->msme_type] ?? NULL;
-          $this->constitutionName = $appBusiness->constitution->name; //config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution]
+          $this->business_category = array_search(config('common.MSMETYPE')[$appBusiness->msme_type], config('common.MSMETYPE')) ? $appBusiness->msme_type : NULL;
+          $this->constitutionName = !empty($appBusiness->constitution->cibil_lc_code) ? $appBusiness->constitution->cibil_lc_code : ''; //config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution]
 
 
           $cibilReportData['bs'] = $this->_getBSData($appBusiness);

@@ -44,6 +44,7 @@ class Constitution extends BaseModel
     protected $fillable = [
         'id',
         'name',
+        'cibil_lc_code',
         'is_active',
         'created_at',
         'updated_at'
@@ -97,7 +98,7 @@ class Constitution extends BaseModel
     public static function checkConsitutionName($constiName, $constitId=null)
     {
         $query = self::select('id')
-                ->where('name', $constiName);
+                ->where($constiName);
         if (!is_null($constitId)) {
             $query->where('id', '!=', $constitId);
         }

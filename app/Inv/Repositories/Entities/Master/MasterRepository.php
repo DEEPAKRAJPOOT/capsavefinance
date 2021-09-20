@@ -35,6 +35,7 @@ use App\Inv\Repositories\Models\Master\Activity;
 use App\Inv\Repositories\Models\Master\ChargeGST;
 use App\Inv\Repositories\Models\Master\Tds;
 use App\Inv\Repositories\Models\Master\Voucher;
+use App\Inv\Repositories\Models\Master\LocationType;
 
 
 /**
@@ -890,4 +891,34 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     public function checkBankName($bankName, $banktId) {
         return Bank::checkBankName($bankName, $banktId);
     }
+
+    public function getAllLocationType(){
+      $result = LocationType::orderBy('location_id', 'DESC');
+      return $result ?: false;
+    }
+
+    // Check Unique Location type
+    public function checkLocationType($locationType, $locationId){
+        return LocationType::checkLocationType($locationType, $locationId);
+    } 
+    
+    public function saveLocationType($attributes){
+        $status = LocationType::create($attributes);
+        return $status ?: false;
+    }
+
+    public function findLocationById($locationId){
+      if (empty($locationId) || !ctype_digit($locationId)) {
+            throw new BlankDataExceptions('No Data Found');
+      }
+      $result = LocationType::find($locationId);
+      return $result ?: false;
+    }    
+
+    public function updateLocationType($attributes, $locationId){
+        $status = LocationType::where('location_id', $locationId)->first()->update($attributes);
+        return $status ?: false;
+
+    }    
+
 }
