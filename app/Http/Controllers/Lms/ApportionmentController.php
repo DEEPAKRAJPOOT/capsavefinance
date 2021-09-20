@@ -827,9 +827,7 @@ class ApportionmentController extends Controller
                     if (isset($userInvoiceDate)) {
                         $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
                     } 
-                    if ((isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) || $trans->Outstanding <= 0) {
-                        continue;
-                    }
+                    
                     if($trans->invoice_disbursed_id){
 
                         $invoiceList[$trans->invoice_disbursed_id] = [
