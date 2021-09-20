@@ -1384,7 +1384,7 @@ use CommonRepositoryTraits;
                     'value_date' => Carbon::parse($value->trans_date)->format('d/m/Y'),
                     'trans_name' => $value->transName,
                     'amount' => $value->amount,
-                    'outstanding' => $value->Outstanding,
+                    'outstanding' => $value->outstanding,
 
                 ];
             }
