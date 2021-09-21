@@ -686,6 +686,7 @@ class ApportionmentController extends Controller
                     'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
                     'date_of_payment'=>$paymentDetails['date_of_payment']
                 ];     
+                $isValid = ((float)$payments[$trans->trans_id] <= (float)$trans->outstanding) && $bill_date_check;
                 $transactionList[] = [
                     'trans_id' => $trans->trans_id,
                     'trans_date' => $trans->trans_date,
@@ -697,9 +698,10 @@ class ApportionmentController extends Controller
                     'outstanding_amt' => (float)$trans->outstanding,
                     'payment_date' =>  $paymentDetails['date_of_payment'],
                     'pay' => ($payments[$trans->trans_id])?(float)$payments[$trans->trans_id]:null,
-                    'is_valid' => ((float)$payments[$trans->trans_id] <= (float)$trans->outstanding) && $bill_date_check?1:0
+                    'is_valid' => $isValid?1:0
                 ];
-                $amtToSettle += $payments[$trans->trans_id];
+                if($isValid)
+                    $amtToSettle += $payments[$trans->trans_id];
             }
 
             $unAppliedAmt = $repaymentAmt-$amtToSettle;
