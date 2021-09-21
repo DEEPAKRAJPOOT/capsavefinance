@@ -847,21 +847,22 @@ class ApportionmentController extends Controller
                     }
 
                     $isValid = ((float)$payments[$trans->trans_id] <= (float)$trans->outstanding) && $bill_date_check;
-                    $transactionList[] = [
-                        'payment_id' => $paymentId,
-                        'apportionment_id'=> $paymentId,
-                        'link_trans_id' => $trans->trans_id,
-                        'parent_trans_id' => $trans->trans_id,
-                        'invoice_disbursed_id' => $trans->invoice_disbursed_id,
-                        'user_id' => $userId,
-                        'trans_date' => $paymentDetails['date_of_payment'],
-                        'amount' => $payments[$trans->trans_id],
-                        'entry_type' => 1,
-                        'soa_flag' => 1,
-                        'trans_type' => $trans->trans_type,
-                        'trans_mode' => 2,
-                    ];
                     if($isValid){
+                        $transactionList[] = [
+                            'payment_id' => $paymentId,
+                            'apportionment_id'=> $paymentId,
+                            'link_trans_id' => $trans->trans_id,
+                            'parent_trans_id' => $trans->trans_id,
+                            'invoice_disbursed_id' => $trans->invoice_disbursed_id,
+                            'user_id' => $userId,
+                            'trans_date' => $paymentDetails['date_of_payment'],
+                            'amount' => $payments[$trans->trans_id],
+                            'entry_type' => 1,
+                            'soa_flag' => 1,
+                            'trans_type' => $trans->trans_type,
+                            'trans_mode' => 2,
+                            'is_transaction'=>$trans->is_transaction
+                        ];
                         $amtToSettle += $payments[$trans->trans_id];
                     }
                 }
