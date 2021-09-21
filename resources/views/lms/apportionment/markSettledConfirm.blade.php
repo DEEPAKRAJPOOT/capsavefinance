@@ -64,7 +64,7 @@
                                                     <td>₹ {{ number_format($trans['outstanding_amt'],2) }}</td>
                                                     <td>₹ {{ number_format($trans['pay'],2) }}</td>
                                                     <td>
-                                                        @if($trans['is_valid'] == 1)
+                                                        @if($trans['is_valid'])
                                                             <i class="fa fa-check" aria-hidden="true"></i>
                                                         @else
                                                             <i class="fa fa-times" aria-hidden="true" style="color:red"></i>

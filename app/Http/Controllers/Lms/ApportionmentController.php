@@ -679,7 +679,7 @@ class ApportionmentController extends Controller
                     $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
                 }
                 $bill_date_check = true;
-                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
                     $bill_date_check = false;
                 }
                 $invoiceList[$trans->invoice_disbursed_id] = [
@@ -832,7 +832,7 @@ class ApportionmentController extends Controller
                     } 
 
                     $bill_date_check = true;
-                    if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                    if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
                         $bill_date_check = false;
                     }
                     if($trans->invoice_disbursed_id){
