@@ -5287,39 +5287,77 @@ class DataRenderer implements DataProviderInterface
                         'action',
                         function ($dataRecords) {
                             $btn = '';
-
-                            if(Helpers::checkPermission('delete_payment') && $dataRecords->is_settled == '0' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' ){
-                                $btn .= '<button class="btn btn-action-btn btn-sm"  title="Delete Payment" onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
-                            }
-
-                            if(Helpers::checkPermission('undo_apportionment') && $dataRecords->is_settled == '1' && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && $dataRecords->validRevertPayment){
-                                $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
-                            }
-
-                            if(Helpers::checkPermission('apport_unsettled_view') && $dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING && $dataRecords->action_type == '1'
-                            || (Helpers::checkPermission('apport_unsettled_view') && $dataRecords->action_type == '1' && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && Auth::user()->user_id == $dataRecords->updated_by)
-                            ){
-                                if($dataRecords->isApportPayValid['isValid'] || (in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && Auth::user()->user_id == $dataRecords->updated_by)){
-                                    $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
-                                }elseif($dataRecords->isApportPayValid['error']){
-                                    $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
+                            $roleData = Helpers::getUserRole();
+                            $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
+                
+                            if(Helpers::checkPermission('delete_payment')){
+                                if($dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING && in_array($dataRecords->action_type,[1,3]) && in_array($dataRecords->trans_type, [7,17])){
+                                    $btn .= '<button class="btn btn-action-btn btn-sm"  title="Delete Payment" onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
                                 }
-                            }elseif (Helpers::checkPermission('apport_unsettled_view') && $dataRecords->action_type == '1' && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && $dataRecords->updated_by != Auth::user()->user_id) {
-                                $user = User::find($dataRecords->updated_by);
-                                $btn .= ($user->fullname ?? 'Someone') . ' is already trying to settle transactions';
-                            }elseif(Helpers::checkPermission('lms_refund_payment_advise') && $dataRecords->is_refundable && !$dataRecords->refundReq && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED])){
-                                $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
+
+                                if((Auth::user()->user_id == $dataRecords->updated_by || $is_superadmin) && $dataRecords->is_settled == Payment::PAYMENT_SETTLED_PROCESSING && in_array($dataRecords->action_type,[1,3]) && in_array($dataRecords->trans_type, [7,17])){
+                                    $btn .= '<button class="btn btn-action-btn btn-sm"  title="Delete Payment" onclick="delete_payment(\''. route('delete_payment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-trash"></i></button>';
+                                }
                             }
 
-                            if(Helpers::checkPermission('apport_unsettledtds_view') && $dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING  && in_array($dataRecords->action_type, [3]) && $dataRecords->trans_type == 7 && !$dataRecords->isApportPayValid['error']
-                                || (Helpers::checkPermission('apport_unsettledtds_view') && in_array($dataRecords->action_type, [3]) && $dataRecords->trans_type == 7 && !$dataRecords->isApportPayValid['error']
-                                    && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && $dataRecords->updated_by == Auth::user()->user_id)
-                            ){
-                                $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettledtds_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled TDS Transactions</a>";
-                            }elseif (Helpers::checkPermission('apport_unsettledtds_view') && in_array($dataRecords->action_type, [3]) && $dataRecords->trans_type == 7 && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED]) && $dataRecords->updated_by != Auth::user()->user_id) {
-                                $user = User::find($dataRecords->updated_by);
-                                $btn .= ($user->fullname ?? 'Someone') . ' is already trying to settle TDS transactions';
+                            if(Helpers::checkPermission('undo_apportionment')){
+                                if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && $dataRecords->validRevertPayment){
+                                    $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
+                                }
                             }
+
+                            if(Helpers::checkPermission('apport_unsettled_view')){
+                                if($dataRecords->action_type == '1' && $dataRecords->trans_type == '17'){
+                                    if($dataRecords->isApportPayValid['isValid']){
+                                        if($dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING){
+                                            $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
+                                        }
+                                        
+                                        if((Auth::user()->user_id == $dataRecords->updated_by) && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED])){
+                                            $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
+                                        }
+                                        elseif((Auth::user()->user_id != $dataRecords->updated_by) && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED])) {
+                                            $user = User::find($dataRecords->updated_by);
+                                            $btn .= ($user->fullname ?? 'Someone') . ' is already trying to settle transactions';
+                                        }
+                                        
+                                    }else{
+                                        $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
+                                    }
+                                }
+                            }
+
+                            if(Helpers::checkPermission('lms_refund_payment_advise')){
+                                if($dataRecords->action_type == '1' && $dataRecords->trans_type == '17'){
+                                    if($dataRecords->is_refundable && !$dataRecords->refundReq && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED])){
+                                        $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
+                                    }
+                                }
+                            }
+
+                            if(Helpers::checkPermission('apport_unsettledtds_view')){
+                                if($dataRecords->action_type == '3' && $dataRecords->trans_type == '7'){
+                                    if($dataRecords->isApportPayValid['isValid']){
+                                        if($dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING){
+                                            $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettledtds_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled TDS Transactions</a>"; 
+                                        }
+                                        
+                                        if((Auth::user()->user_id == $dataRecords->updated_by) && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED])){
+                                            $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettledtds_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled TDS Transactions</a>";
+                                        }
+                                        elseif((Auth::user()->user_id != $dataRecords->updated_by) && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED])) {
+                                            $user = User::find($dataRecords->updated_by);
+                                            $btn .= ($user->fullname ?? 'Someone') . ' is already trying to settle tds transactions';
+                                        }else{
+                                            $btn .= $dataRecords->trans_id;
+                                        }
+                                        
+                                    }else{
+                                        $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
+                                    }
+                                }
+                            }
+                            
 
                             return $btn;
                     }) 
