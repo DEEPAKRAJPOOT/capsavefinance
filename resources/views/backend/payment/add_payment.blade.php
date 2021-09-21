@@ -345,11 +345,11 @@ cursor: pointer;
             switch (action_type) {
                 case "1":
                     if(trans_type==17){
-                        $('#date_of_payment').datetimepicker('setStartDate',  new Date(Date.now() - 10*24*60*60*1000));
+                        //$('#date_of_payment').datetimepicker('setStartDate',  new Date(Date.now() - 10*24*60*60*1000));
                         $('#waiveoff_div').hide();
                         get_repayment_amount();
                     }if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate',  null);
+                        //$('#date_of_payment').datetimepicker('setStartDate',  null);
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -358,7 +358,7 @@ cursor: pointer;
                     break;
                 case "2":
                     if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
+                        //$('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -367,7 +367,7 @@ cursor: pointer;
                     break;
                 case "3":
                     if(trans_type==32){
-                        $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
+                        //$('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                         $('#waiveoff_div').hide();
                         get_interest_paid_amount();   
                     }else{
@@ -402,7 +402,7 @@ cursor: pointer;
                     $('#amount').attr('max-data',tds.toFixed(2));
                 }
             }else{
-                $('#date_of_payment').datetimepicker('setStartDate', new Date(messages.sysDate));
+                //$('#date_of_payment').datetimepicker('setStartDate', new Date(messages.sysDate));
                 $('#amount').val(0);
                 $('#txtAmt').text('');
                 $("#reflect_amount").html('')
@@ -618,7 +618,7 @@ cursor: pointer;
             success: function (res) {
                 var amt = parseFloat(res.amount);
                 if (res.status == 'success') {
-                    $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
+                    //$('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                     $('#amount').val(amt.toFixed(2));
                     // $('#amount').attr('max',amt.toFixed(2));
                     $('#amount').attr('max-data',amt.toFixed(2));
