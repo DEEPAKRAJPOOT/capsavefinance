@@ -5661,7 +5661,10 @@ class DataRenderer implements DataProviderInterface
                     $query->where('ref_code', 'like',"%$search_keyword%")
                     ->orwhereHas('payment.biz', function ($q) use ($search_keyword){
                         $q->where('biz_entity_name', 'like', "%$search_keyword%");
-                     });
+                    })
+                    ->orwhereHas('payment', function ($q) use ($search_keyword){
+                        $q->where('user_id', 'like', "%$search_keyword%");
+                    });
                 });
             }
         })
@@ -5755,7 +5758,10 @@ class DataRenderer implements DataProviderInterface
                     $query->where('ref_code', 'like',"%$search_keyword%")
                     ->orwhereHas('payment.biz', function ($q) use ($search_keyword){
                         $q->where('biz_entity_name', 'like', "%$search_keyword%");
-                     });
+                    })
+                    ->orwhereHas('payment', function ($q) use ($search_keyword){
+                        $q->where('user_id', 'like', "%$search_keyword%");
+                    });
                 });
             }
         })
