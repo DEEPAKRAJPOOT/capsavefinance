@@ -831,8 +831,9 @@ class ApportionmentController extends Controller
                         $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
                     } 
 
+                    $bill_date_check = true;
                     if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
-                        continue;
+                        $bill_date_check = false;
                     }
                     if($trans->invoice_disbursed_id){
 
@@ -844,6 +845,8 @@ class ApportionmentController extends Controller
                             'payment_frequency' => $trans->invoiceDisbursed->invoice->program_offer->payment_frequency,
                         ];             
                     }
+
+                    $isValid = ((float)$payments[$trans->trans_id] <= (float)$trans->outstanding) && $bill_date_check;
                     $transactionList[] = [
                         'payment_id' => $paymentId,
                         'apportionment_id'=> $paymentId,
@@ -858,7 +861,9 @@ class ApportionmentController extends Controller
                         'trans_type' => $trans->trans_type,
                         'trans_mode' => 2,
                     ];
-                    $amtToSettle += $payments[$trans->trans_id];
+                    if($isValid){
+                        $amtToSettle += $payments[$trans->trans_id];
+                    }
                 }
 
                 $unAppliedAmt = round(($repaymentAmt-$amtToSettle),2);
