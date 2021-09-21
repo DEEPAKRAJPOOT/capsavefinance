@@ -5321,7 +5321,7 @@ class DataRenderer implements DataProviderInterface
                                             $btn .= ($user->fullname ?? 'Someone') . ' is already trying to settle transactions';
                                         }
                                         
-                                    }else{
+                                    }elseif($dataRecords->isApportPayValid['error']){
                                         $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
                                     }
                                 }
@@ -5352,7 +5352,7 @@ class DataRenderer implements DataProviderInterface
                                             $btn .= $dataRecords->trans_id;
                                         }
                                         
-                                    }else{
+                                    }elseif($dataRecords->isApportPayValid['error']){
                                         $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
                                     }
                                 }
