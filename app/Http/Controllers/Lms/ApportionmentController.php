@@ -645,11 +645,10 @@ class ApportionmentController extends Controller
             $paymentId = $request->payment_id;
             $payments = ($request->payment)?$request->payment:[];
             $checks   = ($request->has('check'))?$request->check:[];
-
             $userDetails = $this->getUserDetails($userId); 
             $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
 
-            if(!$paymentDetails['isApportPayValid']){
+            if(!$paymentDetails['isApportPayValid'] || empty($checks) || $paymentDetails['is_settled'] == 1){
                 Session::flash('error', trans('Apportionment is not possible for the selected Payment. Please select valid payment for the unsettled payment screen.'));
                 return redirect()->back()->withInput();
             }
@@ -676,7 +675,10 @@ class ApportionmentController extends Controller
                     $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
                 }
                 if (isset($userInvoiceDate)) {
-                    $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
+                    $paymentDate = date('Y-m-d', strtotime($paymentDate));
+                }
+                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                    continue;
                 }
                 $bill_date_check = true;
                 if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
@@ -787,8 +789,11 @@ class ApportionmentController extends Controller
                 $checks = $request->session()->get('apportionment.check');
 
                 $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
+                if(!$paymentDetails['isApportPayValid'] || empty($checks) || $paymentDetails['is_settled'] == 1){
+                    Session::flash('error', trans('Apportionment is not possible for the selected Payment. Please select valid payment for the unsettled payment screen.'));
+                    return redirect()->route('unsettled_payments');
+                }
                 $repaymentAmt = (float) $paymentDetails['amount']; 
-                
                 $invoiceList = [];
                 $transactionList = [];
 
@@ -828,7 +833,7 @@ class ApportionmentController extends Controller
                         $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
                     }
                     if (isset($userInvoiceDate)) {
-                        $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
+                        $paymentDate = date('Y-m-d', strtotime($paymentDate));
                     } 
 
                     $bill_date_check = true;
