@@ -68,6 +68,7 @@ class BizInvoice extends BaseModel
         'biz_id',
         'invoice_no',
         'tenor',
+        'is_tenor_mannual',
         'invoice_due_date',
         'invoice_date',
         'pay_calculation_on',
@@ -86,7 +87,10 @@ class BizInvoice extends BaseModel
         'created_by',
         'created_at',
         'updated_at',
-        'updated_by'
+        'updated_by',
+        'is_repayment',  
+        'repayment_amt',
+        'principal_repayment_amt'
     ];
 
     
@@ -98,21 +102,21 @@ class BizInvoice extends BaseModel
      *
      * @return boolean
      */
-public static function saveInvoice($arrInvoice)
+    public static function saveInvoice($arrInvoice)
     {
         return  self::create($arrInvoice);
         
     } 
     
     
-public static function saveBulkInvoice($arrInvoice)
+    public static function saveBulkInvoice($arrInvoice)
     {
         $arrInvoiceVal = self::insert($arrInvoice);
         return ($arrInvoiceVal ?: false);
     } 
     
         
-  public static function updateInvoice($invoiceId,$status)
+    public static function updateInvoice($invoiceId,$status)
     {
         $updated_at  = Carbon::now()->toDateTimeString();
         $id = Auth::user()->user_id;
@@ -171,12 +175,12 @@ public static function saveBulkInvoice($arrInvoice)
         {
             $res  = User::where('user_id',$id)->first();
 
-            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->with(['bulkUpload', 'business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail', 'supplier.apps.disbursed_invoices.invoice_disbursed'])->orderBy('invoice_id', 'DESC');
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->orderBy('invoice_id', 'DESC');
 
         }
         else
         {
-           return self::where('status_id',$status)->with(['business','anchor','supplier','userFile','program','program_offer','Invoiceuser','invoice_disbursed.disbursal.disbursal_batch','lms_user','userDetail', 'supplier.app.disbursed_invoices.invoice_disbursed'])->orderBy('invoice_id', 'DESC');
+           return self::where('status_id',$status)->orderBy('invoice_id', 'DESC');
         }
      } 
 
@@ -322,7 +326,12 @@ public static function saveBulkInvoice($arrInvoice)
     {
        return $this->hasOne('App\Inv\Repositories\Models\User','user_id');  
     }
-    
+     
+    function processing_fee()
+    {
+       return $this->hasOne('App\Inv\Repositories\Models\Lms\InvoiceCharge','invoice_id')->where(['charge_id' => 12, 'is_active' => 1]);  
+    }
+
     function userDetail()
     {
        return $this->belongsTo('App\Inv\Repositories\Models\UserDetail','supplier_id','user_id'); 
@@ -520,8 +529,19 @@ public static function saveBulkInvoice($arrInvoice)
    
     public static function getInvoiceUtilizedAmount($attr)
     {
-        return  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id'],'app_id' =>$attr['app_id']])->sum('invoice_margin_amount');       
-    } 
+        return  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id'],'app_id' =>$attr['app_id']])->sum('invoice_approve_amount');       
+    }    
+    
+    public static function getAnchorInvoiceDataDetail($anchorId = null) 
+    {  
+        $data = self::whereHas('supplier', function($query) use($anchorId) {
+            if (!is_null($anchorId)) {
+                $query->where('anchor_id', $anchorId);
+            }
+        })->get();
+               
+        return $data ?? '';
+    }
     
     /* update invoice amount with statusid  */
     public static function updateInvoiceAmountWithStausId($attributes)
@@ -536,6 +556,35 @@ public static function saveBulkInvoice($arrInvoice)
         InvoiceStatusLog::saveInvoiceLogWithStatusId($invoiceId,$statusId,$amount,$comment);
         return  self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
         
+    }
+    public static function getAllManageInvoice($request,$status)
+    {
+        $id = Auth::user()->user_id;
+        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+        if( $chkUser->id==11) {
+            $res  = User::where('user_id',$id)->first();
+            return self::where(['status_id' => $status,'anchor_id' => $res->anchor_id])->orderBy('invoice_id', 'DESC');
+        } else {
+           return self::where('status_id',$status)->orderBy('invoice_id', 'DESC');
+        }
+    }
+
+    public static function updateInvoiceTenor($data, $invoiceId)
+    {
+
+        if (!is_array($data)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        return  self::where(['invoice_id' => $invoiceId])->update($data);
+        
+    } 
+    
+    
+    function appStatusLog()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\AppStatusLog','app_id','app_id')->where('status_id',50)->latest();
     }    
     
 }

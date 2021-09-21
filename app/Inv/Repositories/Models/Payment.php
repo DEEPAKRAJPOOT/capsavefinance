@@ -10,6 +10,7 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 class Payment extends BaseModel {
     
@@ -75,12 +76,18 @@ class Payment extends BaseModel {
         'generated_by',
         'sys_created_at',
         'sys_updated_at',
+        'payment_excel_id',
         'created_at',
         'created_by',
         'updated_at',
         'updated_by',
         'deleted_at',
     ];
+
+    CONST PAYMENT_SETTLED_PENDING    = 0;
+    CONST PAYMENT_SETTLED_PROCESSING = 2;
+    CONST PAYMENT_SETTLED_PROCESSED  = 3;
+    CONST PAYMENT_SETTLED            = 1;
     
     public function biz() {
        return $this->belongsTo('App\Inv\Repositories\Models\Business', 'biz_id');
@@ -95,7 +102,7 @@ class Payment extends BaseModel {
     }
 
     public function transaction(){
-        return $this->hasOne('App\Inv\Repositories\Models\Lms\Transactions','payment_id','payment_id');
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions','payment_id','payment_id');
     }
     
     public function creator(){
@@ -147,10 +154,8 @@ class Payment extends BaseModel {
                 $res = $res->orderBy($key, $val);
             }
         }
-        $res = $res->get();
-        return $res->isEmpty() ? [] :  $res;
+        return $res;
     }
-
 
     public function userRelation() {
         return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceRelation', 'user_id', 'user_id')->where('is_active', 1);
@@ -239,12 +244,14 @@ class Payment extends BaseModel {
         ->where('is_settled','1')->max('date_of_payment');
         
         $validPayment = self::where('user_id',$this->user_id)
-        ->where('is_settled','0');
+        ->whereIn('is_settled',[self::PAYMENT_SETTLED_PENDING, self::PAYMENT_SETTLED_PROCESSING, self::PAYMENT_SETTLED_PROCESSED]);
         //->whereIn('action_type',['1','5']);
 
         if($lastSettledPaymentDate){
+            $date_of_payment = date('Y-m-d', strtotime($this->date_of_payment));
+            $lastSettledPaymentDate = date('Y-m-d', strtotime($lastSettledPaymentDate));
             $validPayment = $validPayment->where('date_of_payment','>=',$lastSettledPaymentDate);
-            if(strtotime($lastSettledPaymentDate) > strtotime($this->date_of_payment)){
+            if(strtotime($lastSettledPaymentDate) > strtotime($date_of_payment)){
                 $error = 'Invalid Payment: The backdated payment from the last settled payment!';
             }
         }
@@ -285,5 +292,47 @@ class Payment extends BaseModel {
             $query->whereRaw($whereRawCondition);
         }
         return $query;
+    }
+
+    /**
+     * get Payment data list
+     * 
+     * @return type mixed
+     */
+    public static function checkTdsCertificate($tdsCertiName, $id=null)
+    {
+        $query = self::select('payment_id')
+                ->where('tds_certificate_no', $tdsCertiName);
+                // ->where(function($q) use($tdsCertiName) {
+                //     $search_keyword = trim($tdsCertiName);
+                //     $q->where('tds_certificate_no', 'like', "%$search_keyword%");
+                // });
+        if (!is_null($id)) {
+            $query->where('payment_id', '!=', $id);
+        }
+        $res = $query->get();        
+        return $res ?: [];
+    }
+
+    public function scopeSettledProcessing($query)
+    {
+        return $query->orWhere('is_settled', self::PAYMENT_SETTLED_PROCESSING);
+    }
+
+    public function scopeSettledProcessed($query)
+    {
+        return $query->orWhere('is_settled', self::PAYMENT_SETTLED_PROCESSED);
+    }
+
+    public function getValidRevertPaymentAttribute() {
+        $returnId = NULL;
+        $payment_id = Transactions::where('user_id',$this->user_id)->whereNotNull('apportionment_id')->max('payment_id');
+        if($payment_id){
+            $paymentDetails = self::find($payment_id);
+            if($paymentDetails->trans_type == '17' && $paymentDetails->action_type == '1'){
+                $returnId = $payment_id;
+            }
+        }
+        return ($returnId == $this->payment_id);
     }
 }

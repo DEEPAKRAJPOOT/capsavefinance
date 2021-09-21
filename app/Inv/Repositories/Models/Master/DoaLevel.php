@@ -232,5 +232,33 @@ class DoaLevel extends BaseModel {
                 ->orderBy('doa_level_id', 'DESC')
                 ->first();
         return $res ?: false;
+    }  
+    
+    /**
+     * Get DoA Name exists
+     * 
+     * @param array $where
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function getDoaNameExists($where)
+    {
+        if (empty($where)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+        $res = self::where('is_active', 1)
+                ->where($where)
+                ->count();
+        return $res ?: null;
+    } 
+    
+    public static function getDoaNameEditCaseExists($where, $doa_id) {
+        return self::where($where)
+                    ->whereNotIn('doa_level_id', $doa_id)
+                    ->count();
     }    
 }

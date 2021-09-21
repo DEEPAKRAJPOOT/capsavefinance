@@ -452,4 +452,9 @@ class Program extends BaseModel {
     {
         return self::where('prgm_id', $prgmId)->delete();        
     }     
+
+    public function programList()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\Program', 'parent_prgm_id', 'prgm_id');
+    }
 }

@@ -14,15 +14,19 @@ use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use Session;
 use Helpers;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use App\Inv\Repositories\Contracts\MasterInterface;
 
 class CustomerController extends Controller {
 
 	use ApplicationTrait;
+	use ActivityLogTrait;
 
 	protected $appRepo;
 	protected $userRepo;
 	protected $docRepo;
 	protected $lmsRepo;
+	protected $master;
 
 	/**
 	 * The pdf instance.
@@ -31,11 +35,12 @@ class CustomerController extends Controller {
 	 */
 	protected $pdf;
 
-	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo) {
+	public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, InvLmsRepoInterface $lms_repo, MasterInterface $master) {
 		$this->appRepo = $app_repo;
 		$this->userRepo = $user_repo;
 		$this->docRepo = $doc_repo;
 		$this->lmsRepo = $lms_repo;
+		$this->master = $master;
 		$this->middleware('checkBackendLeadAccess');
 	}
 
@@ -105,7 +110,7 @@ public function limitManagement(Request $request) {
 		$customerLimit = $this->appRepo->getUserLimit($user_id);
 		$AvaliablecustomerLimit = $this->appRepo->getAvaliableUserLimit($customerLimit);
 		$getUserProgramLimit = $this->appRepo->getUserProgramLimit($user_id);
-                $getAccountClosure =  $this->appRepo->getAccountActiveClosure($user_id);
+        $getAccountClosure =  $this->appRepo->getAccountActiveClosure($user_id);
 		// dd($getUserProgramLimit);
 		return view('lms.customer.limit_management')
 			->with(['userAppLimit' => $getUserProgramLimit,
@@ -191,7 +196,14 @@ public function saveAdhocLimit(Request $request) {
 			
 			$createAdhocLimit = $this->appRepo->saveAppOfferAdhocLimit($limitData);
 		}
-
+		$whereActivi['activity_code'] = 'save_adhoc_limit';
+		$activity = $this->master->getActivity($whereActivi);
+		if(!empty($activity)) {
+			$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+			$activity_desc = 'Save Adhoc Limit in Limit Management (Manage Sanction Cases) '. null;
+			$arrActivity['app_id'] = null;
+			$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($limitData), $arrActivity);
+		} 
 		if($createAdhocLimit) {
 			Session::flash('message',trans('success_messages.AdhocLimitCreated'));
 			return redirect()->route('limit_management', ['user_id' => $userId]);
@@ -226,6 +238,15 @@ public function approveAdhocLimit(Request $request) {
 			}
 		}
 
+		$whereActivi['activity_code'] = 'save_approve_adhoc_limit';
+		$activity = $this->master->getActivity($whereActivi);
+		if(!empty($activity)) {
+			$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+			$activity_desc = 'Approve Adhoc Limit in Limit Management (Manage Sanction Cases) '. null;
+			$arrActivity['app_id'] = null;
+			$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+		} 
+		
 		if(isset($updateAppLimit)) {
 			Session::flash('message',trans('success_messages.AdhocLimitApproved'));
 			return redirect()->route('limit_management', ['user_id' => $userId]);

@@ -94,10 +94,14 @@
                           <label for="txtMobile">City
                           <span class="mandatory">*</span>
                           </label>
-                          <input class="form-control city" name="comp_city" id="comp_city" value="{{old('comp_city')}}" tabindex="6" type="text" placeholder="City" maxlength="50">
-                          @error('comp_city')
+                          <!--<input class="form-control city" name="comp_city" id="comp_city" value="{{old('comp_city')}}" tabindex="6" type="text" placeholder="City" maxlength="50">-->
+                          <select name="comp_city" id="comp_city" class="form-control" style="width:350px">
+                            <option value="">Select City</option>
+                          </select>
+                           @error('comp_city')
                               <span class="error">{{ $message }}</span>
                           @enderror
+
                        </div>
                     </div>
                    <div class="col-6">
@@ -112,12 +116,23 @@
                          </div>
                       </div>
                   </div>
+                <input type="hidden" name="is_active" value="1" id='is_active'>
                 <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAgency">Submit</button>  
            </form>
          </div>
 @endsection
 
 @section('jscript')
+
+<script>
+
+    var messages = {
+        //get_lead: "{{ URL::route('get_lead') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}",
+
+    };
+</script>
 <script type="text/javascript">
     $(document).ready(function () {
         $('#agencyForm1').validate({ // initialize the plugin
@@ -184,4 +199,42 @@
         });
     });
 </script>
+
+<script type="text/javascript">
+
+    $('#comp_state').on('change',function(){
+    var stateID = $(this).val();
+    if(stateID){
+      //  var image_id =  $(this).data('city-error');
+        $.ajax({
+           type:"POST",
+           data: { "approved": "True", 'state_id': stateID, '_token': messages.token},
+           url:"{{url('/anchor/get-city-list')}}",
+           success:function(data){
+            if(data){
+                $("#comp_city").empty();
+                $.each(data,function(key,value){
+                    $("#comp_city").append('<option value="'+value+'">'+value+'</option>');
+
+                  //   $( "select" ).has( "label" ).css( "background-color", "red" );
+
+                     if ( $('#comp_city').next("label").length > 0 ) {
+                        $("#comp_city").next().remove();
+                     } else {
+                     }
+                });
+
+            }else{
+               $("#comp_city").empty();
+            }
+           }
+        });
+    }else{
+        $("#comp_city").empty();
+    }
+
+   });
+</script>
+
+
 @endsection

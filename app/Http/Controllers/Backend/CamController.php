@@ -50,11 +50,13 @@ use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 //use App\Inv\Repositories\Models\BankTermBusiLoan;
 //use App\Inv\Repositories\Models\BankAnalysis;
 //date_default_timezone_set('Asia/Kolkata');
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class CamController extends Controller
 {
     use CamTrait;
     use CommonTrait;
+    use ActivityLogTrait;
     protected $download_xlsx = TRUE;
     protected $appRepo;
     protected $userRepo;
@@ -233,6 +235,16 @@ class CamController extends Controller
                     }
                 }
             }
+
+            $whereActivi['activity_code'] = 'cam_information_save';
+            $activity = $this->mstRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Cam Inforamtion Save (Overview). AppID '. $arrCamData['app_id'];
+                $arrActivity['app_id'] = $arrCamData['app_id'];
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrCamData), $arrActivity);
+            }             
+            
             $arrCamData['proposed_exposure'] = $arrCamData['proposed_exposure']['0'] ?? '';
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updateCamData($arrCamData, $userId);
@@ -348,6 +360,17 @@ class CamController extends Controller
                         Session::flash('error',trans('Finance detail not saved'));
                   }
             }    
+
+
+          $whereActivi['activity_code'] = 'save_finance_detail';
+          $activity = $this->mstRepo->getActivity($whereActivi);
+          if(!empty($activity)) {
+              $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+              $activity_desc = 'Save Finance Details (CAM). AppID '. $appId;
+              $arrActivity['app_id'] = $appId;
+              $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrData), $arrActivity);
+          }             
+            
             return redirect()->route('cam_finance', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -445,6 +468,16 @@ class CamController extends Controller
                     Session::flash('message',trans('Reviewer Summary not saved'));
               }
         }    
+
+        $whereActivi['activity_code'] = 'save_reviewer_summary';
+        $activity = $this->mstRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Reviewer Summary Save and Update (CAM). AppID '. $arrData['app_id'];
+            $arrActivity['app_id'] = $arrData['app_id'];
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrData), $arrActivity);
+        }         
+        
         return redirect()->route('reviewer_summary', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -1644,6 +1677,15 @@ class CamController extends Controller
                           'created_at'=>\Carbon\Carbon::now(),
                           ]);
 
+            $whereActivi['activity_code'] = 'save_limit_assessment';
+            $activity = $this->mstRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Limit in Limit Assessment. AppID '. $appId;
+                $arrActivity['app_id'] = $appId;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['app_limit' => $app_limit, 'app_prgm_limit' => $app_prgm_limit]), $arrActivity);
+            }                          
+
             if ($app_prgm_limit) {
                 //Update workflow stage
                 //Helpers::updateWfStage('approver', $appId, $wf_status = 1, $assign_role = true);  
@@ -1844,6 +1886,15 @@ class CamController extends Controller
         //}
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
 
+        $whereActivi['activity_code'] = 'update_limit_offer';
+        $activity = $this->mstRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Add/Update Offer. AppID '. $appId;
+            $arrActivity['app_id'] = $appId;
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($offerData), $arrActivity);
+        }         
+        
         $limitData = $this->appRepo->getLimit($aplid);
         if($limitData->product_id == 1){
             $this->addOfferPrimarySecurity($request, $offerData->prgm_offer_id);
@@ -1927,6 +1978,15 @@ class CamController extends Controller
         }
         
         $limitData= $this->appRepo->saveProgramLimit($request->all(), $aplid);
+
+        $whereActivi['activity_code'] = 'update_limit';
+        $activity = $this->mstRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Update Limit. AppID '. $appId;
+            $arrActivity['app_id'] = $appId;
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+        }           
 
         if($limitData){
           //Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));   
@@ -2139,6 +2199,16 @@ class CamController extends Controller
                    }
                }
            }
+
+          $whereActivi['activity_code'] = 'save_anchor_view';
+          $activity = $this->mstRepo->getActivity($whereActivi);
+          if(!empty($activity)) {
+              $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+              $activity_desc = 'Save Anchor View (CAM). AppID '. $allData['app_id'];
+              $arrActivity['app_id'] = $allData['app_id'];
+              $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($allData), $arrActivity);
+          }            
+           
            return redirect()->back()->with('message', 'Anchor Data Saved Successfully.');
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -2163,7 +2233,17 @@ class CamController extends Controller
                  }else{
                        Session::flash('message',trans('CAM hygiene information not saved successfully'));
                  }
-            }    
+            }  
+            
+            $whereActivi['activity_code'] = 'cam_hygiene_save';
+            $activity = $this->mstRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Credit History & Hygine Check Save AppID. '. $arrHygieneData['app_id'];
+                $arrActivity['app_id'] = $arrHygieneData['app_id'];
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrHygieneData), $arrActivity);
+            }            
+            
             return redirect()->route('cam_cibil', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -2189,7 +2269,17 @@ class CamController extends Controller
                  }else{
                        Session::flash('message',trans('Management information not saved successfully'));
                  }
-            }    
+            }  
+            
+            $whereActivi['activity_code'] = 'cam_promoter_comment_save';
+            $activity = $this->mstRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'CAM Promoter Comment Save AppID. '. $arrCamData['app_id'];
+                $arrActivity['app_id'] = $arrCamData['app_id'];
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrCamData), $arrActivity);
+            }
+
             return redirect()->route('cam_promoter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -2214,6 +2304,16 @@ class CamController extends Controller
         DPDF::setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled', true]);               
         $pdf = DPDF::loadView('backend.cam.downloadCamReport', $viewData,[],'UTF-8');
         self::generateCamPdf($appId, $bizId, $pdf->output());
+
+        $whereActivi['activity_code'] = 'generate_cam_report';
+        $activity = $this->mstRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Generate CAM Report AppID. '. $appId;
+            $arrActivity['app_id'] = $appId;
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($viewData), $arrActivity);
+        }         
+        
         return $pdf->download('CamReport.pdf');          
       } catch (Exception $ex) {
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -2275,6 +2375,15 @@ class CamController extends Controller
               $this->saveBankAnalysis($request, (int) $result_id);
               $resultFlag = true;
             }
+            
+            $whereActivi['activity_code'] = 'save_bank_detail';
+            $activity = $this->mstRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Bank (Banking) Details CAM AppID. '. $arrData['app_id'];
+                $arrActivity['app_id'] = $arrData['app_id'];
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrData), $arrActivity);
+            }              
             
             if($resultFlag){
                 Session::flash('message',trans('Bank detail saved successfully'));

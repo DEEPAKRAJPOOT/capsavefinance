@@ -95,6 +95,11 @@ class Apportionment {
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0]}],
             drawCallback: function( settings ) {
                 if(id == 'unsettledTransactions'){
+                    if($(".pay").length){
+                        $('#mark_settle_btn').removeAttr("disabled");
+                    }else{
+                        $('#mark_settle_btn').prop("disabled", true);
+                    }
                     parentRef.setTransactionAmt();
                 }
                 var rows = this.fnGetData();
@@ -156,7 +161,7 @@ class Apportionment {
             }
         });
         var unapplied_amt = payment_amt.toFixed(2)-settled_amt.toFixed(2);
-        if(unapplied_amt.toFixed(2) < 0 ){
+        if(parseFloat(unapplied_amt.toFixed(2)) < 0 ){
             replaceAlert("Sum of your total entries is Greater than Re-payment amount", 'error');
         } 
         $('#unappliledAmt').text('₹ '+unapplied_amt.toFixed(2));
@@ -214,7 +219,7 @@ class Apportionment {
             }
     
             if(status){
-                if(totalSettledAmt > paymentAmt){
+                if(parseFloat(totalSettledAmt.toFixed(2)) > parseFloat(paymentAmt.toFixed(2))){
                     message =  "Sum of your total entries is Greater than Re-payment amount";
                     status = false;
                 }
@@ -251,7 +256,57 @@ class Apportionment {
             replaceAlert(message, 'error');
             return status;
         }
+    }
 
+    validateMarkSettledTDS(el){
+        var check = $('.check');
+        var status = true;
+        var message = '';
+        var paymentAmt = parseFloat(this.data.payment_amt).toFixed(2);
+
+        var totalSettledAmt = 0;
+        if(check.length > 0 &&  check.filter(':checked').length == 0){
+            message = "Please Select at least one ";
+            status = false;
+        }
+
+        var action = $("input[name='action']").val();
+        if(action == 'Mark Settled'){
+            $("#unsettlementFrom").attr('action',this.data.confirm_settle);
+            if(status){
+                check.each(function (index, element) {
+                    if($(this). is(":checked")){
+                        var name = $(this).attr('name');
+                        name =  name.replace('check','');
+                        var value = parseFloat($("input[name='payment"+name+"']").val());
+                        if(isNaN(value)){
+                            message = "Please enter valid value in Pay at row no - "+(index+1);
+                            status = false;
+                        }
+                        else if(value <= 0){
+                            message =  "Please enter value greater than 0 in Pay at row no - "+(index+1);
+                            status = false;
+                        }else{
+                            totalSettledAmt +=value;
+                        }
+                        if(!status){
+                            return false;
+                        }
+                    }
+                });
+            }
+            if(status){
+                if(totalSettledAmt.toFixed(2) > paymentAmt){
+                    message =  "Sum of your total entries is Greater than TDS amount";
+                    status = false;
+                }
+            }
+        }
+
+        if(!status){
+            replaceAlert(message, 'error');
+            return status;
+        }
     }
 
     validateRunningPosted(){
@@ -347,8 +402,10 @@ class Apportionment {
     selectAllChecks(checkallId){
       if ($('#' + checkallId).is(':checked')) {
         $('.check[type="checkbox"]').prop('checked', true);
+        $('.pay[type="text"]').removeAttr('readonly');
       }else{
          $('.check[type="checkbox"]').prop('checked', false);
+         $('.pay[type="text"]').attr('readonly',true);
       }
       $('.pay[type="text"]').val('');
       this.calculateUnAppliedAmt()

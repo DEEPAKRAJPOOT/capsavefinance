@@ -306,6 +306,53 @@ class AppAssignment extends BaseModel
 
     }
 
+    /**
+     * Get Application shared details where role_id 5,6
+     *
+     * @param int $app_id
+     *
+     * @return type
+     *
+     */
+    public static function getAppAssigneWithRoleId($app_id){
+          /**
+         * Check Data is Array
+         */
+        
+        if (!is_numeric($app_id)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($app_id)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        return  $result = self::select( DB::raw("concat_ws(' ',rta_to_u.f_name,rta_to_u.l_name ) as assignby"), 
+        DB::raw("concat_ws(' ',rta_to_u.f_name,rta_to_u.l_name ) as assignto"),
+        'app_assign.sharing_comment', 'app_assign.created_at','to_u.user_id as to_user_id','app_assign.role_id')
+        ->leftjoin('users as to_u','to_u.user_id', '=', 'app_assign.to_id')
+        ->where('app_assign.app_id', (int) $app_id)
+        ->join('role_user', 'role_user.user_id', '=', 'app_assign.to_id')
+        ->where('app_assign.to_id', '>', 0)
+        ->whereIn('role_user.role_id', [5,6])
+        ->groupBy('app_assign.to_id')
+        ->get();
+
+    }
+
+    // Check role id behalf of user_id
+    public static function getAllRoleDataByUserIdAppID($user_id, $appId)
+    {
+        // dd($user_id, $appId);
+        $arrRoles = self::where('from_id', $user_id)
+                        ->whereNotIn('role_id', [5, 6])
+                        ->get();
+        return ($arrRoles ? : false);
+    }
+
 }
   
 

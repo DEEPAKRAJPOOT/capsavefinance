@@ -58,8 +58,13 @@ class ApplicationController extends Controller
 
             //if (isset($appData[0])) {
             if ($appData) {
-                Session::flash('message', trans('error_messages.active_app_check'));
-                return redirect()->back();
+                                
+
+                if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')){
+                    return redirect()->route('front_application_list');
+                } else {
+                    return redirect()->back();
+                }
             }
         }
         
@@ -382,6 +387,7 @@ class ApplicationController extends Controller
                     
                 } else {
                     $appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+                    $appDocData['is_ovd_enabled'] = 1;
                     $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
                     $fileId = $appDocResponse->file_id;
                     $response = $this->docRepo->getFileByFileId($fileId);
@@ -586,8 +592,11 @@ class ApplicationController extends Controller
                 //$appData = $this->appRepo->getAppDataByAppId($appId);
                 //$userId = $appData ? $appData->user_id : null;
                 $reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
-
-                return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
+                if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID')) {
+                    return redirect()->route('front_application_list')->with('message', trans('success_messages.app.completed'));
+                } else {
+                    return redirect()->route('front_dashboard')->with('message', trans('success_messages.app.completed'));
+                }
             // } else {
             //     //Add application workflow stages                
             //     Helpers::updateWfStage('app_submitted', $request->get('app_id'), $wf_status = 2);
@@ -608,7 +617,12 @@ class ApplicationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+    {   
+        $userId = Auth::user()->user_id;
+        $appData = $this->appRepo->checkAppByPan($userId);
+       if((!$appData) && (Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID'))){
+            return redirect()->route('business_information_open');
+        }
        $appStatus = $this->masterRepo->getAppStatus($status_type=1);
        $appStatusList = [];       
                 
@@ -912,4 +926,36 @@ class ApplicationController extends Controller
     }
     return FALSE;
   }
+
+	 /**
+	 * Handling OVD PAN documents file for the application.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return \Illuminate\Http\Response
+	 */
+	
+	public function promoterDocumentOVD(Request $request)
+	{
+		try {
+			$fileId = $request->file_id;
+			$fileId = $request;
+
+			$where = [
+				'app_id' => $fileId['app_id'],
+				'biz_owner_id' => $fileId['owner_id'],
+				'doc_id' => $fileId['doc_id'],
+				'file_id' => $fileId['file_id']
+			];
+			$response = $this->docRepo->disableIsOVD($where);
+			
+			if ($response) {
+				Session::flash('message',trans('success_messages.deleted'));
+				return redirect()->back();
+			} else {
+				return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+			}
+		} catch (Exception $ex) {
+			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+		}
+	}  
 }

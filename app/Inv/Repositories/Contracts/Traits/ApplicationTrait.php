@@ -286,8 +286,8 @@ trait ApplicationTrait
             }
         }
         $app_prgm_limit_id = $supplyChainOffer['app_prgm_limit_id'] ?? 0;
-        $data['ConcernedPersonName'] = $CamData['operational_person'];
-        $data['purpose'] = $CamData['t_o_f_purpose'];
+        $data['ConcernedPersonName'] = $CamData['operational_person'] ?? NULL ;
+        $data['purpose'] = $CamData['t_o_f_purpose'] ?? NULL;
         $data['EntityName'] = $bizData['biz_entity_name'];
         $data['Address'] = $CommunicationAddress;
         $data['EmailId'] = $EntityData['email'];

@@ -282,6 +282,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'delete_payment',
                         'uses' => 'Backend\PaymentController@deletePayment',
                     ]);
+
+
+                    Route::get('/upload-excel-payments', [
+                        'as' => 'upload_excel_payments',
+                        'uses' => 'Backend\PaymentController@uploadExcelPayments'
+                    ]);
+                    Route::post('/import-excel-payments', [
+                        'as' => 'import_excel_payments',
+                        'uses' => 'Backend\PaymentController@importExcelPayment'
+                    ]);
                 }
             });
 
@@ -470,6 +480,20 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::get('online-disbursal-rollback', [
                         'as' => 'online_disbursal_rollback',
                         'uses' => 'Backend\InvoiceController@onlineDisbursalRollback',
+                    ]);
+
+                    Route::get('/update-invoice-chrg', [
+                        'as' => 'iframe_update_invoice_chrg',
+                        'uses' => 'Backend\InvoiceController@iframeUpdateInvoiceChrg',
+                    ]);
+
+                    Route::POST('update-invoice-chrg', [
+                        'as' => 'update_invoice_chrg',
+                        'uses' => 'Backend\InvoiceController@saveInvoiceProcessingFee',
+                    ]);
+                    Route::POST('update_invoice_tenor', [
+                        'as' => 'update_invoice_tenor',
+                        'uses' => 'Backend\InvoiceController@saveInvoiceTenor',
                     ]);
                 }
             });
@@ -824,6 +848,26 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'undo_apportionment',
                         'uses' => 'Lms\ApportionmentController@undoApportionment',
                     ]);
+
+                    Route::get('/unsettled/tds/view', [
+                        'as' => 'apport_unsettledtds_view',
+                        'uses' => 'Lms\ApportionmentController@viewUnsettledTDSTrans',
+                    ]);
+
+                    Route::post('/settledunsettled/tds/list', [
+                        'as' => 'apport_settledunsettled_tds_list',
+                        'uses' => 'Lms\ApportionmentController@listUnsettledSettledTDSTrans',
+                    ]);
+
+                    Route::post('/mark/settle/confirmation/tds', [
+                        'as' => 'apport_mark_settle_confirmation_tds',
+                        'uses' => 'Lms\ApportionmentController@markSettleConfirmationTDS',
+                    ]);
+
+                    Route::post('/tds/mark/settle/save', [
+                        'as' => 'tds_apport_mark_settle_save',
+                        'uses' => 'Lms\ApportionmentController@TDSMarkSettleSave',
+                    ]);
                 }
             });
 
@@ -925,5 +969,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             });
         });
     });
+        Route::get('/maturityOverdueAlertReport', [
+            'as' => 'maturityOverdueAlertReport',
+            'uses' => 'Backend\ReportController@maturityOverdueAlertReport'
+        ]);
     //end of application
 });

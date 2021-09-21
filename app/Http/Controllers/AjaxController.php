@@ -44,6 +44,9 @@ use App\Inv\Repositories\Models\Lms\TransType;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Crypt;
+use App\Inv\Repositories\Models\AppAssignment;
+use App\Inv\Repositories\Contracts\Traits\LmsTrait;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class AjaxController extends Controller {
 
@@ -58,6 +61,8 @@ class AjaxController extends Controller {
     protected $invRepo;
     protected $docRepo;
     protected $lms_repo;
+    use LmsTrait;
+    use ActivityLogTrait;
 
 
     function __construct(Request $request, InvUserRepoInterface $user, InvAppRepoInterface $application,InvMasterRepoInterface $master, InvoiceInterface $invRepo,InvDocumentRepoInterface $docRepo, FinanceInterface $finRepo, InvLmsRepoInterface $lms_repo, InvUserInvRepoInterface $UserInvRepo, ReportInterface $reportsRepo) {
@@ -2726,14 +2731,14 @@ if ($err) {
   
     //////////////////// use for invoice list/////////////////
      public function getInvoiceList(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,7);
         $invoice = $dataProvider->getInvoiceList($this->request, $invoice_data);
         return $invoice;
     }
    //////////////////// use for invoice list/////////////////
      public function getBackendInvoiceList(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,7);
-       /// dd($invoice_data);
+        ini_set('memory_limit',-1);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,7);
         $invoice = $dataProvider->getBackendInvoiceList($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2753,7 +2758,9 @@ if ($err) {
 
       //////////////////// use for Approve invoice list/////////////////
      public function getBackendInvoiceListApprove(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,8);
+        ini_set('memory_limit',-1);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,8);
+        // dd($invoice_data->first());
         $invoice = $dataProvider->getBackendInvoiceListApprove($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2761,15 +2768,16 @@ if ($err) {
     
      //////////////////// use for exception case invoice list/////////////////
      public function getBackendEpList(DataProviderInterface $dataProvider) {
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,28);
+        ini_set('memory_limit',-1);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,28);
         $invoice = $dataProvider->getBackendEpList($this->request, $invoice_data);
         return $invoice;
     } 
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListDisbursedQue(DataProviderInterface $dataProvider) {
-       
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,9);
-        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data);
+        ini_set('memory_limit',-1);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,9);
+        $invoice = $dataProvider->getBackendInvoiceListDisbursedQue($this->request, $invoice_data->with('supplier.apps.disbursed_invoices.invoice_disbursed'));
         return $invoice;
     } 
     
@@ -2789,16 +2797,16 @@ if ($err) {
     }  
       //////////////////// use for Invoice Disbursed Que list/////////////////
      public function getBackendInvoiceListFailedDisbursed(DataProviderInterface $dataProvider) {
-       
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,11);
+        ini_set('memory_limit',-1);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,11);
         $invoice = $dataProvider->getBackendInvoiceListFailedDisbursed($this->request, $invoice_data);
         return $invoice;
     } 
     
       //////////////////// use for Invoice Disbursed  list/////////////////
      public function getBackendInvoiceListDisbursed(DataProviderInterface $dataProvider) {
-       
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,12);
+        ini_set('memory_limit',-1);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,12);
         $invoice = $dataProvider->getBackendInvoiceListDisbursed($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2806,7 +2814,7 @@ if ($err) {
      //////////////////// use for Invoice Disbursed  list/////////////////
      public function getBackendInvoiceListRepaid(DataProviderInterface $dataProvider) {
        
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,13);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,13);
         $invoice = $dataProvider->getBackendInvoiceListRepaid($this->request, $invoice_data);
         return $invoice;
     } 
@@ -2814,7 +2822,7 @@ if ($err) {
       //////////////////// use for Invoice Disbursed  list/////////////////
      public function getBackendInvoiceListReject(DataProviderInterface $dataProvider) {
        
-        $invoice_data = $this->invRepo->getAllInvoice($this->request,14);
+        $invoice_data = $this->invRepo->getAllManageInvoice($this->request,14);
         $invoice = $dataProvider->getBackendInvoiceListReject($this->request, $invoice_data);
         return $invoice;
     } 
@@ -3076,6 +3084,14 @@ if ($err) {
                 } else {               
                     $res =   $this->invRepo->updateInvoice($request->invoice_id,$request->status);   
                 }
+                $whereActivi['activity_code'] = 'update_invoice_approve_single_tab';
+                $activity = $this->masterRepo->getActivity($whereActivi);
+                if(!empty($activity)) {
+                    $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                    $activity_desc = 'Update Invoice Approve, Approve Tab (Manage Invoice)';
+                    $arrActivity['app_id'] = null;
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+                }                
               return \Response::json(['status' => $res]);
            }
    }
@@ -3111,8 +3127,53 @@ if ($err) {
      * @param Request $request
      */
     public function changeAgentFiStatus(Request $request){
-      $status = $this->application->changeAgentFiStatus($request);
-      return $status;
+        $fiAddId = $request->get('fi_addr_id');
+        $changeStatus = $request->get('status');
+        $agencyName;
+        $trigger_email;
+        $where = [];
+        $where['fi_addr_id'] = $fiAddId;
+        $status = $this->application->changeAgentFiStatus($request);
+        $app_id = $request->get('app_id');
+        $biz_id = $request->get('biz_id');
+        $request_info = $request->get('address_id');
+        $roleData = \Auth::user()->user_id;
+        $assignees = AppAssignment::getAppAssigneWithRoleId((int) $app_id);
+        $fiLists = $this->application->getAddressforAgencyFI($biz_id);
+        $getFiAddData = $this->application->getFiAddressData($where);
+        $checkRoleUserCRCPA = AppAssignment::getAllRoleDataByUserIdAppID($getFiAddData[0]->from_id, $app_id);
+        if(!empty($checkRoleUserCRCPA[0])) {
+            $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->from_id);
+            $trigger_email = $triggerUserCreData;
+        }
+        foreach ($fiLists as $key => $fiList) {
+            foreach($fiList->fiAddress as $fiAdd) {
+                $agencyName = $fiAdd->agency->comp_name;
+            }
+        }
+
+        $userCreDataMail = array();
+        if(!empty($assignees[0])) {
+            foreach ($assignees as $key => $value) {
+                $userCreData = $this->userRepo->getUserDetail($value->to_user_id);
+                $userCreDataMail[] = $userCreData->email;
+            }
+            $currUserData = $this->userRepo->getUserDetail($roleData);
+
+            $emailDatas['email'] = isset($userCreDataMail) ? $userCreDataMail : '';
+            $emailDatas['name'] = isset($trigger_email) ? $trigger_email->f_name . ' ' . $trigger_email->l_name : '';
+            $emailDatas['curr_user'] = isset($currUserData) ? $currUserData->f_name . ' ' . $currUserData->l_name : '';
+            $emailDatas['curr_email'] = isset($currUserData) ? $currUserData->email : '';
+            $emailDatas['comment'] = isset($comment) ? $comment : '';
+            $emailDatas['trigger_type'] = 'FI';
+            $emailDatas['subject'] = 'Case Id '. $request_info .' of Agency ' . $agencyName .' updated the status';
+            $emailDatas['agency_name'] = $agencyName;
+            $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email->email : '';
+            $emailDatas['change_status'] = config('common.FI_RCU_STATUS')[$changeStatus];
+            \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailDatas));
+            
+        }
+        return $status;
     }
 
     /**
@@ -3171,6 +3232,56 @@ if ($err) {
      */
     public function changeAgentRcuStatus(Request $request){
       $status = $this->application->changeAgentRcuStatus($request);
+        $docId = $request->get('rcu_doc_id');
+        $changeStatus = $request->get('status');
+        $where = [];
+        $where['rcu_doc_id'] = $docId;
+
+        $app_id = $request->get('app_id');
+        $biz_id = $request->get('biz_id');
+        $request_info = $request->get('address_id');
+        $roleData = \Auth::user()->user_id;
+
+        $assignees = AppAssignment::getAppAssigneWithRoleId((int) $app_id);
+        if(Auth::user()->agency_id != null)
+            $fiLists = $this->application->getRcuActiveLists($app_id);
+        else
+            $fiLists = $this->application->getRcuLists($app_id);
+
+        foreach ($fiLists as $key => $value) {
+            if(Auth::user()->agency_id != null)
+                $fiLists[$key]['agencies'] = $this->application->getRcuActiveAgencies($app_id, $value->doc_id);
+            else
+                $fiLists[$key]['agencies'] = $this->application->getRcuAgencies($app_id, $value->doc_id);        
+        }
+        $getFiAddData = $this->application->getRcuDocumentData($where);
+        $checkRoleUserCRCPA = AppAssignment::getAllRoleDataByUserIdAppID($getFiAddData[0]->from_id, $app_id);
+        if(!empty($checkRoleUserCRCPA[0])) {
+            $triggerUserCreData = $this->userRepo->getUserDetail($getFiAddData[0]->from_id);
+            $trigger_email = $triggerUserCreData;
+        }
+
+        $userCreDataMail = array();
+        if(!empty($assignees[0])) {
+            foreach ($assignees as $key => $value) {
+                $userCreData = $this->userRepo->getUserDetail($value->to_user_id);
+                $userCreDataMail[] = $userCreData->email;
+            }
+
+                $currUserData = $this->userRepo->getUserDetail($roleData);
+
+                $emailDatas['email'] = isset($userCreDataMail) ? $userCreDataMail : '';
+                $emailDatas['name'] = isset($trigger_email) ? $trigger_email->f_name . ' ' . $trigger_email->l_name : '';
+                $emailDatas['curr_user'] = isset($currUserData) ? $currUserData->f_name . ' ' . $currUserData->l_name : '';
+                $emailDatas['curr_email'] = isset($currUserData) ? $currUserData->email : '';
+                $emailDatas['comment'] = isset($comment) ? $comment : '';
+                $emailDatas['trigger_type'] = 'RCU';
+                $emailDatas['subject'] = 'Case Id '. $request_info .' of Agency ' . $fiLists[0]['agencies'][0]->agency->comp_name .' updated the status';
+                $emailDatas['agency_name'] = $fiLists[0]['agencies'][0]->agency->comp_name;
+                $emailDatas['trigger_email'] = isset($trigger_email) ? $trigger_email->email : '';
+                $emailDatas['change_status'] = config('common.FI_RCU_STATUS')[$changeStatus];
+                \Event::dispatch("AGENCY_UPDATE_MAIL_TO_CPA_CR", serialize($emailDatas));
+        }
       return $status;
     }
 
@@ -3750,6 +3861,14 @@ if ($err) {
         }
             if($updateBulk)
             {
+                    $whereActivi['activity_code'] = 'upload_invoice_csv';
+                    $activity = $this->masterRepo->getActivity($whereActivi);
+                    if(!empty($activity)) {
+                        $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                        $activity_desc = 'Upload Bulk Invoice, Final Submit (Manage Invoice)';
+                        $arrActivity['app_id'] = null;
+                        $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($res), $arrActivity);
+                    } 
 
                      return response()->json(['status' => 1,'message' => 'Invoice successfully saved']); 
 
@@ -3851,6 +3970,15 @@ if ($err) {
                          
            }
        }
+
+        $whereActivi['activity_code'] = 'update_bulk_invoice';
+        $activity = $this->masterRepo->getActivity($whereActivi);
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Update bulk and Disburse Invoice (Pending, Approved Tab), Approve (Manage Invoice)';
+            $arrActivity['app_id'] = null;
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+        } 
        
       return \response()->json(['status' => 1,'msg' => substr($result,0,-1)]); 
        
@@ -3880,6 +4008,18 @@ if ($err) {
         $userId = $this->application->getUserIdByBankAccId($acc_id);
         $updateBankAccount = $this->application->updateBankAccount(['is_default' => 0], ['user_id' => $userId]);
         $res = $this->application->updateBankAccount(['is_default' => 1], ['bank_account_id' => $acc_id]);
+
+        $whereActivi['activity_code'] = 'set_default_account';
+        $activity = $this->masterRepo->getActivity($whereActivi);
+
+        if(!empty($activity)) {
+            $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+            $activity_desc = 'Set Default Bank';
+            $arrActivity['app_id'] = null;
+            $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['request' => $request->all(), 'userId' => $userId]), $arrActivity);
+        }
+                
+        
         return \response()->json(['success' => $res]);
     }
     
@@ -4010,12 +4150,12 @@ if ($err) {
 
         $request = $this->request;
         $transactionList = $this->lmsRepo->getSoaList();
-        
+
         if($request->get('from_date')!= '' && $request->get('to_date')!=''){
             $transactionList = $transactionList->where(function ($query) use ($request) {
                 $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                 $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
+                $query->WhereBetween('trans_date', [$from_date, $to_date]);
             });
         }
 
@@ -4028,7 +4168,7 @@ if ($err) {
                     $transactionList = $transactionList->where('trans_type',$trans_type);
                 }
                 if($entry_type != ''){
-                    $transactionList = $transactionList->where('entry_type',$entry_type);
+                    // $transactionList = $transactionList->where('entry_type',$entry_type);
                 }
             }
         }
@@ -4037,10 +4177,7 @@ if ($err) {
             $customer_id = trim($request->get('customer_id')) ?? null ;
             $query->where('customer_id', '=', "$customer_id");
         })
-        ->get()
-        ->filter(function($item){
-            return $item->IsTransaction;
-        });
+        ->get();
 
         $users = $dataProvider->getSoaList($this->request, $transactionList);
         return $users;
@@ -4542,26 +4679,28 @@ if ($err) {
 
     public function getToSettlePayments(DataProviderInterface $dataProvider) {
         $user_id = $this->request->user_id;
-        $this->dataRecords = [];
+        $dataRecords = [];
+        $query = Payment::where('is_settled', Payment::PAYMENT_SETTLED_PENDING);
+
         if (!empty($user_id)) {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 0, 'user_id' => $user_id],['created_at'=>'desc']);
-        } else {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 0],['created_at'=>'desc']);
+            $query = $query->where('user_id', $user_id);
         }
-        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
+        $dataRecords  =   $query->settledProcessing()
+                                ->settledProcessed()
+                                ->orderBy('created_at', 'desc');
+        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $dataRecords);
         return $this->providerResult;
     }
 
     public function getSettledPayments(DataProviderInterface $dataProvider) {
         $user_id = $this->request->user_id;
-        $this->dataRecords = [];
+        $dataRecords = [];
         if (!empty($user_id)) {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id],['updated_at'=>'desc']);
+            $dataRecords = Payment::getPayments(['is_settled' => 1, 'user_id' => $user_id],['updated_at'=>'desc']);
         } else {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 1],['updated_at'=>'desc']);
+            $dataRecords = Payment::getPayments(['is_settled' => 1],['updated_at'=>'desc']);
         }
-        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
-        return $this->providerResult;
+        return $dataProvider->getToSettlePayments($this->request, $dataRecords);
     }
     
     public function checkBankAccExist(Request $req){
@@ -4762,6 +4901,7 @@ if ($err) {
         $dataRecords = [];
         if ($userId) {
             $payments = Payment::getPayments(['is_settled' => 0, 'user_id' => $userId, 'payment_type' => $paymentType]);
+            $payments = $payments->get();
             foreach ($payments as $payment) {
                 $dataRecords[] =[
                     'id'=>Crypt::encryptString($payment->payment_id),
@@ -4891,7 +5031,22 @@ if ($err) {
         $condArr['type']  = 'pdf';
         $tds['pdfUrl'] = route('tds_download_reports', $condArr);
         return new JsonResponse($tds);
-    } 
+    }
+
+
+     /**
+     * change Agency User status
+     *
+     * @param Request $request
+     * @return type mixed
+     */
+    public function changeAgencyStatus(Request $request)
+    {
+        $agency_id = $request->get('agency_id');
+        $is_active = $request->get('is_active');
+        $result = $this->userRepo->updateAgencyStatus(['is_active' => $is_active], ['agency_id' => $agency_id]);
+        return \Response::json(['success' => $result]);
+    }
 
         
     /**
@@ -5053,5 +5208,226 @@ if ($err) {
         } else {
             return $respose = ['status'=>'0'];
         }
+    }
+
+    public function backendGetInvoiceProcessingGstAmount(Request $request) {
+        $invoiceId = $request->get('invoice_id');
+        $typeFlag = $request->get('chrg_type');
+        $valueAmt = $request->get('chrg_value');
+        $invoiceData = $this->invRepo->getInvoiceById($invoiceId);
+        $chargeData = $this->invRepo->getInvoiceProcessingFee(['invoice_id' =>$invoiceId]);
+        // $offerData = $this->appRepo->getOfferData(['prgm_offer_id' =>$invoiceData->prgm_offer_id]);
+        $chrgData = $this->application->getInvoiceProcessingFeeCharge();
+        $getPercentage  = $this->lmsRepo->getLastGSTRecord();
+
+        $tax_value  =0;
+        $marginAmt = $this->calMargin($invoiceData->invoice_approve_amount, $invoiceData->program_offer->margin);
+        $principleAmt = $invoiceData->invoice_approve_amount - $marginAmt;
+        if (isset($typeFlag) && $typeFlag == 2) {
+            $processingFee = $this->calPercentage($principleAmt, $valueAmt);
+        } else {
+            $processingFee = $valueAmt;
+        }
+
+        if($chrgData->is_gst_applicable == 1) {
+            if($getPercentage)
+            {
+                $tax_value  = $getPercentage['tax_value'];
+            }
+            else
+            {
+                $tax_value  =0; 
+            }
+        }
+
+        $fWGst = round((($processingFee*$tax_value)/100),2);
+        $gstChrgValue = round($processingFee + $fWGst,2);
+        return new JsonResponse(
+            [
+                'gstChrgValue' => $gstChrgValue,
+                'processingFee' => $processingFee,
+                'fWGst' => $fWGst
+            ]);
+        // return [
+        // 'status' => 
+        // 'gstChrgValue' => $gstChrgValue];
+    }
+    // Manage Document
+    public function checkDocumentNametAjax(Request $request) {
+        $data = $request->all();
+        $where = [
+            'doc_name' => $data['doc_name'],
+        ];
+        $checkDocName = $this->masterRepo->checkDocumentExist($where); 
+        if($checkDocName > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }      
+    }
+
+    public function checkDocumentNameEdittAjax(Request $request) {
+        $data = $request->all();
+        $where = [
+            'doc_name' => $data['doc_name'],
+        ];
+        $id = [
+            'id' => $data['id']
+        ];
+        $checkDocName = $this->masterRepo->checkDocumentExistEditCase($where, $id); 
+        if($checkDocName > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }      
+    }
+
+    // Manage DOA Level
+    public function checkDOANametAjax(Request $request) {
+        $data = $request->all();
+        $where = [
+            'level_name' => $data['level_name']
+        ];
+        $doaCheckNameExists = $this->masterRepo->getDoaNameExists($where);
+        if($doaCheckNameExists > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }      
+    }
+
+    public function checkDOANametEditAjax(Request $request) {
+        $data = $request->all();
+        $where = [
+            'level_name' => $data['doa_name']
+        ];
+        $doa_id = [
+            'doa_level_id' => $data['doa_id']
+        ];  
+        $doaCheckNameExists = $this->masterRepo->getDoaNameEditCaseExists($where, $doa_id);
+        if($doaCheckNameExists > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }      
+    }
+    
+    // Check Unique Industry
+    public function checkUniqueIndustries(Request $request) 
+    {        
+        $IndustryName = $request->get('name');
+        $industryId = $request->has('industry_id') ? $request->get('industry_id'): null ;
+        $result = $this->masterRepo->checkIndustryName($IndustryName, $industryId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Voucher
+    public function checkUniqueVoucher(Request $request) 
+    {        
+        $voucherName = $request->get('voucher_name');
+        $result = $this->masterRepo->checkVoucherName($voucherName);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Segment
+    public function checkUniqueSegment(Request $request) 
+    {        
+        $segmentName = $request->get('name');
+        $segmentId = $request->has('id') ? $request->get('id'): null ;
+        $result = $this->masterRepo->checkSegmentName($segmentName, $segmentId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Entity
+    public function checkUniqueEntity(Request $request) 
+    {        
+        $entityName = $request->get('entity_name');
+        $entitytId = $request->has('id') ? $request->get('id'): null ;
+        $result = $this->masterRepo->checkEntityName($entityName, $entitytId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Consitution
+    public function checkUniqueConstitution(Request $request) 
+    {        
+        $constiName = $request->get('name');
+        $constitId = $request->has('id') ? $request->get('id'): null ;
+        $result = $this->masterRepo->checkConsitutionName($constiName, $constitId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Equipment
+    public function checkUniqueEquipment(Request $request) 
+    {        
+        $equipmentName = $request->get('equipment_name');
+        $equipmentId = $request->has('id') ? $request->get('id'): null ;
+        $result = $this->masterRepo->checkEquipmentName($equipmentName, $equipmentId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }    
+    
+    // Check Unique Bank name
+    public function checkUniqueBankMaster(Request $request) 
+    {        
+        $bankName = $request->get('bank_name');
+        $banktId = $request->has('bank_id') ? \Crypt::decrypt($request->get('bank_id')) : null ;
+        $result = $this->masterRepo->checkBankName($bankName, $banktId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }
+    
+    // Check Unique Entity
+    public function checkUniqueTdsCertificate(Request $request) 
+    {        
+        $tdsCertificate = $request->get('tds_certificate_no');
+        $id = $request->has('payment_id') ? $request->get('payment_id') : null ;
+        $result =  Payment::checkTdsCertificate($tdsCertificate, $id);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }
+
+    public function getTDSOutstatingAmount(Request $request)
+    {
+        $userId    = $request->get('user_id');
+        $TDSOutstating = $this->lmsRepo->getTDSOutstatingAmount($userId);
+        $TDSOutstating = ((float)$TDSOutstating<0) ? 0 : $TDSOutstating;
+        return response()->json(['tds_amount' => round($TDSOutstating, 2)]);
     }
 }

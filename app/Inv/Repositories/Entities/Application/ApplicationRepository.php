@@ -2285,7 +2285,13 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getLmsUsers($whereCond=[])
     {
         return LmsUser::getLmsUsers($whereCond);
-    }    
+    }
+
+
+    public function getBizDataByUserId($userId)
+    {
+        return Business::getBizDataByUserId($userId);
+    } 
 
      public function saveAppOfferAdhocLimit($arr, $limit_id=null){
         return AppOfferAdhocLimit::saveAppOfferAdhocLimit($arr, $limit_id);
@@ -2552,6 +2558,16 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
             ->where('period_to', '>',date("Y-m-d"))
             ->orderBy('created_at', 'DESC')
             ->get();
+    }
+
+    // get all agency
+    public function getAgenciByAgenciId($id){
+        $agency = Agency::getAgenciByAgenciId($id);
+        return $agency ?: false;
+    }
+    
+    public function getInvoiceProcessingFeeCharge(){
+        return Charges::find(12);
     }
 }
 

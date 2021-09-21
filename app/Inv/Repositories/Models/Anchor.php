@@ -257,4 +257,9 @@ public static function saveAnchor($arrAnchor = [])
            return $this->belongsTo('App\Inv\Repositories\Models\UserBankAccount', 'anchor_id', 'anchor_id')->where('anchor_id','<>', null);
       
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', 1);
+    }
 }

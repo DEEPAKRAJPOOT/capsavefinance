@@ -202,11 +202,39 @@
 
         <div class="col-md-6">
           <div class="form-group">
-            <label for="txtPassword"><b>Processing Fee (%)</b> <span style="color: red;"> *</span></label>
+            <label for="txtPassword"><b>Processing Fee (%) @Sanction level</b> <span style="color: red;"> *</span></label>
             <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
           </div>
         </div>
-    
+          <div class="col-md-6">
+            <div class="form-group">
+            <label for="txtPassword">Invoice Level Procesing Fee <span style="color: red;"> *</span> </label> 
+                <select name="is_invoice_processingfee" class="form-control" id="invoice_processingfee">
+                    <option value="0" {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 0)? 'selected': ''}}>Not Applicable</option>
+                    <option value="1" {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1)? 'selected': ''}}>Applicable</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6" id="invoice_processingfee_type_div" style="display: {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1) ? 'block' : 'none' }};">
+            <div class="form-group">
+            <label for="txtCreditPeriod">Charge Type
+                <span class="mandatory">*</span>
+            </label>
+            <select type="text" class="form-control" id="invoice_processingfee_type" name="invoice_processingfee_type"> 
+                <option value="1" {{ (isset($offerData->invoice_processingfee_type) && $offerData->invoice_processingfee_type == 1)  ? 'selected' : '' }}>Fixed</option>
+                <option value="2" {{ (isset($offerData->invoice_processingfee_type) && $offerData->invoice_processingfee_type == 2)  ? 'selected' : '' }}>Percentage</option>
+            </select> 
+            </div>
+        </div>
+        <div class="col-md-6"  id="invoice_processingfee_value_div" style="display: {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1) ? 'block' : 'none' }};">
+            <div class="form-group">
+                <label for="txtCreditPeriod">Amount/Percentage
+                    <span class="mandatory">*</span>
+                </label>
+                <input type="text" class="form-control" id="invoice_processingfee_value" name="invoice_processingfee_value" placeholder="Enter Amount/Percentage" value="{{ (isset($offerData->invoice_processingfee_value) && $offerData->invoice_processingfee_value) ? $offerData->invoice_processingfee_value : '' }}">
+
+            </div>
+        </div>
         <div class="col-md-12">
           <div class="form-group row">
             <label for="txtPassword" class="col-md-12"><b>Additional Security</b></label> 
@@ -290,6 +318,10 @@
     let comment = $('textarea[name=comment]').val().trim();
     let security_deposit_type = $('input[name=security_deposit_type]:checked').val();
 
+    let is_invoice_processingfee = $('select[name=is_invoice_processingfee]').find(':selected').val();
+    let invoice_processingfee_type = $('select[name=invoice_processingfee_type]').find(':selected').val();
+    let invoice_processingfee_value = $('input[name=invoice_processingfee_value]').val();
+
     /*if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill loan offer amount');
         flag = false;
@@ -333,6 +365,23 @@
         setError('select[name=rental_frequency_type]', 'Please select frequency type');
         flag = false;
     }
+
+
+    if(is_invoice_processingfee == 1){
+        if (invoice_processingfee_type == '') {
+            setError('input[name=invoice_processingfee_type]', 'Please select charge type');
+            flag = false;
+        }
+        if (invoice_processingfee_value == '') {
+            setError('input[name=invoice_processingfee_value]', 'Please fill charge value');
+            flag = false;
+        }
+        if(invoice_processingfee_type == 2 && invoice_processingfee_value >= 50) {
+            setError('input[name=invoice_processingfee_value]', 'Invoice processing fee can not be greater than 50%');
+            flag = false;
+        }
+    }
+
     let data = [];
 
     if(tenor != '' && rental_frequency != '' && facility_type_id != 3){
@@ -538,6 +587,24 @@
         $('#ptpq-block').parent().parent().show();
     }
   });
+  
+  $(document).on('change', '#invoice_processingfee', function(){
+    let selected_val = $(this).find('option:selected').val();
+    let selector1 = $('#invoice_processingfee_type_div');
+    let selector2 = $('#invoice_processingfee_value_div');
+
+    if(selected_val == 1){
+        $(selector1).show();
+        $(selector2).show();
+    }else{
+        $(selector1).hide();
+        $(selector2).hide();
+    }
+  })
+  
+  $(document).on('change', '#invoice_processingfee_type', function(){
+    $('#invoice_processingfee_value').val('');
+  })
 
 </script>
 @endsection

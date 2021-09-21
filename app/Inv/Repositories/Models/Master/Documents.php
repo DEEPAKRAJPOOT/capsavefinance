@@ -53,5 +53,15 @@ class Documents extends Authenticatable
         return $this->hasMany('App\Inv\Repositories\Models\ProductDoc', 'doc_id')
                 ->where('is_active', 1);
     }
+
+    public static function checkDocumentExist($where) {
+        return self::where($where)->count();
+    }
+
+    public static function checkDocumentExistEditCase($where, $document_id) {
+        return self::where($where)
+                    ->whereNotIn('id', $document_id)
+                    ->count();
+    }
 }
 

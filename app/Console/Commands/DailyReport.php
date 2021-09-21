@@ -3,6 +3,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Jobs\MaturityReport;
+use App\Jobs\UtilizationReport;
+use App\Jobs\DisbursalReport;
 
 class DailyReport extends Command
 {    

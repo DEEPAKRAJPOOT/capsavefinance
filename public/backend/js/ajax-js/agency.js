@@ -31,6 +31,7 @@ try {
                     {data: 'email'},
                     {data: 'phone'},
                     {data: 'created_at'},
+                    {data: 'status'},
                     {data: 'action'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,3,4,-5,6]}]
@@ -91,6 +92,32 @@ try {
             });
 
         });
+        
+        
+        $(document).on('click', '.agency_status', function (e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    _token: messages.token
+                },
+                success: function (data) {
+                    if (data.success) {
+                        oTable.draw();
+                    }
+                },
+                error: function () {
+
+                }
+            });
+
+        });
+        
+        
 
         //Search
         $('#searchbtn').on('click', function (e) {

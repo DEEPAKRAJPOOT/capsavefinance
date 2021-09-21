@@ -21,6 +21,18 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'as' => 'login_open',
         'uses' => 'Auth\LoginController@login'
     ]);
+    
+    Route::post('login-lenevo',
+        [
+        'as' => 'login_open_lenevo',
+        'uses' => 'Auth\LenevoLoginController@login'
+    ]);
+    
+    Route::post('register-lenevo',
+        [
+        'as' => 'user_register_save_lenevo',
+        'uses' => 'Auth\LenevoRegisterController@register'
+    ]);
 
     //Logout
     Route::post('logout',
@@ -137,5 +149,62 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'uses' => 'Auth\RegisterController@checkExistUserPan'
         ]
     );   
+    
+});
+
+
+/**
+ * Lenevo FrontEnd routes
+ * 
+ * @since 1.0
+ *
+ * @author Prolitus Dev Team
+ */
+Route::domain(config('proin.lenevo_frontend_uri'))->group(function () {
+
+    Route::get('/', 'Auth\LenevoRegisterController@showRegistrationForm');
+    
+    Route::get('lenevo-login',
+        [
+        'as' => 'lenevo_login_open',
+        'uses' => 'Auth\LenevoLoginController@showLoginForm'
+    ]);
+    
+     //Registration step 1
+    Route::get('sign-up',
+        [
+        'as' => 'user_register_open',
+        'uses' => 'Auth\LenevoRegisterController@showRegistrationForm'
+    ]);
+    
+    // for password
+   Route::group(['prefix' => 'password'],
+        function () {
+        
+        $this->get('lenovo-email',
+            [
+            'as' => 'password.email',
+            'uses' => 'Auth\LenovoForgotPasswordController@showResetLinkEmail'
+            ]
+        );
+        $this->post('lenovo-email',
+            [
+            'as' => 'password.email',
+            'uses' => 'Auth\LenovoForgotPasswordController@sendResetLinkEmail'
+            ]
+        );
+        $this->get('reset',
+            [
+            'as' => 'password.lenevo-reset',
+            'uses' => 'Auth\LenovoForgotPasswordController@showResetForm'
+            ]
+        );
+        $this->post('reset-lenevo',
+            [
+            'as' => 'password.reset-lenevo',
+            'uses' => 'Auth\ResetPasswordController@reset'
+            ]
+        );
+    });
     
 });

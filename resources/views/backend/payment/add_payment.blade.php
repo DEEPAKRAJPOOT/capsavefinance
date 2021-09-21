@@ -55,12 +55,6 @@
                                             <div class="form-group">
 
                                                 <label for="txtCreditPeriod">Virtual Account No.<span class="error_message_label">*</span> </label>
-                                                {{-- <!-- <select class="form-control" name="bank_name">
-                                                    <option> Select</option>
-                                                    @foreach($bank as $row)
-                                                    <option value="{{$row->id}}">{{$row->bank_name}}</option>
-                                                    @endforeach
-                                                </select> --> --}}
                                                 <input type="text" name="virtual_acc" id="virtual_acc" readonly="readonly" class="form-control">
                                                 
                                             </div>
@@ -107,10 +101,11 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group INR">
-                                                <label for="txtCreditPeriod">Transaction Amount <span class="error_message_label">*</span> </label>
+                                                <label for="txtCreditPeriod">Transaction Amount <span id="reflect_amount"></span> <span class="error_message_label">*</span> <span id="txtAmt" style=" color: green; font-size: small; font-weight: bold; "></span> </label>
                                                 <div class="relative">
                                                 <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
-                                                <input type="text" id="amount" name="amount" class="form-control">
+                                                <input type="text" id="amount" name="amount" class="form-control formatCurrency amtcompformax">
+                                                <span id="amountMax" class="error"></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -176,7 +171,7 @@
                                         </div>
                                         <div class="col-md-4 tds_certificate">
                                             <div class="form-group">
-                                                <label for="txtCreditPeriod">TDS Certificate No </label>
+                                                <label for="txtCreditPeriod">TDS Certificate No <span id="tds_certificate_no_label" class="error_message_label" style="display:none;">*</span> </label>
                                                 <input type="text" id="tds_certificate_no" name="tds_certificate_no" class="form-control">
                                             </div>
                                         </div>
@@ -254,12 +249,14 @@ cursor: pointer;
         get_val: "{{URL::route('get_field_val')}}",
         search_business: "{{URL::route('search_business')}}",
         get_repayment_amount_url: "{{ route('get_repayment_amount') }}",
+        get_tdsoutstanding_amount_url: "{{ route('get_tdsoutstanding_amount') }}",
         token: "{{ csrf_token() }}",
         get_remaining_charges_url : "{{route('get_remaining_charges')}}",
         get_customer: "{{ route('get_customer') }}",
         get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}",
         get_interest_paid_amount:"{{ route('get_interest_paid_amount') }}",
-        sysDate:"{{ Carbon\Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d') }}"
+        sysDate:"{{ Carbon\Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d') }}",
+        unique_tds_certificate_no:"{{URL::route('check_unique_tds_certificate_no')}}"
     };
 
     var userData = '';
@@ -273,7 +270,7 @@ cursor: pointer;
                 autoclose: true,
                 minView : 2,
                 endDate: new Date(messages.sysDate),
-            });
+        });
 
         var sample_data = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
@@ -308,6 +305,9 @@ cursor: pointer;
             $("#charges").val('');
             $("#date_of_payment").val('');
             $("#amount").val('');
+            $("#txtAmt").text('');
+            $('#tds_certificate_no_label').hide();
+            $( "#tds_certificate_no" ).rules( "remove", 'required');
             userData['action_type'] = $(this).val();
             if(!userData['user_id']){
                 alert('Please select business name.');
@@ -332,6 +332,7 @@ cursor: pointer;
             $("#charges").val('');
             $("#date_of_payment").val('');
             $("#amount").val('');
+            $("#reflect_amount").html('')
             let user_id = $('#user_id').val();
             if (!user_id) {
                $('#business_name_error').text('Please Search business name'); 
@@ -344,7 +345,7 @@ cursor: pointer;
             switch (action_type) {
                 case "1":
                     if(trans_type==17){
-                        // $('#date_of_payment').datetimepicker('setStartDate',  new Date(Date.now() - 10*24*60*60*1000));
+                        $('#date_of_payment').datetimepicker('setStartDate',  new Date(Date.now() - 10*24*60*60*1000));
                         $('#waiveoff_div').hide();
                         get_repayment_amount();
                     }if(trans_type==32){
@@ -377,23 +378,34 @@ cursor: pointer;
         });
 
         $("#charges").on('change',function(e){
+            $('#tds_certificate_no_label').hide();
+            $( "#tds_certificate_no" ).rules( "remove", 'required');
             $("#date_of_payment").val('');
             $("#amount").val('');
+            $("#reflect_amount").html('');
             var element = $(this).find('option:selected'); 
             var index = element.attr("index"); 
             var chargeData = userData['charges'][index];
             var amt = parseFloat(chargeData['remaining']);
             var max = parseFloat(chargeData['debit_amount']);
             var tds = parseFloat(chargeData['tds_amount']);
+            $('#tds_certificate_no').removeAttr('required');
+            if (amt <= 0 && $('#action_type').val() == 3) {
+                $('#tds_certificate_no_label').show();
+                $( "#tds_certificate_no" ).rules( "add", { required: true });
+                $('#tds_certificate_no').prop('required', 'required');
+            }
             if(chargeData){
                 //$('#date_of_payment').datetimepicker('setStartDate', chargeData['trans_date']);
                 // $('#date_of_payment').datetimepicker('setStartDate', new Date(messages.sysDate));
                 if(userData['action_type']==3){
-                    $('#amount').attr('max',tds.toFixed(2));
+                    $('#amount').attr('max-data',tds.toFixed(2));
                 }
             }else{
                 $('#date_of_payment').datetimepicker('setStartDate', new Date(messages.sysDate));
                 $('#amount').val(0);
+                $('#txtAmt').text('');
+                $("#reflect_amount").html('')
             }
         });
 
@@ -405,7 +417,7 @@ cursor: pointer;
 
             } else if (status == 2) {
                 //$('#appendInput').append('<label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span>  <label for="repaid_amount" class="form-control-label"><span class="payment_text">Upload Cheque</span></label><span class="error_message_label">*</span><input type="file" class="form-control amountRepay" id="cheque" name="cheque" value=""><span id="utr_no_msg" class="error"></span>');
-                $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value="" /><span id="utr_no_msg" class="error"></span></div><div class="col-md-6 tds_certificate"><div class="custom-file upload-btn-cls mb-3 mt-4"><input type="file" class="custom-file-input getFileName doc_file" id="cheque" name="cheque" multiple="" /><label class="custom-file-label" for="cheque">Upload Cheque</label></div><span id="utr_no_msg" class="error"></span></div>');
+                $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">Cheque Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value="" minlength="6" maxlength="6" /><span id="utr_no_msg" class="error"></span></div><div class="col-md-6 tds_certificate"><div class="custom-file upload-btn-cls mb-3 mt-4"><input type="file" class="custom-file-input getFileName doc_file" id="cheque" name="cheque" multiple="" /><label class="custom-file-label" for="cheque">Upload Cheque</label></div><span id="utr_no_msg" class="error"></span></div>');
 
             } else if (status == 3) {
                 $('#appendInput').append('<div class="col-md-6"><label for="repaid_amount" class="form-control-label"><span class="payment_text">UNR Number</span></label><span class="error_message_label">*</span><input type="text" class="form-control amountRepay" id="utr_no" name="utr_no" value=""><span id="utr_no_msg" class="error"></span></div>');
@@ -416,7 +428,26 @@ cursor: pointer;
             }
         });
         
-        
+        $.validator.addMethod("uniqueTdsCertificate",
+            function(value, element, params) {
+                var result = true;
+                var data = {tds_certificate_no : value, _token: messages.token};
+                if (params.id) {
+                    data['id'] = params.id;
+                }
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.unique_tds_certificate_no, // script to validate in server side
+                    data: data,
+                    success: function(data) {                        
+                        result = (data.status == 1) ? false : true;
+                    }
+                });                
+                return result;                
+            },'Please enter another TDS Certificate No.'
+        );
+
         $('#savePayFrm').validate( {
                 rules: {
                 search_bus: {
@@ -457,6 +488,7 @@ cursor: pointer;
                     },
                     tds_certificate_no:{
                         required:false,
+                        uniqueTdsCertificate: true
                     },
                     cheque:{
                         required:true,
@@ -476,6 +508,8 @@ cursor: pointer;
         $("#charges").val('');
         $("#date_of_payment").val('');
         $("#amount").val('');
+        $('#txtAmt').text("");
+        $("#reflect_amount").html('');
         this.userData = data;
         $("#biz_id").val(data.biz_id);
         $("#user_id").val(data.user_id);
@@ -511,6 +545,8 @@ cursor: pointer;
                     $('#waiveoff_div').hide();
                     $('#charges').html('<option value="">Select Transaction</option>');
                     $('#amount').val(''); 
+                    $('#txtAmt').text("");
+                    $("#reflect_amount").html('');
                 }
                 $('.isloader').hide();     
             } 
@@ -518,25 +554,31 @@ cursor: pointer;
     }
 
     function get_all_unsettled_trans_type(data) {
-        $.ajax({
-            type: 'POST',
-            async: false,
-            url: messages.get_all_unsettled_trans_type,
-            data: {"user_id":data.user_id, action_type:data.action_type, _token: messages.token},
-            beforeSend: function( xhr ) {
-                $('.isloader').show();
-            },
-            success: function(res) {
-                $('#trans_type').html('<option value="">Select Transaction Type</option>');
-                if (res.status == 'success') {
-                    chargeResult = res.result;
-                    $(chargeResult).each(function(i,v){
-                        $('#trans_type').append('<option value="'+ v.id +'">' + v.trans_name + '</option>');
-                    })
-                }
-                $('.isloader').hide();
-            }     
-        });
+        if(data.action_type == "1") {
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: messages.get_all_unsettled_trans_type,
+                data: {"user_id":data.user_id, action_type:data.action_type, _token: messages.token},
+                beforeSend: function( xhr ) {
+                    $('.isloader').show();
+                },
+                success: function(res) {
+                    $('#trans_type').parent().parent().show();
+                    $('#trans_type').html('<option value="">Select Transaction Type</option>');
+                    if (res.status == 'success') {
+                        chargeResult = res.result;
+                        $(chargeResult).each(function(i,v){
+                            $('#trans_type').append('<option value="'+ v.id +'">' + v.trans_name + '</option>');
+                        })
+                    }
+                    $('.isloader').hide();
+                }     
+            });
+        } else {
+            $('#trans_type').parent().parent().hide();
+            get_tdsoutstanding_amount();
+        }
     }
     
     function get_repayment_amount() {
@@ -554,9 +596,13 @@ cursor: pointer;
                         $('#amount').val(amt.toFixed(2)); 
                     }
                     $("#amount").val(amt.toFixed(2)); 
-                    $('#amount').removeAttr('max');  
+
+                    $('#amount').removeAttr('max');
+                    $('#amount').removeAttr('max-data');  
                 } else {
+                    $('#txtAmt').text("");
                     $("#amount").val("");
+                    $("#reflect_amount").html('');
                 }
                 $('.isloader').hide();
             }
@@ -574,9 +620,11 @@ cursor: pointer;
                 if (res.status == 'success') {
                     $('#date_of_payment').datetimepicker('setStartDate',  new Date(messages.sysDate));
                     $('#amount').val(amt.toFixed(2));
-                    $('#amount').attr('max',amt.toFixed(2));
+                    // $('#amount').attr('max',amt.toFixed(2));
+                    $('#amount').attr('max-data',amt.toFixed(2));
                 }else{
                     $('#amount').val(''); 
+                    $("#reflect_amount").html('');
                 }
             }
         });
@@ -670,5 +718,40 @@ cursor: pointer;
         var fileName = e.target.files[0].name;
         $(this).parent('div').children('.custom-file-label').html(fileName);
     });
+
+    $(document).on('input keyup blur focus change', '.amtcompformax', function(){
+        $('#amountMax').html('');
+        var maxValue = $(this).attr('max-data');
+        var inputValue = parseFloat($(this).val().replace(/,/g, ''));
+console.log(maxValue,inputValue);
+        if(inputValue > maxValue){
+            $('#amountMax').html("Please enter a value less than or equal to " +maxValue+ ".");
+        }
+        return true;
+    });
+
+    function get_tdsoutstanding_amount() {
+        $.ajax({
+            type: 'POST',                    
+            url: messages.get_tdsoutstanding_amount_url,
+            data: {user_id: $("#user_id").val(), _token: messages.token},
+            beforeSend: function( xhr ) {
+                $('.isloader').show();
+            },
+            success: function(resultData) {                        
+                var amt = parseFloat(resultData.tds_amount);
+                if (resultData.tds_amount != ""){
+                    $('#txtAmt').text("( ₹ "+ amt.toFixed(2) +" )");
+                    $('#amount').removeAttr('max');
+                    $('#amount').removeAttr('max-data');  
+                } else {
+                    $('#txtAmt').text("");
+                    $("#amount").val("");
+                    $("#reflect_amount").html('')
+                }
+                $('.isloader').hide();
+            }
+       });
+    }
 </script>
 @endsection

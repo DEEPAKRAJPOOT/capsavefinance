@@ -8,6 +8,7 @@ use Auth;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Contracts\Ui\DataProviderInterface;
 use App\Libraries\Idfc_lib;
+use Illuminate\Support\Facades\DB;
 
 
 class DashboardController extends Controller
@@ -37,12 +38,14 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-         
-       //return view('backend.dashboard');
-    
-        try {
-           $corp_user_id = @$request->get('corp_user_id');
+        try 
+        {
+            $corp_user_id = @$request->get('corp_user_id');
             $user_kyc_id = @$request->get('user_kyc_id');
+
+            $userId = (int) Auth::user()->user_id;
+            $role_id = DB::table('role_user')->where(['user_id' => $userId])->pluck('role_id');
+            $userRole = DB::table('roles')->whereIn('id',$role_id)->first();
 
             $recentRights = [];
             $benifinary = [];
@@ -66,8 +69,36 @@ class DashboardController extends Controller
                 
             }
             $benifinary['user_type'] = (int) Auth::user()->user_type;
+            $data = [];
 
-            return view('backend.dashboard',compact('benifinary'));
+            if($userRole->id == 11) {
+                $anchorId = Auth::user()->anchor_id;
+
+                $data['anchorData'] = $this->userRepo->getAnchorDetail($anchorId);
+                $data['anchorData']->totalLimit = $data['anchorData']->anchor_limit;
+                $data['anchorData']->utilizedLimit = \Helpers::getAnchorUtilizedLimit($data['anchorData']->prgm_id);
+                if(isset($data['anchorData']->utilizedLimit)) {
+                    $data['anchorData']->remainingLimit = $data['anchorData']->totalLimit - $data['anchorData']->utilizedLimit;
+                }
+
+                $data['prgmData'] = $this->userRepo->getPrgmDetail($anchorId, $data['anchorData']->prgm_id);
+                
+                $data['anchorUserData'] = $this->userRepo->getAnchorUserDataDetail($anchorId);
+                $data['anchorUserData']->inactiveUsers = $this->userRepo->getAnchorInactiveUserDataDetail($anchorId);
+                
+                $data['anchorAppData'] = $this->userRepo->getAnchorAppDataDetail($anchorId);
+                $data['anchorInvoiceData'] = $this->userRepo->getAnchorInvoiceDataDetail($anchorId);
+            } else {
+
+                $data['lenderAnchorData'] = $this->userRepo->getLenderAnchorDetail();
+                $data['anchorUserData'] = $this->userRepo->getAnchorUserDataDetail();
+                $data['anchorUserData']->inactiveUsers = $this->userRepo->getAnchorInactiveUserDataDetail();
+                
+                $data['anchorAppData'] = $this->userRepo->getAnchorAppDataDetail();
+                $data['anchorInvoiceData'] = $this->userRepo->getAnchorInvoiceDataDetail();
+            }
+            // dd($data['anchorAppData']);
+            return view('backend.dashboard',compact('benifinary','data'));
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }

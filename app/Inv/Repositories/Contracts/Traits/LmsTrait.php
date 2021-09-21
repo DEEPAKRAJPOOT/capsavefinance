@@ -33,8 +33,12 @@ trait LmsTrait
      */
     protected function calInterest($principalAmt, $interestRate, $tenorDays)
     {
-        $interest = $principalAmt * $tenorDays * ($interestRate / config('common.DCC')) ;                
-        return $interest;        
+        $interest = round(($principalAmt * ($interestRate / config('common.DCC')))/100,2);                
+        return $tenorDays * $interest;        
+    }  
+
+    protected function calPercentage($amount, $percenttage){
+        return round(($amount*$percenttage)/100,2);
     }  
 
     protected function calMargin($amt, $val)
@@ -176,7 +180,7 @@ trait LmsTrait
         if ($banchMarkDateFlag == 1) {
             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $fundDate);
         }
-        $tInterest = $this->calInterest($fundedAmount, $actIntRate/100, $tenor);
+        $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
 
         if($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
             $interest = $tInterest;
@@ -194,8 +198,10 @@ trait LmsTrait
         $disbursalData['tenor_days'] =  $tenor ?? null;
         $disbursalData['interest_rate'] = $actIntRate ?? null;
         $disbursalData['total_interest'] = $interest;
+        $disbursalData['processing_fee'] = $invoice['processing_fee'] ?? 0.00;
+        $disbursalData['processing_fee_gst'] = $invoice['processing_fee_gst'] ?? 0.00;
         $disbursalData['margin'] = $invoice['program_offer']['margin'] ?? null;
-        $disbursalData['status_id'] = ($disburseType == 2) ? 10 : 12;
+        $disbursalData['status_id'] = 10;
         
         $disbursalData['int_accrual_start_dt'] = ($disburseType == 1 && !empty($invoice['disburse_date'])) ?  date("Y-m-d", strtotime(str_replace('/','-',$invoice['disburse_date']))) : null;
         $disbursalData['grace_period'] = $invoice['program_offer']['grace_period'] ?? null;
@@ -287,6 +293,10 @@ trait LmsTrait
         $transactionData['pay_from'] = ($transType == 16) ? 3 : $this->appRepo->getUserTypeByUserId($userId);
         $transactionData['is_settled'] = 0;
         $transactionData['is_posted_in_tally'] = 0;
+        $transactionData['base_amt'] = $data['base_amt'] ?? null;
+        $transactionData['gst_amt'] = $data['gst_amt'] ?? null;
+        $transactionData['chrg_gst_id'] = $data['chrg_gst_id'] ?? null;
+        $transactionData['trans_mode'] = $data['trans_mode'] ?? null;
 
         $curData = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
                         
@@ -929,7 +939,7 @@ trait LmsTrait
     protected function calculateRefund($transId)
     {
         $repayment = Payment::getPayments(['is_settled' => 1, 'payment_id' => $transId])->first();
-        
+        $repayment = $repayment->get();
         $repaymentTrails = $this->lmsRepo->getTransactions(['payment_id'=>$transId]);
         
         $interestRefundTotal = 0;

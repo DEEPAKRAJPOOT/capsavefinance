@@ -73,8 +73,6 @@ class ProcessMails implements ShouldQueue
                 }
                 
                 $application = $appRepo->getAppDataByAppId($assignmentData->app_id);
-                //$reviewerSummaryData = CamReviewerSummary::where('biz_id','=',$application->business->biz_id)->where('app_id','=',$assignmentData->app_id)->first(); 
-                //$emailData['cover_note'] = $reviewerSummaryData->cover_note;
                 $emailData['lead_id'] = \Helpers::formatIdWithPrefix($application->user_id, 'LEADID');
                 $emailData['entity_name'] = (isset($application->business->biz_entity_name))?$application->business->biz_entity_name:'';
                 $emailData['app_id'] = \Helpers::formatIdWithPrefix($assignmentData->app_id, 'APP');
@@ -95,12 +93,10 @@ class ProcessMails implements ShouldQueue
                             $to_users = $userRepo->getBackendUsersByRoleId($assignmentData->role_id, [$assignmentData->to_id], [$assignmentData->from_id]);
                         }
                     }
-                    // dd($to_users);
                     foreach($to_users as $user) {
                         $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                         $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
                         $emailData['receiver_email'] = $user->email;
-                        //$event = ($user->roles[0]->id =='8')?'APPLICATION_APPROVER_MAIL':$event;
                         \Event::dispatch($event, serialize($emailData));
                     }
                 }else{
@@ -112,10 +108,8 @@ class ProcessMails implements ShouldQueue
                     $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
                     $emailData['receiver_role_name'] = '';//$user->roles[0]->name;
                     $emailData['receiver_email'] = $user->email;
-                    //$event = ($user->roles[0]->id =='8')?'APPLICATION_APPROVER_MAIL':$event;
                     \Event::dispatch($event, serialize($emailData));
                 }
-                // die("here");
             }
         }
         catch(Exception $e) {

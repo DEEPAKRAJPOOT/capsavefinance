@@ -114,6 +114,11 @@
                         <a class="nav-link" href="{{ route('colender_application_list') }}">Co-lender Applications</a>
                     </li>
                     @endcan
+                    @can('api_change_year')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('api_change_year') }}">Change Financial Year</a>
+                    </li>
+                    @endcan
                 </ul>
             </div>
         </li>

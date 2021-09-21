@@ -32,6 +32,9 @@
             <span style="font-size: 9px;font-family: Calibri;">{{$txns['sac']}}</span>
          </td>
          <td style="border: 1px solid #ddd;padding: 2px;">
+            <span style="font-size: 9px;font-family: Calibri;">{{ $txns['trans_date'] }}</span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 2px;">
             <span style="font-size: 9px;font-family: Calibri;"><strong>{{sprintf('%.2F', $txns['base_amt'])}}</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 2px;">
@@ -68,6 +71,9 @@
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
             <span style="font-size: small;"><strong>Total</strong></span>
+         </td>
+         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+            <span style="font-size: 9px;font-family: Calibri;"><strong>&nbsp;</strong></span>
          </td>
          <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
             <span style="font-size: 9px;font-family: Calibri;"><strong>&nbsp;</strong></span>

@@ -30,13 +30,38 @@
 @endsection
 @section('jscript')
 <script type="text/javascript">
+    var messages={
+        unique_equipment_url:"{{ route('check_unique_equipment_url') }}",
+        token: "{{ csrf_token() }}"
+    }
     $(document).ready(function () {
-
+        $.validator.addMethod("uniqueEquipment",
+            function(value, element, params) {
+                var result = true;
+                var data = {equipment_name : value, _token: messages.token};
+                if (params.id) {
+                    data['id'] = params.id;
+                }
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.unique_equipment_url, // script to validate in server side
+                    data: data,
+                    success: function(data) {                        
+                        result = (data.status == 1) ? false : true;
+                    }
+                });                
+                return result;                
+            },'Equipment name is already exists'
+        );
 
         $('#EquipmentForm').validate({ // initialize the plugin
             rules: {
                 'equipment_name' : {
                     required : true,
+                    uniqueEquipment: {
+                        id:$("#id").val()
+                    }
                 },
                 'is_active' : {
                     required : true,

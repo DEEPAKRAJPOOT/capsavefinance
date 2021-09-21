@@ -30,6 +30,7 @@ use App\Inv\Repositories\Models\AppAssignment;
 use Mail;
 use App\Helpers\Helper;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class ApplicationController extends Controller
 {
@@ -41,6 +42,8 @@ class ApplicationController extends Controller
 	protected $docRepo;
 	protected $masterRepo;
 	protected $lmsRepo;
+
+	use ActivityLogTrait;
 
 	/**
 	 * The pdf instance.
@@ -168,13 +171,21 @@ class ApplicationController extends Controller
                                 $arrAnchUser['biz_id'] = $bizId;                                     
                                 $this->userRepo->updateAnchorUserData($arrAnchUser, ['user_id' => $appData->user_id]); 
 
+            $whereActivi['activity_code'] = 'company_details_save';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Company Details (Business Information) Application Information. AppID '. $appId;
+                $arrActivity['app_id'] = $appId;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrFileData), $arrActivity);
+            } 								
 				Session::flash('message',trans('success_messages.update_company_detail_successfully'));
 				return redirect()->route('promoter_details',['app_id' =>  $appId, 'biz_id' => $bizId]);
 			} else {
-				return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+				return redirect()->back()->withInput()->withErrors(trans('auth.oops_something_went_wrong'));
 			}
 		} catch (Exception $ex) {
-			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+			return redirect()->back()->withInput()->withErrors(Helpers::getExceptionMessage($ex));
 		}
 	}
 
@@ -252,7 +263,6 @@ class ApplicationController extends Controller
 				$appId = $arrFileData['app_id']; 
 				$appData = $this->appRepo->getAppDataByAppId($appId);               
 				$userId = $appData ? $appData->user_id : null;     
-				
 				$prgmDocsWhere = [];
 				$prgmDocsWhere['stage_code'] = 'doc_upload';
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
@@ -271,6 +281,15 @@ class ApplicationController extends Controller
 					}                    
 				}                
 				Helpers::updateWfStage('promo_detail', $appId, $wf_status = 1); 
+
+				$whereActivi['activity_code'] = 'promoter_detail_save';
+				$activity = $this->masterRepo->getActivity($whereActivi);
+				if(!empty($activity)) {
+					$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+					$activity_desc = 'Save Promoter Details (Management Information) Application Information. AppID '. $appId;
+					$arrActivity['app_id'] = $appId;
+					$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrFileData), $arrActivity);
+				}				
 				
 				return response()->json(['message' =>trans('success_messages.promoter_saved_successfully'),'status' => 1]);
 			}
@@ -336,6 +355,7 @@ class ApplicationController extends Controller
 					
 				} else {
 					$appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
+					$appDocData['is_ovd_enabled'] = 1;
 					$appDocResponse = $this->docRepo->saveAppDoc($appDocData);
 					$fileId = $appDocResponse->file_id;
 					$response = $this->docRepo->getFileByFileId($fileId);
@@ -535,6 +555,15 @@ class ApplicationController extends Controller
 				//$wf_status = $response->count() < 1 ? 1 : 2;
 				//$wf_status = 1;                
 				//Helpers::updateWfStage('doc_upload', $appId, $wf_status);
+
+				$whereActivi['activity_code'] = 'document_save';
+				$activity = $this->masterRepo->getActivity($whereActivi);
+				if(!empty($activity)) {
+					$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+					$activity_desc = 'Save Documents (Documents) Application Information. AppID '. $appId;
+					$arrActivity['app_id'] = $appId;
+					$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrFileData), $arrActivity);
+				}				
 				
 				Session::flash('message',trans('success_messages.uploaded'));
 				return redirect()->route('documents', ['app_id' => $appId, 'biz_id' => $bizId]);
@@ -614,7 +643,7 @@ class ApplicationController extends Controller
                                            $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
                                            $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
                                         }
-                                       $this->appRepo->updateAppData($parentAppId, ['status' => 3]);
+                                       $this->appRepo->updateAppData($parentAppId, ['status' => 3, 'is_child_sanctioned' => 1]);
                                        $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
                                        $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
                                        \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));
@@ -782,6 +811,16 @@ class ApplicationController extends Controller
 			];
 			
 			$this->appRepo->saveAppNote($noteData);
+
+            $whereActivi['activity_code'] = 'save_app_note';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Add App Note in action tap of My Application in Manage Application. AppID '. $app_id;
+                $arrActivity['app_id'] = $app_id;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($noteData), $arrActivity);
+            } 			
+			
 			Session::flash('message',trans('backend_messages.add_note'));
 			//return redirect()->route('company_details', ['app_id' => $app_id, 'biz_id' => $biz_id]);
 			return redirect()->route('application_list');
@@ -963,7 +1002,7 @@ class ApplicationController extends Controller
                                     $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
                                     $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
                                     \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));*/                                    
-                                    $this->appRepo->updateAppData($parentAppId, ['is_child_sanctioned' => 1]);
+                                    $this->appRepo->updateAppData($parentAppId, ['is_child_sanctioned' => 2]);
                                 }
                                 
         		if (!is_null($appLimitId)) {
@@ -1674,6 +1713,16 @@ class ApplicationController extends Controller
 			$emailData['subject'] ="Sanction Letter for SupplyChain";
 			\Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
 			Session::flash('message',trans('Sanction Letter for Supply Chain sent successfully.'));
+
+            $whereActivi['activity_code'] = 'send_sanction_letter_supplychain';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Send mail Sanction Letter Of Supplychain My Application in Manage Application. AppID '. $appId;
+                $arrActivity['app_id'] = $appId;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['supplyChaindata'=>$supplyChaindata,'postData'=>$arrFileData]), $arrActivity);
+            }			
+			
 			return redirect()->back()->with('is_send',1);
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -1885,7 +1934,16 @@ class ApplicationController extends Controller
 			$filepath = storage_path('app/public/user/'.$appId.'_supplychain.json');
 			\File::put($filepath, base64_encode(json_encode($arrFileData)));
                         
-                        Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.SANCTION_LETTER_GENERATED'));
+						Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.SANCTION_LETTER_GENERATED'));
+						
+            $whereActivi['activity_code'] = 'save_sanction_letter_supplychain';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Save Sanction Letter Of Supplychain My Application in Manage Application. AppID '. $appId;
+                $arrActivity['app_id'] = $appId;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($supplyChaindata), $arrActivity);
+            } 						
                         
 			Session::flash('message',trans('success_messages.save_sanction_letter_successfully'));
 			return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);  
@@ -2022,6 +2080,14 @@ class ApplicationController extends Controller
 		try {
 			$fileId = $request->file_id;
 			$fileId = $request;
+
+			$where = [
+				'app_id' => $fileId['app_id'],
+				'biz_owner_id' => $fileId['owner_id'],
+				'doc_id' => $fileId['doc_id'],
+				'file_id' => $fileId['file_id']
+			];
+			$this->docRepo->disableIsOVD($where);
 			$response = $this->docRepo->deleteFile($fileId);
 			
 			if ($response) {
@@ -2145,7 +2211,14 @@ class ApplicationController extends Controller
                     \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));                    
                 }
             }
-                
+				$whereActivi['activity_code'] = 'save_app_rejection';
+				$activity = $this->masterRepo->getActivity($whereActivi);
+				if(!empty($activity)) {
+					$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+					$activity_desc = 'App Rejection of My Application in Manage Application. AppID '. $app_id;
+					$arrActivity['app_id'] = $app_id;
+					$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['noteData'=>$noteData, 'saveAppStatusLog' => $appStatusData]), $arrActivity);
+				} 			
                 Session::flash('message',trans('backend_messages.reject_app'));
                 return redirect()->route('application_list');
             } catch (Exception $ex) {

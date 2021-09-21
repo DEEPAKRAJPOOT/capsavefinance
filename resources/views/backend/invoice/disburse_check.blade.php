@@ -10,6 +10,7 @@ $disburseAmount = 0;
 $totalMargin = 0;
 $totalInterest = 0;
 $interest = 0;
+$processingFee = 0;
 $apps = $customer->app;
 foreach ($apps as $app) {
 	foreach ($app->invoices as $inv) {
@@ -25,14 +26,22 @@ foreach ($apps as $app) {
 
 
 		$tMargin = (($invoice['invoice_approve_amount']*$margin)/100);
+
+		if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
+            $processingFee = (($invoice['invoice_approve_amount']*$invoice['processing_fee']['chrg_value'])/100);
+        } else {
+            $processingFee = $invoice['processing_fee']['chrg_value'];
+
+        }
+        $processingFee = $invoice['processing_fee']['gst_chrg_value'];
 		$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
 		if($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
 			$interest = $fundedAmount * $tenor * (($interestRate/100) / config('common.DCC')) ;                
         }
             if ($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {		
-                $finalDisburseAmt += round($fundedAmount - $interest, 2);
+                $finalDisburseAmt += round($fundedAmount - $interest - $processingFee, 2);
             } else {
-                $finalDisburseAmt += round($fundedAmount, 2);
+                $finalDisburseAmt += round($fundedAmount - $processingFee, 2);
             }
 	}
 }
@@ -118,11 +127,12 @@ foreach ($apps as $app) {
 									<!-- <th width="4%">App ID</th> -->
 									<th width="10%">Ben Name</th>
 									<th width="20%">Bank Detail</th>
-									<th width="15%">Total Invoice</th>
+									<th width="10%">Total Invoice</th>
 									<th width="15%">Total Invoice Amt.</th>
 									<th width="15%">Total Disburse/Principal Amt</th>
 									<th width="15%">Total Margin</th>
 									<th width="15%">Total Interest</th>
+									<th width="10%">Total Invoice Processing Fee</th>
 									<th width="30%">Total Actual Disburse/Principal Amt.</th>
 								</tr>
 							</thead>
@@ -207,7 +217,9 @@ foreach ($apps as $app) {
 									$disburseAmount = 0;
 									$totalMargin = 0;
 									$totalInterest = 0;
+									$totalProcessingFee = 0;
 									$interest = 0;
+									$processingFee = 0;
 									$apps = $customer->app;
 									foreach ($apps as $app) {
 										foreach ($app->invoices as $inv) {
@@ -223,22 +235,33 @@ foreach ($apps as $app) {
                                                                                        
                                                                                     
 											$tMargin = (($invoice['invoice_approve_amount']*$margin)/100);
+
+											if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
+						                        $processingFee = (($invoice['invoice_approve_amount']*$invoice['processing_fee']['chrg_value'])/100);
+						                    } else {
+						                        $processingFee = $invoice['processing_fee']['chrg_value'];
+
+						                    }
+
+					                        $processingFee = $invoice['processing_fee']['gst_chrg_value'];
 											$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
 											if ($invoice['program_offer']['payment_frequency'] == 1 ) {
     											$interest = $fundedAmount * $tenor * (($interestRate/100) / config('common.DCC')) ;                
-                                                                                        }
-                                                                                        if ($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
-											$disburseAmount += round($fundedAmount - $interest, 2);
-                                                                                        } else {
-                                                                                        $disburseAmount += round($fundedAmount, 2);
-                                                                                        }
+                                            }
+                                            if ($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
+                                            	$disburseAmount += round($fundedAmount - $interest - $processingFee, 2);
+                                            } else {
+                                            	$disburseAmount += round($fundedAmount - $processingFee, 2);
+                                            }
 											$totalMargin += round($tMargin, 2);
 											$totalInterest += round($interest, 2);
+											$totalProcessingFee += round($processingFee, 2);
 										}
 									}
 									@endphp
 									<td> <i class="fa fa-inr"></i> {{ number_format((float)$totalMargin, 2, '.', '') }}</td>
 									<td> <i class="fa fa-inr"></i> {{ number_format((float)$totalInterest, 2, '.', '') }}</td>
+									<td> <i class="fa fa-inr"></i> {{ number_format((float)$totalProcessingFee, 2, '.', '') }}</td>
 									<td> <i class="fa fa-inr"></i> {{ number_format((float)$disburseAmount, 2, '.', '') }}</td>
 									@php 
 

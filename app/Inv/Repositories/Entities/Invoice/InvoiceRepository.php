@@ -3,6 +3,7 @@
 namespace App\Inv\Repositories\Entities\Invoice;
 use DB;
 use Session;
+use Carbon\Carbon;
 use App\Inv\Repositories\Contracts\InvoiceInterface;
 use App\Inv\Repositories\Factory\Repositories\BaseRepositories;
 use App\Inv\Repositories\Models\User as UserModel;
@@ -27,6 +28,8 @@ use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\Lms\DisbursalBatch;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use App\Inv\Repositories\Models\Lms\InvoiceCharge;
+use App\Inv\Repositories\Models\Lms\TransactionsRunning;
 
 class InvoiceRepository extends BaseRepositories implements InvoiceInterface
 {
@@ -1236,6 +1239,181 @@ use CommonRepositoryTraits;
            return $ex;
         }
          
-    }     
+    }
     
+    public function getAllManageInvoice($request,$status)
+    {
+        try
+        {
+           return InvoiceModel::getAllManageInvoice($request,$status);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }
+
+    public function updateInvoiceCharge($data, $invoiceId)
+    {
+        try
+        {
+           return InvoiceCharge::updateInvoiceCharge($data, $invoiceId);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }
+
+    public function getInvoiceProcessingFee($where)
+    {
+        try
+        {
+           return InvoiceCharge::where($where)->first();  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+    }      
+
+    public function updateInvoiceTenor($data, $invoiceId)
+    {
+        try
+        {
+           return InvoiceModel::updateInvoiceTenor($data, $invoiceId);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    } 
+
+    public function getInvoiceById($invoiceId)
+    {
+        try
+        {
+           return InvoiceModel::find($invoiceId);  
+        } catch (Exception $ex) {
+           return $ex;
+        }
+         
+    }
+      
+    public function getMaturityData($user_id = null){
+        $currentDate =  Carbon::now()->format('Y-m-d');
+        $nextDate =  Carbon::now()->addDays(config('lms.INVOICE_MATURITY_ALERT_DAYS'))->format('Y-m-d');
+        $invoiceData = InvoiceDisbursed::whereDate('payment_due_date','=',$nextDate)
+        ->whereDate('payment_due_date','>=', $currentDate)
+        ->whereIn('status_id',[config('lms.STATUS_ID.DISBURSED'),
+        config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED')/*,
+        config('lms.STATUS_ID.PAYMENT_SETTLED')*/]);
+
+        if($user_id){
+            $invoiceData = $invoiceData->whereHas('invoice', function($query) use($user_id){
+                $query->where('supplier_id',$user_id);
+            });
+        }
+        $invoiceData = $invoiceData->get();
+
+        $result = [];
+        foreach($invoiceData as $inv){ 
+            $balance = ($inv->disburse_amt - $inv->invoice->repayment_amt );
+            if ($balance <= 0) {
+              continue;
+            }
+            $result[] = [
+                'cust_id'=> $inv->customer_id,
+                'sup_code'=> $inv->invoice->supplierCode,
+                'batch_no'=> $inv->disbursal->disbursal_batch->batch_id,
+                'batch_date'=> Carbon::parse($inv->disbursal->disbursal_batch->created_at)->format('d/m/Y'),
+                'bill_type'=> $inv->invoice->billType,
+                'inv_no'=> $inv->invoice->billNo,
+                'bill_date'=> Carbon::parse($inv->invoice->invoice_date)->format('d/m/Y'),
+                'due_date'=> Carbon::parse($inv->payment_due_date)->format('d/m/Y'),
+                'bill_amt'=> number_format($inv->invoice->invoice_amount),
+                'approve_amt'=> number_format($inv->invoice->invoice_approve_amount),
+                'discounted_amt'=> number_format($inv->invoice->invoice_approve_amount - round(($inv->invoice->invoice_approve_amount*$inv->margin)/100,2)),
+                'balance'=> $balance,
+            ];
+        }
+
+        return $result;
+    }
+      
+    public function getMaturityOverdueData($user_id = null){
+        $currentDate =  Carbon::now()->format('Y-m-d');
+        $invoiceData = InvoiceDisbursed::whereRaw('ADDDATE(payment_due_Date, grace_period) <= ?', [$currentDate])
+        // ->where('invoice_disbursed_id', 310)
+        ->whereIn('status_id',[config('lms.STATUS_ID.DISBURSED'),
+        config('lms.STATUS_ID.PARTIALLY_PAYMENT_SETTLED')/*,
+        config('lms.STATUS_ID.PAYMENT_SETTLED')*/]);
+
+        if($user_id){
+            $invoiceData = $invoiceData->whereHas('invoice', function($query) use($user_id){
+                $query->where('supplier_id', $user_id);
+            });
+        }
+        $invoiceData = $invoiceData->get();
+        $result = [];
+
+        foreach($invoiceData as $inv){ 
+        $discounted_amt = round(($inv->invoice->invoice_approve_amount - round(($inv->invoice->invoice_approve_amount*$inv->margin)/100,2) /*- $inv->total_interest*/),2);
+            $balance = round(($discounted_amt  - $inv->invoice->principal_repayment_amt),2);
+            $result[$inv->invoice_disbursed_id] = [
+                'cust_id'=> $inv->customer_id,
+                'batch_no'=> $inv->disbursal->disbursal_batch->batch_id,
+                'batch_date'=> Carbon::parse($inv->disbursal->disbursal_batch->created_at)->format('d/m/Y'),
+                'inv_no'=> $inv->invoice->billNo,
+                'bill_date'=> Carbon::parse($inv->invoice->invoice_date)->format('d/m/Y'),
+                'due_date'=> Carbon::parse($inv->payment_due_date)->format('d/m/Y'),
+                'bill_amt'=> number_format($inv->invoice->invoice_amount),
+                'approve_amt'=> number_format($inv->invoice->invoice_approve_amount),
+                'discounted_amt'=> $discounted_amt,
+                'balance'=> $balance,
+            ];
+
+
+            $transactionData = Transactions::where('invoice_disbursed_id', $inv->invoice_disbursed_id)
+                ->whereNull('parent_trans_id')
+                ->whereNull('payment_id')
+                ->where('entry_type', 0)
+                ->whereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+                ->where('outstanding', '>', 0)
+                ->get();
+
+
+            foreach ($transactionData as $key => $value) {
+                $result[$inv->invoice_disbursed_id]['transactions']['t-'.$value->trans_id] = [
+                    'trans_date' => Carbon::parse($value->created_at)->format('d/m/Y'),
+                    'value_date' => Carbon::parse($value->trans_date)->format('d/m/Y'),
+                    'trans_name' => $value->transName,
+                    'amount' => $value->amount,
+                    'outstanding' => $value->outstanding,
+
+                ];
+            }
+
+            $transactionRunningData = TransactionsRunning::where('invoice_disbursed_id', $inv->invoice_disbursed_id)
+                ->where('entry_type', 0)
+                ->whereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+                ->orderBy('trans_date', 'ASC')
+                ->get()
+                ->filter(function($item) {
+                    return $item->outstanding > 0;
+                });
+
+
+
+            foreach ($transactionRunningData as $key => $value) {
+                $result[$inv->invoice_disbursed_id]['transactions']['rt-'.$value->trans_running_id] = [
+                    'trans_date' => Carbon::parse($value->created_at)->format('d/m/Y'),
+                    'value_date' => Carbon::parse($value->trans_date)->format('d/m/Y'),
+                    'trans_name' => $value->transName,
+                    'amount' => $value->amount,
+                    'outstanding' => $value->amount,
+
+                ];
+            }
+
+        }
+
+        return $result;
+    }
+         
 }

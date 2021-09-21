@@ -10,18 +10,22 @@ use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterface;
+use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Master\GstTax;
+use App\Inv\Repositories\Models\LmsUser;
 use DB;
 use Carbon\Carbon;
 use PDF;
 use Session;
 use Helpers;
 // use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 
 class userInvoiceController extends Controller
 {
     //use ApplicationTrait;
+    use ActivityLogTrait;
 
     protected $appRepo;
     protected $userRepo;
@@ -226,7 +230,7 @@ class userInvoiceController extends Controller
         $curr_date = date('y-m-d');
         $origin_of_recipient = [
             'reference_no' => 'RENT'. $reference_no,
-            'financial_year' => getFinancialYear($curr_date),
+            'financial_year' => preg_replace('#[^0-9]+#' , '', getFinancialYear($curr_date)),
             // 'rand_4_no' => sprintf('%04d', $invoice_no_id ?? rand(0, 9999)),
             'rand_4_no' => '----',
         ];
@@ -280,6 +284,7 @@ class userInvoiceController extends Controller
         $intrest_charges = $inv_data[0];
         view()->share(['intrest_charges' => $intrest_charges, 'checkbox' => true]);
         $view = view('lms.invoice.generate_invoice_txns');
+        // dd($inv_data);
         return response()->json(['status' => 1,'view' => base64_encode($view)]); 
     }
 
@@ -293,6 +298,14 @@ class userInvoiceController extends Controller
         $invoice_type = $request->get('invoice_type');
         $trans_ids = $request->get('trans_id');
         $trans_ids = $request->get('trans_id');
+
+        if (!empty($invoice_date)) {
+            $invoice_date = \DateTime::createFromFormat('d/m/Y', $invoice_date)->format('Y-m-d');
+        }
+
+        if (!empty($due_date)) {
+            $due_date = \DateTime::createFromFormat('d/m/Y', $due_date)->format('Y-m-d');
+        }
 
         $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoice_type);
         $invSerialNo = sprintf('%04d', ((!empty($lastInvData->inv_serial_no) ?? 0) + 1) ?? rand(0, 9999));
@@ -346,12 +359,19 @@ class userInvoiceController extends Controller
         if(empty($txnsData) ||  $txnsData->isEmpty()){
             return response()->json(['status' => 0,'message' => 'No transaction found for the user.']); 
         }
+
+        $lmsDetails = LmsUser::getLmsDetailByUserId($user_id);
+        if (empty($lmsDetails) ||  $lmsDetails->isEmpty()) {
+            return response()->json(['status' => 0,'message' => 'Lms Detail not found for the user.']);
+        }
+        $virtual_acc_id = $lmsDetails[0]->virtual_acc_id;
         $origin_of_recipient = [
             'reference_no' => $reference_no,
             'invoice_no' => $invoice_no,
             'place_of_supply' => $state_name,
             'invoice_date' => $invoice_date,
             'due_date' => $due_date,
+            'virtual_acc_id' => $virtual_acc_id,
         ];
         $is_state_diffrent = ($userStateId != $companyStateId);
         $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
@@ -428,7 +448,7 @@ class userInvoiceController extends Controller
             }
             
             $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoice_type);
-            $invSerialNo = sprintf('%04d', ((!empty($lastInvData->inv_serial_no) ?? 0) + 1) ?? rand(0, 9999));
+            $invSerialNo = sprintf('%04d', (($lastInvData->inv_serial_no ?? 0) + 1) ?? rand(0, 9999));
             $InvoiceNoArr = explode('/',$requestedData['invoice_no']);
             $InvoiceNoArr[3] = $invSerialNo;
             $newInvoiceNo = implode('/',$InvoiceNoArr);
@@ -488,12 +508,25 @@ class userInvoiceController extends Controller
                    ]; 
                    $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
                    $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
-                   $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'amount' => ($txnsRec['base_amt'] + $totalGst), 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
+                   $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
+                   if ($invoice_type == 'C')
+                        $this->checkIsTransactionUpdatable($txnsRec['trans_id']);
+
                    $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
                 // $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions);
                 if ($UserInvoiceTxns == true) {
+
+                    $whereActivi['activity_code'] = 'save_user_invoice';
+                    $activity = $this->master->getActivity($whereActivi);
+                    if(!empty($activity)) {
+                        $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                        $activity_desc = 'Create Invoice Int/Charge Invoice (Manage Sanction Cases) ';
+                        $arrActivity['app_id'] = null;
+                        $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['userInvoiceData'=>$userInvoiceData, 'intrest_charges'=>$intrest_charges]), $arrActivity);
+                    }                     
+                    
                    return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('message', 'Invoice generated Successfully');
                 }
             }else{
@@ -504,30 +537,36 @@ class userInvoiceController extends Controller
         }
     }
 
+    private function checkIsTransactionUpdatable($trans_id)
+    {
+        if (isset($trans_id)) {
+            Transactions::where('parent_trans_id',$trans_id)->orWhere('trans_id',$trans_id)->update(['is_transaction' => 1]);
+        }
+    }
+
     public function downloadUserInvoice(Request $request){
         $user_id = $request->get('user_id');
         $user_invoice_id = $request->get('user_invoice_id');
         $invData = $this->UserInvRepo->getInvoiceById($user_invoice_id);
+        if (empty($invData)) {
+           return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No Detail found for the Invoice.'); 
+        }
         $reference_no = $invData->reference_no;
         $invoice_no = $invData->invoice_no;
         $state_name = $invData->place_of_supply;
         $invoice_type = $invData->invoice_type;
-        $invoice_date = $this->dateFormat($invData->invoice_date);
-        $due_date = $invData->due_date ? $this->dateFormat($invData->due_date) :'';
-        // $invoice_date_arr = explode('-',$invData->invoice_date);
-        // $temp = $invoice_date_arr[0];
-        // $invoice_date_arr[0] = $invoice_date_arr[2];
-        // $invoice_date_arr[2] = $temp;
-        // $invoice_date = implode('-',$invoice_date_arr);
+        $invoice_date = $invData->invoice_date;
+        $due_date = $invData->due_date;
 
         $company_id = $invData->comp_addr_id;
         $registered_comp_id = $invData->registered_comp_id;
 
         $bank_account_id = $invData->bank_id;
-        $totalTxnsInInvoice = $invData->userInvoiceTxns->toArray();
+        $totalTxnsInInvoice = $invData->userInvoiceTxns;
+
         $trans_ids = [];
         foreach ($totalTxnsInInvoice as $key => $value) {
-           $trans_ids[] =  $value['trans_id'];
+           $trans_ids[] =  $value->trans_id;
         }
         if (!in_array($invoice_type, ['I', 'C'])) {
            return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Invalid Invoice Type found.'); 
@@ -535,7 +574,6 @@ class userInvoiceController extends Controller
         if (empty(preg_replace('#[^0-9]+#', '', $user_id))) {
            return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Invalid UserId Found.');
         }
-
         $userStateId = $invData->user_gst_state_id;
         $companyStateId = $invData->comp_gst_state_id;
 
@@ -543,6 +581,12 @@ class userInvoiceController extends Controller
         if (empty($stateDetail)) {
            return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'State detail not found for the user address.');
         }
+
+        $lmsDetails = LmsUser::getLmsDetailByUserId($user_id);
+        if (empty($lmsDetails) ||  $lmsDetails->isEmpty()) {
+            return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Lms Detail not found for the user.');
+        }
+        $virtual_acc_id = $lmsDetails[0]->virtual_acc_id;
         $billingDetails = [
             'name' => $invData->biz_entity_name,
             'address' => $invData->gst_addr,
@@ -559,6 +603,7 @@ class userInvoiceController extends Controller
             'place_of_supply' => $state_name,
             'invoice_date' => $invoice_date,
             'due_date' => $due_date,
+            'virtual_acc_id' => $virtual_acc_id,
         ];
         if (empty($invData->inv_comp_data)) {
             $companyDetail = $this->_getCompanyDetail($company_id, $bank_account_id);
@@ -573,21 +618,44 @@ class userInvoiceController extends Controller
         $intrest_charges = [];
         $total_sum_of_rental = 0;
         foreach ($totalTxnsInInvoice as  $key => $invTrans) {
-            $transDetail = $this->UserInvRepo->getTxnByTransId($invTrans['trans_id']);
+            $transDetail = $this->UserInvRepo->getTxnByTransId($invTrans->trans_id);
             if (empty($transDetail->transType)) {
                return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Transaction Type detail not found for the used transaction.');
             }
-            $igst_amt = $invTrans['igst_amount'];
-            $igst_rate = $invTrans['igst_rate'];
-            $cgst_amt = $invTrans['cgst_amount'];
-            $cgst_rate = $invTrans['cgst_rate'];
-            $sgst_amt = $invTrans['sgst_amount'];
-            $sgst_rate = $invTrans['sgst_rate'];
-            $base_amt = $invTrans['base_amount'];
-            $sac_code = $invTrans['sac_code'];
+            $igst_amt = $invTrans->igst_amount;
+            $igst_rate = $invTrans->igst_rate;
+            $cgst_amt = $invTrans->cgst_amount;
+            $cgst_rate = $invTrans->cgst_rate;
+            $sgst_amt = $invTrans->sgst_amount;
+            $sgst_rate = $invTrans->sgst_rate;
+            $base_amt = $invTrans->base_amount;
+            $sac_code = $invTrans->sac_code;
+
+            $txn = $invTrans->trans;
+            $invoice_no = NULL;
+            $invoiceNoFound = $txn->invoiceDisbursed->invoice->invoice_no ?? NULL;
+
+            if (isset($invoiceNoFound)) {
+               $invoice_no = "($invoiceNoFound)";
+            }
+            $desc = $txn->transType->trans_name;
+            if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST')) {
+                $desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
+            } 
+
+            if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+                $dueDate = strtotime($txn->toIntDate); // or your date as well
+                $now = strtotime($txn->fromIntDate);
+                $datediff = ($dueDate - $now);
+                $OdandInterestRate = $txn->InvoiceDisbursed->invoice->program_offer->overdue_interest_rate + $txn->InvoiceDisbursed->invoice->program_offer->interest_rate;
+                $days = round($datediff / (60 * 60 * 24)) . 'days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';
+            } else {
+                $days = '---';
+            }
+
             $intrest_charges[$key] = array(
-                'trans_id' => $invTrans['trans_id'],
-                'desc' => $transDetail->transType->trans_name,
+                'trans_id' => $invTrans->trans_id,
+                'desc' => $desc. " $invoice_no",
                 'sac' => $sac_code,
                 'base_amt' => round($base_amt,2),
                 'sgst_rate' => ($sgst_rate != 0 ? $sgst_rate : 0),
@@ -596,6 +664,7 @@ class userInvoiceController extends Controller
                 'cgst_amt' =>  ($cgst_amt != 0 ? $cgst_amt : 0),
                 'igst_rate' => ($igst_rate != 0 ? $igst_rate : 0),
                 'igst_amt' =>  ($igst_amt != 0 ? $igst_amt : 0),
+                'trans_date' =>  $days,
             );
             $total_rental = round($base_amt + $sgst_amt + $cgst_amt + $igst_amt, 2);
             $total_sum_of_rental += $total_rental; 
@@ -661,13 +730,30 @@ class userInvoiceController extends Controller
             }
             $invoice_no = NULL;
             $invoiceNoFound = $txn->invoiceDisbursed->invoice->invoice_no ?? NULL;
+
             if (isset($invoiceNoFound)) {
                $invoice_no = "($invoiceNoFound)";
             }
+            $sac_code = $txn->transType->charge->sac_code ?? '0000';           
+            $desc = $txn->transType->trans_name;
+            if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST')) {
+                $desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
+                $sac_code = config('lms.SAC_CODE_FOR_INT_INVOICE');
+            } 
+            if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+                $dueDate = strtotime($txn->toIntDate); // or your date as well
+                $now = strtotime($txn->fromIntDate);
+                $datediff = ($dueDate - $now);
+                $OdandInterestRate = $txn->InvoiceDisbursed->invoice->program_offer->overdue_interest_rate + $txn->InvoiceDisbursed->invoice->program_offer->interest_rate;
+                $days = round($datediff / (60 * 60 * 24)) . 'days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';                
+            } else {
+                $days = '---';
+            }
+            
             $intrest_charges[$key] = array(
                 'trans_id' => $txn->trans_id,
-                'desc' => $txn->transType->trans_name . " $invoice_no",
-                'sac' => $txn->transType->charge->sac_code ?? '0000',
+                'desc' => $desc . " $invoice_no",
+                'sac' => $sac_code,
                 'base_amt' => round($base_amt,2),
                 'sgst_rate' => $sgst_rate,
                 'sgst_amt' => $sgst_amt,
@@ -675,6 +761,7 @@ class userInvoiceController extends Controller
                 'cgst_amt' =>  $cgst_amt,
                 'igst_rate' => $igst_rate,
                 'igst_amt' =>  $igst_amt,
+                'trans_date' =>  $days,
             );
             $total_rental = round($base_amt + $sgst_amt + $cgst_amt + $igst_amt, 2);
             $total_sum_of_rental += $total_rental; 

@@ -195,27 +195,31 @@ class SoaController extends Controller
     
     public function prepareDataForRendering($expecteddata){
         $preparedData = [];
+        $balance = 0;
         foreach($expecteddata as $key => $expData){
             foreach ($expData as $k => $data) {
-                $balance = $this->getBalance($data, $balance??0);
-                $preparedData[$key][$k]['payment_id'] = $data->payment_id;
-                $preparedData[$key][$k]['parent_trans_id'] = $data->parent_trans_id;      
+                $cr = round($data->credit_amount,2);
+                $dr = round($data->debit_amount,2);
+                $balance = round(($balance + $dr - $cr),2);
+                $preparedData[$key][$k]['payment_id'] = $data->transaction->payment_id;
+                $preparedData[$key][$k]['parent_trans_id'] = $data->transaction->parent_trans_id;
                 $preparedData[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
-                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->sys_created_at ?? $data->created_at));
-                $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->trans_date));
-                $preparedData[$key][$k]['trans_type'] = trim($data->transname);
-                $preparedData[$key][$k]['batch_no'] = $data->batchNo;
-                $preparedData[$key][$k]['invoice_no'] = $data->invoiceno;
+                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->trans_date));
+                $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->value_date));
+                $preparedData[$key][$k]['trans_type'] = trim($data->transaction->transname);
+                $preparedData[$key][$k]['batch_no'] = $data->batch_no;
+                $preparedData[$key][$k]['invoice_no'] = $data->invoice_no;
                 $preparedData[$key][$k]['narration'] = $data->narration;
-                $preparedData[$key][$k]['currency'] = trim($data->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')]) ? '' : 'INR');
-                $preparedData[$key][$k]['debit'] = $this->getDebit($data);
-                $preparedData[$key][$k]['credit'] = $this->getCredit($data);
-                $preparedData[$key][$k]['balance'] = ($balance<=0)?number_format(abs($balance),2):'('.number_format(abs($balance),2).')';
+                $preparedData[$key][$k]['currency'] = trim($data->transaction->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')]) ? '' : 'INR');
+                $preparedData[$key][$k]['debit'] = $dr;
+                $preparedData[$key][$k]['credit'] = '('.$cr.')';
+                $preparedData[$key][$k]['balance'] = ($balance>0)?$balance:'('.abs($balance).')';
                 $preparedData[$key][$k]['soabackgroundcolor'] = $data->soabackgroundcolor;
             }
         }
         return $preparedData;
     }
+    
 
     public function soaPdfDownload(Request $request){
         try{
@@ -240,7 +244,7 @@ class SoaController extends Controller
                     $transactionList->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
+                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
                     });
                 }
                 if($request->has('trans_entry_type')){
@@ -251,7 +255,7 @@ class SoaController extends Controller
                         $transactionList->where('trans_type',$trans_type);
                     }
                     if($entry_type){
-                        $transactionList->where('entry_type',$entry_type);
+                        // $transactionList->where('entry_type',$entry_type);
                     }
                 }
                 $transactionList->whereHas('lmsUser',function ($query) use ($request) {
@@ -259,11 +263,11 @@ class SoaController extends Controller
                     $query->where('customer_id', '=', "$customer_id");
                 });
 
-                $soaRecord = $this->prepareDataForRendering($transactionList->get()->filter(function($item){
-                    return $item->IsTransaction;
-                })->chunk(25));
+                $soaRecord = $this->prepareDataForRendering($transactionList->whereHas('transaction', function ($q) {
+                    $q->where('is_transaction', true);
+                })->get()->chunk(25));
             } 
-
+            ini_set('memory_limit', -1);
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
             $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
                     ->loadView('lms.soa.downloadSoaReport', ['userInfo' => $userInfo, 'soaRecord' => $soaRecord, 'fromdate' => $request->get('from_date'), 'todate' => $request->get('to_date'),'customerId' => $customerId],[],'UTF-8');
@@ -290,7 +294,7 @@ class SoaController extends Controller
                 $transactionList->where(function ($query) use ($request) {
                     $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                     $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                    $query->WhereBetween('sys_created_at', [$from_date, $to_date]);
+                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
                 });
             }
             if($request->has('trans_entry_type')){
@@ -302,7 +306,7 @@ class SoaController extends Controller
                     $transactionList->where('trans_type',$trans_type);
                 }
                 if($entry_type){
-                    $transactionList->where('entry_type',$entry_type);
+                    // $transactionList->where('entry_type',$entry_type);
                 }
             }
 
@@ -312,9 +316,9 @@ class SoaController extends Controller
             });
         
         }
-        $exceldata = $this->prepareDataForRendering($transactionList->get()->filter(function($item){
-            return $item->IsTransaction;
-        })->chunk(25));
+        $exceldata = $this->prepareDataForRendering($transactionList->whereHas('transaction', function ($q) {
+            $q->where('is_transaction', true);
+        })->get()->chunk(1));
         $sheet =  new PHPExcel();
         $sheet->getActiveSheet()->mergeCells('A2:K2');
         $sheet->getActiveSheet()->mergeCells('A3:K3');

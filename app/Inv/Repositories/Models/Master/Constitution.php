@@ -85,5 +85,24 @@ class Constitution extends BaseModel
 
         return self::where('id', $id)->first()->update($arrConstiData);
     }
+
+    /**
+     * Check Constitution name
+     * 
+     * @param type $where array
+     * @return type mixed
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions 
+     */
+    public static function checkConsitutionName($constiName, $constitId=null)
+    {
+        $query = self::select('id')
+                ->where('name', $constiName);
+        if (!is_null($constitId)) {
+            $query->where('id', '!=', $constitId);
+        }
+        $res = $query->get();        
+        return $res ?: [];
+    }    
     
 }

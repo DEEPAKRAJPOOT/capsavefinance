@@ -12,7 +12,9 @@ use App\Libraries\Bsa_lib;
 use App\Libraries\Perfios_lib;
 use App\Inv\Repositories\Models\Master\TallyEntry;
 use App\Helpers\Helper;
+use App\Inv\Repositories\Models\Master\EmailTemplate;
 use Storage;
+use Session;
 
 /**
  * 
@@ -31,6 +33,21 @@ class ApiController
 
 
   public function tally_recover() {
+      $email_content = EmailTemplate::getEmailTemplate("SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT");
+
+      $activeMailemail = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+      $activeMailbcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+      $activeMailcc = array_filter(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+      $envMails = ['email' => $activeMailemail, 'cc' => $activeMailcc, 'bcc' => $activeMailbcc];
+
+      $dynamicEmail = $data["email"] ?? 'anyId';
+      $dynamiccc = array_filter(explode(',', $email_content->cc));
+      $dynamicbcc = array_filter(explode(',', $email_content->bcc));
+      $dynamicMails = ['email' => $dynamicEmail, 'cc' => $dynamiccc, 'bcc' => $dynamicbcc];
+      
+      $mailIds = ['envMails' => $envMails, 'dynamicMails' => $dynamicMails, 'sendigFrom' => (env('SEND_MAIL_ACTIVE') == 1) ? 'ENV' : 'Dynamically'];
+      dd($mailIds);
+
     $disbursedRec= TallyEntry::where(['trans_type' => 'Payment Disbursed'])->whereNotNull('transactions_id')->get();
     $count = 0;
     foreach ($disbursedRec as $key => $value) {
@@ -881,6 +898,8 @@ class ApiController
         $files = scandir($scanpath, SCANDIR_SORT_DESCENDING);
       }
       $files = array_diff($files, [".", ".."]);
+      natsort($files);
+      $files = array_reverse($files, false);
       $filename = "";
       if (!empty($files)) {
         foreach ($files as $key => $file) {
@@ -892,8 +911,9 @@ class ApiController
           }
         }
       }
+                
       $included_no = preg_replace('#[^0-9]+#', '', $filename);
-      $file_no = str_replace($appId, '', $included_no);
+      $file_no = substr($included_no, strlen($appId));
       if (empty($file_no) && empty($filename)) {
         $new_file = $appId.'_'.$fileType.".$extType";
         $curr_file = '';
@@ -1057,6 +1077,62 @@ class ApiController
         return fwrite($handle, PHP_EOL . $data . PHP_EOL);
       }
       return FALSE;
+  }
+
+  public function changeFinancialYear(Request $request) {
+    if($request->isMethod('post')) {
+      $response = [
+        'status' => 'fail',
+        'message' => "Some error occured, Please try again later."
+      ];
+      
+      $appId = $request->get('app_id');
+      $year = explode('-', $request->get('year'));
+
+      
+      if (count($year) != 3 || ($year[0]-$year[1]) != ($year[1]-$year[2]) || ($year[0]-$year[1]) != 1) {
+
+        Session::flash('error', trans('Three consecutive years in Desc Order are required to Change the years'));
+        return redirect()->route('api_change_year');        
+        // $response['message'] = 'Three consecutive years in Desc Order are required to Change the years';
+        // return $response;
+      }
+      
+      $nameArr = $this->getLatestFileName($appId, 'finance', 'json');
+      if (empty($nameArr['curr_file'])) {
+        Session::flash('error', trans('No file found to update the year for this application'));
+        return redirect()->route('api_change_year');                
+        // $response['message'] = 'No file found to update the year for this application';
+        // return $response;
+      }
+      $toUploadPath = $this->getToUploadPath($appId, 'finance');
+      $contents = json_decode(base64_decode(file_get_contents($toUploadPath.'/'. $nameArr['curr_file'])),true);
+      $fy = $contents['FinancialStatement']['FY'] ?? [];
+      if (empty($fy)) {
+        Session::flash('error', trans('No Content found to update the year'));
+        return redirect()->route('api_change_year'); 
+        // $response['message'] = 'No Content found to update the year';
+        // return $response;
+      }
+      foreach ($fy as $key => $fyData) {
+        $fy[$key]['year'] = $year[$key];
+      }
+      if (count($fy) == 2) {
+        $fy['2'] = $fyData;
+      }
+      $contents['FinancialStatement']['FY'] = $fy;
+      $json_file_name = $nameArr['new_file'];
+      $myfile = fopen($toUploadPath .'/'.$json_file_name, "w");
+      $changeContent = base64_encode(json_encode($contents));
+      \File::put($toUploadPath .'/'.$json_file_name, $changeContent);
+      dump($nameArr, $toUploadPath .'/'.$json_file_name,$changeContent);
+        Session::flash('message', trans('Year changes successfully'));
+        return redirect()->route('api_change_year'); 
+      // $response['status'] = 'success';
+      // $response['message'] = 'Year changes successfully';
+      // return $response;
+    }
+    return view('change_financial_yr');
   }
 }
 

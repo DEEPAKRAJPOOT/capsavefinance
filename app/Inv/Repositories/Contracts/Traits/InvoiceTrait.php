@@ -26,7 +26,7 @@ use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Program;
-
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 
 
 trait InvoiceTrait
@@ -401,31 +401,52 @@ trait InvoiceTrait
        return self::twoDateDiff($CFrom,$app_id['end_date']);
    }
 
-     public static  function    invoiceApproveLimit($attr)
+    public static function invoiceApproveLimit($attr)
    {  
         $prgmData = Program::where('prgm_id', $attr['prgm_id'])->first();
         if (isset($prgmData->parent_prgm_id)) {
-           $prgm_ids = Program::where('parent_prgm_id', $prgmData->parent_prgm_id)->where('prgm_id', '<=', $attr['prgm_id'])->pluck('prgm_id')->toArray();
+           $prgm_ids = Program::where('parent_prgm_id', $prgmData->parent_prgm_id)->pluck('prgm_id')->toArray();
         }else{
             $prgm_ids = [$attr['prgm_id']];
         }
         $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['user_id' => $attr['user_id'],'status' =>2])->count();  
-       if($is_enhance==1)
-       {
-            $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->sum('invoice_margin_amount');
-            $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->whereIn('program_id', $prgm_ids)->where(['is_adhoc' =>0,'is_repayment' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])->sum('repayment_amt');
+      
+        if($is_enhance==1)
+        {
+        $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],NULL);
+        $marginApprAmt = $marginApprAmt??0;
+        $marginApprAmt   +=   BizInvoice::whereIn('status_id',[8,9,10])
+        ->where('prgm_offer_id',$attr['prgm_offer_id'])
+        ->whereIn('program_id', $prgm_ids)
+        ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+        ->where('app_id' , '<=', $attr['app_id'])
+        ->sum('invoice_approve_amount');
+        
+        $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
+        ->where('prgm_offer_id',$attr['prgm_offer_id'])
+        ->whereIn('program_id', $prgm_ids)
+        ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+        ->where('app_id' , '<=', $attr['app_id'])
+        ->sum('principal_repayment_amt');
             return $marginApprAmt-$marginReypayAmt;
        }
        else
        {
-            $marginApprAmt   =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('invoice_margin_amount');
-            $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' =>0,'is_repayment' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])->sum('repayment_amt');
+        $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplierIsEnhance($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],$attr['app_id']);
+        $marginApprAmt = $marginApprAmt??0;
+        $marginApprAmt   +=  BizInvoice::whereIn('status_id',[8,9,10])
+        ->where('prgm_offer_id',$attr['prgm_offer_id'])
+        ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])
+        ->sum('invoice_approve_amount');
+        
+        $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
+        ->where('prgm_offer_id',$attr['prgm_offer_id'])
+        ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])
+        ->sum('principal_repayment_amt');
             return $marginApprAmt-$marginReypayAmt;
        }
    }
 
-  
-   
   public static function getInvoiceDetail($attr)
   {
       return BizInvoice::where(['invoice_id' => $attr['invoice_id']])->first();
@@ -442,6 +463,7 @@ trait InvoiceTrait
             $attr['anchor_id'] =   $inv_details['anchor_id'];
             $attr['prgm_id']   =   $inv_details['program_id'];
             $attr['app_id']   =    $inv_details['app_id'];
+            $attr['prgm_offer_id'] = $inv_details['prgm_offer_id'];
             $invoice_id =   $inv_details['invoice_id'];
             $cid = $inv_details['supplier_id'];
             $sum =  self::invoiceApproveLimit($attr);
@@ -498,19 +520,24 @@ trait InvoiceTrait
             if($inv_details['status_id']==7)  
            { 
                 $status_id=7; 
-                $limit_exceed='';  
+                 
                 if($isOverDue->is_overdue==1)
                 {
+                    $limit_exceed=''; 
                     $status_id=28; 
                     $limit_exceed='Overdue';
+                    InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status_id);
+                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status_id]);
                 } 
                 if($dueDateGreaterCurrentdate)
                 {
+                    $limit_exceed=''; 
                     $status_id=28; 
-                    $limit_exceed='Customer limit has been expired.'; 
+                    $limit_exceed='Customer limit has been expired.';
+                    InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status_id);
+                    return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status_id]);
                 }
-                  InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$status_id); 
-                  return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status_id]);
+                  
             }
              if($inv_details['status_id']==28)
            {
@@ -694,6 +721,7 @@ trait InvoiceTrait
             $attr['anchor_id'] =   $inv_details['anchor_id'];
             $attr['prgm_id']   =   $inv_details['program_id'];
             $attr['app_id']   =     $inv_details['app_id'];
+            $attr['prgm_offer_id'] = $inv_details['prgm_offer_id'];
             $sum =  self::invoiceApproveLimit($attr);
             $limit   =  self::ProgramLimit($inv_details);
             $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']); /* get App limit by user_id*/
@@ -743,6 +771,7 @@ trait InvoiceTrait
         $attribute['prgm_id']  = $attr['program_id'];
         $attribute['user_id']  = $attr['supplier_id'];
         $attribute['anchor_id']  = $attr['anchor_id'];
+        $attribute['prgm_offer_id'] = $attr['prgm_offer_id'];
         $sum  = self::invoiceApproveLimit($attribute);
         $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
         $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
@@ -810,6 +839,7 @@ trait InvoiceTrait
         $attribute['user_id']  = $attr['supplier_id'];
         $attribute['anchor_id']  = $attr['anchor_id'];
         $attribute['app_id']  = $attr['app_id'];
+        $attribute['prgm_offer_id'] = $attr['prgm_offer_id'];
         $sum  = self::invoiceApproveLimit($attribute);
         $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
         $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
@@ -895,9 +925,17 @@ trait InvoiceTrait
    /* Created by gajendra chahan  */
   public static function adhocLimit($attr)
   {
-     $marginApprAmt =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1,'is_repayment' =>0])->sum('invoice_margin_amount');
-     $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12])->where(['supplier_id' =>$attr['user_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1,'is_repayment' =>0])->sum('invoice_margin_amount');
-     return $marginApprAmt-$marginReypayAmt;
+    $sql   =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])->where(['supplier_id' =>$attr['user_id']??$attr['supplier_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1]);
+    if (isset($attr['app_offer_adhoc_limit_id'])) {
+      $sql = $sql->where(['app_offer_adhoc_limit_id' => $attr['app_offer_adhoc_limit_id']]);
+    }
+    $marginApprAmt = $sql->sum('invoice_approve_amount');
+    $sql =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])->where(['supplier_id' =>$attr['user_id']??$attr['supplier_id'],'prgm_offer_id' =>$attr['prgm_offer_id'],'is_adhoc' =>1]);
+    if (isset($attr['app_offer_adhoc_limit_id'])) {
+      $sql = $sql->where(['app_offer_adhoc_limit_id' => $attr['app_offer_adhoc_limit_id']]);
+    }
+    $marginReypayAmt = $sql->sum('principal_repayment_amt');
+    return $marginApprAmt-$marginReypayAmt;
    }
    
    public static function checkUserAdhoc($attr)
@@ -997,6 +1035,7 @@ trait InvoiceTrait
             $attribute['anchor_id'] = $anchor_id;
             $attribute['prgm_id'] = $prgm_id;
             $attribute['program_id'] = $prgm_id;
+            $attribute['prgm_offer_id'] = $invData->prgm_offer_id;
             //$attribute['is_po'] = $is_po;
             $attribute['app_id'] = $app_id;            
             $sum   = self::invoiceApproveLimit($attribute);

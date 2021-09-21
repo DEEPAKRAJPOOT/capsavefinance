@@ -195,9 +195,9 @@ function deleteFile(uploadId, ownerId, file_id, docId)
             //obj = result.result.directors;
             //var count = 0;
 //            alert(r);
+            location.reload();
         }
     });
-    location.reload();
 
 }
 

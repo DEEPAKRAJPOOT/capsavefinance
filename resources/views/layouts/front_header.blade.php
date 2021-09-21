@@ -1,20 +1,28 @@
 <!-- partial:partials/_navbar.html -->
 <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-left navbar-brand-wrapper">
-        <a class="navbar-brand brand-logo" href="{{ route('front_dashboard') }}"><img src="{{url('backend/assets/images/logo.svg')}}"/></a>
+        @if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID'))
+        <a class="navbar-brand brand-logo" href=""><img src="{{url('backend/assets/images/logo.svg')}}"/></a>
+        <a class="navbar-brand brand-logo-mini" href="#"><img src="{{url('backend/assets/images/logo_mini.svg')}}"/></a>
+        @else
+        <a class="navbar-brand brand-logo" href=""><img src="{{url('backend/assets/images/logo.svg')}}"/></a>
         <a class="navbar-brand brand-logo-mini" href="{{ route('front_dashboard') }}"><img src="{{url('backend/assets/images/logo_mini.svg')}}"/></a>
+        @endif
     </div>
     <div class="navbar-menu-wrapper d-flex align-self-stretch align-items-center">
         <button class="navbar-toggler navbar-toggler align-self-center mr-2" type="button" data-toggle="minimize">
           <i class="fa fa-bars" aria-hidden="true"></i>
         </button>
+        @if(Auth::user()->anchor_id == config('common.LENEVO_ANCHOR_ID'))
+        <a class="navbar-brand" href="#"><img src="{{url('frontend/assets/images/lenovo-red.png')}}" width="150"/></a>
+        @endif
         <form class="form-inline mt-2 mt-md-0 d-none d-lg-block">
             <input class="form-control mr-sm-2 search" type="text" placeholder="Search">
         </form>
         <ul class="navbar-nav ml-lg-auto">
             <li class="nav-item nav-profile">
                 <a class="nav-link" href="#">
-                    <span style="color: #328964;">{{ucwords(Auth::user()->f_name.' '.Auth::user()->l_name)}}</span>
+                    <span style="color: #328964;" class="profile_name">{{ucwords(Auth::user()->f_name.' '.Auth::user()->l_name)}}</span>
                     <img src="{{url('backend/assets/images/faces/face9.jpg')}}" />
                 </a>
             </li>

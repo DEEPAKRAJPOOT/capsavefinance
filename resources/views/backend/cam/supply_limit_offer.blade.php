@@ -140,14 +140,44 @@
         @foreach($offerData->offerCharges as $key=>$offerCharge)
         <div class="col-md-6">
           <div class="form-group">
-              <label for="txtPassword">{!!$offerCharge->chargeName->chrg_name.(($offerCharge->chrg_type == 2)? ' (%)': ' (&#8377;)')!!}</label>
+              <label for="txtPassword">{!!$offerCharge->chargeName->chrg_name.(($offerCharge->chrg_type == 2)? ' (%)': ' (&#8377;)')!!} @Sanction level</label>
                 <input type="text" name="charge_names[{{$offerCharge->charge_id.'#'.$offerCharge->chrg_type}}]" class="form-control" data-type="{{$offerCharge->chrg_type}}" data-name="{{$offerCharge->chargeName->chrg_name}}" value="{{$offerCharge->chrg_value}}" maxlength="6">
           </div>
         </div>
         @endforeach
         @endif
     </div>
-    
+         
+        <div class="col-md-6">
+            <div class="form-group">
+            <label for="txtPassword">Invoice Level Procesing Fee <span style="color: red;"> *</span> </label> 
+                <select name="is_invoice_processingfee" class="form-control" id="invoice_processingfee">
+                    <option value="0" {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 0)? 'selected': ''}}>Not Applicable</option>
+                    <option value="1" {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1)? 'selected': ''}}>Applicable</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6" id="invoice_processingfee_type_div" style="display: {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1) ? 'block' : 'none' }};">
+            <div class="form-group">
+            <label for="txtCreditPeriod">Charge Type
+                <span class="mandatory">*</span>
+            </label>
+            <select type="text" class="form-control" id="invoice_processingfee_type" name="invoice_processingfee_type"> 
+                <option value="1" {{ (isset($offerData->invoice_processingfee_type) && $offerData->invoice_processingfee_type == 1)  ? 'selected' : '' }}>Fixed</option>
+                <option value="2" {{ (isset($offerData->invoice_processingfee_type) && $offerData->invoice_processingfee_type == 2)  ? 'selected' : '' }}>Percentage</option>
+            </select> 
+            </div>
+        </div>
+        <div class="col-md-6"  id="invoice_processingfee_value_div" style="display: {{(isset($offerData->is_invoice_processingfee) && $offerData->is_invoice_processingfee == 1) ? 'block' : 'none' }};">
+            <div class="form-group">
+                <label for="txtCreditPeriod">Amount/Percentage
+                    <span class="mandatory">*</span>
+                </label>
+                <input type="text" class="form-control" id="invoice_processingfee_value" name="invoice_processingfee_value" placeholder="Enter Amount/Percentage" value="{{ (isset($offerData->invoice_processingfee_value) && $offerData->invoice_processingfee_value) ? $offerData->invoice_processingfee_value : '' }}">
+
+            </div>
+        </div>
+
     {{--<div class="col-md-6">
       <div class="form-group">
           <label for="txtPassword">Processing Fee <span id="processing_fee_type">(%)</span></label>
@@ -893,6 +923,8 @@
     var bizOwners = {!! json_encode($bizOwners) !!};
     var anchors = {!! json_encode($anchors) !!};
     var appType = {{ config('common.app_type')[$appType] }};
+    var offerData = '{{ isset($offerData->prgm_offer_id) ? $offerData->prgm_offer_id : "" }}'
+    
 
     function anchorDropdown(anchors){
         let $html='<option value="">Select Debtor</option>';
@@ -1054,6 +1086,9 @@
     unsetError('select[name=benchmark_date]');
     unsetError('select[name=payment_frequency]');
     unsetError('input[name*=charge_names]');
+    unsetError('select[name=is_invoice_processingfee]');
+    unsetError('select[name=invoice_processingfee_type]');
+    unsetError('input[name=invoice_processingfee_value]');
 
     let flag = true;
     let anchor_id = $('select[name=anchor_id]').val();
@@ -1066,6 +1101,9 @@
     let overdue_interest_rate = $('input[name=overdue_interest_rate]').val().trim();
     let adhoc_interest_rate = $('input[name=adhoc_interest_rate]').val().trim();
     let grace_period = $('input[name=grace_period]').val().trim();
+    let is_invoice_processingfee = $('select[name=is_invoice_processingfee]').find(':selected').val();
+    let invoice_processingfee_type = $('select[name=invoice_processingfee_type]').find(':selected').val();
+    let invoice_processingfee_value = $('input[name=invoice_processingfee_value]').val();
     let benchmark_date = $('select[name=benchmark_date]').val();
     let payment_frequency = $('select[name=payment_frequency]').val();
     //let processing_fee = $('input[name=processing_fee]').val().trim();
@@ -1162,6 +1200,21 @@
     if(grace_period == ''){
         setError('input[name=grace_period]', 'Please fill grace period');
         flag = false;
+    }
+
+    if(is_invoice_processingfee == 1){
+        if (invoice_processingfee_type == '') {
+            setError('input[name=invoice_processingfee_type]', 'Please select charge type');
+            flag = false;
+        }
+        if (invoice_processingfee_value == '') {
+            setError('input[name=invoice_processingfee_value]', 'Please fill charge value');
+            flag = false;
+        }
+        if(invoice_processingfee_type == 2 && invoice_processingfee_value >= 50) {
+            setError('input[name=invoice_processingfee_value]', 'Invoice processing fee can not be greater than 50%');
+            flag = false;
+        }
     }
 
     $.each($('input[name*=charge_names]'), function(i, val){
@@ -1468,26 +1521,30 @@
   function fillProgramData(anchorPrgms){
     let program_id = $('#program_id option:selected').val();
     if(typeof program_id == 'undefined' || program_id == '' || program_id == null){
-        //$('input[name=tenor]').val();
-        //$('input[name=tenor_old_invoice]').val();
-        $('input[name=margin]').val('');
-        $('input[name=overdue_interest_rate]').val('');
-        $('input[name=adhoc_interest_rate]').val('');
-        $('input[name=grace_period]').val('');
-        //$('input[name=processing_fee]').val('');
-        //$('input[name=document_fee]').val();
+        if(offerData == "") { 
+            //$('input[name=tenor]').val();
+            //$('input[name=tenor_old_invoice]').val();
+            $('input[name=margin]').val('');
+            $('input[name=overdue_interest_rate]').val('');
+            $('input[name=adhoc_interest_rate]').val('');
+            $('input[name=grace_period]').val('');
+            //$('input[name=processing_fee]').val('');
+            //$('input[name=document_fee]').val();
+        }
         return;
     }
     $.each(anchorPrgms, function(i,program){
         if(program.prgm_id == program_id){
-            //$('input[name=tenor]').val();
-            //$('input[name=tenor_old_invoice]').val();
-            $('input[name=margin]').val(program.margin);
-            $('input[name=overdue_interest_rate]').val(program.overdue_interest_rate);
-            $('input[name=adhoc_interest_rate]').val(program.adhoc_interest_rate);
-            $('input[name=grace_period]').val(program.grace_period);
-            //$('input[name=processing_fee]').val(program.processing_fee);
-            //$('input[name=document_fee]').val();
+            if(offerData == "") { 
+                //$('input[name=tenor]').val();
+                //$('input[name=tenor_old_invoice]').val();
+                $('input[name=margin]').val(program.margin);
+                $('input[name=overdue_interest_rate]').val(program.overdue_interest_rate);
+                $('input[name=adhoc_interest_rate]').val(program.adhoc_interest_rate);
+                $('input[name=grace_period]').val(program.grace_period);
+                //$('input[name=processing_fee]').val(program.processing_fee);
+                //$('input[name=document_fee]').val();
+            }
             fillChargesBlock(program);
         }
     });
@@ -1505,8 +1562,10 @@
 //            '</div>';
 //            //value="'+program_charge.chrg_calculation_amt+'"
 //        }
-
-        if(program_charge.charge_name.chrg_tiger_id == appType){
+        console.log(program_charge, appType);
+        var mst_chrg_tiger_id = program_charge.charge_name.chrg_tiger_id;
+        //charges triggered on limit assignment will always popoulated
+        if(mst_chrg_tiger_id == appType || mst_chrg_tiger_id == 1){
             html += '<div class="col-md-6">'+
                 '<div class="form-group">'+
                     '<label for="txtPassword">'+program_charge.charge_name.chrg_name+((program_charge.chrg_calculation_type == 2)? ' (%)':' (&#8377;)')+'</label>'+
@@ -1517,8 +1576,27 @@
         }
 
     });
-    $('.charges_block').html(html);
+    if(offerData == "") { 
+        $('.charges_block').html(html);
+    }
     //$(html).insertAfter(".charges_block");
   }
+
+  $(document).on('change', '#invoice_processingfee', function(){
+    let selected_val = $(this).find('option:selected').val();
+    let selector1 = $('#invoice_processingfee_type_div');
+    let selector2 = $('#invoice_processingfee_value_div');
+
+    if(selected_val == 1){
+        $(selector1).show();
+        $(selector2).show();
+    }else{
+        $(selector1).hide();
+        $(selector2).hide();
+    }
+  })
+  $(document).on('change', '#invoice_processingfee_type', function(){
+    $('#invoice_processingfee_value').val('');
+  })
 </script>
 @endsection

@@ -239,6 +239,7 @@
     $(document).ready(function () {
       $(document).on('change blur keyup', '.changeAnchor', function(){
             var anchorID = $(this).val();
+            // alert("hh");
             $.ajax({
                url: messages.chk_anchor_phy_inv_req,
                type: 'POST',

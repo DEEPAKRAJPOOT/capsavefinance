@@ -142,7 +142,7 @@
 
             <div class="modal-body text-left">
                 <form id="signupFormNew"  action="{{Route('update_invoice_amount')}}" method="post">
-                    @csrf	
+                    @csrf   
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -172,8 +172,49 @@
 
 
                     </div>
-                    <span class="model7msg error"></span>			
+                    <span class="model7msg error"></span>           
                     <input type="submit" id="UpdateInvoiceAmount" class="btn btn-success float-right btn-sm mt-3" value="Submit"> 
+                </form> 
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal show" id="changeInvoiceTenorModal" style="display: none;">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Confirm Invoice Tenor</h5>
+                <button type="button" class="close close-btns" data-dismiss="modal">×</button>
+            </div>
+
+            <div class="modal-body text-left">
+                <form id="signupFormNew"  action="{{Route('update_invoice_tenor')}}" method="post">
+                    @csrf	
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="txtCreditPeriod">Offer Tenor
+                                    <span class="mandatory">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="offer_invoice_tenor" name='offer_invoice_tenor' value="" disabled="">
+                                <input type="hidden" name="tenor_invoice_id" id="tenor_invoice_id">
+                            </div>
+                            <div class="form-group">
+                                <label for="txtCreditPeriod">Invoice Tenor
+                                    <span class="mandatory">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="invoice_tenor" name='tenor_invoice_tenor' value="" >
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                    <span class="model7msg error"></span>			
+                    <input type="submit" id="UpdateInvoiceTenor" class="btn btn-success float-right btn-sm mt-3" value="Submit"> 
                 </form> 
             </div>
         </div>
