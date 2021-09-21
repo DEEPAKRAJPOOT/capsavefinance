@@ -678,9 +678,10 @@ class ApportionmentController extends Controller
                 if (isset($userInvoiceDate)) {
                     $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
                 }
-                // if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
-                //     continue;
-                // }
+                $bill_date_check = true;
+                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                    $bill_date_check = false;
+                }
                 $invoiceList[$trans->invoice_disbursed_id] = [
                     'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
                     'date_of_payment'=>$paymentDetails['date_of_payment']
@@ -696,7 +697,7 @@ class ApportionmentController extends Controller
                     'outstanding_amt' => (float)$trans->outstanding,
                     'payment_date' =>  $paymentDetails['date_of_payment'],
                     'pay' => ($payments[$trans->trans_id])?(float)$payments[$trans->trans_id]:null,
-                    'is_valid' => ((float)$payments[$trans->trans_id] <= (float)$trans->outstanding)?1:0
+                    'is_valid' => ((float)$payments[$trans->trans_id] <= (float)$trans->outstanding) && $bill_date_check?1:0
                 ];
                 $amtToSettle += $payments[$trans->trans_id];
             }
@@ -827,9 +828,10 @@ class ApportionmentController extends Controller
                     if (isset($userInvoiceDate)) {
                         $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
                     } 
-                    // if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
-                    //     continue;
-                    // }
+
+                    if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                        continue;
+                    }
                     if($trans->invoice_disbursed_id){
 
                         $invoiceList[$trans->invoice_disbursed_id] = [
