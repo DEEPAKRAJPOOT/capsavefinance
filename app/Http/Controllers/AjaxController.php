@@ -4679,15 +4679,10 @@ if ($err) {
 
     public function getToSettlePayments(DataProviderInterface $dataProvider) {
         $user_id = $this->request->user_id;
-        $dataRecords = [];
-        $query = Payment::where('is_settled', Payment::PAYMENT_SETTLED_PENDING);
-
+        $dataRecords = Payment::whereIn('is_settled', [Payment::PAYMENT_SETTLED_PENDING,Payment::PAYMENT_SETTLED_PROCESSING,Payment::PAYMENT_SETTLED_PROCESSED])->orderBy('created_at', 'desc');
         if (!empty($user_id)) {
-            $query = $query->where('user_id', $user_id);
+            $dataRecords->where('user_id', $user_id);
         }
-        $dataRecords  =   $query->settledProcessing()
-                                ->settledProcessed()
-                                ->orderBy('created_at', 'desc');
         $this->providerResult = $dataProvider->getToSettlePayments($this->request, $dataRecords);
         return $this->providerResult;
     }
