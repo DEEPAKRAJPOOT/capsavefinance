@@ -321,7 +321,7 @@ class CibilReportController extends Controller
             'Facility / Loan Activation / Sanction Date' => !empty($sanctionDate) ? date('d M Y', strtotime($sanctionDate)) : NULL,
             'Sanctioned Amount/ Notional Amount of Contract' => $prgmLimit,
             'Currency Code' => 'INR',
-            'Credit Type' => '0100',
+            'Credit Type' => '0300',
             'Tenure / Weighted Average maturity period of Contracts' => NULL,
             'Repayment Frequency' => '08',
             'Drawing Power' => NULL,

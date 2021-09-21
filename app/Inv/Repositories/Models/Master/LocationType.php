@@ -76,7 +76,7 @@ class LocationType extends BaseModel {
     
     public static function getLocationDropDown()
     {
-        $res = self::where('is_active', 1)->pluck('name', 'location_id');
+        $res = self::where('is_active', 1)->get();
         return $res ?: [];
     }
     
