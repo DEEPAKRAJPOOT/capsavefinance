@@ -100,13 +100,13 @@ class CibilReportController extends Controller
       $this->batch_no = _getRand(15);
       $cibilReportData['hd'] = $this->_getHDData();
       $cibilReportData['ts'] = $this->_getTSData();
-      dd($businessData);
+      
       foreach ($businessData as $key => $appBusiness) {
           $appId = $appBusiness->app->app_id;
           $userId = $appBusiness->user_id;
           $this->selectedAppData[] = $appId;
           $this->formatedCustId = Helper::formatIdWithPrefix($userId, 'CUSTID');
-          $this->business_category = array_search(config('common.MSMETYPE')[$appBusiness->msme_type], config('common.MSMETYPE')) ? $appBusiness->msme_type : NULL;
+          $this->business_category = isset($appBusiness->msme_type) && array_search(config('common.MSMETYPE')[$appBusiness->msme_type], config('common.MSMETYPE')) ? $appBusiness->msme_type : NULL;
           $this->constitutionName = !empty($appBusiness->constitution->cibil_lc_code) ? $appBusiness->constitution->cibil_lc_code : ''; //config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution]
 
 
@@ -218,15 +218,15 @@ class CibilReportController extends Controller
     }
 
     private function _getASData($appBusiness) {
-        $addressType = [
-              '0' =>'GST Address',
-              '1' =>'Communication',
-              '2' =>'Futureuse',
-              '3' =>'Warehouse',
-              '4' =>'Factory',
-              '5' =>'Mgmt Address',
-              '6' =>'Additional Address',
-        ];
+        // $addressType = [
+        //       '0' =>'GST Address',
+        //       '1' =>'Communication',
+        //       '2' =>'Futureuse',
+        //       '3' =>'Warehouse',
+        //       '4' =>'Factory',
+        //       '5' =>'Mgmt Address',
+        //       '6' =>'Additional Address',
+        // ];
         $addr_data = $appBusiness->registeredAddress;
         $users = $appBusiness->users;
         $fullAddress = NULL;
@@ -236,14 +236,14 @@ class CibilReportController extends Controller
         $data[] = [
           'Ac No' => $this->formatedCustId,
           'Segment Identifier' => 'AS',
-          'Borrower Office Location Type' => $addressType[$addr_data->address_type ?? 0] ?? NULL,
+          'Borrower Office Location Type' => isset($addr_data->getLocationType) ? $addr_data->getLocationType->name : 'Registered Office',
           'Borrower Office DUNS Number' => NULL,
           'Address Line 1' => $fullAddress,
           'Address Line 2' => NULL,
           'Address Line 3' => NULL,
           'City/Town' => $addr_data->city_name ?? NULL,
           'District' => NULL,
-          'State/Union Territory' => $addr_data->state->name ?? NULL,
+          'State/Union Territory' => $addr_data->state->code ?? NULL,
           'Pin Code' => $addr_data->pin_code ?? NULL,
           'Country' => NULL,
           'Mobile Number(s)' => $users->mobile_no ?? NULL,
@@ -378,7 +378,7 @@ class CibilReportController extends Controller
             'Guarantor DUNS Number' => NULL,
             'Guarantor Type' => (strpos(strtolower($this->constitutionName), 'private') !== false) ? '1' : '2' ,
             'Business Category' => $this->business_category,
-            'Business / Industry Type' => $appBusiness->industryType->name,
+            'Business / Industry Type' => isset($appBusiness->industryType->cibil_indus_code) ? $appBusiness->industryType->cibil_indus_code : NULL,
             'Guarantor Entity Name' => $appBusiness->biz_entity_name,
             'Individual Name Prefix' => NULL,
             'Full Name' => $users->f_name . ' '. $users->m_name . ' ' . $users->l_name,

@@ -80,5 +80,11 @@ class LocationType extends BaseModel {
         return $res ?: [];
     }
     
+    public static function getLocationName()
+    {
+        $res = self::where('is_active', 1)->pluck('name')->toArray();
+        return $res ?: [];
+    }
+    
 
 }

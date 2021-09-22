@@ -200,4 +200,8 @@ class BusinessAddress extends BaseModel
         $result = $query->get();
         return $result ? $result : [];
     }
+
+    public function getLocationType(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\LocationType','location_id','location_id')->where(['is_active'=>1]);
+    }    
 }
