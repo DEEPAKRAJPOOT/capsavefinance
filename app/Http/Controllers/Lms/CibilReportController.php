@@ -100,6 +100,7 @@ class CibilReportController extends Controller
       $this->batch_no = _getRand(15);
       $cibilReportData['hd'] = $this->_getHDData();
       $cibilReportData['ts'] = $this->_getTSData();
+      dd($businessData);
       foreach ($businessData as $key => $appBusiness) {
           $appId = $appBusiness->app->app_id;
           $userId = $appBusiness->user_id;
