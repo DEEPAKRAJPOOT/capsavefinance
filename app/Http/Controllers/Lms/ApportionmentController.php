@@ -675,10 +675,7 @@ class ApportionmentController extends Controller
                     $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
                 }
                 if (isset($userInvoiceDate)) {
-                    $paymentDate = date('Y-m-d', strtotime($paymentDate));
-                }
-                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $dateOfPayment) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
-                    continue;
+                    $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
                 }
                 $bill_date_check = true;
                 if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
@@ -833,7 +830,7 @@ class ApportionmentController extends Controller
                         $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
                     }
                     if (isset($userInvoiceDate)) {
-                        $paymentDate = date('Y-m-d', strtotime($paymentDate));
+                        $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
                     } 
 
                     $bill_date_check = true;
