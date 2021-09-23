@@ -4426,7 +4426,7 @@ class DataRenderer implements DataProviderInterface
                     if($trans->debit_amount > 0){
                         $this->soa_balance += $trans->debit_amount;
                     }
-                    if($trans->debit_amount > 0){
+                    if($trans->credit_amount > 0){
                         $this->soa_balance -= $trans->credit_amount;
                     }
                     $balance = $this->soa_balance;
