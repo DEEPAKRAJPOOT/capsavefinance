@@ -4429,10 +4429,11 @@ class DataRenderer implements DataProviderInterface
                     if($trans->debit_amount > 0){
                         $this->soa_balance -= $trans->credit_amount;
                     }
-                    if($this->soa_balance < 0){
-                        return '<span style="color:red">'.number_format(abs($this->soa_balance), 2).'</span>';
+                    $balance = $this->soa_balance;
+                    if($balance < 0){
+                        return '<span style="color:red">'.number_format(abs($balance), 2).'</span>';
                     } else {
-                        return '<span style="color:green">'.number_format(abs($this->soa_balance), 2).'</span>';
+                        return '<span style="color:green">'.number_format(abs($balance), 2).'</span>';
                     }
                 }
             )
