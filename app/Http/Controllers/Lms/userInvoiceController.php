@@ -776,6 +776,7 @@ class userInvoiceController extends Controller
      */
     public function viewInvoiceAsPDF($pdfData = [], $download = false) {
         view()->share($pdfData);
+        ini_set("memory_limit", "-1");
         if ($download==true) {
           $pdf = PDF::loadView('lms.invoice.generate_invoice');
           return $pdf->download('pdfview.pdf');
