@@ -41,6 +41,7 @@ class TransactionsObserver
      */
     public function deleted(Transactions $transaction)
     {
+        $transaction->calculateOutstandings();
         InvoiceDisbursedDetail::deleteTransactionDetails($transaction);
         CustomerTransactionSOA::deleteTransactionSOADetails($transaction);
     }
@@ -53,6 +54,7 @@ class TransactionsObserver
      */
     public function forceDeleted(Transactions $transaction)
     {
+        $transaction->calculateOutstandings();
         InvoiceDisbursedDetail::forceDeletedTransactionDetails($transaction);
         CustomerTransactionSOA::forceDeletedTransactionSOADetails($transaction);
     }
