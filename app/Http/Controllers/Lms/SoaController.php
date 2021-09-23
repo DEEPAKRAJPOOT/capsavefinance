@@ -263,9 +263,7 @@ class SoaController extends Controller
                     $query->where('customer_id', '=', "$customer_id");
                 });
 
-                $soaRecord = $this->prepareDataForRendering($transactionList->whereHas('transaction', function ($q) {
-                    $q->where('is_transaction', true);
-                })->get()->chunk(25));
+                $soaRecord = $this->prepareDataForRendering($transactionList->where('is_transaction', true)->get()->chunk(25));
             } 
             ini_set('memory_limit', -1);
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
