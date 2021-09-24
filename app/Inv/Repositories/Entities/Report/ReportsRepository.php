@@ -128,29 +128,33 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 	}
 
 	public function getDisbursalReport($whereCondition=[], &$sendMail){
-		$curdate = Helper::getSysStartDate();
+		$curdate = Carbon::now()->format('Y-m-d');
 		$curdate = Carbon::parse($curdate)->addDays(1)->format('Y-m-d');
-                $fromdate = Carbon::parse($curdate)->subDays(30)->format('Y-m-d');
+        $fromdate = Carbon::parse($curdate)->subDays(30)->format('Y-m-d');
 
-                $invDisbList = InvoiceDisbursed::with(['transactions' => function($query2){
+        $invDisbList = InvoiceDisbursed::with([
+		'transactions' => function($query2){
 			$query2->whereNull('payment_id')
 			->whereNull('link_trans_id')
 			->whereNull('parent_trans_id')
 			->where('trans_type',config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))
 			->where('entry_type','0');
 		},
-		'invoice'=>function($query2) use($whereCondition){
+		'invoice'=>function($query2) use($whereCondition, $fromdate, $curdate){
 			if(isset($whereCondition['anchor_id'])){
 				$query2->where('anchor_id',$whereCondition['anchor_id']);
 			}
+			$query2->whereBetween('invoice_date', [$fromdate, $curdate]);
 		},
-		'invoice.lms_user', 'invoice.business', 'disbursal'])
+		'invoice.lms_user', 
+		'invoice.business', 
+		'disbursal'])
 		->whereIn('status_id', [12,13,15,47])
-                ->whereHas('invoice', function($query3) use($whereCondition, $fromdate, $curdate){
+        ->whereHas('invoice', function($query3) use($whereCondition, $fromdate, $curdate){
 			if(isset($whereCondition['anchor_id'])){
 				$query3->where('anchor_id',$whereCondition['anchor_id']);
 			}
-		$query3->whereBetween('invoice_date', [$fromdate, $curdate]);
+			$query3->whereBetween('invoice_date', [$fromdate, $curdate]);
 		})
 		->get();
 
