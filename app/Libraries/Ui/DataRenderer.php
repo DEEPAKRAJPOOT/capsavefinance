@@ -6346,6 +6346,15 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('pay', function($trans)use($payment,$showSuggestion){
                 $result = '';
                 if($payment){
+                    $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
+                    $paymentDate = $payment->date_of_payment ?? NULL;
+                    if (isset($userInvoiceDate)) {
+                        $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
+                    }
+                    if (isset($userInvoiceDate)) {
+                        $paymentDate = date('Y-m-d', strtotime($paymentDate));
+                    }
+
                     $transDisabled = '';
                     if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
                         $transDisabled = 'disabled';
@@ -7887,17 +7896,38 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('pay', function($trans)use($payment){
                 $result = '';
                 if($payment){
+                    $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
+                $paymentDate = $payment->date_of_payment ?? NULL;
+                if (isset($userInvoiceDate)) {
+                    $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
+                }
+                if (isset($userInvoiceDate)) {
+                    $paymentDate = date('Y-m-d', strtotime($paymentDate));
+                }
+                $transDisabled = '';
+                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                   $transDisabled = 'disabled';
+                }
+
                     // if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST')])){
                     //     $accuredInterest = $trans->tempInterest;
                     //     if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
                     //         return  "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($accuredInterest,2)."' name='payment[".$trans->trans_id."]'>";
                     //     }
                     // }
-                    $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->TDSAmount,2)."' name='payment[".$trans->trans_id."]'>";    
+                    $result = "<input class='pay' id='".$trans->trans_id."' $transDisabled readonly='true' type='text' max='".round($trans->TDSAmount,2)."' name='payment[".$trans->trans_id."]'>";    
                 }
                 return $result;
             })
-            ->addColumn('select', function($trans){
+            ->addColumn('select', function($trans)use($payment){
+                $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
+                $paymentDate = $payment->date_of_payment ?? NULL;
+                if (isset($userInvoiceDate)) {
+                    $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
+                }
+                if (isset($userInvoiceDate)) {
+                    $paymentDate = date('Y-m-d', strtotime($paymentDate));
+                }
                 $transDisabled = '';
                 $payEnable = 1;
                 $class = 'check';
