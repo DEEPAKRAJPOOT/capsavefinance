@@ -263,7 +263,7 @@ class SoaController extends Controller
                     $query->where('customer_id', '=', "$customer_id");
                 });
 
-                $exceldata = $this->prepareDataForRendering($transactionList->whereHas('transaction', function ($q) {
+                $soaRecord = $this->prepareDataForRendering($transactionList->whereHas('transaction', function ($q) {
                     $q->where('is_transaction', true);
                 })->get()->chunk(25));
             } 
