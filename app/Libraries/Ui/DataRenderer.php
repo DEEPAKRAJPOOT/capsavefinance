@@ -6346,13 +6346,17 @@ class DataRenderer implements DataProviderInterface
             ->addColumn('pay', function($trans)use($payment,$showSuggestion){
                 $result = '';
                 if($payment){
+                    $transDisabled = '';
+                    if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                        $transDisabled = 'disabled';
+                    }
                     if($showSuggestion && $payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                         $accuredInterest = $trans->tempInterest;
                         if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
-                            return  "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($accuredInterest,2)."' name='payment[".$trans->trans_id."]'>";
+                            return  "<input class='pay' id='".$trans->trans_id."' $transDisabled readonly='true' type='text' max='".round($accuredInterest,2)."' name='payment[".$trans->trans_id."]'>";
                         }
                     }
-                    $result = "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]'>";
+                    $result = "<input class='pay' id='".$trans->trans_id."' $transDisabled readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]'>";
                     
                 }
                 return $result;
@@ -7894,10 +7898,19 @@ class DataRenderer implements DataProviderInterface
                 return $result;
             })
             ->addColumn('select', function($trans){
+                $transDisabled = '';
+                $payEnable = 1;
+                $class = 'check';
+                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                   $transDisabled = 'disabled';
+                   $payEnable = 0;
+                   $class = '';
+                }
+
                 $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ( in_array($trans->trans_type, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) ? 'interest' : '');
                 $amount = $trans->TDSAmount;
-                $result = "<input class='check' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' amount='$amount' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
-                return $result;
+                $result = "<input class='$class' id='check_".$trans->trans_id."' $transDisabled payenabled='$payEnable' pay='$paymentDate' userInv='$userInvoiceDate' transtype='$type' type='checkbox' name='check[".$trans->trans_id."]' amount='$amount' onchange='apport.onCheckChange(".$trans->trans_id.")'>";
+                return $result;                
             })
             ->make(true);
     }
