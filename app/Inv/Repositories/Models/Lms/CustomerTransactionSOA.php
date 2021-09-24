@@ -144,6 +144,15 @@ class CustomerTransactionSOA extends BaseModel
         ->orderBy('trans_id', 'asc');
     }
 
+    public static function getConsolidatedSoaList(){
+        return self::whereHas('transaction', function ($q) {
+            $q->where('is_transaction', true);
+        })
+        ->orderBy('user_id', 'asc')
+        ->orderBy('value_date', 'asc')
+        ->orderBy('trans_id', 'asc');
+    }
+    
     public function getSoaBackgroundColorAttribute(){
         $color = '';
         if($this->transaction->payment_id){
