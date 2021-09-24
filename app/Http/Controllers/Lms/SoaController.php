@@ -314,9 +314,7 @@ class SoaController extends Controller
             });
         
         }
-        $exceldata = $this->prepareDataForRendering($transactionList->whereHas('transaction', function ($q) {
-            $q->where('is_transaction', true);
-        })->get()->chunk(1));
+        $exceldata = $this->prepareDataForRendering($transactionList->where('is_transaction', true)->get()->chunk(1));
         $sheet =  new PHPExcel();
         $sheet->getActiveSheet()->mergeCells('A2:K2');
         $sheet->getActiveSheet()->mergeCells('A3:K3');
