@@ -4150,7 +4150,7 @@ if ($err) {
 
         $request = $this->request;
         $transactionList = $this->lmsRepo->getSoaList();
-        
+
         if($request->get('from_date')!= '' && $request->get('to_date')!=''){
             $transactionList = $transactionList->where(function ($query) use ($request) {
                 $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
@@ -4168,7 +4168,7 @@ if ($err) {
                     $transactionList = $transactionList->where('trans_type',$trans_type);
                 }
                 if($entry_type != ''){
-                    $transactionList = $transactionList->where('entry_type',$entry_type);
+                    // $transactionList = $transactionList->where('entry_type',$entry_type);
                 }
             }
         }
@@ -4176,9 +4176,8 @@ if ($err) {
         $transactionList = $transactionList->whereHas('lmsUser',function ($query) use ($request) {
             $customer_id = trim($request->get('customer_id')) ?? null ;
             $query->where('customer_id', '=', "$customer_id");
-        })->get()->filter(function($item){
-            return $item->IsTransaction;
-        });
+        })
+        ->get();
 
         $users = $dataProvider->getSoaList($this->request, $transactionList);
         return $users;
@@ -4680,13 +4679,11 @@ if ($err) {
 
     public function getToSettlePayments(DataProviderInterface $dataProvider) {
         $user_id = $this->request->user_id;
-        $this->dataRecords = [];
+        $dataRecords = Payment::whereIn('is_settled', [Payment::PAYMENT_SETTLED_PENDING,Payment::PAYMENT_SETTLED_PROCESSING,Payment::PAYMENT_SETTLED_PROCESSED])->orderBy('created_at', 'desc');
         if (!empty($user_id)) {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 0, 'user_id' => $user_id],['created_at'=>'desc']);
-        } else {
-            $this->dataRecords = Payment::getPayments(['is_settled' => 0],['created_at'=>'desc']);
+            $dataRecords->where('user_id', $user_id);
         }
-        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $this->dataRecords);
+        $this->providerResult = $dataProvider->getToSettlePayments($this->request, $dataRecords);
         return $this->providerResult;
     }
 

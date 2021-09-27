@@ -10,6 +10,7 @@ use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
 use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\UserInvoiceInterface as InvUserInvRepoInterface;
+use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\LmsUser;
@@ -508,6 +509,9 @@ class userInvoiceController extends Controller
                    $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
                    $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
                    $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
+                   if ($invoice_type == 'C')
+                        $this->checkIsTransactionUpdatable($txnsRec['trans_id']);
+
                    $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
@@ -530,6 +534,13 @@ class userInvoiceController extends Controller
             }
         } catch (Exception $ex) {
              return redirect()->route('view_user_invoice', ['user_id' => $user_id])->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    private function checkIsTransactionUpdatable($trans_id)
+    {
+        if (isset($trans_id)) {
+            Transactions::where('parent_trans_id',$trans_id)->orWhere('trans_id',$trans_id)->update(['is_transaction' => 1]);
         }
     }
 
@@ -765,6 +776,7 @@ class userInvoiceController extends Controller
      */
     public function viewInvoiceAsPDF($pdfData = [], $download = false) {
         view()->share($pdfData);
+        ini_set("memory_limit", "-1");
         if ($download==true) {
           $pdf = PDF::loadView('lms.invoice.generate_invoice');
           return $pdf->download('pdfview.pdf');

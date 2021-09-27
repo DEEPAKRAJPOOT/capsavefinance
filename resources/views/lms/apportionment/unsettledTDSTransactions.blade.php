@@ -51,7 +51,7 @@
                 <div class="col-md-12" >
                     @if($paymentId) 
                         @can('apport_mark_settle_confirmation')
-                            <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm">
+                            <input id="mark_settle_btn" type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm" disabled="true">
                         @endcan
                     @endif
                 </div>

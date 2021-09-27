@@ -115,14 +115,15 @@ class ApplicationController extends Controller
 			$business_info = $this->appRepo->getApplicationById($request->biz_id);
 			$app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
 			
-			foreach($app_data->products as $product){
-			  //  array_push($product_ids, $product->pivot->product_id);
-
-				$product_ids[$product->pivot->product_id]= array( 
-					"loan_amount" => $product->pivot->loan_amount,
-					"tenor_days" => $product->pivot->tenor_days
-				);
+			if (!empty($app_data->products)) {
+				foreach($app_data->products as $product){
+					$product_ids[$product->pivot->product_id]= array( 
+						"loan_amount" => $product->pivot->loan_amount,
+						"tenor_days" => $product->pivot->tenor_days
+					);
+				}
 			}
+			
 			$states = State::getStateList()->get();
 			$locationType = LocationType::getLocationDropDown();
 			$product_types = $this->masterRepo->getProductDataList();

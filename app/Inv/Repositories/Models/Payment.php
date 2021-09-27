@@ -148,7 +148,7 @@ class Payment extends BaseModel {
      * @return type mixed
      */
     public static function getPayments(array $where = [], $orderBy = []) {
-        $res = self::where($where)->settledProcessing()->settledProcessed();
+        $res = self::where($where);
         if(!empty($orderBy)){
             foreach($orderBy as $key => $val){
                 $res = $res->orderBy($key, $val);
@@ -156,7 +156,6 @@ class Payment extends BaseModel {
         }
         return $res;
     }
-
 
     public function userRelation() {
         return $this->hasOne('App\Inv\Repositories\Models\Lms\UserInvoiceRelation', 'user_id', 'user_id')->where('is_active', 1);
@@ -327,7 +326,7 @@ class Payment extends BaseModel {
 
     public function getValidRevertPaymentAttribute() {
         $returnId = NULL;
-        $payment_id = Transactions::where('user_id',$this->user_id)->max('payment_id');
+        $payment_id = Transactions::where('user_id',$this->user_id)->whereNotNull('apportionment_id')->max('payment_id');
         if($payment_id){
             $paymentDetails = self::find($payment_id);
             if($paymentDetails->trans_type == '17' && $paymentDetails->action_type == '1'){
