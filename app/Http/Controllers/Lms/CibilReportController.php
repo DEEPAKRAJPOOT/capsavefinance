@@ -100,7 +100,12 @@ class CibilReportController extends Controller
       $this->batch_no = _getRand(15);
       $cibilReportData['hd'] = $this->_getHDData();
       $cibilReportData['ts'] = $this->_getTSData();
-      
+      $countBucketData = $this->lmsRepo->getOverdueData();
+
+      $this->userWiseData = [];
+      foreach ($countBucketData as $key => $bucketData) {
+        $this->userWiseData[$bucketData->supplier_id] = $bucketData; 
+      };
       foreach ($businessData as $key => $appBusiness) {
           $appId = $appBusiness->app->app_id;
           $userId = $appBusiness->user_id;
@@ -108,7 +113,7 @@ class CibilReportController extends Controller
           $this->formatedCustId = Helper::formatIdWithPrefix($userId, 'CUSTID');
           $this->business_category = isset($appBusiness->msme_type) && array_search(config('common.MSMETYPE')[$appBusiness->msme_type], config('common.MSMETYPE')) ? $appBusiness->msme_type : NULL;
           $this->constitutionName = !empty($appBusiness->constitution->cibil_lc_code) ? $appBusiness->constitution->cibil_lc_code : ''; //config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution]
-
+          $this->account_status = $this->lmsRepo->getAccountStatus($userId); 
 
           $cibilReportData['bs'] = $this->_getBSData($appBusiness);
           $cibilReportData['as'] = $this->_getASData($appBusiness);
@@ -314,6 +319,8 @@ class CibilReportController extends Controller
         $outstanding = Transactions::getUserOutstanding($user->user_id);
         $sanctionDate = $appBusiness->app->sanctionDate->created_at ?? NULL;
         $prgmLimit = $appBusiness->app->prgmLimit->limit_amt ?? NULL;
+        $userData = $this->userWiseData[$user->user_id];
+        $od_days = (int)$userData->od_days;
         $data[] = [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'CR',
@@ -326,25 +333,25 @@ class CibilReportController extends Controller
             'Tenure / Weighted Average maturity period of Contracts' => NULL,
             'Repayment Frequency' => '08',
             'Drawing Power' => NULL,
-            'Current   Balance / Limit Utilized /Mark to Market' => NULL,
+            'Current   Balance / Limit Utilized /Mark to Market' => $userData->utilized_amt,
             'Notional Amount of Out-standing Restructured Contracts' => NULL,
             'Loan Expiry / Maturity Date' => NULL,
             'Loan Renewal Date' => NULL,
-            'Asset Classification/Days Past Due (DPD)' => 'Calculate',
+            'Asset Classification/Days Past Due (DPD)' => $od_days,
             'Asset Classification Date' => NULL,
             'Amount Overdue / Limit Overdue' => NULL,
-            'Overdue Bucket 01 ( 1 – 30 days)' => NULL,
-            'Overdue Bucket 02 ( 31 – 60 days)' => NULL,
-            'Overdue Bucket 03 ( 61 – 90 days)' => NULL,
-            'Overdue Bucket 04 (91 – 180 days)' => NULL,
-            'Overdue Bucket 05 (Above 180 days)' => NULL,
+            'Overdue Bucket 01 ( 1 – 30 days)' => ($od_days >= 1 && $od_days <= 30 ? $od_days : 0),
+            'Overdue Bucket 02 ( 31 – 60 days)' => ($od_days >= 31 && $od_days <= 60 ? $od_days : 0),
+            'Overdue Bucket 03 ( 61 – 90 days)' => ($od_days >= 61 && $od_days <= 90 ? $od_days : 0),
+            'Overdue Bucket 04 (91 – 180 days)' => ($od_days >= 91 && $od_days <= 180 ? $od_days : 0),
+            'Overdue Bucket 05 (Above 180 days)' => ($od_days > 180 ? $od_days : 0),
             'High Credit' => NULL,
             'Installment Amount' => NULL,
             'Last Repaid Amount' => NULL,
-            'Account Status' => NULL,
-            'Account Status Date' => NULL,
-            'Written Off Amount' => NULL,
-            'Settled Amount' => NULL,
+            'Account Status' => !empty($this->account_status->status_name) ? '01' : '02',
+            'Account Status Date' => !empty($this->account_status->created_at) ? date('d M Y', strtotime($this->account_status->created_at)) : NULL,
+            'Written Off Amount' => $userData->write_off_amt,
+            'Settled Amount' => $userData->settled_amt,
             'Major reasons for Restructuring' => NULL,
             'Amount of Contracts Classified as NPA' => NULL,
             'Asset based Security coverage' => NULL,

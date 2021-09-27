@@ -8,6 +8,7 @@ use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Master\Status;
+
 class LmsUsersLog extends BaseModel {
     /* The database table used by the model.
      *
@@ -51,5 +52,12 @@ class LmsUsersLog extends BaseModel {
           
     ];
     
-  
+    public static function getAccountStatus($userId) {
+        $data = self::where('user_id', $userId)->orderBy('lms_users_log_id', 'DESC')->first();
+        return $data;
+    }  
+    
+    public function status() {
+        return $this->belongsTo(Status::class, 'status_id', 'id');
+    }  
 }

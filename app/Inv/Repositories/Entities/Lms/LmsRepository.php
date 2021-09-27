@@ -1827,4 +1827,14 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return Transactions::getUnsettledSettledTDSTrans($data);
 	}
+
+	public static function getOverdueData()
+	{
+		return InterestAccrual::getOverdueData();
+	}
+
+	public static function getAccountStatus($userId)
+	{
+		return LmsUsersLog::getAccountStatus($userId);
+	}
 }
