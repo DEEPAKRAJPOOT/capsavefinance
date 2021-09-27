@@ -319,8 +319,8 @@ class CibilReportController extends Controller
         $outstanding = Transactions::getUserOutstanding($user->user_id);
         $sanctionDate = $appBusiness->app->sanctionDate->created_at ?? NULL;
         $prgmLimit = $appBusiness->app->prgmLimit->limit_amt ?? NULL;
-        $userData = $this->userWiseData[$user->user_id];
-        $od_days = (int)$userData->od_days;
+        $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
+        $od_days = isset($userData) ? (int)$userData->od_days : 0;
         $data[] = [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'CR',
@@ -333,7 +333,7 @@ class CibilReportController extends Controller
             'Tenure / Weighted Average maturity period of Contracts' => NULL,
             'Repayment Frequency' => '08',
             'Drawing Power' => NULL,
-            'Current   Balance / Limit Utilized /Mark to Market' => $userData->utilized_amt,
+            'Current   Balance / Limit Utilized /Mark to Market' => isset($userData) ? $userData->utilized_amt : 0,
             'Notional Amount of Out-standing Restructured Contracts' => NULL,
             'Loan Expiry / Maturity Date' => NULL,
             'Loan Renewal Date' => NULL,
@@ -350,8 +350,8 @@ class CibilReportController extends Controller
             'Last Repaid Amount' => NULL,
             'Account Status' => !empty($this->account_status->status_name) ? '01' : '02',
             'Account Status Date' => !empty($this->account_status->created_at) ? date('d M Y', strtotime($this->account_status->created_at)) : NULL,
-            'Written Off Amount' => $userData->write_off_amt,
-            'Settled Amount' => $userData->settled_amt,
+            'Written Off Amount' => isset($userData) ? $userData->write_off_amt : 0,
+            'Settled Amount' => isset($userData) ? $userData->settled_amt : 0,
             'Major reasons for Restructuring' => NULL,
             'Amount of Contracts Classified as NPA' => NULL,
             'Asset based Security coverage' => NULL,
