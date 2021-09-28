@@ -6376,12 +6376,12 @@ class DataRenderer implements DataProviderInterface
                 $payEnable = 1;
                 $class = 'check';
                 $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
-                $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL; 
+                $paymentDate = $paymentDetails['date_of_payment'] ?? NULL; 
                 if (isset($userInvoiceDate)) {
                     $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
                 }
-                if (isset($dateOfPayment)) {
-                    $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
+                if (isset($paymentDate)) {
+                    $paymentDate = date('Y-m-d', strtotime($paymentDate));
                 }
                 if ($this->enablePaymentBeforeInvoiceDate === true) {
                     if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
