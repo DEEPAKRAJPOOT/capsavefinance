@@ -30,10 +30,10 @@ foreach ($apps as $app) {
 		if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
             $processingFee = (($invoice['invoice_approve_amount']*$invoice['processing_fee']['chrg_value'])/100);
         } else {
-            $processingFee = $invoice['processing_fee']['chrg_value'];
+            $processingFee = $invoice['processing_fee']['chrg_value'] ?? 0;
 
         }
-        $processingFee = $invoice['processing_fee']['gst_chrg_value'];
+        $processingFee = $invoice['processing_fee']['gst_chrg_value'] ?? 0;
 		$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
 		if($invoice['program_offer']['payment_frequency'] == 1 && $invoice['program']['interest_borne_by'] == 2) {
 			$interest = $fundedAmount * $tenor * (($interestRate/100) / config('common.DCC')) ;                
@@ -239,11 +239,11 @@ foreach ($apps as $app) {
 											if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
 						                        $processingFee = (($invoice['invoice_approve_amount']*$invoice['processing_fee']['chrg_value'])/100);
 						                    } else {
-						                        $processingFee = $invoice['processing_fee']['chrg_value'];
+						                        $processingFee = $invoice['processing_fee']['chrg_value'] ?? 0;
 
 						                    }
 
-					                        $processingFee = $invoice['processing_fee']['gst_chrg_value'];
+					                        $processingFee = $invoice['processing_fee']['gst_chrg_value'] ?? 0;
 											$fundedAmount =  $invoice['invoice_approve_amount'] - $tMargin ;
 											if ($invoice['program_offer']['payment_frequency'] == 1 ) {
     											$interest = $fundedAmount * $tenor * (($interestRate/100) / config('common.DCC')) ;                
