@@ -205,7 +205,7 @@ class CibilReportController extends Controller
             'Other ID' => NULL,
             'Borrower’s Legal Constitution' => $this->constitutionName,
             'Business Category' => $this->business_category,
-            'Business/ Industry Type' => $appBusiness->industryType->name ?? NULL,
+            'Business/ Industry Type' => $appBusiness->industryType->cibil_indus_code ?? NULL,
             'Class of Activity 1' => NULL,
             'Class of Activity 2' => NULL,
             'Class of Activity 3' => NULL,
