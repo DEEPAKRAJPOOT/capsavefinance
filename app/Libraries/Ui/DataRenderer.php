@@ -6312,6 +6312,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getUnsettledTrans(Request $request, $trans,$payment, $showSuggestion)
     {
+        $this->enablePaymentBeforeInvoiceDate = false;
         return DataTables::of($trans)
             ->rawColumns(['select', 'pay','outstanding_amt'])
             ->addColumn('disb_date', function($trans){
@@ -6354,10 +6355,11 @@ class DataRenderer implements DataProviderInterface
                     if (isset($userInvoiceDate)) {
                         $paymentDate = date('Y-m-d', strtotime($paymentDate));
                     }
-
-                    $transDisabled = '';
-                    if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
-                        $transDisabled = 'disabled';
+                    if ($this->enablePaymentBeforeInvoiceDate === true) {
+                        $transDisabled = '';
+                        if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                            $transDisabled = 'disabled';
+                        }
                     }
                     if($showSuggestion && $payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                         $accuredInterest = $trans->tempInterest;
@@ -6371,7 +6373,6 @@ class DataRenderer implements DataProviderInterface
                 return $result;
             })
             ->addColumn('select', function($trans) use ($payment){
-                $this->enablePaymentBeforeInvoiceDate = false;
                 $transDisabled = '';
                 $payEnable = 1;
                 $class = 'check';
