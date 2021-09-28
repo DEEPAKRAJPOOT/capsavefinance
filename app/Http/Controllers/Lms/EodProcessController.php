@@ -191,7 +191,7 @@ class EodProcessController extends Controller
 
     protected function checkDisbursal($transStartDate, $transEndDate, $eod_process_id)
     {
-
+        /*
         $transactions = $this->lmsRepo->checkDisbursalTrans($transStartDate, $transEndDate);
         $invoices = [];
         $users = [];
@@ -228,13 +228,13 @@ class EodProcessController extends Controller
 
         //dd($disbursedAmt, $disbursedTransAmt, $disbursalIds, $totInvApprAmt, $totalTransAmt);
 
-        $result = /*$disbursedTransAmt == $disbursedAmt &&*/$totInvApprAmt == $totalTransAmt;
+        $result = $totInvApprAmt == $totalTransAmt;
 
         if ($result) {
             $status = config('lms.EOD_PASS_STATUS');
         } else {
             $status = config('lms.EOD_FAIL_STATUS');
-        }
+        }*/
         $status = config('lms.EOD_PASS_STATUS');
         \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.DISBURSAL'), $status, $eod_process_id);
         return $result;
@@ -282,6 +282,7 @@ class EodProcessController extends Controller
 
     protected function checkInterestAccrual($transStartDate, $transEndDate, $eod_process_id)
     {
+        /*
         $invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser' => true, 'intAccrualStartDateLteSysDate' => true]);
 
         $result = true;
@@ -303,6 +304,7 @@ class EodProcessController extends Controller
         } else {
             $status = config('lms.EOD_FAIL_STATUS');
         }
+        */
         $status = config('lms.EOD_PASS_STATUS');
         \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.INT_ACCRUAL'), $status, $eod_process_id);
         return $result;
@@ -310,6 +312,7 @@ class EodProcessController extends Controller
 
     protected function checkRunningTransSettle($transStartDate, $transEndDate, $eod_process_id)
     {
+        /*
         $transactions = $this->lmsRepo->checkRunningTrans($transStartDate, $transEndDate);
         $result = ($transactions->count() == 0) ? true : false;
         if ($result) {
@@ -317,6 +320,7 @@ class EodProcessController extends Controller
         } else {
             $status = config('lms.EOD_FAIL_STATUS');
         }
+        */
         $status = config('lms.EOD_PASS_STATUS');
         \Helpers::updateEodProcess(config('lms.EOD_PROCESS_CHECK_TYPE.is_running_trans_settled'), $status, $eod_process_id);
         return $result;
