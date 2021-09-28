@@ -6355,8 +6355,8 @@ class DataRenderer implements DataProviderInterface
                     if (isset($userInvoiceDate)) {
                         $paymentDate = date('Y-m-d', strtotime($paymentDate));
                     }
+                    $transDisabled = '';
                     if ($this->enablePaymentBeforeInvoiceDate === true) {
-                        $transDisabled = '';
                         if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
                             $transDisabled = 'disabled';
                         }
