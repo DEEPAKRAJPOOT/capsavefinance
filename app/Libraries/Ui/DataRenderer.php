@@ -37,6 +37,8 @@ class DataRenderer implements DataProviderInterface
      */
     protected $helper;
 
+    private $enablePaymentBeforeInvoiceDate = false;
+
     /**
      * Class constructor
      *
@@ -6312,7 +6314,6 @@ class DataRenderer implements DataProviderInterface
      */
     public function getUnsettledTrans(Request $request, $trans,$payment, $showSuggestion)
     {
-        $this->enablePaymentBeforeInvoiceDate = false;
         return DataTables::of($trans)
             ->rawColumns(['select', 'pay','outstanding_amt'])
             ->addColumn('disb_date', function($trans){
@@ -7909,17 +7910,12 @@ class DataRenderer implements DataProviderInterface
                     $paymentDate = date('Y-m-d', strtotime($paymentDate));
                 }
                 $transDisabled = '';
-                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
-                   $transDisabled = 'disabled';
+                if ($this->enablePaymentBeforeInvoiceDate === true) {
+                    if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                        $transDisabled = 'disabled';
+                    }
                 }
-
-                    // if($payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST')])){
-                    //     $accuredInterest = $trans->tempInterest;
-                    //     if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
-                    //         return  "<input class='pay' id='".$trans->trans_id."' readonly='true' type='text' max='".round($accuredInterest,2)."' name='payment[".$trans->trans_id."]'>";
-                    //     }
-                    // }
-                    $result = "<input class='pay' id='".$trans->trans_id."' $transDisabled readonly='true' type='text' max='".round($trans->TDSAmount,2)."' name='payment[".$trans->trans_id."]'>";    
+                $result = "<input class='pay' id='".$trans->trans_id."' $transDisabled readonly='true' type='text' max='".round($trans->TDSAmount,2)."' name='payment[".$trans->trans_id."]'>";    
                 }
                 return $result;
             })
@@ -7935,10 +7931,12 @@ class DataRenderer implements DataProviderInterface
                 $transDisabled = '';
                 $payEnable = 1;
                 $class = 'check';
-                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
-                   $transDisabled = 'disabled';
-                   $payEnable = 0;
-                   $class = '';
+                if ($this->enablePaymentBeforeInvoiceDate === true) {
+                    if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                       $transDisabled = 'disabled';
+                       $payEnable = 0;
+                       $class = '';
+                    }
                 }
 
                 $type = $trans->transType->chrg_master_id != 0  ? 'charges' : ( in_array($trans->trans_type, [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) ? 'interest' : '');
