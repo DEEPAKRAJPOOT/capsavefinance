@@ -144,17 +144,20 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			if(isset($whereCondition['anchor_id'])){
 				$query2->where('anchor_id',$whereCondition['anchor_id']);
 			}
-			$query2->whereBetween('invoice_date', [$fromdate, $curdate]);
 		},
 		'invoice.lms_user', 
 		'invoice.business', 
-		'disbursal'])
+		'disbursal' => function($query22) use($fromdate, $curdate){
+			$query22->whereBetween('funded_date', [$fromdate, $curdate]);
+		}])
 		->whereIn('status_id', [12,13,15,47])
         ->whereHas('invoice', function($query3) use($whereCondition, $fromdate, $curdate){
 			if(isset($whereCondition['anchor_id'])){
 				$query3->where('anchor_id',$whereCondition['anchor_id']);
 			}
-			$query3->whereBetween('invoice_date', [$fromdate, $curdate]);
+		})
+		->whereHas('disbursal', function($query33) use($fromdate, $curdate){
+			$query33->whereBetween('funded_date', [$fromdate, $curdate]);
 		})
 		->get();
 
