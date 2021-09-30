@@ -79,7 +79,7 @@
             <div class="form-group INR">
                 <label for="txtPassword"><b>Deposit <span id="sdt">{{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}</span></b> <span style="color: red;"> *</span></label>
                 <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa-change fa {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'fa-inr': 'fa-percent') : 'fa-inr'}}" aria-hidden="true"></i></a> 
-                <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? (($offerData->security_deposit_type == 1)? (int)$offerData->security_deposit: $offerData->security_deposit): ''}}" placeholder="Deposit {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}" maxlength="5">
+                <input type="text" name="security_deposit" class="form-control" value="{{isset($offerData->security_deposit)? (($offerData->security_deposit_type == 1)? (int)$offerData->security_deposit: $offerData->security_deposit): ''}}" placeholder="Deposit {{isset($offerData->security_deposit_type)? (($offerData->security_deposit_type == 1)? 'Amount': 'Percent') : 'Amount'}}" maxlength="15">
             </div>
         </div>
 
@@ -348,6 +348,11 @@
         setError('#radio_block', 'Please select security deposit type');
         flag = false;
     }
+
+    if((parseInt(sub_limit.replace(/,/g, '')) < security_deposit)){
+        setError('input[name=security_deposit]', 'Security deposit can\'t exceed from ('+sub_limit+') balance limit amount');
+        flag = false;
+    }      
 
     if(security_deposit == '' || isNaN(security_deposit)){
         setError('input[name=security_deposit]', 'Please fill security deposit');
