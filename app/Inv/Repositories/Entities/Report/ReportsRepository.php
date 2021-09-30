@@ -391,6 +391,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$result[] = [
 				'cust_name'=>$invDisb->invoice->business->biz_entity_name,
 				'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
+				'invoice_no' => $invDetails->invoice_no,
+				'payment_due_date' => $invDisb->payment_due_date,
 				'customer_id'=>$invDetails->lms_user->customer_id,
 				'prgm_name' => $prgmDetails->parentProgram->prgm_name,
 				'sub_prgm_name' => $prgmDetails->prgm_name,
