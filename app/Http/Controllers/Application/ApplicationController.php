@@ -22,6 +22,7 @@ use App\Libraries\MobileAuth_lib;
 use App\Inv\Repositories\Models\BizApi;
 use PDF;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Models\Master\LocationType;
 
 class ApplicationController extends Controller
 {
@@ -92,6 +93,7 @@ class ApplicationController extends Controller
                   "tenor_days" => $product->pivot->tenor_days
               );
           }
+            $locationType = LocationType::getLocationDropDown();
             return view('frontend.application.company_details')
                         ->with(['business_info'=>$business_info, 'states'=>$states, 'product_types'=>$product_types, 'product_ids'=> $product_ids])
                         ->with('user_id',$request->get('user_id'))
@@ -99,9 +101,10 @@ class ApplicationController extends Controller
                         ->with('biz_id',$request->get('biz_id'))
                         ->with('industryList',$industryList)
                         ->with('constitutionList',$constitutionList)
-                        ->with('segmentList',$segmentList);
+                        ->with('segmentList',$segmentList)
+                        ->with('locationType',$locationType);
         }else{
-            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types','industryList','constitutionList', 'segmentList', 'pan']));
+            return view('frontend.application.business_information', compact(['userArr', 'states', 'product_types','industryList','constitutionList', 'segmentList', 'pan', 'locationType']));
         }
     }
 
