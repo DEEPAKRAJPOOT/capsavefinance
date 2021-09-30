@@ -736,13 +736,13 @@
 							</div>	
 						</div>
                                                 @endif
-						{{-- @if($business_info->app->status != 1) --}}
+						@if($business_info->app->status != 1)
 						<div class="d-flex btn-section">
 							<div class="ml-auto text-right">
 								<input type="submit" value="Update and Continue" class="btn btn-success btn-sm">
 							</div>
 						</div>
-						{{-- @endif --}}
+						@endif
 					</div>
 					</form>
 				</div>
