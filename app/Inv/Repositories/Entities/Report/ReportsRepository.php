@@ -103,6 +103,10 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		
 		$result = [];
 		foreach($invDisbList as $invDisb){
+
+			$payment_due_date = date('Y-m-d',strtotime($invDisb->payment_due_date));
+			$out_days =  (strtotime($payment_due_date) - strtotime($curdate))/86400 + $invDisb->grace_period;	
+
 			$result[] = [
 			'cust_name'=>$invDisb->invoice->business->biz_entity_name,
 			'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
@@ -115,7 +119,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'margin_amt'=>$invDisb->invoice->invoice_approve_amount*$invDisb->margin/100,
 			'disb_amt'=>$invDisb->invoice->invoice_amount,
 			'out_amt'=>$invDisb->transactions->sum('outstanding'),
-			'out_days'=>(strtotime($invDisb->payment_due_date) - strtotime($curdate))/86400,
+			'out_days'=>($out_days > 0)?$out_days:0,
 			'tenor'=>$invDisb->tenor_days,
 			'due_date'=>$invDisb->payment_due_date,
 			'due_amt'=>$invDisb->invoice->invoice_amount,
