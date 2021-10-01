@@ -119,7 +119,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'margin_amt'=>$invDisb->invoice->invoice_approve_amount*$invDisb->margin/100,
 			'disb_amt'=>$invDisb->invoice->invoice_amount,
 			'out_amt'=>$invDisb->transactions->sum('outstanding'),
-			'out_days'=>($out_days > 0)?$out_days:0,
+			'out_days'=>($out_days > 0)?0:$out_days,
 			'tenor'=>$invDisb->tenor_days,
 			'due_date'=>$invDisb->payment_due_date,
 			'due_amt'=>$invDisb->invoice->invoice_amount,
