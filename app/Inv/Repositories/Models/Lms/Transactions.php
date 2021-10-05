@@ -557,6 +557,11 @@ class Transactions extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
+        //  set default gst value for overdue interest
+        if(isset($transactions['trans_type']) && $transactions['trans_type'] == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+            $transactions['gst'] = 1;
+        }
+
         //  set default is_transaction value
         if(isset($transactions['trans_type']) && !isset($transactions['is_transaction'])){
             $transType = $transactions['trans_type'];
