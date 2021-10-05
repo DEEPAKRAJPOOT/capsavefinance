@@ -484,4 +484,22 @@ class Business extends BaseModel
         return $arrData;
     }
 
+    public function appWithUser(){
+        return $this->belongsTo('App\Inv\Repositories\Models\Application','user_id','user_id');
+    }
+    
+    function transactions()
+    {
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions', 'user_id','user_id');
+    } 
+    
+    public function sanctionDate() {
+        return $this->belongsTo('App\Inv\Repositories\Models\AppStatusLog', 'user_id', 'user_id')->where('status_id', '50');
+    } 
+    
+    public function prgmLimit()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramLimit', 'biz_id')->where(['product_id' => 1]);
+    }    
+
 }

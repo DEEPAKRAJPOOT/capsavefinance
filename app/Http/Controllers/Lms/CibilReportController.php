@@ -13,7 +13,7 @@ use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 
 class CibilReportController extends Controller
 {   
-    protected $selectedAppData = [];
+    protected $selectedDisbursedData = [];
 
 	  public function __construct(FileHelper $file_helper, InvLmsRepoInterface $lms_repo){
 		 $this->fileHelper = $file_helper;
@@ -69,7 +69,7 @@ class CibilReportController extends Controller
            return $this->fileHelper->array_to_excel($cibilArr, 'CibilReport.xlsx');
        }
        if (strtolower($request->type) == 'insert') {
-          $InsertedData = $this->saveCibilData();
+          $InsertedData = $this->_getMonthLastDate();
           return $InsertedData;
        }
        $pdfArr = ['pdfArr' => $cibilArr];
@@ -90,13 +90,11 @@ class CibilReportController extends Controller
       return $this->fileHelper->array_to_excel($userCibilData);
     }
 
-    public function saveCibilData() {
+    public function saveCibilData($date) {
       $response = array(
         'status' => 'failure',
         'message' => 'Request method not allowed to execute the script.',
       );
-      $whereCond = ['status' => 2, 'is_posted_in_cibil' => 0];
-      $businessData = $this->lmsRepo->getAllBusinessData($whereCond);
       $this->batch_no = _getRand(15);
       $cibilReportData['hd'] = $this->_getHDData();
       $cibilReportData['ts'] = $this->_getTSData();
@@ -106,10 +104,17 @@ class CibilReportController extends Controller
       foreach ($countBucketData as $key => $bucketData) {
         $this->userWiseData[$bucketData->supplier_id] = $bucketData; 
       };
-      foreach ($businessData as $key => $appBusiness) {
+      $whereCond = ['date' => $date, 'is_posted_in_cibil' => 0];
+      $cibilRecords = $this->lmsRepo->getAllBusinessForSheet($whereCond);
+      foreach ($cibilRecords as $key => $cibilRecord) {
+          $this->cibilRecord = $cibilRecord;
+          $appBusiness = $cibilRecord->business;
           $appId = $appBusiness->app->app_id;
           $userId = $appBusiness->user_id;
-          $this->selectedAppData[] = $appId;
+          foreach ($this->cibilRecord->disbursed_invoices as $key => $invoiceDisbursed) {
+            $this->selectedDisbursedData[] = $invoiceDisbursed->invoice_disbursed->invoice_disbursed_id;
+          }
+
           $this->formatedCustId = Helper::formatIdWithPrefix($userId, 'CUSTID');
           $this->business_category = isset($appBusiness->msme_type) && array_search(config('common.MSMETYPE')[$appBusiness->msme_type], config('common.MSMETYPE')) ? $appBusiness->msme_type : NULL;
           $this->constitutionName = !empty($appBusiness->constitution->cibil_lc_code) ? $appBusiness->constitution->cibil_lc_code : ''; //config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution]
@@ -150,8 +155,8 @@ class CibilReportController extends Controller
       }
       if ($res === true) {
         $totalAppRecords = 0;
-        if (!empty($this->selectedAppData)) {
-          $totalAppRecords = \DB::update('update rta_app set is_posted_in_cibil = 1 where app_id in(' . implode(', ', $this->selectedAppData) . ')');
+        if (!empty($this->selectedDisbursedData)) {
+          $totalAppRecords = \DB::update('update rta_invoice_disbursed set is_posted_in_cibil = 1 where invoice_disbursed_id in(' . implode(', ', $this->selectedDisbursedData) . ')');
         }
         $recordsTobeInserted = count($finalCibilData);
         if (empty($totalAppRecords)) {
@@ -160,9 +165,9 @@ class CibilReportController extends Controller
           $response['status'] = 'success';
           $batchData = [
             'batch_no' => $this->batch_no,
-            'app_cnt' => count($this->selectedAppData),
+            'app_cnt' => count($this->selectedDisbursedData),
             'record_cnt' => $recordsTobeInserted,
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date($date),
           ];
           $cibil_inst_data = FinanceModel::dataLogger($batchData, 'cibil_report');
           $response['message'] =  ($recordsTobeInserted > 1 ? $recordsTobeInserted .' Records inserted successfully' : '1 Record inserted.');
@@ -317,8 +322,8 @@ class CibilReportController extends Controller
     private function _getCRData($appBusiness) {
         $user = $appBusiness->users;
         $outstanding = Transactions::getUserOutstanding($user->user_id);
-        $sanctionDate = $appBusiness->app->sanctionDate->created_at ?? NULL;
-        $prgmLimit = $appBusiness->app->prgmLimit->limit_amt ?? NULL;
+        $sanctionDate = $appBusiness->sanctionDate->created_at ?? NULL;
+        $prgmLimit = $appBusiness->prgmLimit->limit_amt ?? NULL;
         $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
         $od_days = isset($userData) ? (int)$userData->od_days : 0;
         $data[] = [
@@ -476,6 +481,44 @@ class CibilReportController extends Controller
           'Filler' => NULL,
       ];
       return $data;
+    }
+
+    private function _getMonthLastDate() {
+      $lastRecord = \DB::select('select * from rta_cibil_report order by cibil_report_id desc limit 1');
+      $currentDate = date('Y-m-d H:i:s');
+      $monthDiff = 10;
+      if(!empty($lastRecord)) {
+        $lastPulledDate = $lastRecord[0]->created_at;
+        $monthDiff = $this->_monthDifference($currentDate, $lastPulledDate);
+      }
+
+      for ($i = $monthDiff - 1; $i >= 0; $i--) {
+        $date = date('Y-m-t 23:59:59', strtotime(-$i . 'month'));
+        $monthArr[] = $date;
+        $monthNo = (int)date('m', strtotime($date));
+        $response[$monthNo] = $this->saveCibilData($date);
+        $response[$monthNo]['monthName'] = date('M', strtotime($date));        
+      }   
+      
+      if(empty($response)) {
+        $response = array(
+          'status' => 'failure',
+          'message' => 'All Records are already pushed to cibil till last month.',
+        );        
+      }
+      return $response;
+    }
+
+    private function _monthDifference($currentDate, $lastDate) {
+      $ts1 = strtotime($lastDate);
+      $ts2 = strtotime($currentDate);
+      $year1 = date('Y', $ts1);
+      $year2 = date('Y', $ts2);
+
+      $month1 = date('m', $ts1);
+      $month2 = date('m', $ts2);
+      $diff = (($year2 - $year1) * 12) + ($month2 - $month1);      
+      return $diff;
     }
 
 }
