@@ -674,6 +674,7 @@ class UserEventsListener extends BaseEvent
                 $email_cc = '';
             }
         }        
+       $email_cc = array_filter($email_cc);
        $mailObj = Mail::to($email, ''); //$user["receiver_user_name"]
        if (!empty($email_cc)) {
            $mailObj->cc($email_cc);
