@@ -99,7 +99,7 @@
          Virtual Account Number: {{$origin_of_recipient['virtual_acc_id']}}, <br>
          MICR Code: {{$registeredCompany['micr_code'] ?? '--'}}, <br>
          Beneficiary Bank Branch Name: {{$registeredCompany['branch_name']}}, <br>
-         Account Type: {{$registeredCompany['acc_type'] ?? '--'}},
+         Account Type: {{$registeredCompany['acc_type'] ?? '--'}}
       </strong>
    </p>
    @else
@@ -112,9 +112,9 @@
          IFSC Code: {{$registeredCompany['ifsc_code']}}, <br>
          Beneficiary Account Number: {{$registeredCompany['acc_no']}}, <br>
          Virtual Account Number: {{$origin_of_recipient['virtual_acc_id']}}, <br>
-         MICR Code: --, <br>
+         MICR Code: {{$registeredCompany['micr_code'] ?? '--'}}, <br>
          Beneficiary Bank Branch Name: {{$registeredCompany['branch_name']}}, <br>
-         Account Type: --
+         Account Type: {{$registeredCompany['acc_type'] ?? '--'}}
       </strong>
    </p>
    @endif
