@@ -82,6 +82,24 @@ Form::open(
         </div>
         <div class="col-md-6">
             <div class="form-group">
+                <label for="micr_code">MICR Code
+                    <span class="mandatory">*</span>
+                </label>
+                {!! Form::text('micr_code', isset($bankAccount->micr_code) ? $bankAccount->micr_code : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter MICR Code', 'maxlength'=>11, 'autocomplete' => 'off', 'id'=>'micr_code']) !!}
+                {!! $errors->first('micr_code', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="acc_type">Account TYpe
+                    <span class="mandatory">*</span>
+                </label>
+                {!! Form::text('acc_type',isset($bankAccount->acc_type) ? $bankAccount->acc_type : null,['class'=>'form-control form-control-sm' ,'placeholder'=>'Enter Branch Name', 'maxlength'=>30]) !!}
+                {!! $errors->first('acc_type', '<span class="error">:message</span>') !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
                 <label for="is_active">Status</label><br>
                 {!! Form::select('is_active', [''=>'Please Select','1'=>'Active','0'=>'Inactive'],isset($bankAccount->is_active) ? $bankAccount->is_active : null,['class'=>'form-control form-control-sm']) !!}
                 {!! $errors->first('is_active', '<span class="error">:message</span>') !!}
@@ -220,6 +238,14 @@ try {
                     alphanumericonly: true,
                     maxlength: 11
                 },
+                'micr_code': {
+                    required: true,
+                    alphanumericonly: true,
+                    maxlength: 11
+                },
+                'acc_type': {
+                    required: true,
+                },
                 'branch_name': {
                     required: true,
                     maxlength: 30
@@ -239,6 +265,10 @@ try {
                     equalTo: 'Account number do not match.'
                 },
                 ifsc_code: {
+                    alphanumericonly: 'please enter alphanumeric characters.',
+                    maxlength: 'IFSC code should be only 11 characters.'
+                },
+                micr_code: {
                     alphanumericonly: 'please enter alphanumeric characters.',
                     maxlength: 'IFSC code should be only 11 characters.'
                 }
