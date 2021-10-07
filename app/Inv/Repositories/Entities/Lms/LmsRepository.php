@@ -1849,7 +1849,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		// return Business::with('app')->take(2)->get();
 		return Application::with(['business', 'disbursed_invoices.invoice_disbursed'])->whereHas('disbursed_invoices.invoice_disbursed', function ($q) use ($whereCond) {
 			$q->where('is_posted_in_cibil',$whereCond['is_posted_in_cibil']);
-			$q->where('created_at', '<=', $whereCond['date']);
+			$q->where('updated_at', '<=', $whereCond['date']);
 		})->get();
     }	
 }

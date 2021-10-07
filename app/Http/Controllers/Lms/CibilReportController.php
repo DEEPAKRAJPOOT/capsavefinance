@@ -492,7 +492,7 @@ class CibilReportController extends Controller
         $monthDiff = $this->_monthDifference($currentDate, $lastPulledDate);
       }
 
-      for ($i = $monthDiff - 1; $i >= 0; $i--) {
+      for ($i = $monthDiff - 1; $i >= 0; --$i) {
         $date = date('Y-m-t 23:59:59', strtotime(-$i . 'month'));
         $monthArr[] = $date;
         $monthNo = (int)date('m', strtotime($date));
