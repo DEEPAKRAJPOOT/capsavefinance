@@ -190,11 +190,19 @@ class Transactions extends BaseModel {
         return (float)$cr - (float)$dr;
     }
 
-    // public function getOutstandingAttribute()
-    // {
-    //     $amount = round(($this->amount - $this->getsettledAmtAttribute()),2);
-    //     return $amount > 0 ? $amount : 0;
-    // }
+    public function getFinalAmtAttribute()
+    {
+        $amount = 0;
+        if($this->entry_type = '1' && is_null($this->payment_id) && is_null($this->link_trans_id) && is_null($this->parent_trans_id)){
+            $cr = (float) self::where('parent_trans_id','=',$this->trans_id)
+            ->where('entry_type','=','1')
+            ->whereIn('trans_type',[config('lms.TRANS_TYPE.CANCEL')])
+            ->sum('amount');
+            
+            $amount = round(($this->amount - $cr),2);
+        }
+        return $amount > 0 ? $amount : 0;
+    }
 
     public function calculateSettledAmt($trans_id){
         $dr = self::where('parent_trans_id','=',$trans_id)
