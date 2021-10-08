@@ -175,14 +175,14 @@ class InvoiceDisbursed extends BaseModel {
 	 {
 		   $getPay = [];
 		   $currentDate =  Carbon::now()->format('Y-m-d');
-		 return self::where(['status_id' => 12])->whereRaw('ADDDATE(DATE(payment_due_date),grace_period) >= '.$currentDate)/*->with(['invoice','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])*/->orderBy('invoice_id', 'DESC');
+		 return self::where(['status_id' => 12])->whereRaw("ADDDATE(DATE(payment_due_date),grace_period) >= $currentDate")/*->with(['invoice','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])*/->orderBy('invoice_id', 'DESC');
 			
 	  }  
 	
 	  public static function getReportAllOverdueInvoice()
 	 {
 		  $currentDate =  Carbon::now()->format('Y-m-d');
-		  return self::where(['status_id' => 12])->whereRaw('ADDDATE(DATE(payment_due_date),grace_period) < '.$currentDate)->with(['InterestAccrual','invoice','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])->orderBy('invoice_id', 'DESC');
+		  return self::where(['status_id' => 12])->whereRaw("ADDDATE(DATE(payment_due_date),grace_period) < $currentDate")/*->with(['InterestAccrual','invoice','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])*/->orderBy('invoice_id', 'DESC');
 	   
 	 } 
 	   public static function getInvoiceRealisationList()
