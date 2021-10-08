@@ -108,7 +108,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 				if($txn->trans_type == config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE')){
 					$txn->amount = $txn->amount;
 				}else{
-					$txn->amount = $txn->outstanding;
+					$txn->amount = $txn->FinalAmt;
 				}
 				// $waiveOffAmount = $txn->getWaiveOffAmount();
 				// $txn->amount = $txn->amount - $waiveOffAmount;
