@@ -145,6 +145,8 @@ class CompanyController extends Controller {
                 'acc_no' => $request->get('acc_no'),
                 'bank_id' => $request->get('bank_id'),
                 'ifsc_code' => $request->get('ifsc_code'),
+                'micr_code' => $request->get('micr_code'),
+                'acc_type' => $request->get('acc_type'),
                 'branch_name' => $request->get('branch_name'),
                 'is_active' => $request->get('is_active'),
                 'user_id' => auth()->user()->user_id,
