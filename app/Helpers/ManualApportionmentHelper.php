@@ -186,7 +186,7 @@ class ManualApportionmentHelper{
         }
     }
 
-    private function runningToTransPosting($invDisbId, $intAccrualDt, $payFreq, $invdueDate, $odStartDate){
+    public function runningToTransPosting($invDisbId, $intAccrualDt, $payFreq, $invdueDate, $odStartDate){
         $intAccrualDate = $this->subDays($intAccrualDt,1);
         $invdueDate = $this->subDays($invdueDate,1);
         $graceStartDate = $invdueDate;
