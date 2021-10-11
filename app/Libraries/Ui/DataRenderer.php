@@ -1645,7 +1645,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
+                        // $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_disbursed ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->invoice_disbursed->created_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })     
                    ->addColumn(
