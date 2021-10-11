@@ -743,9 +743,9 @@ class userInvoiceController extends Controller
             if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
                 $dueDate = strtotime($txn->toIntDate); // or your date as well
                 $now = strtotime($txn->fromIntDate);
-                $datediff = ($dueDate - $now);
+                $datediff = abs($dueDate - $now);
                 $OdandInterestRate = $txn->InvoiceDisbursed->invoice->program_offer->overdue_interest_rate + $txn->InvoiceDisbursed->invoice->program_offer->interest_rate;
-                $days = round($datediff / (60 * 60 * 24)) . 'days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';                
+                $days = (round($datediff / (60 * 60 * 24)) + 1) . ' days -From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';                
             } else {
                 $days = '---';
             }
