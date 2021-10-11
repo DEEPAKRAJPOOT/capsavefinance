@@ -13,6 +13,12 @@
         </div>
       </div>
       <div class="row">
+        <div class="form-group col-md-12">
+          <label for="cibil_indus_code">Industry Code</label>
+          <input type="text" class="form-control" id="cibil_indus_code" name="cibil_indus_code" value="{{$industries_data->cibil_indus_code}}" placeholder="Enter Industry Code" maxlength="50">
+        </div>
+      </div>
+      <div class="row">
         <div class="form-group col-md-6">
              <label for="chrg_type">Status</label><br />
              <select class="form-control" name="is_active" id="is_active">
@@ -35,6 +41,7 @@
 
     var messages={
         unique_industry_url:"{{ route('check_unique_industry_url') }}",
+        unique_industry_code:"{{ route('check_unique_industry_code') }}",
         token: "{{ csrf_token() }}"
     }
 
@@ -61,11 +68,38 @@
             },'Industry is already exists'
         );
 
+        $.validator.addMethod("uniqueIndustryCode",
+            function(value, element, params) {
+                var result = true;
+                var data = {cibil_indus_code: value, _token: messages.token};
+                if (params.industry_id) {
+                    data['industry_id'] = params.industry_id;
+                }
+                console.log(params)
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.unique_industry_code, // script to validate in server side
+                    data: data,
+                    success: function(data) {                        
+                        result = (data.status == 1) ? false : true;
+                    }
+                });                
+                return result;                
+            },'Industry Code is already exists'
+        );
+
         $('#industriesForm').validate({ // initialize the plugin
             rules: {
                 'name' : {
                     required : true,
                     uniqueIndustry: {
+                        industry_id: $("#id").val()
+                    }
+                },
+                'cibil_indus_code' : {
+                    required : true,
+                    uniqueIndustryCode: {
                         industry_id: $("#id").val()
                     }
                 },
@@ -76,6 +110,9 @@
             messages: {
                 'name': {
                     required: "Please enter Industry Name",
+                },
+                'cibil_indus_code': {
+                    required: "Please enter Industry Code",
                 },
                 'is_active': {
                     required: "Please Select Status of Industry",

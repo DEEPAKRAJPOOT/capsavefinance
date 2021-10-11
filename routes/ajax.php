@@ -1294,6 +1294,11 @@ Route::group(
         'uses' => 'AjaxController@checkUniqueIndustries'
     ]);
     
+    Route::post('unique-industry-code', [
+        'as' => 'check_unique_industry_code',
+        'uses' => 'AjaxController@checkUniqueIndustriesCode'
+    ]);
+    
     Route::post('unique-voucher-url', [
         'as' => 'check_unique_voucher_url',
         'uses' => 'AjaxController@checkUniqueVoucher'
@@ -1312,6 +1317,11 @@ Route::group(
     Route::post('unique-constitution-url', [
         'as' => 'check_unique_constitution_url',
         'uses' => 'AjaxController@checkUniqueConstitution'
+    ]);
+    
+    Route::post('unique-constitution-code', [
+        'as' => 'check_unique_constitution_code',
+        'uses' => 'AjaxController@checkUniqueConstitutionCode'
     ]);
     
     Route::post('unique-equipment-url', [
@@ -1338,5 +1348,21 @@ Route::group(
         'as' => 'check_unique_tds_certificate_no',
         'uses' => 'AjaxController@checkUniqueTdsCertificate'
     ]);
+
+     /*Master Document route*/
+    Route::post('get-master-locationtype-list', [
+        'as' => 'get_ajax_master_locationtype_list',
+        'uses' => 'AjaxController@getLocationTypeLists'
+    ]); 
+    
+    Route::post('unique-location-url', [
+        'as' => 'check_unique_location_url',
+        'uses' => 'AjaxController@checkUniqueLocationType'
+    ]);    
+    
+    Route::post('unique-location-code-url', [
+        'as' => 'check_unique_location_code_url',
+        'uses' => 'AjaxController@checkUniqueLocationCode'
+    ]);    
 
 });

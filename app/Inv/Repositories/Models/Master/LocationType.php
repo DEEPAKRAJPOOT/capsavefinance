@@ -5,21 +5,21 @@ namespace App\Inv\Repositories\Models\Master;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Models\User;
 
-class Industry extends BaseModel {
+class LocationType extends BaseModel {
 
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'mst_industry';
+    protected $table = 'mst_location_type';
 
     /**
      * Custom primary key is set for the table
      *
      * @var integer
      */
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'location_id';
 
     /**
      * Maintain created_at and updated_at automatically
@@ -42,47 +42,49 @@ class Industry extends BaseModel {
      */
     protected $fillable = [
         'name',
-        'cibil_indus_code',
         'is_active',
+        'location_code',
         'created_by',
         'created_at',
         'updated_at',
         'updated_by'
     ];
 
-    /**
-     * Get Drop down list
-     *
-     * @return type
-     */
-    public static function getIndustryDropDown()
-    {
-        $res = self::where('is_active', 1)->pluck('name', 'id');
-        return $res ?: [];
-    }
-
     public function userDetail(){
         return $this->belongsTo(User::class, 'created_by');
     }
 
     /**
-     * Check Industry name
+     * Check Location name
      * 
      * @param type $where array
      * @return type mixed
      * @throws BlankDataExceptions
      * @throws InvalidDataTypeExceptions 
      */
-    public static function checkIndustryName($industryName, $excludeIndusId=null)
+    public static function checkLocationType($locationType, $excludeLocationId=null)
     {
 
-        $query = self::select('id')
-                ->where($industryName);
-        if (!is_null($excludeIndusId)) {
-            $query->where('id', '!=', $excludeIndusId);
+        $query = self::select('location_id')
+                ->where($locationType);
+        if (!is_null($excludeLocationId)) {
+            $query->where('location_id', '!=', $excludeLocationId);
         }
         $res = $query->get();        
         return $res ?: [];
-    }        
+    } 
+    
+    public static function getLocationDropDown()
+    {
+        $res = self::where('is_active', 1)->get();
+        return $res ?: [];
+    }
+    
+    public static function getLocationName()
+    {
+        $res = self::where('is_active', 1)->pluck('name')->toArray();
+        return $res ?: [];
+    }
+    
 
 }

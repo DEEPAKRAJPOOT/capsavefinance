@@ -5,11 +5,13 @@ function copyAddress(id,th){
 		$(id+' input[name*=biz_other_city]').val($('input[name=biz_city]').val());
 		$(id+' select[name*=biz_other_state]').val($('select[name=biz_state]').val());
 		$(id+' input[name*=biz_other_pin]').val($('input[name=biz_pin]').val());
+		$(id+' select[name*=location_other_id]').val($('select[name=location_id]').val());
 	}else{
 		$(id+' input[name*=biz_other_address]').val('');
 		$(id+' input[name*=biz_other_city]').val('');
 		$(id+' select[name*=biz_other_state]').val('');
 		$(id+' input[name*=biz_other_pin]').val('');
+		$(id+' select[name*=location_other_id]').val('');
 	}
 }
 
@@ -75,6 +77,7 @@ function setUnsetError(is_gst_manual){
 		unsetError('select[name=biz_state]');
 		unsetError('input[name=biz_city]');
 		unsetError('input[name=biz_pin]');
+		unsetError('select[name=location_id]');
 	} else {
 		$(".gst_address").html('*');
 		//setError('input[name=biz_address]', 'Registered address is required');
@@ -204,7 +207,8 @@ function checkValidation(){
 	unsetError('input[name=biz_pin]');
 	unsetError('#check_block');
 	unsetError('input[name=share_holding_date]');
-        unsetError('input[name=busi_pan_comm_date]');
+		unsetError('input[name=busi_pan_comm_date]');
+	unsetError('select[name=location_id]');		
 	
 	unsetError('#product_type_1_loan');
 	unsetError('#product_type_2_loan');
@@ -253,6 +257,7 @@ function checkValidation(){
 	let biz_state = $('select[name=biz_state]').val();
 	let biz_city = $('input[name=biz_city]').val().trim();
 	let biz_pin = $('input[name=biz_pin]').val().trim();
+	let location_id = $('select[name=location_id]').val();
 	
 	let share_holding_date = $('input[name=share_holding_date]').val();
         let busi_pan_comm_date = $('input[name=busi_pan_comm_date]').val();
@@ -397,6 +402,11 @@ function checkValidation(){
 		flag = false;
 	}
 
+	if (location_id == '' && is_gst_manual != 1) {
+		setError('select[name=location_id]', 'Registered Location is required');
+		flag = false;
+	}	
+
 	if((biz_city.length == '' || !isNaN(biz_city)) && is_gst_manual!=1){
 		setError('input[name=biz_city]', 'Registered City is required');
 		flag = false;
@@ -463,10 +473,12 @@ function fillRegisteredAddress(addr_str){
 		let state = addr_array.pop().trim();
 		let city = addr_array.pop().trim();
 		let address = addr_array.toString().trim();
+		let location = addr_array.pop().trim();
 		$('input[name=biz_address]').val(address);
 		$('select[name=biz_state] option:contains('+state+')').prop('selected', true);
 		$('input[name=biz_city]').val(city);
 		$('input[name=biz_pin]').val(pin);
+		$('select[name=location_id] option:contains('+location+')').prop('selected', true);
 		//return {'address': address, 'city': city, 'state': state, 'pin': pin};
 	}
 	catch(err) {

@@ -1647,7 +1647,8 @@ class DataRenderer implements DataProviderInterface
                     function ($invoice) {                        
                         $inv_amount = '';
                         $inv_amount .= $invoice->Invoiceuser ? '<span><b>Name:&nbsp;</b>'.$invoice->Invoiceuser->f_name.'&nbsp;'.$invoice->Invoiceuser->l_name.'</span>' : '';
-                        $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
+                        // $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
+                        $inv_amount .= $invoice->invoice_disbursed ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->invoice_disbursed->created_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })     
                    ->addColumn(
@@ -3291,7 +3292,7 @@ class DataRenderer implements DataProviderInterface
                     'is_active',
                     function ($industries) {
                        $act = $industries->is_active;
-                       $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editIndustriesFrame" title="Edit Industry Detail" data-url ="'.route('edit_industries',['id' => $industries->id]).'" data-height="250px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                       $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editIndustriesFrame" title="Edit Industry Detail" data-url ="'.route('edit_industries',['id' => $industries->id]).'" data-height="320px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
                        $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
                      return $status;
                     }
@@ -4235,7 +4236,7 @@ class DataRenderer implements DataProviderInterface
                     'is_active',
                     function ($data) {
                     $act = $data->is_active;
-                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editConstiFrame" title="Edit States Detail" data-url ="'.route('edit_constitution', ['id' => $data->id]).'" data-height="150px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editConstiFrame" title="Edit States Detail" data-url ="'.route('edit_constitution', ['id' => $data->id]).'" data-height="220px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
                     $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
                     return $status;
                     }
@@ -7946,4 +7947,49 @@ class DataRenderer implements DataProviderInterface
             })
             ->make(true);
     }
+
+    public function getLocationTypeLists(Request $request, $locationtype){
+
+        return DataTables::of($locationtype)
+                ->rawColumns(['is_active'])
+                ->addColumn(
+                    'name',
+                    function ($locationtype) {
+                    return $locationtype->name;
+                }) 
+                ->addColumn(
+                    'location_code',
+                    function ($locationtype) {
+                    return $locationtype->location_code;
+                }) 
+                ->addColumn(
+                    'created_at',
+                    function ($locationtype) {
+                    return ($locationtype->created_at) ? date('d-M-Y',strtotime($locationtype->created_at)) : '---';
+                })
+                ->addColumn(
+                    'created_by',
+                    function ($locationtype) {
+                    return $locationtype->userDetail->f_name.' '.$locationtype->userDetail->l_name;
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($locationtype) {
+                       $act = $locationtype->is_active;
+                       $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editLocationTypeFrame" title="Edit Location Detail" data-url ="'.route('edit_location_type',['location_id' => $locationtype->location_id]).'" data-height="320px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                       $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                     return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
 }

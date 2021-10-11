@@ -449,6 +449,11 @@
                     <a class="nav-link" href="{{ route('get_bank_list') }}">Manage Bank</a>
                 </li>
                 @endcan
+                @can('list_location_type')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('list_location_type') }}">Manage Location Type</a>
+                </li>
+                @endcan
             </ul>
         </div>
     </li>

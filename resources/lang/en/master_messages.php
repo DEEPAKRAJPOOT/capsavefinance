@@ -31,6 +31,8 @@ return [
     'unique_acc_no' => 'This bank account is already exist.',
     'unique_address' => 'The company branch is already present at this address.',
     'tds_add_success' => 'TDS added successfully.',
-    'tds_edit_success' => 'TDS updated successfully.'
+    'tds_edit_success' => 'TDS updated successfully.',
+    'location_add_success' => 'Location added successfully',
+    'location_edit_success' => 'Location updated successfully',    
 ];
 

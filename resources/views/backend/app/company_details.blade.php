@@ -428,12 +428,30 @@
                                             @enderror
 										</div>
 									</div>
+									<div class="col-md-4">
+										<div class="form-group password-input">
+											<label for="txtPassword">Address Label 
+												<span class="mandatory gst_address">*</span>
+											</label>
+											<select class="form-control" name="location_id" tabindex="13" >
+                                                <option value=""> Address Label</option>
+                                                @foreach($locationType as $key => $location)
+                                                <option value="{{ $location->location_id }}" {{(old('location_id', $business_info->address[0]->location_id) == $location->location_id)? 'selected':''}}> {{$location->name}} </option>
+                                                @endforeach
+                                            </select>
+                                            @error('location_id')
+                                                <span class="text-danger error">{{ $message }}</span>
+                                            @enderror
+										</div>
+									</div>									
 								</div>	
 							</div>
 						</div>
 					</div>	
+
 					<div class="form-sections">	
 						<h5 class="form-head">Other Addresses</h5>
+						
 					</div>			
 					<div class="form-sections">
 						<div id="accordion" class="accordion">
@@ -486,6 +504,18 @@
 													<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.0', $business_info->address[1]->pin_code)}}" class="form-control" tabindex="19" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 												</div>
 											</div>
+											<div class="col-md-4">
+												<div class="form-group password-input">
+													<label for="txtPassword">Address Label 
+													</label>
+													<select class="form-control" name="location_other_id[]" tabindex="13" >
+														<option value=""> Address Label</option>
+														@foreach($locationType as $key => $location)
+														<option value="{{ $location->location_id }}" {{(old('location_other_id.0', $business_info->address[1]->location_id) == $location->location_id)? 'selected':''}}> {{$location->name}} </option>
+														@endforeach
+													</select>
+												</div>
+											</div>											
 										</div>
 									</div>
 								</div>
@@ -538,6 +568,19 @@
 													<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.1', $business_info->address[2]->pin_code)}}" class="form-control" tabindex="23" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 												</div>
 											</div>
+											
+											<div class="col-md-4">
+												<div class="form-group password-input">
+													<label for="txtPassword">Address Label 
+													</label>
+													<select class="form-control" name="location_other_id[]" tabindex="13" >
+														<option value=""> Address Label</option>
+														@foreach($locationType as $key => $location)
+														<option value="{{ $location->location_id }}" {{(old('location_other_id.1', $business_info->address[2]->location_id) == $location->location_id)? 'selected':''}}> {{$location->name}} </option>
+														@endforeach
+													</select>
+												</div>
+											</div>											
 										</div>
 									</div>
 								</div>
@@ -589,6 +632,18 @@
 													<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.2', $business_info->address[3]->pin_code)}}" class="form-control" tabindex="27" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 												</div>
 											</div>
+											<div class="col-md-4">
+												<div class="form-group password-input">
+													<label for="txtPassword">Address Label 
+													</label>
+													<select class="form-control" name="location_other_id[]" tabindex="13" >
+														<option value=""> Address Label</option>
+														@foreach($locationType as $key => $location)
+														<option value="{{ $location->location_id }}" {{(old('location_other_id.2', $business_info->address[3]->location_id) == $location->location_id)? 'selected':''}}> {{$location->name}} </option>
+														@endforeach
+													</select>
+												</div>
+											</div>											
 										</div>
 									</div>
 								</div>
@@ -639,6 +694,19 @@
 													<input type="text" name="biz_other_pin[]" value="{{old('biz_other_pin.3', $business_info->address[4]->pin_code)}}" class="form-control" tabindex="31" placeholder="Enter Pin Code" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="6">
 												</div>
 											</div>
+											<div class="col-md-4">
+												<div class="form-group password-input">
+													<label for="txtPassword">Address Label
+														<!-- <span class="mandatory">*</span> -->
+													</label>
+													<select class="form-control" name="location_other_id[]" tabindex="29">
+                                                        <option value=""> Address Label</option>
+                                                        @foreach($locationType as $key => $location)
+                                                        <option value="{{$location->location_id}}" {{(old('location_other_id.3', $business_info->address[4]->location_id) == $location->location_id)? 'selected':''}}> {{$location->name}} </option>
+                                                        @endforeach
+                                                    </select>
+												</div>
+											</div>											
 										</div>
 									</div>
 								</div>
