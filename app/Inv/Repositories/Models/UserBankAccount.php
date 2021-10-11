@@ -50,6 +50,8 @@ class UserBankAccount extends BaseModel {
         'is_default',
         'acc_no',
         'ifsc_code',
+        'micr_code', 
+        'acc_type',
         'branch_name',
         'is_active',
         'created_by',
