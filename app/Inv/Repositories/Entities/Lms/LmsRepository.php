@@ -1846,7 +1846,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 
     public function getAllBusinessForSheet($whereCond) {
-		return Application::with(['business', 'bizInvoice.invoice_disbursed'])->whereHas('disbursed_invoices.invoice_disbursed', function ($q) use ($whereCond) {
+		return Application::with(['business', 'bizInvoice.invoice_disbursed'])->whereHas('bizInvoice.invoice_disbursed', function ($q) use ($whereCond) {
 			$q->where('is_posted_in_cibil',$whereCond['is_posted_in_cibil']);
 			$q->where('updated_at', '<=', $whereCond['date']);
 			$q->whereIn('status_id', $whereCond['status_ids']);
