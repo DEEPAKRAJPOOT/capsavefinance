@@ -328,7 +328,7 @@ class CibilReportController extends Controller
         $prgmLimit = $appBusiness->prgmLimit->limit_amt ?? NULL;
         $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
         $od_days = isset($userData) ? (int)$userData->od_days : 0;
-        $od_outstanding = isset($userData) ? (int)$userData->od_outstanding : 0;
+        $od_outstanding = isset($userData) ? round($userData->od_outstanding, 2) : 0;
         $data[] = [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'CR',
