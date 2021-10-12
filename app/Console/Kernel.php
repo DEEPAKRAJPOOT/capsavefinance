@@ -45,7 +45,7 @@ class Kernel extends ConsoleKernel
         }
 
         if(config('lms.LMS_STATUS') && !\Helpers::checkEodProcess() && \Helpers::getInterestAccrualCronStatus() && !\Helpers::getEodProcessCronStatus()){
-            $schedule->command('lms:eodprocess')->timezone(config('common.timezone'))->dailyAt('23:50')->emailOutputOnFailure(config('lms.EOD_FAILURE_MAIL'));
+            $schedule->command('lms:eodprocess')->timezone(config('common.timezone'))->dailyAt('23:00')->emailOutputOnFailure(config('lms.EOD_FAILURE_MAIL'));
         }
 
         if (config('lms.LMS_STATUS')) {
@@ -54,15 +54,15 @@ class Kernel extends ConsoleKernel
         
         if(config('lms.LMS_STATUS') && !empty('lms.DAILY_REPORT_MAIL')){
             // To Generate Account Disbursal Report
-            $schedule->command('report:account_disbursal')->timezone(config('common.timezone'))->dailyAt('20:00');
+            $schedule->command('report:account_disbursal')->timezone(config('common.timezone'))->dailyAt('23:40');
             // To Generate Disbursal Report
-            $schedule->command('report:disbursal')->timezone(config('common.timezone'))->dailyAt('20:02');
+            $schedule->command('report:disbursal')->timezone(config('common.timezone'))->dailyAt('23:42');
             // To Generate Maturity Report
-            $schedule->command('report:maturity')->timezone(config('common.timezone'))->dailyAt('20:04');
+            $schedule->command('report:maturity')->timezone(config('common.timezone'))->dailyAt('23:44');
             // To Generate Overdue Report
-            $schedule->command('report:overdue')->timezone(config('common.timezone'))->dailyAt('20:06');
+            $schedule->command('report:overdue')->timezone(config('common.timezone'))->dailyAt('23:46');
             // To Generate Utilization Report
-            $schedule->command('report:utilization')->timezone(config('common.timezone'))->dailyAt('20:08');
+            $schedule->command('report:utilization')->timezone(config('common.timezone'))->dailyAt('23:48');
         }
         $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt('23:00');
         $schedule->command('lms:maturityinvoicedueAlert')->timezone(config('common.timezone'))->dailyAt('21:30');
