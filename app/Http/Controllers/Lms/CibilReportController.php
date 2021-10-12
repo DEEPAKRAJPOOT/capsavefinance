@@ -91,6 +91,8 @@ class CibilReportController extends Controller
     }
 
     public function saveCibilData($date) {
+      ini_set("memory_limit", "-1");
+      $this->selectedDisbursedData = []
       $response = array(
         'status' => 'failure',
         'message' => 'Request method not allowed to execute the script.',
