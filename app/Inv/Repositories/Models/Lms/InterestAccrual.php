@@ -164,7 +164,7 @@ class InterestAccrual extends BaseModel {
             (d.interset_write_off + d.principal_write_off + d.overdue_write_off + d.margin_write_off + d.charge_write_off) AS write_off,
             (d.principal_repayment + d.principal_waived_off + d.principal_tds  + d.interest_repayment + d.interest_waived_off + d.interest_tds + d.overdue_repayment + d.overdue_waived_off + d.overdue_tds + d.margin_repayment + d.margin_waived_off + d.margin_tds + d.charge_repayment + d.charge_waived_off + d.charge_tds)
             AS settled,
-            SUM(d.overdue_repayment + d.overdue_waived_off + d.overdue_tds + d.overdue_write_off) AS od_settled_amt,
+            (d.overdue_repayment + d.overdue_waived_off + d.overdue_tds + d.overdue_write_off) AS od_settled_amt,
             d.total_outstanding_amount AS total_outstanding
             FROM rta_interest_accrual AS c
             JOIN rta_invoice_disbursed AS b ON c.invoice_disbursed_id = b.invoice_disbursed_id
