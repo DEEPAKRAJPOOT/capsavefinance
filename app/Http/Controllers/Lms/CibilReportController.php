@@ -165,7 +165,7 @@ class CibilReportController extends Controller
           $response['status'] = 'success';
           $batchData = [
             'batch_no' => $this->batch_no,
-            'app_cnt' => count($this->selectedDisbursedData),
+            'invoice_cnt' => count($this->selectedDisbursedData),
             'record_cnt' => $recordsTobeInserted,
             'created_at' => date($date),
           ];
