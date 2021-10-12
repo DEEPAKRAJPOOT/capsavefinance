@@ -158,7 +158,7 @@ class InterestAccrual extends BaseModel {
 
     public static function getOverdueData() {
         $data = DB::select('
-            SELECT MAX(cnt) as od_days, SUM(amt) as utilized_amt,SUM(amt-od_settled_amt) as od_outstanding, supplier_id, SUM(write_off) AS write_off_amt, SUM(settled) AS settled_amt, SUM(total_outstanding) AS total_outstanding_amt
+            SELECT MAX(cnt) as od_days, SUM(amt) as utilized_amt, (SUM(amt) - SUM(od_settled_amt)) as od_outstanding, supplier_id, SUM(write_off) AS write_off_amt, SUM(settled) AS settled_amt, SUM(total_outstanding) AS total_outstanding_amt
             FROM (
             SELECT  a.supplier_id, c.invoice_disbursed_id, (COUNT(c.interest_accrual_id) + b.grace_period) AS cnt, SUM(c.accrued_interest) AS amt,
             (d.interset_write_off + d.principal_write_off + d.overdue_write_off + d.margin_write_off + d.charge_write_off) AS write_off,
