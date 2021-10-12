@@ -68,7 +68,7 @@
 	                                        <thead>
 	                                        	<tr role="row">                                                   
                                                     <th>Batch No</th>       
-                                                    <th>Application in Batch</th>       
+                                                    <th>Invoices in Batch</th>       
 		                                     		<th>Records in Batch</th>		
 		                                     		<th>Date</th>
 													<th>Action</th>

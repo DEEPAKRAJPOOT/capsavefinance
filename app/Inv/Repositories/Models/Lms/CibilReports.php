@@ -43,7 +43,7 @@ class CibilReports extends BaseModel {
      */
     protected $fillable = [
         'batch_no',
-        'app_cnt',
+        'invoice_cnt',
         'record_cnt',
         'created_at',
         'created_by'
