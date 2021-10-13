@@ -507,13 +507,18 @@ class InvoiceController extends Controller {
 
         $disbursals = $this->lmsRepo->getDisbursals($disbursalIds)->toArray();
         foreach ($disbursals as $key => $value) {
+        if($value['lms_user']['user']['is_buyer'] == 2) {
+            $benifiName = isset($value['lms_user']['user']['anchor_bank_details'][['acc_name']]) ? $value['lms_user']['user']['anchor_bank_details']['acc_name'] : '';
+        } else {
+            $benifiName = isset($value['lms_user']['bank_details']['acc_name']) ? $value['lms_user']['bank_details']['acc_name'] : '';
+        }            
         $userMailArr['receiver_user_name'] = $name = $value['user']['f_name']. ' ' . $value['user']['l_name'];
         $userMailArr['amount'] = $value['disburse_amount'];
         $userMailArr['receiver_email'] = $value['user']['email'];
         $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
         $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
         $userMailArr['utr_no'] = isset($value['tran_id']) ? $value['tran_id'] : '';
-        $userMailArr['benefi_name'] = $name = $value['user']['f_name']. ' ' . $value['user']['l_name'];
+        $userMailArr['benefi_name'] = $benifiName;
         $userMailArr['disbursed_date'] = isset($value['disburse_date']) ? Carbon::parse($value['disburse_date'])->format('d-m-Y') : '';  
         Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
 
@@ -523,7 +528,7 @@ class InvoiceController extends Controller {
         $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
         $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
         $userMailArr['utr_no'] = isset($value['tran_id']) ? $value['tran_id'] : '';
-        $userMailArr['benefi_name'] = $name = $value['user']['anchor']['comp_name'];
+        $userMailArr['benefi_name'] = $benifiName;
         $userMailArr['disbursed_date'] = isset($value['disburse_date']) ? Carbon::parse($value['disburse_date'])->format('d-m-Y') : '';  
         Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
         }
