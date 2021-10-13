@@ -835,10 +835,12 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
             $mail_subject = str_replace(['%user_id'], $user['user_id'],$email_content->subject);
+            $email_cc = explode(',', $email_content->cc);
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject, $mail_body) {
+                function ($message) use ($user, $mail_subject, $mail_body, $email_cc) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
+                $message->cc($email_cc);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => array($user["receiver_email"]),
