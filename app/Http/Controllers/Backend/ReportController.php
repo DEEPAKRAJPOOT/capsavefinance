@@ -1166,9 +1166,16 @@ class ReportController extends Controller
 		Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($subject, $email_content, $mail_body) {
-                $email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
-                $message->bcc(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
-                $message->cc(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+					
+				if(!empty(env('CRONINVOICE_SEND_MAIL_TO'))){
+					$email = explode(',', env('CRONINVOICE_SEND_MAIL_TO'));
+				}
+				if(!empty(env('CRONINVOICE_SEND_MAIL_CC_TO'))){
+					$message->cc(explode(',', env('CRONINVOICE_SEND_MAIL_CC_TO')));
+				}
+				if(!empty(env('CRONINVOICE_SEND_MAIL_BCC_TO'))){
+					$message->bcc(explode(',', env('CRONINVOICE_SEND_MAIL_BCC_TO')));
+				}
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, '')->subject($subject);
                 $mailContent = [

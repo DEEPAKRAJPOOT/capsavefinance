@@ -188,7 +188,7 @@ class Company extends BaseModel {
 
     // get registered address
     public static function getCompanyRegAddr() {
-       $addr = self::select('mst_company.comp_addr_id','company_id','cmp_name','cmp_add','cmp_email','cmp_mobile','pincode','gst_no','pan_no','cin_no','state','city', 'bank_account_id', 'bank_name', 'acc_name', 'acc_no', 'branch_name', 'ifsc_code')
+       $addr = self::select('mst_company.comp_addr_id','company_id','cmp_name','cmp_add','cmp_email','cmp_mobile','pincode','gst_no','pan_no','cin_no','state','city', 'bank_account_id', 'bank_name', 'acc_name', 'acc_no', 'branch_name', 'ifsc_code', 'micr_code', 'acc_type')
        ->leftjoin('user_bank_account as uba', 'uba.comp_addr_id', '=', 'mst_company.comp_addr_id')
        ->leftjoin('mst_bank as mb', 'uba.bank_id', '=', 'mb.id')
        ->where(['mst_company.is_active' => 1, 'mst_company.is_reg' => 1, 'uba.is_default' => 1])

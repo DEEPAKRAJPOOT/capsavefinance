@@ -1235,10 +1235,10 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                             if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
                                 $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
                             } else {
-                                $processingFee = $invoice['processing_fee']['chrg_value'];
+                                $processingFee = $invoice['processing_fee']['chrg_value'] ?? 0;
 
                             }
-                            $processingFeeGst = $invoice['processing_fee']['gst_chrg_value'] - $processingFee;
+                            $processingFeeGst = ($invoice['processing_fee']['gst_chrg_value'] ?? 0) - $processingFee;
                             $invoice['disbursal_id'] = $createDisbursal->disbursal_id;
                             $invoice['processing_fee'] = $processingFee;
                             $invoice['processing_fee_gst'] = $processingFeeGst;

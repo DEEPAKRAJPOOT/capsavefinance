@@ -103,6 +103,10 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		
 		$result = [];
 		foreach($invDisbList as $invDisb){
+
+			$payment_due_date = date('Y-m-d',strtotime($invDisb->payment_due_date));
+			$out_days =  (strtotime($payment_due_date) - strtotime($curdate))/86400 + $invDisb->grace_period;	
+
 			$result[] = [
 			'cust_name'=>$invDisb->invoice->business->biz_entity_name,
 			'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
@@ -115,7 +119,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'margin_amt'=>$invDisb->invoice->invoice_approve_amount*$invDisb->margin/100,
 			'disb_amt'=>$invDisb->invoice->invoice_amount,
 			'out_amt'=>$invDisb->transactions->sum('outstanding'),
-			'out_days'=>(strtotime($invDisb->payment_due_date) - strtotime($curdate))/86400,
+			'out_days'=>($out_days > 0)?0:$out_days,
 			'tenor'=>$invDisb->tenor_days,
 			'due_date'=>$invDisb->payment_due_date,
 			'due_amt'=>$invDisb->invoice->invoice_amount,
@@ -144,17 +148,20 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			if(isset($whereCondition['anchor_id'])){
 				$query2->where('anchor_id',$whereCondition['anchor_id']);
 			}
-			$query2->whereBetween('invoice_date', [$fromdate, $curdate]);
 		},
 		'invoice.lms_user', 
 		'invoice.business', 
-		'disbursal'])
+		'disbursal' => function($query22) use($fromdate, $curdate){
+			$query22->whereBetween('funded_date', [$fromdate, $curdate]);
+		}])
 		->whereIn('status_id', [12,13,15,47])
         ->whereHas('invoice', function($query3) use($whereCondition, $fromdate, $curdate){
 			if(isset($whereCondition['anchor_id'])){
 				$query3->where('anchor_id',$whereCondition['anchor_id']);
 			}
-			$query3->whereBetween('invoice_date', [$fromdate, $curdate]);
+		})
+		->whereHas('disbursal', function($query33) use($fromdate, $curdate){
+			$query33->whereBetween('funded_date', [$fromdate, $curdate]);
 		})
 		->get();
 
@@ -391,6 +398,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$result[] = [
 				'cust_name'=>$invDisb->invoice->business->biz_entity_name,
 				'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
+				'invoice_no' => $invDetails->invoice_no,
+				'payment_due_date' => $invDisb->payment_due_date,
 				'customer_id'=>$invDetails->lms_user->customer_id,
 				'prgm_name' => $prgmDetails->parentProgram->prgm_name,
 				'sub_prgm_name' => $prgmDetails->prgm_name,

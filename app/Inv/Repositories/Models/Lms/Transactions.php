@@ -190,11 +190,19 @@ class Transactions extends BaseModel {
         return (float)$cr - (float)$dr;
     }
 
-    // public function getOutstandingAttribute()
-    // {
-    //     $amount = round(($this->amount - $this->getsettledAmtAttribute()),2);
-    //     return $amount > 0 ? $amount : 0;
-    // }
+    public function getFinalAmtAttribute()
+    {
+        $amount = 0;
+        if($this->entry_type = '1' && is_null($this->payment_id) && is_null($this->link_trans_id) && is_null($this->parent_trans_id)){
+            $cr = (float) self::where('parent_trans_id','=',$this->trans_id)
+            ->where('entry_type','=','1')
+            ->whereIn('trans_type',[config('lms.TRANS_TYPE.CANCEL')])
+            ->sum('amount');
+            
+            $amount = round(($this->amount - $cr),2);
+        }
+        return $amount > 0 ? $amount : 0;
+    }
 
     public function calculateSettledAmt($trans_id){
         $dr = self::where('parent_trans_id','=',$trans_id)
@@ -557,8 +565,13 @@ class Transactions extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
+        //  set default gst value for overdue interest
+        if(isset($transactions['trans_type']) && $transactions['trans_type'] == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+            $transactions['gst'] = 1;
+        }
+
         //  set default is_transaction value
-        if(isset($transactions['trans_type'])){
+        if(isset($transactions['trans_type']) && !isset($transactions['is_transaction'])){
             $transType = $transactions['trans_type'];
             $chrg_id = TransType::where('id',$transType)->value('chrg_master_id');
             if($chrg_id > 0 || $transType == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){

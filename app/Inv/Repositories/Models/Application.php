@@ -973,4 +973,10 @@ class Application extends BaseModel
     public function sanctionDate() {
         return $this->belongsTo('App\Inv\Repositories\Models\AppStatusLog', 'app_id', 'app_id')->where('status_id', '50');
     }
+
+
+
+    public function bizInvoice() {
+        return $this->hasMany('App\Inv\Repositories\Models\BizInvoice', 'app_id', 'app_id');
+    }
 }

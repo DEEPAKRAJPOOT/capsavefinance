@@ -91,6 +91,8 @@ class CibilReportController extends Controller
     }
 
     public function saveCibilData($date) {
+      ini_set("memory_limit", "-1");
+      $this->selectedDisbursedData = [];
       $response = array(
         'status' => 'failure',
         'message' => 'Request method not allowed to execute the script.',
@@ -104,7 +106,7 @@ class CibilReportController extends Controller
       foreach ($countBucketData as $key => $bucketData) {
         $this->userWiseData[$bucketData->supplier_id] = $bucketData; 
       };
-      $whereCond = ['date' => $date, 'is_posted_in_cibil' => 0];
+      $whereCond = ['date' => $date, 'is_posted_in_cibil' => 0, 'status_ids' => [12,13,15]];
       $cibilRecords = $this->lmsRepo->getAllBusinessForSheet($whereCond);
       foreach ($cibilRecords as $key => $cibilRecord) {
           $this->cibilRecord = $cibilRecord;
@@ -165,7 +167,7 @@ class CibilReportController extends Controller
           $response['status'] = 'success';
           $batchData = [
             'batch_no' => $this->batch_no,
-            'app_cnt' => count($this->selectedDisbursedData),
+            'invoice_cnt' => count($this->selectedDisbursedData),
             'record_cnt' => $recordsTobeInserted,
             'created_at' => date($date),
           ];
@@ -326,6 +328,7 @@ class CibilReportController extends Controller
         $prgmLimit = $appBusiness->prgmLimit->limit_amt ?? NULL;
         $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
         $od_days = isset($userData) ? (int)$userData->od_days : 0;
+        $od_outstanding = isset($userData) ? round($userData->od_outstanding, 2) : 0;
         $data[] = [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'CR',
@@ -344,7 +347,7 @@ class CibilReportController extends Controller
             'Loan Renewal Date' => NULL,
             'Asset Classification/Days Past Due (DPD)' => $od_days,
             'Asset Classification Date' => NULL,
-            'Amount Overdue / Limit Overdue' => NULL,
+            'Amount Overdue / Limit Overdue' => $od_outstanding,
             'Overdue Bucket 01 ( 1 – 30 days)' => ($od_days >= 1 && $od_days <= 30 ? $od_days : 0),
             'Overdue Bucket 02 ( 31 – 60 days)' => ($od_days >= 31 && $od_days <= 60 ? $od_days : 0),
             'Overdue Bucket 03 ( 61 – 90 days)' => ($od_days >= 61 && $od_days <= 90 ? $od_days : 0),

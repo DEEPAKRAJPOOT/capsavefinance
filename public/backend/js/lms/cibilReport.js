@@ -31,7 +31,7 @@ try {
             },
             columns: [
                 {data: 'batch_no'},
-                {data: 'app_cnt'},
+                {data: 'invoice_cnt'},
                 {data: 'record_cnt'},
                 {data: 'created_at'},
                 {data: 'pull_status'},

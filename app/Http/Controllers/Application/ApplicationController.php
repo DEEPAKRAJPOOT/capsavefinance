@@ -83,7 +83,7 @@ class ApplicationController extends Controller
 
         $anchUserData = $this->userRepo->getAnchorUserData(['user_id' => $userId]);        
         $pan = isset($anchUserData[0]) ? $anchUserData[0]->pan_no : '';
-        
+        $locationType = LocationType::getLocationDropDown();
         if($request->has('__signature') && $request->has('biz_id')){
             $business_info = $this->appRepo->getApplicationById($request->biz_id);
             $app_data = $this->appRepo->getAppDataByBizId($request->biz_id);
@@ -93,7 +93,6 @@ class ApplicationController extends Controller
                   "tenor_days" => $product->pivot->tenor_days
               );
           }
-            $locationType = LocationType::getLocationDropDown();
             return view('frontend.application.company_details')
                         ->with(['business_info'=>$business_info, 'states'=>$states, 'product_types'=>$product_types, 'product_ids'=> $product_ids])
                         ->with('user_id',$request->get('user_id'))

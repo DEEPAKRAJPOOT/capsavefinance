@@ -674,6 +674,7 @@ class UserEventsListener extends BaseEvent
                 $email_cc = '';
             }
         }        
+       $email_cc = array_filter($email_cc);
        $mailObj = Mail::to($email, ''); //$user["receiver_user_name"]
        if (!empty($email_cc)) {
            $mailObj->cc($email_cc);
@@ -1099,27 +1100,30 @@ class UserEventsListener extends BaseEvent
             foreach ($user['email'] as $key => $emailVlaue) {
                 array_push($email_cc, $emailVlaue);
             }
-            if (($key = array_search($email_to, $email_cc)) !== false) {
-                unset($email_cc[$key]);
+
+            if(isset($email_to) && !empty($email_to)) {
+                if (($key = array_search($email_to, $email_cc)) !== false) {
+                    unset($email_cc[$key]);
+                }
+                Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
+                    function ($message) use ($user, $mail_subject, $mail_body, $email_cc, $email_to) {
+                    $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                    $message->to($email_to)->subject($mail_subject);
+                    $message->cc($email_cc);
+                    
+                    $check = array($email_to, $user['curr_email']);
+                    $check = array_merge($check, $email_cc);
+                    $mailContent = [
+                        'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                        'email_to' => $check,
+                        'email_type' => $this->func_name,
+                        'name' => $user['curr_user'],
+                        'subject' => $mail_subject,
+                        'body' => $mail_body,
+                    ];
+                    FinanceModel::logEmail($mailContent);
+                });
             }
-            Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
-                function ($message) use ($user, $mail_subject, $mail_body, $email_cc, $email_to) {
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($email_to)->subject($mail_subject);
-                $message->cc($email_cc);
-                
-                $check = array($email_to, $user['curr_email']);
-                $check = array_merge($check, $email_cc);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $check,
-                    'email_type' => $this->func_name,
-                    'name' => $user['curr_user'],
-                    'subject' => $mail_subject,
-                    'body' => $mail_body,
-                ];
-                FinanceModel::logEmail($mailContent);
-            });
         }
     }
 

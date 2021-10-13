@@ -36,6 +36,7 @@ use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
 class ApportionmentController extends Controller
 {
     use ActivityLogTrait;
+    private $enablePaymentBeforeInvoiceDate = false;
 
     public function __construct(InvLmsRepoInterface $lms_repo ,DataProviderInterface $dataProvider, InvUserRepoInterface $user_repo,InvAppRepoInterface $app_repo, MasterInterface $master){
         $this->lmsRepo = $lms_repo;
@@ -669,17 +670,19 @@ class ApportionmentController extends Controller
 
             foreach ($transactions as $trans){
 
-                $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
-                $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL; 
-                if (isset($userInvoiceDate)) {
-                    $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
-                }
-                if (isset($userInvoiceDate)) {
-                    $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
-                }
                 $bill_date_check = true;
-                if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
-                    $bill_date_check = false;
+                if ($this->enablePaymentBeforeInvoiceDate === true) {
+                    $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
+                    $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL; 
+                    if (isset($userInvoiceDate)) {
+                        $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
+                    }
+                    if (isset($dateOfPayment)) {
+                        $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
+                    }
+                    if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                        $bill_date_check = false;
+                    }
                 }
                 $invoiceList[$trans->invoice_disbursed_id] = [
                     'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
@@ -824,19 +827,21 @@ class ApportionmentController extends Controller
                 ];
 
                 foreach ($transactions as $trans){
-                    $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
-                    $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL;
-                    if (isset($userInvoiceDate)) {
-                        $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
-                    }
-                    if (isset($userInvoiceDate)) {
-                        $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
-                    } 
-
                     $bill_date_check = true;
-                    if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
-                        $bill_date_check = false;
+                    if ($this->enablePaymentBeforeInvoiceDate === true) {
+                        $userInvoiceDate = $trans->userInvTrans->getUserInvoice->created_at ?? NULL;
+                        $dateOfPayment = $paymentDetails['date_of_payment'] ?? NULL; 
+                        if (isset($userInvoiceDate)) {
+                            $userInvoiceDate = date('Y-m-d', strtotime($userInvoiceDate));
+                        }
+                        if (isset($dateOfPayment)) {
+                            $paymentDate = date('Y-m-d', strtotime($dateOfPayment));
+                        }
+                        if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
+                            $bill_date_check = false;
+                        }
                     }
+                    
                     if($trans->invoice_disbursed_id){
 
                         $invoiceList[$trans->invoice_disbursed_id] = [

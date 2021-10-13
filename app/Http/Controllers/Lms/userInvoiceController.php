@@ -308,7 +308,7 @@ class userInvoiceController extends Controller
         }
 
         $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoice_type);
-        $invSerialNo = sprintf('%04d', ((!empty($lastInvData->inv_serial_no) ?? 0) + 1) ?? rand(0, 9999));
+        $invSerialNo = sprintf('%04d', (($lastInvData->inv_serial_no ?? 0) + 1) ?? rand(0, 9999));
         $InvoiceNoArr = explode('/',$invoice_no);
         $InvoiceNoArr[3] = $invSerialNo;
         $invoice_no = implode('/',$InvoiceNoArr);
@@ -743,9 +743,9 @@ class userInvoiceController extends Controller
             if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
                 $dueDate = strtotime($txn->toIntDate); // or your date as well
                 $now = strtotime($txn->fromIntDate);
-                $datediff = ($dueDate - $now);
+                $datediff = abs($dueDate - $now);
                 $OdandInterestRate = $txn->InvoiceDisbursed->invoice->program_offer->overdue_interest_rate + $txn->InvoiceDisbursed->invoice->program_offer->interest_rate;
-                $days = round($datediff / (60 * 60 * 24)) . 'days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';                
+                $days = (round($datediff / (60 * 60 * 24)) + 1) . ' days -From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';                
             } else {
                 $days = '---';
             }

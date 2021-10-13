@@ -48,7 +48,7 @@
                                     <th>PAN No.</th>
                                     <th>CIN No.</th>
                                     <th>Status</th>
-                                    <th>Action</th>
+                                    <th width="10%">Action</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -82,13 +82,12 @@
                                            data-target="#add_bank_account"
                                            id="register" 
                                            data-url="{{ route('add_company_bank_account',['comp_addr_id' => $company['comp_addr_id']]) }}" >
-                                            <button class="btn  btn-success btn-sm float-left mb-2" type="button">
-                                                <i class="fa fa-plus"></i> Add Account
+                                            <button class="btn btn-action-btn btn-sm" type="button" title="Add Bank Account">
+                                                <i class="fa fa-plus"></i> 
                                             </button>
                                         </a>
                                         @endcan
                                         @endif
-                                        <span style="margin-left:5px" >
                                         <a  
                                             data-toggle="modal" 
                                             title="Edit Company Detail"
@@ -101,7 +100,6 @@
                                                 <i class="fa fa-edit"></i>
                                             </button>
                                         </a>
-                                        </span>
                                         </div>
                                     </td>
                                     <td align="right" ><span class="trigger"></span></td> 
