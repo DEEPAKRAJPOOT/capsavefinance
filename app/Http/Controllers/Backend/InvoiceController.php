@@ -512,6 +512,9 @@ class InvoiceController extends Controller {
         $userMailArr['receiver_email'] = $value['user']['email'];
         $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
         $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
+        $userMailArr['utr_no'] = isset($value['tran_id']) ? $value['tran_id'] : '';
+        $userMailArr['benefi_name'] = isset($value['tran_id']) ? $value['tran_id'] : '';
+        $userMailArr['disbursed_date'] = isset($value['tran_id']) ? $value['tran_id'] : '';
         Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
 
         $userMailArr['receiver_user_name'] = $name = $value['user']['anchor']['comp_name'];
@@ -519,6 +522,9 @@ class InvoiceController extends Controller {
         $userMailArr['receiver_email'] = $value['user']['anchor']['comp_email'];
         $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
         $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
+        $userMailArr['utr_no'] = isset($value['tran_id']) ? $value['tran_id'] : '';
+        $userMailArr['benefi_name'] = isset($value['tran_id']) ? $value['tran_id'] : '';
+        $userMailArr['disbursed_date'] = isset($value['tran_id']) ? $value['tran_id'] : '';
         Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
         }
         return true;
