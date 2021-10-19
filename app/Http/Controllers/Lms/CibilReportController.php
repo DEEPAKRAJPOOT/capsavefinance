@@ -335,7 +335,7 @@ class CibilReportController extends Controller
         $data[] = [
             'Ac No' => $this->formatedCustId,
             'Segment Identifier' => 'CR',
-            'Account Number' => Helper::formatIdWithPrefix($user->user_id, 'CUSTID'),
+            'Account Number' => $this->formatedCustId,
             'Previous Account Number' => NULL,
             'Facility / Loan Activation / Sanction Date' => !empty($sanctionDate) ? date('d M Y', strtotime($sanctionDate)) : NULL,
             'Sanctioned Amount/ Notional Amount of Contract' => $prgmLimit,
@@ -351,11 +351,11 @@ class CibilReportController extends Controller
             'Asset Classification/Days Past Due (DPD)' => $od_days,
             'Asset Classification Date' => NULL,
             'Amount Overdue / Limit Overdue' => $od_outstanding,
-            'Overdue Bucket 01 ( 1 – 30 days)' => ($od_days >= 1 && $od_days <= 30 ? $od_days : 0),
-            'Overdue Bucket 02 ( 31 – 60 days)' => ($od_days >= 31 && $od_days <= 60 ? $od_days : 0),
-            'Overdue Bucket 03 ( 61 – 90 days)' => ($od_days >= 61 && $od_days <= 90 ? $od_days : 0),
-            'Overdue Bucket 04 (91 – 180 days)' => ($od_days >= 91 && $od_days <= 180 ? $od_days : 0),
-            'Overdue Bucket 05 (Above 180 days)' => ($od_days > 180 ? $od_days : 0),
+            'Overdue Bucket 01 ( 1 – 30 days)' => ($od_days >= 1 && $od_days <= 30 ? $od_outstanding : 0),
+            'Overdue Bucket 02 ( 31 – 60 days)' => ($od_days >= 31 && $od_days <= 60 ? $od_outstanding : 0),
+            'Overdue Bucket 03 ( 61 – 90 days)' => ($od_days >= 61 && $od_days <= 90 ? $od_outstanding : 0),
+            'Overdue Bucket 04 (91 – 180 days)' => ($od_days >= 91 && $od_days <= 180 ? $od_outstanding : 0),
+            'Overdue Bucket 05 (Above 180 days)' => ($od_days > 180 ? $od_outstanding : 0),
             'High Credit' => NULL,
             'Installment Amount' => NULL,
             'Last Repaid Amount' => NULL,
@@ -512,7 +512,7 @@ class CibilReportController extends Controller
           'message' => 'All Records are already pushed to cibil till last month.',
         );        
       }
-      return $response;
+      return print(json_encode($response));
     }
 
     private function _monthDifference($currentDate, $lastDate) {
