@@ -4362,7 +4362,7 @@ class DataRenderer implements DataProviderInterface
                 return $trans->invoice_no;
             })
             ->addColumn('capsave_invoice_no',function($trans){
-                return $trans->capsave_invoice_no;
+                return $trans->transaction->capsaveinvoiceno;
             })
             ->addColumn('batch_no',function($trans){
                 return $trans->batch_no;
@@ -4471,7 +4471,7 @@ class DataRenderer implements DataProviderInterface
                 return $trans->invoice_no;
             })
             ->addColumn('capsave_invoice_no',function($trans){
-                return $trans->capsave_invoice_no;
+                return $trans->transaction->capsaveinvoiceno;
             })
             ->addColumn('batch_no',function($trans){
                 return $trans->batch_no;

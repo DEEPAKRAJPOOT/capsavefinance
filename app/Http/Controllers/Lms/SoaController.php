@@ -209,7 +209,7 @@ class SoaController extends Controller
                 $preparedData[$key][$k]['trans_type'] = trim($data->transaction->transname);
                 $preparedData[$key][$k]['batch_no'] = $data->batch_no;
                 $preparedData[$key][$k]['invoice_no'] = $data->invoice_no;
-                $preparedData[$key][$k]['capsave_invoice_no'] = $data->capsave_invoice_no;
+                $preparedData[$key][$k]['capsave_invoice_no'] = $data->transaction->capsaveinvoiceno;
                 $preparedData[$key][$k]['narration'] = $data->narration;
                 $preparedData[$key][$k]['currency'] = trim($data->transaction->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')]) ? '' : 'INR');
                 $preparedData[$key][$k]['debit'] = $dr;
@@ -241,11 +241,12 @@ class SoaController extends Controller
                         $transactionList = $this->lmsRepo->getSoaList();
                     }
                 }
+
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){
                     $transactionList->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                        $query->WhereBetween('value_date', [$from_date, $to_date]);
                     });
                 }
                 if($request->has('trans_entry_type')){
@@ -267,7 +268,7 @@ class SoaController extends Controller
                 $soaRecord = $this->prepareDataForRendering($transactionList->whereHas('transaction', function ($q) {
                     $q->where('is_transaction', true);
                 })->get()->chunk(25));
-            } 
+            }
             ini_set('memory_limit', -1);
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
             $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
@@ -295,7 +296,7 @@ class SoaController extends Controller
                 $transactionList->where(function ($query) use ($request) {
                     $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                     $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                    $query->WhereBetween('value_date', [$from_date, $to_date]);
                 });
             }
             if($request->has('trans_entry_type')){
