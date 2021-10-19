@@ -4397,7 +4397,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'currency',
                 function ($trans) {
-                    return $trans->currency;
+                    return $trans->trans_id ;
                 }
             )
             ->addColumn(
