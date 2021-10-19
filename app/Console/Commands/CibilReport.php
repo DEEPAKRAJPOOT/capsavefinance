@@ -40,6 +40,6 @@ class CibilReport extends Command
      */
     public function handle()
     {
-        \App::make('App\Http\Controllers\Lms\CibilReportController')->downloadCibilReport();
+        \App::make('App\Http\Controllers\Lms\CibilReportController')->_getMonthLastDate();
     }
 }

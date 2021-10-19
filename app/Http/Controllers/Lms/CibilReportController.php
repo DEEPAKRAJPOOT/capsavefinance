@@ -106,18 +106,21 @@ class CibilReportController extends Controller
       foreach ($countBucketData as $key => $bucketData) {
         $this->userWiseData[$bucketData->supplier_id] = $bucketData; 
       };
-      $whereCond = ['date' => $date, 'is_posted_in_cibil' => 0, 'status_ids' => [12,13,15]];
+      // $date = "2021-10-31 23:59:59";
+      $whereCond = ['date' => $date, 'status_ids' => [12,13,15]];
       $cibilRecords = $this->lmsRepo->getAllBusinessForSheet($whereCond);
+
       foreach ($cibilRecords as $key => $cibilRecord) {
           $this->cibilRecord = $cibilRecord;
           $appBusiness = $cibilRecord->business;
           $appId = $appBusiness->app->app_id;
           $userId = $appBusiness->user_id;
-          foreach ($this->cibilRecord->disbursed_invoices as $key => $invoiceDisbursed) {
-            $this->selectedDisbursedData[] = $invoiceDisbursed->invoice_disbursed->invoice_disbursed_id;
-          }
 
-          $this->formatedCustId = Helper::formatIdWithPrefix($userId, 'CUSTID');
+          $this->selectedDisbursedData[] = $this->cibilRecord->invoice_disbursed->invoice_disbursed_id;
+
+          $capId = sprintf('%09d', $userId);
+				  $customerId = 'CAP'.$capId;
+          $this->formatedCustId = $customerId; /* Helper::formatIdWithPrefix($userId, 'CUSTID') */
           $this->business_category = isset($appBusiness->msme_type) && array_search(config('common.MSMETYPE')[$appBusiness->msme_type], config('common.MSMETYPE')) ? $appBusiness->msme_type : NULL;
           $this->constitutionName = !empty($appBusiness->constitution->cibil_lc_code) ? $appBusiness->constitution->cibil_lc_code : ''; //config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution]
           $this->account_status = $this->lmsRepo->getAccountStatus($userId); 
@@ -139,7 +142,7 @@ class CibilReportController extends Controller
                 'segment_identifier' => $segment,
                 'segment_data' => json_encode($segData),
                 'created_at' => Carbon::now(),
-                'created_by' => Auth::user()->user_id,
+                'created_by' => Auth::user()->user_id ?? 1,
               ];
             }
           }
@@ -161,9 +164,9 @@ class CibilReportController extends Controller
           $totalAppRecords = \DB::update('update rta_invoice_disbursed set is_posted_in_cibil = 1 where invoice_disbursed_id in(' . implode(', ', $this->selectedDisbursedData) . ')');
         }
         $recordsTobeInserted = count($finalCibilData);
-        if (empty($totalAppRecords)) {
-          $response['message'] =  'Some error occured. No Record can be posted in Cibil.';
-        }else{
+        // if (empty($totalAppRecords)) {
+        //   $response['message'] =  'Some error occured. No Record can be posted in Cibil.';
+        // }else{
           $response['status'] = 'success';
           $batchData = [
             'batch_no' => $this->batch_no,
@@ -173,7 +176,7 @@ class CibilReportController extends Controller
           ];
           $cibil_inst_data = FinanceModel::dataLogger($batchData, 'cibil_report');
           $response['message'] =  ($recordsTobeInserted > 1 ? $recordsTobeInserted .' Records inserted successfully' : '1 Record inserted.');
-        }
+        // }
     }else{
       $response['message'] =  ($res[2] ?? 'DB error occured.').' No Record can be posted in Cibil.';
     }
@@ -486,7 +489,7 @@ class CibilReportController extends Controller
       return $data;
     }
 
-    private function _getMonthLastDate() {
+    public function _getMonthLastDate() {
       $lastRecord = \DB::select('select * from rta_cibil_report order by cibil_report_id desc limit 1');
       $currentDate = date('Y-m-d H:i:s');
       $monthDiff = 10;
