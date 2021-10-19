@@ -36,6 +36,7 @@ try {
                 {data: 'trans_type'},
                 {data: 'batch_no'},
                 {data: 'invoice_no'},
+                {data: 'capsave_invoice_no'},
                 {data: 'narration'},
                 {data: 'currency'},
                 // {data: 'sub_amount'},

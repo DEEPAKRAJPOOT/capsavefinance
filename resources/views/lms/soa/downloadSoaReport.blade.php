@@ -146,6 +146,9 @@
                             <span style="font-size: small;"><strong>Invoice No</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>Capsave Invoice No</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Narration</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
@@ -180,6 +183,9 @@
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['invoice_no']}}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['capsave_invoice_no']}}</span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['narration']}}</span>

@@ -41,6 +41,7 @@ class CustomerTransactionSOA extends BaseModel
         'trans_type',
         'batch_no',
         'invoice_no',
+        'capsave_invoice_no',
         'narration',
         'currency',
         'debit_amount',
@@ -121,16 +122,17 @@ class CustomerTransactionSOA extends BaseModel
             $balance -= $creditAmount = $transaction->amount;
         }
         return [
-            'value_date'      =>  $transaction->trans_date,
-            'trans_type'      =>  $transaction->trans_type,
-            'invoice_no'      =>  $transaction->invoiceno,
-            'batch_no'        =>  $transaction->batchNo,
-            'narration'       =>  $transaction->narration,
-            'trans_date'      =>  $transDate,
-            'currency'        =>  $currency,
-            'debit_amount'    =>  $debitAmount,
-            'credit_amount'   =>  $creditAmount,
-            'balance_amount'  =>  $balance,
+            'value_date'         =>  $transaction->trans_date,
+            'trans_type'         =>  $transaction->trans_type,
+            'invoice_no'         =>  $transaction->invoiceno,
+            'capsave_invoice_no' =>  $transaction->capsaveinvoiceno,
+            'batch_no'           =>  $transaction->batchNo,
+            'narration'          =>  $transaction->narration,
+            'trans_date'         =>  $transDate,
+            'currency'           =>  $currency,
+            'debit_amount'       =>  $debitAmount,
+            'credit_amount'      =>  $creditAmount,
+            'balance_amount'     =>  $balance,
         ];
     }
 
@@ -168,6 +170,21 @@ class CustomerTransactionSOA extends BaseModel
         
         $transaction = self::where('user_id',$this->user_id)->whereDate('value_date','<=',$this->value_date)->where('trans_id','<=',$this->trans_id)->whereHas('transaction', function($query){
             $query->where('is_transaction',1)->where('soa_flag',1);
+        });
+
+        $crTrans = clone $transaction;
+        $drTrans = clone $transaction;
+
+        $dr = $drTrans->sum('debit_amount');
+        $cr = $crTrans->sum('credit_amount');
+
+        return round(($dr - $cr),2);
+    }
+
+    public function getConsolidatedSoaBalanceAttribute(){
+        
+        $transaction = self::where('user_id',$this->user_id)->whereDate('value_date','<=',$this->value_date)->where('trans_id','<=',$this->trans_id)->whereHas('transaction', function($query){
+            $query->where('is_transaction', 1);
         });
 
         $crTrans = clone $transaction;

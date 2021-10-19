@@ -166,12 +166,22 @@ class Transactions extends BaseModel {
     public function getInvoiceNoAttribute(){
           
         $invNo = '';
-        if($this->userInvTrans){
-            $invNo = $this->userInvTrans->getUserInvoice->invoice_no;
-        }elseif($this->userInvParentTrans){
-            $invNo = $this->userInvParentTrans->getUserInvoice->invoice_no;
-        }elseif($this->invoice_disbursed_id){
+
+        if ($this->invoice_disbursed_id){
             $invNo = $this->invoiceDisbursed->invoice->billNo;
+        }
+
+        return $invNo;
+    }
+
+    public function getCapsaveInvoiceNoAttribute()
+    {
+        $invNo = '';
+
+        if ($this->userInvTrans) {
+            $invNo = $this->userInvTrans->getUserInvoice->invoice_no;
+        } elseif($this->userInvParentTrans) {
+            $invNo = $this->userInvParentTrans->getUserInvoice->invoice_no;
         }
 
         return $invNo;
