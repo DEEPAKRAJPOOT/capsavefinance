@@ -164,33 +164,33 @@ class CustomerTransactionSOA extends BaseModel
         return $color;
     }
 
-    public function getCustomerSoaBalanceAttribute(){
+    // public function getCustomerSoaBalanceAttribute(){
         
-        $transaction = self::where('user_id',$this->user_id)->whereDate('value_date','<=',$this->value_date)->where('trans_id','<=',$this->trans_id)->whereHas('transaction', function($query){
-            $query->where('is_transaction',1)->where('soa_flag',1);
-        });
+    //     $transaction = self::where('user_id',$this->user_id)->whereDate('value_date','<=',$this->value_date)->where('trans_id','<=',$this->trans_id)->whereHas('transaction', function($query){
+    //         $query->where('is_transaction',1)->where('soa_flag',1);
+    //     });
 
-        $crTrans = clone $transaction;
-        $drTrans = clone $transaction;
+    //     $crTrans = clone $transaction;
+    //     $drTrans = clone $transaction;
 
-        $dr = $drTrans->sum('debit_amount');
-        $cr = $crTrans->sum('credit_amount');
+    //     $dr = $drTrans->sum('debit_amount');
+    //     $cr = $crTrans->sum('credit_amount');
 
-        return round(($dr - $cr),2);
-    }
+    //     return round(($dr - $cr),2);
+    // }
 
-    public function getConsolidatedSoaBalanceAttribute(){
+    // public function getConsolidatedSoaBalanceAttribute(){
         
-        $transaction = self::where('user_id',$this->user_id)->whereDate('value_date','<=',$this->value_date)->where('trans_id','<=',$this->trans_id)->whereHas('transaction', function($query){
-            $query->where('is_transaction', 1);
-        });
+    //     $transaction = self::where('user_id',$this->user_id)->whereDate('value_date','<=',$this->value_date)->where('trans_id','<=',$this->trans_id)->whereHas('transaction', function($query){
+    //         $query->where('is_transaction', 1);
+    //     });
 
-        $crTrans = clone $transaction;
-        $drTrans = clone $transaction;
+    //     $crTrans = clone $transaction;
+    //     $drTrans = clone $transaction;
 
-        $dr = $drTrans->sum('debit_amount');
-        $cr = $crTrans->sum('credit_amount');
+    //     $dr = $drTrans->sum('debit_amount');
+    //     $cr = $crTrans->sum('credit_amount');
 
-        return round(($dr - $cr),2);
-    }
+    //     return round(($dr - $cr),2);
+    // }
 }
