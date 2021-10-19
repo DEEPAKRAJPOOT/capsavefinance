@@ -241,7 +241,6 @@ class SoaController extends Controller
                         $transactionList = $this->lmsRepo->getSoaList();
                     }
                 }
-
                 if($request->get('from_date')!= '' && $request->get('to_date')!=''){
                     $transactionList->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
@@ -268,7 +267,7 @@ class SoaController extends Controller
                 $soaRecord = $this->prepareDataForRendering($transactionList->whereHas('transaction', function ($q) {
                     $q->where('is_transaction', true);
                 })->get()->chunk(25));
-            }
+            } 
             ini_set('memory_limit', -1);
             DPDF::setOptions(['isHtml5ParserEnabled'=> true]);
             $pdf = DPDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif', 'defaultPaperSize' => 'a4'])
@@ -372,9 +371,8 @@ class SoaController extends Controller
                 ->setCellValue('J'.$rows, 'Debit')
                 ->setCellValue('K'.$rows, 'Credit')
                 ->setCellValue('L'.$rows, 'Balance');
-
         
-            $sheet->getActiveSheet()->getStyle('A'.$rows.':L'.$rows)->getFill()->applyFromArray(array(
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':L'.$rows)->getFill()->applyFromArray(array(
             'type' => PHPExcel_Style_Fill::FILL_SOLID,
             'startcolor' => [ 'rgb' => "CAD7D3" ],
             'font' => [ 'bold'  => true ]

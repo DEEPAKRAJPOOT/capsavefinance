@@ -121,16 +121,16 @@ class CustomerTransactionSOA extends BaseModel
             $balance -= $creditAmount = $transaction->amount;
         }
         return [
-            'value_date'         =>  $transaction->trans_date,
-            'trans_type'         =>  $transaction->trans_type,
-            'invoice_no'         =>  $transaction->invoiceno,
-            'batch_no'           =>  $transaction->batchNo,
-            'narration'          =>  $transaction->narration,
-            'trans_date'         =>  $transDate,
-            'currency'           =>  $currency,
-            'debit_amount'       =>  $debitAmount,
-            'credit_amount'      =>  $creditAmount,
-            'balance_amount'     =>  $balance,
+            'value_date'      =>  $transaction->trans_date,
+            'trans_type'      =>  $transaction->trans_type,
+            'invoice_no'      =>  $transaction->invoiceno,
+            'batch_no'        =>  $transaction->batchNo,
+            'narration'       =>  $transaction->narration,
+            'trans_date'      =>  $transDate,
+            'currency'        =>  $currency,
+            'debit_amount'    =>  $debitAmount,
+            'credit_amount'   =>  $creditAmount,
+            'balance_amount'  =>  $balance,
         ];
     }
 
