@@ -237,50 +237,50 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
 			   
 		  });
 
-		Route::group(['prefix' => 'nach'], function () {
-			Route::get('nach-list', [
-				 'as' => 'front_nach_list',
-				'uses' => 'Application\NACHController@nachList'
-			]);
-			Route::get('create-nach', [
-				 'as' => 'front_create_nach',
-				'uses' => 'Application\NACHController@createNACH'
-			]);
-			Route::post('/add-nach-detail', [
-				'as' => 'front_add_nach_detail',
-				'uses' => 'Application\NACHController@addNachDetail',
-			]);
+		// Route::group(['prefix' => 'nach'], function () {
+		// 	Route::get('nach-list', [
+		// 		 'as' => 'front_nach_list',
+		// 		'uses' => 'Application\NACHController@nachList'
+		// 	]);
+		// 	Route::get('create-nach', [
+		// 		 'as' => 'front_create_nach',
+		// 		'uses' => 'Application\NACHController@createNACH'
+		// 	]);
+		// 	Route::post('/add-nach-detail', [
+		// 		'as' => 'front_add_nach_detail',
+		// 		'uses' => 'Application\NACHController@addNachDetail',
+		// 	]);
 			
-			Route::get('/edit-nach-detail', [
-				'as' => 'front_edit_nach_detail',
-				'uses' => 'Application\NACHController@EditNachDetail',
-			]);
+		// 	Route::get('/edit-nach-detail', [
+		// 		'as' => 'front_edit_nach_detail',
+		// 		'uses' => 'Application\NACHController@EditNachDetail',
+		// 	]);
 			
-			Route::post('/save-nach-detail', [
-				'as' => 'front_save_nach_detail',
-				'uses' => 'Application\NACHController@saveNachDetail',
-			]);
+		// 	Route::post('/save-nach-detail', [
+		// 		'as' => 'front_save_nach_detail',
+		// 		'uses' => 'Application\NACHController@saveNachDetail',
+		// 	]);
 
-			Route::get('/nach-detail-preview', [
-				'as' => 'front_nach_detail_preview',
-				'uses' => 'Application\NACHController@nachDetailPreview',
-			]); 
+		// 	Route::get('/nach-detail-preview', [
+		// 		'as' => 'front_nach_detail_preview',
+		// 		'uses' => 'Application\NACHController@nachDetailPreview',
+		// 	]); 
 					
-			Route::get('generate-nach', [
-				'as' => 'front_generate_nach',
-				'uses' => 'Application\NACHController@generateNach'
-			]);
+		// 	Route::get('generate-nach', [
+		// 		'as' => 'front_generate_nach',
+		// 		'uses' => 'Application\NACHController@generateNach'
+		// 	]);
 			
-			Route::get('/upload-nach-document', [
-				'as' => 'front_upload_nach_document',
-				'uses' => 'Application\NACHController@uploadNachDocument'
-			]);
+		// 	Route::get('/upload-nach-document', [
+		// 		'as' => 'front_upload_nach_document',
+		// 		'uses' => 'Application\NACHController@uploadNachDocument'
+		// 	]);
 
-			Route::post('/nach_document-save', [
-				'as' => 'front_nach_document_save',
-				'uses' => 'Application\NACHController@saveNachDocument'
-			]);
-		});
+		// 	Route::post('/nach_document-save', [
+		// 		'as' => 'front_nach_document_save',
+		// 		'uses' => 'Application\NACHController@saveNachDocument'
+		// 	]);
+		// });
 		
 		
 		Route::group(['prefix' => 'soa'], function () {

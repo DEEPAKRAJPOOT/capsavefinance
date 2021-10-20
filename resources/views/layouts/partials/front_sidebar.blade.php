@@ -49,7 +49,8 @@
             </div>
         </li>
         @endif
-        @if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
+
+        {{--@if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-bank"></i>
@@ -60,12 +61,11 @@
                 <ul class="nav flex-column sub-menu">                    
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('front_nach_list') }}">Register Request</a> 
-                    </li>  
-                    
+                    </li>                    
                 </ul>
             </div>
-        </li>      
-        @endif
+        </li>
+        @endif--}}
         @if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
