@@ -209,6 +209,7 @@ class SoaController extends Controller
                 $preparedData[$key][$k]['trans_type'] = trim($data->transaction->transname);
                 $preparedData[$key][$k]['batch_no'] = $data->batch_no;
                 $preparedData[$key][$k]['invoice_no'] = $data->invoice_no;
+                $preparedData[$key][$k]['capsave_invoice_no'] = $data->transaction->capsaveinvoiceno;
                 $preparedData[$key][$k]['narration'] = $data->narration;
                 $preparedData[$key][$k]['currency'] = trim($data->transaction->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')]) ? '' : 'INR');
                 $preparedData[$key][$k]['debit'] = $dr;
@@ -244,7 +245,7 @@ class SoaController extends Controller
                     $transactionList->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                        $query->WhereBetween('value_date', [$from_date, $to_date]);
                     });
                 }
                 if($request->has('trans_entry_type')){
@@ -294,7 +295,7 @@ class SoaController extends Controller
                 $transactionList->where(function ($query) use ($request) {
                     $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                     $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                    $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                    $query->WhereBetween('value_date', [$from_date, $to_date]);
                 });
             }
             if($request->has('trans_entry_type')){
@@ -364,20 +365,21 @@ class SoaController extends Controller
                 ->setCellValue('D'.$rows, 'Tran Type')
                 ->setCellValue('E'.$rows, 'Batch No')
                 ->setCellValue('F'.$rows, 'Invoice No')
-                ->setCellValue('G'.$rows, 'Narration')
-                ->setCellValue('H'.$rows, 'Currency')
-                ->setCellValue('I'.$rows, 'Debit')
-                ->setCellValue('J'.$rows, 'Credit')
-                ->setCellValue('K'.$rows, 'Balance');
+                ->setCellValue('G'.$rows, 'Capsave Invoice No')
+                ->setCellValue('H'.$rows, 'Narration')
+                ->setCellValue('I'.$rows, 'Currency')
+                ->setCellValue('J'.$rows, 'Debit')
+                ->setCellValue('K'.$rows, 'Credit')
+                ->setCellValue('L'.$rows, 'Balance');
         
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->getFill()->applyFromArray(array(
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':L'.$rows)->getFill()->applyFromArray(array(
             'type' => PHPExcel_Style_Fill::FILL_SOLID,
             'startcolor' => [ 'rgb' => "CAD7D3" ],
             'font' => [ 'bold'  => true ]
         ));
               
         $sheet->getActiveSheet()
-        ->getStyle('I:K')
+        ->getStyle('J:L')
         ->getAlignment()
         ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
         $sheet->getActiveSheet()
@@ -396,25 +398,26 @@ class SoaController extends Controller
                     ->setCellValue('D' . $rows, $rowData['trans_type'] ?: '')
                     ->setCellValue('E' . $rows, $rowData['batch_no'] ?: '')
                     ->setCellValue('F' . $rows, $rowData['invoice_no'] ?: '')
-                    ->setCellValue('G' . $rows, $rowData['narration'] ?: '')
-                    ->setCellValue('H' . $rows, $rowData['currency'] ?: '')
-                    ->setCellValue('I' . $rows, $rowData['debit'] ?: '')
-                    ->setCellValue('J' . $rows, $rowData['credit'] ?: '')
-                    ->setCellValue('K' . $rows, $rowData['balance'] ?: '');
+                    ->setCellValue('G' . $rows, $rowData['capsave_invoice_no'] ?: '')
+                    ->setCellValue('H' . $rows, $rowData['narration'] ?: '')
+                    ->setCellValue('I' . $rows, $rowData['currency'] ?: '')
+                    ->setCellValue('J' . $rows, $rowData['debit'] ?: '')
+                    ->setCellValue('K' . $rows, $rowData['credit'] ?: '')
+                    ->setCellValue('L' . $rows, $rowData['balance'] ?: '');
                 
                 $color = 'FFFFFF';
                 if($rowData['soabackgroundcolor']){
                     $color = trim($rowData['soabackgroundcolor'],'#');
                 }
                 
-                $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->getFill()->applyFromArray(array(
+                $sheet->getActiveSheet()->getStyle('A'.$rows.':L'.$rows)->getFill()->applyFromArray(array(
                     'type' => PHPExcel_Style_Fill::FILL_SOLID,
                     'startcolor' => array( 'rgb' => $color)
                 ));
                 $rows++;
             }
         }
-        foreach(range('A','K') as $columnID) {
+        foreach(range('A','L') as $columnID) {
             $sheet->getActiveSheet()->getColumnDimension($columnID)
                 ->setAutoSize(true);
         }

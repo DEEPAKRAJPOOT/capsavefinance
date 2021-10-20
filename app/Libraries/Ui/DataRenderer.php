@@ -4339,6 +4339,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getSoaList(Request $request, $data)
     {
+        $this->soa_balance = 0;
         return DataTables::of($data)
         ->rawColumns(['balance','narration'])
             ->addColumn('payment_id', function($trans){
@@ -4360,6 +4361,9 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('invoice_no',function($trans){
                 return $trans->invoice_no;
+            })
+            ->addColumn('capsave_invoice_no',function($trans){
+                return $trans->transaction->capsaveinvoiceno;
             })
             ->addColumn('batch_no',function($trans){
                 return $trans->batch_no;
@@ -4394,7 +4398,7 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'currency',
                 function ($trans) {
-                    return $trans->trans_id;
+                    return $trans->currency;
                 }
             )
             ->addColumn(
@@ -4425,7 +4429,129 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'balance',
                 function ($trans) {
-                    $balance = $trans->CustomerSoaBalance;
+                    if($trans->debit_amount > 0){
+                        $this->soa_balance += $trans->debit_amount;
+                    }
+                    if($trans->credit_amount > 0){
+                        $this->soa_balance -= $trans->credit_amount;
+                    }
+                    $balance = $this->soa_balance;
+                    if($balance < 0){
+                        return '<span style="color:red">'.number_format(abs($balance), 2).'</span>';
+                    } else {
+                        return '<span style="color:green">'.number_format(abs($balance), 2).'</span>';
+                    }
+                }
+            )
+            ->make(true);
+    }
+
+    /**
+     * get consolidated list
+     * 
+     * @param object $request
+     * @param object $data
+     * @return mixed
+     */
+    public function getConsolidatedSoaList(Request $request, $data)
+    {
+        $this->soa_balance = 0;
+        return DataTables::of($data)
+        ->rawColumns(['balance','narration'])
+            ->addColumn('payment_id', function($trans){
+                return $trans->transaction->payment_id;
+            })
+            ->addColumn('customer_id', function($trans){
+                $data = '';
+                if($trans->lmsUser){
+                    $data = $trans->lmsUser->customer_id;
+                }
+                return $data;
+            })
+            ->addColumn('customer_name', function($trans){
+                $data = '';
+                if($trans->user){
+                    $data = $trans->user->f_name.' '.$trans->user->m_name.' '.$trans->user->l_name;
+                }
+                return $data;
+            })
+            ->addColumn('invoice_no',function($trans){
+                return $trans->invoice_no;
+            })
+            ->addColumn('capsave_invoice_no',function($trans){
+                return $trans->transaction->capsaveinvoiceno;
+            })
+            ->addColumn('batch_no',function($trans){
+                return $trans->batch_no;
+            })
+            ->addColumn('narration',function($trans){
+                return "<b>".$trans->narration."<b>";
+            })
+            ->addColumn(
+                'virtual_acc_id',
+                function ($trans) {
+                    return $trans->virtual_acc_id;
+                }
+            )
+            ->addColumn(
+                'value_date',
+                function ($trans) {
+                    return date('d-m-Y',strtotime($trans->value_date));
+                }
+            )
+            ->editColumn(
+                'trans_date',
+                function ($trans) {
+                    return \Helpers::convertDateTimeFormat($trans->trans_date, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y');
+                }
+            )
+            ->editColumn(
+                'trans_type',
+                function ($trans) {
+                    return $trans->transaction->transname;
+                }
+            )
+            ->editColumn(
+                'currency',
+                function ($trans) {
+                    return $trans->currency;
+                }
+            )
+            ->addColumn(
+                'sub_amount',
+                function($trans){
+                    if($trans->payment_id && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REPAYMENT')])){
+                        return number_format($trans->amount,2);
+                    }
+                }
+            )->editColumn(
+                'debit',
+                function ($trans) {
+                    return $trans->debit_amount > 0 ? $trans->debit_amount : '' ;
+                }
+            )
+            ->editColumn(
+                'credit',
+                function ($trans) {
+                    return $trans->credit_amount > 0 ? $trans->credit_amount : '' ;
+                }
+            )
+            ->addColumn(
+                'backgroundColor',
+                function($trans){
+                    return $trans->soabackgroundcolor;
+                }
+            )
+            ->editColumn(
+                'balance',
+                function ($trans) {
+                    if($trans->debit_amount > 0){
+                        $this->soa_balance += $trans->debit_amount;
+                    }
+                    if($trans->credit_amount > 0){
+                        $this->soa_balance -= $trans->credit_amount;
+                    }
+                    $balance = $this->soa_balance;
                     if($balance < 0){
                         return '<span style="color:red">'.number_format(abs($balance), 2).'</span>';
                     } else {

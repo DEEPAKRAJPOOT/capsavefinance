@@ -4155,7 +4155,7 @@ if ($err) {
             $transactionList = $transactionList->where(function ($query) use ($request) {
                 $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                 $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                $query->WhereBetween('trans_date', [$from_date, $to_date]);
+                $query->WhereBetween('value_date', [$from_date, $to_date]);
             });
         }
 
@@ -4191,7 +4191,7 @@ if ($err) {
     public function lmsGetConsolidatedSoaList(DataProviderInterface $dataProvider) {
 
         $transactionList = $this->lmsRepo->getConsolidatedSoaList();
-        $users = $dataProvider->getSoaList($this->request, $transactionList);
+        $users = $dataProvider->getConsolidatedSoaList($this->request, $transactionList);
         return $users;
     }
 

@@ -112,6 +112,7 @@
 													<th>Tran Type</th>
 													<th>Batch No</th>
 													<th>Invoice No</th>
+                                                    <th>Capsave Invoice No</th>
                                                     <th>Narration</th>
                                                     <th>Currency</th>
                                                     {{-- <th>Sub Amount</th> --}}

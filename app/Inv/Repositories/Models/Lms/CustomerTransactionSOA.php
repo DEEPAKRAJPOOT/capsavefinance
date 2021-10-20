@@ -152,7 +152,7 @@ class CustomerTransactionSOA extends BaseModel
         ->orderBy('value_date', 'asc')
         ->orderBy('trans_id', 'asc');
     }
-
+    
     public function getSoaBackgroundColorAttribute(){
         $color = '';
         if($this->transaction->payment_id){
@@ -163,4 +163,34 @@ class CustomerTransactionSOA extends BaseModel
         }
         return $color;
     }
+
+    // public function getCustomerSoaBalanceAttribute(){
+        
+    //     $transaction = self::where('user_id',$this->user_id)->whereDate('value_date','<=',$this->value_date)->where('trans_id','<=',$this->trans_id)->whereHas('transaction', function($query){
+    //         $query->where('is_transaction',1)->where('soa_flag',1);
+    //     });
+
+    //     $crTrans = clone $transaction;
+    //     $drTrans = clone $transaction;
+
+    //     $dr = $drTrans->sum('debit_amount');
+    //     $cr = $crTrans->sum('credit_amount');
+
+    //     return round(($dr - $cr),2);
+    // }
+
+    // public function getConsolidatedSoaBalanceAttribute(){
+        
+    //     $transaction = self::where('user_id',$this->user_id)->whereDate('value_date','<=',$this->value_date)->where('trans_id','<=',$this->trans_id)->whereHas('transaction', function($query){
+    //         $query->where('is_transaction', 1);
+    //     });
+
+    //     $crTrans = clone $transaction;
+    //     $drTrans = clone $transaction;
+
+    //     $dr = $drTrans->sum('debit_amount');
+    //     $cr = $crTrans->sum('credit_amount');
+
+    //     return round(($dr - $cr),2);
+    // }
 }
