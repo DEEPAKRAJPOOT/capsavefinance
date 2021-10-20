@@ -1242,6 +1242,21 @@ Route::group(
         'uses' => 'AjaxController@frontAjaxUserNachList'
     ]);
 
+    Route::post('front-ajax-user-nach-list',[
+        'as' => 'front_ajax_user_nach_list',
+        'uses' => 'AjaxController@frontAjaxUserNachList'
+    ]);
+
+    Route::post('front-ajax-user-soa-consolidated-list',[
+        'as' => 'front_ajax_user_soa_consolidated_list',
+        'uses' => 'AjaxController@frontAjaxUserSoaConsolidatedList'
+    ]);
+
+    Route::post('front-ajax-user-soa-list',[
+        'as' => 'front_ajax_user_soa_list',
+        'uses' => 'AjaxController@frontAjaxUserSoaList'
+    ]);
+
     Route::post('anchor-ajax-user-nach-list',[
         'as' => 'anchor_ajax_user_nach_list',
         'uses' => 'AjaxController@anchorAjaxUserNachList'

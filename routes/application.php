@@ -280,8 +280,17 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
 				'as' => 'front_nach_document_save',
 				'uses' => 'Application\NACHController@saveNachDocument'
 			]);
-			
 		});
-		  
-	 
+		
+		
+		Route::group(['prefix' => 'soa'], function () {
+			Route::get('list', [
+				 'as' => 'front_soa_list',
+				'uses' => 'Application\SoaController@soaList'
+			]);
+			Route::get('consolidated-list', [
+				'as' => 'front_consolidated_list',
+			   'uses' => 'Application\SoaController@soaConsolidatedList'
+		   ]);
+		});
 });  

@@ -5487,5 +5487,70 @@ if ($err) {
             $result = ['status' => 0];
         }
         return response()->json($result); 
-    }      
+    }
+    
+    public function frontAjaxUserSoaConsolidatedList(DataProviderInterface $dataProvider)
+    {
+        $request = $this->request;
+        $transactionList = $this->lmsRepo->getSoaList();
+
+        if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+            $transactionList = $transactionList->where(function ($query) use ($request) {
+                $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                $query->WhereBetween('value_date', [$from_date, $to_date]);
+            });
+        }
+
+        if($request->has('trans_entry_type')){
+            if($request->trans_entry_type != ''){
+                $trans_entry_type = explode('_',$request->trans_entry_type);
+                $trans_type = $trans_entry_type[0];
+                $entry_type = $trans_entry_type[1];
+                if($trans_type){
+                    $transactionList = $transactionList->where('trans_type',$trans_type);
+                }
+            }
+        }
+        $transactionList = $transactionList->whereHas('lmsUser',function ($query) use ($request) {
+            $customer_id = trim($request->get('customer_id')) ?? null ;
+            $query->where('customer_id', '=', "$customer_id");
+        })
+        ->get();
+
+        $users = $dataProvider->getFrontSoaConsolidatedList($this->request, $transactionList);
+        return $users;
+    }
+
+    public function frontAjaxUserSoaList(DataProviderInterface $dataProvider)
+    {
+        $request = $this->request;
+        $transactionList = $this->lmsRepo->getConsolidatedSoaList();
+        if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+            $transactionList = $transactionList->where(function ($query) use ($request) {
+                $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                $query->WhereBetween('value_date', [$from_date, $to_date]);
+            });
+        }
+
+        if($request->has('trans_entry_type')){
+            if($request->trans_entry_type != ''){
+                $trans_entry_type = explode('_',$request->trans_entry_type);
+                $trans_type = $trans_entry_type[0];
+                $entry_type = $trans_entry_type[1];
+                if($trans_type){
+                    $transactionList = $transactionList->where('trans_type', $trans_type);
+                }
+            }
+        }
+
+        $transactionList = $transactionList->whereHas('lmsUser',function ($query) use ($request) {
+            $customer_id = trim($request->get('customer_id')) ?? null ;
+            $query->where('customer_id', '=', "$customer_id");
+        })
+        ->get();
+        $users = $dataProvider->getFrontSoaList($this->request, $transactionList);
+        return $users;
+    }
 }

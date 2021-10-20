@@ -16,7 +16,6 @@
     @include('layouts.backend.partials.admin_customer_links',['active'=>'custSoa'])
 @endif
 <div class="content-wrapper">
-  @if(!request()->get('sanctionPageView'))
     <section class="content-header">
         <div class="header-icon">
             <i class="fa  fa-list"></i>
@@ -30,8 +29,6 @@
             </ol>
         </div>
     </section>
-    @endif
-
     <div class="card">
         <div class="card-body">    
             @if(request()->get('sanctionPageView'))

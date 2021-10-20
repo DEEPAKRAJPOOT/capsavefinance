@@ -66,6 +66,24 @@
             </div>
         </li>      
         @endif
-        
+        @if(Auth::user()->anchor_id != config('common.LENEVO_ANCHOR_ID'))
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-bank"></i>
+                <span class="menu-title">Manage SOA</span>
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+            <div class="collapse" id="layoutsSubmenu1">
+                <ul class="nav flex-column sub-menu">                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('front_consolidated_list') }}">SOA</a> 
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('front_soa_list') }}">Broad SOA</a> 
+                    </li>
+                </ul>
+            </div>
+        </li>      
+        @endif
     </ul>
 </nav>
