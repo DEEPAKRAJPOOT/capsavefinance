@@ -930,30 +930,28 @@ class ApportionmentController extends Controller
                 /* Refund Process Start */
                 $transactionList = [];
                 foreach ($invoiceList as $invDisb) {
-                    $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
-                    $refundParentTrans = $refundData->get('parent_transaction');
-                    $refundAmt = $refundData->get('amount');
-                    if($refundAmt > 0 && $refundParentTrans){
-                        $transactionList[] = [
-                            'payment_id' => $paymentId,
-                            'apportionment_id'=> $paymentId,
-                            'link_trans_id' => $refundParentTrans->trans_id,
-                            'parent_trans_id' => $refundParentTrans->trans_id,
-                            'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
-                            'user_id' => $userId,
-                            'trans_date' => $invDisb['date_of_payment'],
-                            'amount' => $refundAmt,
-                            'soa_flag' => 1,
-                            'entry_type' => 1,
-                            'trans_type' => config('lms.TRANS_TYPE.REFUND'),
-                            'trans_mode' => 2,
-                        ];
-                    }
-                }
+                    $is_repayment = BizInvoice::find($invDisb->invoice_id)->value('is_repayment');
+                    if($is_repayment == '1'){       
+                        $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
+                        $refundParentTrans = $refundData->get('parent_transaction');
+                        $refundAmt = $refundData->get('amount');
+                        if($refundAmt > 0 && $refundParentTrans){
+                            $transactionList[] = [
+                                'payment_id' => $paymentId,
+                                'apportionment_id'=> $paymentId,
+                                'link_trans_id' => $refundParentTrans->trans_id,
+                                'parent_trans_id' => $refundParentTrans->trans_id,
+                                'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
+                                'user_id' => $userId,
+                                'trans_date' => $invDisb['date_of_payment'],
+                                'amount' => $refundAmt,
+                                'soa_flag' => 1,
+                                'entry_type' => 1,
+                                'trans_type' => config('lms.TRANS_TYPE.REFUND'),
+                                'trans_mode' => 2,
+                            ];
+                        }
                 
-                if(!empty($transactionList)){
-                    foreach ($transactionList as $key => $newTrans) {
-                        $this->lmsRepo->saveTransaction($newTrans);
                     }
                 }
                 /* Refund Process End */
