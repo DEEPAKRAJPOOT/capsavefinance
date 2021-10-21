@@ -271,7 +271,7 @@ class Transactions extends BaseModel {
             }
 
             $linkTrans = $this->linkTransactions;
-            if($linkTrans->link_trans_id == $linkTrans->parent_trans_id &&  $linkTrans->entry_type = 1 && (!is_null($linkTrans->payment_id) ||  (is_null($linkTrans->payment_id) && $linkTrans->trans_type = config('lms.TRANS_TYPE.INTEREST')))){
+            if($linkTrans->link_trans_id == $linkTrans->parent_trans_id &&  $linkTrans->entry_type = 1 && $linkTrans->payment_id){
                 $revertedAmt = self::calculateRevertedAmt($this->link_trans_id);
                 $revtAmt = round(($linkTrans->amount - $revertedAmt),2);
                 $revtAmt = $revtAmt > 0 ? $revtAmt : 0;
