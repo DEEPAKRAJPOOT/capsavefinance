@@ -845,6 +845,7 @@ class ApportionmentController extends Controller
                     if($trans->invoice_disbursed_id){
 
                         $invoiceList[$trans->invoice_disbursed_id] = [
+                            'invoice_id'=> $trans->invoiceDisbursed->invoice_id,
                             'payment_due_date'=>$trans->invoiceDisbursed->payment_due_date,
                             'grace_period'=>$trans->invoiceDisbursed->grace_period,
                             'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
@@ -929,7 +930,7 @@ class ApportionmentController extends Controller
                 /* Refund Process Start */
                 $transactionList = [];
                 foreach ($invoiceList as $invDisb) {
-                    $is_repayment = BizInvoice::find($invDisb->invoice_id)->value('is_repayment');
+                    $is_repayment = BizInvoice::find($invDisb['invoice_id'])->value('is_repayment');
                     if($is_repayment == '1'){ 
                         $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
                         $refundParentTrans = $refundData->get('parent_transaction');
