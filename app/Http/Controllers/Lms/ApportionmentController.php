@@ -951,9 +951,14 @@ class ApportionmentController extends Controller
                                 'trans_mode' => 2,
                             ];
                         }
-                
                     }
                 }
+
+                if(!empty($transactionList)){
+                    foreach ($transactionList as $key => $newTrans) {
+                        $this->lmsRepo->saveTransaction($newTrans);
+                    }
+                }                
                 /* Refund Process End */
 
                 if($paymentId){
