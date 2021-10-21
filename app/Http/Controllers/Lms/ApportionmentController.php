@@ -930,7 +930,7 @@ class ApportionmentController extends Controller
                 /* Refund Process Start */
                 $transactionList = [];
                 foreach ($invoiceList as $invDisb) {
-                    $is_repayment = BizInvoice::find($invDisb['invoice_id'])->value('is_repayment');
+                    $is_repayment = BizInvoice::where('invoice_id',$invDisb['invoice_id'])->value('is_repayment');
                     if($is_repayment == '1'){ 
                         $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
                         $refundParentTrans = $refundData->get('parent_transaction');
