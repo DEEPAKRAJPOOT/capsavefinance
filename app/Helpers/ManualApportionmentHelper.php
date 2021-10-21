@@ -70,7 +70,7 @@ class ManualApportionmentHelper{
             if($trans->toIntDate){
                 $curdate =  Helpers::getSysStartDate();
                 $curdate = Carbon::parse($curdate)->format('Y-m-d');
-                if(strtotime($trans->toIntDate) >= strtotime($curdate) && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST') && $trans->invoiceDisbursed->invoice->program_offer->payment_frequency == '1'){
+                if( $trans->trans_type == config('lms.TRANS_TYPE.INTEREST') && $trans->invoiceDisbursed->invoice->program_offer->payment_frequency == '1' && $trans->invoiceDisbursed->invoice->is_repayment == '0'){
                     $actualAmount = $amount;
                 }
             }
@@ -123,6 +123,21 @@ class ManualApportionmentHelper{
                         }
                     }
                 }
+
+                // Interest Waived Deduction Process
+                if($amount > 0.00){
+                    $waiveTransactions = Transactions::where('parent_trans_id','=',$trans->parent_trans_id ?? $trans->trans_id)
+                    ->where('invoice_disbursed_id','=',$invDisbId)
+                    ->where('entry_type','=',1)
+                    ->where('trans_type','=',config('lms.TRANS_TYPE.WAVED_OFF'))
+                    ->get();
+                    
+                    foreach($waiveTransactions as $waiveTrans){
+                        $amount -= round($waiveTrans->amount,2);
+                        $amount = round($amount,2);
+                    }
+                }
+
                 // Interest Refund Process
                 
                 if($amount > 0.00){

@@ -928,6 +928,7 @@ class ApportionmentController extends Controller
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
 
                 /* Refund Process Start */
+                /*
                 foreach ($invoiceList as $invDisb) {
                     $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
                     $refundParentTrans = $refundData->get('parent_transaction');
@@ -949,6 +950,7 @@ class ApportionmentController extends Controller
                         ];
                     }
                 }
+                */
                 /* Refund Process End */
 
                 if($paymentId){
