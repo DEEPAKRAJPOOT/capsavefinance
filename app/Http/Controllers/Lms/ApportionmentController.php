@@ -926,12 +926,11 @@ class ApportionmentController extends Controller
                     $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId, $useApporCol = true);
                 }
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
-
                 /* Refund Process Start */
                 $transactionList = [];
                 foreach ($invoiceList as $invDisb) {
                     $is_repayment = BizInvoice::find($invDisb->invoice_id)->value('is_repayment');
-                    if($is_repayment == '1'){       
+                    if($is_repayment == '1'){ 
                         $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
                         $refundParentTrans = $refundData->get('parent_transaction');
                         $refundAmt = $refundData->get('amount');
@@ -958,7 +957,7 @@ class ApportionmentController extends Controller
                     foreach ($transactionList as $key => $newTrans) {
                         $this->lmsRepo->saveTransaction($newTrans);
                     }
-                }                
+                }
                 /* Refund Process End */
 
                 if($paymentId){
