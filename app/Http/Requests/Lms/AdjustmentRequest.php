@@ -47,11 +47,11 @@ class AdjustmentRequest extends FormRequest
             foreach ($formData['check'] as $key => $value) {
                 $selectedPayment = $formData['refund'][$key] ?? 0;
                 $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);
-                $outstandingAmount = $transDetail->outstanding;
+                $outstandingAmount = $transDetail->settled_outstanding;
                 if (empty($selectedPayment)) {
                     $validator->errors()->add("refund.{$key}", 'Field is required against selected transaction');
                 }
-                if ($outstandingAmount < $selectedPayment) {
+                if (round($outstandingAmount,2) < round($selectedPayment,2)) {
                     $validator->errors()->add("refund.{$key}", 'Filed must be less than and equal to the remaining amount.');
                 }
             }
