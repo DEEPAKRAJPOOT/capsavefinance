@@ -247,6 +247,19 @@ trait InvoiceTrait
           
                  }
                  
+                 $getDupliInvoice  = self::checkDuplicateInvoiceInInvoice($inv_no,$chlLmsCusto['user_id']);
+               
+                 if($getDupliInvoice)
+                 {
+                     
+                      $multichk['status'] =0;
+                      $inv_no_var5.=$inv_no.',';
+                      $multichk['multiVali6'] = '* Following invoice Number ('.substr($inv_no_var5,0,-1).') already exists in our system.';
+          
+                 }
+
+                 
+                 
            }
            if($getLmsActive > 0)
            {
@@ -348,7 +361,14 @@ trait InvoiceTrait
     {
         
         return InvoiceBulkUpload::where(['invoice_no' => $invNo,'supplier_id' => $user_id])->first();
-    }  
+    }
+
+
+     public static function checkDuplicateInvoiceInInvoice($invNo,$user_id)
+    {
+
+        return BizInvoice::where(['invoice_no' => $invNo,'supplier_id' => $user_id])->first();
+    } 
         
        public static  function validateDate($date, $format = 'd-m-Y')
     { 
