@@ -1227,6 +1227,8 @@ class ApportionmentController extends Controller
 
     public function updateInvoiceRepaymentFlag(array $invDisbId){
         $invDisbs = InvoiceDisbursed::whereIn('invoice_disbursed_id',$invDisbId)->get();
+        // Update Invoice Disbursed Accrual Detail
+        InvoiceDisbursedDetail::updateDailyInterestAccruedDetails($invDisbId);
         foreach($invDisbs as $invd){
             $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
             $inv = BizInvoice::find($invd->invoice_id);
