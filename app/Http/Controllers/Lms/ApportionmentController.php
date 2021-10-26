@@ -1518,8 +1518,8 @@ class ApportionmentController extends Controller
                 foreach ($payments as $transDate => $payment) {
                     $paymentData = [
                         'user_id' => $transactions[0]->user_id,
-                        'biz_id' => $transactions[0]->linkTransactions->payment->biz_id,
-                        'virtual_acc' => $transactions[0]->linkTransactions->payment->virtual_acc,
+                        'biz_id' => $transactions[0]->payment->biz_id,
+                        'virtual_acc' => $transactions[0]->payment->virtual_acc,
                         'action_type' => 5,
                         'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT'),
                         'amount' => $payment['amount'],
