@@ -326,7 +326,7 @@ class CibilReportController extends Controller
 
     private function _getCRData($appBusiness) {
         $user = $appBusiness->users;
-        $outstanding = Transactions::getUserOutstanding($user->user_id);
+        $outstanding = $this->lmsRepo->getUnsettledTrans($user->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding');
         $sanctionDate = $appBusiness->sanctionDate->created_at ?? NULL;
         $prgmLimit = $appBusiness->prgmLimit->limit_amt ?? NULL;
         $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
