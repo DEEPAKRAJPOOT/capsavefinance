@@ -5457,6 +5457,24 @@ class DataRenderer implements DataProviderInterface
                                             $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
                                         }
                                     }
+                                    if($dataRecords->action_type == '5' && $dataRecords->trans_type == '31'){
+                                        if($dataRecords->isApportPayValid['isValid']){
+                                            if($dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING){
+                                                $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
+                                            }
+                                            
+                                            if((Auth::user()->user_id == $dataRecords->updated_by) && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED])){
+                                                $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
+                                            }
+                                            elseif((Auth::user()->user_id != $dataRecords->updated_by) && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED])) {
+                                                $user = User::find($dataRecords->updated_by);
+                                                $btn .= ($user->fullname ?? 'Someone') . ' is already trying to settle transactions';
+                                            }
+                                            
+                                        }elseif($dataRecords->isApportPayValid['error']){
+                                            $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
+                                        }
+                                    }
                                 }
 
                                 if(Helpers::checkPermission('apport_unsettledtds_view')){
