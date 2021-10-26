@@ -36,7 +36,7 @@ try {
                 {data: 'customer_address', width:'200px'},
                 {data: 'customer_gstn'},
                 {data: 'sac_code'},
-                // {data: 'contract_no'},
+                {data: 'interest_prd'},
                 {data: 'invoice_no'},
                 {data: 'invoice_date'},
                 {data: 'base_amount'},

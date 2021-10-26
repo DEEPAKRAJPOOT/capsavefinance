@@ -6725,7 +6725,7 @@ class DataRenderer implements DataProviderInterface
            ->editColumn('sac_code',  function ($invoiceRec) {
                return ($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
            })   
-           ->editColumn('contract_no',  function ($invoiceRec) {
+           ->editColumn('interest_prd',  function ($invoiceRec) {
                return 'HEL/'.($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
            })     
            ->editColumn('invoice_no', function ($invoiceRec) {

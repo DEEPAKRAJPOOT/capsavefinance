@@ -1,7 +1,7 @@
 <ul class="main-menu">
     @can('lease_register')
     <li>
-        <a class=" {{ ($active=='lease_register')? 'active': null }} " href="{{ route('lease_register') }}">Lease Register</a>
+        <a class=" {{ ($active=='lease_register')? 'active': null }} " href="{{ route('lease_register') }}">CFPL InvRegister</a>
     </li>
     @endcan
     @can('report_duereport')

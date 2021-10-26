@@ -9,7 +9,8 @@
         </div>
         <div class="header-title">
             <h3>Reports</h3>
-            <small>Lease Register Reports</small>
+            {{-- <small>Lease Register Reports</small> --}}
+            <small> CFPL InvRegister</small>
         </div>
     </section>
 
@@ -79,7 +80,7 @@
                                                     <th>Cust. Addr</th>
                                                     <th>Cust. GSTN</th>
                                                     <th>SAC Code</th>
-                                                    <!-- <th>Contract No</th> -->
+                                                    <th>Interest Period</th>
                                                     <th>Invoice No</th>
                                                     <th>Invoice Date</th>
                                                     <th>Base Amount</th>
