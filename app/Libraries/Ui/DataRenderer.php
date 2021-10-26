@@ -6726,7 +6726,20 @@ class DataRenderer implements DataProviderInterface
                return ($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
            })   
            ->editColumn('interest_prd',  function ($invoiceRec) {
-               return 'HEL/'.($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
+                if(isset($invoiceRec->trans)) {
+                    if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+                        $dueDate = strtotime($txn->toIntDate); // or your date as well
+                        $now = strtotime($txn->fromIntDate);
+                        $datediff = abs($dueDate - $now);
+                        $OdandInterestRate = $txn->InvoiceDisbursed->invoice->program_offer->overdue_interest_rate + $txn->InvoiceDisbursed->invoice->program_offer->interest_rate;
+                        $days = (round($datediff / (60 * 60 * 24)) + 1) . ' days -From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';                
+                    } else {
+                        $days = '---';
+                    } 
+                } else {
+                    $days = '---';
+                }
+               return $days;
            })     
            ->editColumn('invoice_no', function ($invoiceRec) {
                return $invoiceRec->invoice_no;
