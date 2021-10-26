@@ -279,6 +279,7 @@ class SoaController extends Controller
     }
 
     public function soaExcelDownload(Request $request){
+        ini_set("memory_limit", "-1");
         if($request->has('user_id')){
             if($request->user_id){
                 $data = $this->getUserLimitDetais($request->user_id);
