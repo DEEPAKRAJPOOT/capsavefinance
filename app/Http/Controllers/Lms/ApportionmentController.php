@@ -32,6 +32,7 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 
 class ApportionmentController extends Controller
 {
