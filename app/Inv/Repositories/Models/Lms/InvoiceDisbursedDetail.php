@@ -2,8 +2,12 @@
 
 namespace App\Inv\Repositories\Models\Lms;
 
-use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use DB;
+use Carbon\Carbon;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use App\Inv\Repositories\Models\Lms\InterestAccrual;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 
 class InvoiceDisbursedDetail extends BaseModel
 {
@@ -1066,5 +1070,14 @@ class InvoiceDisbursedDetail extends BaseModel
                 }
             }
         }
+    }
+
+    public static function updateDailyInterestAccruedDetails($invDisbId = null){
+        if($invDisbId){
+            $data = DB::update("UPDATE (SELECT `invoice_disbursed_id`, SUM(IF(interest_rate IS NOT NULL, accrued_interest, 0)) AS int_amt, SUM(IF(interest_rate IS NOT NULL, 1, 0)) AS int_days, MIN(IF(interest_rate IS NOT NULL, `interest_date`, NULL)) AS int_from, MAX(IF(interest_rate IS NOT NULL, `interest_date`, NULL)) AS int_to, SUM(IF(overdue_interest_rate IS NOT NULL, accrued_interest, 0)) AS od_amt, SUM(IF(overdue_interest_rate IS NOT NULL, 1, 0)) AS od_days, MIN(IF(overdue_interest_rate IS NOT NULL, `interest_date`, NULL)) AS od_from, MAX(IF(overdue_interest_rate IS NOT NULL, `interest_date`, NULL)) AS od_to FROM rta_interest_accrual GROUP BY invoice_disbursed_id) AS a JOIN rta_invoice_disbursed_details AS b ON a.`invoice_disbursed_id` = b.`invoice_disbursed_id` SET b.interest_accrued = a.int_amt, b.interest_days = a.int_days, b.interest_from = a.int_from, b.interest_to = a.int_to, b.overdue_accrued = a.od_amt, b.overdue_days = a.od_days, b.overdue_from = a.od_from, b.overdue_to = a.od_to, b.dpd = a.od_days - b.`grace_period` WHERE a.invoice_disbursed_id = b.invoice_disbursed_id and a.invoice_disbursed_id = '".$invDisbId."'");
+        }else{
+            $data = DB::update('UPDATE (SELECT `invoice_disbursed_id`, SUM(IF(interest_rate IS NOT NULL, accrued_interest, 0)) AS int_amt, SUM(IF(interest_rate IS NOT NULL, 1, 0)) AS int_days, MIN(IF(interest_rate IS NOT NULL, `interest_date`, NULL)) AS int_from, MAX(IF(interest_rate IS NOT NULL, `interest_date`, NULL)) AS int_to, SUM(IF(overdue_interest_rate IS NOT NULL, accrued_interest, 0)) AS od_amt, SUM(IF(overdue_interest_rate IS NOT NULL, 1, 0)) AS od_days, MIN(IF(overdue_interest_rate IS NOT NULL, `interest_date`, NULL)) AS od_from, MAX(IF(overdue_interest_rate IS NOT NULL, `interest_date`, NULL)) AS od_to FROM rta_interest_accrual GROUP BY invoice_disbursed_id) AS a JOIN rta_invoice_disbursed_details AS b ON a.`invoice_disbursed_id` = b.`invoice_disbursed_id` SET b.interest_accrued = a.int_amt, b.interest_days = a.int_days, b.interest_from = a.int_from, b.interest_to = a.int_to, b.overdue_accrued = a.od_amt, b.overdue_days = a.od_days, b.overdue_from = a.od_from, b.overdue_to = a.od_to, b.dpd = a.od_days - b.`grace_period` WHERE a.invoice_disbursed_id = b.invoice_disbursed_id');
+        }
+        return $data;
     }
 }
