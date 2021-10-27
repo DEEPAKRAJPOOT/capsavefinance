@@ -32,6 +32,7 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 
 class ApportionmentController extends Controller
 {
@@ -1238,6 +1239,8 @@ class ApportionmentController extends Controller
     public function updateInvoiceRepaymentFlag(array $invDisbId){
         $invDisbs = InvoiceDisbursed::whereIn('invoice_disbursed_id',$invDisbId)->get();
         foreach($invDisbs as $invd){
+            // Update Invoice Disbursed Accrual Detail
+            InvoiceDisbursedDetail::updateDailyInterestAccruedDetails($invd);
             $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
             $inv = BizInvoice::find($invd->invoice_id);
             if($flag['is_settled']){
@@ -1525,8 +1528,8 @@ class ApportionmentController extends Controller
                 foreach ($payments as $transDate => $payment) {
                     $paymentData = [
                         'user_id' => $transactions[0]->user_id,
-                        'biz_id' => $transactions[0]->linkTransactions->payment->biz_id,
-                        'virtual_acc' => $transactions[0]->linkTransactions->payment->virtual_acc,
+                        'biz_id' => $transactions[0]->payment->biz_id,
+                        'virtual_acc' => $transactions[0]->payment->virtual_acc,
                         'action_type' => 5,
                         'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT'),
                         'amount' => $payment['amount'],
