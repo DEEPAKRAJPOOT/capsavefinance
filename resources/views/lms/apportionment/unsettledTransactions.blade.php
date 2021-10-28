@@ -4,6 +4,17 @@
     .Lh-3{
         line-height:2.5;
     }
+    .table-wrapper-scroll-y {
+        display: block;
+    }
+    .my-custom-scrollbar {
+        position: relative;
+        height: 50vh;
+        overflow: auto;
+    }
+    .ps--active-x .ps__scrollbar-x-rail {
+        display: none !important;
+    }
 </style>
 @endsection
 
@@ -47,7 +58,7 @@
             <div class="row">
                 @include('lms.apportionment.common.listUnsettledTransactions')
             </div>
-            <div class="row pull-right action-btn">
+            <div class="row pull-right action-btn mt-2">
                 <div class="col-md-12" >
                     @if($paymentId) 
                         @can('apport_mark_settle_confirmation')
@@ -87,6 +98,13 @@
         old_data: {!! json_encode($oldData) !!},
         token: "{{ csrf_token() }}",
     };
+
+    jQuery(document).ready(function ($) {
+        setTimeout(() => {
+            $('.table-responsive').scrollLeft($('.table-responsive').scrollLeft() + 20);
+        }, 1000);
+    }); 
+    
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/lms/apportionment.js') }}"></script>

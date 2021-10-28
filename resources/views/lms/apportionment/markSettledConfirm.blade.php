@@ -5,6 +5,17 @@
     .Lh-3{
         line-height:2.5;
     }
+    .my-custom-scrollbar {
+        position: relative;
+        height: 50vh;
+        overflow: auto;
+    }
+    .table-wrapper-scroll-y {
+        display: block;
+    }
+    .ps--active-x .ps__scrollbar-x-rail {
+        display: none !important;
+    }
 </style>
 @endsection
 
@@ -39,7 +50,7 @@
                         <div class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
+                                    <div class="table-responsive ps ps--theme_default table-wrapper-scroll-y my-custom-scrollbar" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
                                         <table class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                             <thead>
                                                 <tr role="row">                                                   
@@ -84,7 +95,7 @@
             
             <form action="{{ route('apport_mark_settle_save',[ 'user_id' => $userId , 'payment_id' => $paymentId,'sanctionPageView'=>$sanctionPageView]) }}" method="post" >
              @csrf	
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-md-10">
                     <label>
                         <input type="checkbox" name="confirm" required>
