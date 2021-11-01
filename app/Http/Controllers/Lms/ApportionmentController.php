@@ -967,7 +967,6 @@ class ApportionmentController extends Controller
                     }
                 }
                 
-                $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId, $useApporCol = true);
                 /* Refund Process End */
 
                 if($paymentId){
