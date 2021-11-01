@@ -97,8 +97,12 @@ class Apportionment {
                 if(id == 'unsettledTransactions'){
                     if($(".pay").length){
                         $('#mark_settle_btn').removeAttr("disabled");
+                        $('#dwnldUnTransCsv').removeClass("disabled");
+                        $('#uploadUnTransCsv').removeClass("disabled");
                     }else{
                         $('#mark_settle_btn').prop("disabled", true);
+                        $('#dwnldUnTransCsv').addCss("disabled");
+                        $('#uploadUnTransCsv').addCss("disabled");
                     }
                     parentRef.setTransactionAmt();
                 }

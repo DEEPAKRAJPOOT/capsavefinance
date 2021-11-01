@@ -38,7 +38,8 @@ class ApportionmentRequest extends FormRequest
 
     public function withValidator($validator){
         $formData = $validator->getData();
-
+        ///echo "<pre>";print_r($formData);
+        ///die;
         $validator->after(function ($validator) use ($formData) {
             $totalselectedAmount = 0;
             $totalRePayAmount = 0;
@@ -62,6 +63,12 @@ class ApportionmentRequest extends FormRequest
             //}
             if(isset($formData['settlement']) && $formData['settlement'] == 'TDS'){
                 if(isset($formData['check'])){
+                    $formData['check'] = $formData['check'];
+                    $formData['payment'] = $formData['payment'];
+                    if(isset($formData['type']) && $formData['type'] == 'uploadCsv'){
+                        $formData['check'] = unserialize(base64_decode($formData['check']));
+                        $formData['payment'] = unserialize(base64_decode($formData['payment']));
+                    }
                     foreach ($formData['check'] as $key => $value) {
                         $selectedPayment = $formData['payment'][$key] ?? 0;
                         $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);
@@ -81,6 +88,12 @@ class ApportionmentRequest extends FormRequest
                 }
             } else {
                 if(isset($formData['check'])){
+                    $formData['check'] = $formData['check'];
+                    $formData['payment'] = $formData['payment'];
+                    if(isset($formData['type']) && $formData['type'] == 'uploadCsv'){
+                        $formData['check'] = unserialize(base64_decode($formData['check']));
+                        $formData['payment'] = unserialize(base64_decode($formData['payment']));
+                    }
                     foreach ($formData['check'] as $key => $value) {
                         $selectedPayment = $formData['payment'][$key] ?? 0;
                         $transDetail = $this->lmsRepo->getTransDetail(['trans_id' => $key]);
