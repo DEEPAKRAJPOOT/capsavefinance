@@ -37,6 +37,7 @@ try {
                 {data: 'customer_gstn'},
                 {data: 'sac_code'},
                 {data: 'interest_prd'},
+                {data: 'cap_invoice_no'},
                 {data: 'invoice_no'},
                 {data: 'invoice_date'},
                 {data: 'base_amount'},

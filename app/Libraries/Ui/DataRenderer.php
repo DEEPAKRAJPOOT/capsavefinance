@@ -6741,8 +6741,12 @@ class DataRenderer implements DataProviderInterface
                 }
                return $days;
            })     
+           ->editColumn('cap_invoice_no', function ($invoiceRec) {
+               return $invoiceRec->capinvoice;
+           })    
            ->editColumn('invoice_no', function ($invoiceRec) {
-               return $invoiceRec->invoice_no;
+            //    dd($invoiceRec);
+               return $invoiceRec->invoice;
            })    
            ->editColumn('invoice_date', function ($invoiceRec) {
                return date('d-m-Y', strtotime($invoiceRec->invoice_date));

@@ -81,6 +81,7 @@
                                                     <th>Cust. GSTN</th>
                                                     <th>SAC Code</th>
                                                     <th>Interest Period</th>
+                                                    <th>Capsave Invoice No</th>
                                                     <th>Invoice No</th>
                                                     <th>Invoice Date</th>
                                                     <th>Base Amount</th>
