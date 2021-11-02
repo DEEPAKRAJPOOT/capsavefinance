@@ -290,6 +290,14 @@ class ReportController extends Controller
 		 $total_rate =  ($lease->sgst_rate + $lease->cgst_rate + $lease->igst_rate);
 		 $total_tax =  ($lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
 		 $total_amount =  ($lease->base_amount + $lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
+		if(isset($lease->invoice_date) && isset($lease->due_date)) {
+			$dueDate = strtotime($lease->invoice_date); // or your date as well
+			$now = strtotime($lease->due_date);
+			$datediff = abs($dueDate - $now);
+			$days = (round($datediff / (60 * 60 * 24)) + 1) . ' days -From:' . date('d-M-Y', strtotime($lease->invoice_date)) . " to " . date('d-M-Y', strtotime($lease->due_date)) /* . ' @ ' . $OdandInterestRate . '%' */;                
+		} else {
+			$days = '---';
+		}		 
 		 $leaseArr[] = [
 			'State' => $lease->name, 
 			'GSTN' => ($inv_comp_data['gst_no'] ?? $lease->biz_gst_no), 
@@ -299,7 +307,9 @@ class ReportController extends Controller
 			'Cust. GSTN' => $lease->biz_gst_no, 
 			'SAC Code' => $sac_code, 
 			// 'Contract No' => $contract_no, 
-			'Invoice No' => $lease->invoice_no, 
+			'Interest Period' => $days, 
+			'Capsave Invoice No' => $lease->capinvoice, 
+			'Invoice No' => $lease->invoice, 
 			'Invoice Date' => $lease->invoice_date, 
 			'Base Amount' => number_format($lease->base_amount, 2), 
 			'SGST Rate' => ($lease->sgst_rate != 0 ? $lease->sgst_rate .'%' : '-'), 
@@ -317,11 +327,11 @@ class ReportController extends Controller
 	   }
 	   if (strtolower($request->type) == 'excel') {
 		   $toExportData['Lease Register'] = $leaseArr;
-		   return $this->fileHelper->array_to_excel($toExportData, 'leaseRegisterReport.xlsx', $moreDetails);
+		   return $this->fileHelper->array_to_excel($toExportData, 'CFPL_InvRegister.xlsx', $moreDetails);
 	   }
 	   $pdfArr = ['pdfArr' => $leaseArr, 'filter' => $condArr];
 	   $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.leaseRegisterReport');
-	   return $pdf->download('leaseRegisterReport.pdf');        
+	   return $pdf->download('CFPL_InvRegister.pdf');        
 	}
 	
 	 public function duereport(Request $request) {
