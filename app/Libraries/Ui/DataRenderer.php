@@ -6818,7 +6818,7 @@ class DataRenderer implements DataProviderInterface
                 if($request->get('user_id')!= ''){
                     $query->where(function ($query) use ($request) {
                         $user_id = trim($request->get('user_id'));
-                        $query->where('transactions.user_id', '=',$user_id);
+                        $query->where('user_invoice.user_id', '=',$user_id);
                     });
                 }
               

@@ -254,11 +254,12 @@ class ReportController extends Controller
 	   if(!empty($request->get('from_date')) && !empty($request->get('to_date'))){
 			$from_date = $request->get('from_date');
 			$to_date = $request->get('to_date');
-			$cond[] = " invoice_date between '$from_date' AND '$to_date' ";
+			$cond[] = " rta_user_invoice.invoice_date between '$from_date' AND '$to_date' ";
+			// dd($cond);
 	   }
 	   if(!empty($request->get('user_id'))){
 			$user_id = $request->get('user_id');
-			$cond[] = " user_id='$user_id' ";
+			$cond[] = " rta_user_invoice.user_id='$user_id' ";
 			$userInfo = $this->reportsRepo->getCustomerDetail($user_id);
 	   }
 	   if (!empty($cond)) {
