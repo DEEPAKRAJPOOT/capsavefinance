@@ -248,6 +248,7 @@ class ReportController extends Controller
 	}
 	
 	public function downloadLeaseReport(Request $request) {
+		ini_set("memory_limit", "-1");
 	   $whereRaw = '';
 	   $userInfo = '';
 	   if(!empty($request->get('from_date')) && !empty($request->get('to_date'))){
