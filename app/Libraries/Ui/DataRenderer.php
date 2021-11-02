@@ -6743,11 +6743,28 @@ class DataRenderer implements DataProviderInterface
            ->editColumn('sac_code',  function ($invoiceRec) {
                return ($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
            })   
-           ->editColumn('contract_no',  function ($invoiceRec) {
-               return 'HEL/'.($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
+           ->editColumn('interest_prd',  function ($invoiceRec) {
+                if(isset($invoiceRec->invoice_date) && isset($invoiceRec->due_date)) {
+                    // if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+                        $dueDate = strtotime($invoiceRec->invoice_date); // or your date as well
+                        $now = strtotime($invoiceRec->due_date);
+                        $datediff = abs($dueDate - $now);
+                        // $OdandInterestRate = $txn->InvoiceDisbursed->invoice->program_offer->overdue_interest_rate + $txn->InvoiceDisbursed->invoice->program_offer->interest_rate;
+                        $days = (round($datediff / (60 * 60 * 24)) + 1) . ' days -From:' . date('d-M-Y', strtotime($invoiceRec->invoice_date)) . " to " . date('d-M-Y', strtotime($invoiceRec->due_date)) /* . ' @ ' . $OdandInterestRate . '%' */;                
+                    // } else {
+                    //     $days = '---';
+                    // } 
+                } else {
+                    $days = '---';
+                }
+               return $days;
            })     
+           ->editColumn('cap_invoice_no', function ($invoiceRec) {
+               return $invoiceRec->capinvoice;
+           })    
            ->editColumn('invoice_no', function ($invoiceRec) {
-               return $invoiceRec->invoice_no;
+            //    dd($invoiceRec);
+               return $invoiceRec->invoice;
            })    
            ->editColumn('invoice_date', function ($invoiceRec) {
                return date('d-m-Y', strtotime($invoiceRec->invoice_date));
