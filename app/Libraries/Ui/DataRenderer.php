@@ -6812,13 +6812,13 @@ class DataRenderer implements DataProviderInterface
                     $query->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
-                        $query->WhereBetween('invoice_date', [$from_date, $to_date]);
+                        $query->WhereBetween('user_invoice.invoice_date', [$from_date, $to_date]);
                     });
                 }
                 if($request->get('user_id')!= ''){
                     $query->where(function ($query) use ($request) {
                         $user_id = trim($request->get('user_id'));
-                        $query->where('user_id', '=',$user_id);
+                        $query->where('user_invoice.user_id', '=',$user_id);
                     });
                 }
               
