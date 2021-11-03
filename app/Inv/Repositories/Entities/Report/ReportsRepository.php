@@ -468,18 +468,10 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		}
 		return $result;
 	}
-
-
-
-
-
-
-        public function getMarginReport($whereCondition=[], &$sendMail){
-		$curdate = Helper::getSysStartDate();
-		$curdate = Carbon::parse($curdate)->format('Y-m-d');
-
-                $invDisbList = DB::select("SELECT * FROM margin_report");
-                $sendMail = (count($invDisbList) > 0)?true:false;
+    
+	public function getMarginReport($whereCondition=[], &$sendMail){
+        $invDisbList = DB::select("SELECT * FROM margin_report");
+        $sendMail = (count($invDisbList) > 0)?true:false;
  		$result = [];
 		foreach($invDisbList as $invDisb){
 			$result[] = [
@@ -490,7 +482,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'invoice_date'=>$invDisb->invoice_date,
 				'invoice_amount' => $invDisb->invoice_amount,
 				'disbursed_amt' => $invDisb->disbursed_amt,
-                                'disbursal_date'=>$invDisb->disbursal_date,
+                'disbursal_date'=>$invDisb->disbursal_date,
 				'margin_per'=>$invDisb->margin_per,
 				'margin_allocated'=>$invDisb->margin_allocated,
 				'margin_outstanding'=> $invDisb->margin_outstanding

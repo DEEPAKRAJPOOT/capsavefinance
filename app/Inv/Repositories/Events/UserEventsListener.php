@@ -1008,7 +1008,6 @@ class UserEventsListener extends BaseEvent
         });
     }
 
-
     public function onMarginReport($mailData){
         $data = unserialize($mailData);
         $this->func_name = __FUNCTION__;
