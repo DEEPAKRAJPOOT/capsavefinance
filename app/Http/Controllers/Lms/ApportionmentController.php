@@ -32,6 +32,8 @@ use App\Inv\Repositories\Contracts\ApplicationInterface as InvAppRepoInterface;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
+use App\Helpers\FileHelper;
 
 class ApportionmentController extends Controller
 {
@@ -631,6 +633,7 @@ class ApportionmentController extends Controller
      * Unsettled Transaction marked Settled
      */
     public function markSettleConfirmation(ApportionmentRequest $request){
+        //dd($request->all());
         try {
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
@@ -646,6 +649,10 @@ class ApportionmentController extends Controller
             $paymentId = $request->payment_id;
             $payments = ($request->payment)?$request->payment:[];
             $checks   = ($request->has('check'))?$request->check:[];
+            if($request->has('type') && $request->type == 'uploadCsv'){
+                $checks  = ($request->has('check'))?unserialize(base64_decode($request->check)):[];
+                $payments = ($request->payment)?unserialize(base64_decode($request->payment)):[];
+            }
             $userDetails = $this->getUserDetails($userId); 
             $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
 
@@ -845,6 +852,7 @@ class ApportionmentController extends Controller
                     if($trans->invoice_disbursed_id){
 
                         $invoiceList[$trans->invoice_disbursed_id] = [
+                            'invoice_id'=> $trans->invoiceDisbursed->invoice_id,
                             'payment_due_date'=>$trans->invoiceDisbursed->payment_due_date,
                             'grace_period'=>$trans->invoiceDisbursed->grace_period,
                             'invoice_disbursed_id'=>$trans->invoice_disbursed_id,
@@ -926,31 +934,39 @@ class ApportionmentController extends Controller
                     $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId, $useApporCol = true);
                 }
                 $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
-
                 /* Refund Process Start */
-                /*
+                $transactionList = [];
                 foreach ($invoiceList as $invDisb) {
-                    $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
-                    $refundParentTrans = $refundData->get('parent_transaction');
-                    $refundAmt = $refundData->get('amount');
-                    if($refundAmt > 0 && $refundParentTrans){
-                        $transactionList[] = [
-                            'payment_id' => $paymentId,
-                            'apportionment_id'=> $paymentId,
-                            'link_trans_id' => $refundParentTrans->trans_id,
-                            'parent_trans_id' => $refundParentTrans->trans_id,
-                            'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
-                            'user_id' => $userId,
-                            'trans_date' => $invDisb['date_of_payment'],
-                            'amount' => $refundAmt,
-                            'soa_flag' => 1,
-                            'entry_type' => 1,
-                            'trans_type' => config('lms.TRANS_TYPE.REFUND'),
-                            'trans_mode' => 2,
-                        ];
+                    $is_repayment = BizInvoice::where('invoice_id',$invDisb['invoice_id'])->value('is_repayment');
+                    if($is_repayment == '1'){ 
+                        $refundData = $this->lmsRepo->calInvoiceRefund($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment']);
+                        $refundParentTrans = $refundData->get('parent_transaction');
+                        $refundAmt = $refundData->get('amount');
+                        if($refundAmt > 0 && $refundParentTrans){
+                            $transactionList[] = [
+                                'payment_id' => $paymentId,
+                                'apportionment_id'=> $paymentId,
+                                'link_trans_id' => $refundParentTrans->trans_id,
+                                'parent_trans_id' => $refundParentTrans->trans_id,
+                                'invoice_disbursed_id' => $refundParentTrans->invoice_disbursed_id,
+                                'user_id' => $userId,
+                                'trans_date' => $invDisb['date_of_payment'],
+                                'amount' => $refundAmt,
+                                'soa_flag' => 1,
+                                'entry_type' => 1,
+                                'trans_type' => config('lms.TRANS_TYPE.REFUND'),
+                                'trans_mode' => 2,
+                            ];
+                        }
                     }
                 }
-                */
+
+                if(!empty($transactionList)){
+                    foreach ($transactionList as $key => $newTrans) {
+                        $this->lmsRepo->saveTransaction($newTrans);
+                    }
+                }
+                
                 /* Refund Process End */
 
                 if($paymentId){
@@ -1228,6 +1244,8 @@ class ApportionmentController extends Controller
     public function updateInvoiceRepaymentFlag(array $invDisbId){
         $invDisbs = InvoiceDisbursed::whereIn('invoice_disbursed_id',$invDisbId)->get();
         foreach($invDisbs as $invd){
+            // Update Invoice Disbursed Accrual Detail
+            InvoiceDisbursedDetail::updateDailyInterestAccruedDetails($invd);
             $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
             $inv = BizInvoice::find($invd->invoice_id);
             if($flag['is_settled']){
@@ -1515,8 +1533,8 @@ class ApportionmentController extends Controller
                 foreach ($payments as $transDate => $payment) {
                     $paymentData = [
                         'user_id' => $transactions[0]->user_id,
-                        'biz_id' => $transactions[0]->linkTransactions->payment->biz_id,
-                        'virtual_acc' => $transactions[0]->linkTransactions->payment->virtual_acc,
+                        'biz_id' => $transactions[0]->payment->biz_id,
+                        'virtual_acc' => $transactions[0]->payment->virtual_acc,
                         'action_type' => 5,
                         'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT'),
                         'amount' => $payment['amount'],
@@ -1715,6 +1733,7 @@ class ApportionmentController extends Controller
     }
 
     public function markSettleConfirmationTDS(ApportionmentRequest $request){
+        //dd($request->all());
         try {
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
@@ -1730,7 +1749,10 @@ class ApportionmentController extends Controller
             $paymentId = $request->payment_id;
             $payments = ($request->payment)?$request->payment:[];
             $checks   = ($request->has('check'))?$request->check:[];
-
+            if($request->has('type') && $request->type == 'uploadCsv'){
+                $checks  = ($request->has('check'))?unserialize(base64_decode($request->check)):[];
+                $payments = ($request->payment)?unserialize(base64_decode($request->payment)):[];
+            }
             $userDetails = $this->getUserDetails($userId); 
             $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
 
@@ -1784,6 +1806,7 @@ class ApportionmentController extends Controller
             $unAppliedAmt = (float) round(($repaymentAmt - $amtToSettle),2);
 
             $totalOutstanding = (float) round($totalOutstanding,2);
+            //dd($paymentDetails);
             if($paymentDetails['action_type'] == '3' &&  $paymentDetails['trans_type'] == '7'){
                 if($unAppliedAmt > 0 && $totalOutstanding > 0){
                     Session::flash('error', trans('You cannot settle partial TDS amount, please use full TDS amount for settlement.'));
@@ -1991,4 +2014,291 @@ class ApportionmentController extends Controller
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
+
+    public function downloadApportUnsettledTrans(Request $request){
+     //dd($request->all());
+        try {
+            set_time_limit(0);
+            $userId = $request->user_id;
+            $paymentId = null;
+            $payment_date = null;
+            $payment = null;
+            $transactions = null;
+            $unInvCnt = BizInvoice::where('supplier_id', $userId)->whereHas('invoice_disbursed')->where('is_repayment','0')->count();
+            $showSuggestion = ($unInvCnt <= 50) ?true:false; 
+            $date_of_payment = null;
+            if($request->has('payment_id')){
+                $paymentId = $request->payment_id;
+                $payment = $this->lmsRepo->getPaymentDetail($paymentId,$userId);    
+                $date_of_payment = $payment->date_of_payment;
+            }
+            
+        $transactions = $this->getUnsettledTrans($userId, $date_of_payment);
+        $columns = ["Trans Date","Invoice No","Trans Type","Total Repay Amt","Outstanding Amt","Payment"];
+        $unTransactions = [];
+        foreach ($transactions as $trans) {
+            $invoiceNo = '-';
+            if($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id){
+                $invoiceNo = $trans->invoiceDisbursed->invoice->invoice_no;
+            }
+            $totalPay= \Helpers::formatCurrencyNoSymbol($trans->amount);
+            $outStanding = \Helpers::formatCurrencyNoSymbol($trans->outstanding);
+            $unTransactions[]= [
+                'Trans Date' => Carbon::parse($trans->parenttransdate)->format('d-m-Y'), 
+                'Invoice No' => $invoiceNo, 
+                'Trans Type' =>  $trans->transName, 
+                'Total Repay Amt' => $totalPay, 
+                'Outstanding Amt' => $outStanding, 
+                'Payment' => ''
+            ];
+        }
+        $fileHelper = new FileHelper($this->appRepo);
+        //$arrvar = ['unTransactions' => $unTransactions];
+        //return $fileHelper->array_to_excel($arrvar, 'UnsettledTransactions.xlsx');
+        return $fileHelper->exportCsv($unTransactions,$columns,'UnsettledTransactions.csv');
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+       }
+    }
+
+    public function uploadApportUnsettledTrans(Request $request){
+        set_time_limit(0);
+        $sanctionPageView = false;
+        if($request->has('sanctionPageView')){
+            $sanctionPageView = $request->get('sanctionPageView');
+        }
+        $userId = $request->user_id;
+        $paymentId = $request->payment_id;
+        $type = $request->type;
+        if($request->has('type') && $type == 'UploadForm'){
+            //dd($request->all());
+            try {
+                $validatedData = Validator::make($request->all(),[
+                    'upload_unsettled_trans' => 'required'
+                ],[
+                    'upload_unsettled_trans.required' => 'This field is required.',
+                ])->validate();
+    
+                $uploadedFile = $request->file('upload_unsettled_trans');
+                $destinationPath = storage_path() . '/uploads';
+                
+                $fileName = time();
+                if ($uploadedFile->isValid()) {
+                    $uploadedFile->move($destinationPath, $fileName);
+                }
+    
+                $fullFilePath  = $destinationPath . '/' . $fileName;
+                /*$header = [
+                    0,1,2,3,4,5
+                ];*/
+    
+                $fileHelper = new FileHelper($this->appRepo);
+                //$fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
+                $fileArrayData = $fileHelper->csvToArray($fullFilePath, $delimiter = ',');
+                 //dd($fileArrayData);
+                if($fileArrayData['status'] != 'success'){
+                    Session::flash('message', 'Please fill the data countiously till 6th column in the sheet');
+                    return redirect()->back();
+                }
+                $rowData = $fileArrayData['data'];
+                if (empty($rowData)) {
+                    Session::flash('message', 'File does not contain any record');
+                    return redirect()->back();                     
+                }
+                //dd($rowData);
+                foreach($rowData as $key => $value){
+                    if ((empty($value['Trans Date']) || empty($value['Invoice No']) || empty($value['Trans Type']) || empty($value['Total Repay Amt']) || empty($value['Outstanding Amt']))) {
+                        Session::flash('message', 'Please fill the correct details.');
+                        return redirect()->back();                     
+                    }
+                }
+                $transactions = $this->getUnsettledTrans($userId);
+                //dd($transactions);
+                $payment = $check = [];
+                foreach ($rowData as $key => $value) {
+                    if ((empty($value['Trans Date']) || empty($value['Invoice No']) || empty($value['Trans Type']) || empty($value['Total Repay Amt']) || empty($value['Outstanding Amt']))) {
+                        Session::flash('message', 'Please fill the correct details.');
+                        return redirect()->back();                     
+                    }
+                    //$check[$transactions[$key]['trans_id']] = 'off';
+                   if(!empty($value['Payment']) && $value['Payment'] != ''){
+                     $check[$transactions[$key]['trans_id']] = 'on';
+                     $payment[$transactions[$key]['trans_id']] = $value['Payment']; 
+                   }          
+                }
+                unlink($destinationPath . '/' . $fileName);
+                Session::flash('is_accept', 1);
+                return redirect()->route('apport_mark_settle_confirmation',[
+                    'user_id' => $request->user_id,
+                    'payment_id' => $request->payment_id,
+                    'payment' => base64_encode(serialize($payment)),
+                    'check' => base64_encode(serialize($check)),
+                    'type' => 'uploadCsv'
+                ]);          
+            } catch (Exception $ex) {
+                 return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
+        }else{
+            return view('lms.apportionment.uploadApportUnsettledTrans',[
+                'paymentId' => $paymentId,
+                'userId' => $userId,
+                'sanctionPageView'=>$sanctionPageView
+            ]); 
+        }
+        
+    }
+    /**
+     * Get Unsettled Transactions 
+     * @param int $userId
+     * @return \Illuminate\Http\Response
+     */
+    private function getUnsettledTransTDS(int $userId){
+        $transactionList = new Collection();
+        
+        $invoiceTrans = $this->lmsRepo->getUnsettledSettledTDSTrans($userId);
+        //$invoiceTrans = $invoiceTrans->sortBy('paymentDueDate');
+        foreach($invoiceTrans as $trans){
+            $transactionList->push($trans);
+        }
+
+        return $transactionList; 
+    }
+    public function downloadApportUnsettledTdsTrans(Request $request){
+        //dd($request->all());
+           try {
+               set_time_limit(0);
+               $userId = $request->user_id;
+               $paymentId = null;
+               $payment_date = null;
+               $payment = null;
+               $transactions = null;
+               if($request->has('payment_id')){
+                $paymentId = $request->payment_id;
+                $payment = $this->lmsRepo->getPaymentDetail($paymentId,$userId);    
+            }
+            if(!$transactions){
+                $transactions = $this->lmsRepo->getUnsettledSettledTDSTrans($userId);
+            }
+           $columns = ["Trans Date","Invoice No","Trans Type","Total Repay Amt","Outstanding TDS Amt","TDS Payment"];
+           $unTransactions = [];
+           foreach ($transactions as $trans) {
+               $invoiceNo = '-';
+               if($trans->InvoiceNo){
+                   $invoiceNo = $trans->InvoiceNo;
+               }
+               $totalPay= \Helpers::formatCurrencyNoSymbol($trans->amount);
+               $outStanding = \Helpers::formatCurrencyNoSymbol($trans->TDSAmount);
+               $unTransactions[]= [
+                   'Trans Date' => Carbon::parse($trans->parenttransdate)->format('d-m-Y'), 
+                   'Invoice No' => $invoiceNo, 
+                   'Trans Type' =>  $trans->transName, 
+                   'Total Repay Amt' => $totalPay, 
+                   'Outstanding TDS Amt' => $outStanding, 
+                   'TDS Payment' => ''
+               ];
+           }
+           $fileHelper = new FileHelper($this->appRepo);
+           //$arrvar = ['unTransactions' => $unTransactions];
+           //return $fileHelper->array_to_excel($arrvar, 'UnsettledTransactions.xlsx');
+           return $fileHelper->exportCsv($unTransactions,$columns,'UnsettledTdsTransactions.csv');
+           } catch (Exception $ex) {
+               return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+          }
+       }
+
+       public function uploadApportUnsettledTdsTrans(Request $request){
+        set_time_limit(0);
+        $sanctionPageView = false;
+        if($request->has('sanctionPageView')){
+            $sanctionPageView = $request->get('sanctionPageView');
+        }
+        $userId = $request->user_id;
+        $paymentId = $request->payment_id;
+        $type = $request->type;
+        if($request->has('type') && $type == 'UploadForm'){
+            //dd($request->all());
+            try {
+                $validatedData = Validator::make($request->all(),[
+                    'upload_unsettled_tds_trans' => 'required'
+                ],[
+                    'upload_unsettled_tds_trans.required' => 'This field is required.',
+                ])->validate();
+    
+                $uploadedFile = $request->file('upload_unsettled_tds_trans');
+                $destinationPath = storage_path() . '/uploads';
+                
+                $fileName = time();
+                if ($uploadedFile->isValid()) {
+                    $uploadedFile->move($destinationPath, $fileName);
+                }
+    
+                $fullFilePath  = $destinationPath . '/' . $fileName;
+                /*$header = [
+                    0,1,2,3,4,5
+                ];*/
+    
+                $fileHelper = new FileHelper($this->appRepo);
+                //$fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
+                $fileArrayData = $fileHelper->csvToArray($fullFilePath, $delimiter = ',');
+                 //dd($fileArrayData);
+                if($fileArrayData['status'] != 'success'){
+                    Session::flash('message', 'Please fill the data countiously till 6th column in the sheet');
+                    return redirect()->back();
+                }
+                $rowData = $fileArrayData['data'];
+                //dd($rowData);
+                if (empty($rowData)) {
+                    Session::flash('message', 'File does not contain any record');
+                    return redirect()->back();                     
+                }
+                //dd($rowData);
+                foreach($rowData as $key => $value){
+                    if ((empty($value['Trans Date']) || empty($value['Invoice No']) || empty($value['Trans Type']) || empty($value['Total Repay Amt']) || empty($value['Outstanding TDS Amt']))) {
+                        Session::flash('message', 'Please fill the correct details.');
+                        return redirect()->back();                     
+                    }
+                }
+                //$transactions = $this->lmsRepo->getUnsettledSettledTDSTrans($userId);
+                $transactions =  $this->getUnsettledTransTDS($userId);
+                //dd($transactions);
+                $payment = $check = [];
+                //dd($rowData);
+                foreach ($rowData as $key => $value) {
+                    if ((empty($value['Trans Date']) || empty($value['Invoice No']) || empty($value['Trans Type']) || empty($value['Total Repay Amt']) || empty($value['Outstanding TDS Amt']))) {
+                        Session::flash('message', 'Please fill the correct details.');
+                        return redirect()->back();                     
+                    }
+                    //$check[$transactions[$key]['trans_id']] = 'off';
+                   if(!empty($value['TDS Payment']) && $value['TDS Payment'] != ''){
+                     $check[$transactions[$key]['trans_id']] = 'on';
+                     $payment[$transactions[$key]['trans_id']] = $value['TDS Payment']; 
+                   }          
+                }
+                //dd($check);
+                //dd($payment);
+                unlink($destinationPath . '/' . $fileName);
+                Session::flash('is_accept', 1);
+                return redirect()->route('apport_mark_settle_confirmation_tds',[
+                    'user_id' => $request->user_id,
+                    'payment_id' => $request->payment_id,
+                    'payment' => base64_encode(serialize($payment)),
+                    'check' => base64_encode(serialize($check)),
+                    'type' => 'uploadCsv',
+                    'settlement' => 'TDS',
+                    'sanctionPageView'=>$sanctionPageView
+                ]);          
+            } catch (Exception $ex) {
+                 return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            }
+        }else{
+            return view('lms.apportionment.uploadApportUnsettledTdsTrans',[
+                'paymentId' => $paymentId,
+                'userId' => $userId,
+                'sanctionPageView'=>$sanctionPageView
+            ]); 
+        }
+        
+    }
+
+
 }

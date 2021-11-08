@@ -72,7 +72,7 @@ class CibilReports extends BaseModel {
     
     public static function saveCibilReportsData(array $attributes = []) {
         $created_at = \carbon\Carbon::now();
-        $user_id = Auth::user()->user_id;
+        $user_id = Auth::user()->user_id ?? 1;
         if (!is_array($attributes)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }

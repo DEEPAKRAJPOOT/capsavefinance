@@ -784,7 +784,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'uses' => 'Lms\ApportionmentController@saveSettledTrans',
                     ]);
 
-                    Route::post('/mark/settle/confirmation', [
+                    Route::match(['get', 'post'],'/mark/settle/confirmation', [
                         'as' => 'apport_mark_settle_confirmation',
                         'uses' => 'Lms\ApportionmentController@markSettleConfirmation',
                     ]);
@@ -859,7 +859,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'uses' => 'Lms\ApportionmentController@listUnsettledSettledTDSTrans',
                     ]);
 
-                    Route::post('/mark/settle/confirmation/tds', [
+                    Route::match(['get', 'post'],'/mark/settle/confirmation/tds', [
                         'as' => 'apport_mark_settle_confirmation_tds',
                         'uses' => 'Lms\ApportionmentController@markSettleConfirmationTDS',
                     ]);
@@ -867,6 +867,26 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::post('/tds/mark/settle/save', [
                         'as' => 'tds_apport_mark_settle_save',
                         'uses' => 'Lms\ApportionmentController@TDSMarkSettleSave',
+                    ]);
+
+                    Route::get('/download/apportionment-unsettled-transactions', [
+                        'as' => 'download_apport_unsettled_trans',
+                        'uses' => 'Lms\ApportionmentController@downloadApportUnsettledTrans',
+                    ]);
+
+                    Route::match(['get', 'post'],'/upload/apportionment-unsettled-transactions', [
+                        'as' => 'upload_apport_unsettled_trans',
+                        'uses' => 'Lms\ApportionmentController@uploadApportUnsettledTrans',
+                    ]);
+
+                    Route::get('/download/apportionment-unsettled-tds-transactions', [
+                        'as' => 'download_apport_unsettled_tds_trans',
+                        'uses' => 'Lms\ApportionmentController@downloadApportUnsettledTdsTrans',
+                    ]);
+
+                    Route::match(['get', 'post'],'/upload/apportionment-unsettled-tds-transactions', [
+                        'as' => 'upload_apport_unsettled_tds_trans',
+                        'uses' => 'Lms\ApportionmentController@uploadApportUnsettledTdsTrans',
                     ]);
                 }
             });

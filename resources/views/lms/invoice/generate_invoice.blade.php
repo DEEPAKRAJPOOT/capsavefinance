@@ -95,7 +95,7 @@
          Beneficiary Name: {{$registeredCompany['acc_name']}}; <br><br>
          Beneficiary Bank Name: {{$registeredCompany['bank_name']}}, <br>
          IFSC Code: {{$registeredCompany['ifsc_code']}}, <br>
-         Beneficiary Account Number: {{$registeredCompany['acc_no']}}, <br>
+         {{-- Beneficiary Account Number: {{$registeredCompany['acc_no']}}, <br> --}}
          Virtual Account Number: {{$origin_of_recipient['virtual_acc_id']}}, <br>
          MICR Code: {{$registeredCompany['micr_code'] ?? '--'}}, <br>
          Beneficiary Bank Branch Name: {{$registeredCompany['branch_name']}}, <br>
@@ -110,7 +110,7 @@
          Beneficiary Name: {{$registeredCompany['acc_name']}}; <br><br>
          Beneficiary Bank Name: {{$registeredCompany['bank_name']}}, <br>
          IFSC Code: {{$registeredCompany['ifsc_code']}}, <br>
-         Beneficiary Account Number: {{$registeredCompany['acc_no']}}, <br>
+         {{-- Beneficiary Account Number: {{$registeredCompany['acc_no']}}, <br> --}}
          Virtual Account Number: {{$origin_of_recipient['virtual_acc_id']}}, <br>
          MICR Code: {{$registeredCompany['micr_code'] ?? '--'}}, <br>
          Beneficiary Bank Branch Name: {{$registeredCompany['branch_name']}}, <br>

@@ -363,5 +363,56 @@ class FileHelper {
       }
       return $respArray;
     }
+
+public function exportCsv($data=[],$columns=[],$fileName='')
+{
+        $headers = array(
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        );
+        $callback = function() use($data, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            foreach ($data as $key=>$data) {
+                fputcsv($file, $data);
+            }
+            fclose($file);
+        };
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function csvToArray($filename = '', $delimiter = ',')
+    {
+        $respArray = [
+            'status' => 'success',
+            'message' => 'success',
+            'data' => [],
+          ];
+      try{
+        if (!file_exists($filename) || !is_readable($filename))
+            return false;
+
+        $header = null;
+        if (($handle = fopen($filename, 'r')) !== false)
+        {
+            while (($row = fgetcsv($handle, 1000, $delimiter)) !== false)
+            {
+                if (!$header)
+                    $header = $row;
+                else
+                    $respArray['data'][] = array_combine($header, $row);
+            }
+            fclose($handle);
+        }
+    }catch(\Exception $e){
+        $respArray['data'] = [];
+        $respArray['status'] = 'fail';
+        $respArray['message'] = str_replace($inputFileName, '', $e->getMessage());
+    }
+    return $respArray;
+    }
    
 }

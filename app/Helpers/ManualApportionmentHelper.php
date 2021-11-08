@@ -15,6 +15,7 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InterestAccrual;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\Lms\TransactionsRunning;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 
 class ManualApportionmentHelper{
     
@@ -693,6 +694,8 @@ class ManualApportionmentHelper{
             $this->intAccrual($invId);
             $this->transactionPostingAdjustment($invId, NULL, NULL, NULL);
         }
+        // Update Invoice Disbursed Accrual Detail
+        InvoiceDisbursedDetail::updateDailyInterestAccruedDetails();
         /*foreach($transRunningTrans as $invId){
             $invDisbDetail = InvoiceDisbursed::find($invId);
             $offerDetails = $invDisbDetail->invoice->program_offer;

@@ -5457,6 +5457,24 @@ class DataRenderer implements DataProviderInterface
                                             $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
                                         }
                                     }
+                                    if($dataRecords->action_type == '5' && $dataRecords->trans_type == '31'){
+                                        if($dataRecords->isApportPayValid['isValid']){
+                                            if($dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING){
+                                                $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
+                                            }
+                                            
+                                            if((Auth::user()->user_id == $dataRecords->updated_by) && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED])){
+                                                $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
+                                            }
+                                            elseif((Auth::user()->user_id != $dataRecords->updated_by) && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED_PROCESSING, Payment::PAYMENT_SETTLED_PROCESSED])) {
+                                                $user = User::find($dataRecords->updated_by);
+                                                $btn .= ($user->fullname ?? 'Someone') . ' is already trying to settle transactions';
+                                            }
+                                            
+                                        }elseif($dataRecords->isApportPayValid['error']){
+                                            $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
+                                        }
+                                    }
                                 }
 
                                 if(Helpers::checkPermission('apport_unsettledtds_view')){
@@ -6725,11 +6743,28 @@ class DataRenderer implements DataProviderInterface
            ->editColumn('sac_code',  function ($invoiceRec) {
                return ($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
            })   
-           ->editColumn('contract_no',  function ($invoiceRec) {
-               return 'HEL/'.($invoiceRec->sac_code != 0 ? $invoiceRec->sac_code : '000');
+           ->editColumn('interest_prd',  function ($invoiceRec) {
+                if(isset($invoiceRec->invoice_date) && isset($invoiceRec->due_date)) {
+                    // if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+                        $dueDate = strtotime($invoiceRec->invoice_date); // or your date as well
+                        $now = strtotime($invoiceRec->due_date);
+                        $datediff = abs($dueDate - $now);
+                        // $OdandInterestRate = $txn->InvoiceDisbursed->invoice->program_offer->overdue_interest_rate + $txn->InvoiceDisbursed->invoice->program_offer->interest_rate;
+                        $days = (round($datediff / (60 * 60 * 24)) + 1) . ' days -From:' . date('d-M-Y', strtotime($invoiceRec->invoice_date)) . " to " . date('d-M-Y', strtotime($invoiceRec->due_date)) /* . ' @ ' . $OdandInterestRate . '%' */;                
+                    // } else {
+                    //     $days = '---';
+                    // } 
+                } else {
+                    $days = '---';
+                }
+               return $days;
            })     
+           ->editColumn('cap_invoice_no', function ($invoiceRec) {
+               return $invoiceRec->capinvoice;
+           })    
            ->editColumn('invoice_no', function ($invoiceRec) {
-               return $invoiceRec->invoice_no;
+            //    dd($invoiceRec);
+               return $invoiceRec->invoice;
            })    
            ->editColumn('invoice_date', function ($invoiceRec) {
                return date('d-m-Y', strtotime($invoiceRec->invoice_date));
@@ -6777,13 +6812,13 @@ class DataRenderer implements DataProviderInterface
                     $query->where(function ($query) use ($request) {
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d 00:00:00');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d 23:59:59');
-                        $query->WhereBetween('invoice_date', [$from_date, $to_date]);
+                        $query->WhereBetween('user_invoice.invoice_date', [$from_date, $to_date]);
                     });
                 }
                 if($request->get('user_id')!= ''){
                     $query->where(function ($query) use ($request) {
                         $user_id = trim($request->get('user_id'));
-                        $query->where('user_id', '=',$user_id);
+                        $query->where('user_invoice.user_id', '=',$user_id);
                     });
                 }
               
