@@ -237,29 +237,26 @@ trait InvoiceTrait
             if($chlLmsCusto['status']==1)
            {
                  $getDupli  = self::checkDuplicateInvoice($inv_no,$chlLmsCusto['user_id']);
-               
+                 $inv_no_dublicate = '';
                  if($getDupli)
                  {
-                     
+                      
                       $multichk['status'] =0;
                       $inv_no_var5.=$inv_no.',';
+                      $inv_no_dublicate = $inv_no;
                       $multichk['multiVali6'] = '* Following invoice Number ('.substr($inv_no_var5,0,-1).') already exists in our system.';
           
                  }
-                 
                  $getDupliInvoice  = self::checkDuplicateInvoiceInInvoice($inv_no,$chlLmsCusto['user_id']);
-               
                  if($getDupliInvoice)
                  {
-                     
                       $multichk['status'] =0;
-                      $inv_no_var5.=$inv_no.',';
-                      $multichk['multiVali6'] = '* Following invoice Number ('.substr($inv_no_var5,0,-1).') already exists in our system.';
-          
+                      if($inv_no_dublicate != $inv_no) {
+                        $inv_no_var5.=$inv_no.',';
+                        $multichk['multiVali6'] = '* Following invoice Number ('.substr($inv_no_var5,0,-1).') already exists in our system.';
+                      }
                  }
 
-                 
-                 
            }
            if($getLmsActive > 0)
            {
