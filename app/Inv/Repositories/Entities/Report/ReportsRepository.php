@@ -382,9 +382,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		})
 		->whereHas('accruedInterest', function($query3) use($whereCondition){
 			$query3->whereNotNull('overdue_interest_rate');
-			if(isset($whereCondition['to_date'])){
-				$query3->whereDate('interest_date','<=',$whereCondition['to_date']);
-			}
+			// if(isset($whereCondition['to_date'])){
+			// 	$query3->whereDate('interest_date','<=',$whereCondition['to_date']);
+			// }
 		})
 		->get();
 
