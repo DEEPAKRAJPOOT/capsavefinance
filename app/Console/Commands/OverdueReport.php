@@ -13,7 +13,10 @@ class OverdueReport extends Command
      *
      * @var string
      */
-    protected $signature = 'report:overdue';
+
+    protected $signature = 'report:overdue
+    {user=all : The ID of the user}
+    {date=now : Date of Overdue Report(YYYY/MM/DD)}';
 
     /**
      * The console command description.
@@ -44,8 +47,19 @@ class OverdueReport extends Command
             dd('DAILY_REPORT_MAIL is missing');
         }
 
+        $userId = $this->argument('user');
+        $toDate = $this->argument('date');
+
+        if(trim(strtolower($toDate)) == 'now'){
+            $toDate = NULL;
+        }
+
+        if(trim(strtolower($userId)) == 'all'){
+            $userId = NULL;
+        }
+
         // consolidated report
-        OverdueReportJob::dispatch($this->emailTo)
+        OverdueReportJob::dispatch($this->emailTo, $userId, $toDate)
                         ->delay(now()->addSeconds(10));
     }
 }

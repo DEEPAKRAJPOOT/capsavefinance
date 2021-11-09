@@ -22,15 +22,19 @@ class OverdueReport implements ShouldQueue
 
     private $sendMail;
     private $emailTo;
+    private $userId;
+    private $toDate;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($emailTo)
+    public function __construct($emailTo, $userId, $toDate)
     {
         $this->sendMail = false;
         $this->emailTo  = $emailTo;
+        $this->userId = $userId;
+        $this->toDate = $toDate;
     }
 
     /**
@@ -43,7 +47,7 @@ class OverdueReport implements ShouldQueue
         ini_set("memory_limit", "-1");
 
         $this->reportsRepo = $reportsRepo;
-        $data              = $this->reportsRepo->getOverdueReport([], $this->sendMail);
+        $data              = $this->reportsRepo->getOverdueReport(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
 
         if ($this->sendMail) {
             $emailTemplate  = EmailTemplate::getEmailTemplate("REPORT_OVERDUE");
