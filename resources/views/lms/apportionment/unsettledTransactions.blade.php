@@ -12,6 +12,15 @@
     @include('layouts.backend.partials.admin_customer_links',['active'=>'unsettledTrans'])
                 
 @endif
+@if(Session::has('untrans_error'))
+        <div class="content-wrapper-msg">
+        <div class=" alert-danger alert" role="alert">
+        <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            {{ Session::get('untrans_error') }}
+        </div>
+        </div>
+    @endif
 <div class="content-wrapper">
     @if(!$sanctionPageView == true)
     <section class="content-header">
@@ -53,7 +62,7 @@
                         @can('apport_mark_settle_confirmation')
                             <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm">
                             <a href="{{ URL::route('download_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" class="btn btn-success btn-sm float-left mr-2 disabled" id="dwnldUnTransCsv">Download CSV</a>
-                            <a data-toggle="modal" data-target="#uploadUnsettledTransactionsFrame1" data-url="{{ URL::route('upload_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView,'type'=>'getUploadForm']) }}" data-height="" data-width="100%" data-placement="top" class="btn btn-success btn-sm float-left mr-2 disabled" id="uploadUnTransCsv">Upload CSV</a>
+                            <a data-toggle="modal" data-target="#uploadUnsettledTransactionsFrame1" data-height="" data-width="100%" data-placement="top" class="btn btn-success btn-sm float-left mr-2 disabled" id="uploadUnTransCsv">Upload CSV</a>
                         @endcan
                     @endif
                     @if($sanctionPageView) 
@@ -110,17 +119,19 @@
 <script src="{{ asset('backend/js/lms/apportionment.js') }}"></script>
 <script type="text/javascript">
 $(document).ready(function () {
+    //xls|xlsx|
+    //and xlsx 
     var validator = $('#uploadUnTransForm').validate({ // initialize the plugin
     rules: {
         upload_unsettled_trans: {
         required: true,
-        extension: "xls|xlsx|csv"
+        extension: "csv"
       }
     },
     messages: {
     upload_unsettled_trans: {
     required: "Please select file",
-    extension:"Please select only csv and xlsx format",
+    extension:"Please select only csv format",
     }
     }
     });

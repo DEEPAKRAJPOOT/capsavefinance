@@ -2336,4 +2336,36 @@ class Helper extends PaypalHelper
 
         return $emailData;
     }
+
+    public static function _decrypt($string, $key){
+        $result = '';
+        $string = base64_decode($string);
+        for ($i = 0; $i < strlen($string); $i++) {
+            $char = substr($string, $i, 1);
+            $keychar = substr($key, ($i % strlen($key)) - 1, 1);
+            $char = chr(ord($char) - ord($keychar));
+            $result .= $char;
+        }
+        //return base64_decode($result);
+        return $result;
+    }
+
+    public static function _encrypt($string, $key){
+        $result = '';
+        for ($i = 0; $i < strlen($string); $i++) {
+            $char = substr($string, $i, 1);
+            $keychar = substr($key, ($i % strlen($key)) - 1, 1);
+            $char = chr(ord($char) + ord($keychar));
+            $result .= $char;
+        }
+        return base64_encode($result);
+    }
+
+    public static function _is_base64_encoded($data){
+        if (preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $data)) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
 }
