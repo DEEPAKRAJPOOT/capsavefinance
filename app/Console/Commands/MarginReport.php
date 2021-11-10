@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Jobs\OverdueReport as OverdueReportJob;
+use App\Jobs\MarginReport as MarginReportJob;
 
-class OverdueReport extends Command
+class MarginReport extends Command
 {
     private $emailTo;
     /**
@@ -13,17 +13,14 @@ class OverdueReport extends Command
      *
      * @var string
      */
-
-    protected $signature = 'report:overdue
-    {user=all : The ID of the user}
-    {date=now : Date of Overdue Report(YYYY/MM/DD)}';
+    protected $signature = 'report:margin';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'To Generate Overdue Report';
+    protected $description = 'To Generate Margin Report';
 
     /**
      * Create a new command instance.
@@ -47,19 +44,8 @@ class OverdueReport extends Command
             dd('DAILY_REPORT_MAIL is missing');
         }
 
-        $userId = $this->argument('user');
-        $toDate = $this->argument('date');
-
-        if(trim(strtolower($toDate)) == 'now'){
-            $toDate = NULL;
-        }
-
-        if(trim(strtolower($userId)) == 'all'){
-            $userId = NULL;
-        }
-
         // consolidated report
-        OverdueReportJob::dispatch($this->emailTo, $userId, $toDate)
+        MarginReportJob::dispatch($this->emailTo)
                         ->delay(now()->addSeconds(10));
     }
 }

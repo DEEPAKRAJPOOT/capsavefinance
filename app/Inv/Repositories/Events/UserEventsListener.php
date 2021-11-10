@@ -1008,6 +1008,44 @@ class UserEventsListener extends BaseEvent
         });
     }
 
+    public function onMarginReport($mailData){
+        $data = unserialize($mailData);
+        $this->func_name = __FUNCTION__;
+        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
+        function ($message) use ($data) {
+            if(!empty($data['attachment'])){
+                $att_name = 'Margin Report.xlsx';
+                $message->attach($data['attachment'] ,['as' => $att_name]);
+            }
+
+            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'))
+            ->to($data["to"], $data["name"])
+            ->subject($data['subject']);
+
+            if (!empty($data["cc"])) {
+                $message->cc($data["cc"]);
+            }
+
+            if (!empty($data["bcc"])) {
+                $message->bcc($data["bcc"]);
+            }
+
+            $mailContent = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_to' => $data["to"],
+                'email_cc' => $data["cc"],
+                'email_bcc' => $data["bcc"],
+                'email_type' => $this->func_name,
+                'name' => $data['name'],
+                'subject' => $data['subject'],
+                'body' => $data['body'],
+                'att_name' => $att_name ?? NULL,
+                'attachment' => $data['attachment'] ?? NULL,
+            ];
+            FinanceModel::logEmail($mailContent);
+        });
+    }
+
     public function onAccountDisbursalReport($mailData){
         $data = unserialize($mailData); 
         $this->func_name = __FUNCTION__;
@@ -1508,6 +1546,11 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'SUPPLY_CHAIN_INVOICE_OVERDUE_ALERT', 
             'App\Inv\Repositories\Events\UserEventsListener@supplyChainInvOverDueAlert'
+        );
+
+        $events->listen(
+            'NOTIFY_MARGIN_REPORT',
+            'App\Inv\Repositories\Events\UserEventsListener@onMarginReport'
         );
     }
 }

@@ -63,6 +63,8 @@ class Kernel extends ConsoleKernel
             $schedule->command('report:overdue')->timezone(config('common.timezone'))->dailyAt('23:46');
             // To Generate Utilization Report
             $schedule->command('report:utilization')->timezone(config('common.timezone'))->dailyAt('23:48');
+            // To Generate Margin Report
+            $schedule->command('report:margin')->timezone(config('common.timezone'))->dailyAt('23:50');
         }
         $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt('23:00');
         $schedule->command('lms:maturityinvoicedueAlert')->timezone(config('common.timezone'))->dailyAt('21:30');

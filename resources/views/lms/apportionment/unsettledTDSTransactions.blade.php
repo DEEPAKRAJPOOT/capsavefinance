@@ -52,8 +52,6 @@
                     @if($paymentId) 
                         @can('apport_mark_settle_confirmation')
                             <input id="mark_settle_btn" type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm" disabled="true">
-                            <!--<a href="{{ URL::route('download_apport_unsettled_tds_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" class="btn btn-success btn-sm float-left mr-2 disabled" id="dwnldUnTransCsv">Download CSV</a>
-                            <a data-toggle="modal" data-target="#uploadUnsettledTdsTransactionsFrame1" data-url="{{ URL::route('upload_apport_unsettled_tds_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView,'type'=>'getUploadForm']) }}" data-height="" data-width="100%" data-placement="top" class="btn btn-success btn-sm float-left mr-2 disabled" id="uploadUnTransCsv">Upload CSV</a>-->
                         @endcan
                     @endif
                 </div>
@@ -64,22 +62,6 @@
     <a data-toggle="modal" data-target="#viewDetailFrame" data-url="" data-height="400px" data-width="100%" data-placement="top" class="view_detail_transaction"></a>
 </div>
 {!!Helpers::makeIframePopup('viewDetailFrame','Transaction Detail', 'modal-md')!!}
-<div class="modal fade" id="uploadUnsettledTdsTransactionsFrame1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Upload CSV</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-      @include('lms.apportionment.uploadApportUnsettledTdsTrans')
-      </div>
-    </div>
-  </div>
-</div>
-</div>
 </div>
 @endsection
 
@@ -98,43 +80,5 @@
     };
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <script src="{{ asset('backend/js/lms/apportionment.js') }}"></script>
-<script type="text/javascript">
-$(document).ready(function () {
-    var validator = $('#uploadUnTdsTransForm').validate({ // initialize the plugin
-    rules: {
-        upload_unsettled_tds_trans: {
-        required: true,
-        extension: "xls|xlsx|csv"
-      }
-    },
-    messages: {
-    upload_unsettled_tds_trans: {
-    required: "Please select file",
-    extension:"Please select only csv and xlsx format",
-    }
-    }
-    });
-
-$("#uploadUnTdsTransForm").submit(function(){
-    if($(this).valid()){
-        $("#saveUnsettled").attr("disabled","disabled");
-    }
-});
-});
-$('#upload_unsettled_tds_trans').click(function(){
-    $('#upload_unsettled_tds_trans').change(function(e) {
-    var fileName = e.target.files[0].name;
-       $('.val_print').html(fileName);
-    });
-})
-$('#uploadUnTransCsv').click(function(){
-    $( "#uploadUnTdsTransForm" ).get(0).reset();
-    var validator = $( "#uploadUnTdsTransForm" ).validate();
-     validator.resetForm();
-     $('.val_print').html('').html('Choose file');
-})
-
-</script>
 @endsection

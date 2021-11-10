@@ -1399,7 +1399,7 @@ class Helper extends PaypalHelper
             $formatedId = $prefix . sprintf('%08d', $idValue);            
         } else if ($type == 'LEADID') {
             $prefix = config('common.idprefix.'.$type);
-            $formatedId = $prefix . sprintf('%08d', $idValue);            
+            $formatedId = $prefix . sprintf('%09d', $idValue);            
         }
         return $formatedId;
     }    

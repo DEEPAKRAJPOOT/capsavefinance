@@ -81,21 +81,6 @@
     <a data-toggle="modal" data-target="#viewDetailFrame" data-url="" data-height="400px" data-width="100%" data-placement="top" class="view_detail_transaction"></a>
 </div>
 {!!Helpers::makeIframePopup('viewDetailFrame','Transaction Detail', 'modal-md')!!}
-<div class="modal fade" id="uploadUnsettledTransactionsFrame1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Upload CSV</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-      @include('lms.apportionment.uploadApportUnsettledTrans')
-      </div>
-    </div>
-  </div>
-</div>
 </div>
 @endsection
 
@@ -115,7 +100,6 @@
     };
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <script src="{{ asset('backend/js/lms/apportionment.js') }}"></script>
 <script type="text/javascript">
 $(document).ready(function () {
