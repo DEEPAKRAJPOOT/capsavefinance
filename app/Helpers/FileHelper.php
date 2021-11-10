@@ -525,6 +525,7 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
         15 => 'Upload File does not match with latest downloaded file. Please upload latest file!',
         16 => 'File record does not found. Please download latest file to upload!',
         17 => 'Some Errors while uploading a file. Please try again!',
+        18 => 'Some Token Data missing in Token ID. Please try again!',
       ];
       return $errorMessage[$errorMessageID];
     }

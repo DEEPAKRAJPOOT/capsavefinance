@@ -2153,6 +2153,11 @@ class ApportionmentController extends Controller
                             $tokenData = [];
                             if ($tokenId) {
                                 $tokenData = explode('|', $tokenId);
+                                //dd($tokenData);
+                                if (empty($tokenData[0]) || empty($tokenData[1]) || empty($tokenData[2])  || empty($tokenData[3]) ) {
+                                    session::flash('untrans_error', $fileHelper->validationMessage(18));
+                                    return redirect()->back();
+                                }
                                 $upload_date = Carbon::parse($tokenData[3])->format('Y-m-d');
                                 $current_date = \Carbon\Carbon::now("UTC")->format('Y-m-d');
                             }
