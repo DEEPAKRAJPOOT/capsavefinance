@@ -45,7 +45,11 @@
             <div class="row pull-right action-btn">
                 <div class="col-md-12" >
                     @can('apport_trans_reversal')
+                        @if($paymentAppor)
+                        <input type="button" value="Reverse Amount" class="btn btn-success btn-sm" onclick="javascript:alert('Currently your payment apportionment is pending, so you can not perform this action.')">
+                        @else
                         <input type="button" value="Reverse Amount" class="btn btn-success btn-sm" onclick="apport.onReversalAmount()">
+                        @endif
                     @endcan
                 </div>
             </div>

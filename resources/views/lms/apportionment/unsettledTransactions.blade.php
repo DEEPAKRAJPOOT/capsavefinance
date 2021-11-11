@@ -60,7 +60,11 @@
                 <div class="col-md-12" >
                     @if($paymentId) 
                         @can('apport_mark_settle_confirmation')
-                            <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm">
+                            @if($paymentApportionment)
+                                <input type="button" name="action" value="Mark Settled" class="btn btn-success btn-sm" onclick="javascript:alert('Currently your payment apportionment is pending, so you can not perform this action.')">
+                            @else
+                                <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm">
+                            @endif    
                             @if (!$paymentApportionment)
                             <a href="{{ URL::route('download_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" class="btn btn-success btn-sm float-left mr-2 disabled" id="dwnldUnTransCsv">Download CSV</a>
                             @else
@@ -71,7 +75,11 @@
                     @endif
                     @if($sanctionPageView) 
                         @can('apport_trans_waiveoff')
-                        <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
+                        @if($paymentApportionment)
+                            <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="javascript:alert('Currently your payment apportionment is pending, so you can not perform this action.')">
+                        @else
+                            <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
+                        @endif    
                         @endcan
                         @if($userDetails['status_id'] == 41 && in_array($userDetails['wo_status_id'],[config('lms.WRITE_OFF_STATUS.APPROVED'),config('lms.WRITE_OFF_STATUS.TRANSACTION_SETTLED')]))
                             <input type="submit" name="action" value="Write Off" class="btn btn-success btn-sm">

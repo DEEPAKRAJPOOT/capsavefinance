@@ -129,10 +129,18 @@ class ApportionmentController extends Controller
             if ($request->has('redirect') && $request->redirect) {
                 sleep(2);
             }
-            $paymentApportionment = PaymentApportionment::where('payment_id', $paymentId)
-                                                        ->where('is_active', 1)
-                                                        ->where('parent_id', 0)
-                                                        ->first();
+            if($paymentId) {
+                $paymentApportionment = PaymentApportionment::where('payment_id', $paymentId)
+                                                            ->where('is_active', 1)
+                                                            ->where('parent_id', 0)
+                                                            ->first();
+            } else {
+                $paymentApportionment = PaymentApportionment::where('user_id', $userId)
+                                                            ->where('is_active', 1)
+                                                            ->where('parent_id', 0)
+                                                            ->first();
+            }
+
             return view('lms.apportionment.unsettledTransactions')
             ->with('paymentId', $paymentId)  
             ->with('userId', $userId)
@@ -164,12 +172,15 @@ class ApportionmentController extends Controller
             $userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId);
              $result = $this->getUserLimitDetais($userId);
+             $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
             return view('lms.apportionment.settledTransactions')
                 ->with('userDetails', $userDetails)
                 ->with('sanctionPageView',$sanctionPageView)
                  ->with(['userInfo' =>  $result['userInfo'],
                             'application' => $result['application'],
-                            'anchors' =>  $result['anchors']]);    
+                            'anchors' =>  $result['anchors']
+                ])
+                ->with('paymentAppor', $paymentAppor);    
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -1028,6 +1039,12 @@ class ApportionmentController extends Controller
                 return redirect()->back()->withInput();
             }
 
+            $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
+            if ($paymentAppor) {
+                \Session::flash('error', 'Currently your payment apportionment is pending, so you can not perform this action.');
+                return back();
+            }
+
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
                 $sanctionPageView = $request->get('sanctionPageView');
@@ -1721,6 +1738,7 @@ class ApportionmentController extends Controller
             }
 
             $result = $this->getUserLimitDetais($userId);
+            $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
             return view('lms.apportionment.unsettledTDSTransactions')
             ->with('paymentId', $paymentId)  
             ->with('userId', $userId)
@@ -1731,7 +1749,9 @@ class ApportionmentController extends Controller
             ->with('sanctionPageView',$sanctionPageView)
             ->with(['userInfo' =>  $result['userInfo'],
                     'application' => $result['application'],
-                    'anchors' =>  $result['anchors']]);
+                    'anchors' =>  $result['anchors']
+            ])
+            ->with('paymentAppor', $paymentAppor);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
