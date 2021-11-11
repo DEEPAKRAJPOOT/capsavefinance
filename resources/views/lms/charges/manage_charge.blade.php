@@ -59,8 +59,12 @@
                         <div class="col-md-2">
                              <label>&nbsp;</label><br>
                         @can('list_lms_charges')
-                            <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addChargesLmsFrame" data-url ="{{route('list_lms_charges',['user_id' => request()->get('user_id')])}}" data-height="500px" data-width="100%" data-placement="top" >
-                           <i class="fa fa-plus"></i>Add Manual Charge</a>
+                            @if($paymentAppor)
+                                <a class="btn btn-success btn-sm" href="javascript:void(0)" onclick="javascript:alert('Currently your payment apportionment is pending, so you can not perform this action.')"><i class="fa fa-plus"></i>Add Manual Charge</a>
+                           @else
+                                <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addChargesLmsFrame" data-url ="{{route('list_lms_charges',['user_id' => request()->get('user_id')])}}" data-height="500px" data-width="100%" data-placement="top" >
+                                <i class="fa fa-plus"></i>Add Manual Charge</a>
+                           @endif
                         @endcan
                       </div>
             </div>

@@ -61,7 +61,11 @@
                     @if($paymentId) 
                         @can('apport_mark_settle_confirmation')
                             <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm">
+                            @if (!$paymentApportionment)
                             <a href="{{ URL::route('download_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" class="btn btn-success btn-sm float-left mr-2 disabled" id="dwnldUnTransCsv">Download CSV</a>
+                            @else
+                            <a href="{{ URL::route('delete_download_csv_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'payment_appor_id' => $paymentApportionment->payment_aporti_id, 'sanctionPageView' => $sanctionPageView]) }}" class="btn btn-danger btn-sm float-left mr-2 disabled" id="dltUnTransCsv">Delete CSV</a>
+                            @endif
                             <a data-toggle="modal" data-target="#uploadUnsettledTransactionsFrame1" data-height="" data-width="100%" data-placement="top" class="btn btn-success btn-sm float-left mr-2 disabled" id="uploadUnTransCsv">Upload CSV</a>
                         @endcan
                     @endif
@@ -113,6 +117,7 @@
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         old_data: {!! json_encode($oldData) !!},
         token: "{{ csrf_token() }}",
+        apporUnsettleRedirect: "{{ URL::route('apport_unsettled_view',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView, 'redirect' => true ]) }}",
     };
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>

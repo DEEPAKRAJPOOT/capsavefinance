@@ -14,6 +14,7 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\LmsUser;
+use App\Inv\Repositories\Models\Lms\PaymentApportionment;
 use DB;
 use Carbon\Carbon;
 use PDF;
@@ -69,6 +70,11 @@ class userInvoiceController extends Controller
      **/
        public function createUserInvoice(Request $request) {
         try {
+            $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
+            if ($paymentAppor) {
+                \Session::flash('error', 'Currently your payment apportionment is pending, so you can not perform this action.');
+                return back();
+            }
             $eodStartDate = Helper::getSysStartDate();
             $due_date = \Carbon\Carbon::now()->addDays(7)->toDateTimeString();
             $user_id = $request->get('user_id');

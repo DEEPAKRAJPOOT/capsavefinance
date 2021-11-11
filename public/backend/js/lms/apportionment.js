@@ -99,10 +99,12 @@ class Apportionment {
                         $('#mark_settle_btn').removeAttr("disabled");
                         $('#dwnldUnTransCsv').removeClass("disabled");
                         $('#uploadUnTransCsv').removeClass("disabled");
+                        $('#dltUnTransCsv').removeClass("disabled");
                     }else{
                         $('#mark_settle_btn').prop("disabled", true);
                         $('#dwnldUnTransCsv').addCss("disabled");
                         $('#uploadUnTransCsv').addCss("disabled");
+                        $('#dltUnTransCsv').addCss("disabled");
                     }
                     parentRef.setTransactionAmt();
                 }
@@ -469,4 +471,16 @@ $(document).on('propertychange change click keyup input paste','.pay',function()
 $(document).on('propertychange change click keyup input paste','.refund',function(){
     this.value = this.value.replace(/[^0-9\.]/g,'');
     apport.onRefundChange($(this).attr('id'));
+});
+
+$("#dwnldUnTransCsv").click(function(e) {   
+    e.preventDefault();
+
+    //open download link in new page
+    window.open($(this).attr("href"));
+
+    //redirect current page to success page
+    window.location.href = messages.apporUnsettleRedirect;
+    window.focus();
+    // location.reload();
 });

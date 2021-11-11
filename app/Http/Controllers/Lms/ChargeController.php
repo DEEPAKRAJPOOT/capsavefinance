@@ -19,6 +19,8 @@ use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use Illuminate\Support\Facades\Crypt;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use App\Inv\Repositories\Models\Lms\PaymentApportionment;
+
 class ChargeController extends Controller
 {
 	use ApplicationTrait;
@@ -55,6 +57,8 @@ class ChargeController extends Controller
 	 * @return \Illuminate\Http\Response
 	 */
 	 public function manageCharge(Request $request){
+            $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
+            
              $totalLimit = 0;
             $totalCunsumeLimit = 0;
             $consumeLimit = 0;
@@ -80,7 +84,7 @@ class ChargeController extends Controller
             $userInfo->total_limit = number_format($totalLimit);
             $userInfo->consume_limit = number_format($totalCunsumeLimit);
             $userInfo->utilize_limit = number_format($totalLimit - $totalCunsumeLimit);
-             return view('lms.charges.manage_charge')->with(['user_id' =>$user_id,'trans' =>$transactionUser,'userInfo' => $userInfo]);
+             return view('lms.charges.manage_charge')->with(['user_id' =>$user_id,'trans' =>$transactionUser,'userInfo' => $userInfo, 'paymentAppor' => $paymentAppor]);
         }
 
     

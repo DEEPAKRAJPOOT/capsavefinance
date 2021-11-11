@@ -36,6 +36,7 @@ class PaymentApportionment extends BaseModel
      * @var array
      */
     protected $fillable = [
+        'user_id',
         'payment_id',
         'file_id',
         'parent_id',
@@ -74,6 +75,14 @@ class PaymentApportionment extends BaseModel
         ->orderBy('payment_aporti_id','DESC')
         ->first();
         return ($res);
+    }
+
+    public static function checkApportionmentHold($request)
+    {
+        return self::where('user_id', $request->user_id)
+                    ->where('parent_id', 0)
+                    ->where('is_active', 1)
+                    ->first();
     }
 }
   

@@ -35,6 +35,7 @@ use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 use App\Helpers\FileHelper;
 use App\Inv\Repositories\Models\Lms\PaymentApportionment;
+use Illuminate\Support\Facades\Response;
 
 class ApportionmentController extends Controller
 {
@@ -125,6 +126,13 @@ class ApportionmentController extends Controller
                 Session::flash('error', trans('We have disabled the suggestive amount on manual apportionment screen as records are than 50.'));
             }
             $result = $this->getUserLimitDetais($userId);
+            if ($request->has('redirect') && $request->redirect) {
+                sleep(2);
+            }
+            $paymentApportionment = PaymentApportionment::where('payment_id', $paymentId)
+                                                        ->where('is_active', 1)
+                                                        ->where('parent_id', 0)
+                                                        ->first();
             return view('lms.apportionment.unsettledTransactions')
             ->with('paymentId', $paymentId)  
             ->with('userId', $userId)
@@ -135,7 +143,8 @@ class ApportionmentController extends Controller
             ->with('sanctionPageView',$sanctionPageView)
             ->with(['userInfo' =>  $result['userInfo'],
                     'application' => $result['application'],
-                    'anchors' =>  $result['anchors']]);
+                    'anchors' =>  $result['anchors']])
+            ->with('paymentApportionment',$paymentApportionment);
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         } 
@@ -736,7 +745,7 @@ class ApportionmentController extends Controller
                 return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
 
             $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
-        
+
             return view('lms.apportionment.markSettledConfirm',[
                 'paymentId' => $paymentId,
                 'userId' => $userId,
@@ -1411,6 +1420,11 @@ class ApportionmentController extends Controller
      */
     public function markAdjustmentConfirmation(AdjustmentRequest $request){
         try {
+            $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
+            if ($paymentAppor) {
+                \Session::flash('error', 'Currently your payment apportionment is pending, so you can not perform this action.');
+                return back();
+            }
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
                 $sanctionPageView = $request->get('sanctionPageView');
@@ -2080,6 +2094,7 @@ class ApportionmentController extends Controller
             $userFile = $docRepo->saveFile($uploadFileData);
             if ($userFile) {
                 $paymentApportionment  = [
+                    'user_id'    => $userId,
                     'payment_id' => $paymentId,
                     'parent_id'   => 0,
                     'file_id' => $userFile->file_id,
@@ -2212,6 +2227,7 @@ class ApportionmentController extends Controller
                             $userFile = $docRepo->saveFile($uploadFileData);
                             if ($userFile) {
                                 $paymentApportionment  = [
+                                    'user_id'    => $userId,
                                     'payment_id' => $paymentId,
                                     'parent_id'   => $parentId,
                                     'file_id' => $userFile->file_id,
@@ -2256,4 +2272,23 @@ class ApportionmentController extends Controller
         }
     }
 
+    public function deleteDownloadCsvApportUnsettledTrans(Request $request)
+    {
+        try {
+            if ($request->has('user_id') && $request->user_id && $request->has('payment_id') && $request->payment_id) {
+                $paymentApportionment = PaymentApportionment::where('user_id', $request->user_id)
+                                                            ->where('payment_id', $request->payment_id)
+                                                            ->where('parent_id', 0)
+                                                            ->where('payment_aporti_id', $request->payment_appor_id)
+                                                            ->first();
+                if ($paymentApportionment) {
+                    $paymentApportionment->update(['is_active' => 0]);
+                }
+
+                return redirect()->route('apport_unsettled_view', [ 'user_id' => $request->user_id , 'payment_id' => $request->payment_id, 'sanctionPageView' => $request->sanctionPageView ]);
+            }    
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }    
+    }
 }
