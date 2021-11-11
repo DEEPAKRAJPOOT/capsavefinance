@@ -64,13 +64,17 @@
                                 <input type="button" name="action" value="Mark Settled" class="btn btn-success btn-sm" onclick="javascript:alert('Currently your payment apportionment is pending, so you can not perform this action.')">
                             @else
                                 <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm">
-                            @endif    
+                            @endif
+                        @endcan                         
+                        @can('download_apport_unsettled_trans')
                             @if (!$paymentApportionment)
                             <a href="{{ URL::route('download_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" class="btn btn-success btn-sm float-left mr-2 disabled" id="dwnldUnTransCsv">Download CSV</a>
                             @else
                             <a href="{{ URL::route('delete_download_csv_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'payment_appor_id' => $paymentApportionment->payment_aporti_id, 'sanctionPageView' => $sanctionPageView]) }}" class="btn btn-danger btn-sm float-left mr-2 disabled" id="dltUnTransCsv">Delete CSV</a>
                             @endif
-                            <a data-toggle="modal" data-target="#uploadUnsettledTransactionsFrame1" data-height="" data-width="100%" data-placement="top" class="btn btn-success btn-sm float-left mr-2 disabled" id="uploadUnTransCsv">Upload CSV</a>
+                        @endcan
+                        @can('upload_apport_unsettled_trans')
+                        <a data-toggle="modal" data-target="#uploadUnsettledTransactionsFrame1" data-height="" data-width="100%" data-placement="top" class="btn btn-success btn-sm float-left mr-2 disabled" id="uploadUnTransCsv">Upload CSV</a>
                         @endcan
                     @endif
                     @if($sanctionPageView) 
