@@ -61,7 +61,11 @@
                     @if($paymentId) 
                         @can('apport_mark_settle_confirmation')
                             <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm">
+                        @endcan
+                        @can('download_apport_unsettled_trans')
                             <a href="{{ URL::route('download_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" class="btn btn-success btn-sm float-left mr-2 disabled" id="dwnldUnTransCsv">Download CSV</a>
+                        @endcan
+                        @can('upload_apport_unsettled_trans')
                             <a data-toggle="modal" data-target="#uploadUnsettledTransactionsFrame1" data-height="" data-width="100%" data-placement="top" class="btn btn-success btn-sm float-left mr-2 disabled" id="uploadUnTransCsv">Upload CSV</a>
                         @endcan
                     @endif
