@@ -41,7 +41,7 @@ class CsvApportionment extends Command
         $paymentAppors = PaymentApportionment::where('is_active', 1)
                             ->where('parent_id', 0)
                             ->whereHas('file', function ($query) {
-                                $query->whereDate('created_at', now()->subDay(2)->format('Y-m-d'));
+                                $query->whereDate('created_at', now()->format('Y-m-d'));
                             })
                             ->get();
         foreach($paymentAppors as $paymentAppor)
