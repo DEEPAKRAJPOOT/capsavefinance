@@ -13,14 +13,14 @@
                                     <th>Total Repay Amt</th>
                                     @if($payment['action_type'] == 3)
                                             <th>Outstanding TDS Amt</th>
-                                    @else`
+                                    @else
                                         <th>Outstanding Amt</th>
                                     @endif
                                     {{-- @if($paymentId)<th>Payment Date</th>@endif --}}
                                     @if($paymentId)
                                         @if($payment['action_type'] == 3)
                                             <th>TDS Payment</th>
-                                        @else`
+                                        @else
                                             <th>Payment</th>
                                         @endif
                                     @endif

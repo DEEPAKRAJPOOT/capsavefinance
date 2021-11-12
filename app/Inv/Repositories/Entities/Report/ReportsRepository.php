@@ -408,7 +408,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			
 			$limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::invoiceAnchorLimitApprove($offerDetails),2);
 			$limitAvl[$offerDetails['prgm_offer_id']] = $limitAvl[$offerDetails['prgm_offer_id']] ?? $offerDetails['prgm_limit_amt'] - $limitUsed[$offerDetails['prgm_offer_id']];
-			$limitAvl[$offerDetails['prgm_offer_id']] = ($limitAvl[$offerDetails['prgm_offer_id']] > 0) ? $limitUsed[$offerDetails['prgm_offer_id']] : 0; 
+			$limitAvl[$offerDetails['prgm_offer_id']] = ($limitAvl[$offerDetails['prgm_offer_id']] > 0) ? $limitAvl[$offerDetails['prgm_offer_id']] : 0; 
 			$result[] = [
 				'cust_name'=>$invDisb->invoice->business->biz_entity_name,
 				'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,

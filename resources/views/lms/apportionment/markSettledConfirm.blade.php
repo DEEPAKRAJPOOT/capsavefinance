@@ -5,6 +5,17 @@
     .Lh-3{
         line-height:2.5;
     }
+    .sticky {
+        top: 0;
+    }
+    
+    .sticky-section {        
+        background-color: #fff;
+        padding: 1.3rem 1.5rem;
+        z-index: 999;
+        margin-right: 30px;
+        margin-top: 55px;
+    }
 </style>
 @endsection
 
@@ -29,11 +40,12 @@
     </section>
 
     <div class="card">
-        <div class="card-body">       
-            @include('lms.apportionment.common.userDetails')
-            @include('lms.apportionment.common.paymentDetails')
-           
-            <div class="row">
+        <div class="card-body">
+            <div class="sticky">	
+                @include('lms.apportionment.common.userDetails')
+                @include('lms.apportionment.common.paymentDetails')
+            </div>
+            <div class="row" id="unsettlementConfirmRow">
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
                         <div class="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -84,7 +96,7 @@
             
             <form action="{{ route('apport_mark_settle_save',[ 'user_id' => $userId , 'payment_id' => $paymentId,'sanctionPageView'=>$sanctionPageView]) }}" method="post" >
              @csrf	
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-md-10">
                     <label>
                         <input type="checkbox" name="confirm" required>
@@ -113,6 +125,21 @@
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
     };
+
+    $(document).ready(function() {
+        var stickyTop = $('.sticky').offset().top - 70;
+        $(window).scroll(function() {
+            var windowTop = $(window).scrollTop();
+            if (stickyTop < windowTop && $("#unsettlementConfirmRow").height() + 
+            $("#unsettlementConfirmRow").offset().top - $(".sticky").height() > windowTop) {
+                $('.sticky').css('position', 'fixed');
+                $('.sticky').addClass('sticky-section');
+            } else {
+                $('.sticky').css('position', 'relative');
+                $('.sticky').removeClass('sticky-section');
+            }
+        });
+    });
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/lms/apportionment.js') }}"></script>

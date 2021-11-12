@@ -4,6 +4,18 @@
     .Lh-3{
         line-height:2.5;
     }
+
+    .sticky {
+        top: 0;
+    }
+    
+    .sticky-section {        
+        background-color: #fff;
+        padding: 1.3rem 1.5rem;
+        z-index: 999;
+        margin-right: 30px;
+        margin-top: 55px;
+    }
 </style>
 @endsection
 
@@ -44,19 +56,21 @@
              <div class="table-responsive ps ps--theme_default w-100">
                       @include('lms.customer.limit_details')
                     </div>
-             @endif     	
-        @if(!$sanctionPageView)      
-            @include('lms.apportionment.common.userDetails')
-            @if($paymentId)
-            @include('lms.apportionment.common.paymentDetails')
-            @endif
-        @endif
+             @endif
+            <div class="sticky">	
+                @if(!$sanctionPageView)      
+                    @include('lms.apportionment.common.userDetails')
+                    @if($paymentId)
+                    @include('lms.apportionment.common.paymentDetails')
+                    @endif
+                @endif
+            </div> 
             <form id="unsettlementFrom" action="" method="post" onsubmit="return apport.validateMarkSettled(this)">
              @csrf	
             <div class="row">
                 @include('lms.apportionment.common.listUnsettledTransactions')
             </div>
-            <div class="row pull-right action-btn">
+            <div class="row pull-right action-btn mt-2">
                 <div class="col-md-12" >
                     @if($paymentId) 
                         @can('apport_mark_settle_confirmation')
@@ -118,6 +132,27 @@
         old_data: {!! json_encode($oldData) !!},
         token: "{{ csrf_token() }}",
     };
+
+    jQuery(document).ready(function ($) {
+        setTimeout(() => {
+            $('.table-responsive').scrollLeft($('.table-responsive').scrollLeft() + 20);
+        }, 1000);
+    }); 
+    
+    $(document).ready(function() {
+        var stickyTop = $('.sticky').offset().top - 70;
+        $(window).scroll(function() {
+            var windowTop = $(window).scrollTop();
+            if (stickyTop < windowTop && $("#unsettlementFrom").height() + 
+            $("#unsettlementFrom").offset().top - $(".sticky").height() > windowTop) {
+                $('.sticky').css('position', 'fixed');
+                $('.sticky').addClass('sticky-section');
+            } else {
+                $('.sticky').css('position', 'relative');
+                $('.sticky').removeClass('sticky-section');
+            }
+        });
+    });
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/lms/apportionment.js') }}"></script>
