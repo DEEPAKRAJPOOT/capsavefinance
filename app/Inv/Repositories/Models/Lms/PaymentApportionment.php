@@ -84,6 +84,11 @@ class PaymentApportionment extends BaseModel
                     ->where('is_active', 1)
                     ->first();
     }
+
+    public function file()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id', 'file_id');
+    }
 }
   
 
