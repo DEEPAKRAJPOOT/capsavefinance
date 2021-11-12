@@ -1600,7 +1600,7 @@ class ApportionmentController extends Controller
         }
 
         if ($result) {
-            CustomerTransactionSOA::updateTransactionSOADetails($userId);
+            //CustomerTransactionSOA::updateTransactionSOADetails($userId);
             $Obj  = new ManualApportionmentHelper($this->lmsRepo);
             foreach ($data as $invDisb => $sysCreatedAt) {
                 $Obj->intAccrual($invDisb, $sysCreatedAt);
