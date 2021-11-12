@@ -2,8 +2,11 @@
 namespace App\Inv\Repositories\Models\Lms;
 
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OverdueReportLog extends BaseModel {
+
+    use SoftDeletes;
     /* The database table used by the model.
      *
      * @var string
