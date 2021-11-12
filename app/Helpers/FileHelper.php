@@ -526,6 +526,8 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
         16 => 'File record does not found. Please download latest file to upload!',
         17 => 'Some Errors while uploading a file. Please try again!',
         18 => 'Some Token Data missing in Token ID. Please try again!',
+        19 => 'Trans ID does not exists in our system. Please try again!',
+        20 => 'Trans ID does not exists in our system. Please try again!',
       ];
       return $errorMessage[$errorMessageID];
     }
