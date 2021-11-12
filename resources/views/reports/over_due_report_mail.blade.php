@@ -14,23 +14,9 @@
     </section>
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                
-                   <div class="row md-12">
-                <div class="col-md-3">
-                    {!!
-                    Form::text('from_date',
-                    null,
-                    [
-                    'class' => 'form-control',
-                    'required' => 'required',
-                    'placeholder' => 'From Date',
-                    'id'=>'from_date',
-                    'autocomplete'=>'off'
-                    ])
-                    !!} 
-                </div>
-                 <div class="col-md-3">
+            <div class="row">                
+                <div class="row md-12">                
+                 <div class="col-md-4">
                     {!!
                     Form::text('to_date',
                     null,
@@ -43,7 +29,7 @@
                     ])
                     !!} 
                 </div>
-                <div class="col-md-3" id="prefetch">
+                <div class="col-md-6" id="prefetch">
                     {!!
                     Form::text('search_keyword',
                     null,
@@ -56,18 +42,17 @@
                     !!}
                 </div>
                
-               
-                <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
-                 &nbsp; &nbsp; <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldPDF">Pdf</a> &nbsp; &nbsp; <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldEXCEL">Excel</a>                 
+               <div class="col-md-2">
+                   <button id="sendMailBtn" type="button" class="btn  btn-success btn-sm float-right">Send Mail</button>
+               </div>
             </div>
-            <a href="{{ route('report_overduereport', ['by_mail' => true]) }}" class="btn  btn-success btn-sm float-right" id="sendReportByMail">Send Report By Mail</a>
                 {!! Form::hidden('user_id', 
-                    isset($user['user_id'])?$user['user_id']:null, 
+                    isset($user['user_id']) ? $user['user_id'] : null, 
                     [ 'id'=>'user_id' ]) 
                 !!}
 
                 {!! Form::hidden('customer_id',  
-                    isset($user['customer_id'])?$user['customer_id']:null, 
+                    isset($user['customer_id']) ? $user['customer_id'] : null, 
                     [ 'id'=>'customer_id' ])
                 !!}
                   <div class="col-12 dataTables_wrapper mt-4">
@@ -76,19 +61,14 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive ps ps--theme_default" data-ps-id="0b57d57f-c517-e65f-5cf6-304e01f86376">
-	                              		<table id="lmsSoaList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
+	                              		<table id="lmsOverdueLogsList"  class="table table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
 	                                        <thead>
                                                      <tr role="row">
                                                     <th>Customer Id</th>
-                                                    <th>Batch No</th>
-                                                    <th>Batch Date</th>
-                                                    <th>Bills  No.</th>
-                                                     <th>Bill  Date.</th>
-                                                     <th>Due  Date.</th>
-                                                     <th>Bill  Amount.</th>
-                                                     <th>Approve  Amount.</th>
-                                                     <th> Days OD </th>
-                                                     <th>Balance</th>
+                                                    <th>Date</th>
+                                                    <th>Created Date</th>
+                                                    <th>Created By</th>
+                                                    <th></th>
                                                    </tr>
 	                                        </thead>
 	                                        <tbody>
@@ -96,7 +76,7 @@
 	                                        </tbody>
                                     	</table>
 							  		</div>
-                            		<div id="lmsSoaList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                            		<div id="lmsOverdueLogsList_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
                                 </div>
                             </div>
                         </div>
@@ -121,20 +101,17 @@
 <script>
  var messages = {
         get_customer: "{{ route('get_customer') }}",
-        lms_get_invoice_over_due_list: "{{ URL::route('lms_get_invoice_over_due_list') }}",
+        lms_get_invoice_over_due_list: "{{ URL::route('lms_send_invoice_over_due') }}",
         token: "{{ csrf_token() }}",
-    };    
-$('#from_date').datetimepicker({
-        format: 'dd/mm/yyyy',
-        //  startDate: new Date(),
-        autoclose: true,
-        minView: 2, });
+    };
+
     $('#to_date').datetimepicker({
         format: 'dd/mm/yyyy',
-        //  startDate: new Date(),
         autoclose: true,
-        minView: 2, });
-  $(document).ready(function(){
+        minView: 2, 
+    });
+    
+    $(document).ready(function(){
       var sample_data = new Bloodhound({
        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
        queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -143,8 +120,7 @@ $('#from_date').datetimepicker({
         url:messages.get_customer+'?query=%QUERY',
         wildcard:'%QUERY'
        }
-      });
-      
+    });
     
     $('#prefetch .form-control').typeahead(null, {
         name: 'sample_data',
@@ -171,5 +147,5 @@ function setClientDetails(data){
     $("#customer_id").val(data.customer_id);
 }
 </script>
-<script src="{{ asset('backend/js/lms/overdue.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend/js/lms/send_mail_overdue.js') }}" type="text/javascript"></script>
 @endsection

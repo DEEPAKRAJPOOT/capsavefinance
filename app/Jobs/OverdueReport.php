@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 use App\Inv\Repositories\Models\Master\EmailTemplate;
+use App\Inv\Repositories\Models\Lms\OverdueReportLog;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use Illuminate\Support\Facades\Storage;
 use PHPExcel_IOFactory;
@@ -54,11 +55,24 @@ class OverdueReport implements ShouldQueue
             if ($emailTemplate) {
                 $emailData               = Helpers::getDailyReportsEmailData($emailTemplate);
                 $filePath                = $this->downloadOverdueReport($data);
-                $emailData['to']      = $this->emailTo;
+                $emailData['to']         = $this->emailTo;
                 $emailData['attachment'] = $filePath;
+
                 \Event::dispatch("NOTIFY_OVERDUE_REPORT", serialize($emailData));
+
+                // to create log for overdue report
+                $this->createOverdueReportLog($this->toDate, $this->userId, $filePath);
             }
         }
+    }
+
+    private function createOverdueReportLog($toDate, $userId, $filePath)
+    {
+        OverdueReportLog::create([
+            'user_id'   => $userId,
+            'to_date'   => $toDate,
+            'file_path' => $filePath,
+        ]);
     }
 
     private function downloadOverdueReport($exceldata)
