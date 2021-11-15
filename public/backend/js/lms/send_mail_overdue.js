@@ -37,6 +37,7 @@ try {
 
         //Search
         $('#sendMailBtn').on('click', function (e) {
+            $("#to_date").parent().find('span.error').detach();
             if (!$("#to_date").val()) {
                 $("#to_date").parent().append('<span class="error">Please Select To Date</span>');
                 return false;
