@@ -61,7 +61,9 @@ class OverdueReport implements ShouldQueue
                 \Event::dispatch("NOTIFY_OVERDUE_REPORT", serialize($emailData));
 
                 // to create log for overdue report
-                $this->createOverdueReportLog($this->toDate, $this->userId, $filePath);
+                if($this->toDate){
+                    $this->createOverdueReportLog($this->toDate, $this->userId, $filePath);
+                }
             }
         }
     }
