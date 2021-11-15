@@ -41,9 +41,8 @@ class ManualApportionmentHelperTemp{
         $intrest = 0;
         $disbTransIds = null;
         $intTransIds = null;
-        $Dr = 0 ;
-
-        $invDisbDetails = InvoiceDisbursed::find($invDisbId);
+        $Dr = 0;
+        $invDisbDetails = InvoiceDisbursed::where('int_accrual_start_dt','<=',$transDate)->where('invoice_disbursed_id',$invDisbId)->first();
         if($invDisbDetails){
             $margin = ($invDisbDetails->invoice->invoice_approve_amount*$invDisbDetails->margin)/100;
             $Dr = $invDisbDetails->invoice->invoice_approve_amount - $margin;
@@ -171,7 +170,7 @@ class ManualApportionmentHelperTemp{
             $payDueDate = $invDisbDetail->payment_due_date;
             $gStartDate = $payDueDate;
             $gEndDate = $this->addDays($payDueDate,$gPeriod);
-            $odStartDate = $this->addDays($gEndDate,1);
+            $odStartDate = $gEndDate;
             $maxAccrualDate = $invDisbDetail->interestTemp->where('payment_id',$paymentId)->max('interest_date');
             if($maxAccrualDate){
                 $maxAccrualDate = $this->addDays($maxAccrualDate,1);
@@ -209,15 +208,18 @@ class ManualApportionmentHelperTemp{
                 
                 $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq, $gStartDate);
 
+                // Update grace period interest into overdue interest.
+                if(strtotime($loopStratDate) === strtotime($odStartDate) && $balancePrincipal > 0){
+                    $this->updateGracePeriodInt($invDisbId, $gStartDate, $gEndDate, $odIntRate, $payFreq, $userId, $paymentId);
+                }
+
+                $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq, $gStartDate);
 
                 if($balancePrincipal > 0){
                     if(strtotime($loopStratDate) >= strtotime($odStartDate)){
                         $currentIntRate = $odIntRate;
-                        $intType = 2;
-                        if(strtotime($loopStratDate) === strtotime($odStartDate)){
-                            $this->updateGracePeriodInt($invDisbId, $gStartDate, $gEndDate, $odIntRate, $payFreq, $userId, $paymentId);
-                        }
-                    }
+                        $intType = 2; 
+                    }  
                     $interestAmt = round($this->calInterest($balancePrincipal, $currentIntRate, 1),config('lms.DECIMAL_TYPE.AMOUNT'));
                     
                     $interest_accrual_temp_id = InterestAccrualTemp::whereDate('interest_date',$loopStratDate)
@@ -252,8 +254,11 @@ class ManualApportionmentHelperTemp{
                 
                 $loopStratDate = $this->addDays($loopStratDate,1);
                 
-                $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $loopStratDate)->endOfMonth()->format('Y-m-d');
-
+                if($balancePrincipal > 0){
+                    $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $loopStratDate)->endOfMonth()->format('Y-m-d');
+                }else{
+                    break;
+                }
             }
         } catch (Exception $ex) {
             return Helpers::getExceptionMessage($ex);

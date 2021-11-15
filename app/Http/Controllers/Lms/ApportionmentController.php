@@ -1563,6 +1563,9 @@ class ApportionmentController extends Controller
     
     private function processApportionmentUndoTrans($payment, $result)
     {
+        
+        ini_set('max_execution_time', 0);
+        ini_set("memory_limit", "-1");
         $userId             =   $payment->user_id;
         $paymentId          =   $payment->payment_id;
 
@@ -1600,7 +1603,7 @@ class ApportionmentController extends Controller
         }
 
         if ($result) {
-            CustomerTransactionSOA::updateTransactionSOADetails($userId);
+            //CustomerTransactionSOA::updateTransactionSOADetails($userId);
             $Obj  = new ManualApportionmentHelper($this->lmsRepo);
             foreach ($data as $invDisb => $sysCreatedAt) {
                 $Obj->intAccrual($invDisb, $sysCreatedAt);
