@@ -129,7 +129,7 @@ class ApportionmentController extends Controller
             if ($request->has('redirect') && $request->redirect) {
                 sleep(2);
             }
-            $paymentApportionment =  PaymentApportionment::checkApportionmentHold($userId);
+            $paymentApportionment =  PaymentApportionment::checkApportionmentHold($userId, $paymentId);
             return view('lms.apportionment.unsettledTransactions')
             ->with('paymentId', $paymentId)  
             ->with('userId', $userId)
