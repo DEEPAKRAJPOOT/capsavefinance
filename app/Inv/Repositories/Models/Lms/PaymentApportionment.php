@@ -80,6 +80,7 @@ class PaymentApportionment extends BaseModel
     public static function checkApportionmentHold($request)
     {
         $res = self::select('payment_apportionment.*','file.file_name')
+        ->join('file', 'file.file_id', '=', 'payment_apportionment.file_id')
         ->join('payments', 'payments.payment_id', '=', 'payment_apportionment.payment_id')
         ->whereIn('payment_id', [0,2,3])
         ->where('user_id', $request->user_id)
