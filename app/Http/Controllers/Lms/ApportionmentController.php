@@ -161,7 +161,7 @@ class ApportionmentController extends Controller
             $userId = $request->user_id;
             $userDetails = $this->getUserDetails($userId);
              $result = $this->getUserLimitDetais($userId);
-             $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
+             $paymentAppor = PaymentApportionment::checkApportionmentHold($userId);
             return view('lms.apportionment.settledTransactions')
                 ->with('userDetails', $userDetails)
                 ->with('sanctionPageView',$sanctionPageView)
@@ -1028,7 +1028,7 @@ class ApportionmentController extends Controller
                 return redirect()->back()->withInput();
             }
 
-            $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
+            $paymentAppor = PaymentApportionment::checkApportionmentHold($request->user_id);
             if ($paymentAppor) {
                 \Session::flash('error', 'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.');
                 return back();
@@ -1426,7 +1426,7 @@ class ApportionmentController extends Controller
      */
     public function markAdjustmentConfirmation(AdjustmentRequest $request){
         try {
-            $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
+            $paymentAppor = PaymentApportionment::checkApportionmentHold($request->user_id);
             if ($paymentAppor) {
                 \Session::flash('error', 'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.');
                 return back();
@@ -1727,7 +1727,7 @@ class ApportionmentController extends Controller
             }
 
             $result = $this->getUserLimitDetais($userId);
-            $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
+            $paymentAppor = PaymentApportionment::checkApportionmentHold($userId);
             return view('lms.apportionment.unsettledTDSTransactions')
             ->with('paymentId', $paymentId)  
             ->with('userId', $userId)

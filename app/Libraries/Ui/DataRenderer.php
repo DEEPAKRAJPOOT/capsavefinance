@@ -5413,7 +5413,7 @@ class DataRenderer implements DataProviderInterface
                             $btn = '';
                             $roleData = Helpers::getUserRole();
                             $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
-                            $paymentAppor = PaymentApportionment::checkApportionmentHold($dataRecords);
+                            $paymentAppor = PaymentApportionment::checkApportionmentHold($dataRecords->user_id);
                             if ($dataRecords->is_settled == Payment::PAYMENT_SETTLED) {
                                 if(Helpers::checkPermission('undo_apportionment')){
                                     if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && $dataRecords->validRevertPayment){
