@@ -72,7 +72,7 @@ class userInvoiceController extends Controller
         try {
             $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
             if ($paymentAppor) {
-                \Session::flash('error', 'Currently your payment apportionment is pending, so you can not perform this action.');
+                \Session::flash('error', 'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.');
                 return back();
             }
             $eodStartDate = Helper::getSysStartDate();

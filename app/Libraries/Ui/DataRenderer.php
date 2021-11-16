@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\Master\DoaLevelRole;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
+use App\Inv\Repositories\Models\Lms\PaymentApportionment;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -5412,17 +5413,26 @@ class DataRenderer implements DataProviderInterface
                             $btn = '';
                             $roleData = Helpers::getUserRole();
                             $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
+                            $paymentAppor = PaymentApportionment::checkApportionmentHold($dataRecords);
                             if ($dataRecords->is_settled == Payment::PAYMENT_SETTLED) {
                                 if(Helpers::checkPermission('undo_apportionment')){
                                     if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && $dataRecords->validRevertPayment){
+                                        if (!$paymentAppor) {  
                                         $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
+                                        }else{
+                                            $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="javascript:alert(\'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.\');" ><i class="fa fa-undo"></i></button>';                                            
+                                        }
                                     }
                                 }
 
                                 if(Helpers::checkPermission('lms_refund_payment_advise')){
                                     if($dataRecords->action_type == '1' && $dataRecords->trans_type == '17'){
                                         if($dataRecords->is_refundable && !$dataRecords->refundReq && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED])){
+                                        if (!$paymentAppor) { 
                                             $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
+                                        }else{
+                                            $btn .= '<button class="btn btn-action-btn btn-sm"  title="Payment Refund" onclick="javascript:alert(\'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.\');" ><i class="fa fa-list-alt"></i></button>';                                            
+                                        }
                                         }
                                     }
                                 }

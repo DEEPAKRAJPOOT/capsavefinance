@@ -61,18 +61,20 @@
                     @if($paymentId) 
                         @can('apport_mark_settle_confirmation')
                             @if($paymentApportionment)
-                                <input type="button" name="action" value="Mark Settled" class="btn btn-success btn-sm" onclick="javascript:alert('Currently your payment apportionment is pending, so you can not perform this action.')">
+                                <input type="button" name="action" value="Mark Settled" class="btn btn-success btn-sm" onclick="javascript:alert('You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.')">
                             @else
                                 <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm">
                             @endif
                         @endcan                         
-                        @can('download_apport_unsettled_trans')
-                            @if (!$paymentApportionment)
+                        @if (!$paymentApportionment)
+                            @can('download_apport_unsettled_trans')
                             <a href="{{ URL::route('download_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" class="btn btn-success btn-sm float-left mr-2 disabled" id="dwnldUnTransCsv">Download CSV</a>
+                            @endcan
                             @else
+                            @can('delete_download_csv_apport_unsettled_trans')
                             <a href="{{ URL::route('delete_download_csv_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'payment_appor_id' => $paymentApportionment->payment_aporti_id, 'sanctionPageView' => $sanctionPageView]) }}" class="btn btn-danger btn-sm float-left mr-2 disabled" id="dltUnTransCsv">Delete CSV</a>
-                            @endif
-                        @endcan
+                            @endcan
+                        @endif
                         @can('upload_apport_unsettled_trans')
                         <a data-toggle="modal" data-target="#uploadUnsettledTransactionsFrame1" data-height="" data-width="100%" data-placement="top" class="btn btn-success btn-sm float-left mr-2 disabled" id="uploadUnTransCsv">Upload CSV</a>
                         @endcan
@@ -80,7 +82,7 @@
                     @if($sanctionPageView) 
                         @can('apport_trans_waiveoff')
                         @if($paymentApportionment)
-                            <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="javascript:alert('Currently your payment apportionment is pending, so you can not perform this action.')">
+                            <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="javascript:alert('You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.')">
                         @else
                             <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
                         @endif    
