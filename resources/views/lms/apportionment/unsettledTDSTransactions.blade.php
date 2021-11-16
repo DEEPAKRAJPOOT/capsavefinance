@@ -51,7 +51,11 @@
                 <div class="col-md-12" >
                     @if($paymentId) 
                         @can('apport_mark_settle_confirmation')
-                            <input id="mark_settle_btn" type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm" disabled="true">
+                            @if($paymentAppor)
+                                <input type="button" value="Mark Settled" class="btn btn-success btn-sm" onclick="javascript:alert('You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.')">
+                            @else
+                                <input id="mark_settle_btn" type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm" disabled="true">
+                            @endif
                         @endcan
                     @endif
                 </div>

@@ -45,7 +45,11 @@
             <div class="row pull-right action-btn">
                 <div class="col-md-12" >
                     @can('apport_trans_reversal')
+                        @if($paymentAppor)
+                        <input type="button" value="Reverse Amount" class="btn btn-success btn-sm" onclick="javascript:alert('You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.')">
+                        @else
                         <input type="button" value="Reverse Amount" class="btn btn-success btn-sm" onclick="apport.onReversalAmount()">
+                        @endif
                     @endcan
                 </div>
             </div>

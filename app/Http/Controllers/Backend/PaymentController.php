@@ -32,6 +32,7 @@ use App\Helpers\FileHelper;
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use App\Inv\Repositories\Models\Lms\PaymentApportionment;
 
 class PaymentController extends Controller {
 
@@ -738,8 +739,11 @@ class PaymentController extends Controller {
 							$activity_desc = 'Delete Payment (Manage Payment)';
 							$arrActivity['app_id'] = null;
 							$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
-						}						
-						
+						}
+						PaymentApportionment::where('payment_id', $paymentId)
+						->update([
+							'is_active' => 0
+							]);						
 						return response()->json(['status' => 1,'message' => 'Successfully Deleted Payment']); 
 					}
 					else{

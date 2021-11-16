@@ -24,6 +24,15 @@
     @include('layouts.backend.partials.admin_customer_links',['active'=>'unsettledTrans'])
                 
 @endif
+@if(Session::has('untrans_error'))
+        <div class="content-wrapper-msg">
+        <div class=" alert-danger alert" role="alert">
+        <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            {{ Session::get('untrans_error') }}
+        </div>
+        </div>
+    @endif
 <div class="content-wrapper">
     @if(!$sanctionPageView == true)
     <section class="content-header">
@@ -65,12 +74,32 @@
                 <div class="col-md-12" >
                     @if($paymentId) 
                         @can('apport_mark_settle_confirmation')
-                            <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm">
+                            @if($paymentApportionment)
+                                <input type="button" name="action" value="Mark Settled" class="btn btn-success btn-sm" onclick="javascript:alert('You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.')">
+                            @else
+                                <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm">
+                            @endif
+                        @endcan                         
+                        @if (!$paymentApportionment)
+                            @can('download_apport_unsettled_trans')
+                            <a href="{{ URL::route('download_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}" class="btn btn-success btn-sm float-left mr-2 disabled" id="dwnldUnTransCsv">Download CSV</a>
+                            @endcan
+                            @else
+                            @can('delete_download_csv_apport_unsettled_trans')
+                            <a href="{{ URL::route('delete_download_csv_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'payment_appor_id' => $paymentApportionment->payment_aporti_id, 'sanctionPageView' => $sanctionPageView]) }}" class="btn btn-danger btn-sm float-left mr-2 disabled" id="dltUnTransCsv">Delete CSV</a>
+                            @endcan
+                        @endif
+                        @can('upload_apport_unsettled_trans')
+                        <a data-toggle="modal" data-target="#uploadUnsettledTransactionsFrame1" data-height="" data-width="100%" data-placement="top" class="btn btn-success btn-sm float-left mr-2 disabled" id="uploadUnTransCsv">Upload CSV</a>
                         @endcan
                     @endif
                     @if($sanctionPageView) 
                         @can('apport_trans_waiveoff')
-                        <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
+                        @if($paymentApportionment)
+                            <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="javascript:alert('You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.')">
+                        @else
+                            <input type="button" value="Waived Off" class="btn btn-success btn-sm" onclick="apport.onWaveOff()">
+                        @endif    
                         @endcan
                         @if($userDetails['status_id'] == 41 && in_array($userDetails['wo_status_id'],[config('lms.WRITE_OFF_STATUS.APPROVED'),config('lms.WRITE_OFF_STATUS.TRANSACTION_SETTLED')]))
                             <input type="submit" name="action" value="Write Off" class="btn btn-success btn-sm">
@@ -84,6 +113,22 @@
     <a data-toggle="modal" data-target="#viewDetailFrame" data-url="" data-height="400px" data-width="100%" data-placement="top" class="view_detail_transaction"></a>
 </div>
 {!!Helpers::makeIframePopup('viewDetailFrame','Transaction Detail', 'modal-md')!!}
+<div class="modal fade" id="uploadUnsettledTransactionsFrame1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Upload CSV</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      @include('lms.apportionment.uploadApportUnsettledTrans')
+      </div>
+    </div>
+  </div>
+</div>
+</div>
 </div>
 @endsection
 
@@ -100,6 +145,7 @@
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         old_data: {!! json_encode($oldData) !!},
         token: "{{ csrf_token() }}",
+        apporUnsettleRedirect: "{{ URL::route('apport_unsettled_view',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView, 'redirect' => true ]) }}",
     };
 
     jQuery(document).ready(function ($) {
@@ -125,4 +171,43 @@
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/lms/apportionment.js') }}"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+    //xls|xlsx|
+    //and xlsx 
+    var validator = $('#uploadUnTransForm').validate({ // initialize the plugin
+    rules: {
+        upload_unsettled_trans: {
+        required: true,
+        extension: "csv"
+      }
+    },
+    messages: {
+    upload_unsettled_trans: {
+    required: "Please select file",
+    extension:"Please select only csv format",
+    }
+    }
+    });
+
+$("#uploadUnTransForm").submit(function(){
+    if($(this).valid()){
+        $("#saveUnsettled").attr("disabled","disabled");
+    }
+});
+});
+$('#upload_unsettled_trans').click(function(){
+    $('#upload_unsettled_trans').change(function(e) {
+    var fileName = e.target.files[0].name;
+       $('.val_print').html(fileName);
+    });
+})
+$('#uploadUnTransCsv').click(function(){
+    $( "#uploadUnTransForm" ).get(0).reset();
+    var validator = $( "#uploadUnTransForm" ).validate();
+     validator.resetForm();
+     $('.val_print').html('').html('Choose file');
+})
+
+</script>
 @endsection
