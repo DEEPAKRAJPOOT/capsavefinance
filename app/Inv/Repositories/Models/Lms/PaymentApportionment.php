@@ -83,7 +83,7 @@ class PaymentApportionment extends BaseModel
         ->join('file', 'file.file_id', '=', 'payment_apportionment.file_id')
         ->join('payments', 'payments.payment_id', '=', 'payment_apportionment.payment_id');
         if($payment_id){
-            $res->where('payment_apportionment.payment_id', $payment_id);  
+            $res = $res->where('payment_apportionment.payment_id', $payment_id);  
         }
         $res = $res->whereIn('payments.is_settled', [0,2,3])
         ->where('payment_apportionment.user_id', $user_id)
