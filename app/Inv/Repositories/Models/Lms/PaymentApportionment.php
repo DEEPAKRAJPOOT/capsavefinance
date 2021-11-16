@@ -79,10 +79,14 @@ class PaymentApportionment extends BaseModel
 
     public static function checkApportionmentHold($request)
     {
-        return self::where('user_id', $request->user_id)
-                    ->where('parent_id', 0)
-                    ->where('is_active', 1)
-                    ->first();
+        $res = self::select('payment_apportionment.*','file.file_name')
+        ->join('payments', 'payments.payment_id', '=', 'payment_apportionment.payment_id')
+        ->whereIn('payment_id', [0,2,3])
+        ->where('user_id', $request->user_id)
+        ->where('parent_id', 0)
+        ->where('is_active', 1)
+        ->first();
+        return ($res);
     }
 
     public function file()
