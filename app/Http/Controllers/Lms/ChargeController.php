@@ -57,13 +57,12 @@ class ChargeController extends Controller
 	 * @return \Illuminate\Http\Response
 	 */
 	 public function manageCharge(Request $request){
-            $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
-            
              $totalLimit = 0;
             $totalCunsumeLimit = 0;
             $consumeLimit = 0;
             $transactions = 0;
             $user_id = $request->get('user_id');
+            $paymentAppor = PaymentApportionment::checkApportionmentHold($user_id);
             $userInfo = $this->userRepo->getCustomerDetail($user_id);
              $transactionUser  = $this->lmsRepo->getAllUserChargeTransaction();
              $application = $this->appRepo->getCustomerApplications($user_id);

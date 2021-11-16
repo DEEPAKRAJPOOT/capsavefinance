@@ -70,7 +70,7 @@ class userInvoiceController extends Controller
      **/
        public function createUserInvoice(Request $request) {
         try {
-            $paymentAppor = PaymentApportionment::checkApportionmentHold($request);
+            $paymentAppor = PaymentApportionment::checkApportionmentHold($request->get('user_id'));
             if ($paymentAppor) {
                 \Session::flash('error', 'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.');
                 return back();
