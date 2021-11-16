@@ -2085,7 +2085,7 @@ class ApportionmentController extends Controller
                 ];
             }
             $fileHelper = new FileHelper($this->appRepo);
-            $notes = 'Note: Token ID and Trans ID is required for updating data.';
+            $notes = 'Note: Token ID and Trans ID is required for updating data. Please do not change Trans ID.';
             $extraDataArray = ['TOKEN_ID' => Helpers::_encrypt($token, 'CAPAUT'), 'NOTE' => $notes];
             $now = now()->format('U');
             //$arrvar = ['unTransactions' => $unTransactions];
@@ -2136,7 +2136,7 @@ class ApportionmentController extends Controller
         if ($request->has('type') && $type == 'UploadForm') {
             try {
                 $fileHelper = new FileHelper($this->appRepo);
-                Validator::make($request->all(), [
+                $validator = Validator::make($request->all(), [
                     'upload_unsettled_trans' => 'required'
                 ], [
                     'upload_unsettled_trans.required' => 'This field is required.',
@@ -2198,6 +2198,7 @@ class ApportionmentController extends Controller
                                 $payment = $this->lmsRepo->getPaymentDetail($paymentId, $userId);
                                 $date_of_payment = $payment->date_of_payment;
                             }
+                            $transactions = $this->getUnsettledTrans($userId, $date_of_payment);
                             if ($tokenData[0] != $userId || $tokenData[1] != $paymentId || $tokenData[2] != $date_of_payment || $upload_date != $current_date) {
                                 session::flash('untrans_error', $fileHelper->validationMessage(9));
                                 return redirect()->back();
@@ -2209,8 +2210,13 @@ class ApportionmentController extends Controller
                                     return redirect()->back();
                                 }
                                 $selectedPayment = str_replace(",","",$value['Payment']);
+                                $is_negative = $selectedPayment < 0 ? true : false;
                                 if (!empty($selectedPayment)) {
                                     $checkV = 1;
+                                }
+                                if($is_negative){
+                                    Session::flash("untrans_error", $fileHelper->validationMessage(13));
+                                    return redirect()->back();
                                 }
                                 if (!is_numeric($selectedPayment) && !empty($selectedPayment)) {
                                     Session::flash("untrans_error", $fileHelper->validationMessage(13));
@@ -2229,6 +2235,12 @@ class ApportionmentController extends Controller
                                 }
                                 //$check[$transactions[$key]['trans_id']] = 'off';
                                 $Trans_ID = Helpers::_decrypt($value['Trans ID'], 'CAPAUT');
+                                //$transactions[$key]['trans_id']
+                                if($transactions[$key]['trans_id'] != $Trans_ID){
+                                    Session::flash('untrans_error', $fileHelper->validationMessage(19));
+                                    //$validator->errors()->add("payment.{$Trans_ID}", 'Pay filed must be less than and equal to the outsanding amount');
+                                    return redirect()->back();
+                                }
                                 if (!empty($value['Payment']) && $value['Payment'] != '') {
                                     $check[$Trans_ID] = 'on';
                                     $payment[$Trans_ID] = str_replace(",","",$value['Payment']);
