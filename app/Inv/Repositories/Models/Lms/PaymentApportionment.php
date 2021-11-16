@@ -85,7 +85,7 @@ class PaymentApportionment extends BaseModel
         if($payment_id){
             $res->where('payment_apportionment.payment_id', $payment_id);  
         }
-        $res = $res->whereIn('payments.payment_id', [0,2,3])
+        $res = $res->whereIn('payments.is_settled', [0,2,3])
         ->where('payment_apportionment.user_id', $user_id)
         ->where('payment_apportionment.parent_id', 0)
         ->where('payment_apportionment.is_active', 1)
