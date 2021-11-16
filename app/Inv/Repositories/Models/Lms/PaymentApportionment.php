@@ -82,10 +82,10 @@ class PaymentApportionment extends BaseModel
         $res = self::select('payment_apportionment.*','file.file_name')
         ->join('file', 'file.file_id', '=', 'payment_apportionment.file_id')
         ->join('payments', 'payments.payment_id', '=', 'payment_apportionment.payment_id')
-        ->whereIn('payment_id', [0,2,3])
-        ->where('user_id', $request->user_id)
-        ->where('parent_id', 0)
-        ->where('is_active', 1)
+        ->whereIn('payments.payment_id', [0,2,3])
+        ->where('payment_apportionment.user_id', $request->user_id)
+        ->where('payment_apportionment.parent_id', 0)
+        ->where('payment_apportionment.is_active', 1)
         ->first();
         return ($res);
     }
