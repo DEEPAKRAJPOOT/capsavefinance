@@ -2293,7 +2293,10 @@ class ApportionmentController extends Controller
                 if ($paymentApportionment) {
                     $paymentApportionment->update(['is_active' => 0]);
                 }
-
+                PaymentApportionment::where('payment_id', $request->payment_id)
+						->update([
+							'is_active' => 0
+							]);
                 return redirect()->route('apport_unsettled_view', [ 'user_id' => $request->user_id , 'payment_id' => $request->payment_id, 'sanctionPageView' => $request->sanctionPageView ]);
             }    
         } catch (Exception $ex) {
