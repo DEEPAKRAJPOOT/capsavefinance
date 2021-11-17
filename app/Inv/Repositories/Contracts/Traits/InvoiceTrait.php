@@ -983,7 +983,7 @@ trait InvoiceTrait
          $data['status'] = 0;
           
       }
-      else if($get_TDS_Payment == $get_TDS_Payment_File)
+      else if($get_TDS_Payment <> $get_TDS_Payment_File)
       {
         $data['msg']  = 'You cannot close this account as TDS certificated is not uploaded.';
         $data['status'] = 0;
