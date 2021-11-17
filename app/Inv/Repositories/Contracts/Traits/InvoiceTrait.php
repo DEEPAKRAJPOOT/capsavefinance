@@ -974,7 +974,7 @@ trait InvoiceTrait
    {
       $getBank =   BizInvoice::where(['status_id' => 10,'supplier_id' =>$attr['user_id']])->count();
       $get_outstanding =   BizInvoice::where(['is_repayment' =>0,'status_id' => 12,'supplier_id' =>$attr['user_id']])->count();
-      $get_Payment  =  Payment::where(['user_id' => $attr['user_id'],'action_type' =>3])->where('file_id','<>', 0)->count();
+      $get_TDS_Payment  =  Payment::where(['user_id' => $attr['user_id'],'action_type' =>3])->count();
       $getReject =   BizInvoice::whereIn('status_id',[7,8,9,11,28])->where(['supplier_id' =>$attr['user_id']])->get();
       if($getBank > 0)
       {
@@ -982,11 +982,13 @@ trait InvoiceTrait
          $data['status'] = 0;
           
       }
-      else if($get_Payment==0)
+      else if($get_TDS_Payment > 0)
       {
-         $data['msg']  = 'You cannot close this account as TDS certificated is not uploaded.';
-         $data['status'] = 0;
-       
+        $get_TDS_Payment_File = Payment::where(['user_id' => $attr['user_id'],'action_type' =>3])->where('file_id','<>', 0)->count();
+        if($get_TDS_Payment_File == 0){
+          $data['msg']  = 'You cannot close this account as TDS certificated is not uploaded.';
+          $data['status'] = 0;
+        }
       }
       else if($get_outstanding > 0)
       {
