@@ -1795,30 +1795,34 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
     public function disbursalPaymentEnquiry(Request $request)
     {
         try {
-
+            
             if ($request->get('eod_process')) {
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
             
-            $disbursalBatchId = $request->get('disbursal_batch_id');
-            $sysDate =  \Helpers::getSysStartDate();
             date_default_timezone_set("Asia/Kolkata");
-            $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
-            $disburseDate = date("Y-m-d", strtotime($data->disbursalOne->disburse_date));
-            $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
-            $transId = $reqData['txn_id'];
-            // $transId = '2RGIK4436OUMXHZGXH';
+            $disbursalBatchId = $request->get('disbursal_batch_id');
+            $disburseDate = null;
+            $transId = null;
             $createdBy = Auth::user()->user_id;
             $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
             $transDisbursalIds = [];
             $tranNewIds = [];
+            
+            $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
             if (!isset($data) || empty($data)) {
                 return redirect()->route('backend_get_disbursal_batch_request')->withErrors('Something went wrong please try again.');
-            } elseif ($fundedDate != $disburseDate) {
+            } else {
+                $disburseDate = date("Y-m-d", strtotime($data->disbursalOne->disburse_date));
+                $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
+                $transId = $reqData['txn_id'];
+            }
+
+
+            if ($fundedDate != $disburseDate) {
                 return redirect()->route('backend_get_disbursal_batch_request')->withErrors('funded date can not marked '.$fundedDate.'.');
-            } 
-             else {
+            } else {
                 $data = $data->toArray();
             }
 
@@ -1912,7 +1916,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                                         'status_id' => $disburseStatus,
                                         'tran_id' => $value['UTR_No']
                                     ], ['ref_no' => $value['RefNo']]);
-                                // dd($transDisbursalIds);
                                 foreach ($transDisbursalIds as $key => $value1) {
                                     $this->lmsRepo->createDisbursalStatusLog($value1, $disburseStatus, '', $createdBy);
                                     
