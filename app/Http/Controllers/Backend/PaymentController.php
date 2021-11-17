@@ -33,6 +33,7 @@ use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Lms\PaymentApportionment;
+use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller {
 
