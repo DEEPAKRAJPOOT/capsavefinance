@@ -983,7 +983,7 @@ trait InvoiceTrait
          $data['status'] = 0;
           
       }
-      else if($get_TDS_Payment > 0 && $get_TDS_Payment_File == 0)
+      else if(!($get_TDS_Payment > 0 && $get_TDS_Payment_File == 0))
       {
         $data['msg']  = 'You cannot close this account as TDS certificated is not uploaded.';
         $data['status'] = 0;
@@ -1015,7 +1015,7 @@ trait InvoiceTrait
    {
         $mytime = Carbon::now();
         $cDate   =  $mytime->toDateTimeString();
-        $create_uid = Auth::user()->user_id;
+        $create_uid = /*Auth::user()->user_id ??*/ NULL;
         $getLogId = LmsUsersLog::create(['user_id' => $uid,'status_id' => 35,'created_by' => $create_uid,'created_at' => $cDate]);
         UserDetail::where(['user_id' => $uid])->update(['is_active' => 0,'lms_users_log_id' => $getLogId->lms_users_log_id]);
        
