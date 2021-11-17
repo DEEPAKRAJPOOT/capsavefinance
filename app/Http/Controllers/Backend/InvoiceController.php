@@ -508,7 +508,7 @@ class InvoiceController extends Controller {
         $disbursals = $this->lmsRepo->getDisbursals($disbursalIds)->toArray();
         foreach ($disbursals as $key => $value) {
         if($value['lms_user']['user']['is_buyer'] == 2) {
-            $benifiName = isset($value['lms_user']['user']['anchor_bank_details'][['acc_name']]) ? $value['lms_user']['user']['anchor_bank_details']['acc_name'] : '';
+            $benifiName = isset($value['lms_user']['user']['anchor_bank_details']['acc_name']) ? $value['lms_user']['user']['anchor_bank_details']['acc_name'] : '';
         } else {
             $benifiName = isset($value['lms_user']['bank_details']['acc_name']) ? $value['lms_user']['bank_details']['acc_name'] : '';
         }            
