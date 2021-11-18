@@ -129,12 +129,12 @@ class Apportionment {
                     let value =  parseFloat($(this).attr('max'));
                     if(paymentAmt>=value){
                         $(this).val(value.toFixed(2));
-                        $(this).attr('readonly',false);
+                        $(this).attr('disabled',false);
                         $("input[name='check["+id+"]']").prop("checked", true);
                         paymentAmt = paymentAmt-value.toFixed(2);
                     }else{
                         $(this).val(paymentAmt.toFixed(2));
-                        $(this).attr('readonly',false);
+                        $(this).attr('disabled',false);
                         $("input[name='check["+id+"]']").prop("checked", true);
                         paymentAmt= 0;
                     }
@@ -150,7 +150,7 @@ class Apportionment {
                 if(!$.isEmptyObject(oldData.check[id])){
                     $("input[name='check["+id+"]']").prop("checked", true);
                 }else{
-                    $("input[name='payment["+id+"]']").attr('readonly',true);
+                    $("input[name='payment["+id+"]']").attr('disabled',true);
                 }
             });
         }
@@ -180,9 +180,9 @@ class Apportionment {
     onCheckChange(transId){
         $("input[name='payment["+transId+"]']").val('');
         if ($("input[name='check["+transId+"]']").is(":checked")) { 
-            $("input[name='payment["+transId+"]']").removeAttr('readonly');
+            $("input[name='payment["+transId+"]']").removeAttr('disabled');
         } else { 
-            $("input[name='payment["+transId+"]']").attr('readonly',true);
+            $("input[name='payment["+transId+"]']").attr('disabled',true);
         }
         this.calculateUnAppliedAmt()
     }
@@ -408,10 +408,10 @@ class Apportionment {
     selectAllChecks(checkallId){
       if ($('#' + checkallId).is(':checked')) {
         $('.check[type="checkbox"]').prop('checked', true);
-        $('.pay[type="text"]').removeAttr('readonly');
+        $('.pay[type="text"]').removeAttr('disabled');
       }else{
          $('.check[type="checkbox"]').prop('checked', false);
-         $('.pay[type="text"]').attr('readonly',true);
+         $('.pay[type="text"]').attr('disabled',true);
       }
       $('.pay[type="text"]').val('');
       this.calculateUnAppliedAmt()
@@ -423,9 +423,9 @@ class Apportionment {
 
     onRefundCheckChange(transId){
         if ($("input[name='check["+transId+"]']").is(":checked")) { 
-            $("input[name='refund["+transId+"]']").attr('readonly',false);
+            $("input[name='refund["+transId+"]']").attr('disabled',false);
         } else { 
-            $("input[name='refund["+transId+"]']").attr('readonly',true);
+            $("input[name='refund["+transId+"]']").attr('disabled',true);
         }
         $("input[name='refund["+transId+"]']").val('');
     }
@@ -433,10 +433,10 @@ class Apportionment {
     selectAllRefundCheck(checkallId){
         if ($('#' + checkallId).is(':checked')) {
             $('.check[type="checkbox"]').prop('checked', true);
-            $('.refund[type="text"]').attr('readonly',false);
+            $('.refund[type="text"]').attr('disabled',false);
         }else{
             $('.check[type="checkbox"]').prop('checked', false);
-            $('.refund[type="text"]').attr('readonly',true);
+            $('.refund[type="text"]').attr('disabled',true);
         }
         $('.refund[type="text"]').val(''); 
     }
