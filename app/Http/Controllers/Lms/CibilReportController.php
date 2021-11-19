@@ -344,7 +344,7 @@ class CibilReportController extends Controller
             'Tenure / Weighted Average maturity period of Contracts' => NULL,
             'Repayment Frequency' => '08',
             'Drawing Power' => NULL,
-            'Current   Balance / Limit Utilized /Mark to Market' => isset($userData) ? $userData->utilized_amt : 0,
+            'Current   Balance / Limit Utilized /Mark to Market' => isset($userData) ? $userData->total_outstanding_amt : 0,
             'Notional Amount of Out-standing Restructured Contracts' => NULL,
             'Loan Expiry / Maturity Date' => NULL,
             'Loan Renewal Date' => NULL,
