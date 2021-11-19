@@ -5416,7 +5416,7 @@ class DataRenderer implements DataProviderInterface
                             $paymentAppor = PaymentApportionment::checkApportionmentHold($dataRecords->user_id);
                             if ($dataRecords->is_settled == Payment::PAYMENT_SETTLED) {
                                 if(Helpers::checkPermission('undo_apportionment')){
-                                    if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && $dataRecords->validRevertPayment){
+                                    if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && (($dataRecords->action_type == '1' && $dataRecords->trans_type == '17') || ($dataRecords->action_type == '3' && $dataRecords->trans_type == '7') ) && $dataRecords->validRevertPayment){
                                         if (!$paymentAppor) {  
                                         $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
                                         }else{

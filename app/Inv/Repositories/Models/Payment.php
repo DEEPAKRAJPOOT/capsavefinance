@@ -330,7 +330,7 @@ class Payment extends BaseModel {
         $payment_id = $payment->payment_id;
         if($payment_id){
             $paymentDetails = self::find($payment_id);
-            if($paymentDetails->trans_type == '17' && $paymentDetails->action_type == '1'){
+            if(($paymentDetails->trans_type == '17' && $paymentDetails->action_type == '1') || ($paymentDetails->trans_type == '7' && $paymentDetails->action_type == '3') ){
                 $returnId = $payment_id;
             }
         }
