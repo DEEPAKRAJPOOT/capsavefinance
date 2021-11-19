@@ -541,9 +541,7 @@ class Transactions extends BaseModel {
                 ->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REFUND'),config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')])
                 ->where('user_id','=',$userId)->get()
                 ->where('is_transaction',1)
-                ->filter(function($item){
-                    return ($item->refundoutstanding > 0);
-                });
+                ->where('settled_outstanding','>',0);
     }
 
     public static function getRefundTrans($userId){
