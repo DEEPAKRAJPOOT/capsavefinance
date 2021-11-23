@@ -8077,10 +8077,10 @@ class DataRenderer implements DataProviderInterface
                 $transDisabled = '';
                 if ($this->enablePaymentBeforeInvoiceDate === true) {
                     if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
-                        $transDisabled = 'disabled';
+                        $transDisabled = 'readonly';
                     }
                 }
-                $result = "<input class='pay' id='".$trans->trans_id."' $transDisabled readonly='true' type='text' max='".round($trans->TDSAmount,2)."' name='payment[".$trans->trans_id."]'>";    
+                $result = "<input class='pay' id='".$trans->trans_id."' $transDisabled disabled type='text' max='".round($trans->TDSAmount,2)."' name='payment[".$trans->trans_id."]'>";    
                 }
                 return $result;
             })
