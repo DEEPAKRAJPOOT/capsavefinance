@@ -6620,7 +6620,7 @@ class DataRenderer implements DataProviderInterface
                 return "₹ ".number_format($trans->refundoutstanding,2);
             })
             ->addColumn('refund', function($trans){
-                $result = "<input class='refund' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->refundoutstanding,2)."' name='refund[".$trans->trans_id."]' onchange='apport.onRefundChange(".$trans->trans_id.")'>";
+                $result = "<input class='refund' id='".$trans->trans_id."' disabled type='text' max='".round($trans->refundoutstanding,2)."' name='refund[".$trans->trans_id."]' onchange='apport.onRefundChange(".$trans->trans_id.")'>";
                 return $result;
             })
             ->addColumn('select', function($trans){
