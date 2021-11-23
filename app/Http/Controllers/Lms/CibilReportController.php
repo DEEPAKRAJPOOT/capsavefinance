@@ -493,7 +493,7 @@ class CibilReportController extends Controller
     public function _getMonthLastDate() {
       $lastRecord = \DB::select('select * from rta_cibil_report order by cibil_report_id desc limit 1');
       $currentDate = date('Y-m-d H:i:s');
-      $monthDiff = 10;
+      $monthDiff = 16;
       if(!empty($lastRecord)) {
         $lastPulledDate = $lastRecord[0]->created_at;
         $monthDiff = $this->_monthDifference($currentDate, $lastPulledDate);
