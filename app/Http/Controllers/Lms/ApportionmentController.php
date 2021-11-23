@@ -2065,12 +2065,20 @@ class ApportionmentController extends Controller
             $token = $userId . '|' . $paymentId . '|' . $date_of_payment . '|' . $datetime;
             //dd($tokenId);
             $transactions = $this->getUnsettledTrans($userId, $date_of_payment);
-            $columns = ["Trans ID", "Trans Date", "Invoice No", "Trans Type", "Total Repay Amt", "Outstanding Amt", "Payment"];
+            //dd($transactions);
+            $columns = ["Trans ID", "Trans Date", "Invoice No", "Trans Type", "Total Repay Amt", "Outstanding Amt", "Suggested Outstanding Amt", "Payment"];
             $unTransactions = [];
             foreach ($transactions as $trans) {
                 $invoiceNo = '-';
                 if ($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id) {
                     $invoiceNo = $trans->invoiceDisbursed->invoice->invoice_no;
+                }
+                $accuredInterestR = '';
+                if($showSuggestion && $payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                    $accuredInterest = $trans->tempInterest;
+                    if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
+                           $accuredInterestR = number_format($accuredInterest,2);
+                    }
                 }
                 $totalPay = $trans->amount;
                 $outStanding = $trans->outstanding;
@@ -2081,6 +2089,7 @@ class ApportionmentController extends Controller
                     'Trans Type' =>  $trans->transName,
                     'Total Repay Amt' => $totalPay,
                     'Outstanding Amt' => $outStanding,
+                    'Suggested Outstanding Amt' => $accuredInterestR,
                     'Payment' => ''
                 ];
             }
