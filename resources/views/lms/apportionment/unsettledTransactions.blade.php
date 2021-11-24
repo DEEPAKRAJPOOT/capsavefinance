@@ -73,11 +73,12 @@
             <div class="row pull-right action-btn mt-2">
                 <div class="col-md-12" >
                     @if($paymentId) 
+                    <span class="pull-left mr-3 mt-1" id="msg_action"></span>
                         @can('apport_mark_settle_confirmation')
                             @if($paymentApportionment)
-                                <input type="button" name="action" value="Mark Settled" class="btn btn-success btn-sm" onclick="javascript:alert('You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.')">
+                                <input type="button" name="action" value="Mark Settled" class="btn btn-success btn-sm" onclick="javascript:alert('You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.')" id="MarkSettled">
                             @else
-                                <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm">
+                                <input type="submit" name="action" value="Mark Settled" class="btn btn-success btn-sm" id="MarkSettled">
                             @endif
                         @endcan                         
                         @if (!$paymentApportionment)
@@ -86,7 +87,7 @@
                             @endcan
                             @else
                             @can('delete_download_csv_apport_unsettled_trans')
-                            <a href="{{ URL::route('delete_download_csv_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'payment_appor_id' => $paymentApportionment->payment_aporti_id, 'sanctionPageView' => $sanctionPageView]) }}" class="btn btn-danger btn-sm float-left mr-2 disabled" id="dltUnTransCsv">Delete CSV</a>
+                            <a href="javascript:void(0);" class="btn btn-danger btn-sm float-left mr-2 disabled" id="dltUnTransCsv">Delete CSV</a>
                             @endcan
                         @endif
                         @can('upload_apport_unsettled_trans')
@@ -145,6 +146,10 @@
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         old_data: {!! json_encode($oldData) !!},
         token: "{{ csrf_token() }}",
+        deleteCsvApport: "{{ URL::route('delete_download_csv_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'payment_appor_id' => ($paymentApportionment->payment_aporti_id)??0, 'sanctionPageView' => $sanctionPageView]) }}",
+        downloadCsvApport : "{{ URL::route('download_apport_unsettled_trans',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}",
+        sanctionPageView: "{{  $sanctionPageView }}",
+        payment_appor_id: "{{ ($paymentApportionment->payment_aporti_id)??0 }}",
         apporUnsettleRedirect: "{{ URL::route('apport_unsettled_view',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView, 'redirect' => true ]) }}",
     };
 

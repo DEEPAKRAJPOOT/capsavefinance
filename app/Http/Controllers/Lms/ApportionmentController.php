@@ -2295,22 +2295,35 @@ class ApportionmentController extends Controller
     {
         try {
             if ($request->has('user_id') && $request->user_id && $request->has('payment_id') && $request->payment_id) {
-                $paymentApportionment = PaymentApportionment::where('user_id', $request->user_id)
-                                                            ->where('payment_id', $request->payment_id)
-                                                            ->where('parent_id', 0)
-                                                            ->where('payment_aporti_id', $request->payment_appor_id)
-                                                            ->first();
-                if ($paymentApportionment) {
-                    $paymentApportionment->update(['is_active' => 0]);
+                if ($request->has('action_type') && $request->has('action_type') == 'checkDownloadCsvEntry') {
+                    sleep(2);
+                    $paymentApportionments  = ['payment_id' => $request->payment_id];
+                    $result = PaymentApportionment::getLastPaymentAportData($paymentApportionments);
+                    if ($result) {
+                        return \Response::json(['status' => 1, 'message' =>  'Download Successfully!']);
+                    } else {
+                        return \Response::json(['status' => 2, 'message' =>  'Not Download Successfully!']);
+                    }
+                } else {
+                    $paymentApportionment = PaymentApportionment::where('user_id', $request->user_id)
+                        ->where('payment_id', $request->payment_id)
+                        ->where('parent_id', 0)
+                        ->where('payment_aporti_id', $request->payment_appor_id)
+                        ->first();
+                    if ($paymentApportionment) {
+                        $paymentApportionment->update(['is_active' => 0]);
+                    }
+                    PaymentApportionment::where('payment_id', $request->payment_id)
+                        ->update([
+                            'is_active' => 0
+                        ]);
+                    //return redirect()->route('apport_unsettled_view', [ 'user_id' => $request->user_id , 'payment_id' => $request->payment_id, 'sanctionPageView' => $request->sanctionPageView ]);
+                    return \Response::json(['status' => 1, 'message' =>  'Deleted Successfully!']);
                 }
-                PaymentApportionment::where('payment_id', $request->payment_id)
-						->update([
-							'is_active' => 0
-							]);
-                return redirect()->route('apport_unsettled_view', [ 'user_id' => $request->user_id , 'payment_id' => $request->payment_id, 'sanctionPageView' => $request->sanctionPageView ]);
-            }    
+            }
         } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }    
+            //return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            return \Response::json(['status' => 0, 'message' =>  Helpers::getExceptionMessage($ex)]);
+        }
     }
 }
