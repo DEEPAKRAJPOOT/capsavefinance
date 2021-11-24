@@ -889,7 +889,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'uses' => 'Lms\ApportionmentController@uploadApportUnsettledTdsTrans',
                     ]);
 
-                    Route::get('/upload/delete-download-csv-unsettled-transactions', [
+                    Route::match(['get', 'post'],'/upload/delete-download-csv-unsettled-transactions', [
                         'as' => 'delete_download_csv_apport_unsettled_trans',
                         'uses' => 'Lms\ApportionmentController@deleteDownloadCsvApportUnsettledTrans',
                     ]);

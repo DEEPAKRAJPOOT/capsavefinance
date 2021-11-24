@@ -473,14 +473,110 @@ $(document).on('propertychange change click keyup input paste','.refund',functio
     apport.onRefundChange($(this).attr('id'));
 });
 
-$("#dwnldUnTransCsv").click(function(e) {   
+/*$("#dwnldUnTransCsv").click(function(e) {   
     e.preventDefault();
 
     //open download link in new page
     window.open($(this).attr("href"));
 
     //redirect current page to success page
-    window.location.href = messages.apporUnsettleRedirect;
+    //window.location.href = messages.apporUnsettleRedirect;
     window.focus();
     // location.reload();
+});*/
+let checkDownloadCsvEntry = function () {
+    let data = "user_id=" + messages.user_id + "&payment_id=" + messages.payment_id + "&sanctionPageView=" + messages.sanctionPageView + "&payment_appor_id=" + messages.payment_appor_id + "&action_type=checkDownloadCsvEntry&_token=" + messages.token;
+    $.ajax({
+        type: "POST",
+        url: messages.deleteCsvApport,
+        data: data,
+        beforeSend: function () {
+            $("#dwnldUnTransCsv").addClass("disabled").text("Please wait...");
+            $("#uploadUnTransCsv").addClass("disabled");
+            $("input[name=action]").addClass("disabled");
+        },
+        error: function (xhr, status, error) {
+            if (status === "timeout" || status === "error") {
+                alert("Timeout or unable to receive statistics!");
+            }
+        },
+        success: function (response) {
+            if (response.status == 1) {
+                $("#msg_action").fadeIn().html("<font color='green'><b>"+response.message+"</b></font>").fadeOut(3000);
+                $aId = $("#dwnldUnTransCsv");
+                $aId2 = $("#MarkSettled");
+                $aId.removeClass("btn-success");
+                $aId.addClass("btn-danger");
+                $aId.attr("id", "dltUnTransCsv");
+                $aId.text("Delete CSV");
+                $aId2.attr("type", "button");
+                $aId2.attr("onclick", "alert('You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.')");
+                $aId3 = $('#dltUnTransCsv');
+                $aId3.attr("href", "javascript:void(0);");
+                $("#dwnldUnTransCsv,#dltUnTransCsv").removeClass("disabled").text("Delete CSV");
+                $("#uploadUnTransCsv").removeClass("disabled");
+                $("input[name=action]").removeClass("disabled");
+                //window.focus();
+            } else {
+                console.log(response.message);
+                $("#dwnldUnTransCsv,#dltUnTransCsv").removeClass("disabled");
+                $("#uploadUnTransCsv").removeClass("disabled");
+                $("input[name=action]").removeClass("disabled");
+            }
+        },
+        complete: function (jqXHR, status) {
+            if (status !== "timeout" && status !== "error") {
+                //setTimeout(myfunc, 3000);
+            }
+            $("#dwnldUnTransCsv,#dltUnTransCsv").removeClass("disabled");
+            $("#uploadUnTransCsv").removeClass("disabled");
+            $("input[name=action]").removeClass("disabled");
+        },
+        timeout: 5000
+    });
+}
+
+$(document).on("click", "#dwnldUnTransCsv", function (e) {
+    e.preventDefault();
+    window.location.href = $(this).attr("href");
+    checkDownloadCsvEntry();
+});
+
+$(document).on("click", "#dltUnTransCsv", function (e) {
+    e.preventDefault();
+    if (confirm('Are you sure you want to delete csv?')) {
+        let data = "user_id=" + messages.user_id + "&payment_id=" + messages.payment_id + "&sanctionPageView=" + messages.sanctionPageView + "&payment_appor_id=" + messages.payment_appor_id + "&_token=" + messages.token;
+        $.ajax({
+            type: "POST",
+            url: messages.deleteCsvApport,
+            data: data,
+            beforeSend: function () {
+                $("#dwnldUnTransCsv,#dltUnTransCsv").addClass("disabled").text("Please wait...");
+                $("#uploadUnTransCsv").addClass("disabled");
+                $("input[name=action]").addClass("disabled");
+            },
+        }).done(function (response) {
+            //console.log(response);
+            if (response.status == 1) {
+                $("#msg_action").fadeIn().html("<font color='green'><b>"+response.message+"</b></font>").fadeOut(3000);
+                $aId = $('#dltUnTransCsv');
+                $aId.attr("href", messages.downloadCsvApport);
+                $aId.removeClass("btn-danger");
+                $aId.addClass("btn-success");
+                $aId.attr("id", "dwnldUnTransCsv");
+                $aId.text("Download CSV");
+                $aId2 = $("#MarkSettled");
+                $aId2.attr("type", "submit");
+                $aId2.removeAttr("onclick");
+                $("#dwnldUnTransCsv,#dltUnTransCsv").removeClass("disabled");
+                $("#uploadUnTransCsv").removeClass("disabled");
+                $("input[name=action]").removeClass("disabled");
+            } else {
+                console.log(response.message);
+                $("#dwnldUnTransCsv,#dltUnTransCsv").removeClass("disabled");
+                $("#uploadUnTransCsv").removeClass("disabled");
+                $("input[name=action]").removeClass("disabled");
+            }
+        });
+    }
 });

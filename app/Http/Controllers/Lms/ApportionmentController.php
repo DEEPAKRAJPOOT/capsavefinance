@@ -2055,6 +2055,7 @@ class ApportionmentController extends Controller
             $transactions = null;
             $unInvCnt = BizInvoice::where('supplier_id', $userId)->whereHas('invoice_disbursed')->where('is_repayment', '0')->count();
             $showSuggestion = ($unInvCnt <= 50) ? true : false;
+            //dd($showSuggestion);
             $date_of_payment = null;
             if ($request->has('payment_id')) {
                 $paymentId = $request->payment_id;
@@ -2063,14 +2064,20 @@ class ApportionmentController extends Controller
             }
             $datetime = \Carbon\Carbon::now("UTC");
             $token = $userId . '|' . $paymentId . '|' . $date_of_payment . '|' . $datetime;
-            //dd($tokenId);
             $transactions = $this->getUnsettledTrans($userId, $date_of_payment);
-            $columns = ["Trans ID", "Trans Date", "Invoice No", "Trans Type", "Total Repay Amt", "Outstanding Amt", "Payment"];
+            $columns = ["Trans ID", "Trans Date", "Invoice No", "Trans Type", "Total Repay Amt", "Outstanding Amt", "Suggested Outstanding Amt", "Payment"];
             $unTransactions = [];
             foreach ($transactions as $trans) {
                 $invoiceNo = '-';
                 if ($trans->invoice_disbursed_id && $trans->invoiceDisbursed->invoice_id) {
                     $invoiceNo = $trans->invoiceDisbursed->invoice->invoice_no;
+                }
+                $accuredInterestR = '';
+                if($showSuggestion && $payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                    $accuredInterest = $trans->tempInterest;
+                    if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
+                           $accuredInterestR = number_format($accuredInterest,2);
+                    }
                 }
                 $totalPay = $trans->amount;
                 $outStanding = $trans->outstanding;
@@ -2081,6 +2088,7 @@ class ApportionmentController extends Controller
                     'Trans Type' =>  $trans->transName,
                     'Total Repay Amt' => $totalPay,
                     'Outstanding Amt' => $outStanding,
+                    'Suggested Outstanding Amt' => $accuredInterestR,
                     'Payment' => ''
                 ];
             }
@@ -2088,8 +2096,6 @@ class ApportionmentController extends Controller
             $notes = 'Note: Token ID and Trans ID is required for updating data. Please do not change Trans ID.';
             $extraDataArray = ['TOKEN_ID' => Helpers::_encrypt($token, 'CAPAUT'), 'NOTE' => $notes];
             $now = now()->format('U');
-            //$arrvar = ['unTransactions' => $unTransactions];
-            //return $fileHelper->array_to_excel($arrvar, 'UnsettledTransactions.xlsx');
             $fileName = 'UnsettledTransactions-' . $now . '.csv';
             $responseFile = $fileHelper->exportCsv($unTransactions, $columns, $fileName, $extraDataArray);
             if (is_array($responseFile) && isset($responseFile['status']) && $responseFile['status'] != 'success') {
@@ -2144,7 +2150,6 @@ class ApportionmentController extends Controller
                 $uploadedFile = $request->file('upload_unsettled_trans');
                 $paymentApportionments  = ['payment_id' => $paymentId];
                 $result = PaymentApportionment::getLastPaymentAportData($paymentApportionments);
-                ///dd($result);
                 if ($result) {
                     $parentId = $result['payment_aporti_id'];
                     $paymentId = $result['payment_id'];
@@ -2156,18 +2161,14 @@ class ApportionmentController extends Controller
                             return redirect()->back();
                         }
                         $uploadFileData = $uploadData['data'];
-                        //$fullFilePath = Storage::url('app/public/'.$uploadFileData['file_path']);
                         $fullFilePath = storage_path('app') . '/public/' . $uploadFileData['file_path'];
                         if (file_exists($fullFilePath)) {
-                            //$fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
                             $fileArrayData = $fileHelper->csvToArray($fullFilePath, $delimiter = ',');
-                            //dd($fileArrayData);
                             if ($fileArrayData['status'] != 'success') {
                                 Session::flash('untrans_error', $fileHelper->validationMessage(5));
                                 return redirect()->back();
                             }
                             $rowData = $fileArrayData['data'];
-                            //dd($fileArrayData);
                             if (empty($rowData)) {
                                 Session::flash('untrans_error', $fileHelper->validationMessage(6));
                                 return redirect()->back();
@@ -2180,7 +2181,6 @@ class ApportionmentController extends Controller
                             $tokenData = [];
                             if ($tokenId) {
                                 $tokenData = explode('|', $tokenId);
-                                //dd($tokenData);
                                 if (empty($tokenData[0]) || empty($tokenData[1]) || empty($tokenData[2])  || empty($tokenData[3]) ) {
                                     session::flash('untrans_error', $fileHelper->validationMessage(18));
                                     return redirect()->back();
@@ -2233,12 +2233,9 @@ class ApportionmentController extends Controller
                                     Session::flash('untrans_error', $fileHelper->validationMessage(10));
                                     return redirect()->back();
                                 }
-                                //$check[$transactions[$key]['trans_id']] = 'off';
                                 $Trans_ID = Helpers::_decrypt($value['Trans ID'], 'CAPAUT');
-                                //$transactions[$key]['trans_id']
                                 if($transactions[$key]['trans_id'] != $Trans_ID){
                                     Session::flash('untrans_error', $fileHelper->validationMessage(19));
-                                    //$validator->errors()->add("payment.{$Trans_ID}", 'Pay filed must be less than and equal to the outsanding amount');
                                     return redirect()->back();
                                 }
                                 if (!empty($value['Payment']) && $value['Payment'] != '') {
@@ -2246,7 +2243,6 @@ class ApportionmentController extends Controller
                                     $payment[$Trans_ID] = str_replace(",","",$value['Payment']);
                                 }
                             }
-                            //dd($payment);
                             $docRepo = \App::make('App\Inv\Repositories\Contracts\DocumentInterface');
                             $userFile = $docRepo->saveFile($uploadFileData);
                             if ($userFile) {
@@ -2259,7 +2255,6 @@ class ApportionmentController extends Controller
                                     'is_active' => 1
                                 ];
                                 $result = PaymentApportionment::creates($paymentApportionment, 'upload');
-                                //unlink($destinationPath . '/' . $fileName);
                                 Session::flash('is_accept', 1);
                                 return redirect()->route('apport_mark_settle_confirmation', [
                                     'user_id' => $request->user_id,
@@ -2300,22 +2295,35 @@ class ApportionmentController extends Controller
     {
         try {
             if ($request->has('user_id') && $request->user_id && $request->has('payment_id') && $request->payment_id) {
-                $paymentApportionment = PaymentApportionment::where('user_id', $request->user_id)
-                                                            ->where('payment_id', $request->payment_id)
-                                                            ->where('parent_id', 0)
-                                                            ->where('payment_aporti_id', $request->payment_appor_id)
-                                                            ->first();
-                if ($paymentApportionment) {
-                    $paymentApportionment->update(['is_active' => 0]);
+                if ($request->has('action_type') && $request->has('action_type') == 'checkDownloadCsvEntry') {
+                    sleep(2);
+                    $paymentApportionments  = ['payment_id' => $request->payment_id];
+                    $result = PaymentApportionment::getLastPaymentAportData($paymentApportionments);
+                    if ($result) {
+                        return \Response::json(['status' => 1, 'message' =>  'Download Successfully!']);
+                    } else {
+                        return \Response::json(['status' => 2, 'message' =>  'Not Download Successfully!']);
+                    }
+                } else {
+                    $paymentApportionment = PaymentApportionment::where('user_id', $request->user_id)
+                        ->where('payment_id', $request->payment_id)
+                        ->where('parent_id', 0)
+                        ->where('payment_aporti_id', $request->payment_appor_id)
+                        ->first();
+                    if ($paymentApportionment) {
+                        $paymentApportionment->update(['is_active' => 0]);
+                    }
+                    PaymentApportionment::where('payment_id', $request->payment_id)
+                        ->update([
+                            'is_active' => 0
+                        ]);
+                    //return redirect()->route('apport_unsettled_view', [ 'user_id' => $request->user_id , 'payment_id' => $request->payment_id, 'sanctionPageView' => $request->sanctionPageView ]);
+                    return \Response::json(['status' => 1, 'message' =>  'Deleted Successfully!']);
                 }
-                PaymentApportionment::where('payment_id', $request->payment_id)
-						->update([
-							'is_active' => 0
-							]);
-                return redirect()->route('apport_unsettled_view', [ 'user_id' => $request->user_id , 'payment_id' => $request->payment_id, 'sanctionPageView' => $request->sanctionPageView ]);
-            }    
+            }
         } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }    
+            //return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            return \Response::json(['status' => 0, 'message' =>  Helpers::getExceptionMessage($ex)]);
+        }
     }
 }
