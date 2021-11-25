@@ -113,5 +113,5 @@
     };
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="{{ asset('backend/js/lms/apportionment.js') }}"></script>
+<script src="{{ asset('backend/js/lms/apportionment.js') }}?id={{ time() }}"></script>
 @endsection

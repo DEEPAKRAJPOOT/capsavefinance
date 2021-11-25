@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\Master\DoaLevelRole;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use App\Inv\Repositories\Models\Lms\InterestAccrualTemp;
 use App\Inv\Repositories\Models\Lms\UserInvoiceRelation;
+use App\Inv\Repositories\Models\Lms\PaymentApportionment;
 
 class DataRenderer implements DataProviderInterface
 {
@@ -5412,17 +5413,26 @@ class DataRenderer implements DataProviderInterface
                             $btn = '';
                             $roleData = Helpers::getUserRole();
                             $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
+                            $paymentAppor = PaymentApportionment::checkApportionmentHold($dataRecords->user_id);
                             if ($dataRecords->is_settled == Payment::PAYMENT_SETTLED) {
                                 if(Helpers::checkPermission('undo_apportionment')){
-                                    if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && $dataRecords->action_type == '1' && $dataRecords->trans_type == '17' && $dataRecords->validRevertPayment){
+                                    if($dataRecords->is_settled == Payment::PAYMENT_SETTLED && (($dataRecords->action_type == '1' && $dataRecords->trans_type == '17') || ($dataRecords->action_type == '3' && $dataRecords->trans_type == '7') ) && $dataRecords->validRevertPayment){
+                                        if (!$paymentAppor) {  
                                         $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="delete_payment(\''. route('undo_apportionment', ['payment_id' => $dataRecords->payment_id, '_token'=> csrf_token()] ) .'\',this)" ><i class="fa fa-undo"></i></button>';
+                                        }else{
+                                            $btn .= '<button class="btn btn-action-btn btn-sm"  title="Revert Apportionment" onclick="javascript:alert(\'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.\');" ><i class="fa fa-undo"></i></button>';                                            
+                                        }
                                     }
                                 }
 
                                 if(Helpers::checkPermission('lms_refund_payment_advise')){
                                     if($dataRecords->action_type == '1' && $dataRecords->trans_type == '17'){
                                         if($dataRecords->is_refundable && !$dataRecords->refundReq && in_array($dataRecords->is_settled, [Payment::PAYMENT_SETTLED])){
+                                        if (!$paymentAppor) { 
                                             $btn .= '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#paymentRefundInvoice" title="Payment Refund" data-url ="'.route('lms_refund_payment_advise', ['payment_id' => $dataRecords->payment_id]).'" data-height="350px" data-width="100%" data-placement="top"><i class="fa fa-list-alt"></i></a>';
+                                        }else{
+                                            $btn .= '<button class="btn btn-action-btn btn-sm"  title="Payment Refund" onclick="javascript:alert(\'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.\');" ><i class="fa fa-list-alt"></i></button>';                                            
+                                        }
                                         }
                                     }
                                 }
@@ -6503,10 +6513,10 @@ class DataRenderer implements DataProviderInterface
                     if($showSuggestion && $payment && in_array($trans->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                         $accuredInterest = $trans->tempInterest;
                         if(!is_null($accuredInterest) && !($trans->invoiceDisbursed->invoice->program_offer->payment_frequency == 1 && $trans->invoiceDisbursed->invoice->program->interest_borne_by == 1 && $trans->trans_type == config('lms.TRANS_TYPE.INTEREST'))){
-                            return  "<input class='pay' id='".$trans->trans_id."' $transDisabled readonly='true' type='text' max='".round($accuredInterest,2)."' name='payment[".$trans->trans_id."]'>";
+                            return  "<input class='pay' id='".$trans->trans_id."' $transDisabled disabled type='text' max='".round($accuredInterest,2)."' name='payment[".$trans->trans_id."]'>";
                         }
                     }
-                    $result = "<input class='pay' id='".$trans->trans_id."' $transDisabled readonly='true' type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]'>";
+                    $result = "<input class='pay' id='".$trans->trans_id."' $transDisabled disabled type='text' max='".round($trans->outstanding,2)."' name='payment[".$trans->trans_id."]'>";
                     
                 }
                 return $result;
@@ -6610,7 +6620,7 @@ class DataRenderer implements DataProviderInterface
                 return "₹ ".number_format($trans->refundoutstanding,2);
             })
             ->addColumn('refund', function($trans){
-                $result = "<input class='refund' id='".$trans->trans_id."' readonly='true' type='text' max='".round($trans->refundoutstanding,2)."' name='refund[".$trans->trans_id."]' onchange='apport.onRefundChange(".$trans->trans_id.")'>";
+                $result = "<input class='refund' id='".$trans->trans_id."' disabled type='text' max='".round($trans->refundoutstanding,2)."' name='refund[".$trans->trans_id."]' onchange='apport.onRefundChange(".$trans->trans_id.")'>";
                 return $result;
             })
             ->addColumn('select', function($trans){
@@ -8067,10 +8077,10 @@ class DataRenderer implements DataProviderInterface
                 $transDisabled = '';
                 if ($this->enablePaymentBeforeInvoiceDate === true) {
                     if (isset($userInvoiceDate) && preg_replace('#[^0-9]+#', '', $paymentDate) < preg_replace('#[^0-9]+#', '', $userInvoiceDate)) {
-                        $transDisabled = 'disabled';
+                        $transDisabled = 'readonly';
                     }
                 }
-                $result = "<input class='pay' id='".$trans->trans_id."' $transDisabled readonly='true' type='text' max='".round($trans->TDSAmount,2)."' name='payment[".$trans->trans_id."]'>";    
+                $result = "<input class='pay' id='".$trans->trans_id."' $transDisabled disabled type='text' max='".round($trans->TDSAmount,2)."' name='payment[".$trans->trans_id."]'>";    
                 }
                 return $result;
             })

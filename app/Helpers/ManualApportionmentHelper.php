@@ -325,7 +325,6 @@ class ManualApportionmentHelper{
         $disbTransIds = null;
         $intTransIds = null;
         $Dr = 0;
-        
         $invDisbDetails = InvoiceDisbursed::where('int_accrual_start_dt','<=',$transDate)->where('invoice_disbursed_id',$invDisbId)->first();
         if($invDisbDetails){
             $margin = ($invDisbDetails->invoice->invoice_approve_amount*$invDisbDetails->margin)/100;
@@ -415,13 +414,13 @@ class ManualApportionmentHelper{
                 ->where('entry_type','=',0)
                 ->whereMonth('trans_date', date('n', strtotime($odue->interestDate)))
                 ->value('trans_running_id');
-                
+
                 if($transRunningId){
                     TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                     ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
                     ->where('trans_running_id','>',$transRunningId)
                     ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
-                    
+
                     $whereCond = ['trans_running_id' => $transRunningId];
                     $intTransData = [
                         'invoice_disbursed_id' => $invDisbId,
@@ -436,7 +435,7 @@ class ManualApportionmentHelper{
                     TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                     ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
                     ->update(['amount'=>0,'sys_updated_at' => Helpers::getSysStartDate()]);
-                    
+
                     $intTransData = [
                         'invoice_disbursed_id' => $invDisbId,
                         'user_id' => $userId,
@@ -457,7 +456,7 @@ class ManualApportionmentHelper{
 
     private function interestPosting($invDisbId, $userId, $payFreq, $transDate, $gStartDate, $gEndDate){
         $interests = new Collection();
-        
+    
         $interestData = InterestAccrual::select(\DB::raw("sum(accrued_interest) as totalInt,max(interest_date) as interestDate"))
                         ->where('invoice_disbursed_id','=',$invDisbId)
                         ->whereNull('overdue_interest_rate')
@@ -467,7 +466,7 @@ class ManualApportionmentHelper{
         if($payFreq == 1){
             $interests = $interestData->whereDate('interest_date', '>=', $gStartDate)->get();
         }
-        
+
         //Monthly
         elseif($payFreq == 2){
             $interests = $interestData->groupByRaw('YEAR(interest_date), MONTH(interest_date)')->get();
@@ -494,7 +493,7 @@ class ManualApportionmentHelper{
                 ->where('entry_type','=',0)
                 ->value('trans_running_id');
                 }
-            
+
                 if($transId){
                     TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                     ->where('trans_running_id','>',$transId)
@@ -591,7 +590,6 @@ class ManualApportionmentHelper{
             }
             
             $loopStratDate = $startDate ?? $maxAccrualDate ?? $intAccrualStartDate;
-            
              
             if (is_null($invDisbDetail->int_accrual_start_dt)) {
                 throw new InvalidArgumentException('Interest Accrual Start Date is missing for invoice Disbursed Id: ' . $invDisbId);
@@ -624,9 +622,9 @@ class ManualApportionmentHelper{
                 }
 
                 $balancePrincipal = $this->getpaymentSettled($loopStratDate, $invDisbId, $payFreq, $gStartDate);
-                
+
                 if($balancePrincipal > 0){
-                    if(strtotime($loopStratDate) >= strtotime($odStartDate) ){
+                    if(strtotime($loopStratDate) >= strtotime($odStartDate)){
                         $currentIntRate = $odIntRate;
                         $intType = 2; 
                     }  
@@ -664,7 +662,7 @@ class ManualApportionmentHelper{
                 if(strtotime($loopStratDate) >= strtotime($odStartDate))
                 $this->overDuePosting($invDisbId, $userId);
                 
-                $loopStratDate = $this->addDays($loopStratDate,1);  
+                $loopStratDate = $this->addDays($loopStratDate,1);
                 $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
                 
                 if($balancePrincipal > 0){
@@ -731,7 +729,7 @@ class ManualApportionmentHelper{
             $this->runningToTransPosting($invDisbId, $curDate, $payFreq, $payDueDate, $odStartDate);
         }
     }
-        
+    
     public function getBankBaseRates($bank_id, $date=null){
         if($bank_id){
             $base_rates = \App\Inv\Repositories\Models\Master\BaseRate::where(['bank_id'=> $bank_id, 'is_active'=> 1])->orderBy('id', 'DESC')->get();

@@ -364,17 +364,25 @@ class FileHelper {
       return $respArray;
     }
 
-public function exportCsv($data=[],$columns=[],$fileName='')
+public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
 {
+  $respArray = [
+    'status' => 'success',
+    'message' => 'success',
+  ];
+  try {  
         $headers = array(
-            "Content-type"        => "text/csv",
+            "Content-type"        => "application/csv",
             "Content-Disposition" => "attachment; filename=$fileName",
             "Pragma"              => "no-cache",
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
             "Expires"             => "0"
         );
-        $callback = function() use($data, $columns) {
+        $callback = function() use($data, $columns, $extraDataArray, $fileName) {
             $file = fopen('php://output', 'w');
+            fputcsv($file, ['Token ID='.$extraDataArray['TOKEN_ID']]);
+            fputcsv($file, [$extraDataArray['NOTE']]);
+            fputcsv($file, []);
             fputcsv($file, $columns);
             foreach ($data as $key=>$data) {
                 fputcsv($file, $data);
@@ -382,6 +390,11 @@ public function exportCsv($data=[],$columns=[],$fileName='')
             fclose($file);
         };
         return response()->stream($callback, 200, $headers);
+      }catch(\Exception $e){
+        $respArray['status'] = 'fail';
+        $respArray['message'] = str_replace($fileName, '', $e->getMessage());
+        return $respArray;
+     }
     }
 
     public function csvToArray($filename = '', $delimiter = ',')
@@ -398,21 +411,124 @@ public function exportCsv($data=[],$columns=[],$fileName='')
         $header = null;
         if (($handle = fopen($filename, 'r')) !== false)
         {
+            $rows=1;
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== false)
             {
-                if (!$header)
+              $num = count($row);
+              if ($rows != 1 && $rows != 2 && $rows != 3){
+                if (!$header){
                     $header = $row;
-                else
+                }else{
                     $respArray['data'][] = array_combine($header, $row);
+                }
+              }
+              $rows++;
+              for ($c=0; $c < $num; $c++) {
+                $regex  = "/Token ID=/";
+                // preg_match returns true or false.
+                if(preg_match($regex, $row[$c], $match)) 
+                {
+                  $respArray['TOKEN_ID']  = str_replace("Token ID=","",$row[$c]);
+                }
+              }
             }
             fclose($handle);
         }
     }catch(\Exception $e){
         $respArray['data'] = [];
         $respArray['status'] = 'fail';
-        $respArray['message'] = str_replace($inputFileName, '', $e->getMessage());
+        $respArray['message'] = str_replace($filename, '', $e->getMessage());
     }
     return $respArray;
     }
-   
+
+    public static function uploadUnSettledTransCsv($data=[],$columns=[],$fileName='',$extraDataArray=[],$paymentId=null,$type='upload')
+    {
+      $respArray = [
+        'status' => 'success',
+        'message' => 'success',
+        'data' => [],
+      ];
+      try{
+        $inputArr = [];
+        if ($data) {
+          if($type == 'download'){
+              if (!Storage::exists('/public/payment/' . $paymentId.'/download')) {
+                Storage::makeDirectory('/public/payment/' . $paymentId.'/download', 0777, true);
+              }
+              $destinationPath = storage_path('app').'/public/payment/' . $paymentId.'/download/'.$fileName;
+              $fp = fopen($destinationPath, 'w+');
+              fputcsv($fp, ['Token ID='.$extraDataArray['TOKEN_ID']]);
+              fputcsv($fp, [$extraDataArray['NOTE']]);
+              fputcsv($fp, []);
+              fputcsv($fp, $columns);
+              foreach ($data as $key=>$data) {
+                  fputcsv($fp, $data);
+              }
+              fclose($fp);
+              $dbpath = 'payment/' . $paymentId.'/download/'.$fileName;
+              $inputArr['file_path'] = $dbpath;
+              $fileInfo =  pathinfo($destinationPath);
+              $inputArr['file_type'] = 'text/'.$fileInfo['extension'];//\File::mimeType($destinationPath);
+              $inputArr['file_name'] = $fileName;
+              $inputArr['file_size'] = \File::size($destinationPath);
+              $inputArr['file_encp_key'] =  md5('2');
+        }else{
+          if ($data['upload_unsettled_trans']) {
+          if (!Storage::exists('/public/payment/' . $paymentId.'/upload')) {
+            Storage::makeDirectory('/public/payment/' . $paymentId.'/upload', 0777, true);
+          }
+          $destinationPath = '/payment/' . $paymentId.'/upload';
+          $fileName = $data['upload_unsettled_trans']->getClientOriginalName();
+          //$path = Storage::put($destinationPath,$data['upload_unsettled_trans'],'file.csv');
+          $path = Storage::disk('public')->putFileAs($destinationPath, $data['upload_unsettled_trans'],$fileName);
+          $inputArr['file_path'] = $path;
+        }
+        $inputArr['file_type'] = $data['upload_unsettled_trans']->getClientMimeType();
+        $inputArr['file_name'] = $data['upload_unsettled_trans']->getClientOriginalName();
+        $inputArr['file_size'] = $data['upload_unsettled_trans']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        }
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+        $respArray = [
+          'status' => 'success',
+          'message' => 'success',
+          'data' => $inputArr,
+        ];
+       }
+      }catch(\Exception $e){
+        $respArray['data'] = [];
+        $respArray['status'] = 'fail';
+        $respArray['message'] = str_replace($fileName, '', $e->getMessage());
+      }
+      return $respArray;
+    }
+
+    public static function validationMessage($errorMessageID=0){
+      $errorMessage = [
+        0 => 'Some Error while performing task. Please try again!',
+        1 => 'Some Error while downloading file. Please try again!',
+        2 => 'Some Errors while downloading file. Please try again!',
+        3 => 'Some Error while saving file. Please try again!',
+        4 => 'Some Error while downloading file. Please try again!',
+        5 => 'Please fill the data continuously till 6th column in the sheet',
+        6 => 'File does not contain any record.',
+        7 => 'File does not contain Token ID.',
+        8 => 'Token Data does not contain payload.',
+        9 => 'Token Data does not matched. Please try again!',
+        10 => 'Please fill the correct details.',
+        11 => 'Please fill at least one Payment value.',
+        12 => 'Some Error while saving file. Please try again!',
+        13 => 'Payment value must be numeric.',
+        14 => 'Some Errors while uploading a file. Please try again!',
+        15 => 'Upload File does not match with latest downloaded file. Please upload latest file!',
+        16 => 'File record does not found. Please download latest file to upload!',
+        17 => 'Some Errors while uploading a file. Please try again!',
+        18 => 'Some Token Data missing in Token ID. Please try again!',
+        19 => 'Trans ID does not exists in our system. Please try again!',
+        20 => 'Trans ID does not exists in our system. Please try again!',
+      ];
+      return $errorMessage[$errorMessageID];
+    }
 }

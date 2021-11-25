@@ -504,4 +504,28 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		}
 		return $result;
 	}
+
+	public function getReceiptReport($whereCondition=[], &$sendMail){
+        $transactions = DB::select("SELECT * FROM receipt_report");
+        $sendMail = (count($transactions) > 0)?true:false;
+ 		$result = [];
+		foreach($transactions as $trans){
+			$result[] = [
+				'receipt_date' => $trans->receipt_date,
+				'receipt_account' => $trans->receipt_account,
+				'client_name' => $trans->client_name,
+				'client_id' => $trans->client_id,
+				'trans_type_name' => $trans->trans_type_name,
+				'invoice_no' => $trans->invoice_no,
+				'receipt_utr' => $trans->receipt_utr,
+				'invoice_date' => $trans->invoice_date,
+				'capsave_invoice_no' => $trans->capsave_invoice_no,
+				'capsave_inv_date' => $trans->capsave_inv_date,
+				'disburse_date' => $trans->disburse_date,
+				'amount' => $trans->amount,
+				'total_amount' => $trans->total_amount
+			 ];
+		}
+		return $result;
+	}
 }

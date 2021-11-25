@@ -327,6 +327,7 @@ class CibilReportController extends Controller
     private function _getCRData($appBusiness) {
         $user = $appBusiness->users;
         $outstanding = $this->lmsRepo->getUnsettledTrans($user->user_id, ['trans_type_not_in' => [config('lms.TRANS_TYPE.MARGIN'),config('lms.TRANS_TYPE.NON_FACTORED_AMT')] ])->sum('outstanding');
+        $settledAmt = $this->lmsRepo->getSettledTrans($user->user_id)->sum('settled_outstanding');
         $sanctionDate = $appBusiness->sanctionDate->created_at ?? NULL;
         $prgmLimit = $appBusiness->prgmLimit->limit_amt ?? NULL;
         $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
@@ -344,7 +345,7 @@ class CibilReportController extends Controller
             'Tenure / Weighted Average maturity period of Contracts' => NULL,
             'Repayment Frequency' => '08',
             'Drawing Power' => NULL,
-            'Current   Balance / Limit Utilized /Mark to Market' => isset($userData) ? $userData->utilized_amt : 0,
+            'Current   Balance / Limit Utilized /Mark to Market' => isset($outstanding) ? $outstanding : 0,
             'Notional Amount of Out-standing Restructured Contracts' => NULL,
             'Loan Expiry / Maturity Date' => NULL,
             'Loan Renewal Date' => NULL,
@@ -362,7 +363,7 @@ class CibilReportController extends Controller
             'Account Status' => !empty($this->account_status->status_name) ? '01' : '02',
             'Account Status Date' => !empty($this->account_status->created_at) ? date('d M Y', strtotime($this->account_status->created_at)) : NULL,
             'Written Off Amount' => isset($userData) ? (int)$userData->write_off_amt : 0,
-            'Settled Amount' => isset($userData) ? (int)$userData->settled_amt : 0,
+            'Settled Amount' => isset($settledAmt) ? (int)$settledAmt : 0,
             'Major reasons for Restructuring' => NULL,
             'Amount of Contracts Classified as NPA' => NULL,
             'Asset based Security coverage' => NULL,
@@ -492,7 +493,7 @@ class CibilReportController extends Controller
     public function _getMonthLastDate() {
       $lastRecord = \DB::select('select * from rta_cibil_report order by cibil_report_id desc limit 1');
       $currentDate = date('Y-m-d H:i:s');
-      $monthDiff = 10;
+      $monthDiff = 16;
       if(!empty($lastRecord)) {
         $lastPulledDate = $lastRecord[0]->created_at;
         $monthDiff = $this->_monthDifference($currentDate, $lastPulledDate);
