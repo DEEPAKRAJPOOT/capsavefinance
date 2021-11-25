@@ -182,7 +182,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$interestAmount = 0;
 			$fromDate = null;
 			$toDate = null;
-			if(($invDisb->invoice->program_offer->payment_frequency == 1) && (strtotime($invDisb->payment_due_date) <= strtotime($curdate)) ) {
+			$intrstRecDate = null;
+			if(($invDisb->invoice->program_offer->payment_frequency == '1' && $invDisb->invoice->program_offer->program->interest_borne_by == '2' ) && (strtotime($invDisb->payment_due_date) >= strtotime($curdate)) ) {
+				$intrstRecDate = $invDisb->int_accrual_start_dt;
 				$interestAmount = $invDisb->total_interest;
 				$fromDate = $invDisb->int_accrual_start_dt;
 				$toDate = $invDisb->payment_due_date;
@@ -218,7 +220,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'to'=>$toDate,
 			'tds_intrst'=>$invDisb->transactions->where('trans_type',7)->where('entry_type',1)->sum('amount'),
 			'net_intrst'=>$interestAmount - ($invDisb->transactions->where('trans_type',7)->where('entry_type',1)->sum('amount')),
-			'intrst_rec_date'=>'', // blank
+			'intrst_rec_date'=>$intrstRecDate, // blank
 			'proce_fee'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('base_amt'),
 			'proce_amt'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('base_amt'),
 			'proce_fee_gst'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('amount'),
