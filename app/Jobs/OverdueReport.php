@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Jobs;
-
+use Illuminate\Support\Facades\App;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -114,6 +114,9 @@ class OverdueReport implements ShouldQueue
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
 
         $dirPath = 'public/report/temp/overdueReport/'.date('Ymd');
+        if(!App::runningInConsole()){
+            $dirPath = 'public/report/temp/overdueReport/manual/'.date('Ymd');
+        }
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
