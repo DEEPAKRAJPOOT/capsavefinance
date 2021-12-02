@@ -188,5 +188,10 @@ class LmsUser extends Authenticatable
     {
         return self::where(['user_id' => $userId])->get();
     }
+
+    public function userCreatedBy()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\User','created_by', 'user_id');
+    }    
     
 }
