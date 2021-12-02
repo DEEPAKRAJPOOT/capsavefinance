@@ -1201,4 +1201,8 @@ class ReportController extends Controller
                 FinanceModel::logEmail($mailContent);
             });
 	}
+
+    public function etlReportSync(){
+        return $this->reportsRepo->etlReportSync();
+    }
 }
