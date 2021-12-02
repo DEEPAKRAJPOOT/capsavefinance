@@ -248,8 +248,4 @@ class RenewalController extends Controller {
         
         echo $result . "<br>Finished ...";
     }    
-    
-    public function etlReportSync(){
-        return $this->reportsRepo->etlReportSync();
-    }
 }
