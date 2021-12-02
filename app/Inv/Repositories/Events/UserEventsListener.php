@@ -845,7 +845,7 @@ class UserEventsListener extends BaseEvent
             if(isset($user['auth_email'])) {
                 $email_cc[] = ($user['auth_email']);
             } 
-            $email_cc[] = 'aditya.kumar@prolitus.com';   
+            $email_cc[] = 'aditya.kumar@prolitus.com'; 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
                 function ($message) use ($user, $mail_subject, $mail_body, $email_cc) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
