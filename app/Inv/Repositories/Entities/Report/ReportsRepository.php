@@ -533,4 +533,23 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		}
 		return $result;
 	}
+
+	public function etlReportSync(){
+		$report_1_clear = 'TRUNCATE `etl_margin_report`';
+		$report_1_data = 'INSERT INTO etl_margin_report (`anchor`,`client`,`client_id`,`invoice_no`,`invoice_date`,`invoice_amount`,`disbursed_amount`,`disbursal_date`,`margin_percentage`,`margin_allocated`,`margin_outstanding`) SELECT anchor, CLIENT, client_id, invoice_no, invoice_date, invoice_amount, disbursed_amt, disbursal_date, margin_per, margin_allocated, margin_outstanding  FROM margin_report';
+		DB::statement(\DB::raw($report_1_clear));
+		
+		$report_1_res = DB::statement(\DB::raw($report_1_data));
+		
+		$report_2_clear = 'TRUNCATE `etl_settlement_report`';
+		$report_2_data = 'INSERT INTO etl_settlement_report (`receipt_date`,`receipt_account_no`,`client_borrower_name`,`client_id`,`head_against_ipc`,`invoice_no`,`utr_no`,`invoice_date`,`capsave_invoice_no`,`capsave_invoice_date`,`disbursement_date`,`amount_applied`,`amount_received`) SELECT `receipt_date`,`receipt_account`,`client_name`,`client_id`,`trans_type_name`,`invoice_no`,`receipt_utr`,`invoice_date`,`capsave_invoice_no`,`capsave_inv_date`,`disburse_date`,`amount`,`total_amount` FROM receipt_report';
+		DB::statement(\DB::raw($report_2_clear));
+		
+		$report_2_res = DB::statement(\DB::raw($report_2_data));
+				
+		return [
+			'report_1' => $report_1_res,
+			'report_2' => $report_2_res
+		];
+	}
 }
