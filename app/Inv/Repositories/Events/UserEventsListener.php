@@ -844,17 +844,18 @@ class UserEventsListener extends BaseEvent
             }
             if(isset($user['auth_email'])) {
                 $email_cc[] = ($user['auth_email']);
-            }            
+            } 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
                 function ($message) use ($user, $mail_subject, $mail_body, $email_cc) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
-                if(!empty($message->cc)) {
+                // if(!empty($message->cc)) {
                     $message->cc($email_cc);
-                }
+                // }
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => array($user["receiver_email"]),
+                    'email_cc' => $email_cc,
                     'email_type' => $this->func_name,
                     'name' => $user['receiver_user_name'],
                     'subject' => $mail_subject,

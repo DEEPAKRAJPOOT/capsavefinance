@@ -512,16 +512,16 @@ class InvoiceController extends Controller {
         } else {
             $benifiName = isset($value['lms_user']['bank_details']['acc_name']) ? $value['lms_user']['bank_details']['acc_name'] : '';
         }            
-        $userMailArr['receiver_user_name'] = $name = $value['user']['f_name']. ' ' . $value['user']['l_name'];
+        $userMailArr['receiver_user_name'] = $name = isset($value['user']['email']) ?  $value['user']['f_name']. ' ' . $value['user']['l_name'] : $value['user']['anchor']['comp_name'];
         $userMailArr['amount'] = $value['disburse_amount'];
-        $userMailArr['receiver_email'] = $value['user']['email'];
+        $userMailArr['receiver_email'] = isset($value['user']['email']) ? $value['user']['email'] : $value['user']['anchor']['comp_email'];
         $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
         $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
         $userMailArr['utr_no'] = isset($value['tran_id']) ? $value['tran_id'] : '';
         $userMailArr['benefi_name'] = $benifiName;
         $userMailArr['disbursed_date'] = isset($value['disburse_date']) ? Carbon::parse($value['disburse_date'])->format('d-m-Y') : '';  
         $userMailArr['anchor_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['comp_email']) ? $value['user']['anchor']['comp_email'] : null;
-        $userMailArr['sales_email'] = isset($value['lms_user']['user_created_by']) ? $value['lms_user']['user_created_by']['email'] : null;
+        $userMailArr['sales_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['sales_user']) ? $value['user']['anchor']['sales_user']['email'] : null;
         $userMailArr['auth_email'] = \Auth::user() ? \Auth::user()->email : null;        
         Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
 
