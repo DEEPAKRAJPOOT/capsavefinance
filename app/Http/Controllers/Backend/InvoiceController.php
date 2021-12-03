@@ -521,7 +521,7 @@ class InvoiceController extends Controller {
         $userMailArr['benefi_name'] = $benifiName;
         $userMailArr['disbursed_date'] = isset($value['disburse_date']) ? Carbon::parse($value['disburse_date'])->format('d-m-Y') : '';  
         $userMailArr['anchor_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['comp_email']) ? $value['user']['anchor']['comp_email'] : null;
-        $userMailArr['sales_email'] = isset($value['lms_user']['user_created_by']) ? $value['lms_user']['user_created_by']['email'] : null;
+        $userMailArr['sales_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['sales_user']) ? $value['user']['anchor']['sales_user']['email'] : null;
         $userMailArr['auth_email'] = \Auth::user() ? \Auth::user()->email : null;        
         Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
 
