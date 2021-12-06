@@ -351,6 +351,18 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		return $result;
 	}
 
+	private function getOverdueData($date){
+		$result = [];
+
+		$overdueData = DB::select('SELECT dr.invoice_disbursed_id,  ROUND((IFNULL(dr.od,0) - IFNULL(cr.od,0)),2) AS ttl_od, dr.cnt_od FROM ( SELECT invoice_disbursed_id, SUM(accrued_interest) AS od, COUNT(interest_accrual_id) AS cnt_od FROM rta_interest_accrual WHERE overdue_interest_rate IS NOT NULL AND interest_date <= ? GROUP BY invoice_disbursed_id ) AS dr LEFT JOIN ( SELECT a.`user_id`, a.`invoice_disbursed_id`, SUM(a.amount) AS od FROM rta_transactions AS a JOIN rta_transactions AS b ON a.`parent_trans_id` = b.`trans_id` WHERE b.`trans_type` = ? AND b.`entry_type` = ? AND a.`trans_type` IN (7,33,36) AND DATE(a.trans_date) <= ? GROUP BY a.`user_id`, a.`invoice_disbursed_id` ) AS cr ON cr.invoice_disbursed_id = dr.invoice_disbursed_id',[$date,'33','0',$date]);
+
+		foreach($overdueData as $od){
+			$result[$od->invoice_disbursed_id]['overdue'] = $od->ttl_od;
+			$result[$od->invoice_disbursed_id]['days'] = $od->cnt_od;
+		}
+		return $result;
+	}
+
 	public function getOverdueReport($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
@@ -380,27 +392,17 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				$query3->where('supplier_id',$whereCondition['user_id']);
 			}
 		})
-		->whereHas('accruedInterest', function($query3) use($whereCondition){
-			$query3->whereNotNull('overdue_interest_rate');
-			if(isset($whereCondition['to_date'])){
-				$query3->whereDate('interest_date','<=',$whereCondition['to_date']);
-			}
-		})
+		->where('payment_due_date','<=',$curdate)
 		->get();
-
+		$overdueData = self::getOverdueData($whereCondition['to_date']??$curdate);
 		$sendMail = ($invDisbList->count() > 0)?true:false;
-
 		$result = [];
 		foreach($invDisbList as $invDisb){
 
-			$overdue = $invDisb->accruedInterest()->whereNotNull('overdue_interest_rate');
-			if(isset($whereCondition['to_date'])){
-				$overdue  = $overdue->whereDate('interest_date','<=',$whereCondition['to_date']);
-			}
-			$overdue2  =   clone $overdue;
-			$overdueDays = $overdue2->count();
-			$overdueAmt = $overdue->sum('accrued_interest');
+			$overdueDays = $overdueData[$invDisb->invoice_disbursed_id]['days'] ?? 0;
+			$overdueAmt = $overdueData[$invDisb->invoice_disbursed_id]['overdue'] ?? 0;
 
+			$outstandingAmt = $invDisb->transactions->sum('outstanding');
 			$invDetails = $invDisb->invoice;
 			$offerDetails = $invDetails->program_offer->toArray();
 			$offerDetails['user_id'] = $invDetails->supplier_id;
