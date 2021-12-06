@@ -606,6 +606,7 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function listUnsettledTrans(Request $request){
+        ini_set("memory_limit", "-1");
         $userId = $request->user_id;
         $paymentId = null;
         $payment_date = null;
