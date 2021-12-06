@@ -848,10 +848,10 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body, ],
                 function ($message) use ($user, $mail_subject, $mail_body, $email_cc) {
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($user["receiver_email"], $user["receiver_user_name"])->subject($mail_subject);
-                // if(!empty($message->cc)) {
+                $message->to(trim($user["receiver_email"]),trim($user["receiver_user_name"]))->subject($mail_subject);
+                if(!empty($email_cc)) {
                     $message->cc($email_cc);
-                // }
+                }
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => array($user["receiver_email"]),
