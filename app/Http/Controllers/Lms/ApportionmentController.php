@@ -783,6 +783,7 @@ class ApportionmentController extends Controller
 
     public function markSettleSave(Request $request){
         try {
+            ini_set('max_execution_time', 2000);
             $payment = Payment::find($request->payment_id);
 
             if (!$this->verifyUnSettleTransInitiator($payment)) {
