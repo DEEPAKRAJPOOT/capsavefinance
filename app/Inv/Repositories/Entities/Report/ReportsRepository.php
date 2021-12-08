@@ -363,10 +363,22 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		return $result;
 	}
 
+	private function getInterestData($date){
+		$result = [];
+
+		$interestData = DB::select('SELECT dr.invoice_disbursed_id,  ROUND((IFNULL(dr.od,0) - IFNULL(cr.od,0)),2) AS ttl_od, dr.cnt_od FROM ( SELECT invoice_disbursed_id, SUM(accrued_interest) AS od, COUNT(interest_accrual_id) AS cnt_od FROM rta_interest_accrual WHERE interest_rate IS NOT NULL AND interest_date <= ? GROUP BY invoice_disbursed_id ) AS dr LEFT JOIN ( SELECT a.`user_id`, a.`invoice_disbursed_id`, SUM(a.amount) AS od FROM rta_transactions AS a JOIN rta_transactions AS b ON a.`parent_trans_id` = b.`trans_id` WHERE b.`trans_type` = ? AND b.`entry_type` = ? AND a.`trans_type` IN (7,9,36) AND DATE(a.trans_date) <= ? GROUP BY a.`user_id`, a.`invoice_disbursed_id` ) AS cr ON cr.invoice_disbursed_id = dr.invoice_disbursed_id',[$date,'9','0',$date]);
+
+		foreach($interestData as $int){
+			$result[$int->invoice_disbursed_id]['interest'] = ($int->ttl_od > 0)?$int->ttl_od:0;
+			$result[$int->invoice_disbursed_id]['days'] = $int->cnt_od;
+		}
+		return $result;
+	}
+
 	public function getOverdueReport($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
-
+		$curdate = $whereCondition['to_date']??$curdate;
 		$invDisbList = InvoiceDisbursed::with(['transactions' => function($query2){
 			$query2->whereNull('payment_id')
 			->whereNull('link_trans_id')
@@ -392,17 +404,27 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				$query3->where('supplier_id',$whereCondition['user_id']);
 			}
 		})
-		->where('payment_due_date','<=',$curdate)
+		->where(function($q) use($curdate){
+			$q->whereDate('payment_due_date','<=',$curdate)
+			->orwhereDate('int_accrual_start_dt','<=',$curdate);
+		})
 		->get();
-		$overdueData = self::getOverdueData($whereCondition['to_date']??$curdate);
+		$overdueData = self::getOverdueData($curdate);
+		$interestData = self::getInterestData($curdate);
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
 		foreach($invDisbList as $invDisb){
+			$transDetail = $invDisb->transactions();
+			$transDetailDr = $transDetail->where('trans_type','16')->whereDate('trans_date','<=',$curdate);
+			$transDetailCr = clone $transDetailDr; 
+			$principalAmt = $transDetailDr->where('entry_type','0')->sum('amount');
+			$prinSettleAmt = $transDetailCr->where('entry_type','1')->sum('amount');
 
 			$overdueDays = $overdueData[$invDisb->invoice_disbursed_id]['days'] ?? 0;
 			$overdueAmt = $overdueData[$invDisb->invoice_disbursed_id]['overdue'] ?? 0;
+			$interestAmt = $interestData[$invDisb->invoice_disbursed_id]['interest'] ?? 0;
+			$outstandingAmt = $principalAmt+$interestAmt-$prinSettleAmt;
 
-			$outstandingAmt = $invDisb->transactions->sum('outstanding');
 			$invDetails = $invDisb->invoice;
 			$offerDetails = $invDetails->program_offer->toArray();
 			$offerDetails['user_id'] = $invDetails->supplier_id;
@@ -422,7 +444,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'virtual_ac'=>$invDisb->invoice->lms_user->virtual_acc_id,
 				'client_sanction_limit'=>$offerDetails['prgm_limit_amt'],
 				'limit_available'=> $limitAvl[$offerDetails['prgm_offer_id']],
-				'out_amt'=>$invDisb->transactions->sum('outstanding'),
+				'out_amt'=>$outstandingAmt,
 				'od_days'=>$overdueDays,
 				'od_amt'=>$overdueAmt,
 				'sales_person_name'=> ($invDisb->invoice->anchor->salesUser->f_name.' '. $invDisb->invoice->anchor->salesUser->m_name.' '. $invDisb->invoice->anchor->salesUser->l_name)

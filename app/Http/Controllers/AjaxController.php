@@ -5563,7 +5563,7 @@ if ($err) {
     public function sendInvoiceOverdueReportByMail(DataProviderInterface $dataProvider)
     {
         if ($this->request->get('to_date')) {
-            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y/m/d');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d');
             $userId  = $this->request->get('user_id') ?? 'all';
             \Artisan::call("report:overdue", ['user' => $userId, 'date' => $to_date]);
         }
