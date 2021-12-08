@@ -330,7 +330,8 @@ class Payment extends BaseModel {
                                 ->where('transactions.user_id',$this->user_id)
                                 ->whereNotNull('transactions.apportionment_id')
                                 ->whereNotNull('transactions.payment_id')
-                                ->orderBy('payments.created_at','DESC')
+                                ->orderBy('payments.date_of_payment','DESC')
+                                ->orderBy('transactions.trans_id','DESC')
                                 ->first();
         if($payment){
             $payment_id = $payment->payment_id;
