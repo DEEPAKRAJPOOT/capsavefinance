@@ -326,9 +326,14 @@ class Payment extends BaseModel {
 
     public function getValidRevertPaymentAttribute() {
         $returnId = NULL;
-        $payment = Transactions::join('payments', 'payments.payment_id', '=', 'transactions.payment_id')->where('transactions.user_id',$this->user_id)->whereNotNull('transactions.apportionment_id')->whereNotNull('transactions.payment_id')->orderBy('payments.date_of_payment','DESC')->first();
-        $payment_id = $payment->payment_id;
-        if($payment_id){
+        $payment = Transactions::join('payments', 'payments.payment_id', '=', 'transactions.payment_id')
+                                ->where('transactions.user_id',$this->user_id)
+                                ->whereNotNull('transactions.apportionment_id')
+                                ->whereNotNull('transactions.payment_id')
+                                ->orderBy('payments.created_at','DESC')
+                                ->first();
+        if($payment){
+            $payment_id = $payment->payment_id;
             $paymentDetails = self::find($payment_id);
             if(($paymentDetails->trans_type == '17' && $paymentDetails->action_type == '1') || ($paymentDetails->trans_type == '7' && $paymentDetails->action_type == '3') ){
                 $returnId = $payment_id;
