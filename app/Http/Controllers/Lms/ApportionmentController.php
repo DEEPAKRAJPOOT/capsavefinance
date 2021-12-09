@@ -1593,8 +1593,8 @@ class ApportionmentController extends Controller
     private function processApportionmentUndoTrans($payment, $result)
     {
         
-        ini_set('max_execution_time', 0);
-        ini_set("memory_limit", "-1");
+        ini_set('max_execution_time', 2000);
+        ini_set("memory_limit", -1);
         $userId             =   $payment->user_id;
         $paymentId          =   $payment->payment_id;
 
