@@ -60,7 +60,6 @@ class UtilizationReport implements ShouldQueue
     private function generateConsolidatedReport()
     {
         $data = $this->reportsRepo->getUtilizationReport([], $this->sendMail);
-
         if ($this->sendMail) {
             $this->reportGenerateAndSendWithEmail($data);
         }
@@ -94,41 +93,37 @@ class UtilizationReport implements ShouldQueue
         $rows = 1;
 
         $sheet =  new PHPExcel();
+        $sheet->setActiveSheetIndex(0)
+        ->setCellValue('A'.$rows, 'Anchor Name')
+        ->setCellValue('B'.$rows, 'Program Name')
+        ->setCellValue('C'.$rows, 'Sub Program Name')
+        ->setCellValue('D'.$rows, '# of Clients sanctioned')
+        ->setCellValue('E'.$rows, '# of Overdue Customers')
+        ->setCellValue('F'.$rows, 'Total Over Due Amount')
+        ->setCellValue('G'.$rows, 'Client Name')
+        ->setCellValue('H'.$rows, 'Customer ID')
+        ->setCellValue('I'.$rows, 'Virtual Account #')
+        ->setCellValue('J'.$rows, 'Client Sanction Limit')
+        ->setCellValue('K'.$rows, 'Limit Utilized Limit')
+        ->setCellValue('L'.$rows, 'Available Limit')
+        ->setCellValue('M'.$rows, 'Expiry Date')
+        ->setCellValue('N'.$rows, 'Sales Person Name')
+        ->setCellValue('O'.$rows,'Invoice #')
+        ->setCellValue('P'.$rows,'Invoice Date')
+        ->setCellValue('Q'.$rows,'Invoice Amount')
+        ->setCellValue('R'.$rows,'Invoice Approved')
+        ->setCellValue('S'.$rows,'Margin Amount')
+        ->setCellValue('T'.$rows,'Amount Disbursed')
+        ->setCellValue('U'.$rows,'Principal OverDue Days')
+        ->setCellValue('V'.$rows,'Principal OverDue Amount')
+        ->setCellValue('W'.$rows,'Over Due Days')
+        ->setCellValue('X'.$rows,'Over Due Interest Amount');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':X'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $rows++;
         foreach($exceldata as $rowData){
             if(!empty($rowData['disbursement'])){
                 foreach($rowData['disbursement'] as $disb){                    
                     if(!empty($disb['invoice'])){
-                        $sheet->setActiveSheetIndex(0)
-                        ->setCellValue('A'.$rows, 'Anchor Name')
-                        ->setCellValue('B'.$rows, 'Program Name')
-                        ->setCellValue('C'.$rows, 'Sub Program Name')
-                        ->setCellValue('D'.$rows, '# of Clients sanctioned')
-                        ->setCellValue('E'.$rows, '# of Overdue Customers')
-                        ->setCellValue('F'.$rows, 'Total Over Due Amount')
-
-                        ->setCellValue('G'.$rows, 'Client Name')
-                        ->setCellValue('H'.$rows, 'Customer ID')
-                        ->setCellValue('I'.$rows, 'Virtual Account #')
-                        ->setCellValue('J'.$rows, 'Client Sanction Limit')
-                        ->setCellValue('K'.$rows, 'Limit Utilized Limit')
-                        ->setCellValue('L'.$rows, 'Available Limit')
-                        ->setCellValue('M'.$rows, 'Expiry Date')
-                        ->setCellValue('N'.$rows, 'Sales Person Name')
-
-                        ->setCellValue('O'.$rows,'Invoice #')
-                        ->setCellValue('P'.$rows,'Invoice Date')
-                        ->setCellValue('Q'.$rows,'Invoice Amount')
-						->setCellValue('R'.$rows,'Invoice Approved')
-                        ->setCellValue('S'.$rows,'Margin Amount')
-                        ->setCellValue('T'.$rows,'Amount Disbursed')
-                        ->setCellValue('U'.$rows,'Principal OverDue Days')
-						->setCellValue('V'.$rows,'Principal OverDue Amount')
-						->setCellValue('W'.$rows,'Over Due Days')
-                        ->setCellValue('X'.$rows,'Over Due Interest Amount');
-
-                        $sheet->getActiveSheet()->getStyle('A'.$rows.':X'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
-                        $rows++;
-
                         foreach($disb['invoice'] as $inv){
                             $sheet->setActiveSheetIndex(0)
                             ->setCellValue('A'.$rows, $rowData['anchor_name'])
@@ -137,7 +132,6 @@ class UtilizationReport implements ShouldQueue
                             ->setCellValue('D'.$rows, $rowData['client_sanction'])
                             ->setCellValue('E'.$rows, $rowData['ttl_od_customer'])
                             ->setCellValue('F'.$rows, number_format($rowData['ttl_od_amt'],2))
-
                             ->setCellValue('G'.$rows, $disb['client_name'])
                             ->setCellValue('H'.$rows, $disb['user_id'])
                             ->setCellValue('I'.$rows, $disb['virtual_ac'])
@@ -146,7 +140,6 @@ class UtilizationReport implements ShouldQueue
                             ->setCellValue('L'.$rows, number_format($disb['limit_available'],2))
                             ->setCellValue('M'.$rows, Carbon::parse($disb['end_date'])->format('d/m/Y') ?? NULL)
                             ->setCellValue('N'.$rows, $disb['sales_person_name'])
-
                             ->setCellValue('O'.$rows, $inv['invoice_no'])
                             ->setCellValue('P'.$rows, Carbon::parse($inv['invoice_date'])->format('d/m/Y') ?? NULL)
                             ->setCellValue('Q'.$rows, number_format($inv['invoice_amt'],2))
@@ -157,13 +150,11 @@ class UtilizationReport implements ShouldQueue
 							->setCellValue('V'.$rows, number_format($inv['principal_od_amount'],2))
                             ->setCellValue('W'.$rows, $inv['od_days'])
                             ->setCellValue('X'.$rows, number_format($inv['od_amt'],2));
-
                             $rows++;
                         }
                     }
                 }
             }
-            $rows++;
         }
         
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
