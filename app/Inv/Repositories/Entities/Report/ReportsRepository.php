@@ -403,10 +403,10 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$overdueDays = $overdue2->count();
 			//$overdueAmt = $overdue->sum('accrued_interest');
 			$overdueAmt = $invDisb->transactions()->where('trans_type',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))->where('entry_type','0')->sum('outstanding');
-			$runnTrans  = $invDisb->runningTransactions()->where('trans_type', config('lms.TRANS_TYPE.INTEREST_OVERDUE'))->where('entry_type', '0')->get('amount');
-			$overdueAmt += $runnTrans->sum(function($runnTran) {
-				return $runnTran->outstanding;
-			});
+			$runnTrans  = $invDisb->runningTransactions()->where('trans_type', config('lms.TRANS_TYPE.INTEREST_OVERDUE'))->where('entry_type', '0')->get();
+			foreach($runnTrans as $rtans){
+				$overdueAmt += $runnTran->outstanding;
+			}
 			$outstandingAmt = $invDisb->transactions->sum('outstanding');
 			$invDetails = $invDisb->invoice;
 			$offerDetails = $invDetails->program_offer->toArray();
