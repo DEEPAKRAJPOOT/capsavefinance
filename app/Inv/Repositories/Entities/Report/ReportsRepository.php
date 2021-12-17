@@ -404,7 +404,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			//$overdueAmt = $overdue->sum('accrued_interest');
 			$overdueAmt = $invDisb->transactions()->where('trans_type',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))->where('entry_type','0')->sum('outstanding');
 			$runnTrans  = $invDisb->runningTransactions()->where('trans_type', config('lms.TRANS_TYPE.INTEREST_OVERDUE'))->where('entry_type', '0')->get();
-			foreach($runnTrans as $rtans){
+			foreach($runnTrans as $runnTran){
 				$overdueAmt += $runnTran->outstanding;
 			}
 			$outstandingAmt = $invDisb->transactions->sum('outstanding');
