@@ -61,7 +61,7 @@ class MaturityReport implements ShouldQueue
     {
         $data = $this->reportsRepo->getMaturityReport([], $this->sendMail);
         if ($this->sendMail) {
-            $this->reportGenerateAndSendWithEmail($data);
+            $this->reportGenerateAndSendWithEmail($data, "/Consolidated Report");
         }
     }
 
@@ -71,24 +71,24 @@ class MaturityReport implements ShouldQueue
         $data           = $this->reportsRepo->getMaturityReport(['anchor_id' => $anchorId], $this->sendMail);
 
         if ($this->sendMail) {
-            $this->reportGenerateAndSendWithEmail($data);
+            $this->reportGenerateAndSendWithEmail($data, "/Anchor Wise Report".time().'_'.rand(111111, 999999));
         }
     }
 
-    private function reportGenerateAndSendWithEmail($data)
+    private function reportGenerateAndSendWithEmail($data, $reportName)
     {
         $emailTemplate  = EmailTemplate::getEmailTemplate("REPORT_MATURITY");
         if ($emailTemplate) {
             $compName                = is_array($this->anchor) && isset($this->anchor['comp_name']) ? $this->anchor['comp_name'] : '';
             $emailData               = Helpers::getDailyReportsEmailData($emailTemplate, $compName);
-            $filePath                = $this->downloadMaturityReport($data);
+            $filePath                = $this->downloadMaturityReport($data, $reportName);
             $emailData['to']      = $this->emailTo;
             $emailData['attachment'] = $filePath;
-            \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
+            // \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
         }
     }
 
-    private function downloadMaturityReport($exceldata)
+    private function downloadMaturityReport($exceldata, $reportName)
     {
         $rows  = 5;
         $sheet =  new PHPExcel();
@@ -144,7 +144,8 @@ class MaturityReport implements ShouldQueue
         }
 
         $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Maturity Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
+        // $filePath = $storage_path.'/Maturity Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
+        $filePath = $storage_path.$reportName.'.xlsx';
         $objWriter->save($filePath);
         return $filePath;
     }
