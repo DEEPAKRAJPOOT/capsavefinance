@@ -61,7 +61,7 @@ class DisbursalReport implements ShouldQueue
     {
         $data = $this->reportsRepo->getDisbursalReport([], $this->sendMail);
         if ($this->sendMail) {
-            $this->reportGenerateAndSendWithEmail($data);
+            $this->reportGenerateAndSendWithEmail($data, "/Consolidated Report");
         }
     }
 
@@ -71,24 +71,24 @@ class DisbursalReport implements ShouldQueue
         $data           = $this->reportsRepo->getDisbursalReport(['anchor_id' => $anchorId], $this->sendMail);
 
         if ($this->sendMail) {
-            $this->reportGenerateAndSendWithEmail($data);
+            $this->reportGenerateAndSendWithEmail($data, "/Anchor Wise Report".time().'_'.rand(111111, 999999));
         }
     }
 
-    private function reportGenerateAndSendWithEmail($data)
+    private function reportGenerateAndSendWithEmail($data, $reportName)
     {
         $emailTemplate  = EmailTemplate::getEmailTemplate("REPORT_DISBURSAL");
         if ($emailTemplate) {
             $compName                = is_array($this->anchor) && isset($this->anchor['comp_name']) ? $this->anchor['comp_name'] : '';
             $emailData               = Helpers::getDailyReportsEmailData($emailTemplate, $compName);
-            $filePath                = $this->downloadDailyDisbursalReport($data);
+            $filePath                = $this->downloadDailyDisbursalReport($data, $reportName);
             $emailData['to']      = $this->emailTo;
             $emailData['attachment'] = $filePath;
             \Event::dispatch("NOTIFY_DISBURSAL_REPORT", serialize($emailData));
         }
     }
 
-    private function downloadDailyDisbursalReport($exceldata)
+    private function downloadDailyDisbursalReport($exceldata, $reportName)
     {
         $rows = 5;
         $sheet =  new PHPExcel();
@@ -115,7 +115,7 @@ class DisbursalReport implements ShouldQueue
             ->setCellValue('S'.$rows, 'Tenure (Days)')
             ->setCellValue('T'.$rows, 'Interest rate')
             ->setCellValue('U'.$rows, 'Interest amount')
-            ->setCellValue('V'.$rows, 'From ')
+            ->setCellValue('V'.$rows, 'From')
             ->setCellValue('W'.$rows, 'To')
             ->setCellValue('X'.$rows, 'TDS on Interest')
             ->setCellValue('Y'.$rows, 'Net Interest')
@@ -198,7 +198,8 @@ class DisbursalReport implements ShouldQueue
             Storage::makeDirectory($dirPath);
         }
         $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Daily Disbursal Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
+        // $filePath = $storage_path.'/Daily Disbursal Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
+        $filePath = $storage_path.$reportName.'.xlsx';
         $objWriter->save($filePath);
         return $filePath;
     }
