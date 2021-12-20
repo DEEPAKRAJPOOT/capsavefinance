@@ -84,7 +84,7 @@ class MaturityReport implements ShouldQueue
             $filePath                = $this->downloadMaturityReport($data, $reportName);
             $emailData['to']      = $this->emailTo;
             $emailData['attachment'] = $filePath;
-            // \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
+            \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
         }
     }
 
