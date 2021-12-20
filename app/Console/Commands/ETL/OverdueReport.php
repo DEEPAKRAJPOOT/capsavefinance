@@ -40,6 +40,7 @@ class OverdueReport extends Command
      */
     public function handle()
     {
+        ini_set("memory_limit", "-1");
         $reportDate = now()->format('Ymd'); // now()->subDays(1)->format('Ymd');
         $dirPath = 'public/report/temp/overdueReport/'.$reportDate;
         
