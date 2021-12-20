@@ -6,11 +6,8 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 
 class MaturityReport extends BaseModel
 {
-    /**
-     * The database table used by the model.
-     *
-     * @var string
-     */
+    
+    protected $connection = 'mysql2';
     protected $table = 'etl_maturity_report';
     public $timestamps = false;
     public $userstamps = false;

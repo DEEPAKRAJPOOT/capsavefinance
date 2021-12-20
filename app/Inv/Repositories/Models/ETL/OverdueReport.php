@@ -6,11 +6,8 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 
 class OverdueReport extends BaseModel
 {
-    /**
-     * The database table used by the model.
-     *
-     * @var string
-     */
+    
+    protected $connection = 'mysql2';
     protected $table = 'etl_overdue_report';
     public $timestamps = false;
     public $userstamps = false;
