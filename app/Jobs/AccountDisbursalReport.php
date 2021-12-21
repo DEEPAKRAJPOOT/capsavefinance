@@ -82,21 +82,21 @@ class AccountDisbursalReport implements ShouldQueue
         $rows++;
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
-            ->setCellValue('A'.$rows, $rowData['cust_name'])
-            ->setCellValue('B'.$rows, $rowData['loan_ac'])
-            ->setCellValue('C'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
-            ->setCellValue('D'.$rows, $rowData['trans_no'])
-            ->setCellValue('E'.$rows, $rowData['invoice_no'])
-            ->setCellValue('F'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'))
-            ->setCellValue('G'.$rows, number_format($rowData['invoice_amt'],2))
-            ->setCellValue('H'.$rows, number_format($rowData['margin_amt'],2))
-            ->setCellValue('I'.$rows, number_format($rowData['disb_amt'],2))
-            ->setCellValue('J'.$rows, $rowData['trans_utr'])
-            ->setCellValue('K'.$rows, $rowData['remark'])
-            ->setCellValue('L'.$rows, $rowData['bank_ac'])
-            ->setCellValue('M'.$rows, $rowData['ifsc'])
-            ->setCellValue('N'.$rows, $rowData['status'])
-            ->setCellValue('O'.$rows, $rowData['status_des']);
+            ->setCellValueExplicit('A'.$rows, $rowData['cust_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('B'.$rows, $rowData['loan_ac'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('C'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('D'.$rows, $rowData['trans_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('E'.$rows, $rowData['invoice_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('F'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('G'.$rows, number_format($rowData['invoice_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('H'.$rows, number_format($rowData['margin_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('I'.$rows, number_format($rowData['disb_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('J'.$rows, $rowData['trans_utr'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('K'.$rows, $rowData['remark'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('L'.$rows, $rowData['bank_ac'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('M'.$rows, $rowData['ifsc'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('N'.$rows, $rowData['status'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('O'.$rows, $rowData['status_des'], \PHPExcel_Cell_DataType::TYPE_STRING);
             $rows++;
         }
 
