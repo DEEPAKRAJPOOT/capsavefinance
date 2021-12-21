@@ -72,7 +72,7 @@ class DisbursalReport extends Command
                                         "Supply chain type (upfront, Rare or monthly interest)" => "Supply chain type", 
                                         "Tenure (Days)"                                         => "Tenure",
                                         "Net of interest, PF & Stamp"                           => "Net of interest_PF _Stamp",
-                                        "From "                                                 => "From_1",
+                                        "From"                                                 => "From_1",
                                         "To"                                                    => "To_1",
                                         "Sanction date"                                         => "Sanction Date",
                                         "Funds to be received from Anchor or client"            => "Funds_rec From anchor_client",

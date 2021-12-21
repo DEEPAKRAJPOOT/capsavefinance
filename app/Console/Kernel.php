@@ -76,7 +76,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('clear:day_end_active_csv_apportionment')->timezone(config('common.timezone'))->dailyAt('23:00');
         $schedule->command('etl:ReportSync')->timezone(config('common.timezone'))->dailyAt('01:00');
         $schedule->command('etl:report_overdue')->timezone(config('common.timezone'))->dailyAt('12:15');
-        $schedule->command('etl:report_maturity')->timezone(config('common.timezone'))->dailyAt('12:30');
+        $schedule->command('etl:report_maturity')->timezone(config('common.timezone'))->dailyAt('12:15');
+        $schedule->command('etl:report_utilization')->timezone(config('common.timezone'))->dailyAt('12:15');
+        $schedule->command('etl:report_disbursal')->timezone(config('common.timezone'))->dailyAt('12:15');
+        $schedule->command('etl:report_account_disbursal')->timezone(config('common.timezone'))->dailyAt('12:15');
     }
     
     /**
