@@ -79,6 +79,7 @@ class OverdueReport extends Command
                         array_push($dataRecords, array_combine($headings, $rowData[0]));
                     }
 
+                    OverdueReportModel::truncate();
                     // database insertion
                     foreach($dataRecords as $dataRecord)
                     {                        

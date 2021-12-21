@@ -88,6 +88,8 @@ class UtilizationReport extends Command
                         $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, NULL, TRUE, FALSE);
                         array_push($dataRecords, array_combine($headings, $rowData[0]));
                     }
+
+                    UtilizationReportModel::truncate();
                     // database insertion
                     foreach($dataRecords as $dataRecord)
                     {  

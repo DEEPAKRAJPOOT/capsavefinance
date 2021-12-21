@@ -86,6 +86,7 @@ class MaturityReport extends Command
                         array_push($dataRecords, array_combine($headings, $rowData[0]));
                     }
 
+                    MaturityReportModel::truncate();
                     // database insertion
                     foreach($dataRecords as $dataRecord)
                     {                        
