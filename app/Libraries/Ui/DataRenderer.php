@@ -7094,7 +7094,7 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('from_date') != '' && $request->get('to_date') != '') {                        
                         $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
                         $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
-                        $query->whereRaw("BETWEEN ADDDATE(DATE(payment_due_date),grace_period) '".$from_date."' AND  '".$to_date."'");
+                        $query->whereRaw("ADDDATE(DATE(payment_due_date),grace_period) BETWEEN '".$from_date."' AND  '".$to_date."'");
                     }
                      if ($request->get('customer_id') != '') {                        
                         $query->where(function ($query) use ($request) {

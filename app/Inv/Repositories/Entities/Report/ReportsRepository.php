@@ -182,7 +182,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$interestAmount = 0;
 			$fromDate = null;
 			$toDate = null;
-			if(($invDisb->invoice->program_offer->payment_frequency == 1) && (strtotime($invDisb->payment_due_date) <= strtotime($curdate)) ) {
+			$intrstRecDate = null;
+			if(($invDisb->invoice->program_offer->payment_frequency == '1' && $invDisb->invoice->program_offer->program->interest_borne_by == '2' ) && (strtotime($invDisb->payment_due_date) >= strtotime($curdate)) ) {
+				$intrstRecDate = $invDisb->int_accrual_start_dt;
 				$interestAmount = $invDisb->total_interest;
 				$fromDate = $invDisb->int_accrual_start_dt;
 				$toDate = $invDisb->payment_due_date;
@@ -218,7 +220,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'to'=>$toDate,
 			'tds_intrst'=>$invDisb->transactions->where('trans_type',7)->where('entry_type',1)->sum('amount'),
 			'net_intrst'=>$interestAmount - ($invDisb->transactions->where('trans_type',7)->where('entry_type',1)->sum('amount')),
-			'intrst_rec_date'=>'', // blank
+			'intrst_rec_date'=>$intrstRecDate, // blank
 			'proce_fee'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('base_amt'),
 			'proce_amt'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('base_amt'),
 			'proce_fee_gst'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('amount'),
@@ -386,7 +388,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			->where('trans_type',config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))
 			->where('entry_type','0');
 		},
-		'invoice'=>function($query2) use($whereCondition, $curdate){
+		'invoice'=>function($query2) use($whereCondition){
 			if(isset($whereCondition['anchor_id'])){
 				$query2->where('anchor_id',$whereCondition['anchor_id']);
 			}
@@ -408,6 +410,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$q->whereDate('payment_due_date','<=',$curdate)
 			->orwhereDate('int_accrual_start_dt','<=',$curdate);
 		})
+		->where('payment_due_date','<=',$curdate)
 		->get();
 		$overdueData = self::getOverdueData($curdate);
 		$interestData = self::getInterestData($curdate);
@@ -551,5 +554,24 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			 ];
 		}
 		return $result;
+	}
+
+	public function etlReportSync(){
+		$report_1_clear = 'TRUNCATE `etl_margin_report`';
+		$report_1_data = 'INSERT INTO etl_margin_report (`anchor`,`client`,`client_id`,`invoice_no`,`invoice_date`,`invoice_amount`,`disbursed_amount`,`disbursal_date`,`margin_percentage`,`margin_allocated`,`margin_outstanding`) SELECT anchor, CLIENT, client_id, invoice_no, invoice_date, invoice_amount, disbursed_amt, disbursal_date, margin_per, margin_allocated, margin_outstanding  FROM margin_report';
+		DB::statement(\DB::raw($report_1_clear));
+		
+		$report_1_res = DB::statement(\DB::raw($report_1_data));
+		
+		$report_2_clear = 'TRUNCATE `etl_settlement_report`';
+		$report_2_data = 'INSERT INTO etl_settlement_report (`receipt_date`,`receipt_account_no`,`client_borrower_name`,`client_id`,`head_against_ipc`,`invoice_no`,`utr_no`,`invoice_date`,`capsave_invoice_no`,`capsave_invoice_date`,`disbursement_date`,`amount_applied`,`amount_received`) SELECT `receipt_date`,`receipt_account`,`client_name`,`client_id`,`trans_type_name`,`invoice_no`,`receipt_utr`,`invoice_date`,`capsave_invoice_no`,`capsave_inv_date`,`disburse_date`,`amount`,`total_amount` FROM receipt_report';
+		DB::statement(\DB::raw($report_2_clear));
+		
+		$report_2_res = DB::statement(\DB::raw($report_2_data));
+				
+		return [
+			'report_1' => $report_1_res,
+			'report_2' => $report_2_res
+		];
 	}
 }

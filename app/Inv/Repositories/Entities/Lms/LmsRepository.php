@@ -701,7 +701,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getDisbursals($disburseIds)
    {
-	  return Disbursal::with(['lms_user','lms_user.user', 'lms_user.bank_details', 'lms_user.user.anchor_bank_details'])->whereIn('disbursal_id', $disburseIds)->with('user.anchor')
+	  return Disbursal::with(['lms_user','lms_user.user', 'lms_user.bank_details', 'lms_user.user.anchor_bank_details', 'lms_user.userCreatedBy'])->whereIn('disbursal_id', $disburseIds)->with('user.anchor', 'user.anchor.salesUser')
 			->get();
    }
 

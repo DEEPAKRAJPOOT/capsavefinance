@@ -1211,4 +1211,8 @@ class ReportController extends Controller
 		$reportLog = OverdueReportLog::findOrfail($request->report_log_id);
 		return response()->download($reportLog->file_path);
 	}
+	
+    public function etlReportSync(){
+        return $this->reportsRepo->etlReportSync();
+    }
 }

@@ -97,17 +97,17 @@ class OverdueReport implements ShouldQueue
         $rows++;
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
-            ->setCellValue('A'.$rows, $rowData['cust_name'])
-            ->setCellValue('B'.$rows, $rowData['customer_id'])
-            ->setCellValue('C'.$rows, $rowData['invoice_no'])
-            ->setCellValue('D'.$rows, $rowData['payment_due_date'])
-            ->setCellValue('E'.$rows, $rowData['virtual_ac'])
-            ->setCellValue('F'.$rows, number_format($rowData['client_sanction_limit'],2))
-            ->setCellValue('G'.$rows, number_format($rowData['limit_available'],2))
-            ->setCellValue('H'.$rows, number_format($rowData['out_amt'],2))
-            ->setCellValue('I'.$rows, $rowData['od_days'])
-            ->setCellValue('J'.$rows, number_format($rowData['od_amt'],2))
-            ->setCellValue('K'.$rows, $rowData['sales_person_name']);
+            ->setCellValueExplicit('A'.$rows, $rowData['cust_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('B'.$rows, $rowData['customer_id'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('C'.$rows, $rowData['invoice_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('D'.$rows, $rowData['payment_due_date'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('E'.$rows, $rowData['virtual_ac'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('F'.$rows, number_format($rowData['client_sanction_limit'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('G'.$rows, number_format($rowData['limit_available'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('H'.$rows, number_format($rowData['out_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('I'.$rows, $rowData['od_days'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('J'.$rows, number_format($rowData['od_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('K'.$rows, $rowData['sales_person_name'], \PHPExcel_Cell_DataType::TYPE_STRING);
             $rows++;
         }
 

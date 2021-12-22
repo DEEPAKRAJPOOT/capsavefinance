@@ -83,15 +83,20 @@ class UtilizationReport extends Command
         }
     }
 
-    private function addToJobQueue($needConsolidatedReport, $anchor = null)
+    private function addToJobQueue($needConsolidatedReport, $anchor = null, $anchorEmail = null)
     {
-        UtilizationReportJob::dispatch($needConsolidatedReport, $this->emailTo, $anchor)
+        $emailTo = $this->emailTo;
+        if(filter_var($anchorEmail, FILTER_VALIDATE_EMAIL)){
+            $emailTo = $anchorEmail;
+        }
+        UtilizationReportJob::dispatch($needConsolidatedReport,$emailTo,$anchor)
                             ->delay(now()->addSeconds(10));
     }
 
     public function generateAnchorReport($anchor)
     {
         $payLoad = ['anchor_id' => $anchor->anchor_id, 'comp_name' => $anchor->comp_name];
-        $this->addToJobQueue($needConsolidatedReport = false, $payLoad);
+        $email = $anchor->comp_email??$this->emailTo;
+        $this->addToJobQueue(false, $payLoad, $email);
     }
 }

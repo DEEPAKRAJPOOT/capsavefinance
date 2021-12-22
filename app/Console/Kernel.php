@@ -24,6 +24,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\LenovoNewUser::class,
         \App\Console\Commands\MaturityInvoiceDueAlert::class,
         \App\Console\Commands\MaturityInvoiceOverDueAlert::class,
+        \App\Console\Commands\EtlReportSync::class,
     ];
 
     /**
@@ -73,6 +74,12 @@ class Kernel extends ConsoleKernel
         $schedule->command('lms:maturityinvoiceoverdueAlert')->timezone(config('common.timezone'))->dailyAt('22:00');
         $schedule->command('lms:cibilReport')->timezone(config('common.timezone'))->monthlyOn(1, '22:00');
         $schedule->command('clear:day_end_active_csv_apportionment')->timezone(config('common.timezone'))->dailyAt('23:00');
+        $schedule->command('etl:ReportSync')->timezone(config('common.timezone'))->dailyAt('01:10');
+        $schedule->command('etl:report_overdue')->timezone(config('common.timezone'))->dailyAt('01:15');
+        $schedule->command('etl:report_maturity')->timezone(config('common.timezone'))->dailyAt('01:20');
+        $schedule->command('etl:report_utilization')->timezone(config('common.timezone'))->dailyAt('01:25');
+        $schedule->command('etl:report_disbursal')->timezone(config('common.timezone'))->dailyAt('01:30');
+        $schedule->command('etl:report_account_disbursal')->timezone(config('common.timezone'))->dailyAt('01:35');
     }
     
     /**

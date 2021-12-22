@@ -317,5 +317,10 @@ class InvoiceDisbursed extends BaseModel {
 						->where('interest_accrual.invoice_disbursed_id', $disbursalIds)
 						->sum('interest_accrual.accrued_interest');
 		return $sumData;
-	}	
+	}
+
+	public function runningTransactions()
+	{
+		return $this->hasMany('App\Inv\Repositories\Models\Lms\TransactionsRunning','invoice_disbursed_id','invoice_disbursed_id');
+	}
 }
