@@ -46,7 +46,9 @@ class OverdueReport implements ShouldQueue
     public function handle(ReportInterface $reportsRepo)
     {
         ini_set("memory_limit", "-1");
-
+        if($this->isSecondFourthSaturday() && is_null($this->userId) && is_null($this->toDate)){
+            $this->toDate = date('Y-m-d');
+        }
         $this->reportsRepo = $reportsRepo;
         $data              = $this->reportsRepo->getOverdueReport(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
 
@@ -124,5 +126,13 @@ class OverdueReport implements ShouldQueue
         $filePath = $storage_path.'/Overdue Report'.time().'.xlsx';
         $objWriter->save($filePath);
         return $filePath;
+    }
+
+    private function isSecondFourthSaturday(){
+        $month = date('M');
+        $year = date('Y');
+        $secondSat = date('Ymd', strtotime('second sat of '.$month.' '.$year));
+        $fourthSat = date('Ymd', strtotime('fourth sat of '.$month.' '.$year));
+        return in_array(date('Ymd'),[$secondSat,$fourthSat]);
     }
 }

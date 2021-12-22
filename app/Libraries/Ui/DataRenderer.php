@@ -8333,7 +8333,7 @@ class DataRenderer implements DataProviderInterface
                 return Helpers::convertDateTimeFormat($overdueLog->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
             })
             ->addColumn('created_by', function ($overdueLog) {
-                return ucwords($overdueLog->createdByUser->full_name);
+                return ucwords($overdueLog->createdByUserName);
             })
             ->addColumn('action', function ($overdueLog) {
                 return "<a href=\"".route('overdue_report_download', ['report_log_id' => $overdueLog->id])."\" class='btn  btn-success btn-sm'>Download Report</a>";

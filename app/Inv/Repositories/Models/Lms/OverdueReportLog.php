@@ -61,4 +61,12 @@ class OverdueReportLog extends BaseModel {
     {
         return $this->belongsTo('App\Inv\Repositories\Models\User','created_by','user_id');
     }
+
+    public function getCreatedByUserNameAttribute(){
+        if($this->created_by > 0){
+            return $this->createdByUser->full_name;
+        }else{
+            return 'System';
+        }
+    }
 }
