@@ -377,7 +377,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		return $result;
 	}
 
-	public function getOverdueReport($whereCondition=[], &$sendMail){
+	public function getOverdueReportBackDate($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
 		$curdate = $whereCondition['to_date']??$curdate;
@@ -452,6 +452,91 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'od_amt'=>$overdueAmt,
 				'sales_person_name'=> ($invDisb->invoice->anchor->salesUser->f_name.' '. $invDisb->invoice->anchor->salesUser->m_name.' '. $invDisb->invoice->anchor->salesUser->l_name)
 			 ];
+		}
+		return $result;
+	}
+
+	public function getOverdueReport($whereCondition=[], &$sendMail){
+		$curdate = Helper::getSysStartDate();
+		$curdate = Carbon::parse($curdate)->format('Y-m-d');
+
+		$invDisbList = InvoiceDisbursed::with(['transactions' => function($query2){
+			$query2->whereNull('payment_id')
+			->whereNull('link_trans_id')
+			->whereNull('parent_trans_id')
+			->where('trans_type',config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))
+			->where('entry_type','0');
+		},
+		'invoice'=>function($query2) use($whereCondition){
+			if(isset($whereCondition['anchor_id'])){
+				$query2->where('anchor_id',$whereCondition['anchor_id']);
+			}
+			if(isset($whereCondition['user_id'])){
+				$query2->where('supplier_id',$whereCondition['user_id']);
+			}
+		},
+		'invoice.lms_user', 'invoice.business', 'disbursal','invoice.app.appLimit'])
+		->whereIn('status_id', [12,13,15,47])
+		->whereHas('invoice', function($query3) use($whereCondition){
+			if(isset($whereCondition['anchor_id'])){
+				$query3->where('anchor_id',$whereCondition['anchor_id']);
+			}
+			if(isset($whereCondition['user_id'])){
+				$query3->where('supplier_id',$whereCondition['user_id']);
+			}
+		})
+		->whereHas('accruedInterest', function($query3) use($whereCondition){
+			if(isset($whereCondition['to_date'])){
+				$query3->whereDate('interest_date','<=',$whereCondition['to_date']);
+			}
+		})
+		->where('payment_due_date','<=',$curdate)
+		->get();
+
+		$sendMail = ($invDisbList->count() > 0)?true:false;
+
+		$result = [];
+		foreach($invDisbList as $invDisb){
+
+			$overdue = $invDisb->accruedInterest()->whereNotNull('overdue_interest_rate');
+			if(isset($whereCondition['to_date'])){
+				$overdue  = $overdue->whereDate('interest_date','<=',$whereCondition['to_date']);
+			}
+			$overdue2  =   clone $overdue;
+			$overdueDays = $overdue2->count();
+			//$overdueAmt = $overdue->sum('accrued_interest');
+			$overdueAmt = $invDisb->transactions()->where('trans_type',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))->where('entry_type','0')->sum('outstanding');
+			$runnTrans  = $invDisb->runningTransactions()->where('trans_type', config('lms.TRANS_TYPE.INTEREST_OVERDUE'))->where('entry_type', '0')->get();
+			foreach($runnTrans as $runnTran){
+				$overdueAmt += $runnTran->outstanding;
+			}
+			$outstandingAmt = $invDisb->transactions->sum('outstanding');
+			$invDetails = $invDisb->invoice;
+			$offerDetails = $invDetails->program_offer->toArray();
+			$offerDetails['user_id'] = $invDetails->supplier_id;
+			$prgmDetails = $invDetails->program;
+			
+			$limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::invoiceAnchorLimitApprove($offerDetails),2);
+			$limitAvl[$offerDetails['prgm_offer_id']] = $limitAvl[$offerDetails['prgm_offer_id']] ?? $offerDetails['prgm_limit_amt'] - $limitUsed[$offerDetails['prgm_offer_id']];
+			$limitAvl[$offerDetails['prgm_offer_id']] = ($limitAvl[$offerDetails['prgm_offer_id']] > 0) ? $limitAvl[$offerDetails['prgm_offer_id']] : 0; 
+			if($overdueAmt > 0 || $outstandingAmt > 0){
+				$result[] = [
+					'cust_name'=>$invDisb->invoice->business->biz_entity_name,
+					'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
+					'invoice_no' => $invDetails->invoice_no,
+					'payment_due_date' => $invDisb->payment_due_date,
+					'customer_id'=>$invDetails->lms_user->customer_id,
+					'prgm_name' => $prgmDetails->parentProgram->prgm_name,
+					'sub_prgm_name' => $prgmDetails->prgm_name,
+					'virtual_ac'=>$invDisb->invoice->lms_user->virtual_acc_id,
+					'client_sanction_limit'=>$offerDetails['prgm_limit_amt'],
+					'limit_available'=> $limitAvl[$offerDetails['prgm_offer_id']],
+					'out_amt'=>$outstandingAmt,
+					'od_days'=>$overdueDays,
+					'od_amt'=>$overdueAmt,
+					'sales_person_name'=> ($invDisb->invoice->anchor->salesUser->f_name.' '. $invDisb->invoice->anchor->salesUser->m_name.' '. $invDisb->invoice->anchor->salesUser->l_name)
+				];
+			}
 		}
 		return $result;
 	}
