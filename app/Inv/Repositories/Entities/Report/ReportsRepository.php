@@ -377,7 +377,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		return $result;
 	}
 
-	public function getOverdueReportBackDate($whereCondition=[], &$sendMail){
+	public function getOverdueReportManual($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
 		$curdate = $whereCondition['to_date']??$curdate;

@@ -13,9 +13,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Inv\Repositories\Contracts\ReportInterface;
+use App\Inv\Repositories\Models\Lms\OverdueReportLog;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 
-class OverdueReport implements ShouldQueue
+class OverdueReportManual implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -44,19 +45,38 @@ class OverdueReport implements ShouldQueue
     public function handle(ReportInterface $reportsRepo)
     {
         ini_set("memory_limit", "-1");
+        
+        //Second and fourth Saturday back dated overdue report 
+        if($this->isSecondFourthSaturday() && is_null($this->userId) && is_null($this->toDate)){
+            $this->toDate = date('Y-m-d');
+        }
+
         $this->reportsRepo = $reportsRepo;
-        $data              = $this->reportsRepo->getOverdueReport(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
+        $data = $this->reportsRepo->getOverdueReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
 
         if ($this->sendMail) {
-            $emailTemplate  = EmailTemplate::getEmailTemplate("REPORT_OVERDUE");
+            $emailTemplate  = EmailTemplate::getEmailTemplate("REPORT_OVERDUE_MANUAL");
             if ($emailTemplate) {
                 $emailData               = Helpers::getDailyReportsEmailData($emailTemplate);
                 $filePath                = $this->downloadOverdueReport($data);
                 $emailData['to']         = $this->emailTo;
                 $emailData['attachment'] = $filePath;
+                // to create log for overdue report
+                if($this->toDate){
+                    $this->createOverdueReportLog($this->toDate, $this->userId, $filePath);
+                }
                 \Event::dispatch("NOTIFY_OVERDUE_REPORT", serialize($emailData));
             }
         }
+    }
+
+    private function createOverdueReportLog($toDate, $userId, $filePath)
+    {
+        OverdueReportLog::create([
+            'user_id'   => $userId,
+            'to_date'   => $toDate,
+            'file_path' => $filePath,
+        ]);
     }
 
     private function downloadOverdueReport($exceldata)
@@ -95,7 +115,10 @@ class OverdueReport implements ShouldQueue
 
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
 
-        $dirPath = 'public/report/temp/overdueReport/'.date('Ymd');
+        $dirPath = 'public/report/temp/overdueReport/manual/console';
+        if(!App::runningInConsole()){
+            $dirPath = 'public/report/temp/overdueReport/manual/http';
+        }
         if (!Storage::exists($dirPath)) {
             Storage::makeDirectory($dirPath);
         }
@@ -103,5 +126,13 @@ class OverdueReport implements ShouldQueue
         $filePath = $storage_path.'/Overdue Report'.time().'.xlsx';
         $objWriter->save($filePath);
         return $filePath;
+    }
+
+    private function isSecondFourthSaturday(){
+        $month = date('M');
+        $year = date('Y');
+        $secondSat = date('Ymd', strtotime('second sat of '.$month.' '.$year));
+        $fourthSat = date('Ymd', strtotime('fourth sat of '.$month.' '.$year));
+        return in_array(date('Ymd'),[$secondSat,$fourthSat]);
     }
 }
