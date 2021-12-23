@@ -46,9 +46,11 @@ class OverdueReport implements ShouldQueue
     public function handle(ReportInterface $reportsRepo)
     {
         ini_set("memory_limit", "-1");
+        /*Second and fourth Saturday back dated overdue report 
         if($this->isSecondFourthSaturday() && is_null($this->userId) && is_null($this->toDate)){
             $this->toDate = date('Y-m-d');
         }
+        */
         $this->reportsRepo = $reportsRepo;
         $data              = $this->reportsRepo->getOverdueReport(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
 
