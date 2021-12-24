@@ -1380,4 +1380,8 @@ Route::group(
         'uses' => 'AjaxController@checkUniqueLocationCode'
     ]);    
 
+    Route::post('lms_send_invoice_over_due', [
+        'as' => 'lms_send_invoice_over_due',
+        'uses' => 'AjaxController@sendInvoiceOverdueReportByMail'
+    ]);
 });

@@ -41,6 +41,7 @@ use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\GroupCompanyExposure;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\TransType;
+use App\Inv\Repositories\Models\Lms\OverdueReportLog;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Crypt;
@@ -5552,5 +5553,22 @@ if ($err) {
         ->get();
         $users = $dataProvider->getFrontSoaList($this->request, $transactionList);
         return $users;
+    }
+
+    /**
+   * send overdue report by mail and get all reports
+   *
+   * @return json transaction data
+   */
+    public function sendInvoiceOverdueReportByMail(DataProviderInterface $dataProvider)
+    {
+        if ($this->request->get('to_date')) {
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d');
+            $userId  = $this->request->get('user_id') ?? 'all';
+            \Artisan::call("report:overdueManual", ['user' => $userId, 'date' => $to_date]);
+        }
+    
+        $overdueReportLogs = OverdueReportLog::get();
+        return $dataProvider->getOverdueReportLogs($this->request, $overdueReportLogs);
     }
 }

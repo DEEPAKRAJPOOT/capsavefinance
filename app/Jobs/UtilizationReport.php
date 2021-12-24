@@ -61,7 +61,7 @@ class UtilizationReport implements ShouldQueue
     {
         $data = $this->reportsRepo->getUtilizationReport([], $this->sendMail);
         if ($this->sendMail) {
-            $this->reportGenerateAndSendWithEmail($data);
+            $this->reportGenerateAndSendWithEmail($data, "/Consolidated Report");
         }
     }
 
@@ -71,111 +71,90 @@ class UtilizationReport implements ShouldQueue
         $data           = $this->reportsRepo->getUtilizationReport(['anchor_id' => $anchorId], $this->sendMail);
 
         if ($this->sendMail) {
-            $this->reportGenerateAndSendWithEmail($data);
+            $this->reportGenerateAndSendWithEmail($data, "/Anchor Wise Report".time().'_'.rand(111111, 999999));
         }
     }
 
-    private function reportGenerateAndSendWithEmail($data)
+    private function reportGenerateAndSendWithEmail($data, $reportName)
     {
         $emailTemplate  = EmailTemplate::getEmailTemplate("REPORT_UTILIZATION");
         if ($emailTemplate) {
             $compName                = is_array($this->anchor) && isset($this->anchor['comp_name']) ? $this->anchor['comp_name'] : '';
             $emailData               = Helpers::getDailyReportsEmailData($emailTemplate, $compName);
-            $filePath                = $this->downloadUtilizationExcel($data);
+            $filePath                = $this->downloadUtilizationExcel($data, $reportName);
             $emailData['to']      = $this->emailTo;
             $emailData['attachment'] = $filePath;
             \Event::dispatch("NOTIFY_UTILIZATION_REPORT", serialize($emailData));
         }
     }
 
-    private function downloadUtilizationExcel($exceldata) 
+    private function downloadUtilizationExcel($exceldata, $reportName) 
     {
-        $rows = 5;
+        $rows = 1;
 
         $sheet =  new PHPExcel();
+        $sheet->setActiveSheetIndex(0)
+        ->setCellValue('A'.$rows, 'Anchor Name')
+        ->setCellValue('B'.$rows, 'Program Name')
+        ->setCellValue('C'.$rows, 'Sub Program Name')
+        ->setCellValue('D'.$rows, '# of Clients sanctioned')
+        ->setCellValue('E'.$rows, '# of Overdue Customers')
+        ->setCellValue('F'.$rows, 'Total Over Due Amount')
+        ->setCellValue('G'.$rows, 'Client Name')
+        ->setCellValue('H'.$rows, 'Customer ID')
+        ->setCellValue('I'.$rows, 'Virtual Account #')
+        ->setCellValue('J'.$rows, 'Client Sanction Limit')
+        ->setCellValue('K'.$rows, 'Limit Utilized Limit')
+        ->setCellValue('L'.$rows, 'Available Limit')
+        ->setCellValue('M'.$rows, 'Expiry Date')
+        ->setCellValue('N'.$rows, 'Sales Person Name')
+        ->setCellValue('O'.$rows,'Invoice #')
+        ->setCellValue('P'.$rows,'Invoice Date')
+        ->setCellValue('Q'.$rows,'Invoice Amount')
+        ->setCellValue('R'.$rows,'Invoice Approved')
+        ->setCellValue('S'.$rows,'Margin Amount')
+        ->setCellValue('T'.$rows,'Amount Disbursed')
+        ->setCellValue('U'.$rows,'Principal OverDue Days')
+        ->setCellValue('V'.$rows,'Principal OverDue Amount')
+        ->setCellValue('W'.$rows,'Over Due Days')
+        ->setCellValue('X'.$rows,'Over Due Interest Amount');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':X'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $rows++;
         foreach($exceldata as $rowData){
-            $sheet->setActiveSheetIndex(0)
-            ->setCellValue('A'.$rows, 'Anchor Name')
-            ->setCellValue('B'.$rows, 'Program Name')
-            ->setCellValue('C'.$rows, 'Sub Program Name')
-            ->setCellValue('D'.$rows, '# of Clients sanctioned')
-            ->setCellValue('E'.$rows, '# of Overdue Customers')
-            ->setCellValue('F'.$rows, 'Total Over Due Amount');
-            $sheet->getActiveSheet()->getStyle('A'.$rows.':F'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
-            $rows++;
-
-            $sheet->setActiveSheetIndex(0)
-            ->setCellValue('A' . $rows, $rowData['anchor_name'])
-            ->setCellValue('B' . $rows, $rowData['prgm_name'])
-            ->setCellValue('C' . $rows, $rowData['sub_prgm_name'])
-            ->setCellValue('D' . $rows, $rowData['client_sanction'])
-            ->setCellValue('E' . $rows, $rowData['ttl_od_customer'])
-            ->setCellValue('F' . $rows, number_format($rowData['ttl_od_amt'],2)); 
-            $rows++;
-            $rows++;
             if(!empty($rowData['disbursement'])){
-                foreach($rowData['disbursement'] as $disb){
-                    $rows++;
-                    $sheet->setActiveSheetIndex(0)
-                    ->setCellValue('A'.$rows, 'Client Name')
-                    ->setCellValue('B'.$rows, 'Customer ID')
-                    ->setCellValue('C'.$rows, 'Virtual Account #')
-                    ->setCellValue('D'.$rows, 'Client Sanction Limit')
-                    ->setCellValue('E'.$rows, 'Limit Utilized Limit')
-                    ->setCellValue('F'.$rows, 'Available Limit')
-                    ->setCellValue('G'.$rows, 'Expiry Date')
-                    ->setCellValue('H'.$rows, 'Sales Person Name')
-                    ->setCellValue('I'.$rows, 'Sub Program Name')
-					->setCellValue('J'.$rows, 'Anchor Name');
-                    $sheet->getActiveSheet()->getStyle('A'.$rows.':J'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
-                    $rows++;
-                    $sheet->setActiveSheetIndex(0)
-                    ->setCellValue('A'.$rows, $disb['client_name'])
-                    ->setCellValue('B'.$rows, $disb['user_id'])
-                    ->setCellValue('C'.$rows, $disb['virtual_ac'])
-                    ->setCellValue('D'.$rows, number_format($disb['client_sanction_limit'],2))
-                    ->setCellValue('E'.$rows, number_format($disb['limit_utilize'],2))
-                    ->setCellValue('F'.$rows, number_format($disb['limit_available'],2))
-                    ->setCellValue('G'.$rows, Carbon::parse($disb['end_date'])->format('d/m/Y') ?? NULL)
-                    ->setCellValue('H'.$rows, $disb['sales_person_name'])
-                    ->setCellValue('I'.$rows, $disb['sub_prgm_name'])
-					->setCellValue('J'.$rows, $rowData['anchor_name']);
-                    $rows++;
-                    $rows++;
+                foreach($rowData['disbursement'] as $disb){                    
                     if(!empty($disb['invoice'])){
-                        $sheet->setActiveSheetIndex(0)
-                        ->setCellValue('B'.$rows,'Invoice #')
-                        ->setCellValue('C'.$rows,'Invoice Date')
-                        ->setCellValue('D'.$rows,'Invoice Amount')
-						->setCellValue('E'.$rows,'Invoice Approved')
-                        ->setCellValue('F'.$rows,'Margin Amount')
-                        ->setCellValue('G'.$rows,'Amount Disbursed')
-                        ->setCellValue('H'.$rows,'Principal OverDue Days')
-						->setCellValue('I'.$rows,'Principal OverDue Amount')
-						->setCellValue('J'.$rows,'Over Due Days')
-                        ->setCellValue('K'.$rows,'Over Due Interest Amount');
-
-                        $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
-                        $rows++;
-
                         foreach($disb['invoice'] as $inv){
                             $sheet->setActiveSheetIndex(0)
-                            ->setCellValue('B'.$rows,$inv['invoice_no'])
-                            ->setCellValue('C'.$rows,Carbon::parse($inv['invoice_date'])->format('d/m/Y') ?? NULL)
-                            ->setCellValue('D'.$rows,number_format($inv['invoice_amt'],2))
-							->setCellValue('E'.$rows,number_format($inv['approve_amt'],2))
-                            ->setCellValue('F'.$rows,number_format($inv['margin_amt'],2))
-                            ->setCellValue('G'.$rows,number_format($inv['disb_amt'],2))
-							->setCellValue('H'.$rows,$inv['principal_od_days'])
-							->setCellValue('I'.$rows,number_format($inv['principal_od_amount'],2))
-                            ->setCellValue('J'.$rows,$inv['od_days'])
-                            ->setCellValue('K'.$rows,number_format($inv['od_amt'],2));
+                            ->setCellValueExplicit('A'.$rows, $rowData['anchor_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('B'.$rows, $rowData['prgm_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('C'.$rows, $rowData['sub_prgm_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('D'.$rows, $rowData['client_sanction'], \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('E'.$rows, $rowData['ttl_od_customer'], \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('F'.$rows, number_format($rowData['ttl_od_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('G'.$rows, $disb['client_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('H'.$rows, $disb['user_id'], \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('I'.$rows, $disb['virtual_ac'], \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('J'.$rows, number_format($disb['client_sanction_limit'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('K'.$rows, number_format($disb['limit_utilize'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('L'.$rows, number_format($disb['limit_available'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('M'.$rows, Carbon::parse($disb['end_date'])->format('d/m/Y') ?? NULL, \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('N'.$rows, $disb['sales_person_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('O'.$rows, $inv['invoice_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('P'.$rows, Carbon::parse($inv['invoice_date'])->format('d/m/Y') ?? NULL, \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('Q'.$rows, number_format($inv['invoice_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('R'.$rows, number_format($inv['approve_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('S'.$rows, number_format($inv['margin_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('T'.$rows, number_format($inv['disb_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('U'.$rows, $inv['principal_od_days'], \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('V'.$rows, number_format($inv['principal_od_amount'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('W'.$rows, $inv['od_days'], \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('X'.$rows, number_format($inv['od_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING);
                             $rows++;
                         }
                     }
                 }
             }
-            $rows++;
         }
         
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
@@ -185,7 +164,8 @@ class UtilizationReport implements ShouldQueue
             Storage::makeDirectory($dirPath);
         }
         $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Utilization Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
+        // $filePath = $storage_path.'/Utilization Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
+        $filePath = $storage_path.$reportName.'.xlsx';
         $objWriter->save($filePath);
         return $filePath;
     }

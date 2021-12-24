@@ -22,7 +22,7 @@ use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Models\FinanceModel;
-
+use App\Inv\Repositories\Models\Lms\OverdueReportLog;
 
 class ReportController extends Controller
 {
@@ -348,7 +348,11 @@ class ReportController extends Controller
 	
 	 public function overduereport(Request $request) {
 		try {
-			return view('reports.overduereport');
+			if ($request->has('by_mail') && $request->by_mail) {
+				return view('reports.over_due_report_mail');
+			} else {
+				return view('reports.overduereport');
+			}
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
 		}
@@ -1202,6 +1206,12 @@ class ReportController extends Controller
             });
 	}
 
+	public function downloadOverdueReportFromLogs(Request $request)
+	{
+		$reportLog = OverdueReportLog::findOrfail($request->report_log_id);
+		return response()->download($reportLog->file_path);
+	}
+	
     public function etlReportSync(){
         return $this->reportsRepo->etlReportSync();
     }

@@ -61,7 +61,7 @@ class MaturityReport implements ShouldQueue
     {
         $data = $this->reportsRepo->getMaturityReport([], $this->sendMail);
         if ($this->sendMail) {
-            $this->reportGenerateAndSendWithEmail($data);
+            $this->reportGenerateAndSendWithEmail($data, "/Consolidated Report");
         }
     }
 
@@ -71,24 +71,24 @@ class MaturityReport implements ShouldQueue
         $data           = $this->reportsRepo->getMaturityReport(['anchor_id' => $anchorId], $this->sendMail);
 
         if ($this->sendMail) {
-            $this->reportGenerateAndSendWithEmail($data);
+            $this->reportGenerateAndSendWithEmail($data, "/Anchor Wise Report".time().'_'.rand(111111, 999999));
         }
     }
 
-    private function reportGenerateAndSendWithEmail($data)
+    private function reportGenerateAndSendWithEmail($data, $reportName)
     {
         $emailTemplate  = EmailTemplate::getEmailTemplate("REPORT_MATURITY");
         if ($emailTemplate) {
             $compName                = is_array($this->anchor) && isset($this->anchor['comp_name']) ? $this->anchor['comp_name'] : '';
             $emailData               = Helpers::getDailyReportsEmailData($emailTemplate, $compName);
-            $filePath                = $this->downloadMaturityReport($data);
+            $filePath                = $this->downloadMaturityReport($data, $reportName);
             $emailData['to']      = $this->emailTo;
             $emailData['attachment'] = $filePath;
             \Event::dispatch("NOTIFY_MATURITY_REPORT", serialize($emailData));
         }
     }
 
-    private function downloadMaturityReport($exceldata)
+    private function downloadMaturityReport($exceldata, $reportName)
     {
         $rows  = 5;
         $sheet =  new PHPExcel();
@@ -115,24 +115,24 @@ class MaturityReport implements ShouldQueue
         $rows++;
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
-            ->setCellValue('A'.$rows, $rowData['cust_name'])
-            ->setCellValue('B'.$rows, $rowData['loan_ac'])
-            ->setCellValue('C'.$rows, $rowData['virtual_ac'])
-            ->setCellValue('D'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'))
-            ->setCellValue('E'.$rows, $rowData['trans_no'])
-            ->setCellValue('F'.$rows, $rowData['invoice_no'])
-            ->setCellValue('G'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'))
-            ->setCellValue('H'.$rows, number_format($rowData['invoice_amt'],2))
-            ->setCellValue('I'.$rows, number_format($rowData['margin_amt'],2))
-            ->setCellValue('J'.$rows, number_format($rowData['disb_amt'],2))
-            ->setCellValue('K'.$rows, number_format($rowData['out_amt'],2))
-            ->setCellValue('L'.$rows, $rowData['out_days'])
-            ->setCellValue('M'.$rows, $rowData['tenor'])
-            ->setCellValue('N'.$rows, Carbon::parse($rowData['due_date'])->format('d-m-Y'))
-            ->setCellValue('O'.$rows, number_format($rowData['due_amt'],2))
-            ->setCellValue('P'.$rows, $rowData['od_days'])
-            ->setCellValue('Q'.$rows, number_format($rowData['od_amt'],2))
-            ->setCellValue('R'.$rows, $rowData['remark']);
+            ->setCellValueExplicit('A'.$rows, $rowData['cust_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('B'.$rows, $rowData['loan_ac'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('C'.$rows, $rowData['virtual_ac'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('D'.$rows, Carbon::parse($rowData['trans_date'])->format('d-m-Y'), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('E'.$rows, $rowData['trans_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('F'.$rows, $rowData['invoice_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('G'.$rows, Carbon::parse($rowData['invoice_date'])->format('d-m-Y'), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('H'.$rows, number_format($rowData['invoice_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('I'.$rows, number_format($rowData['margin_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('J'.$rows, number_format($rowData['disb_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('K'.$rows, number_format($rowData['out_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('L'.$rows, $rowData['out_days'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('M'.$rows, $rowData['tenor'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('N'.$rows, Carbon::parse($rowData['due_date'])->format('d-m-Y'), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('O'.$rows, number_format($rowData['due_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('P'.$rows, $rowData['od_days'], \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('Q'.$rows, number_format($rowData['od_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('R'.$rows, $rowData['remark'], \PHPExcel_Cell_DataType::TYPE_STRING);
             $rows++;
         }
 
@@ -144,7 +144,8 @@ class MaturityReport implements ShouldQueue
         }
 
         $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Maturity Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
+        // $filePath = $storage_path.'/Maturity Report'.time().'_'.rand(1111, 9999).'_'.'.xlsx';
+        $filePath = $storage_path.$reportName.'.xlsx';
         $objWriter->save($filePath);
         return $filePath;
     }
