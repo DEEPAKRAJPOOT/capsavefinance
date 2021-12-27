@@ -2385,19 +2385,21 @@ class Helper extends PaypalHelper
                 ->where('app.user_id', $userId)
                 ->where('app_prgm_offer.is_active', 1)
                 ->whereNotIn('app.curr_status_id', [51])
-                ->whereNotIn('app_prgm_offer.status', [2])
+                ->where(function ($query) {
+                    $query->whereIn('app_prgm_offer.status', [1])->orWhereNull('app_prgm_offer.status');                  
+                })
                 ->orderBy('user_id', 'asc')
                 ->orderBy('prgm_id', 'asc')
                 ->orderBy('app_id', 'asc')
                 ->orderBy('prgm_offer_id', 'asc')
                 ->get();
-
+                
         $arr = [];
         foreach($results as $result)
         {
-            if ($result->parent_app_id && isset($arr[$result->parent_app_id]) && $arr[$result->parent_app_id]['curr_status_id'] == 50) {
+            if ($result->parent_app_id && isset($arr[$result->parent_app_id]) && $arr[$result->parent_app_id]['curr_status_id'] == 50 && $result->curr_status_id != 50) {
                 $arr[$result->app_id] = [
-                    'parent_app_id'  => $result->parent_app_id ?? 0,
+                    'parent_app_id'  => $result->parent_app_id,
                     'prgm_limit_amt' => $result->prgm_limit_amt,
                     'status'         => $result->status,
                     'curr_status_id' => $result->curr_status_id
