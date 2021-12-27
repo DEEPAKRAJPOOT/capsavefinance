@@ -40,6 +40,7 @@ use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\LmsUsersLog;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use App\Inv\Repositories\Models\AppProgramOffer;
 
 class Helper extends PaypalHelper
 {
@@ -2371,5 +2372,48 @@ class Helper extends PaypalHelper
         }else{
             return TRUE;
         }
+    }
+
+    public static function getPrgmBalLimitAmt($userId, $prgmId)
+    {
+        $results = AppProgramOffer::select('app_prgm_offer.anchor_id', 'app.user_id', 'app_prgm_offer.prgm_id', 'app_prgm_offer.app_id', 'app.parent_app_id', 'app_prgm_offer.prgm_offer_id', 'app_prgm_offer.prgm_limit_amt', 'app_prgm_offer.status', 'app.curr_status_id')
+                ->join('prgm', 'app_prgm_offer.prgm_id', '=', 'prgm.prgm_id')
+                ->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+                ->join('app_product', 'app.app_id', '=', 'app_product.app_id')
+                ->where('app_product.product_id', 1)
+                ->where('prgm.prgm_id', $prgmId)
+                ->where('app.user_id', $userId)
+                ->where('app_prgm_offer.is_active', 1)
+                ->whereNotIn('app.curr_status_id', [51])
+                ->where(function ($query) {
+                    $query->whereIn('app_prgm_offer.status', [1])->orWhereNull('app_prgm_offer.status');
+                })
+                ->orderBy('user_id', 'asc')
+                ->orderBy('prgm_id', 'asc')
+                ->orderBy('app_id', 'asc')
+                ->orderBy('prgm_offer_id', 'asc')
+                ->get();
+
+        $arr = [];
+        foreach($results as $result)
+        {
+            if ($result->parent_app_id && isset($arr[$result->parent_app_id]) && $arr[$result->parent_app_id]['curr_status_id'] == 50 && $result->curr_status_id != 50) {
+                $arr[$result->app_id] = [
+                    'parent_app_id'  => $result->parent_app_id,
+                    'prgm_limit_amt' => $result->prgm_limit_amt,
+                    'status'         => $result->status,
+                    'curr_status_id' => $result->curr_status_id
+                ];
+                unset($arr[$result->parent_app_id]);
+            } else {
+                $arr[$result->app_id] = [
+                    'parent_app_id'  => $result->parent_app_id ?? 0,
+                    'prgm_limit_amt' => $result->prgm_limit_amt,
+                    'status'         => $result->status,
+                    'curr_status_id' => $result->curr_status_id
+                ];
+            }
+        }
+        return array_sum(array_column($arr, 'prgm_limit_amt'));
     }
 }
