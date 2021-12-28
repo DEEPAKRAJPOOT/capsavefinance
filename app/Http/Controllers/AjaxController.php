@@ -3656,20 +3656,20 @@ if ($err) {
             $appId = (int)$request->app_id;
             $appData = $this->application->getAppData($appId);
             $anchorUsers = $this->userRepo->getAnchorUserData(['anchor_id' => $prgm_data->anchor_id]);
-            
-            if ($appData->app_type == 2) {
-                $totalConsumtionAmt = 0;
-                foreach($anchorUsers as $anchorUser)
-                {
-                    if ($anchorUser->user_id != $appData->user_id) {
-                        $totalConsumtionAmt += \Helpers::getPrgmBalLimitAmt($anchorUser->user_id, $program_id);
-                    }
+            $totalConsumtionAmt = 0;
+            foreach($anchorUsers as $anchorUser)
+            {
+                if ($anchorUser->user_id != $appData->user_id) {
+                    $totalConsumtionAmt += \Helpers::getPrgmBalLimitAmt($anchorUser->user_id, $program_id);
                 }
-                $balanceAmt = $prgm_data->anchor_limit - $totalConsumtionAmt;
-                $appLimit   = $this->application->getAppLimit($appId);
-                $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
-                $appUserBalLimit = $appLimit->tot_limit_amt - $appUserConsumtionLimit;
-                $totalBalanceAmt = $balanceAmt + $appUserBalLimit;
+            }
+            $totalBalanceAmt = $prgm_data->anchor_limit - $totalConsumtionAmt;
+            $appLimit   = $this->application->getAppLimit($appId);
+            $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
+            $appUserBalLimit = $appLimit->tot_limit_amt - $appUserConsumtionLimit;
+            if ($appData->app_type == 2) {
+                $currAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
+                $totalBalanceAmt += $currAppConsumAmt;
             }
         }
         $utilizedLimit = 0;
@@ -3677,7 +3677,7 @@ if ($err) {
             $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
         }
 
-        return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit, 'prgm_data' => $prgm_data, 'totalBalanceAmt' => $totalBalanceAmt ?? 0]);
+        return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit, 'prgm_data' => $prgm_data, 'prgmBalLimitAmt' => $appUserBalLimit ?? 0, 'anchorBalLimitAmt' => $totalBalanceAmt ?? 0]);
     }
     
      public function getProgramSingleList(Request $request)

@@ -48,7 +48,8 @@
     <div class="col-md-6">
       <div class="form-group">
         <label for="txtPassword">Select Program <span style="color: red;"> *</span></label> 
-            <select name="prgm_id" id="program_id" class="form-control">
+        <span class="float-right text-success"><small>Anchor Balance: <i class="fa fa-inr"></i><span id="anchorBalLimitAmt"></span></small></span>    
+        <select name="prgm_id" id="program_id" class="form-control">
             </select>
         </div>
     </div>
@@ -999,6 +1000,7 @@
         $('input[name="bank_id"]').val(bank_id);
         $('input[name="base_rate"]').val(base_rate);
 
+
         unsetError('input[name=prgm_limit_amt]');
         unsetError('input[name=interest_rate]');
         let program_min_rate = $('#program_id option:selected').data('min_rate');
@@ -1054,9 +1056,14 @@
                         $('input[name="document_fee"]').val(prgm_data.document_fee_amt);
                     }
                 }*/
-                if ($("#prgmBalLimitAmt").text != res.totalBalanceAmt) {
-                    limit_balance = res.totalBalanceAmt; 
-                    $("#prgmBalLimitAmt").text(res.totalBalanceAmt);
+                
+                if ($("#anchorBalLimitAmt").text != res.anchorBalLimitAmt) {
+                    $("#anchorBalLimitAmt").text(res.anchorBalLimitAmt);
+                }
+
+                if ($("#prgmBalLimitAmt").text != res.prgmBalLimitAmt) {
+                    limit_balance = res.prgmBalLimitAmt; 
+                    $("#prgmBalLimitAmt").text(res.prgmBalLimitAmt);
                 }
                 prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;                  
                 $('.isloader').hide();
