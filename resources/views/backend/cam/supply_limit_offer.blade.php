@@ -57,7 +57,7 @@
       <div class="form-group INR">
         <label for="txtPassword">Program Limit <span style="color: red;"> *</span></label>
         <small><span class="text-success limit"></span></small>
-        <span class="float-right text-success"><small>Balance: <i class="fa fa-inr"></i>{{($limitBalance<0)? 0: $limitBalance}}</small></span>
+        <span class="float-right text-success"><small>Balance: <i class="fa fa-inr"></i><span id="prgmBalLimitAmt">{{ ($limitBalance < 0) ? 0 : $limitBalance }}</span></small></span>
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr"></i></a>
         <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Program Limit" maxlength="15">
       </div>
@@ -999,7 +999,6 @@
         $('input[name="bank_id"]').val(bank_id);
         $('input[name="base_rate"]').val(base_rate);
 
-
         unsetError('input[name=prgm_limit_amt]');
         unsetError('input[name=interest_rate]');
         let program_min_rate = $('#program_id option:selected').data('min_rate');
@@ -1022,12 +1021,12 @@
             setLimit('input[name=interest_rate]', '('+program_min_rate+'%-'+program_max_rate+'%)');
         }
         let token = "{{ csrf_token() }}";            
-
+        var appId = $("input[name='app_id']").val();
         $('.isloader').show();
         $.ajax({
             'url':messages.get_program_balance_limit,
             'type':"POST",
-            'data':{"_token" : messages.token, "program_id" : program_id},
+            'data':{"_token" : messages.token, "program_id" : program_id, "app_id": appId},
             error:function (xhr, status, errorThrown) {
                 $('.isloader').hide();
                 alert(errorThrown);
@@ -1055,6 +1054,10 @@
                         $('input[name="document_fee"]').val(prgm_data.document_fee_amt);
                     }
                 }*/
+                if ($("#prgmBalLimitAmt").text != res.totalBalanceAmt) {
+                    limit_balance = res.totalBalanceAmt; 
+                    $("#prgmBalLimitAmt").text(res.totalBalanceAmt);
+                }
                 prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;                  
                 $('.isloader').hide();
             }
@@ -1067,7 +1070,7 @@
         'prgm_max_rate':$('#program_id option:selected').data('max_rate'),
         'prgm_min_limit':$('#program_id option:selected').data('min_limit'),
         'prgm_max_limit':$('#program_id option:selected').data('max_limit'),
-        'limit_balance_amt':"{{(int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount}}",
+        'limit_balance_amt':limit_balance,
         'prgm_balance_limit':$('#program_id option:selected').data('sub_limit') - prgm_consumed_limit,
     };
 

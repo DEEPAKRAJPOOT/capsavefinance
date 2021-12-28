@@ -1581,6 +1581,9 @@ class CamController extends Controller
         $currStage = Helpers::getCurrentWfStage($appId);                
         $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: '';   
         $userRole = $this->userRepo->getBackendUser(Auth::user()->user_id);
+        $appData = $this->appRepo->getAppData($appId);
+        $appType = $appData->app_type;
+
         return view('backend.cam.limit_assessment')
                 ->with('appId', $appId)
                 ->with('bizId', $bizId)
@@ -1594,7 +1597,8 @@ class CamController extends Controller
                 ->with('currStageCode', $currStageCode)
                 ->with('offerStatus', $offerStatus)
                 ->with('userRole', $userRole)
-                ->with('product_types', $product_types);
+                ->with('product_types', $product_types)
+                ->with('appType', $appType);
     }
     
     /**
@@ -1790,6 +1794,7 @@ class CamController extends Controller
 
     /*function for showing offer data*/
     public function showLimitOffer(Request $request){
+      // dd($request->all());
       $appId = (int)$request->get('app_id');
       $biz_id = $request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
@@ -1805,7 +1810,6 @@ class CamController extends Controller
       $facilityTypeList= $this->mstRepo->getFacilityTypeList();
       $limitData= $this->appRepo->getLimit($aplid);
       $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
-
 
       if ($limitData->product_id == 1) {
         $appData = $this->appRepo->getAppData($appId);
@@ -1839,7 +1843,8 @@ class CamController extends Controller
         $prgmOfferedAmount = 0;
         $prgmLimit = 0;
       }
-
+      // $currentOfferAmount = $offerData->prgm_limit_amt ?? 0;
+      // $limitBalance = (int)$limitData->limit_amt - (int)$totalSubLmtAmt + (int)$currentOfferAmount;
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
       return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType]);
     }
@@ -1847,11 +1852,39 @@ class CamController extends Controller
     /*function for updating offer data*/
     public function updateLimitOffer(Request $request){
       try{
-        $appId = $request->get('app_id');
+        $appId = $request->get('app_id');        
         $bizId = $request->get('biz_id');
         $prgmOfferId = $request->get('offer_id');
         $aplid = (int)$request->get('app_prgm_limit_id');        
         $request['prgm_limit_amt'] = str_replace(',', '', $request->prgm_limit_amt);
+
+        // enhancement check
+        $program_id = (int)$request->prgm_id;
+        $prgm_data =  $this->appRepo->getProgramData(['prgm_id' => $program_id]);
+        
+        if ($prgm_data->product_id == 1) {
+            $appData = $this->appRepo->getAppData($appId);
+            $anchorUsers = $this->userRepo->getAnchorUserData(['anchor_id' => $prgm_data->anchor_id]);
+            
+            if ($appData->app_type == 2) {
+                $totalConsumtionAmt = 0;
+                foreach($anchorUsers as $anchorUser)
+                {
+                    if ($anchorUser->user_id != $appData->user_id) {
+                        $totalConsumtionAmt += \Helpers::getPrgmBalLimitAmt($anchorUser->user_id, $program_id);
+                    }
+                }
+                $balanceAmt = $prgm_data->anchor_limit - $totalConsumtionAmt;
+                $appLimit   = $this->appRepo->getAppLimit($appId);
+                $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
+                $appUserBalLimit = $appLimit->tot_limit_amt - $appUserConsumtionLimit;
+                $totalBalanceAmt = $balanceAmt + $appUserBalLimit;
+                if ($request->prgm_limit_amt > $totalBalanceAmt) {
+                  Session::flash('message', 'Program limit amount should be less or equal to the balance amount.');
+                  return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
+                }
+            }
+        }
         $request['processing_fee'] = str_replace(',', '', $request->processing_fee);
         $request['check_bounce_fee'] = str_replace(',', '', $request->check_bounce_fee);
         $request['created_at'] = \Carbon\Carbon::now();
@@ -1928,7 +1961,7 @@ class CamController extends Controller
         }
         */
         
-        if($offerData){                           
+        if($offerData){              
           Session::flash('message',trans('backend_messages.limit_offer_success'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }else{
