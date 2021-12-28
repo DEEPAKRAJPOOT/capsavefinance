@@ -48,7 +48,7 @@
     <div class="col-md-6">
       <div class="form-group">
         <label for="txtPassword">Select Program <span style="color: red;"> *</span></label> 
-        <span class="float-right text-success"><small>Anchor Balance: <i class="fa fa-inr"></i><span id="anchorBalLimitAmt"></span></small></span>    
+        <span class="float-right text-success d-none"><small>Anchor Balance: <i class="fa fa-inr"></i><span id="anchorBalLimitAmt"></span></small></span>    
         <select name="prgm_id" id="program_id" class="form-control">
             </select>
         </div>
@@ -1057,11 +1057,12 @@
                     }
                 }*/
                 
-                if ($("#anchorBalLimitAmt").text != res.anchorBalLimitAmt) {
+                if ($("#anchorBalLimitAmt").text() != res.anchorBalLimitAmt) {
+                    $("#anchorBalLimitAmt").parent().parent().removeClass('d-none');
                     $("#anchorBalLimitAmt").text(res.anchorBalLimitAmt);
                 }
 
-                if ($("#prgmBalLimitAmt").text != res.prgmBalLimitAmt) {
+                if ($("#prgmBalLimitAmt").text() != res.prgmBalLimitAmt) {
                     limit_balance = res.prgmBalLimitAmt; 
                     $("#prgmBalLimitAmt").text(res.prgmBalLimitAmt);
                 }
@@ -1079,6 +1080,7 @@
         'prgm_max_limit':$('#program_id option:selected').data('max_limit'),
         'limit_balance_amt':limit_balance,
         'prgm_balance_limit':$('#program_id option:selected').data('sub_limit') - prgm_consumed_limit,
+        'anchor_bal_limit_amt': $("#anchorBalLimitAmt").text()
     };
 
     unsetError('select[name=anchor_id]');
@@ -1142,6 +1144,9 @@
             flag = false;
         }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limit_balance)){
             setError('input[name=prgm_limit_amt]', 'Limit amount should not greater than balance limit');
+            flag = false;
+        }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.anchor_bal_limit_amt)){
+            setError('input[name=prgm_limit_amt]', 'Limit amount should not greater than anchor balance limit');
             flag = false;
         }else{
             //TAKE REST limit_balance

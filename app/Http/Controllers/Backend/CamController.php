@@ -1863,28 +1863,34 @@ class CamController extends Controller
         $prgm_data =  $this->appRepo->getProgramData(['prgm_id' => $program_id]);
         
         if ($prgm_data->product_id == 1) {
-            $appData = $this->appRepo->getAppData($appId);
-            $anchorUsers = $this->userRepo->getAnchorUserData(['anchor_id' => $prgm_data->anchor_id]);
-            
-            if ($appData->app_type == 2) {
-                $totalConsumtionAmt = 0;
-                foreach($anchorUsers as $anchorUser)
-                {
-                    if ($anchorUser->user_id != $appData->user_id) {
-                        $totalConsumtionAmt += \Helpers::getPrgmBalLimitAmt($anchorUser->user_id, $program_id);
-                    }
-                }
-                $balanceAmt = $prgm_data->anchor_limit - $totalConsumtionAmt;
-                $appLimit   = $this->appRepo->getAppLimit($appId);
-                $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
-                $appUserBalLimit = $appLimit->tot_limit_amt - $appUserConsumtionLimit;
-                $totalBalanceAmt = $balanceAmt + $appUserBalLimit;
-                if ($request->prgm_limit_amt > $totalBalanceAmt) {
-                  Session::flash('message', 'Program limit amount should be less or equal to the balance amount.');
-                  return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
-                }
-            }
+          $appId = (int)$request->app_id;
+          $appData = $this->application->getAppData($appId);
+          $anchorUsers = $this->userRepo->getAnchorUserData(['anchor_id' => $prgm_data->anchor_id]);
+          $totalConsumtionAmt = 0;
+          foreach($anchorUsers as $anchorUser)
+          {
+              if ($anchorUser->user_id != $appData->user_id) {
+                  $totalConsumtionAmt += \Helpers::getPrgmBalLimitAmt($anchorUser->user_id, $program_id);
+              }
+          }
+          $totalBalanceAmt = $prgm_data->anchor_limit - $totalConsumtionAmt;
+          $appLimit   = $this->application->getAppLimit($appId);
+          $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
+          $appUserBalLimit = $appLimit->tot_limit_amt - $appUserConsumtionLimit;
+          if ($appData->app_type == 2) {
+              $currAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
+              $totalBalanceAmt += $currAppConsumAmt;
+          }
+          if ($request->prgm_limit_amt > $appUserBalLimit) {
+            Session::flash('message', 'Program limit amount should not be greater than the balance limit.');
+            return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
+          }
+          if ($request->prgm_limit_amt > $totalBalanceAmt) {
+            Session::flash('message', 'Program limit amount should not be greater than the anchor balance limit.');
+            return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
+          }
         }
+      
         $request['processing_fee'] = str_replace(',', '', $request->processing_fee);
         $request['check_bounce_fee'] = str_replace(',', '', $request->check_bounce_fee);
         $request['created_at'] = \Carbon\Carbon::now();
