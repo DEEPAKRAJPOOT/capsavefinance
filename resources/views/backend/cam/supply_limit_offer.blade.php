@@ -20,7 +20,6 @@
 
     @php
     $currentOfferAmount = $offerData->prgm_limit_amt ?? 0;
-    $limitBalance = (int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount;
     @endphp
 
     <div class="col-md-6">
@@ -58,7 +57,7 @@
       <div class="form-group INR">
         <label for="txtPassword">Program Limit <span style="color: red;"> *</span></label>
         <small><span class="text-success limit"></span></small>
-        <span class="float-right text-success"><small>Balance: <i class="fa fa-inr"></i><span id="prgmBalLimitAmt">{{ ($limitBalance < 0) ? 0 : $limitBalance }}</span></small></span>
+        <span class="float-right text-success d-none"><small>Balance: <i class="fa fa-inr"></i><span id="prgmBalLimitAmt"></span></small></span>
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr"></i></a>
         <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Program Limit" maxlength="15">
       </div>
@@ -952,7 +951,7 @@
     var anchorPrgms = {!! json_encode($anchorPrgms) !!};
     var anchor_id = {{$offerData->anchor_id ?? 0}};
     var program_id = {{$offerData->prgm_id ?? 0}};
-    var limit_balance = {{$limitBalance}};
+    var limit_balance = 0;
     var max_prgm_limit=0;
     
     $(document).ready(function(){
@@ -1028,7 +1027,7 @@
         $.ajax({
             'url':messages.get_program_balance_limit,
             'type':"POST",
-            'data':{"_token" : messages.token, "program_id" : program_id, "app_id": appId},
+            'data':{"_token" : messages.token, "program_id" : program_id, "app_id": appId, "offer_id":offerData},
             error:function (xhr, status, errorThrown) {
                 $('.isloader').hide();
                 alert(errorThrown);
@@ -1063,8 +1062,9 @@
                 }
 
                 if ($("#prgmBalLimitAmt").text() != res.prgmBalLimitAmt) {
-                    limit_balance = res.prgmBalLimitAmt; 
+                    $("#prgmBalLimitAmt").parent().parent().removeClass('d-none');
                     $("#prgmBalLimitAmt").text(res.prgmBalLimitAmt);
+                    limit_balance = res.prgmBalLimitAmt; 
                 }
                 prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;                  
                 $('.isloader').hide();
@@ -1568,16 +1568,16 @@
   function fillChargesBlock(program){
     let html='';
     $.each(program.program_charges, function(i,program_charge){
-//        if(program_charge.charge_name.chrg_tiger_id == 1){
-//            html += '<div class="col-md-6">'+
-//                '<div class="form-group">'+
-//                    '<label for="txtPassword">'+program_charge.charge_name.chrg_name+((program_charge.charge_name.chrg_calculation_type == 2)? ' (%)':' (&#8377;)')+'</label>'+
-//                    '<input type="text" name="charge_names['+program_charge.charge_id+'#'+program_charge.charge_name.chrg_calculation_type+']" value="'+program_charge.chrg_calculation_amt+'" data-type="'+program_charge.charge_name.chrg_calculation_type+'" class="form-control" data-name="'+program_charge.charge_name.chrg_name+'" placeholder="'+program_charge.charge_name.chrg_name+'" maxlength="6">'+
-//                '</div>'+
-//            '</div>';
-//            //value="'+program_charge.chrg_calculation_amt+'"
-//        }
-        console.log(program_charge, appType);
+            //if(program_charge.charge_name.chrg_tiger_id == 1){
+            //    html += '<div class="col-md-6">'+
+            //        '<div class="form-group">'+
+            //            '<label for="txtPassword">'+program_charge.charge_name.chrg_name+((program_charge.charge_name.chrg_calculation_type == 2)? ' (%)':' (&#8377;)')+'</label>'+
+            //            '<input type="text" name="charge_names['+program_charge.charge_id+'#'+program_charge.charge_name.chrg_calculation_type+']" value="'+program_charge.chrg_calculation_amt+'" data-type="'+program_charge.charge_name.chrg_calculation_type+'" class="form-control" data-name="'+program_charge.charge_name.chrg_name+'" placeholder="'+program_charge.charge_name.chrg_name+'" maxlength="6">'+
+            //        '</div>'+
+            //    '</div>';
+            //    //value="'+program_charge.chrg_calculation_amt+'"
+            //}
+        //console.log(program_charge, appType);
         var mst_chrg_tiger_id = program_charge.charge_name.chrg_tiger_id;
         //charges triggered on limit assignment will always popoulated
         if(mst_chrg_tiger_id == appType || mst_chrg_tiger_id == 1){

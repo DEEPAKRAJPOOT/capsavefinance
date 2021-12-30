@@ -3648,15 +3648,19 @@ if ($err) {
      */
     public function getProgramBalanceLimit(Request $request)
     {
+        $appId = (int)$request->app_id;
         $program_id = (int)$request->program_id;
+        $offer_id = (int)$request->offer_id;
+        $utilizedLimit = 0;
+
         $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
         $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
         
+        # product Type 1=> Supply Chain
         if ($prgm_data->product_id == 1) {
-            $appId = (int)$request->app_id;
+            $totalConsumtionAmt = 0;
             $appData = $this->application->getAppData($appId);
             $anchorUsers = $this->userRepo->getAnchorUserData(['anchor_id' => $prgm_data->anchor_id]);
-            $totalConsumtionAmt = 0;
             foreach($anchorUsers as $anchorUser)
             {
                 if ($anchorUser->user_id != $appData->user_id) {
@@ -3664,19 +3668,27 @@ if ($err) {
                 }
             }
             $totalBalanceAmt = $prgm_data->anchor_limit - $totalConsumtionAmt;
-            $appLimit   = $this->application->getAppLimit($appId);
             $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
-            $appUserBalLimit = $appLimit->tot_limit_amt - $appUserConsumtionLimit;
+            $appPrgmLimit = $this->application->getProgramLimitData($appId,1);
+            $appUserBalLimit = $appPrgmLimit[0]->limit_amt - $appUserConsumtionLimit;
+            /** Enhancement*/ 
             if ($appData->app_type == 2) {
-                $currAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
-                $totalBalanceAmt += $currAppConsumAmt;
+                /** Parent Aplication limit consumed */
+                if($appData->parent_app_id){
+                    $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->parent_app_id);
+                    $totalBalanceAmt += $parentAppConsumAmt;
+                }
+                /**  Current Offer Consumed Limit */
+                if($offer_id){
+                    $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, null, $offer_id);
+                    $appUserBalLimit += $currOfferConsumAmt;
+                }
             }
         }
-        $utilizedLimit = 0;
+        
         if ($prgm_data && $prgm_data->copied_prgm_id) {            
             $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
         }
-
         return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit, 'prgm_data' => $prgm_data, 'prgmBalLimitAmt' => $appUserBalLimit ?? 0, 'anchorBalLimitAmt' => $totalBalanceAmt ?? 0]);
     }
     
