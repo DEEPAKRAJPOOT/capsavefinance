@@ -2374,7 +2374,7 @@ class Helper extends PaypalHelper
         }
     }
 
-    public static function getPrgmBalLimitAmt($userId, $prgmId)
+    public static function getPrgmBalLimitAmt($userId, $prgmId, $app_id = null, $offer_id = null)
     {
         $results = AppProgramOffer::select('app_prgm_offer.anchor_id', 'app.user_id', 'app_prgm_offer.prgm_id', 'app_prgm_offer.app_id', 'app.parent_app_id', 'app_prgm_offer.prgm_offer_id', 'app_prgm_offer.prgm_limit_amt', 'app_prgm_offer.status', 'app.curr_status_id')
                 ->join('prgm', 'app_prgm_offer.prgm_id', '=', 'prgm.prgm_id')
@@ -2386,14 +2386,20 @@ class Helper extends PaypalHelper
                 ->where('app_prgm_offer.is_active', 1)
                 ->whereNotIn('app.curr_status_id', [51])
                 ->where(function ($query) {
-                    $query->whereIn('app_prgm_offer.status', [1])->orWhereNull('app_prgm_offer.status');                  
+                    $query->whereIn('app_prgm_offer.status', [1])->orWhereNull('app_prgm_offer.status');
                 })
                 ->orderBy('user_id', 'asc')
                 ->orderBy('prgm_id', 'asc')
                 ->orderBy('app_id', 'asc')
-                ->orderBy('prgm_offer_id', 'asc')
-                ->get();
-                
+                ->orderBy('prgm_offer_id', 'asc');
+        if($app_id){
+            $results->where('app.app_id', $app_id);
+        }                
+        if($offer_id){
+            $results->where('app_prgm_offer.prgm_offer_id',$offer_id);
+        }
+        $results = $results->get();
+
         $arr = [];
         foreach($results as $result)
         {
@@ -2415,5 +2421,14 @@ class Helper extends PaypalHelper
             }
         }
         return array_sum(array_column($arr, 'prgm_limit_amt'));
-    }    
+    }
+
+    public static function checkAnchorPrgmOfferDuplicate($anchorId, $prgmId, $appId)
+    {
+        return AppProgramOffer::where('anchor_id', $anchorId)
+                                    ->where('prgm_id', $prgmId)
+                                    ->where('app_id', $appId)
+                                    ->where('is_active', 1)
+                                    ->first();
+    }
 }

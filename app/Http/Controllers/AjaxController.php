@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\Crypt;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 
 class AjaxController extends Controller {
 
@@ -62,6 +63,7 @@ class AjaxController extends Controller {
     protected $invRepo;
     protected $docRepo;
     protected $lms_repo;
+    use ApplicationTrait;
     use LmsTrait;
     use ActivityLogTrait;
 
@@ -3648,14 +3650,11 @@ if ($err) {
      */
     public function getProgramBalanceLimit(Request $request)
     {
+        $appId = (int)$request->app_id;
         $program_id = (int)$request->program_id;
-        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
-        $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
-        $utilizedLimit = 0;
-        if ($prgm_data && $prgm_data->copied_prgm_id) {            
-            $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
-        }
-        return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
+        $offer_id = (int)$request->offer_id;
+        $data = $this->getAnchorProgramLimit($appId, $program_id, $offer_id);
+        return json_encode($data);
     }
     
      public function getProgramSingleList(Request $request)

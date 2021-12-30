@@ -452,9 +452,19 @@
     </div>    
 </div>
 
+@php
+    if ($appType == 1) {
+        $offerHeading = "Add/Update Offer(Renewal)";
+    } elseif($appType == 2) {
+        $offerHeading = "Add/Update Offer(Limit Enhancement)";
+    } else {    
+        $offerHeading = "Add/Update Offer";
+    }
+@endphp
+
 {!!Helpers::makeIframePopup('shareColenderFrame','Share with Co-Lender', 'modal-md')!!}
 {!!Helpers::makeIframePopup('viewSharedColenderFrame','View shared Co-Lender', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('limitOfferFrame','Add/Update Offer', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('limitOfferFrame', $offerHeading, 'modal-lg')!!}
 {!!Helpers::makeIframePopup('editLimitFrame','Update Limit', 'modal-md')!!}
 
 @endsection

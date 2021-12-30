@@ -27,6 +27,7 @@ return [
     'co_lender_registration_update'=>'Co-lender information saved successfully.',
     'change_app_disbursed_status' => 'Application disbursed successfully.',
     'limit_offer_success' => 'Offer generated successfully.',
+    'limit_offer_update_success' => 'Offer Updated successfully.',
     'add_payment_manual' => 'Payment add successfully.',
     'proccessed' => 'Successfully proccessed.',
     'under_approval' => 'You cannot create/modify the offer as the offer has been approved by approver.',
