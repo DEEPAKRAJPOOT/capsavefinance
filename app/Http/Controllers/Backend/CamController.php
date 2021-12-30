@@ -1794,7 +1794,6 @@ class CamController extends Controller
 
     /*function for showing offer data*/
     public function showLimitOffer(Request $request){
-      // dd($request->all());
       $appId = (int)$request->get('app_id');
       $biz_id = $request->get('biz_id');
       $aplid = $request->get('app_prgm_limit_id');
@@ -1860,11 +1859,17 @@ class CamController extends Controller
 
         // enhancement check
         $program_id = (int)$request->prgm_id;
-        $prgm_data =  $this->appRepo->getProgramData(['prgm_id' => $program_id]);
+        $prgm_data =  $this->appRepo->getProgram(['prgm_id' => $program_id]);
+        $offerIsExist = \Helpers::checkAnchorPrgmOfferDuplicate($prgm_data->anchor_id, $program_id, $appId);
+
+        if ((!$prgmOfferId && $offerIsExist) || ($prgmOfferId && $offerIsExist && $prgmOfferId != $offerIsExist->prgm_offer_id)) {
+          Session::flash('message', 'Anchor Offer is already generated for this program.');
+          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
+        }
         
         if ($prgm_data->product_id == 1) {
           $appId = (int)$request->app_id;
-          $appData = $this->application->getAppData($appId);
+          $appData = $this->appRepo->getAppData($appId);
           $anchorUsers = $this->userRepo->getAnchorUserData(['anchor_id' => $prgm_data->anchor_id]);
           $totalConsumtionAmt = 0;
           foreach($anchorUsers as $anchorUser)
@@ -1874,7 +1879,7 @@ class CamController extends Controller
               }
           }
           $totalBalanceAmt = $prgm_data->anchor_limit - $totalConsumtionAmt;
-          $appLimit   = $this->application->getAppLimit($appId);
+          $appLimit   = $this->appRepo->getAppLimit($appId);
           $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
           $appUserBalLimit = $appLimit->tot_limit_amt - $appUserConsumtionLimit;
           if ($appData->app_type == 2) {

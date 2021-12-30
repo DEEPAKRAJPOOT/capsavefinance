@@ -2416,4 +2416,13 @@ class Helper extends PaypalHelper
         }
         return array_sum(array_column($arr, 'prgm_limit_amt'));
     }
+
+    public static function checkAnchorPrgmOfferDuplicate($anchorId, $prgmId, $appId)
+    {
+        return AppProgramOffer::where('anchor_id', $anchorId)
+                                    ->where('prgm_id', $prgmId)
+                                    ->where('app_id', $appId)
+                                    ->where('is_active', 1)
+                                    ->first();
+    }
 }

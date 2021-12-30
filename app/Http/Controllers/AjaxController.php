@@ -3650,7 +3650,7 @@ if ($err) {
     {
         $program_id = (int)$request->program_id;
         $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
-        $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
+        $prgm_data =  $this->application->getProgram(['prgm_id' => $program_id]);
         
         if ($prgm_data->product_id == 1) {
             $appId = (int)$request->app_id;
@@ -3663,6 +3663,7 @@ if ($err) {
                     $totalConsumtionAmt += \Helpers::getPrgmBalLimitAmt($anchorUser->user_id, $program_id);
                 }
             }
+
             $totalBalanceAmt = $prgm_data->anchor_limit - $totalConsumtionAmt;
             $appLimit   = $this->application->getAppLimit($appId);
             $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
