@@ -628,7 +628,34 @@ class ApiController
     return $receiptPayment;
   }
 
-  public function tally_entry() {
+  function displayDates($date1, $date2, $format = 'Y-m-d') {
+    $dates = array();
+    $current = strtotime($date1);
+    $date2 = strtotime($date2);
+    $stepVal = '+1 day';
+    while($current <= $date2 ) {
+       $dates[] = date($format, $current);
+       $current = strtotime($stepVal, $current);
+    }
+    return $dates;
+  }
+
+  public function tally_entry_date_wise(){
+
+    $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
+    foreach ($dates as $activeDate) {
+      self::tally_entry($activeDate);
+    }
+
+  }
+  public function tally_entry($activeDate = null ){
+    if(empty($activeDate)){
+      $activeDate = date('Y-m-d');
+    }
+    $this->selectedTxnData = [];
+    $this->selectedPaymentData = [];
+    $this->voucherNo = null;
+    ini_set("memory_limit", "-1");
     $response = array(
       'status' => 'failure',
       'message' => 'Request method not allowed to execute the script.',
@@ -644,7 +671,7 @@ class ApiController
     }
     $this->voucherNo = $this->voucherNo + 1;
     $batch_no = _getRand(15);
-    $where = ['is_posted_in_tally' => '0'];
+    $where = [['is_posted_in_tally', '=', '0'], ['created_at', 'like', "$activeDate%"]];
     $journalData = Transactions::getJournalTxnTally($where);
     $disbursalData = Transactions::getDisbursalTxnTally($where);
     $refundData = Transactions::getRefundTxnTally($where);
@@ -685,7 +712,7 @@ class ApiController
         $batchData = [
           'batch_no' => $batch_no,
           'record_cnt' => $recordsTobeInserted,
-          'created_at' => date('Y-m-d H:i:s'),
+          'created_at' => $activeDate,
         ];
         $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
         $response['message'] =  ($recordsTobeInserted > 1 ? $recordsTobeInserted .' Records inserted successfully' : '1 Record inserted.');
