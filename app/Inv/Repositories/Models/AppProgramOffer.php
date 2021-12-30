@@ -671,4 +671,22 @@ class AppProgramOffer extends BaseModel {
         }
         return $frequencyType;
     }
+
+    public static function getAnchorPrgmUserIdsInArray($anchorId, $prgmId)
+    {
+        return  AppProgramOffer::join('prgm', 'app_prgm_offer.prgm_id', '=', 'prgm.prgm_id')
+                ->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+                ->join('app_product', 'app.app_id', '=', 'app_product.app_id')
+                ->where('app_product.product_id', 1)
+                ->where('prgm.prgm_id', $prgmId)
+                ->where('app_prgm_offer.anchor_id', $anchorId)
+                ->where('app_prgm_offer.is_active', 1)
+                ->whereNotIn('app.curr_status_id', [51])
+                ->where(function ($query) {
+                    $query->whereIn('app_prgm_offer.status', [1])->orWhereNull('app_prgm_offer.status');
+                })
+                ->groupBy('app.user_id')
+                ->pluck('app.user_id')
+                ->toArray();
+    }
 }

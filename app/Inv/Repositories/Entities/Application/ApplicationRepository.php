@@ -2570,4 +2570,7 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Charges::find(12);
     }
 
+    public function getAnchorPrgmUserIdsInArray($anchorId, $prgmId){
+        return AppProgramOffer::getAnchorPrgmUserIdsInArray($anchorId, $prgmId);
+    }
 }

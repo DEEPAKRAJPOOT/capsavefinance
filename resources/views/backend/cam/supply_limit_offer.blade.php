@@ -1056,16 +1056,12 @@
                     }
                 }*/
                 
-                if ($("#anchorBalLimitAmt").text() != res.anchorBalLimitAmt) {
-                    $("#anchorBalLimitAmt").parent().parent().removeClass('d-none');
-                    $("#anchorBalLimitAmt").text(res.anchorBalLimitAmt);
-                }
-
-                if ($("#prgmBalLimitAmt").text() != res.prgmBalLimitAmt) {
-                    $("#prgmBalLimitAmt").parent().parent().removeClass('d-none');
-                    $("#prgmBalLimitAmt").text(res.prgmBalLimitAmt);
-                    limit_balance = res.prgmBalLimitAmt; 
-                }
+                $("#anchorBalLimitAmt").text(res.anchorBalLimitAmt);
+                $("#prgmBalLimitAmt").text(res.prgmBalLimitAmt);
+                limit_balance = res.prgmBalLimitAmt; 
+                
+                $("#anchorBalLimitAmt").parent().parent().removeClass('d-none');
+                $("#prgmBalLimitAmt").parent().parent().removeClass('d-none');
                 prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;                  
                 $('.isloader').hide();
             }
