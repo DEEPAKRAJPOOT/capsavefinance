@@ -2376,6 +2376,12 @@ class Helper extends PaypalHelper
 
     public static function getPrgmBalLimitAmt($userId, $prgmId, $app_id = null, $offer_id = null)
     {
+        $appStatusList = [
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            config('common.mst_status_id.APP_CLOSED'),
+            config('common.mst_status_id.OFFER_LIMIT_REJECTED')
+        ];
         $results = AppProgramOffer::select('app_prgm_offer.anchor_id', 'app.user_id', 'app_prgm_offer.prgm_id', 'app_prgm_offer.app_id', 'app.parent_app_id', 'app_prgm_offer.prgm_offer_id', 'app_prgm_offer.prgm_limit_amt', 'app_prgm_offer.status', 'app.curr_status_id')
                 ->join('prgm', 'app_prgm_offer.prgm_id', '=', 'prgm.prgm_id')
                 ->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
@@ -2384,7 +2390,7 @@ class Helper extends PaypalHelper
                 ->where('prgm.prgm_id', $prgmId)
                 ->where('app.user_id', $userId)
                 ->where('app_prgm_offer.is_active', 1)
-                ->whereNotIn('app.curr_status_id', [51])
+                ->whereNotIn('app.curr_status_id', $appStatusList)
                 ->where(function ($query) {
                     $query->whereIn('app_prgm_offer.status', [1])->orWhereNull('app_prgm_offer.status');
                 })
