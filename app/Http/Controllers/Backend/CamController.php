@@ -51,9 +51,11 @@ use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 //use App\Inv\Repositories\Models\BankAnalysis;
 //date_default_timezone_set('Asia/Kolkata');
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 
 class CamController extends Controller
 {
+    use ApplicationTrait;
     use CamTrait;
     use CommonTrait;
     use ActivityLogTrait;
@@ -67,6 +69,7 @@ class CamController extends Controller
 
     public function __construct(InvAppRepoInterface $app_repo, InvUserRepoInterface $user_repo, InvDocumentRepoInterface $doc_repo, Pdf $pdf, InvMasterRepoInterface $mstRepo, InvFinanceRepoInterface $finance_repo){
         $this->appRepo = $app_repo;
+        $this->application = $app_repo;
         $this->userRepo = $user_repo;
         $this->docRepo = $doc_repo;
         $this->pdf = $pdf;
@@ -1868,29 +1871,13 @@ class CamController extends Controller
         }
         
         if ($prgm_data->product_id == 1) {
-          $appId = (int)$request->app_id;
-          $appData = $this->appRepo->getAppData($appId);
-          $anchorUsers = $this->userRepo->getAnchorUserData(['anchor_id' => $prgm_data->anchor_id]);
-          $totalConsumtionAmt = 0;
-          foreach($anchorUsers as $anchorUser)
-          {
-              if ($anchorUser->user_id != $appData->user_id) {
-                  $totalConsumtionAmt += \Helpers::getPrgmBalLimitAmt($anchorUser->user_id, $program_id);
-              }
-          }
-          $totalBalanceAmt = $prgm_data->anchor_limit - $totalConsumtionAmt;
-          $appLimit   = $this->appRepo->getAppLimit($appId);
-          $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
-          $appUserBalLimit = $appLimit->tot_limit_amt - $appUserConsumtionLimit;
-          if ($appData->app_type == 2) {
-              $currAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
-              $totalBalanceAmt += $currAppConsumAmt;
-          }
-          if ($request->prgm_limit_amt > $appUserBalLimit) {
+          $anchorPrgmLimit =  $this->getAnchorProgramLimit($appId, $program_id, $prgmOfferId);
+          
+          if($request->prgm_limit_amt > $anchorPrgmLimit['prgmBalLimitAmt']) {
             Session::flash('message', 'Program limit amount should not be greater than the balance limit.');
             return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
           }
-          if ($request->prgm_limit_amt > $totalBalanceAmt) {
+          if ($request->prgm_limit_amt > $anchorPrgmLimit['anchorBalLimitAmt']) {
             Session::flash('message', 'Program limit amount should not be greater than the anchor balance limit.');
             return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
           }
@@ -1972,8 +1959,12 @@ class CamController extends Controller
         }
         */
         
-        if($offerData){              
-          Session::flash('message',trans('backend_messages.limit_offer_success'));
+        if($offerData){ 
+          if($prgmOfferId){
+            Session::flash('message',trans('backend_messages.limit_offer_update_success'));
+          }else{
+            Session::flash('message',trans('backend_messages.limit_offer_success'));
+          }            
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }else{
           Session::flash('message',trans('backend_messages.limit_assessment_fail'));

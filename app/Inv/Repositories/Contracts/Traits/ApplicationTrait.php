@@ -625,4 +625,48 @@ trait ApplicationTrait
         return $array;
 
     }    
+
+    public function getAnchorProgramLimit(int $appId, int $program_id, int $offer_id){
+        $utilizedLimit = 0;
+
+        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
+        $prgm_data =  $this->application->getProgram(['prgm_id' => $program_id]);
+        
+        # product Type 1=> Supply Chain
+        if ($prgm_data->product_id == 1) {
+            $totalConsumtionAmt = 0;
+            $appData = $this->application->getAppData($appId);
+            $anchorUsers = $this->userRepo->getAnchorUserData(['anchor_id' => $prgm_data->anchor_id]);
+            foreach($anchorUsers as $anchorUser)
+            {
+                if ($anchorUser->user_id != $appData->user_id) {
+                    $totalConsumtionAmt += \Helpers::getPrgmBalLimitAmt($anchorUser->user_id, $program_id);
+                }
+            }
+
+            $totalBalanceAmt = $prgm_data->anchor_limit - $totalConsumtionAmt;
+            $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
+            $appPrgmLimit = $this->application->getProgramLimitData($appId,1);
+            $appUserBalLimit = $appPrgmLimit[0]->limit_amt - $appUserConsumtionLimit;
+            /** Enhancement*/ 
+            if ($appData->app_type == 2) {
+                /** Parent Aplication limit consumed */
+                if($appData->parent_app_id){
+                    $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->parent_app_id);
+                    $totalBalanceAmt += $parentAppConsumAmt;
+                }
+                /**  Current Offer Consumed Limit */
+                if($offer_id){
+                    $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, null, $offer_id);
+                    $appUserBalLimit += $currOfferConsumAmt;
+                }
+            }
+        }
+        
+        if ($prgm_data && $prgm_data->copied_prgm_id) {            
+            $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
+        }
+        
+        return ['prgm_limit' => $prgm_limit + $utilizedLimit, 'prgm_data' => $prgm_data, 'prgmBalLimitAmt' => $appUserBalLimit ?? 0, 'anchorBalLimitAmt' => $totalBalanceAmt ?? 0];
+    }
 }

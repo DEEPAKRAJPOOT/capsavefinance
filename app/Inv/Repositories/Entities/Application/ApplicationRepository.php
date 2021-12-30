@@ -2569,7 +2569,5 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getInvoiceProcessingFeeCharge(){
         return Charges::find(12);
     }
+
 }
-
-
-

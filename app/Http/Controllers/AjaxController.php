@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\Crypt;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 
 class AjaxController extends Controller {
 
@@ -62,6 +63,7 @@ class AjaxController extends Controller {
     protected $invRepo;
     protected $docRepo;
     protected $lms_repo;
+    use ApplicationTrait;
     use LmsTrait;
     use ActivityLogTrait;
 
@@ -3651,46 +3653,8 @@ if ($err) {
         $appId = (int)$request->app_id;
         $program_id = (int)$request->program_id;
         $offer_id = (int)$request->offer_id;
-        $utilizedLimit = 0;
-
-        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
-        $prgm_data =  $this->application->getProgram(['prgm_id' => $program_id]);
-        
-        # product Type 1=> Supply Chain
-        if ($prgm_data->product_id == 1) {
-            $totalConsumtionAmt = 0;
-            $appData = $this->application->getAppData($appId);
-            $anchorUsers = $this->userRepo->getAnchorUserData(['anchor_id' => $prgm_data->anchor_id]);
-            foreach($anchorUsers as $anchorUser)
-            {
-                if ($anchorUser->user_id != $appData->user_id) {
-                    $totalConsumtionAmt += \Helpers::getPrgmBalLimitAmt($anchorUser->user_id, $program_id);
-                }
-            }
-
-            $totalBalanceAmt = $prgm_data->anchor_limit - $totalConsumtionAmt;
-            $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
-            $appPrgmLimit = $this->application->getProgramLimitData($appId,1);
-            $appUserBalLimit = $appPrgmLimit[0]->limit_amt - $appUserConsumtionLimit;
-            /** Enhancement*/ 
-            if ($appData->app_type == 2) {
-                /** Parent Aplication limit consumed */
-                if($appData->parent_app_id){
-                    $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->parent_app_id);
-                    $totalBalanceAmt += $parentAppConsumAmt;
-                }
-                /**  Current Offer Consumed Limit */
-                if($offer_id){
-                    $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, null, $offer_id);
-                    $appUserBalLimit += $currOfferConsumAmt;
-                }
-            }
-        }
-        
-        if ($prgm_data && $prgm_data->copied_prgm_id) {            
-            $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
-        }
-        return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit, 'prgm_data' => $prgm_data, 'prgmBalLimitAmt' => $appUserBalLimit ?? 0, 'anchorBalLimitAmt' => $totalBalanceAmt ?? 0]);
+        $data = $this->getAnchorProgramLimit($appId, $program_id, $offer_id);
+        return json_encode($data);
     }
     
      public function getProgramSingleList(Request $request)
