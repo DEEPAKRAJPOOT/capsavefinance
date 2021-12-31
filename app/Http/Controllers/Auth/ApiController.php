@@ -641,16 +641,38 @@ class ApiController
   }
 
   public function tally_entry_date_wise(){
-
     $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
     foreach ($dates as $activeDate) {
-      self::tally_entry($activeDate);
+      self::tally_entry($activeDate,$activeDate);
     }
-
   }
-  public function tally_entry($activeDate = null ){
-    if(empty($activeDate)){
-      $activeDate = date('Y-m-d');
+
+  public function tally_entry_Week_wise($weekName){
+    $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
+    foreach ($dates as $activeDate) {
+      if(in_array(strtolower(trim($weekName)),[strtolower(date('D',strtotime($activeDate))), strtolower(date('l',strtotime($activeDate)))])){
+        $weekStartDate = date('Y-m-d',(strtotime ( '-7 day' , strtotime($activeDate))));
+        self::tally_entry($weekStartDate,$activeDate);
+      }
+    }
+  }
+
+  public function tally_entry_month_wise(){
+    $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
+    foreach ($dates as $activeDate) {
+      if(date("Y-m-t", strtotime($activeDate)) == $activeDate){
+        $monthStartDate = date("Y-m-1", strtotime($activeDate));
+        self::tally_entry($monthStartDate,$activeDate);
+      }
+    }
+  }
+
+  public function tally_entry($startDate = null, $endDate = null){
+    if(empty($startDate)){
+      $startDate = date('Y-m-d');
+    }
+    if(empty($endDate)){
+      $endDate = $startDate;
     }
     $this->selectedTxnData = [];
     $this->selectedPaymentData = [];
@@ -671,7 +693,7 @@ class ApiController
     }
     $this->voucherNo = $this->voucherNo + 1;
     $batch_no = _getRand(15);
-    $where = [['is_posted_in_tally', '=', '0'], ['created_at', 'like', "$activeDate%"]];
+    $where = [['is_posted_in_tally', '=', '0'], ['created_at', '>=', "$startDate 00:00:00"],['created_at', '<=', "$endDate 23:59:59"]];
     $journalData = Transactions::getJournalTxnTally($where);
     $disbursalData = Transactions::getDisbursalTxnTally($where);
     $refundData = Transactions::getRefundTxnTally($where);
@@ -712,7 +734,7 @@ class ApiController
         $batchData = [
           'batch_no' => $batch_no,
           'record_cnt' => $recordsTobeInserted,
-          'created_at' => $activeDate,
+          'created_at' => $endDate,
         ];
         $tally_inst_data = FinanceModel::dataLogger($batchData, 'tally');
         $response['message'] =  ($recordsTobeInserted > 1 ? $recordsTobeInserted .' Records inserted successfully' : '1 Record inserted.');

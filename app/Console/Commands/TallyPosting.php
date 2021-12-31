@@ -37,6 +37,6 @@ class TallyPosting extends Command
      */
     public function handle()
     {
-        \App::make('App\Http\Controllers\Auth\ApiController')->tally_entry();
+        \App::make('App\Http\Controllers\Auth\ApiController')->tally_entry_month_wise('fri');
     }
 }
