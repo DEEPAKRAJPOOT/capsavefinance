@@ -25,6 +25,8 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\MaturityInvoiceDueAlert::class,
         \App\Console\Commands\MaturityInvoiceOverDueAlert::class,
         \App\Console\Commands\EtlReportSync::class,
+        \App\Console\Commands\OverdueReport::class,
+        \App\Console\Commands\OverdueReportManual::class,
     ];
 
     /**
@@ -62,6 +64,8 @@ class Kernel extends ConsoleKernel
             $schedule->command('report:maturity')->timezone(config('common.timezone'))->dailyAt('23:44');
             // To Generate Overdue Report
             $schedule->command('report:overdue')->timezone(config('common.timezone'))->dailyAt('23:46');
+            // To Generate Overdue Report Manual
+            $schedule->command('report:overdueManual')->timezone(config('common.timezone'))->saturdays()->at('23:30');
             // To Generate Utilization Report
             $schedule->command('report:utilization')->timezone(config('common.timezone'))->dailyAt('23:48');
             // To Generate Margin Report

@@ -648,23 +648,25 @@ class ApiController
   }
 
   public function tally_entry_Week_wise($weekName){
-    $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
-    foreach ($dates as $activeDate) {
+    $activeDate = date('Y-m-d');
+    //$dates = $this->displayDates('2020-01-01', date('Y-m-d'));
+    //foreach ($dates as $activeDate) {
       if(in_array(strtolower(trim($weekName)),[strtolower(date('D',strtotime($activeDate))), strtolower(date('l',strtotime($activeDate)))])){
         $weekStartDate = date('Y-m-d',(strtotime ( '-7 day' , strtotime($activeDate))));
         self::tally_entry($weekStartDate,$activeDate);
       }
-    }
+    //}
   }
 
   public function tally_entry_month_wise(){
-    $dates = $this->displayDates('2020-01-01', date('Y-m-d'));
-    foreach ($dates as $activeDate) {
+    $activeDate = date('Y-m-d');
+    //$dates = $this->displayDates('2020-01-01', date('Y-m-d'));
+    //foreach ($dates as $activeDate) {
       if(date("Y-m-t", strtotime($activeDate)) == $activeDate){
         $monthStartDate = date("Y-m-1", strtotime($activeDate));
         self::tally_entry($monthStartDate,$activeDate);
       }
-    }
+    //}
   }
 
   public function tally_entry($startDate = null, $endDate = null){
