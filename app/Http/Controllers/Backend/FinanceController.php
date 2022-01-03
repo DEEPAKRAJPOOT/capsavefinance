@@ -66,6 +66,7 @@ class FinanceController extends Controller {
     }
     
     public function exportTransactions(Request $request) {
+        ini_set("memory_limit", "-1");
         $batch_no = $request->get('batch_no') ?? NULL;
         $where = [];
         if (!empty($batch_no)) {
