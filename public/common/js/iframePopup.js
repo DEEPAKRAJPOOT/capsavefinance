@@ -139,6 +139,7 @@ var iframe_ids = [
     'iframeUpdateInvoiceCharge',
     'addLocationTypeFrame',
     'editLocationTypeFrame',
+    'frontViewInterestAccrualFrame',
 ];
 
 iframe_ids.forEach(function (id) {
