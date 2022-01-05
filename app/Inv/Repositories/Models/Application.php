@@ -96,6 +96,11 @@ class Application extends BaseModel
      /**
      * join with app limit table to get limit amount for application
      */
+    public function prgmOffer()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id');
+    }
+
     public function appPrgmOffer()
     {
         return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where('is_active', 1);

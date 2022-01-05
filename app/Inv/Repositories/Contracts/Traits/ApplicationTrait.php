@@ -643,16 +643,12 @@ trait ApplicationTrait
             }
 
             $totalBalanceAmt = $prgm_data->anchor_sub_limit - $totalConsumtionAmt;
-            $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id);
+            $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id,$appData->app_id);
             $appPrgmLimit = $this->application->getProgramLimitData($appId,1);
             $appUserBalLimit = $appPrgmLimit[0]->limit_amt - $appUserConsumtionLimit;
             /** Enhancement*/ 
             if ($appData->app_type == 2) {
-                /** Parent Aplication limit consumed */
-                // if($appData->app_id){
-                //     $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id);
-                //     $totalBalanceAmt += $parentAppConsumAmt;
-                // }
+                
                 /**  Current Offer Consumed Limit */
                 if($offer_id){
                     if($appData->app_id){
@@ -660,8 +656,14 @@ trait ApplicationTrait
                         $totalBalanceAmt += $parentAppConsumAmt;
                     }
 
-                    $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, null, $offer_id);
+                    $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id, $offer_id);
                     $appUserBalLimit += $currOfferConsumAmt;
+                }
+                else{
+                    if(!$appData->prgmOffer()->count()){
+                        $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->parent_app_id, null);
+                        $totalBalanceAmt += $parentAppConsumAmt;
+                    }
                 }
             }
         }
