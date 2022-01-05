@@ -946,6 +946,23 @@ class ApplicationController extends Controller
 						} else {
 							//$whereCondition = ['app_id' => $app_id];
 							//$offerData = $this->appRepo->getOfferData($whereCondition);
+							$appData = $this->appRepo->getAppData($app_id);
+							if ($appData && in_array($appData->app_type, [3]) ) {
+								$curDate = \Carbon\Carbon::now()->format('Y-m-d');
+								$endDate = date('Y-m-d', strtotime('+1 years -1 day'));
+								$parentAppId = $appData->parent_app_id;
+								$actualEndDate = $curDate;
+								$appLimitData = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $parentAppId]);
+								if (in_array($appData->app_type, [3])) {
+									$curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
+									$endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
+								}
+
+								$this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
+								$this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
+								\Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                
+								$this->appRepo->updateAppData($parentAppId, ['is_child_sanctioned' => 2]);
+							}
 							$this->appRepo->updateActiveOfferByAppId($app_id, ['is_approve' => 1]);
 						}
 					}
@@ -993,21 +1010,21 @@ class ApplicationController extends Controller
 			  	$curDate = \Carbon\Carbon::now()->format('Y-m-d');
 			  	$endDate = date('Y-m-d', strtotime('+1 years -1 day'));
 			  	$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($user_id, $app_id);
-                                $appData = $this->appRepo->getAppData($app_id);
-                                if ($appData && in_array($appData->app_type, [1,2,3]) ) {
-                                    $parentAppId = $appData->parent_app_id;
-                                    $actualEndDate = $curDate;
-                                    $appLimitData = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $parentAppId]);
-                                    if (in_array($appData->app_type, [2,3])) {
-                                        $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
-                                        $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
-                                    }
-                                    
-                                    $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
-                                    $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
-                                    \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                
-                                    $this->appRepo->updateAppData($parentAppId, ['is_child_sanctioned' => 2]);
-                                }
+				$appData = $this->appRepo->getAppData($app_id);
+				if ($appData && in_array($appData->app_type, [1,2]) ) {
+					$parentAppId = $appData->parent_app_id;
+					$actualEndDate = $curDate;
+					$appLimitData = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $parentAppId]);
+					if (in_array($appData->app_type, [2])) {
+						$curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
+						$endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
+					}
+
+					$this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
+					$this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
+					\Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                
+					$this->appRepo->updateAppData($parentAppId, ['is_child_sanctioned' => 2]);
+				}
                                 
         		if (!is_null($appLimitId)) {
 				  	$this->appRepo->saveAppLimit([

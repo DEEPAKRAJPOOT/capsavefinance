@@ -1690,7 +1690,9 @@ class CamController extends Controller
                 $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
                 $activity_desc = 'Save Limit in Limit Assessment. AppID '. $appId;
                 $arrActivity['app_id'] = $appId;
-                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['app_limit' => $app_limit, 'app_prgm_limit' => $app_prgm_limit]), $arrActivity);
+                if (isset($app_limit) && $app_limit) {
+                  $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['app_limit' => $app_limit, 'app_prgm_limit' => $app_prgm_limit]), $arrActivity);
+                }
             }                          
 
             if ($app_prgm_limit) {
@@ -1912,6 +1914,7 @@ class CamController extends Controller
           Session::flash('message', trans('backend_messages.under_approval'));
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
+        \DB::beginTransaction();
         //if (empty($prgmOfferId)) {
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
         //}
@@ -1960,6 +1963,7 @@ class CamController extends Controller
         */
         
         if($offerData){ 
+          \DB::commit();
           if($prgmOfferId){
             Session::flash('message',trans('backend_messages.limit_offer_update_success'));
           }else{
@@ -1971,6 +1975,7 @@ class CamController extends Controller
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
         }
       }catch(\Exception $ex){
+        \DB::rollBack();
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
     }

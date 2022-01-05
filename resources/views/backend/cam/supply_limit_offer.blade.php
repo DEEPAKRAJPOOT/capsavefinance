@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 
-  <form method="POST" style="width:100%;" action="{{route('update_limit_offer')}}" target="_top" onsubmit="return checkSupplyValidations()">
+  <form method="POST" style="width:100%;" action="{{route('update_limit_offer')}}" target="_top" onsubmit="return checkSupplyValidations(this)">
     @csrf
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
@@ -919,7 +919,7 @@
 @endsection
 
 @section('jscript')
-<script>
+<script>    
     var bizOwners = {!! json_encode($bizOwners) !!};
     var anchors = {!! json_encode($anchors) !!};
     var appType = {{ config('common.app_type')[$appType] }};
@@ -1068,7 +1068,7 @@
         })
     });
 
-  function checkSupplyValidations(){
+  function checkSupplyValidations(event){
     var limitObj={
         'prgm_min_rate':$('#program_id option:selected').data('min_rate'),
         'prgm_max_rate':$('#program_id option:selected').data('max_rate'),
@@ -1258,8 +1258,10 @@
     }*/
 
     if(flag){
+        $(event).find("button[type='submit']").prop('disabled', true);
         return true;
     }else{
+        $(event).find("button[type='submit']").prop('disabled', false);
         return false;
     }
   }

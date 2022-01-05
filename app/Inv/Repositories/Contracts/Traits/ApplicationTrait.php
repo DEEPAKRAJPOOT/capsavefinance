@@ -626,7 +626,7 @@ trait ApplicationTrait
 
     }    
 
-    public function getAnchorProgramLimit(int $appId, int $program_id, int $offer_id){
+    public function getAnchorProgramLimit(int $appId, int $program_id, int $offer_id = null){
         $utilizedLimit = 0;
 
         $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
