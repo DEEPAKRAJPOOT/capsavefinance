@@ -1134,9 +1134,9 @@
         if((parseInt(prgm_limit_amt.replace(/,/g, '')) < parseInt(limitObj.prgm_min_limit)) ||(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_max_limit))){
             setError('input[name=prgm_limit_amt]', 'Limit amount should be ('+parseInt(limitObj.prgm_min_limit)+'-'+parseInt(limitObj.prgm_max_limit)+') program range');
             flag = false;
-        }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_balance_limit)){
+        }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.limit_balance_amt)){
             //setError('input[name=prgm_limit_amt]', 'Limit amount should be less than ('+limitObj.prgm_balance_limit+') program balance limit');
-            setError('input[name=prgm_limit_amt]', 'Limit amount should be less than program balance limit. (Remaining Program Balance: '+limitObj.prgm_balance_limit+')');
+            setError('input[name=prgm_limit_amt]', 'Limit amount should be less than program balance limit. (Remaining Program Balance: '+limitObj.limit_balance_amt+')');
             flag = false;
         }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limit_balance)){
             setError('input[name=prgm_limit_amt]', 'Limit amount should not greater than balance limit');
