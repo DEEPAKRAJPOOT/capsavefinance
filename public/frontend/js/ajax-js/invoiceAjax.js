@@ -381,9 +381,7 @@ function uploadFile(app_id,id)
 
     $(document).on('click', '.frontViewInterestAccrualFrame', function () {
         var disburse = $(this).attr('data-disburse');
-        console.log(disburse)
         var postData = ({ 'invoice_disbursed_id': disburse, 'from': 'Front', '_token': messages.token });
-        $('.append_in-frame').html('sss');
         jQuery.ajax({
             url: messages.front_interest_accrual,
             method: 'get',
