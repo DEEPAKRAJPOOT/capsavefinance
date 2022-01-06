@@ -668,6 +668,9 @@ class ManualApportionmentHelper{
                 if($balancePrincipal > 0){
                     $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $loopStratDate)->endOfMonth()->format('Y-m-d');
                 }else{
+                    $transrunning = TransactionsRunning::where('user_id',$userId)->where('invoice_disbursed_id',$invDisbId)->get();
+                    $unpostedAmt = $transrunning->where('outstanding','>',0)->sum('outstanding');
+                    if(!$unpostedAmt)
                     break;
                 }
             }
@@ -702,7 +705,7 @@ class ManualApportionmentHelper{
             $payDueDate = $invDisbDetail->payment_due_date;
             $gStartDate = $payDueDate;
             $gEndDate = $this->addDays($payDueDate,$gPeriod);
-            $this->runningToTransPosting($invId, $curdate, $payFreq, $gStartDate, $gEndDate);
+            $this->runningToTransPosting($invId, $curdate, $payFreq, $payDueDate, $gEndDate);
             $this->transactionPostingAdjustment($invId, NULL, NULL, NULL);   
         }*/
         
