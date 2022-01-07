@@ -291,9 +291,15 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
 				 'as' => 'front_soa_list',
 				'uses' => 'Application\SoaController@soaList'
 			]);
+
 			Route::get('consolidated-list', [
 				'as' => 'front_consolidated_list',
 			   'uses' => 'Application\SoaController@soaConsolidatedList'
-		   ]);
+		   	]);
+
+		    Route::get('/excel/download', [
+				'as' => 'front_soa_excel_download',
+				'uses' => 'Application\SoaController@soaExcelDownload',
+			]);
 		});
 });  

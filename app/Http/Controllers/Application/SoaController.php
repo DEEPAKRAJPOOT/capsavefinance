@@ -8,6 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Contracts\ApplicationInterface as AppRepoInterface;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
+use PHPExcel;
+use PHPExcel_IOFactory;
+use PHPExcel_Style_Fill;
+use PHPExcel_Cell_DataType;
+use PHPExcel_Style_Alignment;
 
 class SoaController extends Controller {
 
@@ -30,6 +35,7 @@ class SoaController extends Controller {
         $maxPrincipalDPD = null;
         $maxInterestDPD = null;
         $result = null;
+        $userData = [];
 		if($request->has('user_id') && $request->user_id){
             $result = $this->getUserLimitDetais($request->user_id);
             $user = $this->userRepo->lmsGetCustomer($request->user_id);
@@ -130,5 +136,191 @@ class SoaController extends Controller {
         } catch (Exception $ex) {
             dd($ex);
         }
+    }
+
+    public function prepareDataForRendering($expecteddata)
+    {
+        $preparedData = [];
+        $balance = 0;
+        foreach($expecteddata as $key => $expData){
+            foreach ($expData as $k => $data) {
+                $cr = round($data->credit_amount,2);
+                $dr = round($data->debit_amount,2);
+                $balance = round(($balance + $dr - $cr),2);
+                $preparedData[$key][$k]['payment_id'] = $data->transaction->payment_id;
+                $preparedData[$key][$k]['parent_trans_id'] = $data->transaction->parent_trans_id;
+                $preparedData[$key][$k]['customer_id'] = $data->lmsUser->customer_id;
+                $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->trans_date));
+                $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->value_date));
+                $preparedData[$key][$k]['trans_type'] = trim($data->transaction->transname);
+                $preparedData[$key][$k]['batch_no'] = $data->batch_no;
+                $preparedData[$key][$k]['invoice_no'] = $data->invoice_no;
+                $preparedData[$key][$k]['capsave_invoice_no'] = $data->transaction->capsaveinvoiceno;
+                $preparedData[$key][$k]['narration'] = $data->narration;
+                $preparedData[$key][$k]['currency'] = trim($data->transaction->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')]) ? '' : 'INR');
+                $preparedData[$key][$k]['debit'] = $dr;
+                $preparedData[$key][$k]['credit'] = '('.$cr.')';
+                $preparedData[$key][$k]['balance'] = ($balance>0)?$balance:'('.abs($balance).')';
+                $preparedData[$key][$k]['soabackgroundcolor'] = $data->soabackgroundcolor;
+            }
+        }
+        return $preparedData;
+    }
+
+    public function soaExcelDownload(Request $request)
+    {
+        ini_set("memory_limit", "-1");
+        if($request->has('user_id')){
+            if($request->user_id){
+                $data = $this->getUserLimitDetais($request->user_id);
+            }
+            if($request->has('soaType')){
+                if($request->soaType == 'consolidatedSoa'){
+                    $transactionList = $this->lmsRepo->getConsolidatedSoaList();
+                }
+                elseif($request->soaType == 'customerSoa'){
+                    $transactionList = $this->lmsRepo->getSoaList();
+                }
+            }
+            if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+                $transactionList->where(function ($query) use ($request) {
+                    $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d');
+                    $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d');
+                    $query->WhereBetween('value_date', [$from_date, $to_date]);
+                });
+            }
+            if($request->has('trans_entry_type')){
+                $trans_entry_type = explode('_',$request->trans_entry_type);
+                $trans_type = $trans_entry_type[0];
+                $entry_type = $trans_entry_type[1];
+
+                if($trans_type){
+                    $transactionList->where('trans_type', $trans_type);
+                }
+                if($entry_type){
+                    $transactionList->whereHas('transaction', function($query) use($entry_type) {
+                        $query->where('entry_type', $entry_type);
+                    });
+                }
+            }
+
+            $transactionList->whereHas('lmsUser',function ($query) use ($request) {
+                $customer_id = trim($request->get('customer_id'));
+                $query->where('customer_id', '=', "$customer_id");
+            });        
+        }
+        $exceldata = $this->prepareDataForRendering($transactionList->get()->chunk(1));
+        $sheet =  new PHPExcel();
+        $sheet->getActiveSheet()->mergeCells('A2:K2');
+        $sheet->getActiveSheet()->mergeCells('A3:K3');
+        $sheet->getActiveSheet()
+        ->getStyle('A2:K3')
+        ->getAlignment()
+        ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A2', 'CAPSAVE FINANCE PRIVATE LIMITED')
+            ->setCellValue('A3', 'Statement Of Account');
+
+        if(!empty($data)){
+            $sheet->setActiveSheetIndex(0)
+            ->setCellValue('A5', 'Business Name')
+            ->setCellValue('A6', 'Email')
+            ->setCellValue('C5', $data['userInfo']->biz->biz_entity_name)
+            ->setCellValue('C6', $data['userInfo']->email)
+            ->setCellValue('H5', 'Full Name')
+            ->setCellValue('H6', 'Mobile')
+            ->setCellValue('J5', $data['userInfo']->f_name." ".$data['userInfo']->m_name." ".$data['userInfo']->l_name)
+            ->setCellValueExplicit('J6', $data['userInfo']->mobile_no, PHPExcel_Cell_DataType::TYPE_STRING);
+        }
+        
+        $sheet->getActiveSheet()->getStyle('A1:I7')->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->getActiveSheet()->getStyle("D2")
+            ->applyFromArray(['font' => ['bold'  => true, 'size' => 15]]);
+
+        $rows = 8;
+        if($request->get('from_date')!= '' && $request->get('to_date')!=''){
+            $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A7', 'From Date')
+                ->setCellValue('C7', $request->get('from_date'))
+                ->setCellValue('H7', 'To Date')
+                ->setCellValue('J7', $request->get('to_date'));
+            $rows++;
+        }
+
+        $sheet->setActiveSheetIndex(0)
+                ->setCellValue('A'.$rows, 'Customer ID')
+                ->setCellValue('B'.$rows, 'Tran Date')
+                ->setCellValue('C'.$rows, 'Value Date')
+                ->setCellValue('D'.$rows, 'Tran Type')
+                ->setCellValue('E'.$rows, 'Batch No')
+                ->setCellValue('F'.$rows, 'Invoice No')
+                ->setCellValue('G'.$rows, 'Capsave Invoice No')
+                ->setCellValue('H'.$rows, 'Narration')
+                ->setCellValue('I'.$rows, 'Currency')
+                ->setCellValue('J'.$rows, 'Debit')
+                ->setCellValue('K'.$rows, 'Credit')
+                ->setCellValue('L'.$rows, 'Balance');
+        
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':L'.$rows)->getFill()->applyFromArray(array(
+            'type' => PHPExcel_Style_Fill::FILL_SOLID,
+            'startcolor' => [ 'rgb' => "CAD7D3" ],
+            'font' => [ 'bold'  => true ]
+        ));
+              
+        $sheet->getActiveSheet()
+        ->getStyle('J:L')
+        ->getAlignment()
+        ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getActiveSheet()
+        ->getStyle('B:C')
+        ->getAlignment()
+        ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+
+        $rows++;
+
+        foreach($exceldata as $data){
+            foreach ($data as $rowData){
+                $sheet->setActiveSheetIndex(0)
+                    ->setCellValue('A' . $rows, $rowData['customer_id'] ?: '')
+                    ->setCellValue('B' . $rows, $rowData['trans_date'] ?: '')
+                    ->setCellValue('C' . $rows, $rowData['value_date'] ?: '')
+                    ->setCellValue('D' . $rows, $rowData['trans_type'] ?: '')
+                    ->setCellValue('E' . $rows, $rowData['batch_no'] ?: '')
+                    ->setCellValue('F' . $rows, $rowData['invoice_no'] ?: '')
+                    ->setCellValue('G' . $rows, $rowData['capsave_invoice_no'] ?: '')
+                    ->setCellValue('H' . $rows, $rowData['narration'] ?: '')
+                    ->setCellValue('I' . $rows, $rowData['currency'] ?: '')
+                    ->setCellValue('J' . $rows, $rowData['debit'] ?: '')
+                    ->setCellValue('K' . $rows, $rowData['credit'] ?: '')
+                    ->setCellValue('L' . $rows, $rowData['balance'] ?: '');
+                
+                $color = 'FFFFFF';
+                if($rowData['soabackgroundcolor']){
+                    $color = trim($rowData['soabackgroundcolor'],'#');
+                }
+                
+                $sheet->getActiveSheet()->getStyle('A'.$rows.':L'.$rows)->getFill()->applyFromArray(array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'startcolor' => array( 'rgb' => $color)
+                ));
+                $rows++;
+            }
+        }
+        foreach(range('A','L') as $columnID) {
+            $sheet->getActiveSheet()->getColumnDimension($columnID)
+                ->setAutoSize(true);
+        }
+        
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Soa_Excel.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        ob_end_clean();
+        $objWriter->save('php://output');
+        exit;
     }
 }

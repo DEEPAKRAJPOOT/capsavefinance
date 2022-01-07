@@ -138,6 +138,7 @@
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         datataledraw: "{{ $datataledraw }}",
         token: "{{ csrf_token() }}",
+        excel_soa_url: "{{ URL::route('front_soa_excel_download',['user_id' => $user['user_id'],'customer_id' => $user['customer_id'], 'soaType' => 'consolidatedSoa']) }}",
     };
     $('#from_date').datetimepicker({
         format: 'dd/mm/yyyy',

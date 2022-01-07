@@ -119,7 +119,8 @@
     var messages = {
         lms_get_soa_list: "{{ URL::route('front_ajax_user_soa_consolidated_list') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
-        token: "{{ csrf_token() }}"
+        token: "{{ csrf_token() }}",
+        excel_soa_url: "{{ URL::route('front_soa_excel_download',['user_id' => $user['user_id'],'customer_id' => $user['customer_id'], 'soaType' => 'customerSoa']) }}",
     };
     $('#from_date').datetimepicker({
         format: 'dd/mm/yyyy',
