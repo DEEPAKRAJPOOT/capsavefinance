@@ -18,6 +18,7 @@ use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Master\BaseRate;
+use Illuminate\Support\Facades\View;
 
 use App\Helpers\ManualApportionmentHelper;
 
@@ -363,18 +364,29 @@ class DisbursalController extends Controller
          */
         public function viewInterestAccrual(Request $request)
         {
-            $disbursalId = $request->get('invoice_disbursed_id');            
+            $disbursalId = $request->get('invoice_disbursed_id'); 
+			$from = $request->has('from') ? $request->get('from') : null;
+			
             $whereCond = [];
             $whereCond['invoice_disbursed_id'] = $disbursalId;
 			//$whereCond['interest_date_eq'] = $intAccrualDt;      
 			$disbursalData = $this->lmsRepo->getInvoiceDisbursalRequests($whereCond)->first();
-
 			$curr_int_rate = $this->getCurrentInterestRate($disbursalData->interest_rate, $disbursalData->invoice->prgm_offer_id);
 			// dd($disbursalData);
 			$intAccrualData = $this->lmsRepo->getAccruedInterestData($whereCond);    
             //dd('rrrrrr', $intAccrualData);
                         $prgm_data = AppProgramOffer::find($disbursalData->invoice->prgm_offer_id);
                         $paymentFrequency = $prgm_data ? $prgm_data->payment_frequency : '';
+			
+			if(isset($from)) {
+                return response()->json([
+                    'status' => true,
+                    'view' => (String)View::make('lms.disbursal.view_interest_accrual',[
+                        'data'=> $intAccrualData,'disbursal'=>$disbursalData, 'currentIntRate'=> $curr_int_rate, 'paymentFrequency' => $paymentFrequency
+                    ])
+                ]); 				
+			}
+						
             return view('lms.disbursal.view_interest_accrual')->with(['data'=> $intAccrualData,'disbursal'=>$disbursalData, 'currentIntRate'=> $curr_int_rate, 'paymentFrequency' => $paymentFrequency]);
         }
 

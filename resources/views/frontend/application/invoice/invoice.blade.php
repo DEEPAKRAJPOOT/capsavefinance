@@ -177,11 +177,13 @@
         update_invoice_approve: "{{ URL::route('update_invoice_approve') }}",
         invoice_document_save: "{{ URL::route('invoice_document_save') }}",
         update_bulk_invoice: "{{ URL::route('update_bulk_invoice') }}",
+        front_interest_accrual: "{{ URL::route('front_view_interest_accrual') }}",
         token: "{{ csrf_token() }}",
     };      
 </script>
 <script src="{{ asset('frontend/js/ajax-js/invoiceAjax.js') }}"></script>
 <script src="{{ asset('frontend/js/ajax-js/invoice_list.js') }}"></script>
 
+{!!Helpers::makeIframePopup('frontViewInterestAccrualFrame','Interest Accrual', 'modal-lg')!!}
 @endsection
  

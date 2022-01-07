@@ -378,3 +378,24 @@ function uploadFile(app_id,id)
             return true;
         }
     });
+
+    $(document).on('click', '.frontViewInterestAccrualFrame', function () {
+        var disburse = $(this).attr('data-disburse');
+        var postData = ({ 'invoice_disbursed_id': disburse, 'from': 'Front', '_token': messages.token });
+        jQuery.ajax({
+            url: messages.front_interest_accrual,
+            method: 'get',
+            dataType: 'json',
+            data: postData,
+            error: function (xhr, status, errorThrown) {
+                // alert(errorThrown);
+            },
+            success: function (data) {
+                if (data.status) {
+                    $('.append_in-frame').html(data.view);
+                } else {
+                    alert('page not load! Refresh again');
+                }
+            }
+        });    
+    });    

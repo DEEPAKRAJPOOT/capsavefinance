@@ -234,7 +234,10 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
 				'uses' => 'Application\InvoiceController@saveFrontInvoiceAmount'
 			]); 
 			   
-			   
+			Route::get('front_view_interest_accrual', [
+				'as' => 'front_view_interest_accrual',
+				'uses' => 'Lms\DisbursalController@viewInterestAccrual',
+			]);			   
 		  });
 
 		// Route::group(['prefix' => 'nach'], function () {
