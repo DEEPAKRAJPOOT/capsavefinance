@@ -171,9 +171,8 @@ class AppProgramOffer extends BaseModel {
     {
        $getAppUser  =    Application::where(['user_id' => $res['user_id'],'status' =>2])->pluck('user_id');  
        $lms_user_id =    LmsUser::whereIn('user_id',$getAppUser)->pluck('user_id');
-       $app_id =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->first();
-       return self::whereHas('productHas')->where(['app_id' => $app_id['app_id'],'anchor_id' => $res['anchor_id'],'prgm_id'=> $res['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->first();
-            
+       $app_ids =    AppLimit::whereIn('user_id',$lms_user_id)->where('status',1)->pluck('app_id');
+       return self::whereHas('productHas')->whereIn('app_id',$app_ids)->where(['anchor_id' => $res['anchor_id'],'prgm_id'=> $res['prgm_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->first();     
     }
        public static function getAmountOfferLimit($res)
     {
