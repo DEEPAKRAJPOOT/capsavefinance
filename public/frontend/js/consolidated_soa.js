@@ -49,12 +49,15 @@ try {
             ],    
             buttons: [
                 {
-                    text: 'Excel',
+                    text:      '<i style="font-size: 16px;color: green;font-weight: normal;" class="fa fa-file-excel-o pr-sm-1"></i><span style="font-size: 14px;color: #3c8964;font-weight: bold;">Download SOA</span>',
                     className: "excel_button",
+                    init: function(api, node, config) {
+                        $(node).removeClass('dt-button')
+                    },
                     action: function ( e, dt, node, config ) {
                         download('excel');
                     }
-                }
+                },
             ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
         });
