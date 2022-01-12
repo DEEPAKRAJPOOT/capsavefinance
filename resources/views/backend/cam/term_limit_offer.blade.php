@@ -254,7 +254,7 @@
           </div>
         </div>
 
-        <div class="col-md-12 mb-3" style="float: right;">
+        <div class="col-md-12" style="float: right;">
             <div class="form-group row">
                 <label for="txtPassword" class="col-md-12"><b>Comment</b></label>
                 <div class="col-md-12">
