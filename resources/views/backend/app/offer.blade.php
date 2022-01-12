@@ -292,7 +292,7 @@ tr.border_bottom td {
                                                 <tr>
                                                     <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
                                                     <td><b>Facility Type: </b></td>
-                                                    <td>Lease Loan</td>
+                                                    <td>{{ config('common.facility_type')[$termOffer->facility_type_id] }}</td>
                                                     <td><b>Apply Loan Amount: </b> </td>
                                                     <td>{{$termOffer->prgm_limit_amt}}</td>
                                                     <td><b>Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <label class="badge {{($termOffer->status == 1)? 'badge-success': 'badge-danger'}} current-status">{{($termOffer->status == 1)? 'Accepted': (($termOffer->status == 2)? 'Rejected': 'Pending')}}</label></td>
@@ -302,35 +302,70 @@ tr.border_bottom td {
                                                     <td></td>
                                                     <td><b>Tenor (Months): </b></td>
                                                     <td>{{$termOffer->tenor}}</td>
-                                                    <td><b>Equipment Type: </b></td>
-                                                    <td>{{\Helpers::getEquipmentTypeById($termOffer->equipment_type_id)->equipment_name}}</td>
+                                                    <td><b>Asset Type: </b></td>
+                                                    <td>{{ $termOffer->asset->asset_type }}</td>
                                                     <td><b>Created By: &nbsp;&nbsp;&nbsp;</b>{{\Helpers::getUserName($termOffer->created_by)}}</td>
                                                 </tr>
                                                 <tr>
                                                     <td></td>
-                                                    <td><b>Security Deposit: </b></td>
-                                                    <td>{{$termOffer->security_deposit}}</td>
-                                                    <td><b>Rental Frequency: </b></td>
+                                                    <td><b>Payment Frequency: </b></td>
                                                     <td>{{(($termOffer->rental_frequency == 1)?'Yearly':(($termOffer->rental_frequency == 2)? 'Bi-Yearly':(($termOffer->rental_frequency == 3)? 'Quaterly': 'Monthly')))}}</td>
+                                                    <td><b>Frequency Type: </b></td>
+                                                    <td>{{ $termOffer->rental_frequency_type == 1 ? 'Advance' : (($termOffer->rental_frequency_type == 2) ? 'Arrears' : '')  }}</td>
                                                     <td><b>Created At: &nbsp;&nbsp;&nbsp;</b>{{\Carbon\Carbon::parse($termOffer->created_at)->format('d-m-Y')}}</td>
                                                 </tr>
                                                 <tr>
                                                 <td></td>
-                                                    <td><b>PTP Frequency: </b></td>
+                                                    <td><b>Intereset Rate (%): </b></td>
                                                     <td>
-                                                        @if(isset($termOffer->offerPTPQ))   
-                                                            @foreach ($termOffer->offerPTPQ as $ok => $ov)
-                                                               {!!isset($ov->ptpq_from) ? '<b>From Period:</b> '.$ov->ptpq_from : ''!!}
-                                                               {!!isset($ov->ptpq_to) ? '<b>&nbsp;&nbsp;&nbsp;To Period:</b> '.$ov->ptpq_to : ''!!}
-                                                               {!!isset($ov->ptpq_rate) ? '<b>&nbsp;&nbsp;&nbsp;Rate:</b> '.$ov->ptpq_rate : ''!!}
-                                                               <br/>
-                                                            @endforeach 
-                                                         @endif
+                                                        {{ $termOffer->interest_rate }}%
                                                     </td>
-                                                    <td><b>XIRR (%): </b></td>
-                                                    <td>Ruby Sheet : {{$termOffer->ruby_sheet_xirr}}<br/>Cash Flow :{{$termOffer->cash_flow_xirr}}</td>
+                                                    <td><b>Processing Fee (%): </b></td>
+                                                    <td>{{ $termOffer->processing_fee }}%</td>
                                                     <td></td>
                                                 </tr>
+                                                <td></td>
+                                                    <td><b>Asset Insurance: </b></td>
+                                                    <td>
+                                                        @if(isset($termOffer->asset_insurance) && $termOffer->asset_insurance == 1)
+                                                            {!!isset($termOffer->asset_name) ? '<b>Asset Name:</b> '.$termOffer->asset_name : '' !!}
+                                                            {!!isset($termOffer->timelines_for_insurance) ? '<b>&nbsp;&nbsp;&nbsp;Timelines For Insurance:</b> '.$termOffer->timelines_for_insurance : ''!!}
+                                                            {!!isset($termOffer->asset_comment) ? '<b>&nbsp;&nbsp;&nbsp;Asset Comment:</b> '.$termOffer->asset_comment : ''!!}
+                                                            <br/>
+                                                         @endif
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+
+                                                @if($termOffer->offerPg->count() > 0)
+                                                <tr>
+                                                    <td></td>
+                                                    <td colspan="4">
+                                                        <table width="100%">
+                                                            <tr>
+                                                                <td rowspan="3"><b>Personal Guarantee</b></td>
+                                                                <td><b>Guarantor</b></td>
+                                                                <td><b>Time for security</b></td>
+                                                                <td><b>Residential Address</b></td>
+                                                                <td><b>Net worth as per ITR/CA Cert</b></td>
+                                                                <td><b>Comments if any</b></td>
+                                                            </tr>
+                                                            @foreach($termOffer->offerPg as $key=>$opg)
+                                                            <tr>
+                                                                <td>{{($opg->owner)? $opg->owner->first_name: 'NA'}}</td>
+                                                                <td>{{($opg->pg_time_for_perfecting_security_id != null)? config('common.pg_time_for_perfecting_security_id')[$opg->pg_time_for_perfecting_security_id]: 'NA'}}</td>
+                                                                <td>{{$opg->pg_residential_address}}</td>
+                                                                <td>{{$opg->pg_net_worth}}</td>
+                                                                <td>{{$opg->pg_comments}}</td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </table>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                @endif
                                                 <tr>
                                                 <td></td>
                                                     <td><b>Additional Security: </b></td>

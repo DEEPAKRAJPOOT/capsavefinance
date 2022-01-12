@@ -115,7 +115,8 @@ return [
     'facility_type' => [
         '1' => 'Rental Facility',
         '2' => 'Sale and Lease Back',
-        '3' => 'Rental Discounting'
+        '3' => 'Rental Discounting',
+        '4' => 'Term Loan'
     ],
     'deposit_type' => [
         '1' => 'Loan Amount',
