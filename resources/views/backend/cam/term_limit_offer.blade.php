@@ -242,19 +242,25 @@
         
         <div class="col-md-12">
           <div class="form-group row">
-            <label for="txtPassword" class="col-md-12"><b>Additional Security</b></label> 
+            <label for="txtPassword" class="col-md-12"><b>Additional Security</b></label>
             <div id="check_block" style="width: 100%;">
-                <div class="col-md-6" style="display: inline;">
+                <div class="col-md-12" style="display: inline;">
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="1" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '1') !== false)? 'checked': ''): '')}}> BG</label>
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="2" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '2') !== false)? 'checked': ''): '')}}> FD</label>
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="3" name="addl_security[]" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '3') !== false)? 'checked': ''): '')}}> MF</label>
                     <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;"><input type="checkbox" value="4" name="addl_security[]" id="other_sec" {{(isset($offerData->addl_security)? ((strpos((string)$offerData->addl_security, '4') !== false)? 'checked': ''): '')}}> Others</label>
-                </div>
-                <div class="col-md-6" style="float: right;">
-                <textarea name="comment" class="form-control" maxlength="200" placeholder="Security comment">{{isset($offerData->comment)? $offerData->comment: ''}}</textarea>
-                </div>
+                </div>                
             </div>
           </div>
+        </div>
+
+        <div class="col-md-12 mb-3" style="float: right;">
+            <div class="form-group row">
+                <label for="txtPassword" class="col-md-12"><b>Comment</b></label>
+                <div class="col-md-12">
+                    <textarea name="comment" class="form-control" maxlength="200" placeholder="Comment">{{isset($offerData->comment)? $offerData->comment: ''}}</textarea>
+                </div>    
+            </div>    
         </div>
     </div>
     <div class="row">
