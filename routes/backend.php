@@ -71,6 +71,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'report_duereport',
                 'uses' => 'Backend\ReportController@duereport'
             ]);
+
+            Route::get('/outstandingreport', [
+                'as' => 'report_outstandingreport',
+                'uses' => 'Backend\ReportController@outstandingreport'
+            ]);
+
             Route::get('/overduereport', [
                 'as' => 'report_overduereport',
                 'uses' => 'Backend\ReportController@overduereport'

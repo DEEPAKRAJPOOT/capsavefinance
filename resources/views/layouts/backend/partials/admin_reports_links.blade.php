@@ -14,6 +14,11 @@
         <a class=" {{( $active=='overduereport') ? 'active': null }} " href="{{route('report_overduereport')}}">Invoice Over Due Report  </a>
     </li>
     @endcan
+    @can('report_outstandingreport')
+    <li>
+        <a class=" {{( $active=='outstandingreport') ? 'active': null }} " href="{{route('report_outstandingreport')}}">Outstanding Report  </a>
+    </li>
+    @endcan
     @can('report_realisationreport')
      <li>
         <a class=" {{( $active=='realisationreport') ? 'active': null }} " href="{{route('report_realisationreport')}}"> Realisation Report </a>

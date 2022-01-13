@@ -53,20 +53,9 @@ class OverdueReportManual implements ShouldQueue
 
         $this->reportsRepo = $reportsRepo;
         $data = $this->reportsRepo->getOverdueReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
-
-        if ($this->sendMail) {
-            $emailTemplate  = EmailTemplate::getEmailTemplate("REPORT_OVERDUE_MANUAL");
-            if ($emailTemplate) {
-                $emailData               = Helpers::getDailyReportsEmailData($emailTemplate);
-                $filePath                = $this->downloadOverdueReport($data);
-                $emailData['to']         = $this->emailTo;
-                $emailData['attachment'] = $filePath;
-                // to create log for overdue report
-                if($this->toDate){
-                    $this->createOverdueReportLog($this->toDate, $this->userId, $filePath);
-                }
-                \Event::dispatch("NOTIFY_OVERDUE_REPORT", serialize($emailData));
-            }
+        $filePath = $this->downloadOverdueReport($data);
+        if($this->toDate){
+            $this->createOverdueReportLog($this->toDate, $this->userId, $filePath);
         }
     }
 
@@ -84,36 +73,53 @@ class OverdueReportManual implements ShouldQueue
         $rows = 5;
         $sheet =  new PHPExcel();
         $sheet->setActiveSheetIndex(0)
-            ->setCellValue('A'.$rows, 'Customer Name')
-            ->setCellValue('B'.$rows, 'Customer ID')
-            ->setCellValue('C'.$rows, 'Invoice No')
-            ->setCellValue('D'.$rows, 'Invoice Due Date')
-            ->setCellValue('E'.$rows, 'Virtual Account #')
-            ->setCellValue('F'.$rows, 'Sanction Limit')
-            ->setCellValue('G'.$rows, 'Limit Available')
-            ->setCellValue('H'.$rows, 'O/s Amount')
-            ->setCellValue('I'.$rows, 'Over Due Days')
-            ->setCellValue('J'.$rows, 'Overdue Amount')
-            ->setCellValue('K'.$rows, 'Sales Person Name');
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':K'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        ->setCellValue('A'.$rows, 'Customer Name')
+        ->setCellValue('B'.$rows, 'Customer ID')
+        ->setCellValue('C'.$rows, 'Invoice No')
+        ->setCellValue('D'.$rows, 'Invoice Due Date')
+        ->setCellValue('E'.$rows, 'Virtual Account #')
+        ->setCellValue('F'.$rows, 'Sanction Limit')
+        ->setCellValue('G'.$rows, 'Limit Available')
+        ->setCellValue('H'.$rows, 'O/s Amount')
+        ->setCellValue('I'.$rows, 'Interest')
+        ->setCellValue('J'.$rows, 'Over Due Days')
+        ->setCellValue('K'.$rows, 'Overdue Amount')
+        ->setCellValue('L'.$rows, 'SoA Balance')
+        ->setCellValue('M'.$rows, 'Grace')
+        ->setCellValue('N'.$rows, 'OverDue After Grace Days')
+        ->setCellValue('O'.$rows, 'Max Bucket OverDue After Grace Days')
+        ->setCellValue('P'.$rows, 'Outstanding Max Bucket')
+        ->setCellValue('Q'.$rows, 'Maturity Days')
+        ->setCellValue('R'.$rows, 'Maturity Bucket')
+        ->setCellValue('S'.$rows, 'Sales Person Name');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':S'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
-            ->setCellValueExplicit('A'.$rows, $rowData['cust_name'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('B'.$rows, $rowData['customer_id'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('C'.$rows, $rowData['invoice_no'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('D'.$rows, $rowData['payment_due_date'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('E'.$rows, $rowData['virtual_ac'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('F'.$rows, number_format($rowData['client_sanction_limit'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('G'.$rows, number_format($rowData['limit_available'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('H'.$rows, number_format($rowData['out_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('I'.$rows, $rowData['od_days'], \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('J'.$rows, number_format($rowData['od_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('K'.$rows, $rowData['sales_person_name'], \PHPExcel_Cell_DataType::TYPE_STRING);
+            ->setCellValue('A'.$rows, $rowData['cust_name'])
+            ->setCellValue('B'.$rows, $rowData['customer_id'])
+            ->setCellValue('C'.$rows, $rowData['invoice_no'])
+            ->setCellValue('D'.$rows, $rowData['payment_due_date'])
+            ->setCellValue('E'.$rows, $rowData['virtual_ac'])
+            ->setCellValue('F'.$rows, number_format($rowData['client_sanction_limit'],2))
+            ->setCellValue('G'.$rows, number_format($rowData['limit_available'],2))
+            ->setCellValue('H'.$rows, $rowData['principalOut'])
+            ->setCellValue('I'.$rows, $rowData['interestOut'])
+            ->setCellValue('J'.$rows, $rowData['overdueDays'])
+            ->setCellValue('K'.$rows, $rowData['overdueOut'])
+            ->setCellValue('L'.$rows, $rowData['soa_balance'])
+            ->setCellValue('M'.$rows, $rowData['grace_period'])
+            ->setCellValue('N'.$rows, $rowData['odDaysWithoutGrace'])
+            ->setCellValue('O'.$rows, $rowData['maxBucOdDaysWithoutGrace'])
+            ->setCellValue('P'.$rows, '=IF(AND(H'.$rows.'>100,O'.$rows.'>0),IF(O'.$rows.'<7,"01 - 07 Days",IF(O'.$rows.'<15,"08 - 15 Days",IF(O'.$rows.'<30,"16 - 30 Days",IF(O'.$rows.'<60,"31-60 Days",IF(O'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")')
+            ->setCellValue('Q'.$rows, $rowData['maturityDays'])
+            ->setCellValue('R'.$rows, '=IF(AND(H'.$rows.'>100,Q'.$rows.'>0),IF(Q'.$rows.'<7,"01 - 07 Days",IF(Q'.$rows.'<15,"08 - 15 Days",IF(Q'.$rows.'<30,"16 - 30 Days",IF(Q'.$rows.'<60,"31-60 Days",IF(Q'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")')
+            ->setCellValue('S'.$rows, $rowData['sales_person_name'], \PHPExcel_Cell_DataType::TYPE_STRING);
             $rows++;
         }
 
         $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        $objWriter->setPreCalculateFormulas(true);
 
         $dirPath = 'public/report/temp/overdueReport/manual/console';
         if(!App::runningInConsole()){

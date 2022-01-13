@@ -377,26 +377,53 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		return $result;
 	}
 
+	private function getOutstandingData($date){
+        $result = [];
+		$invDisbData = DB::select("SELECT dr.invoice_disbursed_id, IFNULL(SUM(IF(dr.trans_type = 16, dr.amount,0)),0) + IFNULL(SUM(IF(dr.trans_type = 16, cdr.amount,0)),0)  AS priDr, SUM(IF(dr.trans_type = 16, cr.amount,0)) AS priCr, IFNULL(SUM(IF(dr.trans_type = 9, dr.amount,0)),0) + IFNULL(SUM(IF(dr.trans_type = 9, cdr.amount,0)),0) AS intDr, SUM(IF(dr.trans_type = 9, cr.amount,0)) AS intCr, IFNULL(SUM(IF(dr.trans_type = 33, dr.amount,0)),0) + IFNULL(SUM(IF(dr.trans_type = 33, cdr.amount,0)),0) AS odiDr, SUM(IF(dr.trans_type = 33, cr.amount,0)) AS odiCr, (SELECT COUNT(`interest_accrual_id`) FROM rta_interest_accrual WHERE overdue_interest_rate IS NOT NULL AND `invoice_disbursed_id` = dr.invoice_disbursed_id AND DATE(interest_date) <= '".$date."') AS odDays FROM ( SELECT `invoice_disbursed_id`,`trans_type`, SUM(`amount`) AS amount FROM rta_transactions WHERE `trans_type` IN (9,16 ,33) AND entry_type = '0' AND DATE(`trans_date`) <= '".$date."' GROUP BY `invoice_disbursed_id`, `trans_type` ) AS dr LEFT JOIN ( SELECT a.`invoice_disbursed_id`, a.`trans_type`, SUM(b.`amount`)AS amount FROM rta_transactions AS a LEFT JOIN rta_transactions AS b ON a.`trans_id` = b.`parent_trans_id` WHERE a.`trans_type` IN (9,16,33) AND b.`entry_type` = '1' AND DATE(a.`trans_date`) <= '".$date."' AND DATE(b.`trans_date`) <= '".$date."' GROUP BY a.`invoice_disbursed_id`,a.`trans_type` ) AS cr ON dr.invoice_disbursed_id = cr.invoice_disbursed_id AND dr.trans_type = cr.trans_type LEFT JOIN ( SELECT a.`invoice_disbursed_id`, a.`trans_type`, SUM(b.`amount`)AS amount FROM rta_transactions AS a LEFT JOIN rta_transactions AS b ON a.`trans_id` = b.`parent_trans_id` WHERE a.`trans_type` IN (9,16,33) AND b.`entry_type` = '0' AND DATE(a.`trans_date`) <= '".$date."' AND DATE(b.`trans_date`) <= '".$date."' GROUP BY a.`invoice_disbursed_id`,a.`trans_type` ) AS cdr ON cdr.invoice_disbursed_id = cr.invoice_disbursed_id AND cdr.trans_type = cr.trans_type GROUP BY dr.invoice_disbursed_id");
+
+        foreach($invDisbData as $invDisb){
+            $result[$invDisb->invoice_disbursed_id] = [
+                'priDr' =>  ($invDisb->priDr > 0)?$invDisb->priDr:0,
+                'priCr' =>  ($invDisb->priCr > 0)?$invDisb->priCr:0,
+                'intDr' =>  ($invDisb->intDr > 0)?$invDisb->intDr:0,
+                'intCr' =>  ($invDisb->intCr > 0)?$invDisb->intCr:0,
+                'odiDr' =>  ($invDisb->odiDr > 0)?$invDisb->odiDr:0,
+                'odiCr' =>  ($invDisb->odiCr > 0)?$invDisb->odiCr:0,
+                'odDays' => ($invDisb->odDays > 0)?$invDisb->odDays:0,
+            ];
+        }
+
+        unset($invDisbData);
+        return $result;
+    }
+    
 	public function getOverdueReportManual($whereCondition=[], &$sendMail){
 		$curdate = Helper::getSysStartDate();
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
 		$curdate = $whereCondition['to_date']??$curdate;
-		$invDisbList = InvoiceDisbursed::with(['transactions' => function($query2){
-			$query2->whereNull('payment_id')
-			->whereNull('link_trans_id')
-			->whereNull('parent_trans_id')
-			->where('trans_type',config('lms.TRANS_TYPE.PAYMENT_DISBURSED'))
-			->where('entry_type','0');
-		},
-		'invoice'=>function($query2) use($whereCondition){
-			if(isset($whereCondition['anchor_id'])){
-				$query2->where('anchor_id',$whereCondition['anchor_id']);
-			}
-			if(isset($whereCondition['user_id'])){
-				$query2->where('supplier_id',$whereCondition['user_id']);
-			}
-		},
-		'invoice.lms_user', 'invoice.business', 'disbursal','invoice.app.appLimit'])
+		$invDisbList = InvoiceDisbursed::
+		with([
+			'transactions' => 
+				function($query2) use($curdate){
+					$query2->whereDate('trans_date','<=',$curdate);
+				},
+			'invoice'=>function($query2) use($whereCondition){
+					if(isset($whereCondition['anchor_id'])){
+						$query2->where('anchor_id',$whereCondition['anchor_id']);
+					}
+					if(isset($whereCondition['user_id'])){
+						$query2->where('supplier_id',$whereCondition['user_id']);
+					}
+				},
+			/*'interests' => 
+				function($query2) use($curdate){
+					$query2->whereDate('interest_date','<=',$curdate);
+				},*/
+			'invoice.lms_user', 
+			'invoice.business', 
+			'disbursal',
+			'invoice.app.appLimit'
+		])
 		->whereIn('status_id', [12,13,15,47])
 		->whereHas('invoice', function($query3) use($whereCondition){
 			if(isset($whereCondition['anchor_id'])){
@@ -412,46 +439,58 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		})
 		->where('payment_due_date','<=',$curdate)
 		->get();
-		$overdueData = self::getOverdueData($curdate);
-		$interestData = self::getInterestData($curdate);
+
+		$outstandingData = self::getOutstandingData($curdate);
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
 		foreach($invDisbList as $invDisb){
-			$transDetail = $invDisb->transactions();
-			$transDetailDr = $transDetail->where('trans_type','16')->whereDate('trans_date','<=',$curdate);
-			$transDetailCr = clone $transDetailDr; 
-			$principalAmt = $transDetailDr->where('entry_type','0')->sum('amount');
-			$prinSettleAmt = $transDetailCr->where('entry_type','1')->sum('amount');
-
-			$overdueDays = $overdueData[$invDisb->invoice_disbursed_id]['days'] ?? 0;
-			$overdueAmt = $overdueData[$invDisb->invoice_disbursed_id]['overdue'] ?? 0;
-			$interestAmt = $interestData[$invDisb->invoice_disbursed_id]['interest'] ?? 0;
-			$outstandingAmt = $principalAmt+$interestAmt-$prinSettleAmt;
-
-			$invDetails = $invDisb->invoice;
-			$offerDetails = $invDetails->program_offer->toArray();
-			$offerDetails['user_id'] = $invDetails->supplier_id;
-			$prgmDetails = $invDetails->program;
+			$principalDr = $outstandingData[$invDisb->invoice_disbursed_id]['priDr'];
+			$principalCr = $outstandingData[$invDisb->invoice_disbursed_id]['priCr'];
+			$principalOut = round((round($principalDr,2) - round($principalCr,2)),2);
 			
+			$interestDr = $outstandingData[$invDisb->invoice_disbursed_id]['intDr'];
+			$interestCr = $outstandingData[$invDisb->invoice_disbursed_id]['intCr'];
+			$interestOut = round((round($interestDr,2) - round($interestCr,2)),2);
+
+			$overdueInterestDr = $outstandingData[$invDisb->invoice_disbursed_id]['odiDr'];
+			$overdueInterestCr = $outstandingData[$invDisb->invoice_disbursed_id]['odiCr'];
+			$overdueInterestOut = round((round($overdueInterestDr,2) - round($overdueInterestCr,2)),2);
+
+			$curOddays = $outstandingData[$invDisb->invoice_disbursed_id]['odDays'];
+			$odDaysWithoutGrace = ($curOddays)?$curOddays - $invDisb->grace_period:0;
+
+			$diff=date_diff(date_create($invDisb->payment_due_date),date_create($curdate));
+			$maturityDays = $diff->format("%a");
+			$offerDetails = $invDisb->invoice->program_offer->toArray();
+			$offerDetails['user_id'] = $invDisb->supplier_id;
+			$prgmDetails = $invDisb->program;
+
 			$limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::invoiceAnchorLimitApprove($offerDetails),2);
 			$limitAvl[$offerDetails['prgm_offer_id']] = $limitAvl[$offerDetails['prgm_offer_id']] ?? $offerDetails['prgm_limit_amt'] - $limitUsed[$offerDetails['prgm_offer_id']];
 			$limitAvl[$offerDetails['prgm_offer_id']] = ($limitAvl[$offerDetails['prgm_offer_id']] > 0) ? $limitAvl[$offerDetails['prgm_offer_id']] : 0; 
-			$result[] = [
-				'cust_name'=>$invDisb->invoice->business->biz_entity_name,
+			$result[$invDisb->invoice_disbursed_id] = [
 				'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
-				'invoice_no' => $invDetails->invoice_no,
+				'cust_name' => $invDisb->invoice->business->biz_entity_name,
+				'customer_id' => $invDisb->invoice->lms_user->customer_id??null,
+				'invoice_no' => $invDisb->invoice->invoice_no,
 				'payment_due_date' => $invDisb->payment_due_date,
-				'customer_id'=>$invDetails->lms_user->customer_id,
-				'prgm_name' => $prgmDetails->parentProgram->prgm_name,
-				'sub_prgm_name' => $prgmDetails->prgm_name,
-				'virtual_ac'=>$invDisb->invoice->lms_user->virtual_acc_id,
-				'client_sanction_limit'=>$offerDetails['prgm_limit_amt'],
-				'limit_available'=> $limitAvl[$offerDetails['prgm_offer_id']],
-				'out_amt'=>$outstandingAmt,
-				'od_days'=>$overdueDays,
-				'od_amt'=>$overdueAmt,
+				'virtual_ac' => $invDisb->invoice->lms_user->virtual_acc_id,
+				'client_sanction_limit' => $offerDetails['prgm_limit_amt'],
+				'limit_available' => $limitAvl[$offerDetails['prgm_offer_id']],
+				'principalOut' => $principalOut,
+				'interestOut' => $interestOut,
+				'overdueDays' => $curOddays,
+				'overdueOut' => $overdueInterestOut,
+				'soa_balance' => $principalOut + $interestOut + $overdueInterestOut,
+				'grace_period' => $invDisb->grace_period,
+				'odDaysWithoutGrace' => $odDaysWithoutGrace,
+				'maturityDays' => $maturityDays,
 				'sales_person_name'=> ($invDisb->invoice->anchor->salesUser->f_name.' '. $invDisb->invoice->anchor->salesUser->m_name.' '. $invDisb->invoice->anchor->salesUser->l_name)
-			 ];
+			];
+			$result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] = $result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] ?? 0;
+			if($principalOut > 100 && ($result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] ?? 0) < $odDaysWithoutGrace){
+				$result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] = $odDaysWithoutGrace;
+			}
 		}
 		return $result;
 	}

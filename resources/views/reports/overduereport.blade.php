@@ -60,7 +60,6 @@
                 <button id="searchbtn" type="button" class="btn  btn-success btn-sm float-right">Search</button>
                  &nbsp; &nbsp; <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldPDF">Pdf</a> &nbsp; &nbsp; <a href="javascript:void(0)" class="btn  btn-success btn-sm float-right" id="dwnldEXCEL">Excel</a>                 
             </div>
-            <a href="{{ route('report_overduereport', ['by_mail' => true]) }}" class="btn  btn-success btn-sm float-right" id="sendReportByMail">Send Report By Mail</a>
                 {!! Form::hidden('user_id', 
                     isset($user['user_id'])?$user['user_id']:null, 
                     [ 'id'=>'user_id' ]) 

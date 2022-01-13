@@ -346,13 +346,17 @@ class ReportController extends Controller
 		
 	}
 	
-	 public function overduereport(Request $request) {
+	public function outstandingreport(Request $request){
 		try {
-			if ($request->has('by_mail') && $request->by_mail) {
-				return view('reports.over_due_report_mail');
-			} else {
-				return view('reports.overduereport');
-			}
+			return view('reports.outstandingReport');
+		} catch (Exception $ex) {
+			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+		}
+	}
+
+	public function overduereport(Request $request) {
+		try {
+			return view('reports.overduereport');
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
 		}

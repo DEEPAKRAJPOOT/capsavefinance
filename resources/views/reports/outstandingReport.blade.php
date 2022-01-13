@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-@include('layouts.backend.partials.admin_reports_links',['active'=>'overduereport'])
+@include('layouts.backend.partials.admin_reports_links',['active'=>'outstandingreport'])
 <div class="content-wrapper">
     <section class="content-header">
         <div class="header-icon">
@@ -9,13 +9,13 @@
         </div>
         <div class="header-title">
             <h3>Reports</h3>
-            <small> Invoice Due Report</small>
+            <small>Outstanding Report</small>
         </div>
     </section>
     <div class="card">
         <div class="card-body">
             <div class="row">                
-                <div class="row md-12">                
+                <div class="row col-md-12">                
                  <div class="col-md-4">
                     {!!
                     Form::text('to_date',
@@ -41,9 +41,9 @@
                     ])
                     !!}
                 </div>
-               
+
                <div class="col-md-2">
-                   <button id="sendMailBtn" type="button" class="btn  btn-success btn-sm float-right">Send Mail</button>
+                   <button id="sendMailBtn" type="button" class="btn  btn-success btn-sm float-right">Generate Report</button>
                </div>
             </div>
                 {!! Form::hidden('user_id', 
