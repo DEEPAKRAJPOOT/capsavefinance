@@ -107,7 +107,7 @@ class OverdueReportManual implements ShouldQueue
             ->setCellValue('I'.$rows, $rowData['interestOut'])
             ->setCellValue('J'.$rows, $rowData['overdueDays'])
             ->setCellValue('K'.$rows, $rowData['overdueOut'])
-            ->setCellValue('L'.$rows, $rowData['soa_balance'])
+            ->setCellValue('L'.$rows, '=+H'.$rows.'+I'.$rows.'+K'.$rows)
             ->setCellValue('M'.$rows, $rowData['grace_period'])
             ->setCellValue('N'.$rows, $rowData['odDaysWithoutGrace'])
             ->setCellValue('O'.$rows, $rowData['maxBucOdDaysWithoutGrace'])

@@ -415,10 +415,10 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 						$query2->where('supplier_id',$whereCondition['user_id']);
 					}
 				},
-			/*'interests' => 
+			'interests' => 
 				function($query2) use($curdate){
 					$query2->whereDate('interest_date','<=',$curdate);
-				},*/
+				},
 			'invoice.lms_user', 
 			'invoice.business', 
 			'disbursal',
@@ -433,11 +433,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				$query3->where('supplier_id',$whereCondition['user_id']);
 			}
 		})
-		->where(function($q) use($curdate){
-			$q->whereDate('payment_due_date','<=',$curdate)
-			->orwhereDate('int_accrual_start_dt','<=',$curdate);
-		})
-		->where('payment_due_date','<=',$curdate)
+		->whereDate('int_accrual_start_dt','<=',$curdate)
 		->get();
 
 		$outstandingData = self::getOutstandingData($curdate);
