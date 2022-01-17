@@ -47,6 +47,18 @@ try {
                 {data: 'credit'},
                 {data: 'balance'}
             ],
+            buttons: [
+                {
+                    text:      '<i style="font-size: 16px;color: green;font-weight: normal;" class="fa fa-file-excel-o pr-sm-1"></i><span style="font-size: 14px;color: #3c8964;font-weight: bold;">Download SOA</span>',
+                    className: "excel_button",
+                    init: function(api, node, config) {
+                        $(node).removeClass('dt-button')
+                    },
+                    action: function ( e, dt, node, config ) {
+                        download('excel');
+                    }
+                },
+            ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [0,1,2,3,4,5,6,7]}]
         });
         //Search
@@ -58,6 +70,31 @@ try {
             oTable.draw();
         });
     });
+
+    function download(action){
+        url = '';
+        from_date = $('input[name="from_date"]').val().trim();
+        to_date = $('input[name="to_date"]').val().trim();
+        customer_id = $('input[name=customer_id]').val().trim();
+        trans_entry_type = $('select[name=trans_entry_type]').val().trim();
+
+        if(action.trim() == 'excel'){
+            url = messages.excel_soa_url;
+        }
+
+        if(from_date){
+            url += '&from_date='+from_date;
+        }
+
+        if(to_date){
+            url += '&to_date='+to_date;
+        }
+
+        if(trans_entry_type){
+            url += '&trans_entry_type='+trans_entry_type;
+        }
+        window.open(url, '_blank');
+    }
 } catch (e) {
     if (typeof console !== 'undefined') {
         console.log(e);

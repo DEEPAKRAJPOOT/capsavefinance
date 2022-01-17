@@ -88,6 +88,7 @@
     <script src="{{url('backend/assets/js/misc.js')}}"></script>
     <script src="{{url('backend/js/promoter.js')}}"></script>
     <script src="{{url('backend/assets/plugins/datatables/js/datatable.min.js')}}"></script>
+    <script src="{{url('backend/assets/plugins/datatables/Buttons/dataTables.buttons.min.js')}}"></script>
     <script src="{{url('common/js/datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
     <script src="{{url('common/js/iframePopup.js')}}"></script>
    

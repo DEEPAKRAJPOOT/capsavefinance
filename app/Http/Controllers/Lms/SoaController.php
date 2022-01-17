@@ -256,7 +256,9 @@ class SoaController extends Controller
                         $transactionList->where('trans_type',$trans_type);
                     }
                     if($entry_type){
-                        // $transactionList->where('entry_type',$entry_type);
+                        $transactionList->whereHas('transaction', function($query) use($entry_type) {
+                            $query->where('entry_type', $entry_type);
+                        });
                     }
                 }
                 $transactionList->whereHas('lmsUser',function ($query) use ($request) {
@@ -308,7 +310,9 @@ class SoaController extends Controller
                     $transactionList->where('trans_type',$trans_type);
                 }
                 if($entry_type){
-                    // $transactionList->where('entry_type',$entry_type);
+                    $transactionList->whereHas('transaction', function($query) use($entry_type) {
+                        $query->where('entry_type', $entry_type);
+                    });
                 }
             }
 
