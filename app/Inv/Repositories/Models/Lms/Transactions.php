@@ -247,11 +247,13 @@ class Transactions extends BaseModel {
     {
         if($this->parent_trans_id){
             $parentTrans = $this->parentTransactions;
-            if($parentTrans->entry_type == 0){
-                $settledAmt = self::calculateSettledAmt($this->parent_trans_id);
-                $outAmt = round(($parentTrans->amount - $settledAmt),2);
-                $outAmt = $outAmt > 0 ? $outAmt : 0;
-                self::where('trans_id', $this->parent_trans_id)->update(['outstanding' => $outAmt]);
+            if($parentTrans){
+                if($parentTrans->entry_type == 0){
+                    $settledAmt = self::calculateSettledAmt($this->parent_trans_id);
+                    $outAmt = round(($parentTrans->amount - $settledAmt),2);
+                    $outAmt = $outAmt > 0 ? $outAmt : 0;
+                    self::where('trans_id', $this->parent_trans_id)->update(['outstanding' => $outAmt]);
+                }
             }
         }else{
             if($this->entry_type == 0){
