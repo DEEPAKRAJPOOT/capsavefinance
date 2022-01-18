@@ -1144,7 +1144,7 @@ class ApplicationController extends Controller
 							'app_id' => $app_id,
 							'to_id' => $approver->user_id,
 							'assigned_user_id' => $user_id,
-                                                        'sharing_comment' => '',
+							'sharing_comment' => $addl_data['sharing_comment'],
 						];
 						Helpers::assignAppUser($appAssignData);
                                             }
