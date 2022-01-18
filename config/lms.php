@@ -186,7 +186,8 @@ return [
         '4'=>'3'  // NACH 4
     ],
     'BANK_TYPE' => [
-        'IDFC' => '1'
+        'IDFC' => '1',
+        'KOTAK' => '2'
     ],
     'DISBURSAL_TIME_VALIDATE' => '17',
     'DISBURSAL_STATUS' => [    
@@ -261,4 +262,19 @@ return [
     ],
     'INVOICE_MATURITY_ALERT_DAYS' => 7,
     'SAC_CODE_FOR_INT_INVOICE' => '997119',
+    'KOTAK_DEBIT_BANK' => [    
+        'DEBIT_ACC_NO' => env('KOTAK_CLIENT_DEBIT_ACC_NO', ''),
+     ],
+     'KOTAK_CREDIT_BANK' => [    
+        'BEN_ACC_NO' => env('KOTAK_BEN_ACC_NO', '33302491515'),
+        'BEN_IFSC' => env('KOTAK_BEN_IFSC_CODE', 'SBIN0002914'),
+        'BEN_ACC_NAME' => env('KOTAK_BEN_ACC_NAME', 'ABHINAV ASHISH'),
+        'BEN_EMAIL' => env('KOTAK_BEN_EMAIL', 'abhinavashish1234@gmail.com'),
+     ],
+     'KOTAK_API_URL' => env('KOTAK_API_URL', ''),
+     'KOTAK_API_KEY' => env('KOTAK_API_KEY', ''),
+     'KOTAK_UAT_ACTIVE' => env('KOTAK_UAT_ACTIVE', 1),
+     'KOTAK_CLIENT_CODE' => env('KOTAK_CLIENT_CODE', 'TEMPTEST1'),
+     'KOTAK_MSG_SOURCE' => env('KOTAK_MSG_SOURCE', 'ABCCOMPANY'),
+     'KOTAK_MYPRODCODE' => env('KOTAK_MYPRODCODE', 'NETPAY'),
 ];

@@ -37,27 +37,38 @@ $role = (isset($role)) ? $role :     11;
                             <div class="card">
                                 <div class="card-body">
                                     <div class="row">
-
-                                        <div class="col-md-3">
+                                        {{-- class="col-md-3" --}}
+                                        <div >
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                         </div>
-                                        <div class="col-md-5">
-                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number">
+                                        <div class="col-md-4">
+                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number,Customer Id">
                                         </div> 
                                         <div class="col-md-1">
-                                            <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
-                                        </div>  
+                                            <button  type="button" id="search_biz" class="btn btn-success btn-sm">Search</button>
+                                        </div>
                                         @php if($role!=11) { @endphp
-                                        <div class="col-md-2" id="buttonDiv">
+                                        <div class ="row">
+                                        <div class="col-md-12" id="buttonDiv">
 
                                            @can('disburse_confirm')
-                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank (Offline)</a>
+                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-3 disburseClickBtn pull-right" >Send To Bank (Offline)</a>
                                             @endcan
                                         </div>
-                                        <div class="col-md-2" id="buttonDiv">
+                                       </div>
+                                        <div class ="row">
+                                        <div class="col-md-12" id="buttonDiv">
                                             @can('disburse_confirm')
-                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 1 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2 disburseClickBtn" >Send To Bank (Online)</a>
+                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 1,'bank_type'=> 1]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-3 disburseClickBtn pull-right" >Send To IDFC Bank (Online)</a>
                                             @endcan
+                                        </div>
+                                        </div>
+                                        <div class ="row">
+                                        <div class="col-md-12" id="buttonDiv">
+                                            @can('disburse_confirm')
+                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 1 ,'bank_type'=> 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-3 disburseClickBtn pull-right" data-bankType="2">Send To Kotak Bank (Online)</a>
+                                            @endcan
+                                        </div>
                                         </div>
                                         @php  } @endphp
                                             <a data-toggle="modal" data-target="#disburseInvoice" data-url ="" data-height="560px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2" id="openDisburseInvoice" style="display: none;" >Disburse Trigger</a>
@@ -65,7 +76,7 @@ $role = (isset($role)) ? $role :     11;
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-12 dataTables_wrapper mt-4">
+                                    <div class="col-12 dataTables_wrapper mt-1">
                                         <div class="overflow">
                                             <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                                                 <div class="row">
