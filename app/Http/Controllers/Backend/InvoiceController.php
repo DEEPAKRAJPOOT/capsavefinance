@@ -2531,7 +2531,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             } else {
                 $data = $data->toArray();
             }
-            die;
+            //die;
             $message = [];
 
             if (!empty($reqData)) {
