@@ -1634,26 +1634,28 @@ class CamController extends Controller
             //Validate Enchancement Limit  
             $totLimitAmt = str_replace(',', '', $request->get('tot_limit_amt'));
             $result = \Helpers::checkLimitAmount($appId, $request->product_id, $request->limit_amt);
-                                    
+
             if ($result['app_type'] == 2 && isset($result['tot_limit_amt']) 
                     && $result['tot_limit_amt'] > $totLimitAmt) {
                 Session::flash('error', trans('backend_messages.enhanced_tot_limit_amt_validation'));
                 return redirect()->back()->withInput();                
             } else if ($result['app_type'] == 3 && isset($result['tot_limit_amt']) 
-                    && ($result['tot_limit_amt'] < $totLimitAmt)) {
+                    && ($totLimitAmt >= $result['tot_limit_amt'])) {
                 Session::flash('error', trans('backend_messages.reduced_tot_limit_amt_validation'));
                 return redirect()->back()->withInput();                
             } else if ($result['app_type'] == 3 && isset($result['parent_inv_utilized_amt']) 
-                    && ($result['parent_inv_utilized_amt'] >= $totLimitAmt)) {
+                    && (($result['parent_inv_utilized_amt'] - $result['parent_inv_settled_amt']) >= $totLimitAmt)) {
+                Session::flash('error', trans('backend_messages.reduced_utilized_amt_validation'));
+                return redirect()->back()->withInput();                
+            } else if ($result['app_type'] == 3 && isset($result['parent_consumed_limit']) 
+                    && ($totLimitAmt <= $result['parent_consumed_limit'])) {
                 Session::flash('error', trans('backend_messages.reduced_utilized_amt_validation'));
                 return redirect()->back()->withInput();                
             } else if ($result['status']) {
                 Session::flash('error', $result['message']);
                 return redirect()->back()->withInput();
             }
-            
 
-            
             $totalLimit = $this->appRepo->getAppLimit($appId);
 
             if($totalLimit){

@@ -695,4 +695,14 @@ class AppProgramOffer extends BaseModel {
                 ->pluck('app.user_id')
                 ->toArray();
     }
+
+    public static function getActiveProgramOfferByAppId($appId)
+    {
+        $query = self::select('app_prgm_offer.app_id', 'app_prgm_offer.prgm_offer_id', 'app_prgm_offer.prgm_limit_amt', 'offer_chrg.charge_id', 'offer_chrg.chrg_value', 'offer_chrg.chrg_type', 'mst_chrg.chrg_name', 'mst_chrg.is_gst_applicable', 'mst_chrg.gst_percentage', 'mst_chrg.chrg_applicable_id')
+                ->join('offer_chrg', 'app_prgm_offer.prgm_offer_id', '=', 'offer_chrg.prgm_offer_id')
+                ->join('mst_chrg', 'offer_chrg.charge_id', '=', 'mst_chrg.id')                
+                ->where('app_prgm_offer.is_active', '1')
+                ->where('app_prgm_offer.app_id', $appId);
+        return $query->first();
+    }
 }

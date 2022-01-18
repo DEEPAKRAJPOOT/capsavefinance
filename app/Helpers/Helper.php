@@ -1616,11 +1616,17 @@ class Helper extends PaypalHelper
         }
         $is_enhance =Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();
 
-
         if($is_enhance==1)
-        { 
-            $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],$attr['app_id']);
-            $marginApprAmt = $marginApprAmt??0;
+        {
+            $marginApprAmt = 0;
+            $appData = Application::getAppData((int) $attr['app_id']);
+            if ($appData->app_type == 2 && $appData->parent_app_id) {
+                $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($appData->parent_app_id);
+                if ($parentAppOffer) {
+                    $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $parentAppOffer->prgm_offer_id, $attr['anchor_id'], $appData->parent_app_id);    
+                }
+            }
+            $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],$attr['app_id']);
             $marginApprAmt   +=   BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
             ->whereIn('status_id',[8,9,10])
@@ -1633,13 +1639,13 @@ class Helper extends PaypalHelper
             ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
             ->where('app_id' , '<=', $attr['app_id'])
             ->sum('principal_repayment_amt');
-
+            
             return $marginApprAmt-$marginReypayAmt;
         }
         else
-        {
+        {            
             $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplierIsEnhance($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'], $attr['app_id']);
-            $marginApprAmt = $marginApprAmt??0;
+            $marginApprAmt = $marginApprAmt ?? 0;
             $marginApprAmt   +=  BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
             ->whereIn('status_id',[8,9,10])                    
@@ -1680,13 +1686,15 @@ class Helper extends PaypalHelper
             $parentAppId = $appData->parent_app_id;
             $parentUserId = $appData->user_id;
             
-            $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 2]);
+            // $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 2]);
+            $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 1]);
             $result['tot_limit_amt'] = isset($appLimitData[0]) ? $appLimitData[0]->tot_limit_amt : 0;            
             $result['parent_inv_utilized_amt'] = 0;
             
             if ($productId == 1) {
                 $pTotalCunsumeLimit = 0;
-                $invUtilizedAmt = 0;        
+                $invUtilizedAmt = 0;
+                $invSettledAmt  = 0;
                 $pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
                 foreach ($pAppPrgmLimit as $value) {
                     $pTotalCunsumeLimit += $value->utilize_limit;
@@ -1696,10 +1704,12 @@ class Helper extends PaypalHelper
                     $attr['app_id'] = $parentAppId;
                     $attr['anchor_id'] = $value->anchor_id;
                     $attr['prgm_id'] = $value->prgm_id;                     
-                    $invUtilizedAmt += $appRepo->getInvoiceUtilizedAmount($attr);                
+                    $invUtilizedAmt += $appRepo->getInvoiceUtilizedAmount($attr);      
+                    $invSettledAmt += $appRepo->getSettledInvoiceAmount($attr);      
                 }
 
                 $result['parent_inv_utilized_amt'] = $invUtilizedAmt;
+                $result['parent_inv_settled_amt'] = $invSettledAmt;
 
                 $totalCunsumeLimit = $inputLimitAmt > 0 ? str_replace(',', '', $inputLimitAmt) : 0;
                 $appPrgmLimit = $appRepo->getUtilizeLimit($appId, 1, $checkApprLimit=false);
@@ -1722,7 +1732,7 @@ class Helper extends PaypalHelper
                     $result['message'] = trans('backend_messages.validate_limit_enhance_amt');
                     $result['parent_consumed_limit'] = $pTotalCunsumeLimit; 
                 } else if ($appData->app_type == 3) {
-                    $result['status'] = $invUtilizedAmt > $totalCunsumeLimit;    
+                    $result['status'] = ($invUtilizedAmt - $invSettledAmt) >= $totalCunsumeLimit;    
                     $result['message'] = trans('backend_messages.validate_reduce_limit_amt');
                     $result['parent_consumed_limit'] = $pTotalCunsumeLimit; 
                 }
