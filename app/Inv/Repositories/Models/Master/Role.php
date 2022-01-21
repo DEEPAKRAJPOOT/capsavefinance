@@ -223,4 +223,12 @@ class Role extends BaseModel
         $arrRoles = self::where('role_type', $role_type)->get();
         return $arrRoles ? $arrRoles : [];
     }
+
+    public static function getActiveChrgDeleteEmailAllowedRoles()
+    {
+        $arrRoles = Role::where('is_chrg_delete_email_allowed', 1)
+                        ->where('is_active', 1)
+                        ->get('id');
+        return $arrRoles;               
+    }
 }

@@ -1384,4 +1384,14 @@ Route::group(
         'as' => 'lms_send_invoice_over_due',
         'uses' => 'AjaxController@sendInvoiceOverdueReportByMail'
     ]);
+
+    Route::post('lms_req_for_chrg_deletion', [
+        'as' => 'lms_req_for_chrg_deletion',
+        'uses' => 'AjaxController@reqForChargeDeletion'
+    ]);
+    
+    Route::post('lms_approve_chrg_deletion', [
+        'as' => 'lms_approve_chrg_deletion',
+        'uses' => 'AjaxController@approveChargeDeletion'
+    ]);
 });

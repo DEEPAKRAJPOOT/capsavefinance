@@ -1805,5 +1805,10 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
         return AnchorUser::getAnchorUserDataByDate($whereCond, $date);
     }
+
+    public function getActiveChrgDeleteEmailAllowedRoles()
+    {
+        return Role::getActiveChrgDeleteEmailAllowedRoles();
+    }
 }
 

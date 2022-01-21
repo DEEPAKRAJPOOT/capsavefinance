@@ -1415,6 +1415,44 @@ class UserEventsListener extends BaseEvent
         }
     }
 
+    public function onChargeDeletionRequest($userData){
+        $user = unserialize($userData);        
+        $this->func_name = __FUNCTION__;
+        
+        $email = [];
+        foreach($user as $u) {
+            if(!empty($u['receiver_email']) ){
+                $email[] = $u['receiver_email'];
+            }
+        }
+
+        $email_content = EmailTemplate::getEmailTemplate("CHARGE_DELETION_REQUEST_MAIL");
+        $email_cc = explode(',', $email_content->cc);
+        $email_cc = array_filter($email_cc);
+        if ($email_content) {
+            $mail_subject = str_replace(['%business_name'], [$user['business_name']],$email_content->subject);
+            $mail_body = $email_content->message;
+            $mail_body = str_replace(['%url'], ['https://'. config('proin.backend_uri')], $mail_body);
+            $mail_body = str_replace(['%business_name'], [$user['business_name']], $mail_body);
+            Mail::send('email', ['baseUrl' => config('lms.REDIRECT_URL'),'varContent' => $mail_body,
+                ],
+                function ($message) use ($email_content, $mail_body, $email_cc, $email, $mail_subject) {
+                $message->cc($email_cc);                    
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($email, '')->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_type' => $this->func_name,
+                    'name' => 'Request Approval For Charge Deletion',
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }
+
     /**
      * Event subscribers
      *
@@ -1604,6 +1642,11 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'NOTIFY_RECEIPT_REPORT',
             'App\Inv\Repositories\Events\UserEventsListener@onReceiptReport'
+        );
+
+        $events->listen(
+            'CHARGE_DELETION_REQUEST_MAIL', 
+            'App\Inv\Repositories\Events\UserEventsListener@onChargeDeletionRequest'
         );
     }
 }

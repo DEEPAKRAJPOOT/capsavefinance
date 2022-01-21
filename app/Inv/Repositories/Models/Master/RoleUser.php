@@ -203,4 +203,14 @@ class RoleUser extends BaseModel
                         ->get();
         return ($arrRoles ? : false);
     }
+
+    public static function getRoleActiveUsers($roleIds = [])
+    {
+        $users = self::select('users.*')
+                 ->join('users', 'role_user.user_id', '=', 'users.user_id')
+                 ->whereIn('role_user.role_id', $roleIds)
+                 ->where('users.is_active', 1)
+                 ->get();
+        return $users;         
+    }
 }

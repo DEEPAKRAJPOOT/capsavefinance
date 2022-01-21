@@ -48,6 +48,9 @@ use Illuminate\Support\Facades\Crypt;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use App\Inv\Repositories\Models\Lms\ChargesTransactions;
+use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
+use App\Inv\Repositories\Models\Master\Permission;
 
 class AjaxController extends Controller {
 
@@ -5572,5 +5575,96 @@ if ($err) {
     
         $overdueReportLogs = OverdueReportLog::get();
         return $dataProvider->getOverdueReportLogs($this->request, $overdueReportLogs);
+    }
+
+    public function reqForChargeDeletion(Request $request)
+    {
+        try {
+            $request->validate([
+                'chrg_id' => 'required'
+            ],['chrg_id.required' => 'Please select atleast one checked']);
+    
+            $attr = is_array($request->chrg_id) && count($request->chrg_id) ? $request->chrg_id : [$request->chrg_id];
+            $chrgTrans = ChargesTransactions::whereIn('chrg_trans_id', $attr)->get();
+            \DB::beginTransaction();
+            foreach($chrgTrans as $chrgTran) {
+                $query  = ChargeTransactionDeleteLog::where('chrg_trans_id', $chrgTran->chrg_trans_id);
+                $newQuery = clone $query;
+                $isExistChrgTranReqLog     = $query->reqForDeletion()->first();
+                $isExistChrgTranApproveLog = $newQuery->approveForDeletion()->first();
+                
+                if (!$isExistChrgTranReqLog && !$isExistChrgTranApproveLog) {
+                    $attr = [
+                        'chrg_trans_id' => $chrgTran->chrg_trans_id,
+                        'status'        => 1,
+                        'created_at'    => now(),
+                        'created_by'    => auth()->user()->user_id
+                    ];
+    
+                    $this->lmsRepo->saveChargeTransDeleteLog($attr);
+                }
+            }
+            $roles = $this->userRepo->getActiveChrgDeleteEmailAllowedRoles();
+            $sendEmailRoleIds = [];
+            foreach($roles as $role) {
+                $isPermission = Permission::checkRolePermission('lms_approve_chrg_deletion', $role->id);
+                if ($isPermission && !in_array($role->id, $sendEmailRoleIds)) {
+                    array_push($sendEmailRoleIds, $role->id);
+                }
+            }
+            $users = $this->lmsRepo->getRoleActiveUsers($sendEmailRoleIds);
+            $allEmailData = [];
+            $user_id = $request->get('user_id');
+            $userInfo = $this->userRepo->getCustomerDetail($user_id);
+            foreach($users as $user) {
+                $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
+                $emailData['receiver_email']     = isset($user->email) ? $user->email : '';
+                array_push($allEmailData, $emailData);
+            }
+            $allEmailData['business_name']      = $userInfo->biz->biz_entity_name;
+            if (count($sendEmailRoleIds)) {
+                \Event::dispatch("CHARGE_DELETION_REQUEST_MAIL", serialize($allEmailData));
+            }
+            \DB::commit();
+            return response()->json(['status' => 1,'msg' => "Charge deletion request sent for approval successfully."]);
+        } catch (Exception $ex) {
+            \DB::rollback();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    public function approveChargeDeletion(Request $request)
+    {
+        try {
+            $request->validate([
+                'chrg_id' => 'required'
+            ],['chrg_id.required' => 'Please select atleast one checked']);
+    
+            $chrgIds = is_array($request->chrg_id) && count($request->chrg_id) ? $request->chrg_id : [$request->chrg_id];
+            $chrgTrans = ChargesTransactions::whereIn('chrg_trans_id', $chrgIds)->get();
+            $chrgTranReqDltLogs = ChargeTransactionDeleteLog::whereIn('chrg_trans_id', $chrgIds)
+                                            ->reqForDeletion()
+                                            ->get();            
+            if (count($chrgTrans) != count($chrgTranReqDltLogs)) {
+                return response()->json(['status' => 0,'msg' => "Please request for deletion before approve the charge."]);
+            }
+            \DB::beginTransaction();
+            foreach($chrgTrans as $chrgTran) {
+                $attr = [
+                    'chrg_trans_id' => $chrgTran->chrg_trans_id,
+                    'status'        => 2,
+                    'created_at'    => now(),
+                    'created_by'    => auth()->user()->user_id
+                ];
+                $chrgTran->transaction->delete();
+                $this->lmsRepo->saveChargeTransDeleteLog($attr);
+            }            
+            
+            \DB::commit();
+            return response()->json(['status' => 1,'msg' => "Charge deletion approved successfully."]);
+        } catch (Exception $ex) {
+            \DB::rollback();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
     }
 }

@@ -72,6 +72,7 @@ use App\Inv\Repositories\Models\Lms\NachTransReq;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
+use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
 
 /**
  * Lms Repository class
@@ -1859,5 +1860,15 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		->groupBy('supplier_id')
 		->get();
 
+    }
+
+	public function saveChargeTransDeleteLog($attr)
+	{
+		return ChargeTransactionDeleteLog::saveChargeTransDeleteLog($attr);
+	}
+
+	public function getRoleActiveUsers($roleIds = [])
+    {
+        return RoleUser::getRoleActiveUsers($roleIds);
     }
 }

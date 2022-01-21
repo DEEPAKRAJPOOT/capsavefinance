@@ -261,4 +261,5 @@ return [
     ],
     'INVOICE_MATURITY_ALERT_DAYS' => 7,
     'SAC_CODE_FOR_INT_INVOICE' => '997119',
+    'REDIRECT_URL' => env('REDIRECT_URL', ''),
 ];
