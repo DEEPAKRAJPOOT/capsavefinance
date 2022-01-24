@@ -5586,6 +5586,7 @@ if ($err) {
     
             $attr = is_array($request->chrg_id) && count($request->chrg_id) ? $request->chrg_id : [$request->chrg_id];
             $chrgTrans = ChargesTransactions::whereIn('chrg_trans_id', $attr)->get();
+
             \DB::beginTransaction();
             foreach($chrgTrans as $chrgTran) {
                 $query  = ChargeTransactionDeleteLog::where('chrg_trans_id', $chrgTran->chrg_trans_id);
