@@ -1808,7 +1808,7 @@ class UserRepository extends BaseRepositories implements UserInterface
 
     public function getActiveChrgDeleteEmailAllowedRoles()
     {
-        return Role::getActiveChrgDeleteEmailAllowedRoles();
+        return  Role::getActiveChrgDeleteEmailAllowedRoles();
     }
 }
 

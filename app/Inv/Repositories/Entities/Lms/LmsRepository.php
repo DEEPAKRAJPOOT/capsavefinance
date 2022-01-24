@@ -1864,7 +1864,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	public function saveChargeTransDeleteLog($attr)
 	{
-		return ChargeTransactionDeleteLog::saveChargeTransDeleteLog($attr);
+		return  ChargeTransactionDeleteLog::saveChargeTransDeleteLog($attr);
 	}
 
 	public function getRoleActiveUsers($roleIds = [])

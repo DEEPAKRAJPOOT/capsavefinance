@@ -5644,7 +5644,8 @@ if ($err) {
             $chrgTrans = ChargesTransactions::whereIn('chrg_trans_id', $chrgIds)->get();
             $chrgTranReqDltLogs = ChargeTransactionDeleteLog::whereIn('chrg_trans_id', $chrgIds)
                                             ->reqForDeletion()
-                                            ->get();            
+                                            ->get();
+
             if (count($chrgTrans) != count($chrgTranReqDltLogs)) {
                 return response()->json(['status' => 0,'msg' => "Please request for deletion before approve the charge."]);
             }

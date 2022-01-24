@@ -1645,7 +1645,7 @@ class UserEventsListener extends BaseEvent
         );
 
         $events->listen(
-            'CHARGE_DELETION_REQUEST_MAIL', 
+            'CHARGE_DELETION_REQUEST_MAIL',
             'App\Inv\Repositories\Events\UserEventsListener@onChargeDeletionRequest'
         );
     }
