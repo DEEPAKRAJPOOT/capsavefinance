@@ -3178,6 +3178,22 @@ class DataRenderer implements DataProviderInterface
                     function ($charges) {
                     return ($charges->created_at) ? date('d-m-Y',strtotime($charges->created_at)) : '---';
                 })
+                ->addColumn(
+                    'settled_payment_id',
+                    function ($charges) {
+                        $paymentIds = $charges->transaction->childTransactions()->whereNotNull('payment_id')->distinct('payment_id')->pluck('payment_id')->toArray();
+                        
+                        if (is_array($paymentIds) && count($paymentIds)) {
+                            $paymentIdsWithPrefix = [];
+                            foreach($paymentIds as $paymentId) {
+                                array_push($paymentIdsWithPrefix, \Helpers::formatIdWithPrefix($paymentId, 'PAYMENTID'));
+                            }
+                            return implode(',', $paymentIdsWithPrefix);
+                        }elseif(!$charges->transaction->payment_id && $charges->transaction->amount != $charges->transaction->outstanding) {
+                            return 'WriteOff/WaiveOff';
+                        }
+                    return '---';
+                })
                 ->addColumn('status', function ($charges) {
                     $statuses = $charges->deleteLogs()->distinct()->pluck('status')->toArray();
                     if (in_array(1, $statuses) && !in_array(2, $statuses)) {

@@ -288,7 +288,8 @@ return [
         'VA' => 'CAPVA',
         'CUSTID' => 'CAPCI',
         'REFUND' => 'REF',
-        'LEADID' => 'CAP'
+        'LEADID' => 'CAP',
+        'PAYMENTID' => 'CAPPI',
     ],
     'chrg_trigger_list' => [
         '3' => 'None',

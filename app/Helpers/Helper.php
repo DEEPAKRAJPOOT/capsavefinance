@@ -1400,6 +1400,9 @@ class Helper extends PaypalHelper
         } else if ($type == 'LEADID') {
             $prefix = config('common.idprefix.'.$type);
             $formatedId = $prefix . sprintf('%09d', $idValue);            
+        } else if ($type == 'PAYMENTID') {
+            $prefix = config('common.idprefix.'.$type);
+            $formatedId = $prefix . sprintf('%09d', $idValue);            
         }
         return $formatedId;
     }    

@@ -5658,6 +5658,12 @@ if ($err) {
                     'created_at'    => now(),
                     'created_by'    => auth()->user()->user_id
                 ];
+                if ($chrgTran->transaction->childTransactions) {
+                    $childTrans = $chrgTran->transaction->childTransactions;
+                    foreach($childTrans as $childTran) {
+                        $childTran->delete();
+                    }
+                }
                 $chrgTran->transaction->delete();
                 $this->lmsRepo->saveChargeTransDeleteLog($attr);
             }            

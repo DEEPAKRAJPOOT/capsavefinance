@@ -91,7 +91,8 @@
                                     <th>Applicability</th>
                                     <th>Description</th>
                                     <th>Date Time</th>
-                                    <th>Status</th>
+                                    <th>Settled Payment Id</th>
+                                    <th>Delete Status</th>
                                 </tr>
                             </thead>
                             <tbody>

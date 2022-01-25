@@ -39,6 +39,7 @@ try {
                 {data: 'applicability'}, 
                 {data: 'chrg_desc'},
                 {data: 'created_at'},
+                {data: 'settled_payment_id'},
                 {data: 'status'},                
             ],
             'columnDefs': [{
