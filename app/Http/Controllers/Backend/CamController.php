@@ -1644,7 +1644,7 @@ class CamController extends Controller
                 Session::flash('error', trans('backend_messages.reduced_tot_limit_amt_validation'));
                 return redirect()->back()->withInput();                
             } else if ($result['app_type'] == 3 && isset($result['parent_inv_utilized_amt']) 
-                    && (($result['parent_inv_utilized_amt'] - $result['parent_inv_settled_amt']) >= $totLimitAmt)) {
+                    && ($result['parent_inv_utilized_amt'] >= $totLimitAmt)) {
                 Session::flash('error', trans('backend_messages.reduced_utilized_amt_validation'));
                 return redirect()->back()->withInput();                
             } else if ($result['status']) {

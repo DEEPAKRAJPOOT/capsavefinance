@@ -1732,7 +1732,7 @@ class Helper extends PaypalHelper
                     $result['message'] = trans('backend_messages.validate_limit_enhance_amt');
                     $result['parent_consumed_limit'] = $pTotalCunsumeLimit; 
                 } else if ($appData->app_type == 3) {
-                    $result['status'] = ($invUtilizedAmt - $invSettledAmt) >= $totalCunsumeLimit;    
+                    $result['status'] = $invUtilizedAmt >= $totalCunsumeLimit;    
                     $result['message'] = trans('backend_messages.validate_reduce_limit_amt');
                     $result['parent_consumed_limit'] = $pTotalCunsumeLimit; 
                 }
@@ -2452,9 +2452,6 @@ class Helper extends PaypalHelper
     {
         $name = '';
         switch ($appType) {
-            case 0:
-                $name = 'Normal';
-                break;
             case 1:
                 $name = 'Renewal';
                 break;
