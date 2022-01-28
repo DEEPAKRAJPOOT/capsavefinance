@@ -956,7 +956,7 @@ class ApplicationController extends Controller
 								
 								$productId = 1;
 								$parentUserId = $appData->user_id;
-								$pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
+								$pAppPrgmLimit = $this->appRepo->getUtilizeLimit($parentAppId, $productId);
 								$invUtilizedAmt = 0;
 								$currentAppLimitData  = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $app_id]);
 								foreach ($pAppPrgmLimit as $value) {
@@ -966,7 +966,7 @@ class ApplicationController extends Controller
 									$attr['anchor_id'] = $value->anchor_id;
 									$attr['prgm_id'] = $value->prgm_id;              
 									$attr['prgm_offer_id'] = $value->prgm_offer_id;
-									$invUtilizedAmt += self::invoiceAnchorLimitApprove($attr);
+									$invUtilizedAmt += Helpers::invoiceAnchorLimitApprove($attr);
 								}
 
 								if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invUtilizedAmt > $currentAppLimitData[0]->tot_limit_amt) {

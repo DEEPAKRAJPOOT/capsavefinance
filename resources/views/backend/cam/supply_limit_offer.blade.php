@@ -923,9 +923,10 @@
     var bizOwners = {!! json_encode($bizOwners) !!};
     var anchors = {!! json_encode($anchors) !!};
     var appType = {{ config('common.app_type')[$appType] }};
-    var offerData = '{{ isset($offerData->prgm_offer_id) ? $offerData->prgm_offer_id : "" }}'
+    var offerData = '{{ isset($offerData->prgm_offer_id) ? $offerData->prgm_offer_id : "" }}';
+    var currentAppType = '{{ $appType }}';
+    var invUtilizedAmt = '{{ $invUtilizedAmt }}';
     
-
     function anchorDropdown(anchors){
         let $html='<option value="">Select Debtor</option>';
         $.each(anchors,function(i,anchor){
@@ -1143,6 +1144,9 @@
             flag = false;
         }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.anchor_bal_limit_amt)){
             setError('input[name=prgm_limit_amt]', 'Limit amount should not greater than anchor balance limit');
+            flag = false;
+        }else if(currentAppType == 3 && parseInt(prgm_limit_amt.replace(/,/g, '')) <= parseInt(invUtilizedAmt)){
+            setError('input[name=prgm_limit_amt]', 'Limit amount can\'t be less than or equal to the previous utilized limit.');
             flag = false;
         }else{
             //TAKE REST limit_balance
