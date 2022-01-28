@@ -100,4 +100,9 @@ class ChargesTransactions extends BaseModel
        return $this->hasOne('App\Inv\Repositories\Models\Master\Charges','id','chrg_master_id');
       
     }
+
+   public function deleteLogs()
+   {
+      return $this->hasMany('App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog','chrg_trans_id','chrg_trans_id');
+   }
 }

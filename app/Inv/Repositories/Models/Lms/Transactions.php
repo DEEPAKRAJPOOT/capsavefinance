@@ -591,7 +591,7 @@ class Transactions extends BaseModel {
             }else{
                 $transactions['is_transaction'] = true;
             }
-        } 
+        }
 
         $transactions['sys_updated_at'] = Helpers::getSysStartDate();
         if (!empty($whereCondition)) {
@@ -861,17 +861,19 @@ class Transactions extends BaseModel {
     /*** save repayment transaction details for invoice  **/
     public static function saveRepaymentTrans($transactions)
     {
-        $transactions['sys_updated_at'] = Helpers::getSysStartDate();
-        $transactions['sys_created_at'] = Helpers::getSysStartDate();
-        return self::create($transactions);
+        return self::saveTransaction($transactions);
+        // $transactions['sys_updated_at'] = Helpers::getSysStartDate();
+        // $transactions['sys_created_at'] = Helpers::getSysStartDate();
+        // return self::create($transactions);
     }
     
     /*** save repayment transaction details for invoice  **/
     public static function saveCharge($transactions)
     {
-        $transactions['sys_updated_at'] = Helpers::getSysStartDate();
-        $transactions['sys_created_at'] = Helpers::getSysStartDate();
-        return self::create($transactions);
+        return self::saveTransaction($transactions);
+        // $transactions['sys_updated_at'] = Helpers::getSysStartDate();
+        // $transactions['sys_created_at'] = Helpers::getSysStartDate();
+        // return self::create($transactions);
     } 
     
     /*** get all transaction  **/

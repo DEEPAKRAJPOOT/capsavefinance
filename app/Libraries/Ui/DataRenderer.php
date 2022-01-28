@@ -3118,7 +3118,16 @@ class DataRenderer implements DataProviderInterface
             '5' => 'Overdue Amount'
         );
         return DataTables::of($charges)
-                ->rawColumns(['chrg_type'])
+                ->rawColumns(['chrg_id', 'chrg_type'])
+                ->addColumn('chrg_id', function($charges) {
+                    $statuses = $charges->deleteLogs()->distinct()->pluck('status')->toArray();
+                    if ($charges->transaction && $charges->transaction->amount == $charges->transaction->outstanding) {
+                        if((Helpers::checkPermission('lms_req_for_chrg_deletion') && (!in_array(1, $statuses) && !in_array(2, $statuses))) || (Helpers::checkPermission('lms_approve_chrg_deletion') && (in_array(1, $statuses) && !in_array(2, $statuses)))){
+                            return '<input type="checkbox" class="single_charge_select" name="chrg_ids[]" onclick="selectSingleCharge(this)" value="'.$charges->chrg_trans_id.'">';
+                        }
+                    }
+                    return '--';
+                })
                 ->addColumn(
                     'chrg_type',
                     function ($charges) {
@@ -3169,6 +3178,32 @@ class DataRenderer implements DataProviderInterface
                     function ($charges) {
                     return ($charges->created_at) ? date('d-m-Y',strtotime($charges->created_at)) : '---';
                 })
+                ->addColumn(
+                    'settled_payment_id',
+                    function ($charges) {
+                        $paymentIds = $charges->transaction->childTransactions()->whereNotNull('payment_id')->distinct('payment_id')->pluck('payment_id')->toArray();
+                        
+                        if (is_array($paymentIds) && count($paymentIds)) {
+                            $paymentIdsWithPrefix = [];
+                            foreach($paymentIds as $paymentId) {
+                                array_push($paymentIdsWithPrefix, \Helpers::formatIdWithPrefix($paymentId, 'PAYMENTID'));
+                            }
+                            return implode(',', $paymentIdsWithPrefix);
+                        }elseif(!$charges->transaction->payment_id && $charges->transaction->amount != $charges->transaction->outstanding) {
+                            return 'WriteOff/WaiveOff';
+                        }
+                    return '---';
+                })
+                ->addColumn('status', function ($charges) {
+                    $statuses = $charges->deleteLogs()->distinct()->pluck('status')->toArray();
+                    if (in_array(1, $statuses) && !in_array(2, $statuses)) {
+                        return 'Sent For Approval';
+                    }
+                    if (in_array(1, $statuses) && in_array(2, $statuses)) {
+                        return 'Charge Deleted';
+                    }
+                    return '---';
+                })
                 ->filter(function ($query) use ($request) {
                     if($request->get('user_id') != '') {
                             $query->whereHas('transaction', function ($query) use ($request) {
@@ -3189,8 +3224,7 @@ class DataRenderer implements DataProviderInterface
                             $query->whereDate('created_at','<=' , date('Y-m-d H:i:s', strtotime($to_date)) );
                         });
                     }
-                })
-                
+                })                
                 ->make(true);
     }
     
