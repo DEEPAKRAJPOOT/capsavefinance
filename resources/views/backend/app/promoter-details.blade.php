@@ -156,7 +156,11 @@
                             }
                             ?>
                             <div class="col-md-12">
-                                <h5 class="card-title form-head">Management Information ({{isset($row->first_name) ? $i : '1'}}) </h5>
+                                <h5 class="card-title form-head pr-2">Management Information ({{isset($row->first_name) ? $i : '1'}})
+                                    @if(count($ownerDetails) > 1)
+                                    <span class="float-right"><a href="javascript:void(0)" class=" text-danger" onclick="deleteManagementInfo({{ $row->biz_owner_id }})"><i class="fa fa-trash"></i></a></span>
+                                    @endif
+                                </h5>
 
                                 <div class="row">
                                     <div class="col-md-4">
@@ -920,7 +924,8 @@
                 chk_user_pan_karza_add_more: "{{ URL::route('chk_user_pan_karza_add_more') }}",
                 chk_user_pan_karza: "{{ URL::route('chk_user_pan_karza') }}",
                 get_user_pan_response_karza: "{{ URL::route('get_user_pan_response_karza') }}",
-                protmoter_document_delete: "{{ url::route('promoter_document_delete') }}"
+                protmoter_document_delete: "{{ url::route('promoter_document_delete') }}",
+                delete_management_info: "{{ url::route('delete_management_info') }}",    
         };
         $(document).ready(function () {
          ///////////////For Amount comma Seprate///////////
@@ -1962,6 +1967,32 @@
             return false;
         }
             return true;
-        })
+        });
+
+        function deleteManagementInfo(bizOwnerId) {
+            console.log(bizOwnerId);
+            if(!confirm('Are you sure? You want to Delete Management Information.')) {
+                return false;
+            }
+            let data = "biz_owner_id=" + bizOwnerId + "&_token=" + messages.token;
+            $.ajax({
+                type: "POST",
+                url: messages.delete_management_info,
+                data: data,
+                error: function (xhr, status, error) {
+                    replaceAlert(status, 'error');
+                },
+                success: function (response) {
+                    if (response.status == 1) {
+                        replaceAlert(response.message, 'success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 500);                        
+                    } else {
+                        replaceAlert(response.message, 'error');
+                    }
+                },
+            });
+        }
     </script>
     @endsection

@@ -5573,4 +5573,28 @@ if ($err) {
         $overdueReportLogs = OverdueReportLog::get();
         return $dataProvider->getOverdueReportLogs($this->request, $overdueReportLogs);
     }
+
+    public function deleteManagementInfo(Request $request)
+    {        
+        try {
+            if ($request->has('biz_owner_id') && $request->biz_owner_id) {
+                \DB::beginTransaction();
+                $bizOwner = $this->application->getBizOwnerDataByOwnerId($request->biz_owner_id);
+                if ($bizOwner) {
+                    $bizOwner->deleted_by = auth::user()->user_id;
+                    $bizOwner->save();
+                    $bizOwner->delete();
+                    \DB::commit();
+                    return response()->json(['status' => 1,'message' => "Management info deleted successfully."]);
+                } else {
+                    return response()->json(['status' => 0,'message' => 'Something went wrong.']); 
+                }
+            } else {
+                return response()->json(['status' => 0,'message' => 'Something went wrong.']);
+            }
+        } catch (Exception $ex) {
+            \DB::rollback();
+            return response()->json(['status' => 0,'message' => Helpers::getExceptionMessage($ex)]);
+        }
+    }
 }

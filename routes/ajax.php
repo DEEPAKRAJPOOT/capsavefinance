@@ -1384,4 +1384,9 @@ Route::group(
         'as' => 'lms_send_invoice_over_due',
         'uses' => 'AjaxController@sendInvoiceOverdueReportByMail'
     ]);
+
+    Route::post('delete_management_info', [
+        'as' => 'delete_management_info',
+        'uses' => 'AjaxController@deleteManagementInfo'
+    ]);
 });
