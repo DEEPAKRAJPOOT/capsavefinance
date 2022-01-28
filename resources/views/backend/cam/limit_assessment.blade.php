@@ -176,7 +176,7 @@
                                             @endforeach
                                             @else
                                                 <tr style="text-align: center;">
-                                                    <td>No offer found</td>
+                                                    <td colspan="9">No offer found</td>
                                                 </tr>
                                             @endif
                                             </tbody>
@@ -457,6 +457,8 @@
         $offerHeading = "Add/Update Offer(Renewal)";
     } elseif($appType == 2) {
         $offerHeading = "Add/Update Offer(Limit Enhancement)";
+    } elseif($appType == 3) {
+        $offerHeading = "Add/Update Offer(Limit Reduction)";
     } else {    
         $offerHeading = "Add/Update Offer";
     }

@@ -646,8 +646,8 @@ trait ApplicationTrait
             $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id,$appData->app_id);
             $appPrgmLimit = $this->application->getProgramLimitData($appId,1);
             $appUserBalLimit = $appPrgmLimit[0]->limit_amt - $appUserConsumtionLimit;
-            /** Enhancement*/ 
-            if ($appData->app_type == 2) {
+            /** Enhancement || Reduction */ 
+            if ($appData->app_type == 2 || $appData->app_type == 3) {
                 
                 /**  Current Offer Consumed Limit */
                 if($offer_id){
@@ -658,8 +658,7 @@ trait ApplicationTrait
 
                     $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id, $offer_id);
                     $appUserBalLimit += $currOfferConsumAmt;
-                }
-                else{
+                } else{
                     if(!$appData->prgmOffer()->count()){
                         $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->parent_app_id, null);
                         $totalBalanceAmt += $parentAppConsumAmt;
