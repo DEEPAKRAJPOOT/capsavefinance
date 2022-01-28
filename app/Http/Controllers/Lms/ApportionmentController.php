@@ -105,17 +105,20 @@ class ApportionmentController extends Controller
             $paymentId = null;
             $payment = null;
             $payment_amt = 0;
-            $userDetails = $this->getUserDetails($userId); 
-            $unInvCnt = BizInvoice::where('supplier_id', $userId)->whereHas('invoice_disbursed')->where('is_repayment','0')->count();
+            $userDetails = $this->getUserDetails($userId);             
             $paySug = false;
             if($request->has('payment_id') && $request->payment_id){
                 $paymentId = $request->payment_id;
                 $payment = $this->getPaymentDetails($paymentId,$userId); 
                 $payment_amt = $payment['payment_amt']; 
-                if($unInvCnt <= 50 ){
+                $transList = self::getUnsettledTrans($userId, $payment['date_of_payment']);
+                $invDisbList = $transList->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.INTEREST_OVERDUE')])->pluck('invoice_disbursed_id')->toArray();
+                if(count($invDisbList) <= 50 ){
                     $paySug  = true;
                     $Obj = new ManualApportionmentHelperTemp($this->lmsRepo);
-                    $Obj->setTempInterest($paymentId);
+                    foreach($invDisbList as $invDisbId){
+                        $Obj->intAccrual($invDisbId, null, $payment['date_of_payment'], $paymentId);
+                    }
                     if(!$payment['isApportPayValid']){
                         Session::flash('error', trans('Please select Valid Payment!'));
                         return redirect()->back()->withInput();
