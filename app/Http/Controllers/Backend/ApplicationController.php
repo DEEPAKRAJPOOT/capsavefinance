@@ -952,14 +952,35 @@ class ApplicationController extends Controller
 								$endDate = date('Y-m-d', strtotime('+1 years -1 day'));
 								$parentAppId = $appData->parent_app_id;
 								$actualEndDate = $curDate;
-								$appLimitData = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $parentAppId]);
+								$appLimitData  = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $parentAppId]);
+								
+								$productId = 1;
+								$parentUserId = $appData->user_id;
+								$pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
+								$invUtilizedAmt = 0;
+								$currentAppLimitData  = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $app_id]);
+								foreach ($pAppPrgmLimit as $value) {
+									$attr=[];
+									$attr['user_id'] = $parentUserId;
+									$attr['app_id'] = $parentAppId;
+									$attr['anchor_id'] = $value->anchor_id;
+									$attr['prgm_id'] = $value->prgm_id;              
+									$attr['prgm_offer_id'] = $value->prgm_offer_id;
+									$invUtilizedAmt += self::invoiceAnchorLimitApprove($attr);
+								}
+
+								if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invUtilizedAmt > $currentAppLimitData[0]->tot_limit_amt) {
+									Session::flash('error_code', trans('backend_messages.reduction_utilized_amt_appoval_validation'));
+									return redirect()->back();
+								}
+
 								if (in_array($appData->app_type, [3])) {
 									$curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
 									$endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
 								}
 
 								$this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
-								$this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
+								$this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => $productId]);  
 								\Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                
 								$this->appRepo->updateAppData($parentAppId, ['status' => 3, 'is_child_sanctioned' => 2]);
 							}
@@ -983,7 +1004,7 @@ class ApplicationController extends Controller
 					$uploadDocStatus = $this->appRepo->isDocsUploaded($app_id, $docIds);                    
 					if(count($docIds) == 0 || !$uploadDocStatus)  {                    
 						Session::flash('error_code', 'no_post_docs_uploaded');
-						return redirect()->back();                                            
+						return redirect()->back();
 					}                                  
 				} else if ($currStage->stage_code == 'upload_pre_sanction_doc') {
 					

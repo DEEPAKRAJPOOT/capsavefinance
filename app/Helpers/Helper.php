@@ -1696,6 +1696,7 @@ class Helper extends PaypalHelper
                 $invUtilizedAmt = 0;
                 $invSettledAmt  = 0;
                 $pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
+
                 foreach ($pAppPrgmLimit as $value) {
                     $pTotalCunsumeLimit += $value->utilize_limit;
 
@@ -1703,13 +1704,12 @@ class Helper extends PaypalHelper
                     $attr['user_id'] = $parentUserId;
                     $attr['app_id'] = $parentAppId;
                     $attr['anchor_id'] = $value->anchor_id;
-                    $attr['prgm_id'] = $value->prgm_id;                     
-                    $invUtilizedAmt += $appRepo->getInvoiceUtilizedAmount($attr);      
-                    $invSettledAmt += $appRepo->getSettledInvoiceAmount($attr);      
+                    $attr['prgm_id'] = $value->prgm_id;              
+                    $attr['prgm_offer_id'] = $value->prgm_offer_id;
+                    $invUtilizedAmt += self::invoiceAnchorLimitApprove($attr);
+                    // $invUtilizedAmt += $appRepo->getInvoiceUtilizedAmount($attr);      
                 }
-
                 $result['parent_inv_utilized_amt'] = $invUtilizedAmt;
-                $result['parent_inv_settled_amt'] = $invSettledAmt;
 
                 $totalCunsumeLimit = $inputLimitAmt > 0 ? str_replace(',', '', $inputLimitAmt) : 0;
                 $appPrgmLimit = $appRepo->getUtilizeLimit($appId, 1, $checkApprLimit=false);
@@ -2446,5 +2446,25 @@ class Helper extends PaypalHelper
                                     ->where('app_id', $appId)
                                     ->where('is_active', 1)
                                     ->first();
+    }
+
+    public static function getAppTypeName($appType)
+    {
+        $name = '';
+        switch ($appType) {
+            case 0:
+                $name = 'Normal';
+                break;
+            case 1:
+                $name = 'Renewal';
+                break;
+            case 2:
+                $name = 'Limit Enhancement';
+                break;
+            case 3:
+                $name = 'Limit Reduction';
+                break;
+        }
+        return $name;
     }
 }

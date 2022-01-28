@@ -49,5 +49,6 @@ return [
     'validate_limit_rejected' => 'In case of limit rejected you cannot move the case to reviewer until the offer detail is updated or modified.',
     'amountNachValidate' => 'Outstanding Amount can not be greater than NACH max amount.',
     'batch_disbursed' => 'Batch successfully marked disbursed.',
+    'reduction_utilized_amt_appoval_validation' => 'You can\'t approve this application because Previous Utilized limit is greater than your current limit',
 ];
 
