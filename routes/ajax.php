@@ -1384,4 +1384,14 @@ Route::group(
         'as' => 'lms_send_invoice_over_due',
         'uses' => 'AjaxController@sendInvoiceOverdueReportByMail'
     ]);
+    //new sanction letter
+    Route::post('get-new-sanction-letter-list', [
+        'as' => 'get_new_sanction_letter_list',
+        'uses' => 'AjaxController@getNewSanctionLetterList'
+    ]);
+
+    Route::post('update-regenerate-sanction-letter', [
+        'as' => 'update_regenerate_sanction_letter',
+        'uses' => 'AjaxController@updateRegenerateSanctionLetter'
+    ]); 
 });

@@ -624,5 +624,146 @@ trait ApplicationTrait
 
         return $array;
 
-    }    
+    }
+    
+    protected function getNewSanctionLetterData($appId, int $bizId, $offerId=null, $sanctionID=null){
+        $offerWhereCond = [];
+        $appId = (int)$appId;
+        if ($offerId) {
+            $offerWhereCond['prgm_offer_id'] = $offerId;
+        } else {
+            $offerWhereCond['app_id'] = $appId;   
+            $offerWhereCond['is_active'] = 1; 
+        }
+       
+        $offerData = $this->appRepo->getOfferData($offerWhereCond);
+
+        if(!empty($offerData)){
+            $sanctionData = $this->appRepo->getOfferNewSanctionLetter($offerData->prgm_offer_id, $sanctionID);
+            $businessData = $this->appRepo->getApplicationById($bizId); 
+            $businessAddress = $businessData ? $businessData->address->where('address_type','2')->first() : null;
+            $cam =  Cam::select('contact_person')->where('biz_id',$bizId)->where('app_id',$appId)->first();
+            
+            $programLimitData = $this->appRepo->getLimit($offerData->app_prgm_limit_id);
+            $ptpqrData =  $this->appRepo->getOfferPTPQR($offerData->prgm_offer_id);
+            $equipmentData = null;
+            if($offerData->equipment_type_id){
+                $equipmentData = Equipment::find($offerData->equipment_type_id);
+            }
+    
+            $security_deposit_of = ''; 
+            switch ($offerData->security_deposit_of) {
+                case(4): $security_deposit_of = 'Sanction'; break;
+                case(3): $security_deposit_of = 'Asset Base Value'; break;
+                case(2): $security_deposit_of = 'Asset value'; break;
+                case(1): $security_deposit_of = 'Loan Amount'; break;
+            }
+            $data['contact_person'] = ($cam)?$cam->contact_person:'';
+            $data['sanction_id'] = ($sanctionData)?$sanctionData->sanction_letter_id:'';
+            $data['app_id'] = ($sanctionData)?$sanctionData->app_id:'';
+            $data['prgm_offer_id'] = ($sanctionData)?$sanctionData->prgm_offer_id:'';
+            $data['ref_no'] = ($sanctionData)?$sanctionData->ref_no:'';
+            $data['date_of_final_submission'] = ($sanctionData)?$sanctionData->date_of_final_submission:'';
+            $data['sanction_content'] = ($sanctionData)?$sanctionData->sanction_content:'';
+            $data['status'] = ($sanctionData)?$sanctionData->status:'';
+            $data['sanctionData'] = ($sanctionData)?$sanctionData:'';
+            $data['product_id'] = $programLimitData->product_id;
+            $data['biz_entity_name'] = $businessData ? $businessData->biz_entity_name : null;
+            $data['security_deposit_of'] = $security_deposit_of;
+            $data['offerId'] = $offerData->prgm_offer_id;
+            $data['equipmentData'] = $equipmentData;
+            $data['ptpqrData'] = $ptpqrData;
+            $data['businessAddress'] = $businessAddress;
+            $data['sanction_expire_msg'] = '';
+            $currentDate = date("Y-m-d");
+            if(empty($data['expire_date'])){
+                 $data['expire_date'] = date('Y/m/d', strtotime($currentDate. ' + 30 days'));
+            } 
+            if(isset($data['expire_date'])){
+                if(strtotime($currentDate) > strtotime($data['expire_date'])){
+                    $data['sanction_expire_msg'] = "Sanction Letter Expired.";
+                }
+            }
+               
+        }
+        $data['offerData'] = $offerData;
+        $data['appId'] = $appId;
+        $data['bizId'] = $bizId;
+
+        return $data;
+    }
+
+    
+    protected function getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId=null, $sanctionID=null){
+        $bizData = $this->appRepo->getApplicationById($bizId);
+        $EntityData  = $this->appRepo->getEntityByBizId($bizId);
+        $CamData  = $this->appRepo->getCamDataByBizAppId($bizId, $appId);
+        $AppLimitData  = $this->appRepo->getAppLimit($appId);
+        $supplyChainOfferData = $this->appRepo->appOfferWithLimit($appId);
+        $reviewerSummaryData = $this->appRepo->getReviewerSummaryData($appId, $bizId);
+
+        $user = $this->appRepo->getAppData($appId)->user;
+        //$anchors = $user->anchors;
+        $anchors = $this->userRepo->getAnchorsByUserId($user->user_id);
+        $anchorArr=[];
+        foreach($anchors as $anchor){
+          //$anchorArr[$anchor->anchor_id]  = $anchor->toArray();
+          $anchorArr[]  = $anchor->toArray();
+        }
+
+        $ProgramData = $supplyChainOffer = [];
+        if ($supplyChainOfferData->count()) {
+            $supplyChainOfferData = $supplyChainOfferData[0];
+            $supplyChainOffer = array_merge($supplyChainOfferData->programLimit->toArray(),$supplyChainOfferData->toArray());
+            $ProgramData = $this->appRepo->getProgramData(['prgm_id' => $supplyChainOffer['prgm_id']]);
+        }
+        $offerData = $this->appRepo->getAllOffers($appId, 1);
+        $tot_limit_amt = 0;
+        if (!empty($AppLimitData) && $AppLimitData->count()) {
+            $tot_limit_amt = $AppLimitData['tot_limit_amt'];
+        }
+        $CommunicationAddress = '';
+        if (!empty($bizData->address[1])) {
+            $AddressData = $bizData->address[1];
+            $stateName = $city_name = $pin_code = $addr_1 = "";
+            if (!empty($AddressData->state)) {
+               $stateName = $AddressData->state->name.' - ' ?? '';
+            }
+            if (!empty($AddressData->city_name)) {
+                $city_name = $AddressData->city_name. ', ' ?? '';
+             }
+             if (!empty($AddressData->pin_code)) {
+                $pin_code = $AddressData->pin_code ?? '';
+             }
+             if (!empty($AddressData->addr_1)) {
+                $addr_1 = $AddressData->addr_1. ', ' ?? '';
+             }
+            $CommunicationAddress = $addr_1 . $city_name . $stateName  . $pin_code;
+        }
+        $bizOwners = BizOwner::getCompanyOwnerByBizId($bizId);
+        $bizOwnerData = [];
+        if ($bizOwners->count()) {
+            foreach ($bizOwners as $key => $bizOwner) {
+                $bizOwnerData[$bizOwner['biz_owner_id']]  = $bizOwner->toArray();
+            }
+        }
+        $app_prgm_limit_id = $supplyChainOffer['app_prgm_limit_id'] ?? 0;
+        $data['ConcernedPersonName'] = $CamData['operational_person'] ?? NULL ;
+        $data['purpose'] = $CamData['t_o_f_purpose'] ?? NULL;
+        $data['EntityName'] = $bizData['biz_entity_name'];
+        $data['Address'] = $CommunicationAddress;
+        $data['EmailId'] = $EntityData['email'];
+        $data['MobileNumber'] = $EntityData['mobile_no'];
+        $data['limit_amt'] = $supplyChainOffer['limit_amt'] ?? 0;
+        $data['product_id'] = $supplyChainOffer['product_id'] ?? 0;
+        $data['prgm_type'] = $ProgramData['prgm_type'] ?? 0;
+        $data['product_name'] = $ProgramData['product_name'] ?? 0;
+        $data['tot_limit_amt'] = $tot_limit_amt;
+        $data['offerData'] = $offerData;
+        $data['reviewerSummaryData'] = $reviewerSummaryData;
+        $data['bizOwnerData'] = $bizOwnerData;
+        $data['anchorData'] = $anchorArr;
+        $data['amountInwords'] = numberTowords($data['limit_amt']);
+        return $data;
+    }
 }

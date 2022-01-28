@@ -50,6 +50,7 @@ class AppSanctionLetter extends BaseModel {
         'sanction_content', 
         'status', 
         'is_active',
+        'is_regenerated',
         'created_at',
         'created_by',
         'updated_at',        
@@ -63,7 +64,7 @@ class AppSanctionLetter extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getOfferSancationData($whereCondition=[])
+    public static function getOfferNewSancationLetterData($whereCondition=[])
     {
         //Check $whereCondition is not an array
         if (!is_array($whereCondition)) {
@@ -86,7 +87,7 @@ class AppSanctionLetter extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function getOfferSanction($offerId)
+    public static function getOfferNewSanctionLetter($offerId, $sanctionID)
     {
         /**
          * Check id is not blank
@@ -102,7 +103,7 @@ class AppSanctionLetter extends BaseModel {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        $sanction = self::where(['prgm_offer_id'=>$offerId, 'is_active'=>1])->first();;      
+        $sanction = self::where(['sanction_letter_id'=>$sanctionID,'prgm_offer_id'=>$offerId, 'is_active'=>1])->first();      
         return $sanction ? $sanction : null;
     }
 
@@ -115,7 +116,7 @@ class AppSanctionLetter extends BaseModel {
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
-    public static function saveSanctionData($sanctionData=[], $sanctionId=null)
+    public static function saveNewSanctionLetterData($sanctionData=[], $sanctionId=null)
     {
         //Check $whereCondition is not an array
         if (!is_array($sanctionData)) {
@@ -142,7 +143,7 @@ class AppSanctionLetter extends BaseModel {
      * @throws BlankDataExceptions
      * @throws InvalidDataTypeExceptions
      */
-    public static function updateSanctionByOfferId($offer_id, $arr = [])
+    public static function updateNewSanctionLetterByOfferId($offer_id, $arr = [])
     {
         /**
          * Check id is not blank
@@ -168,6 +169,31 @@ class AppSanctionLetter extends BaseModel {
         $rowUpdate = self::where('prgm_offer_id',(int) $offer_id)->update($arr);
 
         return ($rowUpdate ? $rowUpdate : false);
+    }
+
+    /**
+     * Get All Offer Data
+     * 
+     * @param int AppProgramOfferId
+     * @return mixed
+     * @throws InvalidDataTypeExceptions
+     */
+    public static function getOfferNewSanctionLetterData($whereCondition=[],$orderBy=false,$onlyFirst='no')
+    {
+        if($onlyFirst == 'yes'){
+            $sanction = self::where($whereCondition);
+            if($orderBy){
+                $sanction  = $sanction->orderBy($orderBy, 'DESC');
+            }
+            $sanction  =$sanction->first();
+        }else{
+            $sanction = self::where($whereCondition);
+            if($orderBy){
+                $sanction  = $sanction->orderBy($orderBy, 'DESC');
+            }
+            $sanction  =$sanction->get();
+        }      
+        return $sanction ? $sanction : null;
     }
 
    

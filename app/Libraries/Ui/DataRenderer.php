@@ -8343,4 +8343,94 @@ class DataRenderer implements DataProviderInterface
             })
             ->make(true);
     }
+
+    // get new sanction letter list
+    public function getNewSanctionLetterList(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['action'])
+            ->editColumn(
+                'status',
+                function ($data) {
+                    switch($data->status){
+                        case(1):
+                          $status = 'Incomplete';
+                          break;                          
+                        case(2):
+                           $status = 'Complete';
+                            break;
+                        case(3):
+                            $status =  'Regenerate';
+                            break;
+                        case(4):
+                            $status =  'Expired';
+                            break;
+                        default:
+                            $status =  'Pending';
+                    }
+                    return $status;
+                }
+            )
+            ->editColumn(
+                'created_by',
+                function ($data) {
+                    return \Helpers::getUserName($data->created_by);
+                }
+            ) 
+            ->editColumn(
+                'created_at',
+                function ($data) {
+                    return \Carbon\Carbon::parse($data->created_at)->format('d-m-Y H:i:s');
+                }
+            )  
+            ->editColumn('date_of_final_submission',  function ($data) {
+                if($data->date_of_final_submission){
+                   return \Carbon\Carbon::parse($data->date_of_final_submission)->format('d-m-Y');
+                }else{
+                    return 'N/A';
+                }
+            })
+            ->editColumn(
+                'action',
+                function ($data) {
+                $link = '';
+                if(Helpers::checkPermission('view_new_sanction_letter') ){
+                    $link .="<a href=\"".route('view_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' =>$data->sanction_letter_id, 'action_type' => 'view'] )."\" title='View' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-eye' aria-hidden='true'></i></a>";
+                }
+                if(Helpers::checkPermission('create_new_sanction_letter') ){
+                    if (in_array($data->status,[0,1])){
+                        $link .="<a href=\"".route('create_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' => $data->sanction_letter_id, 'action_type' => 'edit'] ) ."\" title='Edit' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></a>";
+                    }
+                }
+                if(Helpers::checkPermission('download_new_sanction_letter') ){
+                    $link .="<a href=\"".route('download_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' => $data->sanction_letter_id, 'action_type' => 'download'] ) ."\" title='Download' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-download' aria-hidden='true'></i></a>";
+                }
+                if(Helpers::checkPermission('update_regenerate_sanction_letter') ){
+                    if ($data->status == 2){
+                        if($data->is_regenerated == 1){
+                            $link .='<a href="javascript:void(0);" title="Regenerate" class="btn btn-action-btn btn-sm mr-1" id="regenerateButton" data-id="'.$data->sanction_letter_id.'"><i class="fa fa-repeat" aria-hidden="true"></i></a>';
+                        }
+                    }
+                }
+                return $link;
+                }
+            )
+            ->filter(function ($query) use ($request) {
+                   if (!empty($request->get('from_date')) && !empty($request->get('to_date'))) {               
+                        $query->where(function ($query) use ($request) {
+                            $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d H:i:s');
+                            $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d H:i:s');
+                            $query->whereBetween('date_of_final_submission',  [$from_date, $to_date]);
+                        });                        
+                    }
+                    if(!empty($request->get('ref_no'))){
+                        $query->where(function ($query) use ($request) {
+                           $ref_no = trim($request->get('ref_no'));
+                           $query->where('ref_no', 'like', "%$ref_no%");
+                        });
+                    }
+                    
+                })
+            ->make(true);
+    }
 }

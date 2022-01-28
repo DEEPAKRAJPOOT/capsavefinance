@@ -78,6 +78,7 @@ use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\UserNach;
 use App\Inv\Repositories\Models\Lms\NachBatch;
 use App\Inv\Repositories\Models\NachStatusLog;
+use App\Inv\Repositories\Models\AppSanctionLetter;
 
 /**
  * Application repository class
@@ -2568,6 +2569,20 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     
     public function getInvoiceProcessingFeeCharge(){
         return Charges::find(12);
+    }
+
+    public function saveNewSanctionLetterData($sanctionData=[], $sactionId=null)
+    {
+        $sanctionData = AppSanctionLetter::saveNewSanctionLetterData($sanctionData, $sactionId);
+        return $sanctionData ? $sanctionData : false;
+    }
+
+    public function getOfferNewSanctionLetter($offerId,$sanctionID){
+        return AppSanctionLetter::getOfferNewSanctionLetter($offerId,$sanctionID);
+    }
+
+    public function getOfferNewSanctionLetterData($whereCondition=[], $orderBy='sanction_letter_id', $onlyFirst='no'){
+        return AppSanctionLetter::getOfferNewSanctionLetterData($whereCondition, $orderBy, $onlyFirst);
     }
 }
 

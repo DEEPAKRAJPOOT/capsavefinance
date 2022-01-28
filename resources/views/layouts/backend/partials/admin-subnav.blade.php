@@ -76,10 +76,10 @@
     </li>
     @endcan
     {{--@endif--}}
-    {{-- @can('list_new_sanction_letter') --}}
+    @can('list_new_sanction_letter')
     <li>
         <a href="{{ route('list_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/new-sanction-letter','application/create-new-sanction-letter','application/view-new-sanction-letter') ? 'active' : '' }}">New Sanction Letter</a>
     </li>
-    {{-- @endcan    --}}
+    @endcan   
 
 </ul>

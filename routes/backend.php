@@ -584,7 +584,7 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\DocumentController@seeUploadFile'
 
             ]);
-
+            //New Sanction Letter
             Route::get('new-sanction-letter', [
                 'as' => 'list_new_sanction_letter',
                 'uses' => 'Backend\ApplicationController@ListNewSanctionLetter'
@@ -603,6 +603,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
             Route::get('view-new-sanction-letter', [
                 'as' => 'view_new_sanction_letter',
                 'uses' => 'Backend\ApplicationController@viewNewSanctionLetterSupplyChain',
+            ]);
+
+            Route::get('download-new-sanction-letter', [
+                'as' => 'download_new_sanction_letter',
+                'uses' => 'Backend\ApplicationController@downloadNewSanctionLetterSupplyChain',
             ]);
            
             //start section cam
