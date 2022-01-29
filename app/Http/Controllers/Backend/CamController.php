@@ -1720,7 +1720,31 @@ class CamController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
             $userId = $request->has('user_id') ? $request->get('user_id') : null;
-            
+
+            $appData = $this->appRepo->getAppData($appId);
+            if ($appData && in_array($appData->app_type, [3]) ) {
+								$parentAppId = $appData->parent_app_id;
+								$parentUserId = $appData->user_id;
+								$productId = 1;
+								$invUtilizedAmt = 0;
+								$pAppPrgmLimit = $this->appRepo->getUtilizeLimit($parentAppId, $productId);
+								$currentAppLimitData  = $this->appRepo->getAppLimitData(['user_id' => $parentUserId, 'app_id' => $appId]);
+								foreach ($pAppPrgmLimit as $value) {
+									$attr=[];
+									$attr['user_id'] = $parentUserId;
+									$attr['app_id'] = $parentAppId;
+									$attr['anchor_id'] = $value->anchor_id;
+									$attr['prgm_id'] = $value->prgm_id;              
+									$attr['prgm_offer_id'] = $value->prgm_offer_id;
+									$invUtilizedAmt += Helpers::invoiceAnchorLimitApprove($attr);
+								}
+
+              if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invUtilizedAmt > $currentAppLimitData[0]->tot_limit_amt) {
+                Session::flash('error', trans('backend_messages.reduction_utilized_amt_appoval_validation'));
+                return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
+              }
+            }
+
             $appApprData = [
                 'app_id' => $appId,
                 'approver_user_id' => \Auth::user()->user_id,
@@ -1883,7 +1907,7 @@ class CamController extends Controller
         $offerIsExist = \Helpers::checkAnchorPrgmOfferDuplicate($prgm_data->anchor_id, $program_id, $appId);
 
         if ((!$prgmOfferId && $offerIsExist) || ($prgmOfferId && $offerIsExist && $prgmOfferId != $offerIsExist->prgm_offer_id)) {
-          Session::flash('message', 'Anchor Offer is already generated for this program.');
+          Session::flash('error', 'Anchor Offer is already generated for this program.');
           return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
         }
         
@@ -1891,11 +1915,11 @@ class CamController extends Controller
           $anchorPrgmLimit =  $this->getAnchorProgramLimit($appId, $program_id, $prgmOfferId);
           
           if($request->prgm_limit_amt > $anchorPrgmLimit['prgmBalLimitAmt']) {
-            Session::flash('message', 'Program limit amount should not be greater than the balance limit.');
+            Session::flash('error', 'Program limit amount should not be greater than the balance limit.');
             return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
           }
           if ($request->prgm_limit_amt > $anchorPrgmLimit['anchorBalLimitAmt']) {
-            Session::flash('message', 'Program limit amount should not be greater than the anchor balance limit.');
+            Session::flash('error', 'Program limit amount should not be greater than the anchor balance limit.');
             return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
           }
 
@@ -1917,7 +1941,7 @@ class CamController extends Controller
             }
 
             if ($request->prgm_limit_amt <= $invUtilizedAmt) {
-              Session::flash('message', 'Program Limit amount can\'t be less than or equal to the previous utilized limit.');
+              Session::flash('error', 'Program Limit amount can\'t be less than or equal to the previous utilized limit.');
               return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
             }
           }

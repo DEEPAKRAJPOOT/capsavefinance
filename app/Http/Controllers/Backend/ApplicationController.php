@@ -970,7 +970,7 @@ class ApplicationController extends Controller
 								}
 
 								if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invUtilizedAmt > $currentAppLimitData[0]->tot_limit_amt) {
-									Session::flash('error_code', trans('backend_messages.reduction_utilized_amt_appoval_validation'));
+									Session::flash('error_code', trans('backend_messages.reduction_utilized_amt_validation_for_approver'));
 									return redirect()->back();
 								}
 
