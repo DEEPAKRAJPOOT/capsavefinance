@@ -2276,11 +2276,18 @@ class ApplicationController extends Controller
 		if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
 			$offerId = $request->get('offer_id');
 		}
+		$appData = $this->appRepo->getAppDataByAppId($appId);
+		// if($appData->status != 2){
+		// 	Session::flash('message','Application does not Sanctioned. Please try again!');
+		// 	return redirect()->back();
+		// }
 		$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
 		//$sanctionLetterdata = $this->appRepo->getOfferNewSanctionLetterData();
-		$sanctionFirstData =$this->appRepo->getOfferNewSanctionLetterData([],'sanction_letter_id','yes');
+		$whereCondition = [];
+		$whereCondition['app_id'] = $appId;
+		$sanctionFirstData =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,'sanction_letter_id','yes');
 		//dd($sanctionFirstData);
-		return view('backend.app.new_sanction_letter_list')->with(['supplyChaindata'=>$supplyChaindata,'sanctionFirstData'=>$sanctionFirstData]);  
+		return view('backend.app.new_sanction_letter_list')->with(['supplyChaindata'=>$supplyChaindata,'sanctionFirstData'=>$sanctionFirstData,'appData'=>$appData]);  
 	}
 
 	/**
@@ -2302,7 +2309,14 @@ class ApplicationController extends Controller
 		if ($request->has('sanction_letter_id') && !empty($request->get('sanction_letter_id'))) {
 			$sanctionId = $request->get('sanction_letter_id');
 		}
-		$sanctionFirstData =$this->appRepo->getOfferNewSanctionLetterData([],'sanction_letter_id','yes');
+		$appData = $this->appRepo->getAppDataByAppId($appId);
+		if($appData->status != 2){
+			Session::flash('message','Application does not Sanctioned. Please try again!');
+			return redirect()->back();
+		}
+		$whereCondition = [];
+		$whereCondition['app_id'] = $appId;
+		$sanctionFirstData =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,'sanction_letter_id','yes');
 		if(!empty($sanctionFirstData) && $sanctionFirstData->status != 3 && $action_type === 'add'){
 			Session::flash('message','Does not create new sanction letter.Please click on Regenerate icon, Please try again!');
 			return redirect()->back();
@@ -2333,6 +2347,7 @@ class ApplicationController extends Controller
 	 */  
 	public function saveNewSanctionLetterSupplyChain(Request $request){
 		try {
+			//dd($request->all());
 			$arrFileData = $request->all();
 			$appId = (int)$request->app_id; 
 			$offerId = (int)$request->offer_id; 
@@ -2365,7 +2380,9 @@ class ApplicationController extends Controller
 			}else if($arrFileData['action_type'] === 'update'){
                 $status = 1;
 			}else if($arrFileData['action_type'] === 'final_submit_create'){
-				$sanctionFirstData =$this->appRepo->getOfferNewSanctionLetterData([],'sanction_letter_id','yes');
+				$whereCondition = [];
+		        $whereCondition['app_id'] = $appId;
+				$sanctionFirstData =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,'sanction_letter_id','yes');
 				if(!empty($sanctionFirstData) && $sanctionFirstData->status != 3 && $arrFileData['action_type_url'] === 'add'){
 					Session::flash('message','Does not create new sanction letter, Please try again!');
 					return redirect()->route('list_new_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);
@@ -2423,7 +2440,8 @@ class ApplicationController extends Controller
 	 * @return View
 	 */
 	public function viewNewSanctionLetterSupplyChain(Request $request)
-	{  
+	{   
+		//dd($request->all());
 		$appId = $request->get('app_id');
 		$bizId = $request->get('biz_id');
 		$sanctionId = $request->get('sanction_letter_id');
@@ -2436,7 +2454,7 @@ class ApplicationController extends Controller
 		$whereCondition['sanction_letter_id'] = $sanctionId;
 		$supplyChainForm =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,null,'yes');
 		$supplyChainFormData = $arrayOfferData = [];
-		if (!empty($supplyChainForm) && $action_type == 'view') {
+		if (!empty($supplyChainForm) && ($action_type == 'view' || $action_type == 'preview')) {
 			//dd($supplyChainForm);
 		  	$supplyChainFormData = json_decode(base64_decode($supplyChainForm['sanction_content'],true)); 
 			$arrayOfferData = (array) $supplyChainFormData->offerData;
@@ -2445,6 +2463,20 @@ class ApplicationController extends Controller
 		$data = $this->getNewSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
 		$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
 		$appLimit = $this->appRepo->getAppLimit((int)$appId);
+		if($action_type == 'preview'){
+			$dataA = [
+				'supplyChaindata' => $supplyChaindata,
+				'supplyChainFormData' => $supplyChainFormData,
+				'appLimit' => $appLimit, 
+				'action_type' => $action_type,
+				'arrayOfferData' => $arrayOfferData,
+				'date_of_final_submission' => $data['date_of_final_submission'],
+				'sanctionData'  => $data['sanctionData'],
+				'appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'sanctionId' => $sanctionId,'download'=> false
+	
+			];
+			return $this->downloadNewSanctionLetterAsPDF($dataA, false);
+		}
 		return view('backend.app.view_new_sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit, 'action_type'=>$action_type,'arrayOfferData'=>$arrayOfferData]);  
 	}
 	
@@ -2489,12 +2521,82 @@ class ApplicationController extends Controller
      */
     public function downloadNewSanctionLetterAsPDF($pdfData = [], $download = false) {
         view()->share($pdfData);
-        ini_set("memory_limit", "-1");
+        set_time_limit(600);
         if ($download==true) {
+		  ob_start();
           $pdf = NewPDF::loadView('backend.app.generate_new_sanction_letter');
-          return $pdf->download('pdfview.pdf');
+		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'defaultPaperSize'=>'a4']);
+		  $pdf->setPaper('A4', 'Portrait');
+          return $pdf->stream('sanction.pdf');
         }
-        return view('backend.app.generate_new_sanction_letter');
+        $html = view('backend.app.preview_new_sanction_letter')->render();
+		return  $html;
     }
+
+	/**
+	 * Send New sanction letter
+	 * 
+	 * @return \Illuminate\Http\Response
+	 */
+	public function sendNewSanctionLetterSupplyChainMail(Request $request)
+	{
+		try {
+			//dd($request->all());
+			$appId = $request->get('app_id');
+			$bizId = (int) $request->get('biz_id');
+			$sanctionId = $request->get('sanction_letter_id');
+			$action_type = $request->get('action_type');
+			$offerId = null;
+			if ($request->has('offer_id') && !empty($request->get('offer_id'))) {
+				$offerId = $request->get('offer_id');
+			}
+			$whereCondition = [];
+			$whereCondition['sanction_letter_id'] = $sanctionId;
+			$supplyChainForm =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,null,'yes');
+			$supplyChainFormData = $arrayOfferData = [];
+			if (!empty($supplyChainForm) && $action_type == 'mail') {
+				//dd($supplyChainForm);
+				$supplyChainFormData = json_decode(base64_decode($supplyChainForm['sanction_content'],true)); 
+				$arrayOfferData = (array) $supplyChainFormData->offerData;
+			}
+			// $data = $this->getSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
+			$santionData = $this->getNewSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
+			$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
+			$appLimit = $this->appRepo->getAppLimit((int)$appId);
+			$data = [
+				'supplyChaindata' => $supplyChaindata,
+				'supplyChainFormData' => $supplyChainFormData,
+				'appLimit' => $appLimit, 
+				'action_type' => $action_type,
+				'arrayOfferData' => $arrayOfferData,
+				'date_of_final_submission' => $santionData['date_of_final_submission'],
+				'sanctionData'  => $santionData['sanctionData'],
+				'appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'sanctionId' => $sanctionId,'download'=> false
+
+			];
+			$htmlContent = view('backend.app.generate_new_sanction_letter')->with($data)->render();
+			$userData =  $this->userRepo->getUserByAppId($appId);
+			$emailData['email'] = $userData->email;
+			$emailData['name'] = $userData->f_name . ' ' . $userData->l_name;
+			$emailData['body'] = $htmlContent;
+			$emailData['attachment'] = $this->pdf->render($htmlContent);
+			$emailData['subject'] ="Sanction Letter for SupplyChain";
+			\Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
+			Session::flash('message',trans('Sanction Letter for Supply Chain sent successfully.'));
+
+            $whereActivi['activity_code'] = 'send_sanction_letter_supplychain';
+            $activity = $this->masterRepo->getActivity($whereActivi);
+            if(!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Send mail Sanction Letter Of Supplychain My Application in Manage Application. AppID '. $appId;
+                $arrActivity['app_id'] = $appId;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['supplyChaindata'=>$supplyChaindata,'supplyChainFormData'=>$supplyChainFormData]), $arrActivity);
+            }			
+			
+			return redirect()->back()->with('is_send',1);
+		} catch (Exception $ex) {
+			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+		}
+	}
     
 }

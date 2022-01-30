@@ -609,6 +609,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'download_new_sanction_letter',
                 'uses' => 'Backend\ApplicationController@downloadNewSanctionLetterSupplyChain',
             ]);
+
+            Route::post('send-new-sanction-letter-on-mail', [
+                'as' => 'send_new_sanction_letter_on_mail',
+                'uses' => 'Backend\ApplicationController@sendNewSanctionLetterSupplyChainMail',
+            ]);
            
             //start section cam
              Route::group(['prefix' => 'cam'], function () {

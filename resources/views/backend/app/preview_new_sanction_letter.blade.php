@@ -1,47 +1,80 @@
-@extends('layouts.backend.admin-layout')
-@section('additional_css')
-@endsection
+@extends('layouts.backend.admin_popup_layout')
+
 @section('content')
-@include('layouts.backend.partials.admin-subnav')
-@php $actionText = (!empty($actionType) && $actionType == 'add')?'Create':'Edit'; @endphp
-@php $actionIcon = (!empty($actionType) && $actionType == 'add')?'fa fa-plus':'fa fa-pencil'; @endphp
-<div class="content-wrapper">
-    <section class="content-header">
-        <div class="header-icon">
-            <i class="{{ $actionIcon }}"></i>
-        </div>
-        <div class="header-title">
-            <h3>{{ $actionText }} Sanction Letter</h3>
-            <small>{{ $actionText }} Sanction Letter</small>
-            <ol class="breadcrumb">
-                <li style="color:#374767;"> Home </li>
-                <li style="color:#374767;">New Sanction Letter</li>
-                <li class="active">{{ $actionText }} Sanction Letter</li>
-            </ol>
-        </div>
-    </section>
+<style>
+    .alert {
+      padding: 8px;
+      background-color: #387d38;
+      color: #FFF;
+      border-radius: 5px;
+    }
+    .closebtn {
+      margin-left: 15px;
+      color: white;
+      font-weight: bold;
+      float: right;
+      font-size: 22px;
+      line-height: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .closebtn:hover {
+      color: black;
+    }
+    .overlay {
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      background: #141415ad;
+      z-index: 1;
+  }
+  .overlay__inner {
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+  }
+  .overlay__content {
+      left: 50%;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: #FFF;
+  }
+  .spinner {
+      width: 40px;
+      height: 40px;
+      display: inline-block;
+      border-width: 2px;
+      border-color: rgba(255, 255, 255, 0.05);
+      border-top-color: #fff;
+      animation: spin 1s infinite linear;
+      border-radius: 100%;
+      border-style: solid;
+      vertical-align: middle;
+  }
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  @media print {
+    @page {size: A4 portrait; margin: 0; }
+    body {margin: 0;}
+  }
+  </style>
+<div id="overlay" class="overlay" style="display: none;">
+    <div class="overlay__inner">
+        <div class="overlay__content">Sending Email....  &nbsp;<span class="spinner">wait</span></div>
+    </div>
+</div>
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="form-group mb-0 justify-content-between pull-right">
-                        @if($actionType != 'download')
-                            {{-- @if(in_array($sanctionData->status,[0,1,2,3])) --}}
-                        @php 
-                            $limitValidityEndDate = $appLimit->actual_end_date ?? $appLimit->end_date ?? NULL;
-                        @endphp
-                        <span class="badge badge-info mb-3">
-                            Limit Validity: From Date 
-                            {{ isset($appLimit->start_date)? Carbon\Carbon::parse($appLimit->start_date)->format('d/m/Y'):'N/A' }} - To Date 
-                            {{ isset($limitValidityEndDate)? Carbon\Carbon::parse($limitValidityEndDate)->format('d/m/Y'):'N/A' }}
-                        </span>
-                         <!-- add limit validity date -->
-                            @else
-                        {{-- @endif --}}
-                    @endif
-                    </div>
-                    <form action="{{route('save_new_sanction_letter')}}" method="post" id="new_sanction_letter_form" onSubmit="return submitAlert();">
-                        @csrf
                         <div class=" form-fields">
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify;">
                                 <thead>
@@ -67,7 +100,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <span><b>Kind Attention :</b> {{ $supplyChaindata['ConcernedPersonName'] }} <input type="text" style="width:250px; height:30px;" name="operational_person" id="operational_person" value="{{ $supplyChainFormData->operational_person??'' }}"></span>
+                                            <span><b>Kind Attention :</b> {{ $supplyChaindata['ConcernedPersonName'] }}{{ $supplyChainFormData->operational_person??'' }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -80,12 +113,8 @@
                                     <tr>
                                         <td>
                                             <span>
-                                                <b>Dear :</b>
-                                                <select style="width:150px; height:30px;" name="title" id="title">
-                                                    <option {{ isset($supplyChainFormData->title) && $supplyChainFormData->title == 'sir'?'selected':'' }}>Sir</option>
-                                                    <option {{ isset($supplyChainFormData->title) && $supplyChainFormData->title == 'Madam'?'selected':'' }}>Madam</option>
-                                                    <option {{ isset($supplyChainFormData->title) && $supplyChainFormData->title == 'Sir/Madam'?'selected':'' }}>Sir/Madam</option>
-                                                </select>
+                                                <b>Dear  </b>
+                                                         {{ $supplyChainFormData->title??'' }},
                                             </span>
                                         </td>
                                     </tr>
@@ -225,12 +254,12 @@
                                                 <tr>
                                                     <td valign="top"><b>Facility Tenor</b></td>
                                                     <td>
-                                                        <input type="text" value="{{ $arrayOfferData[$offerD->prgm_offer_id]->facility_tenor??'3 months' }}" name="offerData[{{ $offerD->prgm_offer_id }}][facility_tenor]" id="facility_tenor" style=" min-height:30px;padding:0 5px; " class="facility_tenor">
+                                                        {{ $arrayOfferData[$offerD->prgm_offer_id ]->facility_tenor??'' }}
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Purpose of the facility</b></td>
-                                                    <td><input type="text" value="{{ $arrayOfferData[$offerD->prgm_offer_id ]->purpose_of_the_facility??'Working Capital' }}" name="offerData[{{ $offerD->prgm_offer_id }}][purpose_of_the_facility]" id="purpose_of_the_facility" style=" min-height:30px;padding:0 5px; margin-top:5px;">
+                                                    <td>{{ $arrayOfferData[$offerD->prgm_offer_id ]->purpose_of_the_facility??'' }}
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -244,33 +273,30 @@
                                                     <td>Upto {{$offerD->tenor}} days from date of disbursement of each tranche
                                                     </td>
                                                 </tr>
+                                                @if($offerD->grace_period)
                                                 <tr>
                                                     <td valign="top"><b>Grace Period</b></td>
-                                                    <td>{{($offerD->grace_period)? $offerD->grace_period.' days':'NIL'}} (in case grace period is nil in offer – not to capture in
-                                                        final
-                                                        SL)
+                                                    <td>{{($offerD->grace_period)? $offerD->grace_period.' days':''}}
                                                     </td>
-                                                </tr>
+                                                </tr>  
+                                                @endif
                                                 <tr>
                                                     <td valign="top"><b>Old Invoice</b></td>
-                                                    <td>Borrower can submit invoices not older <input type="text" value="{{ $arrayOfferData[$offerD->prgm_offer_id ]->old_invoice??'than' }}" name="offerData[{{ $offerD->prgm_offer_id }}][old_invoice]" id="old_invoice" style=" min-height:30px;padding:0 5px; margin-top:5px;"> {{$offerD->tenor_old_invoice}}
+                                                    <td>Borrower can submit invoices not older {{ $arrayOfferData[$offerD->prgm_offer_id ]->old_invoice??'' }} {{$offerD->tenor_old_invoice}}
                                                         days
-                                                        (deviation upto <input type="text" value="{{ $arrayOfferData[$offerD->prgm_offer_id ]->deviation_first_disbursement??'90' }}" name="offerData[{{ $offerD->prgm_offer_id }}][deviation_first_disbursement]" id="deviation_first_disbursement" style=" min-height:30px;padding:0 5px; margin-top:5px;">
+                                                        (deviation upto {{ $arrayOfferData[$offerD->prgm_offer_id ]->deviation_first_disbursement??'' }}
                                                         days for first disbursement)
                                                     </td>
                                                 </tr>
+                                                @if($offerD->margin)
                                                 <tr>
                                                     <td valign="top"><b>Margin</b></td>
                                                     <td>
-                                                        {{($offerD->margin	)? $offerD->margin:'NIL'}}% on invoice
-                                                        <select style="min-height:30px; padding:0 5px; min-width:180px;" name="offerData[{{ $offerD->prgm_offer_id }}][margin]" id="margin">
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->margin) && $arrayOfferData[$offerD->prgm_offer_id ]->margin == 'Purchase Order'?'selected':'' }}>Purchase Order</option>
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->margin) && $arrayOfferData[$offerD->prgm_offer_id ]->margin == 'Invoice'?'selected':'' }}>Invoice</option>
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->margin) && $arrayOfferData[$offerD->prgm_offer_id ]->margin == 'Proforma Invoice'?'selected':'' }}>Proforma Invoice</option>
-                                                        </select>
-                                                        (in case margin is nil in offer – not to capture in final SL)
+                                                        {{($offerD->margin	)? $offerD->margin:''}}% on invoice
+                                                        {{ $arrayOfferData[$offerD->prgm_offer_id ]->margin??'' }}
                                                     </td>
                                                 </tr>
+                                                @endif
                                                 <tr>
                                                     <td valign="top"><b>Interest frequency </b></td>
                                                     <td>
@@ -303,10 +329,7 @@
                                                                 </td>
                                                                 <td valign="top">
                                                                     Lender shall charge monthly interest to the
-                                                                    <select style="min-height:30px; padding:0 5px; min-width:180px;" name="offerData[{{ $offerD->prgm_offer_id }}][lender_shall_charge]" id="lender_shall_charge">
-                                                                        <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->lender_shall_charge) && $arrayOfferData[$offerD->prgm_offer_id ]->lender_shall_charge == 'Anchor'?'selected':'' }}>Anchor</option>
-                                                                        <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->lender_shall_charge) && $arrayOfferData[$offerD->prgm_offer_id ]->lender_shall_charge == 'Borrower'?'selected':'' }}>Borrower</option>
-                                                                    </select>
+                                                                    {{ $arrayOfferData[$offerD->prgm_offer_id]->lender_shall_charge??'' }}
                                                                     at the month end based on utilization done during
                                                                     the
                                                                     month. (Interest need to be paid by the borrower
@@ -319,20 +342,20 @@
                                                         </table>
                                                     </td>
                                                 </tr>
+                                                @php
+                                                    $processingCharges = ($offerD->BizInvoice->invoice_disbursed->processing_fee ?? 0) + ($offerD->BizInvoice->invoice_disbursed->processing_fee_gst ?? 0);
+                                                @endphp
+                                               @if($processingCharges)
                                                 <tr>
                                                     <td valign="top"><b>One time Processing Charges at the time of
                                                             Sanction
                                                             of credit facility</b></td>
                                                     <td>
-                                                        {{ ($offerD->BizInvoice->invoice_disbursed->processing_fee ?? 0) + ($offerD->BizInvoice->invoice_disbursed->processing_fee_gst ?? 0) }}% of the sanctioned limit + applicable taxes payable by the
-                                                        <select style="min-height:30px; padding:0 5px; min-width:180px;" name="offerData[{{ $offerD->prgm_offer_id }}][one_time_processing_charges]" id="one_time_processing_charges">
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges) &&  $arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges == 'Purchase Order'?'selected':'' }}>Purchase Order</option>
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges) &&  $arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges == 'Invoice'?'selected':'' }}>Invoice</option>
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges) &&  $arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges == 'Proforma Invoice'?'selected':'' }}>Proforma Invoice</option>
-                                                        </select>
-                                                        . *(If Nil is selected in offer– not to capture in final SL).
+                                                        {{ $processingCharges }}% of the sanctioned limit + applicable taxes payable by the
+                                                        {{$arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges??'' }}.
                                                     </td>
                                                 </tr>
+                                                @endif
                                                 <tr>
                                                     <td valign="top"><b>Penal Interest</b></td>
                                                     <td>
@@ -406,13 +429,7 @@
                                                 <tr>
                                                     <td valign="top"><b>Payment mechanism</b></td>
                                                     <td>
-                                                        <select style="min-height:30px; padding:0 5px; min-width:180px;" name="offerData[{{ $offerD->prgm_offer_id }}][payment_mechanism]" id="payment_mechanism">
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) && $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism == 'NACH Mandate from the Borrower.'?'selected':'' }}>NACH Mandate from the Borrower.</option>
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) && $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism == 'RTGS from its customers on or before due date.'?'selected':'' }}>RTGS from its customers on or before due date.
-                                                            </option>
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) && $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism == 'Repayment through NACH/PDC/RTGS/NEFT from Anchor on or before due date.'?'selected':'' }}>Repayment through NACH/PDC/RTGS/NEFT from Anchor on
-                                                                or before due date.</option>
-                                                        </select>
+                                                        {{ $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism??'' }}
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -435,7 +452,7 @@
                                                                     working capital account
                                                                     (in case of re-imbursement) post receiving
                                                                     confirmation
-                                                                    from <input type="text" value="{{ $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process ??'Anchor' }}" style=" min-height:30px;padding:0 5px; margin-top:5px;" name="offerData[{{ $offerD->prgm_offer_id }}][transaction_process]" id="transaction_process">.
+                                                                    from {{ $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process ??'' }}.
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -498,7 +515,7 @@
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify; margin-top:25px;">
                                 <thead>
                                     <tr>
-                                        <th bgcolor="#cccccc" class="text-center" height="30"> <input type="text" value="{{ $supplyChainFormData->annexure_general_terms_and_condition ??'Annexure II - General Terms and Conditions' }}" style=" min-height:30px;padding:0 5px; min-width:300px;" name="annexure_general_terms_and_condition" id="annexure_general_terms_and_condition"></th>
+                                        <th bgcolor="#cccccc" class="text-center" height="30"> {{ $supplyChainFormData->annexure_general_terms_and_condition ??'' }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -507,12 +524,12 @@
                                             <table width="100%" border="1">
                                                 <tr>
                                                     <td width="30%" valign="top"><b>Review Date</b></td>
-                                                    <td><input type="date" name="review_date" id="review_date" style="min-height:30px;" value="{{ $supplyChainFormData->review_date ??'' }}"></td>
+                                                    <td>{{ $supplyChainFormData->review_date?\Carbon\Carbon::parse($supplyChainFormData->review_date)->format('dS F Y'):'' }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Sanction validity for first disbursement</b>
                                                     </td>
-                                                    <td><input type="text" value="{{ $supplyChainFormData->sanction_validity_for_first_disbursement ??'60 days' }}" name="sanction_validity_for_first_disbursement" id="sanction_validity_for_first_disbursement" style=" min-height:30px;padding:0 5px; "> from the date of
+                                                    <td>{{ $supplyChainFormData->sanction_validity_for_first_disbursement ??'' }} from the date of
                                                         sanction.</td>
                                                 </tr>
                                                 <tr>
@@ -523,25 +540,14 @@
                                                             @foreach($supplyChainFormData->defaultEvent as $defaultEvent)
                                                             <tr>
                                                                 <td valign="top" width="1%">●</td>
-                                                                <td><input type="text" value="{{ $defaultEvent }}" name="defaultEvent[]" style=" min-height:30px;padding:0 5px; min-width:100%;">
+                                                                <td>{{ $defaultEvent??'' }}
                                                                 </td>
                                                             </tr>
                                                             @endforeach
                                                             @else
-                                                            <tr>
-                                                                <td valign="top" width="1%">●</td>
-                                                                <td><input type="text" value="Payments not received on or before the due date will be treated as overdue / default by the Borrower." name="defaultEvent[]" style=" min-height:30px;padding:0 5px; min-width:100%;"> </td>
-                                                             </tr>
-                                                             <tr>
-                                                                <td valign="top" width="1%">●</td>
-                                                                <td><input type="text" value="No further disbursement will be made in case of any default under the Facility." name="defaultEvent[]" style=" min-height:30px;padding:0 5px; min-width:100%;"></td>
-                                                             </tr>
+                                                            
                                                             @endif
                                                         </table>
-                                                        <span class="btn btn-danger btn-sm remove_defaultevent" style="float: right;margin: 5px;cursor: pointer;">Remove
-                                                            -</span>
-                                                        <span class="btn btn-success btn-sm clone_defaultevent" style="float: right;margin: 5px;cursor: pointer;">Add More
-                                                            +</span>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -567,13 +573,7 @@
                                                                         <tr>
                                                                             <td valign="top" width="1%">●</td>
                                                                             <td>
-                                                                                <select style="width:20%; min-height:30px; padding:0 5px; margin-top:10px;" name="general_pre_disbursement_conditions" id="general_pre_disbursement_conditions">
-                                                                                    <option value="Certificate of incorporation, MOA, AOA" {{ isset($supplyChainFormData->general_pre_disbursement_conditions) &&$supplyChainFormData->general_pre_disbursement_conditions == 'Certificate of incorporation, MOA, AOA'?'selected':'' }}>Private /Public Limited</option>
-                                                                                    <option value="Partnership Deed" {{ isset($supplyChainFormData->general_pre_disbursement_conditions) &&$supplyChainFormData->general_pre_disbursement_conditions == 'Partnership Deed'?'selected':'' }}> Partnership Firm
-                                                                                    </option>
-                                                                                    <option value="Shop and Establishment registration certificate / Udyog Aadhar" {{ isset($supplyChainFormData->general_pre_disbursement_conditions) &&$supplyChainFormData->general_pre_disbursement_conditions == 'Shop and Establishment registration certificate / Udyog Aadhar'?'selected':'' }}> Proprietorship firm
-                                                                                    </option>
-                                                                                </select>
+                                                                                {{ $supplyChainFormData->general_pre_disbursement_conditions??'' }}
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -595,11 +595,7 @@
                                                             <tr>
                                                                 <td valign="top" width="1%"><b>4.</b></td>
                                                                 <td>
-                                                                    <select style="width:200px; min-height:30px; padding:0 5px; margin-top:10px;" name="general_pre_disbursement_conditions_second" id="general_pre_disbursement_conditions_second">
-                                                                        <option value="Board Resolution" {{ isset($supplyChainFormData->general_pre_disbursement_conditions_second) &&$supplyChainFormData->general_pre_disbursement_conditions_second == 'Board Resolution'?'selected':'' }}>BR</option>
-                                                                        <option value="Partnership Authority Letter" {{ isset($supplyChainFormData->general_pre_disbursement_conditions_second) &&$supplyChainFormData->general_pre_disbursement_conditions_second == 'Partnership Authority Letter'?'selected':'' }}>PAL</option>
-                                                                        <option value="Proprietorship Declaration" {{ isset($supplyChainFormData->general_pre_disbursement_conditions_second) &&$supplyChainFormData->general_pre_disbursement_conditions_second == 'Proprietorship Declaration'?'selected':'' }}>PD</option>
-                                                                    </select> signed by 2
+                                                                    {{ $supplyChainFormData->general_pre_disbursement_conditions_second??'' }} signed by 2
                                                                     directors or Company Secretary in favour of company
                                                                     officials to execute such agreements or
                                                                     documents.
@@ -639,26 +635,14 @@
                                                 <tr>
                                                     <td width="30%" valign="top"><b>Monitoring Covenants</b></td>
                                                     <td>
-                                                        <select style="width:200px; min-height:30px; padding:0 5px;" name="monitoring_covenants_select" id="monitoring_covenants_select">
-                                                            <option {{  isset($supplyChainFormData->monitoring_covenants_select) &&$supplyChainFormData->monitoring_covenants_select == 'Applicable'?'selected':'' }}>Applicable</option>
-                                                            <option {{  isset($supplyChainFormData->monitoring_covenants_select) &&$supplyChainFormData->monitoring_covenants_select == 'Not applicable'?'selected':'' }}>Not applicable</option>
-                                                        </select>
-                                                        @php
-                                                        $class = '';  
-                                                        @endphp 
-                                                  @if(!empty($supplyChainFormData))
-                                                     @if(isset($supplyChainFormData->monitoring_covenants_select)  &&$supplyChainFormData->monitoring_covenants_select == 'Applicable')
-                                                         @php
-                                                           $class = '';  
-                                                         @endphp   
-                                                     @else
-                                                        @php
-                                                           $class = ' hide';         
-                                                        @endphp  
-                                                     @endif
-                                                     @endif
-                                                     <input maxlength="100" value="{{ $supplyChainFormData->monitoring_covenants_select_text ??'' }}" type="text" name="monitoring_covenants_select_text" id="monitoring_covenants_select_text" class="input_sanc{{ $class }}" style=" min-height:30px;padding:0 5px; min-width:80%;" placeholder="Enter Covenants"> 
-                                                       
+                                                        {{ $supplyChainFormData->monitoring_covenants_select??'' }}
+                                                        @if($supplyChainFormData->monitoring_covenants_select == 'Applicable')
+                                                        <br/>
+                                                            {{ $supplyChainFormData->monitoring_covenants_select_text ??'' }}
+                                                        @else
+                                                            
+                                                        @endif
+                                                        
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -882,170 +866,38 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <div class="form-group mb-0 mt-5 justify-content-between pull-right">
-                                {{-- <button type="button" class="btn btn-default mr-2"
-                                    id="preview_invoice">Preview</button> --}}
-                                <input type="hidden" name="sanction_letter_id" value="{{$sanction_id ?? ''}}">
+                        </div>
+                        @if($action_type == 'preview' && !Session::has('message'))
+                            @if(in_array($sanctionData->status,[2]))
+                            <form action="{{route('send_new_sanction_letter_on_mail')}}" method="post" id="new_sanction_letter_form" onSubmit="return submitAlert();">
+                                @csrf
+                                <input type="hidden" name="sanction_letter_id" value="{{$sanctionId ?? ''}}">
                                 <input type="hidden" name="app_id" value="{{$appId ?? ''}}">
                                 <input type="hidden" name="offer_id" value="{{$offerId ?? ''}}">
                                 <input type="hidden" name="biz_id" value="{{$bizId ?? ''}}">
-                                <input type="hidden" name="action_type_url" value="{{$actionType ?? ''}}">
-                                <input type="hidden" name="ref_no" value="CFPL/{{Carbon\Carbon::now()->format('My') }}/{{request()->get('app_id')? request()->get('app_id') :''}}">
-                                @if(!empty($actionType) && $actionType == 'edit')
-                                <button type="submit" class="btn btn-default mr-2" name="action_type" id="update_sanction" value="update" onclick="whichPressed=this.value" >Update</button>
-                                <button type="submit" class="btn btn-primary mr-2" name="action_type" id="final_sanction" value="final_submit" onclick="whichPressed=this.value" >Submit</button>
-                                @else
-                                <button type="submit" class="btn btn-primary mr-2" name="action_type" id="save_sanction" value="final_submit_create" onclick="whichPressed=this.value" >Submit</button>
-                                @endif
-                            </div>
-                        </div>
-                    </form>
+                                <input type="hidden" name="action_type" value="mail">
+                                <button type="submit" class="btn btn-primary pull-right mr-2 mt-3" id="send_sanction" onclick="document.getElementById('overlay').style.display='block'">Send Mail</button>
+                            </form>
+                                @else 
+                            @endif
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
 </div>
-{!! Helpers::makeIframePopup('previewSanctionLetter', 'Preview/Send Mail Sanction Letter', 'modal-lg') !!}
-{!! Helpers::makeIframePopup('previewSupplyChainSanctionLetter', 'Send Mail Supply Chain Letter', 'modal-lg') !!}
-{!! Helpers::makeIframePopup('uploadSanctionLetter', 'Upload Sanction Letter', 'modal-md') !!}
 @endsection
 @section('jscript')
 <script>
-    var messages = {
-        get_applications: "{{ URL::route('ajax_app_list') }}"
-        , data_not_found: "{{ trans('error_messages.data_not_found') }}"
-        , token: "{{ csrf_token() }}",
-
-    };
-    $(document).ready(function() {
-        $('#payment_type').on('change', function() {
-            $('#payment_type_comment').val('');
-            if ($(this).val() == '5') {
-                $('#payment_type_comment').removeClass('hide');
-            } else {
-                $('#payment_type_comment').addClass('hide');
-            }
-        })
-
-        $('#monitoring_covenants_select').on('change', function() {
-            $('#monitoring_covenants_select_text').val('');
-            if ($(this).val() == 'Applicable') {
-                $('#monitoring_covenants_select_text').removeClass('hide');
-                $('#monitoring_covenants_select_text-error').remove();
-            } else {
-                $('#monitoring_covenants_select_text').addClass('hide');
-                $('#monitoring_covenants_select_text-error').remove();
-            }
-        });
-
-        $("input[name='sanction_validity_date']").datetimepicker({
-            format: 'dd/mm/yyyy'
-            , autoclose: true
-            , minView: 2
-            , startDate: '-0m'
-        , }).on('changeDate', function(e) {
-            $("input[name='sanction_expire_date']").val(ChangeDateFormat(e.date, 'dmy', '/', 30));
-
-        });
-
-        $("input[name='sanction_expire_date']").datetimepicker({
-            format: 'dd/mm/yyyy'
-            , autoclose: true
-            , minView: 2
-            , startDate: '+1m'
-        });
-    });
-
-
-    function ChangeDateFormat(dateObj, out_format = 'ymd', out_separator = '/', dateAddMinus = 0) {
-        dateObj.setDate(dateObj.getDate() + dateAddMinus);
-        var twoDigitMonth = ((dateObj.getMonth().length + 1) === 1) ? (dateObj.getMonth() + 1) : '0' + (dateObj
-            .getMonth() + 1);
-        var twoDigitDate = dateObj.getDate() + "";
-        if (twoDigitDate.length == 1) twoDigitDate = "0" + twoDigitDate;
-        var Digityear = dateObj.getFullYear();
-        switch (out_format) {
-            case 'myd':
-                outdate = twoDigitMonth + out_separator + Digityear + out_separator + twoDigitDate;
-                break;
-            case 'ydm':
-                outdate = Digityear + out_separator + twoDigitDate + out_separator + twoDigitMonth;
-                break;
-            case 'dmy':
-                outdate = twoDigitDate + out_separator + twoDigitMonth + out_separator + Digityear;
-                break;
-            case 'dym':
-                outdate = twoDigitDate + out_separator + Digityear + out_separator + twoDigitMonth;
-                break;
-            case 'mdy':
-                outdate = twoDigitMonth + out_separator + twoDigitDate + out_separator + Digityear;
-                break;
-            default:
-                outdate = Digityear + out_separator + twoDigitMonth + out_separator + twoDigitDate;
-                break;
-        }
-        return outdate;
-    }
-
-    $(document).on('click', '.clone_defaultevent', function() {
-        // covenants_clone_tr_html =  $('.covenants_clone_tr').html();
-        covenants_clone_tr_html =
-            '<td valign="top" width="1%">●</td><td><input type="text" name="defaultEvent[]" value="" style=" min-height:30px;padding:0 5px; min-width:100%;"></td>';
-        $('#defaultEvent').append("<tr>" + covenants_clone_tr_html + "</tr>");
-    })
-    $(document).on('click', '.remove_defaultevent', function() {
-        totalrows = $('#defaultEvent tbody').children().length - 1;
-        if (totalrows > 1) {
-            $('#defaultEvent tbody tr:last-child').remove();
-        }
-    })
-
-    $(document).ready(function() {
-        jQuery.validator.addMethod("alphanumeric", function(value, element) {
-            return this.optional(element) || /^[\w\s.]+$/i.test(value);
-        }, "Letters, numbers, and underscores only please");
-
-        jQuery.validator.addMethod("ratio", function(value, element) {
-            return this.optional(element) || /^[0-9:]+$/i.test(value);
-        }, "Numbers and colon only please");
-
-        $('#new_sanction_letter_form').validate({
-            rules: {
-                "review_date": {
-                    required : true,
-                }, "annexure_general_terms_and_condition": {
-                    required : true,
-                }
-                , "operational_person": {
-                    required : true,
-                }
-                , "defaultEvent[]": {
-                    required : true,
-                }
-                , "monitoring_covenants_select_text": {
-                    required : true,
-                    alphanumeric: true
-                }
-            }
-        });
-
-        // $("input.facility_tenor").each(function(){
-        //     $(this).rules("add", {
-        //         required: true,
-        //         messages: {
-        //             required: "Specify the reference name"
-        //         }
-        //     } );            
-        // });
-    });
-    let whichPressed;
     function submitAlert()
     {               
-        if(whichPressed=="final_submit")
+        if(confirm('Are you sure you wish to final sanction letter submit?'))
         {
-            return confirm('Are you sure you wish to final sanction letter submit?');
+            return true;
         }
+        document.getElementById('overlay').style.display='none';
+        return false;
     }
 
 </script>

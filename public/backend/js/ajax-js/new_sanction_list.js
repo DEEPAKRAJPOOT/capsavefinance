@@ -39,7 +39,7 @@ try {
             oTable.draw();
         });
         $(document).on('click', '#regenerateButton', function () {
-            if (confirm('Are you sure? You want to regenerate sanction letter.')) {
+            if (confirm('Are you sure you want to regenerate sanction letter again?')) {
                 let current_id = $(this).attr("data-id");
                 if (current_id) {
                     var postData = ({ 'sanction_id': current_id, app_id: messages.app_id, '_token': messages.token });

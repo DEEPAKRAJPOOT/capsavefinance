@@ -29,9 +29,11 @@
                                 @endphp
                             @endif
                         @endif
-                        <a href="{{ route('create_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'action_type' => 'add'] ) }}" id="createSanctionLetterA" class="add-btn-cls{{ $display }}">
-                            <button class="add-btn-cls btn btn-success btn-sm float-right" type="button" id="createSanctionLetter"><i class="fa fa-plus">&nbsp;</i> Create Sanction Letter</button>
-                        </a>
+                        @if(!empty($appData) && $appData->status == 2)
+                            <a href="{{ route('create_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'), 'action_type' => 'add'] ) }}" id="createSanctionLetterA" class="add-btn-cls{{ $display }}">
+                                <button class="add-btn-cls btn btn-success btn-sm float-right" type="button" id="createSanctionLetter"><i class="fa fa-plus">&nbsp;</i> Create Sanction Letter</button>
+                            </a>
+                          @endif
                         @endcan
                      </div>
                   </div>

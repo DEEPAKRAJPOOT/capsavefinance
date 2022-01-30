@@ -639,7 +639,7 @@ trait ApplicationTrait
         $offerData = $this->appRepo->getOfferData($offerWhereCond);
 
         if(!empty($offerData)){
-            $sanctionData = $this->appRepo->getOfferNewSanctionLetter($offerData->prgm_offer_id, $sanctionID);
+            $sanctionData = $this->appRepo->getOfferNewSanctionLetter(null, $sanctionID);
             $businessData = $this->appRepo->getApplicationById($bizId); 
             $businessAddress = $businessData ? $businessData->address->where('address_type','2')->first() : null;
             $cam =  Cam::select('contact_person')->where('biz_id',$bizId)->where('app_id',$appId)->first();

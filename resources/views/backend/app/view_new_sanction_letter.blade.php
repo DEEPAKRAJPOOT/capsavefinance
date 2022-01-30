@@ -27,7 +27,7 @@
                         <!-- add limit validity date -->
                         <div class="form-group mb-0 justify-content-between pull-right">
                             @if($action_type != 'download')
-                                @if(in_array($sanctionData->status,[2]))
+                                @if(in_array($sanctionData->status,[2,3]))
                             @php 
                                 $limitValidityEndDate = $appLimit->actual_end_date ?? $appLimit->end_date ?? NULL;
                             @endphp
@@ -37,10 +37,14 @@
                                 {{ isset($limitValidityEndDate)? Carbon\Carbon::parse($limitValidityEndDate)->format('d/m/Y'):'N/A' }}
                             </span>
                              <!-- add limit validity date -->
-                                <a data-toggle="modal" data-target="#previewSupplyChainSanctionLetter" data-height="500px" data-width="100%" data-placement="top" href="#" data-url="#" class="btn btn-success btn-sm float-right ml-3" style="margin: 0px 0 10px 0;">Preview/Send
-                                    Mail</a>
+                             @can('send_new_sanction_letter_on_mail')
+                             @if(in_array($sanctionData->status,[2]))
+                             <a data-toggle="modal" data-target="#previewSupplyChainSanctionLetter" data-height="500px" data-width="100%" data-placement="top" href="#" data-url="{{ route('view_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' =>$sanctionData->sanction_letter_id, 'action_type' => 'preview'] ) }}" class="btn btn-success btn-sm float-right ml-3" style="margin: 0px 0 10px 0;">Preview/Send
+                                 Mail</a>
+                               @endif
+                             @endcan
                                 @else
-                                @endif
+                             @endif
                             @endif
                         </div>
                         <div class=" form-fields">

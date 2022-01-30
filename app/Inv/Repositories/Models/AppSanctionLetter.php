@@ -92,18 +92,25 @@ class AppSanctionLetter extends BaseModel {
         /**
          * Check id is not blank
          */
-        if (empty($offerId)) {
+        if (empty($offerId) && empty($sanctionID)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
 
         /**
          * Check id is not an integer
          */
-        if (!is_int($offerId)) {
+        if (!is_int($offerId) && !is_int($sanctionID)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
 
-        $sanction = self::where(['sanction_letter_id'=>$sanctionID,'prgm_offer_id'=>$offerId, 'is_active'=>1])->first();      
+        $sanction = self::where(['is_active'=>1]);
+        if(!empty($sanctionID)){
+            $sanction = $sanction->where(['sanction_letter_id'=>$sanctionID]);  
+        }
+        if(!empty($offerId)){
+            $sanction = $sanction->where(['prgm_offer_id'=>$offerId]);
+        }
+        $sanction = $sanction->first();        
         return $sanction ? $sanction : null;
     }
 
