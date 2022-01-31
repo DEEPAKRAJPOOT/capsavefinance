@@ -103,14 +103,16 @@ class AppSanctionLetter extends BaseModel {
         //     throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         // }
 
-        $sanction = self::where(['is_active'=>1]);
+        $sanctions = self::where(['is_active'=>1]);
+        $sanction = [];
         if(!empty($sanctionID)){
-            $sanction = $sanction->where(['sanction_letter_id'=>$sanctionID]);  
+            $sanctions = $sanctions->where(['sanction_letter_id'=>$sanctionID]); 
+            $sanction = $sanctions->first();   
         }
         if(!empty($offerId)){
-            $sanction = $sanction->where(['prgm_offer_id'=>$offerId]);
-        }
-        $sanction = $sanction->first();        
+            $sanctions = $sanctions->where(['prgm_offer_id'=>$offerId]);
+            $sanction = $sanctions->first();  
+        }      
         return $sanction ? $sanction : null;
     }
 

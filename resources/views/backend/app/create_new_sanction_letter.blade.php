@@ -657,7 +657,8 @@
                                                         @endphp  
                                                      @endif
                                                      @endif
-                                                     <input maxlength="100" value="{{ $supplyChainFormData->monitoring_covenants_select_text ??'' }}" type="text" name="monitoring_covenants_select_text" id="monitoring_covenants_select_text" class="input_sanc{{ $class }}" style=" min-height:30px;padding:0 5px; min-width:80%;" placeholder="Enter Covenants"> 
+                                                     <div class="clearfix"></div>
+                                                     <input maxlength="100" value="{{ $supplyChainFormData->monitoring_covenants_select_text ??'' }}" type="text" name="monitoring_covenants_select_text" id="monitoring_covenants_select_text" class="input_sanc{{ $class }}" style=" min-height:30px;padding:0 5px; min-width:80%;margin-top: 1%;" placeholder="Enter Covenants"> 
                                                        
                                                     </td>
                                                 </tr>
