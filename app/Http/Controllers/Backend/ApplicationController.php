@@ -2361,8 +2361,8 @@ class ApplicationController extends Controller
 			    return redirect()->route('list_new_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);
             }
 			$appData = $this->appRepo->getAppDataByAppId($appId);
-			if($appData->curr_status_id != config('common.mst_status_id.APP_SANCTIONED')){
-                Session::flash('error','Application does not marke sanctioned, Please try again!');
+			if($appData->status != 1){
+                Session::flash('error','Application has been marke sanctioned, Please try again!');
 			    return redirect()->route('list_new_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);
 			}
 			$sanctionId = null;
