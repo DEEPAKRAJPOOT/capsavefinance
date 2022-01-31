@@ -89,19 +89,19 @@ class AppSanctionLetter extends BaseModel {
      */
     public static function getOfferNewSanctionLetter($offerId, $sanctionID)
     {
-        /**
-         * Check id is not blank
-         */
-        if (empty($offerId) && empty($sanctionID)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
-        }
+        // /**
+        //  * Check id is not blank
+        //  */
+        // if (empty($offerId) && empty($sanctionID)) {
+        //     throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        // }
 
-        /**
-         * Check id is not an integer
-         */
-        if (!is_int($offerId) && !is_int($sanctionID)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
-        }
+        // /**
+        //  * Check id is not an integer
+        //  */
+        // if (!is_int($offerId) && !is_int($sanctionID)) {
+        //     throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        // }
 
         $sanction = self::where(['is_active'=>1]);
         if(!empty($sanctionID)){
