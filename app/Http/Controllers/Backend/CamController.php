@@ -1720,7 +1720,7 @@ class CamController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
             $userId = $request->has('user_id') ? $request->get('user_id') : null;
-
+            \DB::beginTransaction();
             $appData = $this->appRepo->getAppData($appId);
             if ($appData && in_array($appData->app_type, [3]) ) {
 								$parentAppId = $appData->parent_app_id;
@@ -1742,9 +1742,16 @@ class CamController extends Controller
               if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invUtilizedAmt > $currentAppLimitData[0]->tot_limit_amt) {
                 Session::flash('error', trans('backend_messages.reduction_utilized_amt_appoval_validation'));
                 return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
+              } else {
+                $actualEndDate = \Carbon\Carbon::now()->format('Y-m-d');
+                $appLimitData  = $this->appRepo->getAppLimitData(['user_id' => $parentUserId, 'app_id' => $parentAppId]);
+                $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
+								$this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => $productId]);  
+								Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                
+								$this->appRepo->updateAppData($parentAppId, ['status' => 3, 'is_child_sanctioned' => 2]);
               }
             }
-
+            
             $appApprData = [
                 'app_id' => $appId,
                 'approver_user_id' => \Auth::user()->user_id,
@@ -1754,10 +1761,12 @@ class CamController extends Controller
             
             //update approve status in offer table after all approver approve the offer.
             $this->appRepo->changeOfferApprove((int)$appId);
-            Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+            Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));            
+            \DB::commit();
             Session::flash('message',trans('backend_messages.offer_approved'));
             return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
         }catch (Exception $ex) {
+            \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
