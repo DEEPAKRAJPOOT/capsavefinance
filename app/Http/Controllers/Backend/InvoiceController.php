@@ -584,7 +584,6 @@ class InvoiceController extends Controller {
     /*   save invoice */
 
     public function saveInvoice(Request $request) {   
-       
         if ($request->get('eod_process')) {
             Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
             return back();
@@ -604,10 +603,24 @@ class InvoiceController extends Controller {
         $chkUser  = $this->application->chkUser();
         $customer  = 4;
         $expl  =  explode(",",$getPrgm->invoice_approval); 
+        
+        $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
+        $validAttr['user_id'] = $attributes['supplier_id'];
+        $validAttr['app_id'] = $appId;
+        $validAttr['anchor_id'] = $request->anchor_id;
+        $validAttr['prgm_id'] = $attributes['program_id'];              
+        $validAttr['prgm_offer_id'] = $attributes['prgm_offer_id'];
+        $invUtilizedAmt = Helpers::invoiceAnchorLimitApprove($validAttr);
+        $currentAppLimitData  = $this->application->getAppLimitData(['user_id' => $validAttr['user_id'], 'app_id' => $appId]);
+
+        if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invoice_amount > ($currentAppLimitData[0]->tot_limit_amt - $invUtilizedAmt)) {
+            Session::flash('error', 'Invoice amount should not be greater than the balance limit amount.');
+            return back();
+        }
+
         if (!empty($attributes['exception'])) {
             $statusId = 28;
-            $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';
-           
+            $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';           
         } else {
           if(in_array($customer, $expl))  
           {
@@ -635,10 +648,9 @@ class InvoiceController extends Controller {
         {
             $is_adhoc=0;
         }
+
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);
-        $invoice_approve_amount = str_replace(",", "", $attributes['invoice_approve_amount']);
-        $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
         $arr = array('anchor_id' => $attributes['anchor_id'],
             'supplier_id' => $attributes['supplier_id'],
             'program_id' => $attributes['program_id'],
@@ -1662,6 +1674,16 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $dataAttr['old_tenor']  =   $chlLmsCusto['tenor_old_invoice'];
                         $dataAttr['prgm_offer_id']  =   $chlLmsCusto['prgm_offer_id'];
                         $dataAttr['approval']  =   $getPrgm;
+
+                        $invoice_amount = str_replace(',', '', $dataAttr['amount']);                        
+                        $invUtilizedAmt = Helpers::invoiceAnchorLimitApprove($dataAttr);
+                        $currentAppLimitData  = $this->application->getAppLimitData(['user_id' => $dataAttr['user_id'], 'app_id' => $dataAttr['app_id']]);
+                
+                        if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invoice_amount > ($currentAppLimitData[0]->tot_limit_amt - $invUtilizedAmt)) {
+                            Session::flash('error', 'Invoice amount should not be greater than the balance limit amount.');
+                            return back();
+                        }
+
                         $getInvDueDate =  InvoiceTrait::getInvoiceDueDate($dataAttr); /* get invoice due date*/
                         if($getInvDueDate['status']==0)
                         {

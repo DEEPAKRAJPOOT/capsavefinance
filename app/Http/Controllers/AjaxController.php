@@ -3759,7 +3759,7 @@ if ($err) {
         $limit =   InvoiceTrait::ProgramLimit($res);
         $sum   =   InvoiceTrait::invoiceApproveLimit($res);
         $is_adhoc   =  $this->invRepo->checkUserAdhoc($res);
-        $remainAmount = $limit-$sum;
+        $remainAmount = $limit - $sum;
         return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc]);
     }
     
