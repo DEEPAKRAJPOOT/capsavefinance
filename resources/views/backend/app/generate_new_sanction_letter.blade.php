@@ -3,9 +3,10 @@
    <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://admin-rentalpha-qa.zuron.in/backend/assets/css/style.css?v=?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" />
-    <link rel="stylesheet" href="https://admin-rentalpha-qa.zuron.in/backend/assets/css/custom.css?v=?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}""/>
+      <link href="https://fonts.googleapis.com/css2?family=Federo&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <link rel="stylesheet" href="https://admin-rentalpha-qa.zuron.in/backend/assets/css/style.css?v=?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" />
+      <link rel="stylesheet" href="https://admin-rentalpha-qa.zuron.in/backend/assets/css/custom.css?v=?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}""/>
       {{-- <style type="text/css" media="all">
          table{
             width: 100%;
@@ -22,10 +23,10 @@
       </style> --}}
    </head>
    <body>
-      <table  cellpadding="0" cellspacing="0" border="0">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify;">
          <thead>
             <tr>
-               <th bgcolor="#cccccc"  height="30"><span>SANCTION LETTER</span>
+               <th bgcolor="#cccccc" class="text-center" height="30"><span>SANCTION LETTER</span>
                </th>
             </tr>
          </thead>
@@ -81,7 +82,7 @@
             </tr>
             <tr>
                <td>
-                  <table  border="1">
+                  <table width="100%" border="1">
                      <tr>
                         <td width="30%">Borrower</td>
                         <td>{{ $supplyChaindata['EntityName'] }} (referred to as “Borrower” henceforth)
@@ -124,7 +125,7 @@
             </tr>
             <tr>
                <td>
-                  <table  border="0">
+                  <table width="100%" border="0">
                      <tr>
                         <td width="50%"  height="40"><b>Yours Sincerely</b></td>
                         <td  height="40"><b>Accepted for and behalf of
@@ -147,11 +148,10 @@
             </tr>
             <tr>
                <td>
-                  <table  border="0">
+                  <table width="100%" border="0">
                      <tr>
-                        <td width="50%"  height="40"><b>Authorized Signatory</b>
-                        </td>
-                        <td  height="40"><b>Authorized Signatory</b></td>
+                        <td width="50%" valign="top" height="40"><b>Authorized Signatory</b></td>
+                        <td valign="top" height="40"><b>Authorized Signatory</b></td>
                      </tr>
                   </table>
                </td>
@@ -159,10 +159,10 @@
          </tbody>
       </table>
       {{-- <div class="page-break"></div> --}}
-      <table  cellpadding="0" cellspacing="0" border="0">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify; margin-top:25px;">
          <thead>
             <tr>
-               <th bgcolor="#cccccc" height="30">Annexure I – Specific
+               <th bgcolor="#cccccc" class="text-center" height="30">Annexure I – Specific
                   Terms
                   and Conditions
                </th>
@@ -193,51 +193,51 @@
             </tr>
             <tr>
                <td>
-                  <table  border="1">
+                  <table width="100%" border="1">
                      <tr>
-                        <td width="30%" ><b>Facility</b></td>
+                        <td width="30%" valign="top"><b>Facility</b></td>
                         <td>Working Capital Demand Loan Facility (referred to as “Facility
                            1”
                            henceforth)
                         </td>
                      </tr>
                      <tr>
-                        <td ><b>Sanction Amount</b></td>
+                        <td valign="top"><b>Sanction Amount</b></td>
                         <td>INR {{\Helpers::formatCurrencyNoSymbol($offerD->prgm_limit_amt)}} (Rupees {{
                            numberTowords($offerD->prgm_limit_amt) }} only)
                         </td>
                      </tr>
                      <tr>
-                        <td ><b>Facility Tenor</b></td>
+                        <td valign="top"><b>Facility Tenor</b></td>
                         <td>
                            {{ $arrayOfferData[$offerD->prgm_offer_id ]->facility_tenor??'' }}
                         </td>
                      </tr>
                      <tr>
-                        <td ><b>Purpose of the facility</b></td>
+                        <td valign="top"><b>Purpose of the facility</b></td>
                         <td>{{ $arrayOfferData[$offerD->prgm_offer_id ]->purpose_of_the_facility??'' }}
                         </td>
                      </tr>
                      <tr>
-                        <td ><b>Rate of Interest </b></td>
+                        <td valign="top"><b>Rate of Interest </b></td>
                         <td>{{$offerD->interest_rate}}% per annum reckoned from the date of disbursement until the
                            date on which repayment becomes due.
                         </td>
                      </tr>
                      <tr>
-                        <td ><b>Tenor for each tranche</b></td>
+                        <td valign="top"><b>Tenor for each tranche</b></td>
                         <td>Upto {{$offerD->tenor}} days from date of disbursement of each tranche
                         </td>
                      </tr>
                      @if($offerD->grace_period)
                      <tr>
-                        <td ><b>Grace Period</b></td>
+                        <td valign="top"><b>Grace Period</b></td>
                         <td>{{($offerD->grace_period)? $offerD->grace_period.' days':''}}
                         </td>
                      </tr>
                      @endif
                      <tr>
-                        <td ><b>Old Invoice</b></td>
+                        <td valign="top"><b>Old Invoice</b></td>
                         <td>Borrower can submit invoices not older {{ $arrayOfferData[$offerD->prgm_offer_id
                            ]->old_invoice??'' }} {{$offerD->tenor_old_invoice}}
                            days
@@ -248,7 +248,7 @@
                      </tr>
                      @if($offerD->margin)
                      <tr>
-                        <td ><b>Margin</b></td>
+                        <td valign="top"><b>Margin</b></td>
                         <td>
                            {{($offerD->margin )? $offerD->margin:''}}% on invoice
                            {{ $arrayOfferData[$offerD->prgm_offer_id ]->margin??'' }}
@@ -256,15 +256,15 @@
                      </tr>
                      @endif
                      <tr>
-                        <td ><b>Interest frequency </b></td>
+                        <td valign="top"><b>Interest frequency </b></td>
                         <td>
-                           <table  border="0">
+                           <table width="100%" border="0">
                               @if($offerD->payment_frequency == 1)
                               @if($offerD->program->interest_borne_by == 1)
                               <tr>
-                                 <td  >&bull;
+                                 <td valign="top" width="1%"><span style="margin-top:7px;display: inline-block;"><b>&bull;</b></span>
                                  </td>
-                                 <td >
+                                 <td  valign="top">
                                     To be paid by Anchor
                                     upfront for a period upto 30 days at the time of
                                     disbursement of each tranche.
@@ -272,7 +272,7 @@
                               </tr>
                               @else
                               <tr>
-                                 <td  >&bull;</td>
+                                 <td valign="top" width="1%">&bull;</td>
                                  <td >Lender will deduct upfront interest for
                                     a
                                     period upto 30 days at the time of disbursement of
@@ -284,9 +284,9 @@
                               @else
                               @if($offerD->payment_frequency == 2)
                               <tr>
-                                 <td  >&bull;
+                                 <td valign="top" width="1%">&bull;
                                  </td>
-                                 <td >
+                                 <td valign="top">
                                     Lender shall charge monthly interest to the
                                     {{ $arrayOfferData[$offerD->prgm_offer_id]->lender_shall_charge??'' }}
                                     at the month end based on utilization done during
@@ -306,7 +306,7 @@
                      @endphp
                      @if($processingCharges)
                      <tr>
-                        <td ><b>One time Processing Charges at the time of
+                        <td valign="top"><b>One time Processing Charges at the time of
                            Sanction
                            of credit facility</b>
                         </td>
@@ -318,7 +318,7 @@
                      </tr>
                      @endif
                      <tr>
-                        <td ><b>Penal Interest</b></td>
+                        <td valign="top"><b>Penal Interest</b></td>
                         <td>
                            @php
                            $penelInterestRate = ($offerD['overdue_interest_rate'] ?? 0) + ($offerD['interest_rate'] ??
@@ -334,7 +334,7 @@
                         </td>
                      </tr>
                      <tr>
-                        <td ><b>Applicable Taxes</b></td>
+                        <td valign="top"><b>Applicable Taxes</b></td>
                         <td>
                            @php
                            $interest_borne_by = ($offerD->program->interest_borne_by == 1)?'Anchor':'Borrower';
@@ -348,13 +348,13 @@
                      </tr>
                      @if($offerD->offerPs->count() || $offerD->offerCs->count() || $offerD->offerPg->count())
                      <tr>
-                        <td ><b>Security from Borrower</b></td>
+                        <td valign="top"><b>Security from Borrower</b></td>
                         <td>
-                           <table  border="0">
+                           <table width="100%" border="0">
                               @if($offerD->offerPs->count())
                               @foreach($offerD->offerPs as $PrimarySecurity)
                               <tr>
-                                 <td  >&bull;</td>
+                                 <td valign="top" width="1%">&bull;</td>
                                  <td>{{config('common.ps_security_id.'.$PrimarySecurity->ps_security_id)}} /
                                     {{config('common.ps_type_of_security_id.'.$PrimarySecurity->ps_type_of_security_id)}}
                                     /
@@ -368,7 +368,7 @@
                               @if($offerD->offerCs->count())
                               @foreach($offerD->offerCs as $CollateralSecurity)
                               <tr>
-                                 <td  >&bull;</td>
+                                 <td valign="top" width="1%">&bull;</td>
                                  <td>{{config('common.cs_desc_security_id.'.$CollateralSecurity->cs_desc_security_id)}}
                                     /
                                     {{config('common.cs_type_of_security_id.'.$CollateralSecurity->cs_type_of_security_id)}}
@@ -383,7 +383,7 @@
                               @endif
                               @if($offerD->offerPg->count())
                               <tr>
-                                 <td  >&bull;</td>
+                                 <td valign="top" width="1%">&bull;</td>
                                  <td>Personal Guarantee of
                                     @foreach($offerD->offerPg as $key=>$PersonalGuarantee)
                                     @php
@@ -409,24 +409,24 @@
                      </tr>
                      @endif
                      <tr>
-                        <td ><b>Payment mechanism</b></td>
+                        <td valign="top"><b>Payment mechanism</b></td>
                         <td>
                            {{ $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism??'' }}
                         </td>
                      </tr>
                      <tr>
-                        <td ><b>Transaction process</b></td>
+                        <td valign="top"><b>Transaction process</b></td>
                         <td>
-                           <table  border="0">
+                           <table width="100%" border="0">
                               <tr>
-                                 <td  >&bull;</td>
+                                 <td  valign="top" width="1%">&bull;</td>
                                  <td>Borrower will submit a disbursal request along with
                                     proforma invoices / invoices and Anchor will
                                     confirm the proforma invoices / invoices.
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >&bull;</td>
+                                 <td  valign="top" width="1%">&bull;</td>
                                  <td>Lender will disburse the payment against the
                                     proforma
                                     invoice / invoices in Borrower’s
@@ -438,14 +438,14 @@
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >&bull;</td>
+                                 <td  valign="top" width="1%">&bull;</td>
                                  <td>Disbursement amount should not exceed 70% of
                                     proforma
                                     invoices / invoices.
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >&bull;</td>
+                                 <td  valign="top" width="1%">&bull;</td>
                                  <td>On due date, Anchor will make payment to Lender
                                     within
                                     credit period of 30 days.
@@ -455,13 +455,13 @@
                         </td>
                      </tr>
                      <tr>
-                        <td ><b>Specific pre-disbursement conditions</b></td>
+                        <td valign="top"><b>Specific pre-disbursement conditions</b></td>
                         <td>
-                           <table  border="0">
+                           <table width="100%" border="0">
                               @if(!empty($supplyChaindata['reviewerSummaryData']['preCond']))
                               @foreach($supplyChaindata['reviewerSummaryData']['preCond'] as $k => $precond)
                               <tr>
-                                 <td  >{!! nl2br($precond) !!}</td>
+                                 <td valign="top" width="5%">{!! nl2br($precond) !!}</td>
                                  <td>
                                     {!! isset($supplyChaindata['reviewerSummaryData']['preCondTimeline'][$k]) ?
                                     nl2br($supplyChaindata['reviewerSummaryData']['preCondTimeline'][$k]) : '' !!}
@@ -475,11 +475,11 @@
                      <tr>
                         <td ><b>Specific post-disbursement conditions</b></td>
                         <td>
-                           <table  border="0">
+                           <table width="100%" border="0">
                               @if(!empty($supplyChaindata['reviewerSummaryData']['postCond']))
                               @foreach($supplyChaindata['reviewerSummaryData']['postCond'] as $k => $postcond)
                               <tr>
-                                 <td  >{!! nl2br($postcond) !!}</td>
+                                 <td valign="top" width="5%">{!! nl2br($postcond) !!}</td>
                                  <td>
                                     {!! isset($supplyChaindata['reviewerSummaryData']['postCondTimeline'][$k]) ?
                                     nl2br($supplyChaindata['reviewerSummaryData']['postCondTimeline'][$k]) : '' !!}
@@ -499,16 +499,16 @@
          </tbody>
       </table>
       {{-- <div class="page-break"></div> --}}
-      <table  cellpadding="0" cellspacing="0" border="0">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify; margin-top:25px;">
          <thead>
             <tr>
-               <th bgcolor="#cccccc"> {{ $supplyChainFormData->annexure_general_terms_and_condition ??'' }}</th>
+               <th bgcolor="#cccccc" class="text-center" height="30">  {{ $supplyChainFormData->annexure_general_terms_and_condition ??'' }}</th>
             </tr>
          </thead>
          <tbody>
             <tr>
                <td>
-                  <table  border="1">
+                  <table width="100%" border="1" >
                      <tr>
                         <td><b>Review Date</b></td>
                         <td>{{
@@ -633,155 +633,95 @@
                         </td>
                      </tr>
                      <tr>
-                        <td ><b>Other Conditions </b></td>
+                        <td valign="top"><b>Other Conditions </b></td>
                         <td>
-                           <table  border="0">
+                           <table width="100%" border="0">
                               <tr>
-                                 <td  >1.</td>
-                                 <td>Borrower undertakes that no deferral or moratorium
-                                    will
-                                    be sought by the borrower during the tenure
+                                 <td valign="top" width="5%">1.</td>
+                                 <td>Borrower undertakes that no deferral or moratorium will be sought by the borrower during the tenure 
                                     of the facility
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >2.</td>
-                                 <td>The loan shall be utilized for the purpose for which
-                                    it
-                                    is sanctioned, and it should not be utilized for –
+                                 <td valign="top" width="5%">2.</td>
+                                 <td>The loan shall be utilized for the purpose for which it is sanctioned, and it should not be utilized for –</td>
+                              </tr>
+                              <tr>
+                                 <td valign="top" width="5%">3.</td>
+                                 <td>The Borrower shall maintain adequate books and records which should correctly reflect their 
+                                    financial position and operations and it should submit to CFPL at regular intervals such statements
+                                    as may be prescribed by CFPL in terms of the RBI / Bank’s instructions issued from time to time.
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >3.</td>
-                                 <td>The Borrower shall maintain adequate books and
-                                    records
-                                    which should correctly reflect their
-                                    financial position and operations and it should
-                                    submit
-                                    to CFPL at regular intervals such statements
-                                    as may be prescribed by CFPL in terms of the RBI /
-                                    Bank’s instructions issued from time to time.
+                                 <td valign="top" width="5%">4.</td>
+                                 <td>The Borrower will keep CFPL informed of the happening of any event which is likely to have an 
+                                    impact on their profit or business and more particularly, if the monthly production or sale and 
+                                    profit are likely to be substantially lower than already indicated to CFPL. The Borrower will
+                                    inform accordingly with reasons and the remedial steps proposed to be taken.
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >4.</td>
-                                 <td>The Borrower will keep CFPL informed of the
-                                    happening of
-                                    any event which is likely to have an
-                                    impact on their profit or business and more
-                                    particularly, if the monthly production or sale and
-                                    profit are likely to be substantially lower than
-                                    already
-                                    indicated to CFPL. The Borrower will
-                                    inform accordingly with reasons and the remedial
-                                    steps
-                                    proposed to be taken.
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td  >5.</td>
-                                 <td>CFPL will have the right to examine at all times the
-                                    Borrower’s books of accounts and to have
-                                    the Borrower’s factory(s)/branches inspected from
-                                    time
-                                    to time by officer(s) of the CFPL and/or
-                                    qualified auditors including stock audit and/or
-                                    technical experts and/or management consultants of
-                                    CFPL’s choice and/or we can also get the stock audit
-                                    conducted by other banker. The cost of such
+                                 <td valign="top" width="5%">5.</td>
+                                 <td>CFPL will have the right to examine at all times the Borrower’s books of accounts and to have 
+                                    the Borrower’s factory(s)/branches inspected from time to time by officer(s) of the CFPL and/or 
+                                    qualified auditors including stock audit and/or technical experts and/or management consultants of 
+                                    CFPL’s choice and/or we can also get the stock audit conducted by other banker. The cost of such 
                                     inspections will be borne by the Borrower
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >6.</td>
-                                 <td>The Borrower should not pay any consideration by way
-                                    of
-                                    commission, brokerage, fees or in any
+                                 <td valign="top" width="5%">6.</td>
+                                 <td>The Borrower should not pay any consideration by way of commission, brokerage, fees or in any
                                     other form to guarantors directly or indirectly.
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >7.</td>
-                                 <td>The Borrower and Guarantor(s) shall be deemed to
-                                    have
-                                    given their express consent to CFPL to disclose the
-                                    information and data furnished by them to CFPL and
-                                    also
-                                    those regarding the credit facility/ies enjoyed by
-                                    the
-                                    Borrower, conduct of accounts and guarantee
-                                    obligations
-                                    undertaken by guarantor to the Credit Information
-                                    Bureau
-                                    (India) Ltd. ("CIBIL"), or RBI or any other agencies
-                                    specified by RBI who are authorized to seek and
-                                    publish
+                                 <td valign="top" width="5%">7.</td>
+                                 <td>The Borrower and Guarantor(s) shall be deemed to have given their express consent to CFPL to disclose the 
+                                    information and data furnished by them to CFPL and also those regarding the credit facility/ies enjoyed by the 
+                                    Borrower, conduct of accounts and guarantee obligations undertaken by guarantor to the Credit Information Bureau 
+                                    (India) Ltd. (“CIBIL”), or RBI or any other agencies specified by RBI who are authorized to seek and publish
                                     information.
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >8.</td>
-                                 <td>The Borrower will keep the CFPL advised of any
-                                    circumstances adversely affecting their financial
-                                    position including any action taken by any creditor,
-                                    Government authority against them.
+                                 <td valign="top" width="5%">8.</td>
+                                 <td>The Borrower will keep the CFPL advised of any circumstances adversely affecting their financial 
+                                    position including any action taken by any creditor, Government authority against them.
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >9.</td>
-                                 <td>The Borrower shall procure consent every year from
-                                    the
-                                    auditors appointed by the borrower to
-                                    comply with and give report / specific comments in
-                                    respect of any query or requisition made by us
-                                    as regards the audited accounts or balance sheet of
-                                    the
-                                    Borrower. We may provide information and
-                                    documents to the Auditors in order to enable the
-                                    Auditors to carry out the investigation requested
-                                    for by us. In that event, we shall be entitled to
-                                    make
-                                    specific queries to the Auditors in the light
-                                    of Statements, particulars and other information
-                                    submitted by the Borrower to us for the purpose of
-                                    availing finance, and the Auditors shall give
-                                    specific
-                                    comments on the queries made by us
+                                 <td valign="top" width="5%">9.</td>
+                                 <td>The Borrower shall procure consent every year from the auditors appointed by the borrower to 
+                                    comply with and give report / specific comments in respect of any query or requisition made by us 
+                                    as regards the audited accounts or balance sheet of the Borrower. We may provide information and 
+                                    documents to the Auditors in order to enable the Auditors to carry out the investigation requested 
+                                    for by us. In that event, we shall be entitled to make specific queries to the Auditors in the light 
+                                    of Statements, particulars and other information submitted by the Borrower to us for the purpose of 
+                                    availing finance, and the Auditors shall give specific comments on the queries made by us
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >10.</td>
-                                 <td>The sanction limits would be valid for acceptance
-                                    for 30
-                                    days from the date of the issuance
+                                 <td valign="top" width="5%">10.</td>
+                                 <td>The sanction limits would be valid for acceptance for 30 days from the date of the issuance 
                                     of letter.
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >11.</td>
-                                 <td>CFPL reserves the right to alter, amend any of the
-                                    condition or withdraw the facility,
-                                    at any time without assigning any reason and also
-                                    without giving any notice.
+                                 <td valign="top" width="5%">11.</td>
+                                 <td>CFPL reserves the right to alter, amend any of the condition or withdraw the facility, 
+                                    at any time without assigning any reason and also without giving any notice.
                                  </td>
                               </tr>
                               <tr>
-                                 <td  >12.</td>
-                                 <td>Provided further that notwithstanding anything to
-                                    the
-                                    contrary contained in this Agreement,
-                                    CFPL may at its sole and absolute discretion at any
-                                    time, terminate, cancel or withdraw the Loan
-                                    or any part thereof (even if partial or no
-                                    disbursement
-                                    is made) without any liability and without
-                                    any obligations to give any reason whatsoever,
-                                    whereupon
-                                    all principal monies, interest thereon and
-                                    all other costs, charges, expenses and other monies
-                                    outstanding (if any) shall become due and payable
-                                    to CFPL by the Borrower forthwith upon demand from
-                                    CFPL
+                                 <td valign="top" width="5%">12.</td>
+                                 <td>Provided further that notwithstanding anything to the contrary contained in this Agreement, 
+                                    CFPL may at its sole and absolute discretion at any time, terminate, cancel or withdraw the Loan 
+                                    or any part thereof (even if partial or no disbursement is made) without any liability and without 
+                                    any obligations to give any reason whatsoever, whereupon all principal monies, interest thereon and
+                                    all other costs, charges, expenses and other monies outstanding (if any) shall become due and payable 
+                                    to CFPL by the Borrower forthwith upon demand from CFPL
                                  </td>
                               </tr>
                            </table>
@@ -791,66 +731,49 @@
                </td>
             </tr>
             <tr>
-               <td>I /We accept all the terms and conditions which have been read and
-                  understood by
-                  me/us. 
-               </td>
+               <td>I /We accept all the terms and conditions which have been read and understood by me/us. </td>
             </tr>
             <tr>
-               <td>We request you to acknowledge and return a copy of the same as a
-                  confirmation.
-               </td>
+               <td>We request you to acknowledge and return a copy of the same as a confirmation.</td>
             </tr>
             <tr>
                <td>
-                  <table  border="0">
+                  <table width="100%" border="0">
                      <tbody>
                         <tr>
-                           <td width="50%"  height="40"><b>Yours Sincerely</b>
-                           </td>
-                           <td  height="40"><b>Accepted for and behalf of
-                              Borrower</b>
-                           </td>
+                           <td width="50%" valign="top" height="40"><b>Yours Sincerely</b></td>
+                           <td valign="top" height="40"><b>Accepted for and behalf of Borrower</b></td>
                         </tr>
                         <tr>
-                           <td width="50%"  height="40"><b>For Capsave Finance
-                              Private Limited</b>
-                           </td>
-                           <td  height="40"><b>For {{ $supplyChaindata['EntityName'] }}</b>
-                           </td>
+                           <td width="50%" valign="top" height="40"><b>For Capsave Finance Private Limited</b></td>
+                           <td valign="top" height="40"><b>For Suumaya Lifestyle Limited</b></td>
                         </tr>
                      </tbody>
                   </table>
                </td>
             </tr>
             <tr>
-               <td height="40"></td>
+               <td height="40">&nbsp;</td>
             </tr>
             <tr>
                <td>
-                  <table  border="0">
+                  <table width="100%" border="0">
                      <tbody>
                         <tr>
-                           <td width="50%"  height="40"><b>Authorized
-                              Signatory</b>
-                           </td>
-                           <td  height="40"><b>Authorized Signatory</b></td>
+                           <td width="50%" valign="top" height="40"><b>Authorized Signatory</b></td>
+                           <td valign="top" height="40"><b>Authorized Signatory</b></td>
                         </tr>
                      </tbody>
                   </table>
                </td>
             </tr>
             <tr>
-               <td height="30"></td>
+               <td height="30">&nbsp;</td>
             </tr>
             <tr>
                <td align="center">
-                  <div style="font-family: 'Federo', sans-serif;"><span style="font-size:20px; font-weight:bold;">CAPSAVE
-                     FINANCE PRIVATE
-                     LIMITED</span><br />
-                     Registered office: Unit No.501 Wing-D, Lotus Corporate Park, Western
-                     Express
-                     Highway, Goregaon (East), Mumbai - 400063<br />
+                  <div style="font-family: 'Federo', sans-serif;"><span style="font-size:20px; font-weight:bold;">CAPSAVE FINANCE PRIVATE LIMITED</span><br/> 
+                     Registered office: Unit No.501 Wing-D, Lotus Corporate Park, Western Express Highway, Goregaon (East), Mumbai - 400063<br/>
                      Ph: +91 22 6173 7600, CIN No: U67120MH1992PTC068062
                   </div>
                </td>
