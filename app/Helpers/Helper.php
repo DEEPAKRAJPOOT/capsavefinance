@@ -1621,7 +1621,7 @@ class Helper extends PaypalHelper
             $marginApprAmt = 0;
             $marginReypayAmt = 0;
             $appData = Application::getAppData((int) $attr['app_id']);
-            if ($appData->app_type == 2 && $appData->parent_app_id) {
+            if (in_array($appData->app_type, [2,3]) && $appData->parent_app_id) {
                 $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($appData->parent_app_id);
                 if ($parentAppOffer) {
                     $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $parentAppOffer->prgm_offer_id, $attr['anchor_id'], $appData->parent_app_id);    
