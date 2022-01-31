@@ -5592,9 +5592,9 @@ if ($err) {
        if($result)
        {
             $appData = $this->application->getAppDataByAppId($app_id);
-            if($appData->curr_status_id == config('common.mst_status_id.SANCTION_LETTER_GENERATED')){
-               Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_SANCTIONED'));
-            }
+            //if($appData->curr_status_id == config('common.mst_status_id.SANCTION_LETTER_GENERATED')){
+               //Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_SANCTIONED'));
+            //}
            return response()->json(['status' => 1]); 
        }
        else

@@ -2409,11 +2409,11 @@ class ApplicationController extends Controller
 			}
 			//dd($sanctionData);
 			$sanction_info = $this->appRepo->saveNewSanctionLetterData($sanctionData,$sanctionId);
-            if($appData->curr_status_id == config('common.mst_status_id.APP_SANCTIONED')){
-            	if( $status == 2){
-					Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.SANCTION_LETTER_GENERATED'));
-				}
-			}            		
+            //if($appData->curr_status_id == config('common.mst_status_id.APP_SANCTIONED')){
+			if( $status == 2){
+				Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.SANCTION_LETTER_GENERATED'));
+			}
+			//}            		
             $whereActivi['activity_code'] = 'save_sanction_letter_supplychain';
             $activity = $this->masterRepo->getActivity($whereActivi);
             if(!empty($activity)) {
