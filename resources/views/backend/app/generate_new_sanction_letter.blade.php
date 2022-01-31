@@ -3,7 +3,10 @@
    <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <style type="text/css" media="all">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://admin-rentalpha-qa.zuron.in/backend/assets/css/style.css?v=?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" />
+    <link rel="stylesheet" href="https://admin-rentalpha-qa.zuron.in/backend/assets/css/custom.css?v=?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}""/>
+      {{-- <style type="text/css" media="all">
          table{
             width: 100%;
          }
@@ -16,7 +19,7 @@
          }
          .page { width: 100%; height: 100%; }
          
-      </style>
+      </style> --}}
    </head>
    <body>
       <table  cellpadding="0" cellspacing="0" border="0">
@@ -155,7 +158,7 @@
             </tr>
          </tbody>
       </table>
-      <div class="page-break"></div>
+      {{-- <div class="page-break"></div> --}}
       <table  cellpadding="0" cellspacing="0" border="0">
          <thead>
             <tr>
@@ -488,14 +491,14 @@
                         </td>
                      </tr>
                   </table>
-                  <div class="page-break"></div>
+                  {{-- <div class="page-break"></div> --}}
                </td>
             </tr>
             @endif
             @endforeach
          </tbody>
       </table>
-      <div class="page-break"></div>
+      {{-- <div class="page-break"></div> --}}
       <table  cellpadding="0" cellspacing="0" border="0">
          <thead>
             <tr>

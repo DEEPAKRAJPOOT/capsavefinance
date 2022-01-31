@@ -2523,11 +2523,13 @@ class ApplicationController extends Controller
         view()->share($pdfData);
         set_time_limit(600);
         if ($download==true) {
+			$html = view('backend.app.generate_new_sanction_letter')->render();
+			return  $html;
 		  ob_start();
           $pdf = NewPDF::loadView('backend.app.generate_new_sanction_letter');
 		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'defaultPaperSize'=>'a4']);
 		  $pdf->setPaper('A4', 'Portrait');
-          return $pdf->download('sanction.pdf');
+          return $pdf->stream('sanction.pdf');
         }
         $html = view('backend.app.preview_new_sanction_letter')->render();
 		return  $html;
