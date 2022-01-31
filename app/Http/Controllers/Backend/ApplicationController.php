@@ -2310,7 +2310,7 @@ class ApplicationController extends Controller
 			$sanctionId = $request->get('sanction_letter_id');
 		}
 		$appData = $this->appRepo->getAppDataByAppId($appId);
-		if($appData->status != 2){
+		if($appData->status != 1){
 			Session::flash('message','Application does not Sanctioned. Please try again!');
 			return redirect()->back();
 		}

@@ -8409,7 +8409,7 @@ class DataRenderer implements DataProviderInterface
                     if ($data->status == 2){
                         if($data->is_regenerated == 1){
                             $appData = Application::find($data->app_id);
-                            if($appData->status == 2){
+                            if($appData->status == 1){
                                 $link .='<a href="javascript:void(0);" title="Regenerate" class="btn btn-action-btn btn-sm mr-1" id="regenerateButton" data-id="'.$data->sanction_letter_id.'"><i class="fa fa-repeat" aria-hidden="true"></i></a>';
                             }
                         }
