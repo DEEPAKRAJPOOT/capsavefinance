@@ -605,6 +605,7 @@ class InvoiceController extends Controller {
         $expl  =  explode(",",$getPrgm->invoice_approval); 
         
         $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
+        $invoice_approve_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
         $validAttr['user_id'] = $attributes['supplier_id'];
         $validAttr['app_id'] = $appId;
         $validAttr['anchor_id'] = $request->anchor_id;
@@ -1680,7 +1681,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $currentAppLimitData  = $this->application->getAppLimitData(['user_id' => $dataAttr['user_id'], 'app_id' => $dataAttr['app_id']]);
                 
                         if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invoice_amount > ($currentAppLimitData[0]->tot_limit_amt - $invUtilizedAmt)) {
-                            Session::flash('error', 'Invoice amount should not be greater than the balance limit amount.');
+                            $valiMsg = 'Invoice amount should not be greater than the balance limit amount for customer ' .$dataAttr['cusomer_id'];
+                            Session::flash('error', $valiMsg);
                             return back();
                         }
 
