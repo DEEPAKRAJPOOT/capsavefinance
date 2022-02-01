@@ -781,7 +781,7 @@
                   <table width="100%" border="0">
                      <tbody>
                         <tr>
-                           <td width="50%" valign="top" height="40"><b>Yours Sincerely</b></td>
+                           <td width="50%" valign="top" height="40"><b>Yours Sincerely,</b></td>
                            <td valign="top" height="40" style="float: right;"><b>Accepted for and behalf of Borrower</b></td>
                         </tr>
                         <tr>
@@ -793,7 +793,7 @@
                </td>
             </tr>
             <tr>
-               <td height="40">&nbsp;</td>
+               <td height="40"></td>
             </tr>
             <tr>
                <td>
@@ -808,7 +808,7 @@
                </td>
             </tr>
             <tr>
-               <td height="30">&nbsp;</td>
+               <td height="30"></td>
             </tr>
             <tr>
                <td align="center">
