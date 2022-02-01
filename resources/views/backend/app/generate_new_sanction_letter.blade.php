@@ -582,23 +582,23 @@
                                             @endphp
                                            @if ($bizConstitution)
                                            <tr>
-                                            <td valign="top" width="1%">●</td>
+                                            <td valign="top" width="1%">&bull;</td>
                                             <td>
                                                {{ $bizConstitution }} 
                                               </td>
                                             </tr>
                                            @endif
                                             <tr>
-                                                <td valign="top" width="1%">●</td>
+                                                <td valign="top" width="1%">&bull;</td>
                                                 <td>Address Proof (Not older than 60 days)
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td valign="top" width="1%">●</td>
+                                                <td valign="top" width="1%">&bull;</td>
                                                 <td>PAN Card</td>
                                             </tr>
                                             <tr>
-                                                <td valign="top" width="1%">●</td>
+                                                <td valign="top" width="1%">&bull;</td>
                                                 <td>GST registration letter</td>
                                             </tr>
                                         </table>
@@ -619,14 +619,14 @@
                                         KYC of authorized signatory:
                                         <table width="100%" border="0">
                                             <tr>
-                                                <td valign="top" width="3%">●</td>
+                                                <td valign="top" width="3%">&bull;</td>
                                                 <td>Name of authorized signatories with
                                                     their
                                                     Self Attested ID proof and address proof
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td valign="top" width="3%">●</td>
+                                                <td valign="top" width="3%">&bull;</td>
                                                 <td>Signature Verification of authorized
                                                     signatories from Borrower's banker
                                                 </td>
