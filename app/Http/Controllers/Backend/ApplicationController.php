@@ -216,7 +216,6 @@ class ApplicationController extends Controller
 			$cin =    ""; 
 		}
 		$appData 	 = $this->appRepo->getAppData($appId);
-		$isDeleteAllowed = Helper::isChangeAppStatusAllowed($appData->curr_status_id);
 		$OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
 		return view('backend.app.promoter-details')->with([
 			'ownerDetails' => $OwnerPanApi, 
@@ -225,7 +224,7 @@ class ApplicationController extends Controller
 			'bizId' => $bizId,
 			'edit' => $editFlag,
 			'is_lease' => $getProductType,
-			'isDeleteAllowed' => $isDeleteAllowed
+			'appData' => $appData
 		]);
 			 
 		} catch (Exception $ex) {

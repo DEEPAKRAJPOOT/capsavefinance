@@ -157,7 +157,7 @@
                             ?>
                             <div class="col-md-12">
                                 <h5 class="card-title form-head pr-2">Management Information ({{isset($row->first_name) ? $i : '1'}})
-                                    @if(count($ownerDetails) > 1 && $isDeleteAllowed)
+                                    @if(count($ownerDetails) > 1 && $appData->status == 0 || count($ownerDetails) > 1 && $appData->status > 0 && \Helpers::isChangeAppStatusAllowed($appData->curr_status_id))
                                     <span class="float-right"><a href="javascript:void(0)" class=" text-danger" onclick="deleteManagementInfo({{ $row->biz_owner_id }})"><i class="fa fa-trash"></i></a></span>
                                     @endif
                                 </h5>
