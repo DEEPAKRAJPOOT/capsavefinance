@@ -8359,7 +8359,7 @@ class DataRenderer implements DataProviderInterface
                 function ($data) {
                     switch($data->status){
                         case(1):
-                          $status = '<span class="badge badge-warning">SL Incomplete/span>';
+                          $status = '<span class="badge badge-warning">SL Incomplete</span>';
                           break;                          
                         case(2):
                            $status = '<span class="badge badge-success">SL Completed</span>';
