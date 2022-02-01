@@ -174,8 +174,8 @@
                                         <td>
                                             <table width="100%" border="0">
                                                 <tr>
-                                                    <td width="50%" valign="top" height="40"><b>Yours Sincerely</b></td>
-                                                    <td valign="top" height="40"><b>Accepted for and behalf of
+                                                    <td width="50%" valign="top" height="40"><b>Yours Sincerely,</b></td>
+                                                    <td valign="top" height="40" style="float: right;"><b>Accepted for and behalf of
                                                             Borrower</b>
                                                     </td>
                                                 </tr>
@@ -183,7 +183,7 @@
                                                     <td width="50%" valign="top" height="40"><b>For Capsave Finance
                                                             Private
                                                             Limited</b></td>
-                                                    <td valign="top" height="40"><b>For {{ $supplyChaindata['EntityName'] }}</b>
+                                                    <td valign="top" height="40" style="float: right;"><b>For {{ $supplyChaindata['EntityName'] }}</b>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -198,7 +198,7 @@
                                                 <tr>
                                                     <td width="50%" valign="top" height="40"><b>Authorized Signatory</b>
                                                     </td>
-                                                    <td valign="top" height="40"><b>Authorized Signatory</b></td>
+                                                    <td valign="top" height="40" style="float: right;"><b>Authorized Signatory</b></td>
                                                 </tr>
                                             </table>
                                         </td>
@@ -343,8 +343,19 @@
                                                     </td>
                                                 </tr>
                                                 @php
-                                                    $processingCharges = ($offerD->BizInvoice->invoice_disbursed->processing_fee ?? 0) + ($offerD->BizInvoice->invoice_disbursed->processing_fee_gst ?? 0);
-                                                @endphp
+                                                $processingCharges = '';  
+                                                 @endphp
+                                                    @if(isset($offerD->offerCharges))
+                                                        @foreach($offerD->offerCharges as $key=>$offerCharge)
+                                                        @if($offerCharge->chargeName->chrg_name == 'Processing Fee')
+                                                            @if($offerCharge->chrg_type == '2')
+                                                            @php
+                                                               $processingCharges = $offerCharge->chrg_value;  
+                                                            @endphp
+                                                            @endif
+                                                            @endif
+                                                        @endforeach
+                                                        @endif
                                                @if($processingCharges)
                                                 <tr>
                                                     <td valign="top"><b>One time Processing Charges at the time of
@@ -360,7 +371,7 @@
                                                     <td valign="top"><b>Penal Interest</b></td>
                                                     <td>
                                                         @php
-                                                            $penelInterestRate = ($offerD['overdue_interest_rate'] ?? 0) + ($offerD['interest_rate'] ?? 0)/12; 
+                                                            $penelInterestRate = (($offerD['overdue_interest_rate'] ?? 0) + ($offerD['interest_rate'] ?? 0))/12; 
                                                         @endphp
                                                         {{number_format($penelInterestRate, 2, '.', '')}}% per month in case any tranche remains unpaid after the expiry
                                                         of
@@ -551,7 +562,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td valign="top"><b>General pre-disbursement conditions</b></td>
+                                                    <td><b>General pre-disbursement conditions</b></td>
                                                     <td>
                                                         <table width="100%" border="0">
                                                             <tr>
@@ -570,12 +581,24 @@
                                                                 <td>
                                                                     Self-Attested KYC of borrower (True Copy)
                                                                     <table width="100%" border="0">
-                                                                        <tr>
-                                                                            <td valign="top" width="1%">●</td>
-                                                                            <td>
-                                                                                {{ $supplyChainFormData->general_pre_disbursement_conditions??'' }}
-                                                                            </td>
+                                                                        @php
+                                                                           $bizConstitution = '';
+                                                                            if(isset($supplyChaindata['BizConstitution']) && ($supplyChaindata['BizConstitution'] == 'Private Limited Company' || $supplyChaindata['BizConstitution'] == 'Public Limited Company')  ){
+                                                                                $bizConstitution = 'Certificate of incorporation, MOA, AOA';
+                                                                            }else if(isset($supplyChaindata['BizConstitution']) && ($supplyChaindata['BizConstitution'] == 'Partnership Firm')  ){
+                                                                                $bizConstitution = 'Partnership Deed';
+                                                                            }else if(isset($supplyChaindata['BizConstitution']) && ($supplyChaindata['BizConstitution'] == 'Proprietorship firm' || $supplyChaindata['BizConstitution'] == 'Sole Proprietor')  ){
+                                                                                $bizConstitution = 'Shop and Establishment registration certificate / Udyog Adhar';
+                                                                            }
+                                                                        @endphp
+                                                                       @if ($bizConstitution)
+                                                                       <tr>
+                                                                        <td valign="top" width="1%">●</td>
+                                                                        <td>
+                                                                           {{ $bizConstitution }} 
+                                                                          </td>
                                                                         </tr>
+                                                                       @endif
                                                                         <tr>
                                                                             <td valign="top" width="1%">●</td>
                                                                             <td>Address Proof (Not older than 60 days)
@@ -662,6 +685,23 @@
                                                                 <td>The loan shall be utilized for the purpose for which
                                                                     it
                                                                     is sanctioned, and it should not be utilized for –
+                                                                    <table width="100%" border="0">
+                                                                        <tr>
+                                                                            <td valign="top" width="3%">a.</td>
+                                                                            <td>Subscription to or purchase of shares/debentures.
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td valign="top" width="3%">b.</td>
+                                                                            <td>Extending loans to subsidiary companies/associates or for making inter-corporate deposits.
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td valign="top" width="3%">c.</td>
+                                                                            <td>Any speculative purposes.
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -818,15 +858,15 @@
                                             <table width="100%" border="0">
                                                 <tbody>
                                                     <tr>
-                                                        <td width="50%" valign="top" height="40"><b>Yours Sincerely</b>
+                                                        <td width="50%" valign="top" height="40"><b>Yours Sincerely,</b>
                                                         </td>
-                                                        <td valign="top" height="40"><b>Accepted for and behalf of
+                                                        <td valign="top" height="40" style="float: right;"><b>Accepted for and behalf of
                                                                 Borrower</b></td>
                                                     </tr>
                                                     <tr>
                                                         <td width="50%" valign="top" height="40"><b>For Capsave Finance
                                                                 Private Limited</b></td>
-                                                        <td valign="top" height="40"><b>For {{ $supplyChaindata['EntityName'] }}</b>
+                                                        <td valign="top" height="40" style="float: right;"><b>For {{ $supplyChaindata['EntityName'] }}</b>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -844,7 +884,7 @@
                                                         <td width="50%" valign="top" height="40"><b>Authorized
                                                                 Signatory</b>
                                                         </td>
-                                                        <td valign="top" height="40"><b>Authorized Signatory</b></td>
+                                                        <td valign="top" height="40" style="float: right;"><b>Authorized Signatory</b></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -855,7 +895,7 @@
                                     </tr>
                                     <tr>
                                         <td align="center">
-                                            <div style="font-family: 'Federo', sans-serif;"><span style="font-size:20px; font-weight:bold;">CAPSAVE FINANCE PRIVATE
+                                            <div><span style="font-size:20px; font-weight:bold;">CAPSAVE FINANCE PRIVATE
                                                     LIMITED</span><br />
                                                 Registered office: Unit No.501 Wing-D, Lotus Corporate Park, Western
                                                 Express
@@ -876,7 +916,7 @@
                                 <input type="hidden" name="offer_id" value="{{$offerId ?? ''}}">
                                 <input type="hidden" name="biz_id" value="{{$bizId ?? ''}}">
                                 <input type="hidden" name="action_type" value="mail">
-                                <button type="submit" class="btn btn-primary pull-right mr-2 mt-3" id="send_sanction" onclick="document.getElementById('overlay').style.display='block'">Send Mail</button>
+                                <button type="submit" class="btn btn-primary btn-sm pull-right mr-2 mt-3" id="send_sanction" onclick="document.getElementById('overlay').style.display='block'">Send Mail</button>
                             </form>
                                 @else 
                             @endif

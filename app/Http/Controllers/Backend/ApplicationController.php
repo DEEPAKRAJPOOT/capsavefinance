@@ -2334,7 +2334,7 @@ class ApplicationController extends Controller
 		// $data = $this->getSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
 		$data = $this->getNewSanctionLetterData((int)$appId, (int)$bizId, (int)$offerId, (int)$sanctionId);
 		$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId, $sanctionId);
-		//dd($supplyChaindata);
+		//dd($supplyChaindata,$data);
 		$appLimit = $this->appRepo->getAppLimit((int)$appId);
 		return view('backend.app.create_new_sanction_letter')->with($data)->with(['supplyChaindata'=>$supplyChaindata, 'supplyChainFormData'=>$supplyChainFormData, 'appLimit' => $appLimit, 'actionType' => $action_type,'arrayOfferData'=>$arrayOfferData]);  
 	}
@@ -2372,14 +2372,6 @@ class ApplicationController extends Controller
 			$status = $is_regenerated = 0;
 			$date_of_final_submission = null;
 			if($arrFileData['action_type'] === 'final_submit'){
-                $status = 2;
-				$is_regenerated = 1;
-				AppSanctionLetter::where("app_id",$appId)->update(["is_regenerated" => 0]);
-				$date_of_final_submission = Carbon::now()->format('Y-m-d');
-
-			}else if($arrFileData['action_type'] === 'update'){
-                $status = 1;
-			}else if($arrFileData['action_type'] === 'final_submit_create'){
 				$whereCondition = [];
 		        $whereCondition['app_id'] = $appId;
 				$sanctionFirstData =$this->appRepo->getOfferNewSanctionLetterData($whereCondition,'sanction_letter_id','yes');
@@ -2387,6 +2379,16 @@ class ApplicationController extends Controller
 					Session::flash('message','Does not create new sanction letter, Please try again!');
 					return redirect()->route('list_new_sanction_letter', ['app_id' => $appId, 'offer_id' => $offerId, 'sanction_id' => null,'biz_id' => $bizId]);
 				}
+                $status = 2;
+				$is_regenerated = 1;
+				AppSanctionLetter::where("app_id",$appId)->update(["is_regenerated" => 0]);
+				$date_of_final_submission = Carbon::now()->format('Y-m-d');
+				AppSanctionLetter::where("app_id",$appId)->update(["status" => 4]);
+
+			}else if($arrFileData['action_type'] === 'update'){
+                $status = 1;
+				AppSanctionLetter::where("app_id",$appId)->update(["status" => 4]);
+			}else if($arrFileData['action_type'] === 'update_create'){
 				AppSanctionLetter::where("app_id",$appId)->update(["status" => 4]);
 			}
 			$supplyChaindata = $this->getNewSanctionLetterSupplyChainData($appId, $bizId, $offerId);

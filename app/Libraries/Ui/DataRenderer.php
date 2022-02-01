@@ -394,7 +394,12 @@ class DataRenderer implements DataProviderInterface
                                             $act = $act . $moveToBackStageUrl;
                                         }
                                     } else {
-                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';    
+                                        $status = DB::table('app_sanction_letter')->where(['app_id' => $app->app_id])->orderBy('sanction_letter_id', 'desc')->pluck('status')->first();
+                                       if($status == 3){
+                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" onclick="alert(\'You cannot move this case to next stage as sanction letter is in process/regenerated\')" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';
+                                       }else{
+                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';
+                                       }    
 
                                         if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
                                             $act = $act . $moveToBackStageUrl;
@@ -8348,25 +8353,25 @@ class DataRenderer implements DataProviderInterface
     public function getNewSanctionLetterList(Request $request, $data)
     {
         return DataTables::of($data)
-            ->rawColumns(['action'])
+            ->rawColumns(['action','status'])
             ->editColumn(
                 'status',
                 function ($data) {
                     switch($data->status){
                         case(1):
-                          $status = 'Incomplete';
+                          $status = '<span class="badge badge-warning">SL Incomplete/span>';
                           break;                          
                         case(2):
-                           $status = 'Complete';
+                           $status = '<span class="badge badge-success">SL Completed</span>';
                             break;
                         case(3):
-                            $status =  'Regenerate';
+                            $status =  '<span class="badge badge-primary">SL Regenerated</span>';
                             break;
                         case(4):
-                            $status =  'Expired';
+                            $status =  '<span class="badge badge-danger">SL Expired</span>';
                             break;
                         default:
-                            $status =  'Pending';
+                            $status =  '<span class="badge badge-info">SL Pending</span>';
                     }
                     return $status;
                 }

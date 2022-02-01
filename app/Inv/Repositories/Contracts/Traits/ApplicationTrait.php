@@ -701,7 +701,6 @@ trait ApplicationTrait
         $AppLimitData  = $this->appRepo->getAppLimit($appId);
         $supplyChainOfferData = $this->appRepo->appOfferWithLimit($appId);
         $reviewerSummaryData = $this->appRepo->getReviewerSummaryData($appId, $bizId);
-
         $user = $this->appRepo->getAppData($appId)->user;
         //$anchors = $user->anchors;
         $anchors = $this->userRepo->getAnchorsByUserId($user->user_id);
@@ -752,6 +751,7 @@ trait ApplicationTrait
         $data['purpose'] = $CamData['t_o_f_purpose'] ?? NULL;
         $data['EntityName'] = $bizData['biz_entity_name'];
         $data['Address'] = $CommunicationAddress;
+        $data['BizConstitution'] = $EntityData['name'];
         $data['EmailId'] = $EntityData['email'];
         $data['MobileNumber'] = $EntityData['mobile_no'];
         $data['limit_amt'] = $supplyChainOffer['limit_amt'] ?? 0;
