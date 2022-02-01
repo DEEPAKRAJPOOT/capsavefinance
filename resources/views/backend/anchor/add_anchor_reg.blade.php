@@ -163,9 +163,11 @@
                               {!! $errors->first('logo_align', '<span class="error">:message</span>') !!}
                            </div> 
                         </div>
+
+                          
                      </div>
                      <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                            <label for="chrg_type"><strong>Upload Invoice Copy Mandatory</strong></label><br />
                            <div class="form-check-inline ">
                               <label class="fnt">
@@ -177,7 +179,23 @@
                               <input type="radio" class="form-check-input is_phy_inv_req" name="is_phy_inv_req" value="0">No
                               </label>
                            </div>
-                        </div> 
+                        </div>
+                         <div class="col-6">
+                              <div class="form-group">
+                                 <label for="txtEmail">Is Fungible
+                                 <span class="mandatory">*</span>
+                                 </label>
+
+                                  {!!
+                                Form::select('is_fungible',
+                                [''=>'Please Select', 1 => 'Yes', 0 => 'No'],
+                                '',
+                                array('id' => 'is_fungible',
+                                'class'=>'form-control',
+                                'name'=>'is_fungible'))
+                                !!}
+                              </div>
+                           </div>
                      </div>
                 
                 <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
@@ -319,7 +337,7 @@
                      anchor_logo: {
                         required: false,
                         extension: "jpg,jpeg,png",
-                        filesize : 1, // here we are working with MB
+                       // filesize : 1, // here we are working with MB
                      },
                      logo_align: {
                         required: function(element) {
@@ -329,6 +347,9 @@
                                  return false;
                            }
                         }
+                     },
+                      is_fungible: {
+                        required: true
                      }
                   },
                   messages: {
