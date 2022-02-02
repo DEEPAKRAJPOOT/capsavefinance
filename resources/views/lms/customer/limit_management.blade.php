@@ -140,15 +140,15 @@
 
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Program Limit </label>
-                                <div class="label-bottom">{{number_format($val->prgm_limit_amt)}}</div>
+                                <div class="label-bottom">{{number_format($val->prgm_limit_amt, 2)}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Utilize Limit	 </label>
-                                <div class="label-bottom">{{number_format($inv_limit)}}</div>
+                                <div class="label-bottom">{{number_format($inv_limit, 2)}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Available Limit </label>
-                                <div class="label-bottom">{{number_format($val->prgm_limit_amt-$inv_limit)}}</div>
+                                <div class="label-bottom">{{number_format(($val->prgm_limit_amt-$inv_limit), 2)}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                               
