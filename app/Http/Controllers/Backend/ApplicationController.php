@@ -2525,8 +2525,8 @@ class ApplicationController extends Controller
         view()->share($pdfData);
         set_time_limit(600);
         if ($download==true) {
-			//$html = view('backend.app.generate_new_sanction_letter')->render();
-			//return  $html;
+			$html = view('backend.app.generate_new_sanction_letter')->render();
+			return  $html;
 		  ob_start();
           $pdf = NewPDF::loadView('backend.app.generate_new_sanction_letter');
 		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'defaultPaperSize'=>'a4']);
