@@ -456,6 +456,8 @@ class ApportionmentController extends Controller
                 if($TransDetail->invoice_disbursed_id && $paymentDetails){
                     $Obj = new ManualApportionmentHelper($this->lmsRepo);
                     $Obj->intAccrual($TransDetail->invoice_disbursed_id, $paymentDetails->date_of_payment);
+                    $this->updateInvoiceRepaymentFlag([$TransDetail->invoice_disbursed_id]);
+                    $Obj->transactionPostingAdjustment($TransDetail->invoice_disbursed_id, $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId, $useApporCol = true);
                 }
 
                 $whereActivi['activity_code'] = 'apport_reversal_save';
@@ -952,9 +954,9 @@ class ApportionmentController extends Controller
                     }
                     
                     $Obj->intAccrual($invDisb['invoice_disbursed_id'], $date_of_payment);
+                    $this->updateInvoiceRepaymentFlag([$invDisb['invoice_disbursed_id']]);
                     $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId, $useApporCol = true);
                 }
-                $this->updateInvoiceRepaymentFlag(array_keys($invoiceList));
                 /* Refund Process Start */
                 $transactionList = [];
                 foreach ($invoiceList as $invDisb) {
@@ -1639,6 +1641,8 @@ class ApportionmentController extends Controller
             $Obj  = new ManualApportionmentHelper($this->lmsRepo);
             foreach ($data as $invDisb => $sysCreatedAt) {
                 $Obj->intAccrual($invDisb, $sysCreatedAt);
+                $this->updateInvoiceRepaymentFlag([$invDisb]);
+                $Obj->transactionPostingAdjustment($invDisb, NULL, NULL, NULL);
             }
         }
 
