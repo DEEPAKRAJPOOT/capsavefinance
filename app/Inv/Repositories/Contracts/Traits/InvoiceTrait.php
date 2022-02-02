@@ -27,6 +27,7 @@ use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use App\Helpers\Helper;
 
 
 trait InvoiceTrait
@@ -400,12 +401,17 @@ trait InvoiceTrait
          }
    }
  
-   public static function ProgramLimit($getDetails)
-   {
-
-        return   AppProgramOffer::whereHas('productHas')->where(['app_id' => $getDetails['app_id'],'anchor_id' => $getDetails['anchor_id'],'prgm_id'=> $getDetails['program_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
-        
-   }
+  public static function ProgramLimit($getDetails)
+  {
+    $appId = $getDetails['app_id'];
+    $appData = Application::getAppData((int) $getDetails['app_id']);
+    if ($appData && $appData->curr_status_id == config('common.mst_status_id.APP_CLOSED')) {
+      $childAppData = Application::getAppByParentAppId((int) $getDetails['app_id']);
+      if ($childAppData)
+        $appId = $childAppData->app_id;
+    }
+    return  AppProgramOffer::whereHas('productHas')->where(['app_id' => $appId,'anchor_id' => $getDetails['anchor_id'],'prgm_id'=> $getDetails['program_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');        
+  }
      /* check the user app limit  */
     /* Use  app_limit table */
     /* Created by gajendra chahan  */ 
@@ -426,26 +432,33 @@ trait InvoiceTrait
         }else{
             $prgm_ids = [$attr['prgm_id']];
         }
-        $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['user_id' => $attr['user_id'],'status' =>2])->count();  
+        $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['user_id' => $attr['user_id'],'status' => 2])->count();
       
-        if($is_enhance==1)
+        if($is_enhance == 1)
         {
-        $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],NULL);
-        $marginApprAmt = $marginApprAmt??0;
-        $marginApprAmt   +=   BizInvoice::whereIn('status_id',[8,9,10])
-        ->where('prgm_offer_id',$attr['prgm_offer_id'])
-        ->whereIn('program_id', $prgm_ids)
-        ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
-        ->where('app_id' , '<=', $attr['app_id'])
-        ->sum('invoice_approve_amount');
-        
-        $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
-        ->where('prgm_offer_id',$attr['prgm_offer_id'])
-        ->whereIn('program_id', $prgm_ids)
-        ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
-        ->where('app_id' , '<=', $attr['app_id'])
-        ->sum('principal_repayment_amt');
-            return $marginApprAmt-$marginReypayAmt;
+          $parentLimitData = Helper::getParentApplicationInvoiceApproveLimit($attr, $prgm_ids);
+          $marginApprAmt = $parentLimitData['marginApprAmt'];
+          $marginReypayAmt = $parentLimitData['marginReypayAmt'];
+
+          $childLimitData = Helper::getChildApplicationInvoiceApproveLimit($attr, $prgm_ids);
+          $marginApprAmt += $childLimitData['marginApprAmt'];
+          $marginReypayAmt += $childLimitData['marginReypayAmt'];
+
+          $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],NULL);
+          $marginApprAmt += BizInvoice::whereIn('status_id',[8,9,10])
+          ->where('prgm_offer_id',$attr['prgm_offer_id'])
+          ->whereIn('program_id', $prgm_ids)
+          ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
+          ->where('app_id' , '<=', $attr['app_id'])
+          ->sum('invoice_approve_amount');
+          
+          $marginReypayAmt += BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
+          ->where('prgm_offer_id',$attr['prgm_offer_id'])
+          ->whereIn('program_id', $prgm_ids)
+          ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
+          ->where('app_id' , '<=', $attr['app_id'])
+          ->sum('principal_repayment_amt');
+          return $marginApprAmt - $marginReypayAmt;
        }
        else
        {
