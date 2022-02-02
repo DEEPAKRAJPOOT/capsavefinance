@@ -35,6 +35,7 @@ use Illuminate\Contracts\Support\Renderable;
 use ZanySoft\Zip\Zip;
 use App\Inv\Repositories\Models\AnchorUser;
 use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\AppSanctionLetter;
 use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\ColenderShare;
@@ -2371,5 +2372,25 @@ class Helper extends PaypalHelper
         }else{
             return TRUE;
         }
+    }
+
+    public static function appSanctionLetterStatus($app_id)
+    {
+       $whereCondition = [];
+	   $whereCondition['app_id'] = $app_id;
+       $appSanctionLettersData = AppSanctionLetter::getOfferNewSancationLetterData($whereCondition); 
+        if($appSanctionLettersData){
+            return false;
+        }
+        return true;
+    }
+
+    public static function appCurrentStatus($app_id)
+    {
+       $appCurrentStatusData = Application::getAppData((int) $app_id)->curr_status_id; 
+        if($appCurrentStatusData == config('common.mst_status_id.SANCTION_LETTER_GENERATED')){
+            return true;
+        }
+        return false;
     }
 }

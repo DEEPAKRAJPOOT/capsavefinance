@@ -68,18 +68,23 @@
         <a href="{{ route('colender_view_offer', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('colender/application/view-offer') ? 'active' : '' }}">View Co-lender Offer</a>
     </li>
     @endcan
-
+    @php
+        $appSanctionLetterDataFlag = \Helpers::appSanctionLetterStatus(request()->get('app_id'));  
+        $appCurrentStatus = \Helpers::appCurrentStatus(request()->get('app_id'));        
+    @endphp
     {{--@if ($currentStage->stage_code == 'sanction_letter' && $isNavAccessible)--}}
-    @can('gen_sanction_letter')
-    <li>
-        <a href="{{ route('gen_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/sanction-letter') ? 'active' : '' }}">Sanction Letter</a>
-    </li>
-    @endcan
-    {{--@endif--}}
+    @if($appSanctionLetterDataFlag && $appCurrentStatus)
+        @can('gen_sanction_letter')
+        <li>
+            <a href="{{ route('gen_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/sanction-letter') ? 'active' : '' }}">Sanction Letter</a>
+        </li>
+        @endcan 
+    @else
     @can('list_new_sanction_letter')
     <li>
         <a href="{{ route('list_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/new-sanction-letter','application/create-new-sanction-letter','application/view-new-sanction-letter') ? 'active' : '' }}">New Sanction Letter</a>
     </li>
     @endcan   
-
+    @endif
+    {{--@endif--}}
 </ul>

@@ -926,10 +926,10 @@
                                 <input type="hidden" name="ref_no" value="CFPL/{{Carbon\Carbon::now()->format('My') }}/{{request()->get('app_id')? request()->get('app_id') :''}}">
                                 @if(!empty($actionType) && $actionType == 'edit')
                                 <button type="submit" class="btn btn-default btn-sm mr-2" name="action_type" id="update_sanction" value="update" onclick="whichPressed=this.value" >Update</button>
-                                <button type="submit" class="btn btn-primary btn-sm mr-2" name="action_type" id="final_sanction" value="final_submit" onclick="whichPressed=this.value" >Generate SL</button>
+                                <button type="submit" class="btn btn-primary btn-sm mr-2" name="action_type" id="final_sanction" value="final_submit" onclick="whichPressed=this.value" >Generate Sanction Letter</button>
                                 @else
                                 <button type="submit" class="btn btn-default btn-sm mr-2" name="action_type" id="update_sanction" value="update_create" onclick="whichPressed=this.value" >Save</button>
-                                <button type="submit" class="btn btn-primary btn-sm mr-2" name="action_type" id="final_sanction" value="final_submit" onclick="whichPressed=this.value" >Generate SL</button>
+                                <button type="submit" class="btn btn-primary btn-sm mr-2" name="action_type" id="final_sanction" value="final_submit" onclick="whichPressed=this.value" >Generate Sanction Letter</button>
                                 @endif
                             </div>
                         </div>
@@ -1078,7 +1078,7 @@
     {               
         if(whichPressed=="final_submit")
         {
-            return confirm('Are you sure you wish to final sanction letter submit?');
+            return confirm('Are you sure you want to generate the sanction letter?');
         }
     }
 

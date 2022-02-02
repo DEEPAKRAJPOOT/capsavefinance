@@ -5,24 +5,34 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link href="https://fonts.googleapis.com/css2?family=Federo&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      <link rel="stylesheet" href="https://admin-rentalpha-qa.zuron.in/backend/assets/css/style.css?v=?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" />
-      <link rel="stylesheet" href="https://admin-rentalpha-qa.zuron.in/backend/assets/css/custom.css?v=?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}""/>
-      {{-- <style type="text/css" media="all">
-         table{
-            width: 100%;
+      <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" />
+      <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}""/>
+      <style>
+         table, tr, td, th, tbody, thead, tfoot {
+            page-break-inside: avoid !important;
          }
-         .page-break {
-            page-break-after: always;
-            page-break-inside: auto;
-         }
-         table{
-         border-collapse: collapse;
-         }
-         .page { width: 100%; height: 100%; }
-         
-      </style> --}}
+         table { page-break-inside:auto }
+         tr    { page-break-inside:avoid; page-break-after:auto }
+         thead { display:table-header-group }
+         tfoot { display:table-footer-group }
+         </style>
    </head>
    <body>
+      <script type="text/php">
+         if (isset($pdf)) {
+            $x = 90;
+            $y = 820;
+            //$text = "Page {PAGE_NUM} of {PAGE_COUNT}";
+            $text = "{PAGE_NUM}";
+            $font = $fontMetrics->getFont("Federo", "regular");
+            $size = 12;
+            $color = array(0,0,0);
+            $word_space = 0.0;  //  default
+            $char_space = 0.0;  //  default
+            $angle = 0.0;   //  default
+            $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+        }
+      </script> 
       <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify;">
          <thead>
             <tr>
