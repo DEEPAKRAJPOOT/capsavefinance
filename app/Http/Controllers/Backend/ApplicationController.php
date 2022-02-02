@@ -2531,7 +2531,7 @@ class ApplicationController extends Controller
           $pdf = NewPDF::loadView('backend.app.generate_new_sanction_letter');
 		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true]);
 		  $pdf->setPaper('A4', 'Portrait');
-          return $pdf->download('sanction.pdf');
+          return $pdf->download('sanctionLetter.pdf');
         }
         $html = view('backend.app.preview_new_sanction_letter')->render();
 		return  $html;

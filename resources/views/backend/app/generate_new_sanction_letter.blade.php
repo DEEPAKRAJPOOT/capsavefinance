@@ -5,16 +5,24 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link href="https://fonts.googleapis.com/css2?family=Federo&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" />
+      {{-- <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" /> --}}
       <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}""/>
       <style>
+          table {
+            border-collapse: collapse;
+            
+         }
          table, tr, td, th, tbody, thead, tfoot {
+            page-break-inside: avoid !important;
+         }
+         table {
             page-break-inside: avoid !important;
          }
          table { page-break-inside:auto }
          tr    { page-break-inside:avoid; page-break-after:auto }
          thead { display:table-header-group }
          tfoot { display:table-footer-group }
+         
          </style>
    </head>
    <body>
@@ -669,13 +677,13 @@
                         <td>
                            <table width="100%" border="0">
                               <tr>
-                                 <td valign="top" width="5%">1.</td>
+                                 <td valign="top" width="1%">1.</td>
                                  <td>Borrower undertakes that no deferral or moratorium will be sought by the borrower during the tenure 
                                     of the facility
                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="5%">2.</td>
+                                 <td valign="top" width="1%">2.</td>
                                  <td>The loan shall be utilized for the purpose for which it is sanctioned, and it should not be utilized for –
                                     <table width="100%" border="0">
                                        <tr>
@@ -697,14 +705,14 @@
                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="5%">3.</td>
+                                 <td valign="top" width="1%">3.</td>
                                  <td>The Borrower shall maintain adequate books and records which should correctly reflect their 
                                     financial position and operations and it should submit to CFPL at regular intervals such statements
                                     as may be prescribed by CFPL in terms of the RBI / Bank’s instructions issued from time to time.
                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="5%">4.</td>
+                                 <td valign="top" width="1%">4.</td>
                                  <td>The Borrower will keep CFPL informed of the happening of any event which is likely to have an 
                                     impact on their profit or business and more particularly, if the monthly production or sale and 
                                     profit are likely to be substantially lower than already indicated to CFPL. The Borrower will
@@ -712,7 +720,7 @@
                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="5%">5.</td>
+                                 <td valign="top" width="1%">5.</td>
                                  <td>CFPL will have the right to examine at all times the Borrower’s books of accounts and to have 
                                     the Borrower’s factory(s)/branches inspected from time to time by officer(s) of the CFPL and/or 
                                     qualified auditors including stock audit and/or technical experts and/or management consultants of 
@@ -721,13 +729,13 @@
                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="5%">6.</td>
+                                 <td valign="top" width="1%"">6.</td>
                                  <td>The Borrower should not pay any consideration by way of commission, brokerage, fees or in any
                                     other form to guarantors directly or indirectly.
                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="5%">7.</td>
+                                 <td valign="top" width="1%">7.</td>
                                  <td>The Borrower and Guarantor(s) shall be deemed to have given their express consent to CFPL to disclose the 
                                     information and data furnished by them to CFPL and also those regarding the credit facility/ies enjoyed by the 
                                     Borrower, conduct of accounts and guarantee obligations undertaken by guarantor to the Credit Information Bureau 
@@ -736,13 +744,13 @@
                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="5%">8.</td>
+                                 <td valign="top" width="1%">8.</td>
                                  <td>The Borrower will keep the CFPL advised of any circumstances adversely affecting their financial 
                                     position including any action taken by any creditor, Government authority against them.
                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="5%">9.</td>
+                                 <td valign="top" width="1%">9.</td>
                                  <td>The Borrower shall procure consent every year from the auditors appointed by the borrower to 
                                     comply with and give report / specific comments in respect of any query or requisition made by us 
                                     as regards the audited accounts or balance sheet of the Borrower. We may provide information and 
@@ -753,25 +761,25 @@
                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="5%">10.</td>
+                                 <td valign="top" width="1%">10.</td>
                                  <td>The sanction limits would be valid for acceptance for 30 days from the date of the issuance 
                                     of letter.
                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="5%">11.</td>
+                                 <td valign="top" width="1%">11.</td>
                                  <td>CFPL reserves the right to alter, amend any of the condition or withdraw the facility, 
                                     at any time without assigning any reason and also without giving any notice.
                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="5%">12.</td>
+                                 <td valign="top" width="1%">12.</td>
                                  <td>Provided further that notwithstanding anything to the contrary contained in this Agreement, 
                                     CFPL may at its sole and absolute discretion at any time, terminate, cancel or withdraw the Loan 
                                     or any part thereof (even if partial or no disbursement is made) without any liability and without 
                                     any obligations to give any reason whatsoever, whereupon all principal monies, interest thereon and
                                     all other costs, charges, expenses and other monies outstanding (if any) shall become due and payable 
-                                    to CFPL by the Borrower forthwith upon demand from CFPL
+                                    to CFPL by the Borrower forthwith upon demand from CFPL.
                                  </td>
                               </tr>
                            </table>
