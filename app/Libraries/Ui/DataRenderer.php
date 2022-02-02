@@ -6623,7 +6623,7 @@ class DataRenderer implements DataProviderInterface
                     $flag = false;
                 }
                 
-                if($trans->payment && strtotime(\Helpers::convertDateTimeFormat($trans->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) && $flag && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
+                if(/*$trans->payment && */strtotime(\Helpers::convertDateTimeFormat($trans->sys_created_at, 'Y-m-d H:i:s', 'Y-m-d')) == strtotime(\Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'Y-m-d')) && $flag && !in_array($trans->trans_type,[config('lms.TRANS_TYPE.FAILED')])){
                     $result = "<input type='checkbox' name='check[".$trans->trans_id."]'>";
                 }
                 return $result;
