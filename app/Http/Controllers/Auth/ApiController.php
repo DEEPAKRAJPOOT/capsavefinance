@@ -664,6 +664,7 @@ class ApiController
     foreach ($dates as $activeDate) {
       if(date("Y-m-t", strtotime($activeDate)) == $activeDate){
         $monthStartDate = date("Y-m-1", strtotime($activeDate));
+        echo "$monthStartDate"."--"."$activeDate"."\n";
         self::tally_entry($monthStartDate,$activeDate);
       }
     }
