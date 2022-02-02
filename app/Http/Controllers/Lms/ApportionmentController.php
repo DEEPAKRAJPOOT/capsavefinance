@@ -341,7 +341,7 @@ class ApportionmentController extends Controller
                 $sanctionPageView = $request->get('sanctionPageView');
             }
             $transId = $request->get('trans_id');
-            $paymentId = $request->get('payment_id');
+            $paymentId = $request->get('payment_id')??null;
             $amount = (float)$request->get('amount');
             $comment = $request->get('comment');
             $TransDetail = $this->lmsRepo->getTransDetail(['trans_id' => $transId]);
@@ -366,7 +366,6 @@ class ApportionmentController extends Controller
                 return redirect()->route('apport_settled_view', [ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Comment / Remarks is required to reversed the amount.']);
             }
             
-            $paymentDetails = Payment::find($TransDetail->payment_id);
             if (empty($TransDetail)) {
                 return redirect()->route('apport_settled_view',[ 'payment_id' => $paymentId, 'user_id' =>$TransDetail->user_id, 'sanctionPageView'=>$sanctionPageView])->with(['error' => 'Payment Detail missing for this transaction!']);
             }
@@ -377,7 +376,7 @@ class ApportionmentController extends Controller
                     'parent_trans_id' => $TransDetail->parent_trans_id,
                     'invoice_disbursed_id' => $TransDetail->invoice_disbursed_id ?? NULL,
                     'user_id' => $TransDetail->user_id,
-                    'trans_date' => $paymentDetails->date_of_payment,
+                    'trans_date' => $TransDetail->trans_date,
                     'amount' => $amount,
                     'entry_type' => 0,
                     'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
@@ -405,7 +404,7 @@ class ApportionmentController extends Controller
                         'parent_trans_id' => $TransDetail->parent_trans_id,
                         'invoice_disbursed_id' => $TransDetail->invoice_disbursed_id ?? NULL,
                         'user_id' => $TransDetail->user_id,
-                        'trans_date' => $paymentDetails->date_of_payment,
+                        'trans_date' => $TransDetail->trans_date,
                         'amount' => $crt->settled_outstanding,
                         'entry_type' => 0,
                         'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
@@ -420,45 +419,48 @@ class ApportionmentController extends Controller
             foreach ($newTransactions as $newTrans) {
                 $this->lmsRepo->saveTransaction($newTrans);
             }
-            
-            $paymentData = [
-                'user_id' => $paymentDetails->user_id,
-                'biz_id' => $paymentDetails->biz_id,
-                'virtual_acc' => $paymentDetails->virtual_acc,
-                'action_type' => $paymentDetails->action_type,
-                'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
-                'parent_trans_id' => $resp->trans_id,
-                'amount' => $amount,
-                'date_of_payment' => $paymentDetails->date_of_payment,
-                'gst' => $paymentDetails->gst,
-                'sgst_amt' => $paymentDetails->sgst_amt,
-                'cgst_amt' => $paymentDetails->cgst_amt,
-                'igst_amt' => $paymentDetails->igst_amt,
-                'payment_type' => $paymentDetails->payment_type,
-                'utr_no' => $paymentDetails->utr_no,
-                'unr_no' => $paymentDetails->unr_no,
-                'cheque_no' => $paymentDetails->cheque_no,
-                'tds_certificate_no' => $paymentDetails->tds_certificate_no,
-                'file_id' => $paymentDetails->file_id,
-                'description' => $paymentDetails->description,
-                'is_settled' => 0,
-                'is_manual' => $paymentDetails->is_manual,
-                'generated_by' => 1,
-                'is_refundable' => 1
-            ];
-            $paymentId = Payment::insertPayments($paymentData);
-            if (!empty($resp->trans_id) && is_int($paymentId)) {
+            if($TransDetail->payment_id){
+                $paymentDetails = Payment::find($TransDetail->payment_id);
+                $paymentData = [
+                    'user_id' => $paymentDetails->user_id,
+                    'biz_id' => $paymentDetails->biz_id,
+                    'virtual_acc' => $paymentDetails->virtual_acc,
+                    'action_type' => $paymentDetails->action_type,
+                    'trans_type' => config('lms.TRANS_TYPE.REVERSE'),
+                    'parent_trans_id' => $resp->trans_id,
+                    'amount' => $amount,
+                    'date_of_payment' => $paymentDetails->date_of_payment,
+                    'gst' => $paymentDetails->gst,
+                    'sgst_amt' => $paymentDetails->sgst_amt,
+                    'cgst_amt' => $paymentDetails->cgst_amt,
+                    'igst_amt' => $paymentDetails->igst_amt,
+                    'payment_type' => $paymentDetails->payment_type,
+                    'utr_no' => $paymentDetails->utr_no,
+                    'unr_no' => $paymentDetails->unr_no,
+                    'cheque_no' => $paymentDetails->cheque_no,
+                    'tds_certificate_no' => $paymentDetails->tds_certificate_no,
+                    'file_id' => $paymentDetails->file_id,
+                    'description' => $paymentDetails->description,
+                    'is_settled' => 0,
+                    'is_manual' => $paymentDetails->is_manual,
+                    'generated_by' => 1,
+                    'is_refundable' => 1
+                ];
+                $paymentId = Payment::insertPayments($paymentData);
+            }
+
+            if (!empty($resp->trans_id)) {
                 $commentData = [
                     'trans_id' => $resp->trans_id,
                     'comment' => $comment,
                 ];
                 $comment = $this->lmsRepo->saveTxnComment($commentData);
 
-                if($TransDetail->invoice_disbursed_id && $paymentDetails){
+                if($TransDetail->invoice_disbursed_id){
                     $Obj = new ManualApportionmentHelper($this->lmsRepo);
-                    $Obj->intAccrual($TransDetail->invoice_disbursed_id, $paymentDetails->date_of_payment);
+                    $Obj->intAccrual($TransDetail->invoice_disbursed_id, $TransDetail->trans_date);
                     $this->updateInvoiceRepaymentFlag([$TransDetail->invoice_disbursed_id]);
-                    $Obj->transactionPostingAdjustment($TransDetail->invoice_disbursed_id, $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId, $useApporCol = true);
+                    $Obj->transactionPostingAdjustment($TransDetail->invoice_disbursed_id, $TransDetail->trans_date, $TransDetail->invoiceDisbursed->invoice->program_offer->payment_frequency ?? null, $paymentId);
                 }
 
                 $whereActivi['activity_code'] = 'apport_reversal_save';
