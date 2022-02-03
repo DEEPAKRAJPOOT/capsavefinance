@@ -39,7 +39,7 @@
             <select name="anchor_id" id="anchor_id" class="form-control">
                 <option value="">Select Anchor</option>
                 @foreach($anchors as $key=>$anchor)
-                <option value="{{$anchor->anchor_id}}" {{(isset($offerData->anchor_id) && $anchor->anchor_id == $offerData->anchor_id)? 'selected': ''}}>{{$anchor->comp_name}}</option>
+                <option value="{{$anchor->anchor_id}}" is_fungible="{{$anchor->is_fungible}}" {{(isset($offerData->anchor_id) && $anchor->anchor_id == $offerData->anchor_id)? 'selected': ''}}>{{$anchor->comp_name}}</option>
                 @endforeach
             </select>
         </div>
@@ -1092,6 +1092,7 @@
 
     let flag = true;
     let anchor_id = $('select[name=anchor_id]').val();
+    let is_anchor_fungible = $('select[name=anchor_id] option:selected').attr('is_fungible');
     let prgm_id = $('select[name=prgm_id]').val();
     let prgm_limit_amt = $('input[name=prgm_limit_amt]').val();
     let interest_rate = $('input[name=interest_rate]').val();
@@ -1122,7 +1123,7 @@
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill program limit amount');
         flag = false;
-    }else if(anchor_id !='' && prgm_id != ''){
+    }else if(anchor_id !='' && prgm_id != '' && is_anchor_fungible == 0){
         if((parseInt(prgm_limit_amt.replace(/,/g, '')) < parseInt(limitObj.prgm_min_limit)) ||(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_max_limit))){
             setError('input[name=prgm_limit_amt]', 'Limit amount should be ('+parseInt(limitObj.prgm_min_limit)+'-'+parseInt(limitObj.prgm_max_limit)+') program range');
             flag = false;
@@ -1141,7 +1142,7 @@
     if(interest_rate == '' || isNaN(interest_rate)){
         setError('input[name=interest_rate]', 'Please fill intereset rate');
         flag = false;
-    }else if(anchor_id !='' && prgm_id != ''){
+    }else if(anchor_id !='' && prgm_id != '' && is_anchor_fungible == 1){
         if(parseFloat(interest_rate) > 100){
             setError('input[name=interest_rate]', 'Please fill correct intereset rate');
             flag = false;

@@ -3,6 +3,9 @@
 @php
 $dis_element = $copied_prgm_id ? ['readonly' => true] : [];
 $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
+$defaultSubProgramLimit = ($programData->anchor_limit && $anchorData->is_fungible) ? number_format($programData->anchor_limit ) : NULL;
+$defaultSubProgramLimitReadOnly = ($anchorData->is_fungible) ? 'readonly' : '';
+$defaultMinimumLoanSize = ($anchorData->is_fungible) ? 1 : NULL;
 @endphp
 <div class="content-wrapper">
     <section class="content-header">
@@ -164,14 +167,14 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                     <div class="relative">
                                                                     <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('anchor_sub_limit',
-                                                                    isset($subProgramData->anchor_sub_limit) ? number_format($subProgramData->anchor_sub_limit) : null,
+                                                                    isset($subProgramData->anchor_sub_limit) ? number_format($subProgramData->anchor_sub_limit) : $defaultSubProgramLimit,
                                                                     ['class'=>'form-control number_format '])   !!}
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-12">
+                                                    <div class="col-md-12" style="display: {{$anchorData->is_fungible ? 'none' : 'block'}}">
                                                         <div class="form-group INR">
                                                             <div class="row">
                                                                 <div class="col-md-6">
@@ -180,7 +183,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                     <a href="javascript:void(0);" class="remaining">
                                                                         <i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('min_loan_size',
-                                                                    isset($subProgramData->min_loan_size) ?  number_format($subProgramData->min_loan_size) : null,
+                                                                    isset($subProgramData->min_loan_size) ?  number_format($subProgramData->min_loan_size) : $defaultMinimumLoanSize,
                                                                     ['class'=>'form-control number_format ','placeholder'=>'Min'])   !!}
                                                                     </div>
                                                                 </div>
@@ -190,7 +193,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                     <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('max_loan_size',
                                                                     isset($subProgramData->max_loan_size) ?  number_format($subProgramData->max_loan_size) : null,
-                                                                    ['class'=>'form-control max_loan_size number_format','placeholder'=>'Max'])   !!}
+                                                                    ['class'=>'form-control max_loan_size number_format','placeholder'=>'Max',$defaultSubProgramLimitReadOnly => $defaultSubProgramLimitReadOnly])   !!}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -824,6 +827,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
         get_charges_html: "{{ URL::route('get_charges_html') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
+        is_fungible: "{{ $anchorData->is_fungible }}",
         please_select: "{{ trans('backend.please_select') }}",
         invoiceDataCount: "{{ ($invoiceDataCount > 0) ? 'true' : 'false' }}"
     };

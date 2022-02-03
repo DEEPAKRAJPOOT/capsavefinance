@@ -1255,12 +1255,16 @@ class DataRenderer implements DataProviderInterface
                                 }
                             }
                         }
+                        $IsOverdue = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
                         $isLimitExpired = InvoiceTrait::limitExpire($invoice->supplier_id);
                         $isLimitExceed = InvoiceTrait::isLimitExceed($invoice->invoice_id);
-                        $this->isLimitExpired = $isLimitExpired;  
-                        $this->isLimitExceed  = $isLimitExceed;                          
+                        $isAnchorLimitExceeded = InvoiceTrait::isAnchorLimitExceeded($invoice->anchor_id, 0);
+                        $this->IsOverdue = $IsOverdue;  
+                        $this->isLimitExpired = $isLimitExpired;
+                        $this->isLimitExceed  = $isLimitExceed;
+                        $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded;
                        // return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
-                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";   
+                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $isAnchorLimitExceeded) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
                      })
                 ->addColumn(
                     'anchor_id',
@@ -1351,8 +1355,20 @@ class DataRenderer implements DataProviderInterface
                           }
                            $action .='<option value="14">Reject</option></select></div>';
                         
-                     }    
-                        return  $action;
+                     }
+
+                     if ($this->isLimitExpired) {
+                        $remark = '<span class="badge badge-danger">Limit Expired</span><br>';
+                    } else if ($this->isLimitExceed) {
+                        $remark = '<span class="badge badge-danger">Limit Exceed</span><br>';
+                    } else if ($this->IsOverdue) {
+                        $remark = '<span class="badge badge-danger">Customer A/C is in Overdue</span><br>';
+                    } else if ($this->isAnchorLimitExceeded) {
+                        $remark = '<span class="badge badge-danger">Anchor Limit Exceeded</span><br>';
+                    } else {
+                        $remark = '';
+                    }
+                        return  $remark . $action;
                 })
                  ->filter(function ($query) use ($request) {
                   

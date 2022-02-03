@@ -10,7 +10,7 @@ try {
             var i = parseInt(min);
             var j = parseInt(max);
             return i <= j;
-        }, "Please enter value equal or less then Remaining Anchor Limit");
+        }, "Please enter value equal or less than " + (!messages.is_fungible ? "Remaining" : "") +" Anchor Limit");
 
 
         $.validator.addMethod('min_loan_size', function (value, element, param) {
@@ -513,7 +513,7 @@ try {
                     },                    
                     anchor_sub_limit: {
                         required: true,
-                        lessThan: "#anchor_limit_re",
+                        lessThan: (!messages.is_fungible ? "#anchor_limit_re" : "#anchor_limit"),
                         notLessThan : "#utilized_amount",
                         validateReason : "#old_anchor_sub_limit"
                         // min: 1,
