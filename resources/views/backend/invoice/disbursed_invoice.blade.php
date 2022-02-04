@@ -66,7 +66,9 @@ $role = (isset($role)) ? $role :     11;
                                         <div class ="row">
                                         <div class="col-md-12" id="buttonDiv">
                                             @can('disburse_confirm')
-                                            <a data-url="{{ route('disburse_confirm', ['disburse_type' => 1 ,'bank_type'=> 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-3 disburseClickBtn pull-right" data-bankType="2">Send To Kotak Bank (Online)</a>
+                                              @can('kotak_disburse_online')
+                                                <a data-url="{{ route('disburse_confirm', ['disburse_type' => 1 ,'bank_type'=> 2]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-3 disburseClickBtn pull-right" data-bankType="2">Send To Kotak Bank (Online)</a>
+                                              @endcan
                                             @endcan
                                         </div>
                                         </div>

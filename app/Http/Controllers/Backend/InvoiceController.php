@@ -2386,7 +2386,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $requestData[$userid]['InstRefNo'] =  $transId; //Inst Ref No.
                     $requestData[$userid]['TransId'] =  $transId; //Inst transId No.
                     $exportData[$userid]['Nature_of_Pay'] = $requestData[$userid]['MyProdCode'] =  config('lms.KOTAK_MYPRODCODE'); //'WPAY'; //My product code
-                    $exportData[$userid]['Amount'] = $requestData[$userid]['TxnAmnt'] = 1.10; //"$disburseAmount"; //Transaction Amount
+                    $exportData[$userid]['Amount'] = $requestData[$userid]['TxnAmnt'] = "$disburseAmount"; //Transaction Amount
                     $exportData[$userid]['Debit_Acct_No'] = $requestData[$userid]['AccountNo'] =  config('lms.KOTAK_DEBIT_BANK')['DEBIT_ACC_NO'];  //Client Debit account Number;
                     $requestData[$userid]['DrRefNmbr'] = '123';    //Debit reference Number
                     $exportData[$userid]['Remarks'] = $requestData[$userid]['DrDesc'] = 'Testing';  //Debit Description
@@ -2406,7 +2406,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $modePay = (strtolower($bank_name) == 'kotak mahindra bank') ? 'IFT' : $modePay;
                     $exportData[$userid]['Mode_of_Pay'] = $requestData[$userid]['PayMode']  = $modePay;
 
-                    $requestData[$userid]['Enrichment'] = 'invoice disbursal via kotak bank testing uat'; //Enrichment details which needs to be shared with vendor in the invoices
+                    $requestData[$userid]['Enrichment'] = 'invoice disbursal via kotak bank online'; //Enrichment details which needs to be shared with vendor in the invoices
                 }
             }
             //dd($requestData,$exportData);
