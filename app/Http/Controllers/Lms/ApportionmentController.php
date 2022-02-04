@@ -634,6 +634,7 @@ class ApportionmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function listSettledTrans(Request $request){
+        ini_set("memory_limit", "-1");
         $userId = $request->user_id;  
         $transactions = $this->getSettledTrans($userId);
         return $this->dataProvider->getSettledTrans($request,$transactions);
