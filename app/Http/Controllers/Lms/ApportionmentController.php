@@ -1596,7 +1596,7 @@ class ApportionmentController extends Controller
     private function processApportionmentUndoTrans($payment, $result)
     {
         
-        ini_set('max_execution_time', 2000);
+        ini_set('max_execution_time', -1);
         ini_set("memory_limit", -1);
         $userId             =   $payment->user_id;
         $paymentId          =   $payment->payment_id;
@@ -1606,7 +1606,7 @@ class ApportionmentController extends Controller
         $query1             =   clone $query;
         $data               =   $query->whereNotNull('invoice_disbursed_id')
                                     ->distinct('invoice_disbursed_id')
-                                    ->pluck('sys_created_at', 'invoice_disbursed_id')
+                                    ->pluck('invoice_disbursed_id', 'invoice_disbursed_id')
                                     ->toArray();
 
         $uniqInvDisbIds     =   array_keys($data);
@@ -1633,12 +1633,13 @@ class ApportionmentController extends Controller
             $trans->each->delete();
             $result = true;
         }
-
         if ($result) {
             //CustomerTransactionSOA::updateTransactionSOADetails($userId);
             $Obj  = new ManualApportionmentHelper($this->lmsRepo);
-            foreach ($data as $invDisb => $sysCreatedAt) {
-                $Obj->intAccrual($invDisb, $sysCreatedAt);
+            foreach ($data as $invDisb) {
+                $Obj->intAccrual($invDisb, $paymentDate);
+                $this->updateInvoiceRepaymentFlag([$invDisb]);
+                $Obj->transactionPostingAdjustment($invDisb, NULL, NULL, NULL);
             }
         }
 

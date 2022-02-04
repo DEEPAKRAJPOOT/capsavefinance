@@ -15,7 +15,7 @@ class TransactionsObserver
      */
     public function created(Transactions $transaction)
     {
-        $transaction->calculateOutstandings();
+        $transaction->calculateOutstandingsCreate();
         InvoiceDisbursedDetail::createTransactionDetails($transaction);
         CustomerTransactionSOA::createTransactionSOADetails($transaction);
     }
@@ -28,7 +28,6 @@ class TransactionsObserver
      */
     public function updated(Transactions $transaction)
     {
-        $transaction->calculateOutstandings();
         InvoiceDisbursedDetail::updateTransactionDetails($transaction);
         CustomerTransactionSOA::updateTransactionSOADetails($transaction->user_id);
     }
@@ -41,7 +40,7 @@ class TransactionsObserver
      */
     public function deleted(Transactions $transaction)
     {
-        $transaction->calculateOutstandings();
+        $transaction->calculateOutstandingsDelete();
         InvoiceDisbursedDetail::deleteTransactionDetails($transaction);
         CustomerTransactionSOA::deleteTransactionSOADetails($transaction);
     }
@@ -54,7 +53,7 @@ class TransactionsObserver
      */
     public function forceDeleted(Transactions $transaction)
     {
-        $transaction->calculateOutstandings();
+        $transaction->calculateOutstandingsDelete();
         InvoiceDisbursedDetail::forceDeletedTransactionDetails($transaction);
         CustomerTransactionSOA::forceDeletedTransactionSOADetails($transaction);
     }
