@@ -113,6 +113,7 @@ class ApportionmentController extends Controller
                 $payment_amt = $payment['payment_amt']; 
                 $transList = self::getUnsettledTrans($userId, $payment['date_of_payment']);
                 $invDisbList = $transList->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.INTEREST_OVERDUE')])->pluck('invoice_disbursed_id')->toArray();
+                $invDisbList = array_unique($invDisbList);
                 if(count($invDisbList) <= 50 ){
                     $paySug  = true;
                     $Obj = new ManualApportionmentHelperTemp($this->lmsRepo);
