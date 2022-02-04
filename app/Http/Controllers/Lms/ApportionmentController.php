@@ -141,6 +141,7 @@ class ApportionmentController extends Controller
             ->with('userDetails', $userDetails)
             ->with('oldData',$oldData)
             ->with('sanctionPageView',$sanctionPageView)
+            ->with('paySug', $paySug?1:0)
             ->with(['userInfo' =>  $result['userInfo'],
                     'application' => $result['application'],
                     'anchors' =>  $result['anchors']])
@@ -616,12 +617,12 @@ class ApportionmentController extends Controller
     public function listUnsettledTrans(Request $request){
         ini_set("memory_limit", "-1");
         $userId = $request->user_id;
+        $paymentSuggestion = $request->paySug;
         $paymentId = null;
         $payment_date = null;
         $payment = null;
         $transactions = null;
-        $unInvCnt = BizInvoice::where('supplier_id', $userId)->whereHas('invoice_disbursed')->where('is_repayment','0')->count();
-        $showSuggestion = ($unInvCnt <= 50) ?true:false; 
+        $showSuggestion = $paymentSuggestion?true:false;
         $date_of_payment = null;
         if($request->has('payment_id')){
             $paymentId = $request->payment_id;
