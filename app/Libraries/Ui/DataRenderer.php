@@ -8376,7 +8376,10 @@ class DataRenderer implements DataProviderInterface
                 return ucwords($overdueLog->createdByUserName);
             })
             ->addColumn('action', function ($overdueLog) {
-                return "<a href=\"".route('overdue_report_download', ['report_log_id' => $overdueLog->id])."\" class='btn  btn-success btn-sm'>Download Report</a>";
+                if(Helpers::checkPermission('overdue_report_download') ){
+                    return "<a href=\"".route('overdue_report_download', ['report_log_id' => $overdueLog->id])."\" class='btn  btn-success btn-sm'>Download Report</a>";
+                }
+                return '';
             })
             ->make(true);
     }
