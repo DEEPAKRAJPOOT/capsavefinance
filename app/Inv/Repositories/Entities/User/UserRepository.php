@@ -1641,7 +1641,7 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function lmsGetSentToBankInvToExcel($custId = null, $selectDate=null, $batchId = null)
     {
         $result = Disbursal::select('*', DB::raw('sum(disburse_amount) as total_disburse_amount'))
-                ->with(['lms_user.bank_details.bank', 'invoice_disbursed.invoice.program_offer',  'user.anchor_bank_details.bank', 'disbursal_batch', 'lms_user.user'])
+                ->with(['lms_user.bank_details.bank', 'invoice_disbursed.invoice.program_offer',  'user.anchor_bank_details.bank', 'disbursal_batch', 'lms_user.user','disbursal_batch.disbursal_api_log'])
                 ->whereHas('invoice_disbursed.invoice', function($query) {
                     $query->where('status_id', 10);
                 })
