@@ -47,7 +47,7 @@ class ApportionmentRequest extends FormRequest
             $lmsUser = $this->userRepo->lmsGetCustomer($formData['user_id']);
             $payment = $this->lmsRepo->getPaymentDetail($formData['payment_id'], $formData['user_id']);
             $unInvCnt = BizInvoice::where('supplier_id', $formData['user_id'])->whereHas('invoice_disbursed')->where('is_repayment','0')->count();
-            $showSuggestion = ($unInvCnt <= 50) ?true:false; 
+            $showSuggestion = $formData['paySug'] ?true:false; 
         
             if(!$lmsUser){
                 $validator->errors()->add("check.required", trans('error_messages.apport_invalid_user_id'));

@@ -89,7 +89,11 @@ foreach ($apps as $app) {
 		</div>
 		@else
 		<div class="col-6">
+			@if($bankType == 1)
 			<form id="onlineDisburse" method="POST" action="{{ Route('disburse_online') }}" target="_top">
+		   @else
+		    <form id="onlineDisburse" method="POST" action="{{ Route('kotak_disburse_online') }}" target="_top">
+			@endif
 			<input type="hidden" value="{{ $invoiceIds }}" name="invoice_ids" id="invoice_ids">
 			@csrf
 			<div class="row">
