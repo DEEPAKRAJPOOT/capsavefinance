@@ -14,7 +14,8 @@
     </section>
     <div class="card">
         <div class="card-body">
-            <div class="row">                
+            <div class="row">   
+                @can('lms_send_invoice_over_due')
                 <div class="row col-md-12">                
                  <div class="col-md-4">
                     {!!
@@ -46,6 +47,7 @@
                    <button id="sendMailBtn" type="button" class="btn  btn-success btn-sm float-right">Generate Report</button>
                </div>
             </div>
+            @endcan
                 {!! Form::hidden('user_id', 
                     isset($user['user_id']) ? $user['user_id'] : null, 
                     [ 'id'=>'user_id' ]) 
