@@ -124,14 +124,13 @@ class ManualApportionmentHelper{
                         }
                     }
                 }
-
-                $refundTransaction = $this->generateRefundTrans($invDisbId);
-                foreach($refundTransaction??[] as $rtrans){
-                    $transactionList[] = $rtrans;
-                }
             }
         }
 
+        $refundTransaction = $this->generateRefundTrans($invDisbId);
+        foreach($refundTransaction??[] as $rtrans){
+            $transactionList[] = $rtrans;
+        }
         if(!empty($transactionList)){
             foreach ($transactionList as $key => $newTrans) {
                 $this->lmsRepo->saveTransaction($newTrans);
