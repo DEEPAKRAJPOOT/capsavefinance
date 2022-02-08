@@ -194,6 +194,14 @@ class ManualApportionmentHelperTemp{
             $oldIntRate = $offerDetails->interest_rate - $offerDetails->base_rate;
             $bankRatesArr = $this->getBankBaseRates($offerDetails->bank_id);//if $bankRatesArr value is false then follow the old process. otherwise call the below function to get the actual interest rate based on base rate.
 
+            if(strtotime($gStartDate) <= strtotime($curdate) && strtotime($curdate) <= strtotime($gEndDate)){
+                self::copyOldInterest($invDisbId, $paymentId, $gStartDate);
+                $loopStratDate = $gStartDate;
+            }else{
+                self::copyOldInterest($invDisbId, $paymentId, $curdate);  
+                $loopStratDate = $curdate;
+            }
+
             while(strtotime($curdate) > strtotime($loopStratDate)){
                 if($bankRatesArr){
                     if(isset($payFreq) && $payFreq == 1){
@@ -278,6 +286,22 @@ class ManualApportionmentHelperTemp{
                     $this->intAccrual($invId, null, $paymentDate, $paymentId);
                 }
             }
+        }
+    }
+
+    private function copyOldInterest($invId, $paymentId, $paymentDate = null){
+        $interestData = InterestAccrual::whereDate('interest_date','<',$paymentDate)->where('invoice_disbursed_id',$invId)->get();
+        
+        foreach($interestData as $intData){
+            $iData =   new InterestAccrualTemp; 
+            $iData->payment_id = $paymentId;
+            $iData->invoice_disbursed_id = $intData->invoice_disbursed_id;
+            $iData->interest_date = $intData->interest_date;
+            $iData->principal_amount = $intData->principal_amount;
+            $iData->accrued_interest = $intData->accrued_interest;
+            $iData->interest_rate = $intData->interest_rate;
+            $iData->overdue_interest_rate = $intData->overdue_interest_rate;
+            $iData->save();
         }
     }
     
