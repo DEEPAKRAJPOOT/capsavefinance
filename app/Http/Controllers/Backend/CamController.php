@@ -1736,9 +1736,10 @@ class CamController extends Controller
 									$attr['anchor_id'] = $value->anchor_id;
 									$attr['prgm_id'] = $value->prgm_id;              
 									$attr['prgm_offer_id'] = $value->prgm_offer_id;
-									$invUtilizedAmt += Helpers::invoiceAnchorLimitApprove($attr);
+									// $invUtilizedAmt += Helpers::invoiceAnchorLimitApprove($attr);
+                  $invUtilizedAmt += Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($attr);
 								}
-
+                
               if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invUtilizedAmt > $currentAppLimitData[0]->tot_limit_amt) {
                 Session::flash('error', trans('backend_messages.reduction_utilized_amt_appoval_validation'));
                 return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
@@ -1872,7 +1873,8 @@ class CamController extends Controller
             $attr['anchor_id'] = $value->anchor_id;
             $attr['prgm_id'] = $value->prgm_id;
             $attr['prgm_offer_id'] = $value->prgm_offer_id;
-            $invUtilizedAmt += Helpers::invoiceAnchorLimitApprove($attr);
+            // $invUtilizedAmt += Helpers::invoiceAnchorLimitApprove($attr);
+            $invUtilizedAmt += Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($attr);
           }
         }
       } else {
@@ -1946,7 +1948,8 @@ class CamController extends Controller
               $attr['anchor_id'] = $value->anchor_id;
               $attr['prgm_id'] = $value->prgm_id;              
               $attr['prgm_offer_id'] = $value->prgm_offer_id;
-              $invUtilizedAmt += \Helpers::invoiceAnchorLimitApprove($attr);
+              // $invUtilizedAmt += \Helpers::invoiceAnchorLimitApprove($attr);
+              $invUtilizedAmt += Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($attr);
             }
 
             if ($request->prgm_limit_amt <= $invUtilizedAmt) {

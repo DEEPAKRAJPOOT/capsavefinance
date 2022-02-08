@@ -27,7 +27,7 @@ use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
-
+use App\Helpers\Helper;
 
 trait InvoiceTrait
 {
@@ -424,93 +424,94 @@ trait InvoiceTrait
 
     public static function invoiceApproveLimit($attr)
    {  
-        $prgmData = Program::where('prgm_id', $attr['prgm_id'])->first();
-        if (isset($prgmData->parent_prgm_id)) {
-           $prgm_ids = Program::where('parent_prgm_id', $prgmData->parent_prgm_id)->pluck('prgm_id')->toArray();
-        }else{
-            $prgm_ids = [$attr['prgm_id']];
-        }
-        $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['user_id' => $attr['user_id'],'status' =>2])->count();  
+      return Helper::anchorSupplierPrgmUtilizedLimitByInvoice($attr);
+      //   $prgmData = Program::where('prgm_id', $attr['prgm_id'])->first();
+      //   if (isset($prgmData->parent_prgm_id)) {
+      //      $prgm_ids = Program::where('parent_prgm_id', $prgmData->parent_prgm_id)->pluck('prgm_id')->toArray();
+      //   }else{
+      //       $prgm_ids = [$attr['prgm_id']];
+      //   }
+      //   $is_enhance  =    Application::whereIn('app_type',[1,2,3])->where(['user_id' => $attr['user_id'],'status' => 2])->count();  
 
-        if($is_enhance==1)
-        {
-          $marginApprAmt = 0;
-          $marginReypayAmt = 0;
+      //   if($is_enhance==1)
+      //   {
+      //     $marginApprAmt = 0;
+      //     $marginReypayAmt = 0;
 
-          $appData = Application::getAppData((int) $attr['app_id']);
-          if ($appData && in_array($appData->app_type, [2,3]) && $appData->parent_app_id) {
-              $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($appData->parent_app_id);
-              if ($parentAppOffer) {
-                  $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $parentAppOffer->prgm_offer_id, $attr['anchor_id'], $appData->parent_app_id);    
-                  $marginApprAmt   +=   BizInvoice::whereIn('program_id', $prgm_ids)
-                  ->where('prgm_offer_id', $parentAppOffer->prgm_offer_id)
-                  ->whereIn('status_id',[8,9,10])
-                  ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
-                  ->where('app_id' , '=', $appData->parent_app_id)
-                  ->sum('invoice_approve_amount');
+      //     $appData = Application::getAppData((int) $attr['app_id']);
+      //     if ($appData && in_array($appData->app_type, [2,3]) && $appData->parent_app_id) {
+      //         $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($attr['anchor_id'], $appData->parent_app_id);
+      //         if ($parentAppOffer) {
+      //             $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $parentAppOffer->prgm_offer_id, $attr['anchor_id'], $appData->parent_app_id);    
+      //             $marginApprAmt   +=   BizInvoice::whereIn('program_id', $prgm_ids)
+      //             ->where('prgm_offer_id', $parentAppOffer->prgm_offer_id)
+      //             ->whereIn('status_id',[8,9,10])
+      //             ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
+      //             ->where('app_id' , '=', $appData->parent_app_id)
+      //             ->sum('invoice_approve_amount');
                   
-                  $marginReypayAmt +=   BizInvoice::whereIn('program_id', $prgm_ids)
-                  ->where('prgm_offer_id', $parentAppOffer->prgm_offer_id)
-                  ->whereIn('status_id',[8,9,10,12,13,15])
-                  ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
-                  ->where('app_id' , '=', $appData->parent_app_id)
-                  ->sum('principal_repayment_amt');
-              }
+      //             $marginReypayAmt +=   BizInvoice::whereIn('program_id', $prgm_ids)
+      //             ->where('prgm_offer_id', $parentAppOffer->prgm_offer_id)
+      //             ->whereIn('status_id',[8,9,10,12,13,15])
+      //             ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
+      //             ->where('app_id' , '=', $appData->parent_app_id)
+      //             ->sum('principal_repayment_amt');
+      //         }
               
-          }elseif ($appData && $appData->curr_status_id == config('common.mst_status_id.APP_CLOSED')) {
-            $childAppData = Application::getAppByParentAppId((int) $attr['app_id']);
-            if ($childAppData && $childAppData->app_id) {
-              $childAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($childAppData->app_id);
-              if ($childAppOffer && $childAppOffer->prgm_offer_id) {
-                  $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $childAppOffer->prgm_offer_id, $attr['anchor_id'], $appData->app_id);    
-                  $marginApprAmt   +=   BizInvoice::whereIn('program_id', $prgm_ids)
-                  ->where('prgm_offer_id', $childAppOffer->prgm_offer_id)
-                  ->whereIn('status_id',[8,9,10])
-                  ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
-                  ->where('app_id' , '=', $childAppData->app_id)
-                  ->sum('invoice_approve_amount');
+      //     }elseif ($appData && $appData->curr_status_id == config('common.mst_status_id.APP_CLOSED')) {
+      //       $childAppData = Application::getAppByParentAppId((int) $attr['app_id']);
+      //       if ($childAppData && $childAppData->app_id) {
+      //         $childAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($childAppData->app_id);
+      //         if ($childAppOffer && $childAppOffer->prgm_offer_id) {
+      //             $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $childAppOffer->prgm_offer_id, $attr['anchor_id'], $appData->app_id);    
+      //             $marginApprAmt   +=   BizInvoice::whereIn('program_id', $prgm_ids)
+      //             ->where('prgm_offer_id', $childAppOffer->prgm_offer_id)
+      //             ->whereIn('status_id',[8,9,10])
+      //             ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
+      //             ->where('app_id' , '=', $childAppData->app_id)
+      //             ->sum('invoice_approve_amount');
                   
-                  $marginReypayAmt +=   BizInvoice::whereIn('program_id', $prgm_ids)
-                  ->where('prgm_offer_id', $childAppOffer->prgm_offer_id)
-                  ->whereIn('status_id',[8,9,10,12,13,15])
-                  ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
-                  ->where('app_id' , '=', $childAppData->app_id)
-                  ->sum('principal_repayment_amt');
-              }
-            }
-          }
+      //             $marginReypayAmt +=   BizInvoice::whereIn('program_id', $prgm_ids)
+      //             ->where('prgm_offer_id', $childAppOffer->prgm_offer_id)
+      //             ->whereIn('status_id',[8,9,10,12,13,15])
+      //             ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
+      //             ->where('app_id' , '=', $childAppData->app_id)
+      //             ->sum('principal_repayment_amt');
+      //         }
+      //       }
+      //     }
 
-          $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],NULL);
-          $marginApprAmt   +=   BizInvoice::whereIn('status_id',[8,9,10])
-          ->where('prgm_offer_id',$attr['prgm_offer_id'])
-          ->whereIn('program_id', $prgm_ids)
-          ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
-          ->where('app_id' , '<=', $attr['app_id'])
-          ->sum('invoice_approve_amount');
+      //     $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],NULL);
+      //     $marginApprAmt   +=   BizInvoice::whereIn('status_id',[8,9,10])
+      //     ->where('prgm_offer_id',$attr['prgm_offer_id'])
+      //     ->whereIn('program_id', $prgm_ids)
+      //     ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+      //     ->where('app_id' , '<=', $attr['app_id'])
+      //     ->sum('invoice_approve_amount');
 
-          $marginReypayAmt +=   BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
-          ->where('prgm_offer_id',$attr['prgm_offer_id'])
-          ->whereIn('program_id', $prgm_ids)
-          ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
-          ->where('app_id' , '<=', $attr['app_id'])
-          ->sum('principal_repayment_amt');          
-          return $marginApprAmt - $marginReypayAmt;
-       }
-       else
-       {
-        $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplierIsEnhance($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],$attr['app_id']);
-        $marginApprAmt = $marginApprAmt??0;
-        $marginApprAmt   +=  BizInvoice::whereIn('status_id',[8,9,10])
-        ->where('prgm_offer_id',$attr['prgm_offer_id'])
-        ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])
-        ->sum('invoice_approve_amount');
+      //     $marginReypayAmt +=   BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
+      //     ->where('prgm_offer_id',$attr['prgm_offer_id'])
+      //     ->whereIn('program_id', $prgm_ids)
+      //     ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+      //     ->where('app_id' , '<=', $attr['app_id'])
+      //     ->sum('principal_repayment_amt');          
+      //     return $marginApprAmt - $marginReypayAmt;
+      //  }
+      //  else
+      //  {
+      //   $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplierIsEnhance($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],$attr['app_id']);
+      //   $marginApprAmt = $marginApprAmt??0;
+      //   $marginApprAmt   +=  BizInvoice::whereIn('status_id',[8,9,10])
+      //   ->where('prgm_offer_id',$attr['prgm_offer_id'])
+      //   ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])
+      //   ->sum('invoice_approve_amount');
         
-        $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
-        ->where('prgm_offer_id',$attr['prgm_offer_id'])
-        ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])
-        ->sum('principal_repayment_amt');
-            return $marginApprAmt-$marginReypayAmt;
-       }
+      //   $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
+      //   ->where('prgm_offer_id',$attr['prgm_offer_id'])
+      //   ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])
+      //   ->sum('principal_repayment_amt');
+      //       return $marginApprAmt-$marginReypayAmt;
+      //  }
    }
 
   public static function getInvoiceDetail($attr)
@@ -532,7 +533,8 @@ trait InvoiceTrait
             $attr['prgm_offer_id'] = $inv_details['prgm_offer_id'];
             $invoice_id =   $inv_details['invoice_id'];
             $cid = $inv_details['supplier_id'];
-            $sum =  self::invoiceApproveLimit($attr);
+            // $sum =  self::invoiceApproveLimit($attr);
+            $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attr['user_id'], $attr['anchor_id']);
             $limit   =  self::ProgramLimit($inv_details);
             $getMargin =  self::invoiceMargin($inv_details);
             $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
@@ -788,7 +790,8 @@ trait InvoiceTrait
             $attr['prgm_id']   =   $inv_details['program_id'];
             $attr['app_id']   =     $inv_details['app_id'];
             $attr['prgm_offer_id'] = $inv_details['prgm_offer_id'];
-            $sum =  self::invoiceApproveLimit($attr);
+            // $sum =  self::invoiceApproveLimit($attr);
+            $sum = Helper::anchorSupplierUtilizedLimitByInvoice($inv_details['supplier_id'], $inv_details['anchor_id']);
             $limit   =  self::ProgramLimit($inv_details);
             $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']); /* get App limit by user_id*/
             $isOverDue     =  self::isOverDue($inv_details['supplier_id']); /* get overdue by user_id*/
@@ -837,7 +840,8 @@ trait InvoiceTrait
         $attribute['user_id']  = $attr['supplier_id'];
         $attribute['anchor_id']  = $attr['anchor_id'];
         $attribute['prgm_offer_id'] = $attr['prgm_offer_id'];
-        $sum  = self::invoiceApproveLimit($attribute);
+        // $sum  = self::invoiceApproveLimit($attribute);
+        $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attribute['user_id'], $attribute['anchor_id']);
         $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
         $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
         $uid = Auth::user()->user_id;
@@ -905,7 +909,8 @@ trait InvoiceTrait
         $attribute['anchor_id']  = $attr['anchor_id'];
         $attribute['app_id']  = $attr['app_id'];
         $attribute['prgm_offer_id'] = $attr['prgm_offer_id'];
-        $sum  = self::invoiceApproveLimit($attribute);
+        // $sum  = self::invoiceApproveLimit($attribute);
+        $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attribute['user_id'], $attribute['anchor_id']);
         $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
         $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
         $invoiceMargin  = self::invoiceMargin($attr);  ////*********Invoice Margin **********//////
@@ -1103,7 +1108,8 @@ trait InvoiceTrait
             $attribute['prgm_offer_id'] = $invData->prgm_offer_id;
             //$attribute['is_po'] = $is_po;
             $attribute['app_id'] = $app_id;            
-            $sum   = self::invoiceApproveLimit($attribute);
+            // $sum   = self::invoiceApproveLimit($attribute);
+            $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attribute['user_id'], $attribute['anchor_id']);
             $limit = self::ProgramLimit($attribute);
             $finalsum = $sum - $po_inv_amount;
             if ($limit  >= $finalsum) {

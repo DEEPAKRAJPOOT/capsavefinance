@@ -3757,7 +3757,8 @@ if ($err) {
         $res['program_id']  = $res['prgm_id'];
         $getTenor   =  $this->invRepo->getTenor($res);
         $limit =   InvoiceTrait::ProgramLimit($res);
-        $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
         $is_adhoc   =  $this->invRepo->checkUserAdhoc($res);
         $remainAmount = $limit - $sum;
         return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc]);
@@ -3787,7 +3788,8 @@ if ($err) {
        else
        {
         $limit =   InvoiceTrait::ProgramLimit($res);
-        $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
         $remainAmount = $limit-$sum;
         $is_adhoc = 0;
        }
@@ -3979,7 +3981,6 @@ if ($err) {
             $arrActivity['app_id'] = null;
             $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
         } 
-       
       return \response()->json(['status' => 1,'msg' => substr($result,0,-1)]); 
        
    }  

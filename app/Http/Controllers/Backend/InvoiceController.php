@@ -606,13 +606,8 @@ class InvoiceController extends Controller {
         
         $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
         $invoice_approve_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
-        $validAttr['user_id'] = $attributes['supplier_id'];
-        $validAttr['app_id'] = $appId;
-        $validAttr['anchor_id'] = $request->anchor_id;
-        $validAttr['prgm_id'] = $attributes['program_id'];              
-        $validAttr['prgm_offer_id'] = $attributes['prgm_offer_id'];
-        $invUtilizedAmt = Helpers::invoiceAnchorLimitApprove($validAttr);
-        $currentAppLimitData  = $this->application->getAppLimitData(['user_id' => $validAttr['user_id'], 'app_id' => $appId]);
+        $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($attributes['supplier_id'], $request->anchor_id);
+        $currentAppLimitData  = $this->application->getAppLimitData(['user_id' => $attributes['supplier_id'], 'app_id' => $appId]);
 
         if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invoice_amount > ($currentAppLimitData[0]->tot_limit_amt - $invUtilizedAmt)) {
             Session::flash('error', 'Invoice amount should not be greater than the balance limit amount.');
@@ -1676,8 +1671,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $dataAttr['prgm_offer_id']  =   $chlLmsCusto['prgm_offer_id'];
                         $dataAttr['approval']  =   $getPrgm;
 
-                        $invoice_amount = str_replace(',', '', $dataAttr['amount']);                        
-                        $invUtilizedAmt = Helpers::invoiceAnchorLimitApprove($dataAttr);
+                        $invoice_amount = str_replace(',', '', $dataAttr['amount']);
+                        $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($dataAttr['user_id'], $dataAttr['anchor_id']);
                         $currentAppLimitData  = $this->application->getAppLimitData(['user_id' => $dataAttr['user_id'], 'app_id' => $dataAttr['app_id']]);
                 
                         if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invoice_amount > ($currentAppLimitData[0]->tot_limit_amt - $invUtilizedAmt)) {
