@@ -4151,7 +4151,7 @@ if ($err) {
    * @return json transaction data
    */
     public function lmsGetSoaList(DataProviderInterface $dataProvider) {
-
+        ini_set("memory_limit", "-1");
         $request = $this->request;
         $transactionList = $this->lmsRepo->getSoaList();
 
