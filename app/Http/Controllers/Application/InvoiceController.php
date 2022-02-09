@@ -184,7 +184,7 @@ class InvoiceController extends Controller {
         $remainAmount = $limit - $sum;
 
         if ($marginAmt > $remainAmount) {
-            Session::flash('error', 'Invoice amount should not be greater than balance remaining amount(with margin amount)');
+            Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount.');
             return back();
         }
 
@@ -339,7 +339,7 @@ class InvoiceController extends Controller {
                         $remainAmount = $limit - $sum;
 
                         if ($marginAmt > $remainAmount) {
-                            Session::flash('error', 'Invoice amount should not be greater than balance remaining amount(with margin amount) for invoice no. '.$dataAttr['inv_no']);
+                            Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount for invoice no. '.$dataAttr['inv_no']);
                             return back();
                         }
 

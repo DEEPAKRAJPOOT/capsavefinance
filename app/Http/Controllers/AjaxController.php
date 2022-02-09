@@ -3850,7 +3850,7 @@ if ($err) {
                         $sum   =   InvoiceTrait::invoiceApproveLimit($attr);
                         $remainAmount = $userLimit - $sum;
                         if ($marginAmt > $remainAmount) {
-                            return response()->json(['status' => 0,'message' => 'Invoice amount should not be greater than balance remaining amount(with margin amount) for invoice no. '.$attr['invoice_no']]); 
+                            return response()->json(['status' => 0,'message' => 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount for invoice no. '.$attr['invoice_no']]); 
                         }
                         $updateInvoice=  InvoiceTrait::updateBulkLimit($userLimit,$attr->invoice_approve_amount,$attr);  
                         $attr['comm_txt'] = $updateInvoice['comm_txt'];

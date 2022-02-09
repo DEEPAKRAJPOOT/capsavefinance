@@ -22,6 +22,13 @@
         margin = parseFloat(margin).toFixed(2);
         var marginAmt = (invoice_approve_amount * margin) / 100;
         invoice_approve_amount = invoice_approve_amount - marginAmt;
+
+        if(invoice_approve_amount  > pro_limit)
+        {
+          $("#msgProLimit").text('Invoice amount should not be greater than the remaining limit amount after excluding the margin amount.');
+          $("#submit").css("pointer-events","none");
+          return false;
+        }
       }
 
       if(invoice_approve_amount  > pro_limit)
