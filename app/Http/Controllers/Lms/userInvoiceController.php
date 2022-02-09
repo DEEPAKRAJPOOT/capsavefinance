@@ -624,10 +624,10 @@ class userInvoiceController extends Controller
         $intrest_charges = [];
         $total_sum_of_rental = 0;
         foreach ($totalTxnsInInvoice as  $key => $invTrans) {
-            $transDetail = $this->UserInvRepo->getTxnByTransId($invTrans->trans_id);
-            if (empty($transDetail->transType)) {
-               return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Transaction Type detail not found for the used transaction.');
-            }
+            //$transDetail = $this->UserInvRepo->getTxnByTransId($invTrans->trans_id);
+            //if (empty($transDetail->transType)) {
+              // return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'Transaction Type detail not found for the used transaction.');
+          //  }
             $igst_amt = $invTrans->igst_amount;
             $igst_rate = $invTrans->igst_rate;
             $cgst_amt = $invTrans->cgst_amount;
