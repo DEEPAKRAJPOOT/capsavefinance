@@ -854,7 +854,13 @@ class Transactions extends BaseModel {
     public static function getUnsettledInvoiceTransactions($data = [])
     {
        
-        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id')->where('is_transaction', true);
+        $SettledInvoiceDisbursedId = InvoiceDisbursed::whereHas('invoice',function($q) use($data){
+            $q->where('supplier_id',$data['user_id'])->where('is_repayment','1');
+        })->pluck('invoice_disbursed_id')->toArray();
+
+        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id')->where('entry_type',0)->where('is_transaction', true)
+        ->whereNotIn('invoice_disbursed_id', $SettledInvoiceDisbursedId);
+
         $invoiceDisbursed = $data['invoiceDisbursed']??null;
         if(isset($invoiceDisbursed)){
             $query->where(function($query2) use($invoiceDisbursed){
