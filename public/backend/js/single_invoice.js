@@ -362,7 +362,6 @@
       
       var program_id =  $("#program_id").val(); 
       var anchor_id =  $("#anchor_id").val();
-      var prgm_offer_id =  $("#prgm_offer_id").val();
       var supplier_id  = $(this).val();
        $("#invoice_date, #invoice_due_date, #invoice_approve_amount").val(''); 
       if(supplier_id=='')
@@ -374,7 +373,7 @@
              return false; 
       }
        $(".isloader").show(); 
-     var postData =  ({'bulk':0,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'prgm_offer_id':prgm_offer_id,'_token':messages.token});
+     var postData =  ({'bulk':0,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.get_tenor,
                 method: 'post',
