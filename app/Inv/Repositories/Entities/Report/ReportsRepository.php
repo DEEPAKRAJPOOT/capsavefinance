@@ -194,6 +194,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				$toDate = $invDisb->interests->max('interest_date');
 			}
 			
+			$tds_proce_fee = $invDisb->transactions->first()?$invDisb->transactions->first()->tdsProcessingFee():0;
 			$result[] = [
 			'cust_name'=>$invDisb->invoice->business->biz_entity_name,
 			'rm_sales'=>isset($salesDetails) ? $salesDetails->f_name . ' ' . $salesDetails->l_name : '',
@@ -224,8 +225,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'proce_fee'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('base_amt'),
 			'proce_amt'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('base_amt'),
 			'proce_fee_gst'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('amount'),
-			'tds_proce_fee'=>$invDisb->transactions[0]->tdsProcessingFee(),
-			'net_proc_fee_rec'=>($invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('amount')) - ($invDisb->transactions[0]->tdsProcessingFee()),
+			'tds_proce_fee'=>$tds_proce_fee,
+			'net_proc_fee_rec'=>($invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('amount')) - $tds_proce_fee,
 			'proce_fee_rec'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',1)->sum('amount'),
 			'proce_fee_amt_date'=>'', // blank
 			'balance'=> $invDisb->invoice->program_offer->programLimit->limit_amt - (($invDisb->transactions->where('trans_type',16)->where('entry_type',0)->sum('amount')) - ($invDisb->invoice->principal_repayment_amt)),

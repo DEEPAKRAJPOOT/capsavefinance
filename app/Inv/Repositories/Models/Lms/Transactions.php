@@ -1688,8 +1688,8 @@ class Transactions extends BaseModel {
     }
     
     public function tdsProcessingFee() {
-        $transId = self::select('trans_id')->where('trans_type',62)->where('entry_type',0)->pluck('trans_id');
-        $getData = self::select('amount')->whereIn('payment_id',$transId)->where('trans_type',7)->where('entry_type',1)->sum('amount');
+        $transId = self::where('trans_type',62)->where('entry_type',0)->pluck('trans_id');
+        $getData = self::whereIn('link_trans_id',$transId)->where('trans_type',7)->where('entry_type',1)->sum('amount');
         return $getData;
     }
 }
