@@ -910,6 +910,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
+                        $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         return $inv_amount;
                         
                 })
@@ -1159,6 +1160,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
+                        $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         return $inv_amount;
                 })
                  ->addColumn(            

@@ -29,7 +29,6 @@ use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Helpers\Helper;
 
-
 trait InvoiceTrait
 {
     /**
@@ -403,14 +402,7 @@ trait InvoiceTrait
  
   public static function ProgramLimit($getDetails)
   {
-    $appId = $getDetails['app_id'];
-    $appData = Application::getAppData((int) $getDetails['app_id']);
-    if ($appData && $appData->curr_status_id == config('common.mst_status_id.APP_CLOSED')) {
-      $childAppData = Application::getAppByParentAppId((int) $getDetails['app_id']);
-      if ($childAppData)
-        $appId = $childAppData->app_id;
-    }
-    return  AppProgramOffer::whereHas('productHas')->where(['app_id' => $appId,'anchor_id' => $getDetails['anchor_id'],'prgm_id'=> $getDetails['program_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');        
+      return  AppProgramOffer::whereHas('productHas')->where(['app_id' => $getDetails['app_id'],'anchor_id' => $getDetails['anchor_id'],'prgm_id'=> $getDetails['program_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
   }
      /* check the user app limit  */
     /* Use  app_limit table */
@@ -436,23 +428,17 @@ trait InvoiceTrait
       
         if($is_enhance == 1)
         {
-          $parentLimitData = Helper::getParentApplicationInvoiceApproveLimit($attr, $prgm_ids);
-          $marginApprAmt = $parentLimitData['marginApprAmt'];
-          $marginReypayAmt = $parentLimitData['marginReypayAmt'];
-
-          $childLimitData = Helper::getChildApplicationInvoiceApproveLimit($attr, $prgm_ids);
-          $marginApprAmt += $childLimitData['marginApprAmt'];
-          $marginReypayAmt += $childLimitData['marginReypayAmt'];
-
-          $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],NULL);
+          $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],NULL);
+          $marginApprAmt = $marginApprAmt ?? 0;
           $marginApprAmt += BizInvoice::whereIn('status_id',[8,9,10])
           ->where('prgm_offer_id',$attr['prgm_offer_id'])
           ->whereIn('program_id', $prgm_ids)
           ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
           ->where('app_id' , '<=', $attr['app_id'])
-          ->sum('invoice_approve_amount');
+          ->sum('invoice_margin_amount');
+          // ->sum('invoice_approve_amount');
           
-          $marginReypayAmt += BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
+          $marginReypayAmt = BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
           ->where('prgm_offer_id',$attr['prgm_offer_id'])
           ->whereIn('program_id', $prgm_ids)
           ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
@@ -467,7 +453,8 @@ trait InvoiceTrait
         $marginApprAmt   +=  BizInvoice::whereIn('status_id',[8,9,10])
         ->where('prgm_offer_id',$attr['prgm_offer_id'])
         ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id']])
-        ->sum('invoice_approve_amount');
+        ->sum('invoice_margin_amount');
+        // ->sum('invoice_approve_amount');
         
         $marginReypayAmt =  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
         ->where('prgm_offer_id',$attr['prgm_offer_id'])
@@ -771,13 +758,15 @@ trait InvoiceTrait
             }   
             if($limit  >= $sum)
             {
-                $remain_amount =  $limit-$sum;
-                if($remain_amount >=$inv_details['invoice_approve_amount'])
+                $remain_amount =  $limit - $sum;
+                $invoice = BizInvoice::find($attr['invoice_id']);
+                $marginAmt = Helper::getOfferMarginAmtOfInvoiceAmt($invoice->prgm_offer_id, $inv_details['invoice_approve_amount']);
+                
+                if($remain_amount >= $marginAmt)
                 {
-                         InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
-                         BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['invoice_margin_amount'=>$inv_apprv_amount,'is_margin_deduct' =>1,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
-                         return 1;
-         
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['invoice_margin_amount'=> $inv_apprv_amount,'is_margin_deduct' =>1,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 1;         
                 }
                 else 
                 {

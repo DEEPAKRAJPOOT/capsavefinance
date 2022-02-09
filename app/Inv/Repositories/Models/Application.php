@@ -977,8 +977,4 @@ class Application extends BaseModel
     public function bizInvoice() {
         return $this->hasMany('App\Inv\Repositories\Models\BizInvoice', 'app_id', 'app_id');
     }
-
-    public static function getAppByParentAppId($appId) {
-        return self::where('parent_app_id', $appId)->first();
-    }
 }
