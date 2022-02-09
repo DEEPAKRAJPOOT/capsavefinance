@@ -308,9 +308,9 @@ class ApportionmentController extends Controller
                     'comment' => $comment,
                 ];
                 if($TransDetail->disburse->invoice_disbursed_id){
-                    $invoiceList = array();
-                    array_push($invoiceList, $TransDetail->disburse->invoice_disbursed_id);
-                    $this->updateInvoiceRepaymentFlag($invoiceList);
+                    $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                    $this->updateInvoiceRepaymentFlag([$TransDetail->disburse->invoice_disbursed_id]);
+                    $Obj->refundProcess($TransDetail->disburse->invoice_disbursed_id);
                 }
                 $comment = $this->lmsRepo->saveTxnComment($commentData);
 
@@ -461,8 +461,9 @@ class ApportionmentController extends Controller
                 if($TransDetail->invoice_disbursed_id){
                     $Obj = new ManualApportionmentHelper($this->lmsRepo);
                     $Obj->intAccrual($TransDetail->invoice_disbursed_id, $TransDetail->trans_date);
-                    $this->updateInvoiceRepaymentFlag([$TransDetail->invoice_disbursed_id]);
                     $Obj->transactionPostingAdjustment($TransDetail->invoice_disbursed_id, $TransDetail->trans_date, $TransDetail->invoiceDisbursed->invoice->program_offer->payment_frequency ?? null, $paymentId);
+                    $this->updateInvoiceRepaymentFlag([$TransDetail->invoice_disbursed_id]);
+                    $Obj->refundProcess($TransDetail->invoice_disbursed_id);
                 }
 
                 $whereActivi['activity_code'] = 'apport_reversal_save';
@@ -969,16 +970,11 @@ class ApportionmentController extends Controller
                     }
                     
                     $Obj->intAccrual($invDisb['invoice_disbursed_id'], $date_of_payment);
-                    $this->updateInvoiceRepaymentFlag([$invDisb['invoice_disbursed_id']]);
                     $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId, $useApporCol = true);
-                }
-                /* Refund Process Start */
-                $transactionList = [];
-                foreach ($invoiceList as $invDisb) {
+                    $this->updateInvoiceRepaymentFlag([$invDisb['invoice_disbursed_id']]);
                     $Obj->refundProcess($invDisb['invoice_disbursed_id']);
                 }
-                /* Refund Process End */
-
+                
                 if($paymentId){
                     InterestAccrualTemp::where('payment_id',$paymentId)->delete();
                 }
@@ -1131,20 +1127,28 @@ class ApportionmentController extends Controller
         foreach($invDisbs as $invd){
             // Update Invoice Disbursed Accrual Detail
             InvoiceDisbursedDetail::updateDailyInterestAccruedDetails($invd);
-            $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
+           //$flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
+            
+            $transRunningOut = TransactionsRunning::where('invoice_disbursed_id',$invd)->get()->sum('outstanding');
+            $transOut = Transactions::where('invoice_disbursed_id',$invd)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('outstanding');
+            $transAmt = Transactions::where('invoice_disbursed_id',$invd)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('amount');
+            $prinRepayAmt = Transactions::where('invoice_disbursed_id',$invd)->where('entry_type','1')->whereIn('trans_type',[16])->sum('settled_outstanding');
+            $is_settled = false;
+
+            if($transRunningOut+$transOut == 0){
+                $is_settled = true;
+            }
             $inv = BizInvoice::find($invd->invoice_id);
-            if($flag['is_settled']){
+            if($is_settled){
                 $inv->is_repayment = 1;
                 $inv->status_id = 15;
-                $inv->repayment_amt = $flag['receipt'];
-                $inv->principal_repayment_amt = $flag['principal_repayment_amt'];
+                $inv->repayment_amt = ($transAmt - $transOut);
+                $inv->principal_repayment_amt = $prinRepayAmt;
             }else{
-                if($inv->is_repayment == 1)
                 $inv->is_repayment = 0;
-                if($inv->status_id == 15)
                 $inv->status_id = 12;
-                $inv->repayment_amt = $flag['receipt'];
-                $inv->principal_repayment_amt = $flag['principal_repayment_amt'];
+                $inv->repayment_amt = ($transAmt - $transOut);
+                $inv->principal_repayment_amt = $prinRepayAmt;
             }
             $inv->save();
         }
@@ -1508,8 +1512,9 @@ class ApportionmentController extends Controller
             $Obj  = new ManualApportionmentHelper($this->lmsRepo);
             foreach ($data as $invDisb) {
                 $Obj->intAccrual($invDisb, $paymentDate);
-                $this->updateInvoiceRepaymentFlag([$invDisb]);
                 $Obj->transactionPostingAdjustment($invDisb, NULL, NULL, NULL);
+                $this->updateInvoiceRepaymentFlag([$invDisb]);
+                $Obj->refundProcess($invDisb);
             }
         }
 
