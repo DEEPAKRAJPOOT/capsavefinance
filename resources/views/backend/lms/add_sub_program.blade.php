@@ -168,7 +168,7 @@ $defaultMinimumLoanSize = ($anchorData->is_fungible) ? 1 : NULL;
                                                                     <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('anchor_sub_limit',
                                                                     isset($subProgramData->anchor_sub_limit) ? number_format($subProgramData->anchor_sub_limit) : $defaultSubProgramLimit,
-                                                                    ['class'=>'form-control number_format '])   !!}
+                                                                    ['id' => 'anchor_sub_limit','class'=>'form-control number_format '])   !!}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -192,7 +192,7 @@ $defaultMinimumLoanSize = ($anchorData->is_fungible) ? 1 : NULL;
                                                                     <div class="relative">
                                                                     <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('max_loan_size',
-                                                                    isset($subProgramData->max_loan_size) ?  number_format($subProgramData->max_loan_size) : null,
+                                                                    isset($subProgramData->max_loan_size) ?  number_format($subProgramData->max_loan_size) : $defaultSubProgramLimit,
                                                                     ['class'=>'form-control max_loan_size number_format','placeholder'=>'Max',$defaultSubProgramLimitReadOnly => $defaultSubProgramLimitReadOnly])   !!}
                                                                     </div>
                                                                 </div>
@@ -793,6 +793,11 @@ $defaultMinimumLoanSize = ($anchorData->is_fungible) ? 1 : NULL;
 @endsection
 @section('jscript')
 <script>
+
+    $(document).on('keyup','#anchor_sub_limit', function () {
+       let $anchor_sub_limit = $(this).val();
+       $('input[name="max_loan_size"]').val($anchor_sub_limit || 0);
+    })
    $(document).on('click','.customer_upload',function(){
       
         if ($('#invoice_upload_2').is(":checked") || $('#bulk_invoice_upload_2').is(":checked"))
