@@ -127,10 +127,6 @@ class ManualApportionmentHelper{
             }
         }
 
-        $refundTransaction = $this->generateRefundTrans($invDisbId);
-        foreach($refundTransaction??[] as $rtrans){
-            $transactionList[] = $rtrans;
-        }
         if(!empty($transactionList)){
             foreach ($transactionList as $key => $newTrans) {
                 $this->lmsRepo->saveTransaction($newTrans);
@@ -751,6 +747,7 @@ class ManualApportionmentHelper{
             //unset($pos);
             $this->intAccrual($invId);
             $this->transactionPostingAdjustment($invId, NULL, NULL, NULL);
+            $this->refundProcess($invId,NULL,NULL);
         }
         // Update Invoice Disbursed Accrual Detail
         InvoiceDisbursedDetail::updateDailyInterestAccruedDetails();
