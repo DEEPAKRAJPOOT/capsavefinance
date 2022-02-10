@@ -210,7 +210,7 @@ class ManualApportionmentHelper{
             ->where('entry_type','=',1)
             ->whereIn('trans_type',[$pTrans->trans_type,7]);
             
-            if($payFrq == 1 && $intBornBy == 2 && !$isSettled){
+            if($payFrq == 1 /*&& $intBornBy == 2*/ && !$isSettled){
                 $paidTransactions->whereNotIn('invoice_disbursed_id',[$invDisbId]);
             }
 
