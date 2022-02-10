@@ -49,9 +49,13 @@ class ManualApportionmentHelper{
             ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
             ->get();
         
+        $curdate =  Helpers::getSysStartDate();
+        $curdate = Carbon::parse($curdate)->format('Y-m-d');
+            
         foreach($transactions as $trans){
             $payFreq = $trans->invoiceDisbursed->invoice->program_offer->payment_frequency;
             $isRepayment = $trans->invoiceDisbursed->invoice->is_repayment;
+            $paymentDueDate = $trans->invoiceDisbursed->payment_due_date;
             $amount = round($trans->amount,2);
             $outstanding = ($trans->outstanding > 0.00)?$trans->outstanding:0.00;
 
@@ -70,8 +74,6 @@ class ManualApportionmentHelper{
             $actualAmount = round($actualAmount,2);
 
             if($trans->toIntDate){
-                $curdate =  Helpers::getSysStartDate();
-                $curdate = Carbon::parse($curdate)->format('Y-m-d');
                 if( $trans->trans_type == config('lms.TRANS_TYPE.INTEREST') && $payFreq == '1' && $isRepayment == '0'){
                     $actualAmount = $amount;
                 }
@@ -104,7 +106,7 @@ class ManualApportionmentHelper{
                     $amount = round($amount,2);
                     if(round($cAmt, 2) > 0.00){
                         $refundFlag = True;
-                        if($payFreq == 1 && $isRepayment == 0){
+                        if($payFreq == 1 && strtotime($curdate) < strtotime($paymentDueDate)){
                             $refundFlag = False;
                         }
                         if($refundFlag){
