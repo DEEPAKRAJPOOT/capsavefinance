@@ -308,9 +308,9 @@ class ApportionmentController extends Controller
                     'comment' => $comment,
                 ];
                 if($TransDetail->disburse->invoice_disbursed_id){
-                    $invoiceList = array();
-                    array_push($invoiceList, $TransDetail->disburse->invoice_disbursed_id);
-                    $this->updateInvoiceRepaymentFlag($invoiceList);
+                    $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                    $this->updateInvoiceRepaymentFlag([$TransDetail->disburse->invoice_disbursed_id]);
+                    $Obj->refundProcess($TransDetail->disburse->invoice_disbursed_id);
                 }
                 $comment = $this->lmsRepo->saveTxnComment($commentData);
 
@@ -461,8 +461,9 @@ class ApportionmentController extends Controller
                 if($TransDetail->invoice_disbursed_id){
                     $Obj = new ManualApportionmentHelper($this->lmsRepo);
                     $Obj->intAccrual($TransDetail->invoice_disbursed_id, $TransDetail->trans_date);
-                    $this->updateInvoiceRepaymentFlag([$TransDetail->invoice_disbursed_id]);
                     $Obj->transactionPostingAdjustment($TransDetail->invoice_disbursed_id, $TransDetail->trans_date, $TransDetail->invoiceDisbursed->invoice->program_offer->payment_frequency ?? null, $paymentId);
+                    $this->updateInvoiceRepaymentFlag([$TransDetail->invoice_disbursed_id]);
+                    $Obj->refundProcess($TransDetail->invoice_disbursed_id);
                 }
 
                 $whereActivi['activity_code'] = 'apport_reversal_save';
@@ -662,6 +663,7 @@ class ApportionmentController extends Controller
      * Unsettled Transaction marked Settled
      */
     public function markSettleConfirmation(ApportionmentRequest $request){
+        DB::beginTransaction();
         try {
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
@@ -686,6 +688,7 @@ class ApportionmentController extends Controller
 
             if(!$paymentDetails['isApportPayValid'] || empty($checks) || $paymentDetails['is_settled'] == 1){
                 Session::flash('untrans_error', trans('Apportionment is not possible for the selected Payment. Please select valid payment for the unsettled payment screen.'));
+                DB::rollback();
                 return redirect()->back()->withInput();
             }
             $repaymentAmt = $paymentDetails['amount']; 
@@ -753,11 +756,14 @@ class ApportionmentController extends Controller
 
             $payment = Payment::find($paymentId);
 
-            if (!$this->verifyUnSettleTransInitiator($payment, $settleConfirmation = true))
+            if (!$this->verifyUnSettleTransInitiator($payment, $settleConfirmation = true)){
+                DB::rollback();
                 return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+            }
 
             $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
-
+            
+            DB::commit();
             return view('lms.apportionment.markSettledConfirm',[
                 'paymentId' => $paymentId,
                 'userId' => $userId,
@@ -767,8 +773,8 @@ class ApportionmentController extends Controller
                 'unAppliedAmt' => $unAppliedAmt,
                 'sanctionPageView'=>$sanctionPageView
             ]);
-
         } catch (Exception $ex) {
+            DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
@@ -793,19 +799,23 @@ class ApportionmentController extends Controller
     }
 
     public function markSettleSave(Request $request){
+        DB::beginTransaction();
         try {
             ini_set('max_execution_time', 2000);
             $payment = Payment::find($request->payment_id);
 
             if (!$this->verifyUnSettleTransInitiator($payment)) {
+                DB::rollback();
                 return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
             }
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSED) {
+                DB::rollback();
                 return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
             }
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED) {
+                DB::rollback();
                 return redirect()->route('unsettled_payments')->withErrors('Transactions already settled')->withInput();
             }
 
@@ -827,6 +837,7 @@ class ApportionmentController extends Controller
                 $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
                 if(!$paymentDetails['isApportPayValid'] || empty($checks) || $paymentDetails['is_settled'] == 1){
                     Session::flash('error', trans('Apportionment is not possible for the selected Payment. Please select valid payment for the unsettled payment screen.'));
+                    DB::rollback();
                     return redirect()->route('unsettled_payments');
                 }
                 $repaymentAmt = (float) $paymentDetails['amount']; 
@@ -915,6 +926,7 @@ class ApportionmentController extends Controller
 
                 if((float) round($amtToSettle,2) > (float) round($repaymentAmt,2)){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
+                    DB::rollback();
                     return redirect()->route('unsettled_payments')->withInput();
                 }
 
@@ -958,16 +970,11 @@ class ApportionmentController extends Controller
                     }
                     
                     $Obj->intAccrual($invDisb['invoice_disbursed_id'], $date_of_payment);
-                    $this->updateInvoiceRepaymentFlag([$invDisb['invoice_disbursed_id']]);
                     $Obj->transactionPostingAdjustment($invDisb['invoice_disbursed_id'], $invDisb['date_of_payment'], $invDisb['payment_frequency'], $paymentId, $useApporCol = true);
-                }
-                /* Refund Process Start */
-                $transactionList = [];
-                foreach ($invoiceList as $invDisb) {
+                    $this->updateInvoiceRepaymentFlag([$invDisb['invoice_disbursed_id']]);
                     $Obj->refundProcess($invDisb['invoice_disbursed_id']);
                 }
-                /* Refund Process End */
-
+                
                 if($paymentId){
                     InterestAccrualTemp::where('payment_id',$paymentId)->delete();
                 }
@@ -982,13 +989,15 @@ class ApportionmentController extends Controller
                 }                 
                 
                 $request->session()->forget('apportionment');
+                DB::commit();
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
             $payment = Payment::find($request->payment_id);
             if ($payment)
-                $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PENDING]);
+            $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PENDING]);
 
+            DB::rollback();
             return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
@@ -1118,26 +1127,35 @@ class ApportionmentController extends Controller
         foreach($invDisbs as $invd){
             // Update Invoice Disbursed Accrual Detail
             InvoiceDisbursedDetail::updateDailyInterestAccruedDetails($invd);
-            $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
+           //$flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
+            
+            $transRunningOut = TransactionsRunning::where('invoice_disbursed_id',$invd)->get()->sum('outstanding');
+            $transOut = Transactions::where('invoice_disbursed_id',$invd)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('outstanding');
+            $transAmt = Transactions::where('invoice_disbursed_id',$invd)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('amount');
+            $prinRepayAmt = Transactions::where('invoice_disbursed_id',$invd)->where('entry_type','1')->whereIn('trans_type',[16])->sum('settled_outstanding');
+            $is_settled = false;
+
+            if($transRunningOut+$transOut == 0){
+                $is_settled = true;
+            }
             $inv = BizInvoice::find($invd->invoice_id);
-            if($flag['is_settled']){
+            if($is_settled){
                 $inv->is_repayment = 1;
                 $inv->status_id = 15;
-                $inv->repayment_amt = $flag['receipt'];
-                $inv->principal_repayment_amt = $flag['principal_repayment_amt'];
+                $inv->repayment_amt = ($transAmt - $transOut);
+                $inv->principal_repayment_amt = $prinRepayAmt;
             }else{
-                if($inv->is_repayment == 1)
                 $inv->is_repayment = 0;
-                if($inv->status_id == 15)
                 $inv->status_id = 12;
-                $inv->repayment_amt = $flag['receipt'];
-                $inv->principal_repayment_amt = $flag['principal_repayment_amt'];
+                $inv->repayment_amt = ($transAmt - $transOut);
+                $inv->principal_repayment_amt = $prinRepayAmt;
             }
             $inv->save();
         }
     }
 
     public function markWriteOffConfirmation(Request $request){
+        DB::beginTransaction();
         try {
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
@@ -1188,19 +1206,21 @@ class ApportionmentController extends Controller
                 'check' => $checks,
             ]);
         
+            DB::commit();
             return view('lms.apportionment.markWriteOffConfirm',[
                 'userId' => $userId,
                 'userDetails' => $userDetails,
                 'transactions' => $transactionList,
                 'sanctionPageView'=>$sanctionPageView
             ]);
-
         } catch (Exception $ex) {
+            DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 
     public function markWriteOffSave(Request $request){
+        DB::beginTransaction();
         try {
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
@@ -1265,9 +1285,11 @@ class ApportionmentController extends Controller
                 }
                 
                 $request->session()->forget('writeoff');
+                DB::commit();
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked Write Off']);
             }
         } catch (Exception $ex) {
+            DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
@@ -1276,10 +1298,12 @@ class ApportionmentController extends Controller
      * Refund Transaction marked Adjusted
      */
     public function markAdjustmentConfirmation(AdjustmentRequest $request){
+        DB::beginTransaction();
         try {
             $paymentAppor = PaymentApportionment::checkApportionmentHold($request->user_id);
             if ($paymentAppor) {
                 \Session::flash('error', 'You cannot perform this action as you have not uploaded  the unsettled payment apportionment CSV file.');
+                DB::rollback();
                 return back();
             }
             $sanctionPageView = false;
@@ -1337,6 +1361,7 @@ class ApportionmentController extends Controller
                 'check' => $checks,
             ]);
         
+            DB::commit();
             return view('lms.apportionment.markAdjustmentConfirm',[
                 'userId' => $userId,
                 'userDetails' => $userDetails,
@@ -1344,13 +1369,14 @@ class ApportionmentController extends Controller
                 'sanctionPageView'=>$sanctionPageView,
                 'adjustableAmt'=>$amtToSettle
             ]);
-
         } catch (Exception $ex) {
+            DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
 
     public function markAdjustmentSave(Request $request){
+        DB::beginTransaction();
         try {
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){
@@ -1432,9 +1458,11 @@ class ApportionmentController extends Controller
                     $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['transactions'=>$transactions, 'payments'=>$payments]), $arrActivity);
                 }   
                 $request->session()->forget('apportionment');
+                DB::commit();
                 return redirect()->route('apport_refund_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully Mark Adjusted']);
             }
         } catch (Exception $ex) {
+            DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }
@@ -1484,8 +1512,9 @@ class ApportionmentController extends Controller
             $Obj  = new ManualApportionmentHelper($this->lmsRepo);
             foreach ($data as $invDisb) {
                 $Obj->intAccrual($invDisb, $paymentDate);
-                $this->updateInvoiceRepaymentFlag([$invDisb]);
                 $Obj->transactionPostingAdjustment($invDisb, NULL, NULL, NULL);
+                $this->updateInvoiceRepaymentFlag([$invDisb]);
+                $Obj->refundProcess($invDisb);
             }
         }
 
@@ -1518,6 +1547,7 @@ class ApportionmentController extends Controller
     }
 
     public function undoApportionment(Request $request){
+        DB::beginTransaction();
         try {
 			$paymentId = $request->get('payment_id');
 			if($paymentId){
@@ -1537,7 +1567,7 @@ class ApportionmentController extends Controller
                                 $arrActivity['app_id'] = null;
                                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
                             }                               
-                            
+                            DB::commit();
                             return response()->json(['status' => 1,'message' => 'Successfully Apportionment Reverted']); 
                         }else{
                             return response()->json(['status' => 0,'message' => $aporUndoPro['error']]);
@@ -1551,6 +1581,7 @@ class ApportionmentController extends Controller
 			}
 			return response()->json(['status' => 0,'message' => 'Invalid Request: Payment details missing.']);
         } catch (Exception $ex) {
+            DB::rollback();
 			return response()->json(['status' => 0,'message' => Helpers::getExceptionMessage($ex)]); 
 		}
     }
@@ -1730,18 +1761,22 @@ class ApportionmentController extends Controller
     }
 
     public function TDSMarkSettleSave(Request $request){
+        DB::beginTransaction();
         try {
             $payment = Payment::find($request->payment_id);
 
             if (!$this->verifyUnSettleTransInitiator($payment)) {
+                DB::rollback();
                 return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
             }
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSED) {
+                DB::rollback();
                 return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
             }
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED) {
+                DB::rollback();
                 return redirect()->route('unsettled_payments')->withErrors('Transactions already settled')->withInput();
             }
 
@@ -1809,11 +1844,13 @@ class ApportionmentController extends Controller
                     || ($paymentDetails['action_type'] == 3 && $unAppliedAmt > 0)
                 ){
                     Session::flash('error', trans('Please use whole unapplied amount.'));
+                    DB::rollback();
                     return redirect()->back()->withInput();
                 }
 
                 if(round($amtToSettle, 2) > round($repaymentAmt, 2)){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
+                    DB::rollback();
                     return redirect()->back()->withInput();
                 }
 
@@ -1856,13 +1893,14 @@ class ApportionmentController extends Controller
                 /* Refund Process End */
 
                 $request->session()->forget('apportionment');
+                DB::commit();
                 return redirect()->route('apport_settled_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => 'Successfully marked settled']);
             }
         } catch (Exception $ex) {
             $payment = Payment::find($request->payment_id);
             if ($payment)
                 $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSING]);
-
+            DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }
     }

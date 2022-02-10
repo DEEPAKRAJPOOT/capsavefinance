@@ -854,7 +854,13 @@ class Transactions extends BaseModel {
     public static function getUnsettledInvoiceTransactions($data = [])
     {
        
-        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id')->where('is_transaction', true);
+        $SettledInvoiceDisbursedId = InvoiceDisbursed::whereHas('invoice',function($q) use($data){
+            $q->where('supplier_id',$data['user_id'])->where('is_repayment','1');
+        })->pluck('invoice_disbursed_id')->toArray();
+
+        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id')->where('entry_type',0)->where('is_transaction', true)
+        ->whereNotIn('invoice_disbursed_id', $SettledInvoiceDisbursedId);
+
         $invoiceDisbursed = $data['invoiceDisbursed']??null;
         if(isset($invoiceDisbursed)){
             $query->where(function($query2) use($invoiceDisbursed){
@@ -1682,8 +1688,8 @@ class Transactions extends BaseModel {
     }
     
     public function tdsProcessingFee() {
-        $transId = self::select('trans_id')->where('trans_type',62)->where('entry_type',0)->pluck('trans_id');
-        $getData = self::select('amount')->whereIn('payment_id',$transId)->where('trans_type',7)->where('entry_type',1)->sum('amount');
+        $transId = self::where('trans_type',62)->where('entry_type',0)->pluck('trans_id');
+        $getData = self::whereIn('link_trans_id',$transId)->where('trans_type',7)->where('entry_type',1)->sum('amount');
         return $getData;
     }
 }
