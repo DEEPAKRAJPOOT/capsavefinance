@@ -671,7 +671,7 @@ class UserEventsListener extends BaseEvent
             if(!empty($user['product_id']) && (in_array(1,$user['product_id']) || in_array(2,$user['product_id']))){
                 $email_cc = explode(',', $email_content->cc);
             }else{
-                $email_cc = '';
+                $email_cc = [];
             }
         }        
        $email_cc = array_filter($email_cc);
