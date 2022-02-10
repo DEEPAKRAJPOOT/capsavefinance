@@ -286,6 +286,7 @@ class Transactions extends BaseModel {
     }
 
     public function calculateOutstandingsCreate(){
+        self::where('trans_id', $this->trans_id)->update(['outstanding' => 0, 'actualOutstanding'=> 0,'settled_outstanding' => 0]);
 
         $trans_id = $this->trans_id;
         $entryType = $this->entryType;
