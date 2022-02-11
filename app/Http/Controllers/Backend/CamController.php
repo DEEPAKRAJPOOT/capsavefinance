@@ -54,6 +54,7 @@ use App\Inv\Repositories\Models\Master\GroupCompany;
 use Validator;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Models\Anchor;
 
 class CamController extends Controller
 {
