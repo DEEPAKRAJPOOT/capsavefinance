@@ -61,7 +61,7 @@ class Transactions extends BaseModel {
         'trans_mode',
         'amount',
         'outstanding',
-        'actualOutstanding',
+        'actual_outstanding',
         'settled_outstanding',
         'entry_type',
         'gst',
@@ -286,8 +286,7 @@ class Transactions extends BaseModel {
     }
 
     public function calculateOutstandingsCreate(){
-        self::where('trans_id', $this->trans_id)->update(['outstanding' => 0, 'actualOutstanding'=> 0,'settled_outstanding' => 0]);
-
+        self::where('trans_id', $this->trans_id)->update(['outstanding' => 0, 'actual_outstanding'=> 0,'settled_outstanding' => 0]);
         $trans_id = $this->trans_id;
         $entryType = $this->entryType;
 
@@ -303,7 +302,7 @@ class Transactions extends BaseModel {
 
         if(is_null($this->parent_trans_id) && is_null($this->link_trans_id)){
             if($this->entry_type == '0'){
-                self::where('trans_id', $this->trans_id)->update(['outstanding' => $this->amount, 'actualOutstanding'=>$this->amount]);
+                self::where('trans_id', $this->trans_id)->update(['outstanding' => $this->amount, 'actual_outstanding'=>$this->amount]);
             }
             elseif($this->entry_type == '1'){
                 self::where('trans_id', $this->trans_id)->update(['settled_outstanding' => $this->amount]);
@@ -315,7 +314,7 @@ class Transactions extends BaseModel {
                 if($this->entry_type == '0'){
                     $actualAmount = $this->outstanding - $this->amount;
                     $amount = $actualAmount > 0 ? $actualAmount: 0 ; 
-                    self::where('trans_id', $this->trans_id)->update(['outstanding' => ($amount),'actualOutstanding'=>$actualAmount]);
+                    self::where('trans_id', $this->trans_id)->update(['outstanding' => ($amount),'actual_outstanding'=>$actualAmount]);
                     self::where('trans_id', $linkTrans->trans_id)->update(['settled_outstanding' => ($linkTrans->settled_outstanding + $this->amount)]);
                 }
                 elseif($this->entry_type == '1'){
@@ -323,19 +322,19 @@ class Transactions extends BaseModel {
                     if(!in_array($this->trans_type,[32])){
                         $actualAmount = $linkTrans->outstanding - $this->amount;
                         $amount = $actualAmount > 0 ? $actualAmount: 0 ;
-                        self::where('trans_id', $linkTrans->trans_id)->update(['outstanding' => ($amount),'actualOutstanding'=>$actualAmount]);
+                        self::where('trans_id', $linkTrans->trans_id)->update(['outstanding' => ($amount),'actual_outstanding'=>$actualAmount]);
                     }
                 }
             }else{
                 if($this->entry_type == '0' && $linkTrans->entry_type == '1'){
                     if(in_array($this->trans_type,[31,32])){
                         self::where('trans_id', $linkTrans->trans_id)->update(['settled_outstanding' => ($linkTrans->settled_outstanding - $this->amount)]);
-                        self::where('trans_id', $this->trans_id)->update(['outstanding' => ($this->outstanding + $this->amount) ,'actualOutstanding'=>($this->outstanding + $this->amount)]);
+                        self::where('trans_id', $this->trans_id)->update(['outstanding' => ($this->outstanding + $this->amount) ,'actual_outstanding'=>($this->outstanding + $this->amount)]);
                     }else{
                         $actualAmount = $this->outstanding - $this->amount;
                         $amount = $actualAmount > 0 ? $actualAmount: 0 ;
                         self::where('trans_id', $linkTrans->trans_id)->update(['settled_outstanding' => ($linkTrans->settled_outstanding + $this->amount)]);
-                        self::where('trans_id', $this->trans_id)->update(['outstanding' => ($amount),'actualOutstanding'=>$actualAmount]);
+                        self::where('trans_id', $this->trans_id)->update(['outstanding' => ($amount),'actual_outstanding'=>$actualAmount]);
                     }
                 }
                 elseif($this->entry_type == '1' && $linkTrans->entry_type == '0'){
@@ -343,7 +342,7 @@ class Transactions extends BaseModel {
                     if(!in_array($this->trans_type,[32])){
                         $actualAmount = $linkTrans->outstanding - $this->amount;
                         $amount = $actualAmount > 0 ? $actualAmount: 0 ;
-                        self::where('trans_id', $linkTrans->trans_id)->update(['outstanding' => ($amount),'actualOutstanding'=>$actualAmount]);
+                        self::where('trans_id', $linkTrans->trans_id)->update(['outstanding' => ($amount),'actual_outstanding'=>$actualAmount]);
                     }
                 }
             } 
@@ -355,7 +354,7 @@ class Transactions extends BaseModel {
                     if($this->entry_type == '0'){
                         $actualAmount = $this->outstanding - $this->amount;
                         $amount = $actualAmount > 0 ? $actualAmount: 0 ;
-                        self::where('trans_id', $this->entry_type)->update(['outstanding' => ($amount),'actualOutstanding'=>$actualAmount]);
+                        self::where('trans_id', $this->entry_type)->update(['outstanding' => ($amount),'actual_outstanding'=>$actualAmount]);
                         self::where('trans_id', $parentTrans->trans_id)->update(['settled_outstanding' => ($parentTrans->settled_outstanding + $this->amount)]);
                     }
                     elseif($this->entry_type == '1'){
@@ -363,14 +362,14 @@ class Transactions extends BaseModel {
                         if(!in_array($this->trans_type,[32])){
                             $actualAmount = $parentTrans->outstanding - $this->amount;
                             $amount = $actualAmount > 0 ? $actualAmount: 0 ;
-                            self::where('trans_id', $parentTrans->trans_id)->update(['outstanding' => ($amount),'actualOutstanding'=>$actualAmount]);
+                            self::where('trans_id', $parentTrans->trans_id)->update(['outstanding' => ($amount),'actual_outstanding'=>$actualAmount]);
                         }
                     }
                 }else{
                     if($this->entry_type == '0' && $parentTrans->entry_type == '1'){
                         $actualAmount = $this->outstanding - $this->amount;
                         $amount = $actualAmount > 0 ? $actualAmount: 0 ;
-                        self::where('trans_id', $this->entry_type)->update(['outstanding' => ($amount),'actualOutstanding'=>$actualAmount]);
+                        self::where('trans_id', $this->entry_type)->update(['outstanding' => ($amount),'actual_outstanding'=>$actualAmount]);
                         if(!in_array($parentTrans->trans_type,[32,35,10])){
                             self::where('trans_id', $parentTrans->trans_id)->update(['settled_outstanding' => ($parentTrans->settled_outstanding + $this->amount)]);
                         }
@@ -380,7 +379,7 @@ class Transactions extends BaseModel {
                         if(!in_array($this->trans_type,[32])){
                             $actualAmount = $parentTrans->outstanding - $this->amount;
                             $amount = $actualAmount > 0 ? $actualAmount: 0 ;
-                            self::where('trans_id', $parentTrans->trans_id)->update(['outstanding' => ($amount),'actualOutstanding'=>$actualAmount]);
+                            self::where('trans_id', $parentTrans->trans_id)->update(['outstanding' => ($amount),'actual_outstanding'=>$actualAmount]);
                         }
                     }
                 }
@@ -410,9 +409,11 @@ class Transactions extends BaseModel {
                 }
                 elseif($this->entry_type == '1'){
                     if(!in_array($this->trans_type,[32])){
-                        $actualAmount = $linkTrans->actualOutstanding + $this->amount;
+                        $actualAmount = $linkTrans->actual_outstanding + $this->amount;
                         $amount = $actualAmount > 0 ? $actualAmount: 0 ;
-                        self::where('trans_id', $linkTrans->trans_id)->update(['outstanding' => $amount,'actualOutstanding'=>$actualAmount]);
+                        self::where('trans_id', $linkTrans->trans_id)->update(['outstanding' => $amount,'actual_outstanding'=>$actualAmount]);
+                    }else{
+                        //self::where('trans_id', $linkTrans->trans_id)->update(['settled_outstanding' => ($linkTrans->settled_outstanding - $this->amount)]);
                     }
                 }
             }else{
@@ -425,9 +426,9 @@ class Transactions extends BaseModel {
                 }
                 elseif($this->entry_type == '1' && $linkTrans->entry_type == '0'){
                     if(!in_array($this->trans_type,[32])){
-                        $actualAmount = $linkTrans->actualOutstanding + $this->amount;
+                        $actualAmount = $linkTrans->actual_outstanding + $this->amount;
                         $amount = $actualAmount > 0 ? $actualAmount: 0 ;
-                        self::where('trans_id', $linkTrans->trans_id)->update(['outstanding' => $amount,'actualOutstanding'=>$actualAmount]);
+                        self::where('trans_id', $linkTrans->trans_id)->update(['outstanding' => $amount,'actual_outstanding'=>$actualAmount]);
                     }
                 }
             } 
@@ -441,9 +442,9 @@ class Transactions extends BaseModel {
                     }
                     elseif($this->entry_type == '1'){
                         if(!in_array($this->trans_type,[32])){
-                            $actualAmount = $parentTrans->actualOutstanding + $this->amount;
+                            $actualAmount = $parentTrans->actual_outstanding + $this->amount;
                             $amount = $actualAmount > 0 ? $actualAmount: 0 ;
-                            self::where('trans_id', $parentTrans->trans_id)->update(['outstanding' => $amount,'actualOutstanding'=>$actualAmount]);
+                            self::where('trans_id', $parentTrans->trans_id)->update(['outstanding' => $amount,'actual_outstanding'=>$actualAmount]);
                         }
                     }
                 }else{
@@ -454,9 +455,9 @@ class Transactions extends BaseModel {
                     }
                     elseif($this->entry_type == '1' && $parentTrans->entry_type == '0'){
                         if(!in_array($this->trans_type,[32])){
-                            $actualAmount = $parentTrans->actualOutstanding + $this->amount;
+                            $actualAmount = $parentTrans->actual_outstanding + $this->amount;
                             $amount = $actualAmount > 0 ? $actualAmount: 0 ;
-                            self::where('trans_id', $parentTrans->trans_id)->update(['outstanding' => $amount,'actualOutstanding'=>$actualAmount]);
+                            self::where('trans_id', $parentTrans->trans_id)->update(['outstanding' => $amount,'actual_outstanding'=>$actualAmount]);
                         }
                     }
                 }
@@ -1335,13 +1336,13 @@ class Transactions extends BaseModel {
         }
     }
     
-    public function getFromIntDateAttribute(){
+    public function getFromIntDateAttribute($paymentFrequency = null, $disbursedDate = null, $paymentDate = null){
         $fromDate = null;
         if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
-            $intBorneBy = $this->invoiceDisbursed->invoice->program->interest_borne_by;
-            $paymentFrequency = $this->invoiceDisbursed->invoice->program_offer->payment_frequency;
-            $disbursedDate = date('Y-m-d', strtotime($this->invoiceDisbursed->int_accrual_start_dt));
-            $paymentDate = date('Y-m-d', strtotime($this->invoiceDisbursed->payment_due_date));
+            
+            $paymentFrequency = $paymentFrequency ?? $this->invoiceDisbursed->invoice->program_offer->payment_frequency;
+            $disbursedDate = $disbursedDate ?? date('Y-m-d', strtotime($this->invoiceDisbursed->int_accrual_start_dt));
+            $paymentDate = $paymentDate ?? date('Y-m-d', strtotime($this->invoiceDisbursed->payment_due_date));
             $transDate = date('Y-m-d', strtotime($this->trans_date));
             
             $lastTrans = self::where('invoice_disbursed_id',$this->invoice_disbursed_id)
@@ -1352,7 +1353,7 @@ class Transactions extends BaseModel {
             ->whereNull('parent_trans_id')
             ->where('entry_type','0')
             ->orderBy('trans_date','DESC')
-            ->limit(1)->get()->first();
+            ->limit(1)->get('trans_date')->first();
 
             $lastTransToDate = ($lastTrans)?date('Y-m-d', strtotime($lastTrans->trans_date)):null;
 
@@ -1392,23 +1393,21 @@ class Transactions extends BaseModel {
         return $fromDate;
     }
 
-    public function getToIntDateAttribute(){
+    public function getToIntDateAttribute($paymentFrequency = null, $disbursedDate = null, $paymentDate = null){
         $toDate = null;
         if(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
-            $intBorneBy = $this->invoiceDisbursed->invoice->program->interest_borne_by;
-            $paymentFrequency = $this->invoiceDisbursed->invoice->program_offer->payment_frequency;
-            $disbursedDate = date('Y-m-d', strtotime($this->invoiceDisbursed->int_accrual_start_dt));
-            $paymentDate = date('Y-m-d', strtotime($this->invoiceDisbursed->payment_due_date));
+            $paymentFrequency = $paymentFrequency ?? $this->invoiceDisbursed->invoice->program_offer->payment_frequency;
+            $disbursedDate = $disbursedDate ?? date('Y-m-d', strtotime($this->invoiceDisbursed->int_accrual_start_dt));
+            $paymentDate = $paymentDate ?? date('Y-m-d', strtotime($this->invoiceDisbursed->payment_due_date));
             $transDate = date('Y-m-d', strtotime($this->trans_date));
-            
             if($paymentFrequency == 1){
                if($transDate == $disbursedDate){
                     $toDate = date('Y-m-d', strtotime($paymentDate . "- 1 days"));
                 }else{
-                    $toDate = date('Y-m-d', strtotime($this->trans_date));
+                    $toDate = $transDate;
                 }
             }else{
-                $toDate = date('Y-m-d', strtotime($this->trans_date));
+                $toDate = $transDate;
             }
         }
         return $toDate;
