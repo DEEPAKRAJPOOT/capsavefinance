@@ -1692,4 +1692,14 @@ class Transactions extends BaseModel {
         $getData = self::whereIn('link_trans_id',$transId)->where('trans_type',7)->where('entry_type',1)->sum('amount');
         return $getData;
     }
+
+
+    public function deleteAllChild(){
+        self::where('parent_trans_id',$this->transId)
+        ->orWhere('link_trans_id',$this->transId)
+        ->orderBy('trans_id','DESC')
+        ->get()
+        ->each
+        ->delete();
+    }
 }

@@ -1142,7 +1142,7 @@ class ApportionmentController extends Controller
                 }
             }
 
-            $inv = BizInvoice::find($invd->invoice_id);
+            $inv = $invd->invoice;
             if($is_settled){
                 $inv->is_repayment = 1;
                 $inv->status_id = 15;
