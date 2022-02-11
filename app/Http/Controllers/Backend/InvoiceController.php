@@ -607,9 +607,9 @@ class InvoiceController extends Controller {
         $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
         $invoice_approve_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
         $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($attributes['supplier_id'], $request->anchor_id);
-        $currentAppLimitData  = $this->application->getAppLimitData(['user_id' => $attributes['supplier_id'], 'app_id' => $appId]);
+        $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
 
-        if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invoice_amount > ($currentAppLimitData[0]->tot_limit_amt - $invUtilizedAmt)) {
+        if ($totalProductLimit > 0 && $invoice_amount > 0 && $invoice_amount > ($totalProductLimit - $invUtilizedAmt)) {
             Session::flash('error', 'Invoice amount should not be greater than the balance limit amount.');
             return back();
         }
@@ -1673,9 +1673,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
                         $invoice_amount = str_replace(',', '', $dataAttr['amount']);
                         $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($dataAttr['user_id'], $dataAttr['anchor_id']);
-                        $currentAppLimitData  = $this->application->getAppLimitData(['user_id' => $dataAttr['user_id'], 'app_id' => $dataAttr['app_id']]);
-                
-                        if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invoice_amount > ($currentAppLimitData[0]->tot_limit_amt - $invUtilizedAmt)) {
+                        $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
+
+                        if ($totalProductLimit > 0 && $invoice_amount > 0 && $invoice_amount > ($totalProductLimit - $invUtilizedAmt)) {            
                             $valiMsg = 'Invoice amount should not be greater than the balance limit amount for customer ' .$dataAttr['cusomer_id'];
                             Session::flash('error', $valiMsg);
                             return back();

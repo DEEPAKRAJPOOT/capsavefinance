@@ -1728,7 +1728,7 @@ class CamController extends Controller
 								$productId = 1;
 								$invUtilizedAmt = 0;
 								$pAppPrgmLimit = $this->appRepo->getUtilizeLimit($parentAppId, $productId);
-								$currentAppLimitData  = $this->appRepo->getAppLimitData(['user_id' => $parentUserId, 'app_id' => $appId]);
+								$totalProductLimit = Helpers::getTotalProductLimit($parentAppId, $productId);
 								foreach ($pAppPrgmLimit as $value) {
 									$attr=[];
 									$attr['user_id'] = $parentUserId;
@@ -1740,7 +1740,7 @@ class CamController extends Controller
                   $invUtilizedAmt += Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($attr);
 								}
                 
-              if (count($currentAppLimitData) && isset($currentAppLimitData[0]) && $invUtilizedAmt > $currentAppLimitData[0]->tot_limit_amt) {
+              if ($totalProductLimit > 0 && $invUtilizedAmt > $totalProductLimit) {
                 Session::flash('error', trans('backend_messages.reduction_utilized_amt_appoval_validation'));
                 return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
               } else {

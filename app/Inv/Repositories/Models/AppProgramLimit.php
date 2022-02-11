@@ -363,7 +363,7 @@ class AppProgramLimit extends BaseModel {
     public static function getProductLimit($appId, $productId, $checkApprLimit=true) 
     {
         $curDate = \Carbon\Carbon::now()->format('Y-m-d'); 
-        $query = self::select('app_prgm_limit.app_prgm_limit_id', 'app_prgm_limit.limit_amt as product_limit')                   
+        $query = self::select('app_prgm_limit.app_prgm_limit_id', 'app_prgm_limit.limit_amt as product_limit')
                 ->where('app_prgm_limit.app_id',$appId)
                 ->where('app_prgm_limit.product_id', $productId);
         if ($checkApprLimit == true) {

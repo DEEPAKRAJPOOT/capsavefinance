@@ -2531,4 +2531,16 @@ class Helper extends PaypalHelper
         $sum += $marginApprAmt - $marginReypayAmt;
         return $sum;
     }
+
+    public static function getTotalProductLimit($appId, $productId)
+    {
+        $totalProductLimit = 0;
+        if (isset($appId) && isset($productId)) {
+            $appPrgmLimit = AppProgramLimit::getProductLimit($appId, $productId);
+            foreach ($appPrgmLimit as $value) {
+                $totalProductLimit += $value->product_limit;
+            }
+        }
+        return $totalProductLimit;
+    }
 }
