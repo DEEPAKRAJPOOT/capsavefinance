@@ -1026,15 +1026,15 @@ trait InvoiceTrait
    public static function invoiceMargin($inv_details)
    {
        $res  = AppProgramOffer::where(['prgm_offer_id' => $inv_details['prgm_offer_id']])->first(); 
-      if($res->margin!=null &&  $res->margin!=0 && $inv_details['is_margin_deduct']==0)
-      {
-        $marginAmount  =  round(($inv_details['invoice_approve_amount']*$res->margin/100), 2);
+      // if($res->margin!=null &&  $res->margin!=0 && $inv_details['is_margin_deduct']==0)
+      // {
+        $marginAmount  =  round(($inv_details['invoice_approve_amount'] * $res->margin / 100), 2);
         return     round(($inv_details['invoice_approve_amount'] - $marginAmount), 2);
-      }
-     else 
-      {
-         return  $inv_details['invoice_approve_amount']; 
-      }
+      // }
+    //  else 
+    //   {
+    //      return  $inv_details['invoice_approve_amount']; 
+    //   }
    }
    
     public static function isLimitExceed($invoice_id) {
