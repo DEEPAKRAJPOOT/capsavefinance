@@ -1126,18 +1126,22 @@ class ApportionmentController extends Controller
         $invDisbs = InvoiceDisbursed::whereIn('invoice_disbursed_id',$invDisbId)->get();
         foreach($invDisbs as $invd){
             // Update Invoice Disbursed Accrual Detail
-            InvoiceDisbursedDetail::updateDailyInterestAccruedDetails($invd);
+            InvoiceDisbursedDetail::updateDailyInterestAccruedDetails($invd->invoice_disbursed_id);
            //$flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
             
-            $transRunningOut = TransactionsRunning::where('invoice_disbursed_id',$invd)->get()->sum('outstanding');
-            $transOut = Transactions::where('invoice_disbursed_id',$invd)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('outstanding');
-            $transAmt = Transactions::where('invoice_disbursed_id',$invd)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('amount');
-            $prinRepayAmt = Transactions::where('invoice_disbursed_id',$invd)->where('entry_type','1')->whereIn('trans_type',[16])->sum('settled_outstanding');
-            $is_settled = true;
-
-            if(($transRunningOut + $transOut) == 0){
-                $is_settled = false;
+           $transOut = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('outstanding');
+           $transAmt = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('amount');
+           $prinRepayAmt = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','1')->whereIn('trans_type',[16])->sum('settled_outstanding');
+           
+           $is_settled = false;
+           
+           if($transOut <= 0){
+                $transRunningOut = TransactionsRunning::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->get()->sum('outstanding');
+                if($transRunningOut <= 0){
+                    $is_settled = true;
+                }
             }
+
             $inv = BizInvoice::find($invd->invoice_id);
             if($is_settled){
                 $inv->is_repayment = 1;

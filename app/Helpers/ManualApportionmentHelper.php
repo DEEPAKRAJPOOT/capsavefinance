@@ -53,14 +53,17 @@ class ManualApportionmentHelper{
         $curdate = Carbon::parse($curdate)->format('Y-m-d');
             
         foreach($transactions as $trans){
-            $payFreq = $trans->invoiceDisbursed->invoice->program_offer->payment_frequency;
-            $isRepayment = $trans->invoiceDisbursed->invoice->is_repayment;
-            $paymentDueDate = $trans->invoiceDisbursed->payment_due_date;
+            $invDisb = $trans->invoiceDisbursed;
+            $payFreq = $invDisb->invoice->program_offer->payment_frequency;
+            $isRepayment = $invDisb->invoice->is_repayment;
+            $paymentDueDate = $invDisb->payment_due_date;
+            $disbursedDate = $invDisb->int_accrual_start_dt;
+
             $amount = round($trans->amount,2);
             $outstanding = ($trans->outstanding > 0.00)?$trans->outstanding:0.00;
-
-            $actualAmount = InterestAccrual::where('interest_date', '>=',$trans->fromIntDate)
-                    ->where('interest_date','<=',$trans->toIntDate)
+            $toIntDate = $trans->getToIntDateAttribute($payFreq, $disbursedDate, $paymentDueDate);
+            $actualAmount = InterestAccrual::where('interest_date', '>=',$trans->getFromIntDateAttribute($payFreq, $disbursedDate, $paymentDueDate))
+                    ->where('interest_date','<=',$toIntDate)
                     ->where(function($query) use($trans){
                         if($trans->trans_type == 9){
                             $query->whereNotNull('interest_rate'); 
@@ -73,7 +76,7 @@ class ManualApportionmentHelper{
                     ->sum('accrued_interest');
             $actualAmount = round($actualAmount,2);
 
-            if($trans->toIntDate){
+            if($toIntDate){
                 if( $trans->trans_type == config('lms.TRANS_TYPE.INTEREST') && $payFreq == '1' && $isRepayment == '0'){
                     $actualAmount = $amount;
                 }
@@ -153,13 +156,15 @@ class ManualApportionmentHelper{
         $banchDate = null;
         $isSettled = null;
 
-        $InvDetails = DB::SELECT('SELECT b.invoice_disbursed_id,d.`interest_borne_by`, c.`payment_frequency`, c.`benchmark_date`, a.`is_repayment` FROM rta_invoice AS a JOIN rta_invoice_disbursed AS b ON a.`invoice_id` = b.`invoice_id` JOIN rta_app_prgm_offer AS c ON c.`prgm_offer_id` = a.`prgm_offer_id` JOIN rta_prgm AS d ON d.`prgm_id` = a.`program_id` WHERE b.`invoice_disbursed_id` = ? limit 1', [$invDisbId]);
+        $InvDetails = DB::SELECT('SELECT b.invoice_disbursed_id,d.`interest_borne_by`, c.`payment_frequency`, b.payment_due_date, b.int_accrual_start_dt, c.`benchmark_date`, a.`is_repayment` FROM rta_invoice AS a JOIN rta_invoice_disbursed AS b ON a.`invoice_id` = b.`invoice_id` JOIN rta_app_prgm_offer AS c ON c.`prgm_offer_id` = a.`prgm_offer_id` JOIN rta_prgm AS d ON d.`prgm_id` = a.`program_id` WHERE b.`invoice_disbursed_id` = ? limit 1', [$invDisbId]);
 
         if(count($InvDetails)){
             $intBornBy = $InvDetails[0]->interest_borne_by;
             $payFrq = $InvDetails[0]->payment_frequency;
             $banchDate = $InvDetails[0]->benchmark_date;
             $isSettled = $InvDetails[0]->is_repayment;
+            $disbursedDate = $InvDetails[0]->int_accrual_start_dt; 
+            $paymentDueDate = $InvDetails[0]->payment_due_date;
         }
 
         $parentTransactions = Transactions::where('invoice_disbursed_id',$invDisbId)
@@ -176,8 +181,9 @@ class ManualApportionmentHelper{
         $transactionList = [];
         foreach($parentTransactions as $pTrans){
             $amount = $pTrans->amount;
-            $actualAmount = InterestAccrual::where('interest_date', '>=',$pTrans->fromIntDate)
-                    ->where('interest_date','<=',$pTrans->toIntDate)
+            $pTToIntDate = $pTrans->getToIntDateAttribute($payFrq, $disbursedDate, $paymentDueDate);
+            $actualAmount = InterestAccrual::where('interest_date', '>=',$pTrans->getFromIntDateAttribute($payFrq, $disbursedDate, $paymentDueDate))
+                    ->where('interest_date','<=',$pTToIntDate)
                     ->where(function($query) use($pTrans){
                         if($pTrans->trans_type == 9){
                             $query->whereNotNull('interest_rate'); 
@@ -190,10 +196,10 @@ class ManualApportionmentHelper{
                     ->sum('accrued_interest');
             $actualAmount = round($actualAmount,2);
 
-            if($pTrans->toIntDate){
+            if($pTToIntDate){
                 $curdate =  Helpers::getSysStartDate();
                 $curdate = Carbon::parse($curdate)->format('Y-m-d');
-                if( $pTrans->trans_type == config('lms.TRANS_TYPE.INTEREST') && $pTrans->invoiceDisbursed->invoice->program_offer->payment_frequency == '1' && $pTrans->invoiceDisbursed->invoice->is_repayment == '0'){
+                if( $pTrans->trans_type == config('lms.TRANS_TYPE.INTEREST') && $payFrq == '1' && $isSettled == '0'){
                     $actualAmount = $amount;
                 }
             }
