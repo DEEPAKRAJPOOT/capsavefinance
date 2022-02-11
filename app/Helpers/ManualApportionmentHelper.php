@@ -242,7 +242,7 @@ class ManualApportionmentHelper{
                     
                     if($actualAmount < 0){   
                         $transactionList[] = [
-                            'payment_id' => null,
+                            'payment_id' => $paidTrans->payment_id,
                             'link_trans_id' => $paidTrans->trans_id,
                             'parent_trans_id' => $paidTrans->parent_trans_id ?? $paidTrans->trans_id,
                             'trans_running_id'=> $paidTrans->trans_running_id,
