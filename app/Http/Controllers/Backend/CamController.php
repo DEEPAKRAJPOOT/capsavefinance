@@ -1959,16 +1959,18 @@ class CamController extends Controller
             return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
           }
 
-          if ($prgm_data->product_id == 1 && $anchorData->is_fungible == 0) {
+          if ($prgm_data->product_id == 1) {
             $anchorPrgmLimit =  $this->getAnchorProgramLimit($appId, $program_id, $prgmOfferId);
 
             if($request->prgm_limit_amt > $anchorPrgmLimit['prgmBalLimitAmt']) {
               Session::flash('error', 'Program limit amount should not be greater than the balance limit.');
               return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             }
-            if ($request->prgm_limit_amt > $anchorPrgmLimit['anchorBalLimitAmt']) {
-              Session::flash('error', 'Program limit amount should not be greater than the anchor balance limit.');
-              return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+            if ($anchorData->is_fungible == 0) {
+                if ($request->prgm_limit_amt > $anchorPrgmLimit['anchorBalLimitAmt']) {
+                  Session::flash('error', 'Program limit amount should not be greater than the anchor balance limit.');
+                  return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+                }
             }
           }
 
