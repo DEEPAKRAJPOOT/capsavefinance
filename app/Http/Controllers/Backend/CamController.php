@@ -1947,7 +1947,6 @@ class CamController extends Controller
         $request['prgm_limit_amt'] = str_replace(',', '', $request->prgm_limit_amt);
         $limitData = $this->appRepo->getLimit($aplid);
         $anchorData = Anchor::getAnchorById($anchor_id);
-
         // enhancement check
         if ($limitData->product_id == 1) {
           $program_id = (int)$request->prgm_id;
