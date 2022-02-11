@@ -51,7 +51,7 @@ use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
 use App\Inv\Repositories\Models\Master\Permission;
-
+use App\Inv\Repositories\Models\Anchor;
 class AjaxController extends Controller {
 
     /**
@@ -3654,11 +3654,16 @@ if ($err) {
         $program_id = (int)$request->program_id;
         $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
         $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
+        $anchorData = Anchor::getAnchorById($anchor_id);
         $utilizedLimit = 0;
         if ($prgm_data && $prgm_data->copied_prgm_id) {            
             $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
         }
-        return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
+        if($anchorData->is_fungible == 0) {
+            return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
+        } else {
+            return json_encode(['prgm_limit' => $prgm_limit , 'prgm_data' => $prgm_data]);
+        }
     }
     
      public function getProgramSingleList(Request $request)
