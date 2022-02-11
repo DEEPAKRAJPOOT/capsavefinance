@@ -1028,8 +1028,8 @@ trait InvoiceTrait
        $res  = AppProgramOffer::where(['prgm_offer_id' => $inv_details['prgm_offer_id']])->first(); 
       if($res->margin!=null &&  $res->margin!=0 && $inv_details['is_margin_deduct']==0)
       {
-        $marginAmount  =  round($inv_details['invoice_approve_amount']*$res->margin/100);
-        return     $inv_details['invoice_approve_amount']-$marginAmount;
+        $marginAmount  =  round(($inv_details['invoice_approve_amount']*$res->margin/100), 2);
+        return     round(($inv_details['invoice_approve_amount'] - $marginAmount), 2);
       }
      else 
       {
