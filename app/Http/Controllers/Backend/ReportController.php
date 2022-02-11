@@ -19,10 +19,11 @@ use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Models\Anchor;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\LmsUser;
-use App\Inv\Repositories\Contracts\ReportInterface;
-use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Models\FinanceModel;
+use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\Lms\OverdueReportLog;
+use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 
 class ReportController extends Controller
 {
@@ -292,13 +293,18 @@ class ReportController extends Controller
 		 $total_rate =  ($lease->sgst_rate + $lease->cgst_rate + $lease->igst_rate);
 		 $total_tax =  ($lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
 		 $total_amount =  ($lease->base_amount + $lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
-		if(isset($lease->invoice_date) && isset($lease->due_date)) {
-			$dueDate = strtotime($lease->invoice_date); // or your date as well
-			$now = strtotime($lease->due_date);
-			$datediff = abs($dueDate - $now);
-			$days = (round($datediff / (60 * 60 * 24)) + 1) . ' days -From:' . date('d-M-Y', strtotime($lease->invoice_date)) . " to " . date('d-M-Y', strtotime($lease->due_date)) /* . ' @ ' . $OdandInterestRate . '%' */;                
-		} else {
-			$days = '---';
+		 $txn = Transactions::find($lease->transId);
+		$desc = $txn->transType->trans_name;
+		if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST')) {
+			$desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
+		} 
+
+		if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+			$dueDate = strtotime($txn->toIntDate); // or your date as well
+			$now = strtotime($txn->fromIntDate);
+			$datediff = ($dueDate - $now);
+			$OdandInterestRate = $lease->odi + $lease->interestRate;
+			$desc = $desc." ".round($datediff / (60 * 60 * 24)) . ' days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';
 		}		 
 		 $leaseArr[] = [
 			'State' => $lease->name, 
@@ -309,7 +315,7 @@ class ReportController extends Controller
 			'Cust. GSTN' => $lease->biz_gst_no, 
 			'SAC Code' => $sac_code, 
 			// 'Contract No' => $contract_no, 
-			'Interest Period' => $days, 
+			'Interest Period' => $desc, 
 			'Capsave Invoice No' => $lease->capinvoice, 
 			'Invoice No' => $lease->invoice, 
 			'Invoice Date' => $lease->invoice_date, 
