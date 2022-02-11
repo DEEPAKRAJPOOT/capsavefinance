@@ -1131,4 +1131,31 @@ trait InvoiceTrait
     return $marginApprAmt-$marginReypayAmt;
   }
 
+  public static function invoiceOverdueCheck($invoiceId = false) {
+        $lmsRepo = \App::make('App\Inv\Repositories\Contracts\LmsInterface');
+        $invoice = $lmsRepo->getInvoice($invoiceId);
+        $apps = $invoice->supplier->apps;
+        foreach ($apps as $app) {
+            foreach ($app->disbursed_invoices as $inv) {
+                $invc = $inv->toArray();
+                $invc['invoice_disbursed'] = $inv->invoice_disbursed->toArray();
+                if ((isset($invc['invoice_disbursed']['payment_due_date']))) {
+                    if (!is_null($invc['invoice_disbursed']['payment_due_date'])) {
+                        $calDay = $invc['invoice_disbursed']['grace_period'];
+                        $dueDate = strtotime($invc['invoice_disbursed']['payment_due_date']."+ $calDay Days");
+                        $dueDate = $dueDate ?? 0; // or your date as well
+                        $now = strtotime(date('Y-m-d'));
+                        $datediff = ($dueDate - $now);
+                        $days = round($datediff / (60 * 60 * 24));
+                        if ($days < 0 && $invc['is_repayment'] == 0) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
 }
