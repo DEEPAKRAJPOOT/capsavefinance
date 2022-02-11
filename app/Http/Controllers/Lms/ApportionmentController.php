@@ -1126,8 +1126,8 @@ class ApportionmentController extends Controller
         $invDisbs = InvoiceDisbursed::whereIn('invoice_disbursed_id',$invDisbId)->get();
         foreach($invDisbs as $invd){
             // Update Invoice Disbursed Accrual Detail
-            InvoiceDisbursedDetail::updateDailyInterestAccruedDetails($invd->invoice_disbursed_id);
-           //$flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
+            // InvoiceDisbursedDetail::updateDailyInterestAccruedDetails($invd->invoice_disbursed_id);
+            // $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
             
            $transOut = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('outstanding');
            $transAmt = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('amount');
