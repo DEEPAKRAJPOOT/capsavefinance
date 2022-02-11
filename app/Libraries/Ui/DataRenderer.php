@@ -6803,7 +6803,8 @@ class DataRenderer implements DataProviderInterface
                 $dueDate = strtotime($txn->toIntDate); // or your date as well
                 $now = strtotime($txn->fromIntDate);
                 $datediff = ($dueDate - $now);
-                $OdandInterestRate = $invoiceRec->odi + $invoiceRec->interestRate;
+                //+ $invoiceRec->interestRate
+                $OdandInterestRate = $invoiceRec->odi;
                 $desc = $desc." ".round($datediff / (60 * 60 * 24)) . ' days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';
             }
             return $desc;

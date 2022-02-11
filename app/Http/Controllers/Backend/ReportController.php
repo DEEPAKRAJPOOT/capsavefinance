@@ -303,7 +303,8 @@ class ReportController extends Controller
 			$dueDate = strtotime($txn->toIntDate); // or your date as well
 			$now = strtotime($txn->fromIntDate);
 			$datediff = ($dueDate - $now);
-			$OdandInterestRate = $lease->odi + $lease->interestRate;
+			//+ $lease->interestRate
+			$OdandInterestRate = $lease->odi;
 			$desc = $desc." ".round($datediff / (60 * 60 * 24)) . ' days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';
 		}		 
 		 $leaseArr[] = [
