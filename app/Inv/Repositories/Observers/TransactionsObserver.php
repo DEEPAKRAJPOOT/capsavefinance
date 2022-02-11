@@ -40,7 +40,7 @@ class TransactionsObserver
      */
     public function deleted(Transactions $transaction)
     {
-        $transaction->deleteAllChild();
+        //$transaction->deleteAllChild();
         $transaction->calculateOutstandingsDelete();
         InvoiceDisbursedDetail::deleteTransactionDetails($transaction);
         CustomerTransactionSOA::deleteTransactionSOADetails($transaction);
@@ -54,7 +54,7 @@ class TransactionsObserver
      */
     public function forceDeleted(Transactions $transaction)
     {
-        $transaction->deleteAllChild();
+        //$transaction->deleteAllChild();
         $transaction->calculateOutstandingsDelete();
         InvoiceDisbursedDetail::forceDeletedTransactionDetails($transaction);
         CustomerTransactionSOA::forceDeletedTransactionSOADetails($transaction);

@@ -1695,11 +1695,11 @@ class Transactions extends BaseModel {
 
 
     public function deleteAllChild(){
-        self::where('parent_trans_id',$this->transId)
+       /* self::where('parent_trans_id',$this->transId)
         ->orWhere('link_trans_id',$this->transId)
         ->orderBy('trans_id','DESC')
         ->get()
         ->each
-        ->delete();
+        ->delete();*/
     }
 }
