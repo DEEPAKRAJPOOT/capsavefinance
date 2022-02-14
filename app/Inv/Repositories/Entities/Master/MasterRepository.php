@@ -36,6 +36,7 @@ use App\Inv\Repositories\Models\Master\ChargeGST;
 use App\Inv\Repositories\Models\Master\Tds;
 use App\Inv\Repositories\Models\Master\Voucher;
 use App\Inv\Repositories\Models\Master\LocationType;
+use App\Inv\Repositories\Models\Master\Group;
 
 
 /**
@@ -919,6 +920,11 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         $status = LocationType::where('location_id', $locationId)->first()->update($attributes);
         return $status ?: false;
 
-    }    
+    } 
+    
+    public function getAllActiveGroup()
+    {
+        return Group::getAllActiveGroup();
+    }
 
 }

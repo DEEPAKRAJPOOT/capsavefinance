@@ -49,4 +49,15 @@ class Group extends BaseModel {
         'updated_by'
     ];
 
+    /**
+     * Get All Active group
+     *
+     * @return type
+     */
+    public static function getAllActiveGroup()
+    {
+       $res = self::select('*')->where('is_active', 1)->get();
+       return $res ? : false;
+    }
+
 }
