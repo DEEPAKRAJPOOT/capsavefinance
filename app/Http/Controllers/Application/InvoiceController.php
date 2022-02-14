@@ -155,6 +155,7 @@ class InvoiceController extends Controller {
         $appId = $attributes['app_id'] = $explode[1];
         $explode1 = explode(',', $attributes['program_id']);
         $attributes['program_id'] = $attributes['prgm_id'] = $explode1[0];
+        $prgmOfferId = $explode[2];
         $date = Carbon::now();
         $id = Auth::user()->user_id;
         $res = $this->invRepo->getSingleAnchorDataByAppId($appId);
@@ -178,7 +179,7 @@ class InvoiceController extends Controller {
         $invoice_approve_amount = str_replace(",", "", $attributes['invoice_approve_amount']);
         $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
 
-        $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($attributes['prgm_offer_id'], $invoice_amount);
+        $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($prgmOfferId, $invoice_amount);
         $limit =   InvoiceTrait::ProgramLimit($attributes);
         $sum   =   InvoiceTrait::invoiceApproveLimit($attributes);
         $remainAmount = $limit - $sum;

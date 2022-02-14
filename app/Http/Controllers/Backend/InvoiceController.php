@@ -595,6 +595,7 @@ class InvoiceController extends Controller {
         $explode1 = explode(',', $attributes['program_id']);
         $attributes['program_id'] = $attributes['prgm_id'] = $explode1[0];
         $appId = $attributes['app_id'] = $explode[1];
+        $prgmOfferId = $explode[2];
         $date = Carbon::now();
         $id = Auth::user()->user_id;
         $res = $this->invRepo->getSingleAnchorDataByAppId($appId);
@@ -608,8 +609,18 @@ class InvoiceController extends Controller {
         $invoice_approve_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
         $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($attributes['supplier_id'], $request->anchor_id);
         $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
+        $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($prgmOfferId, $invoice_amount);
 
-        if ($totalProductLimit > 0 && $invoice_amount > 0 && $invoice_amount > ($totalProductLimit - $invUtilizedAmt)) {
+        $limit =   InvoiceTrait::ProgramLimit($attributes);
+        $sum   =   InvoiceTrait::invoiceApproveLimit($attributes);
+        $remainAmount = $limit - $sum;
+
+        if ($marginAmt > $remainAmount) {
+            Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount.');
+            return back();
+        }
+
+        if ($totalProductLimit > 0 && $invoice_amount > 0 && $marginAmt > ($totalProductLimit - $invUtilizedAmt)) {
             Session::flash('error', 'Invoice amount should not be greater than the balance limit amount.');
             return back();
         }
@@ -643,18 +654,6 @@ class InvoiceController extends Controller {
         else
         {
             $is_adhoc=0;
-        }
-        $invoice_approve_amount = str_replace(",", "", $attributes['invoice_approve_amount']);
-        $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
-
-        $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($attributes['prgm_offer_id'], $invoice_amount);
-        $limit =   InvoiceTrait::ProgramLimit($attributes);
-        $sum   =   InvoiceTrait::invoiceApproveLimit($attributes);
-        $remainAmount = $limit - $sum;
-
-        if ($marginAmt > $remainAmount) {
-            Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount.');
-            return back();
         }
 
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
@@ -1702,24 +1701,18 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $invoice_amount = str_replace(',', '', $dataAttr['amount']);
                         $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($dataAttr['user_id'], $dataAttr['anchor_id']);
                         $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
-
-                        if ($totalProductLimit > 0 && $invoice_amount > 0 && $invoice_amount > ($totalProductLimit - $invUtilizedAmt)) {            
-                            $valiMsg = 'Invoice amount should not be greater than the balance limit amount for customer ' .$dataAttr['cusomer_id'];
-                            Session::flash('error', $valiMsg);
-                            return back();
-                        }
-
-                        $getInvDueDate =  InvoiceTrait::getInvoiceDueDate($dataAttr); /* get invoice due date*/
-
+                        
                         $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($dataAttr['prgm_offer_id'], $dataAttr['amount']);
                         $limit =   InvoiceTrait::ProgramLimit($dataAttr);
                         $sum   =   InvoiceTrait::invoiceApproveLimit($dataAttr);
                         $remainAmount = $limit - $sum;
-
+                        
                         if ($marginAmt > $remainAmount) {
                             Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount for customer '.$dataAttr['cusomer_id']);
                             return back();
                         }
+                        
+                        $getInvDueDate =  InvoiceTrait::getInvoiceDueDate($dataAttr); /* get invoice due date*/
 
                         if($getInvDueDate['status']==0)
                         {

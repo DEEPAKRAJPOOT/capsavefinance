@@ -2470,7 +2470,7 @@ class Helper extends PaypalHelper
         $query             = BizInvoice::where(['is_adhoc' => 0,'supplier_id' => $userId,'anchor_id' => $anchorId]);
         $marginReypayQuery = clone $query;
 
-        $marginApprAmt  += $query->whereIn('status_id', [8,9,10])->sum('invoice_approve_amount');
+        $marginApprAmt  += $query->whereIn('status_id', [8,9,10])->sum('invoice_margin_amount');
         $marginReypayAmt = $marginReypayQuery->whereIn('status_id', [8,9,10,12,13,15])->sum('principal_repayment_amt');
         return $marginApprAmt - $marginReypayAmt;
     }
@@ -2505,7 +2505,7 @@ class Helper extends PaypalHelper
                                 ->where('prgm_offer_id',$attr['prgm_offer_id'])
                                 ->whereIn('status_id', [8,9,10])                    
                                 ->where(['is_adhoc' => 0,'app_id' => $attr['app_id'],'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
-                                ->sum('invoice_approve_amount');
+                                ->sum('invoice_margin_amount');
             
         $marginReypayAmt =  BizInvoice::whereIn('program_id', $prgm_ids)
                                 ->where('prgm_offer_id',$attr['prgm_offer_id'])

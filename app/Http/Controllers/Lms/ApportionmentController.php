@@ -1129,9 +1129,9 @@ class ApportionmentController extends Controller
             // InvoiceDisbursedDetail::updateDailyInterestAccruedDetails($invd->invoice_disbursed_id);
             // $flag = $this->lmsRepo->getInvoiceSettleStatus($invd->invoice_id);
             
+           $prinRepayAmt = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','1')->whereIn('trans_type',[16])->sum('settled_outstanding');
            $transOut = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('outstanding');
            $transAmt = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','0')->whereIn('trans_type',[9,16,33])->whereNull('parent_trans_id')->sum('amount');
-           $prinRepayAmt = Transactions::where('invoice_disbursed_id',$invd->invoice_disbursed_id)->where('entry_type','1')->whereIn('trans_type',[16])->sum('settled_outstanding');
            
            $is_settled = false;
            
@@ -1146,14 +1146,12 @@ class ApportionmentController extends Controller
             if($is_settled){
                 $inv->is_repayment = 1;
                 $inv->status_id = 15;
-                $inv->repayment_amt = ($transAmt - $transOut);
-                $inv->principal_repayment_amt = $prinRepayAmt;
             }else{
                 $inv->is_repayment = 0;
                 $inv->status_id = 12;
-                $inv->repayment_amt = ($transAmt - $transOut);
-                $inv->principal_repayment_amt = $prinRepayAmt;
             }
+            $inv->repayment_amt = ($transAmt - $transOut);
+            $inv->principal_repayment_amt = $prinRepayAmt;
             $inv->save();
         }
     }
