@@ -306,6 +306,9 @@
                        {
                            localStorage.setItem('storageMsg', 'Invoice successfully saved');
                            location.reload(); 
+                       }else if(data.status == 0 && typeof data.message != 'undefined') {
+                            localStorage.setItem('storageMsg', data.message);
+                            location.reload(); 
                        }
                  }
          });  

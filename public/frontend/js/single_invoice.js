@@ -10,12 +10,28 @@
      var pro_limit = parseInt($("#pro_limit_hide").val());
      var invoice_approve_amount = $("#invoice_approve_amount").val();
      var invoice_approve_amount = invoice_approve_amount.replace(/\,/g,'');
+     var margin = $("#margin").val();
+
       if(invoice_approve_amount==0)
      {
          $("#invoice_approve_amount").val('');
          return false;
      }
-   /*   if(invoice_approve_amount  > pro_limit)
+
+      if (typeof margin != 'undefined' && margin > 0) {
+        margin = parseFloat(margin).toFixed(2);
+        var marginAmt = (invoice_approve_amount * margin) / 100;
+        invoice_approve_amount = invoice_approve_amount - marginAmt;
+
+        if(invoice_approve_amount  > pro_limit)
+        {
+          $("#msgProLimit").text('Invoice amount should not be greater than the remaining limit amount after excluding the margin amount.');
+          $("#submit").css("pointer-events","none");
+          return false;
+        }
+      }
+
+      if(invoice_approve_amount  > pro_limit)
      {
          $("#msgProLimit").text('Invoice amount should not be more than offered limit amount.');
          $("#submit").css("pointer-events","none");
@@ -26,8 +42,7 @@
          $("#msgProLimit").empty();
          $("#submit").css("pointer-events","auto");
          return true;
-     }  */
-     
+     }
 });
 
  //////////// check duplicate invoice ////////////////////
@@ -379,7 +394,7 @@
                         $("#pro_limit").html('Prgm. Limit : <span class="fa fa-inr"></span>  '+data.limit+'');
                         $("#pro_remain_limit").html('Remaining Prgm. Balance : <span class="fa fa-inr"></span>  '+data.remain_limit+'');
                         $("#pro_limit_hide").val(data.remain_limit);  
-                      
+                        $("#margin").val(data.margin);
                 }
         }); }); 
   

@@ -151,8 +151,10 @@ class InvoiceController extends Controller {
     public function saveInvoice(Request $request) {
         $attributes = $request->all();
         $explode = explode(',', $attributes['supplier_id']);
-        $attributes['supplier_id'] = $explode[0];
-        $appId = $explode[1];
+        $attributes['supplier_id'] = $attributes['user_id'] = $explode[0];
+        $appId = $attributes['app_id'] = $explode[1];
+        $explode1 = explode(',', $attributes['program_id']);
+        $attributes['program_id'] = $attributes['prgm_id'] = $explode1[0];
         $date = Carbon::now();
         $id = Auth::user()->user_id;
         $res = $this->invRepo->getSingleAnchorDataByAppId($appId);
@@ -173,10 +175,21 @@ class InvoiceController extends Controller {
         {
             $is_adhoc=0;
         }
-        $uploadData = Helpers::uploadAppFile($attributes, $appId);
-        $userFile = $this->docRepo->saveFile($uploadData);
         $invoice_approve_amount = str_replace(",", "", $attributes['invoice_approve_amount']);
         $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
+
+        $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($attributes['prgm_offer_id'], $invoice_amount);
+        $limit =   InvoiceTrait::ProgramLimit($attributes);
+        $sum   =   InvoiceTrait::invoiceApproveLimit($attributes);
+        $remainAmount = $limit - $sum;
+
+        if ($marginAmt > $remainAmount) {
+            Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount.');
+            return back();
+        }
+
+        $uploadData = Helpers::uploadAppFile($attributes, $appId);
+        $userFile = $this->docRepo->saveFile($uploadData);
         $arr = array('anchor_id' => $attributes['anchor_id'],
             'supplier_id' => $attributes['supplier_id'],
             'program_id' => $attributes['program_id'],
@@ -194,7 +207,9 @@ class InvoiceController extends Controller {
             'is_adhoc' => $is_adhoc,
             'file_id' => $userFile->file_id,
             'created_by' => $id,
-            'created_at' => $date);
+            'created_at' => $date,
+            'invoice_margin_amount' => $marginAmt
+        );
             $result = $this->invRepo->save($arr);
 
         if ($result) {
@@ -300,7 +315,7 @@ class InvoiceController extends Controller {
                         $dataAttr['amount']  =   $data[2]; 
                         $dataAttr['file_name']  =   $data[3];
                         $dataAttr['anchor_id']  =   $attributes['anchor_name'];
-                        $dataAttr['prgm_id']  =   $prgm_id;
+                        $dataAttr['prgm_id']  =  $dataAttr['program_id'] = $prgm_id;
                         $chlLmsCusto  = InvoiceTrait::getLimitProgram($dataAttr);
                         $getPrgm  = $this->application->getProgram($prgm_id);
                         if($chlLmsCusto['status']==0)
@@ -317,6 +332,17 @@ class InvoiceController extends Controller {
                         $dataAttr['prgm_offer_id']  =   $chlLmsCusto['prgm_offer_id'];
                         $dataAttr['approval']  =   $getPrgm;
                         $getInvDueDate =  InvoiceTrait::getInvoiceDueDate($dataAttr); /* get invoice due date*/
+
+                        $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($dataAttr['prgm_offer_id'], $dataAttr['amount']);
+                        $limit =   InvoiceTrait::ProgramLimit($dataAttr);
+                        $sum   =   InvoiceTrait::invoiceApproveLimit($dataAttr);
+                        $remainAmount = $limit - $sum;
+
+                        if ($marginAmt > $remainAmount) {
+                            Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount for invoice no. '.$dataAttr['inv_no']);
+                            return back();
+                        }
+
                         if($getInvDueDate['status']==0)
                         {
                            Session::flash('error', $getInvDueDate['message']);
@@ -374,6 +400,7 @@ class InvoiceController extends Controller {
                         $ins['file_id'] =  $FileId;
                         $ins['created_by'] =  $id;
                         $ins['created_at'] =  $date;
+                        $ins['invoice_margin_amount'] = $marginAmt;
                         $key++;
                       
                         $res =  $this->invRepo->saveInvoice($ins);

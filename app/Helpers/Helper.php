@@ -1617,41 +1617,21 @@ class Helper extends PaypalHelper
         }else{
             $prgm_ids = [$attr['prgm_id']];
         }
-        $is_enhance =Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();
+        $is_enhance = Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();
 
-        if($is_enhance==1)
+        if($is_enhance == 1)
         {
-            $marginApprAmt = 0;
-            $marginReypayAmt = 0;
-            $appData = Application::getAppData((int) $attr['app_id']);
-            if (in_array($appData->app_type, [2,3]) && $appData->parent_app_id) {
-                $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($attr['anchor_id'], $appData->parent_app_id);
-                if ($parentAppOffer) {
-                    $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $parentAppOffer->prgm_offer_id, $attr['anchor_id'], $appData->parent_app_id);    
-                    $marginApprAmt   +=   BizInvoice::whereIn('program_id', $prgm_ids)
-                    ->where('prgm_offer_id', $parentAppOffer->prgm_offer_id)
-                    ->whereIn('status_id',[8,9,10])
-                    ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
-                    ->where('app_id' , '<=', $appData->parent_app_id)
-                    ->sum('invoice_approve_amount');
-                    
-                    $marginReypayAmt +=   BizInvoice::whereIn('program_id', $prgm_ids)
-                    ->where('prgm_offer_id', $parentAppOffer->prgm_offer_id)
-                    ->whereIn('status_id',[8,9,10,12,13,15])
-                    ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
-                    ->where('app_id' , '<=', $appData->parent_app_id)
-                    ->sum('principal_repayment_amt');
-                }                
-            }
-            $marginApprAmt += InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],$attr['app_id']);
-            $marginApprAmt   +=   BizInvoice::whereIn('program_id', $prgm_ids)
+            $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],$attr['app_id']);
+            $marginApprAmt = $marginApprAmt ?? 0;
+            $marginApprAmt += BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
             ->whereIn('status_id',[8,9,10])
             ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
             ->where('app_id' , '<=', $attr['app_id'])
-            ->sum('invoice_approve_amount');
+            ->sum('invoice_margin_amount');
+            // ->sum('invoice_approve_amount');
 
-            $marginReypayAmt +=   BizInvoice::whereIn('program_id', $prgm_ids)
+            $marginReypayAmt =  BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
             ->whereIn('status_id',[8,9,10,12,13,15])
             ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
@@ -1666,9 +1646,10 @@ class Helper extends PaypalHelper
             $marginApprAmt = $marginApprAmt ?? 0;
             $marginApprAmt   +=  BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
-            ->whereIn('status_id', [8,9,10])                    
-            ->where(['is_adhoc' => 0,'app_id' => $attr['app_id'],'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
-            ->sum('invoice_approve_amount');
+            ->whereIn('status_id',[8,9,10])                    
+            ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+            ->sum('invoice_margin_amount');
+            // ->sum('invoice_approve_amount');
                 
             $marginReypayAmt =  BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
@@ -2545,5 +2526,15 @@ class Helper extends PaypalHelper
             }
         }
         return $totalProductLimit;
+    }
+    
+    public static function getOfferMarginAmtOfInvoiceAmt($prgmOfferId, $invoiceAmount)
+    {
+        $offer = AppProgramOffer::getAppPrgmOfferById($prgmOfferId);
+        $sum   = $invoiceAmount;
+        if ($offer && $offer->margin) {
+            $sum -= ($invoiceAmount * $offer->margin) / 100;
+        }
+        return $sum;
     }
 }

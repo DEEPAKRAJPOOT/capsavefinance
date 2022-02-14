@@ -52,6 +52,7 @@ use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
 use App\Inv\Repositories\Models\Master\Permission;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Models\AppProgramOffer;
 
 class AjaxController extends Controller {
 
@@ -3747,8 +3748,7 @@ if ($err) {
       
 
     public function getTenor(Request $request)
-    {
-       
+    {       
         $result  =  explode(",",$request['program_id']);
         $supplier_id  =  explode(",",$request['supplier_id']);
         $res['prgm_id']  = $result[0];
@@ -3763,8 +3763,11 @@ if ($err) {
         // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
         $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
         $is_adhoc   =  $this->invRepo->checkUserAdhoc($res);
-        $remainAmount = $limit - $sum;
-        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc]);
+        $remainAmount = round(($limit - $sum), 2);
+        $offer = AppProgramOffer::getAppPrgmOfferById($res['prgm_offer_id']);
+        $margin = $offer && $offer->margin ? $offer->margin : 0;
+
+        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc,'margin' => $margin]);
     }
     
     public function getAdhoc(Request $request)
@@ -3838,10 +3841,18 @@ if ($err) {
                 $attr =   $this->invRepo->getSingleBulkInvoice($val);
                 if($attr)
                 {
-                   $invoice_id = NULL;  
-                   if($attr->status==0)
-                   {
+                    $invoice_id = NULL;  
+                    if($attr->status==0)
+                    {
                         $userLimit = InvoiceTrait::ProgramLimit($attr);
+                        $attr['user_id'] = $attr['supplier_id'];
+                        $attr['prgm_id'] = $attr['program_id'];
+                        $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($attr['prgm_offer_id'], $attr['invoice_approve_amount']);
+                        $sum   =   InvoiceTrait::invoiceApproveLimit($attr);
+                        $remainAmount = $userLimit - $sum;
+                        if ($marginAmt > $remainAmount) {
+                            return response()->json(['status' => 0,'message' => 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount for invoice no. '.$attr['invoice_no']]); 
+                        }
                         $updateInvoice=  InvoiceTrait::updateBulkLimit($userLimit,$attr->invoice_approve_amount,$attr);  
                         $attr['comm_txt'] = $updateInvoice['comm_txt'];
                         $attr['status_id'] = $updateInvoice['status_id'];
@@ -3853,8 +3864,7 @@ if ($err) {
                             $inv_apprv_margin_amount = InvoiceTrait::invoiceMargin($res);
                             $is_margin_deduct =  1;  
                             $this->invRepo->updateFileId(['invoice_margin_amount'=>$inv_apprv_margin_amount,'is_margin_deduct' =>1],$res['invoice_id']);
-                        } 
-
+                        }
                    }
                   
                   $attribute['invoice_id'] = $invoice_id;
@@ -3873,7 +3883,7 @@ if ($err) {
                         $activity_desc = 'Upload Bulk Invoice, Final Submit (Manage Invoice)';
                         $arrActivity['app_id'] = null;
                         $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($res), $arrActivity);
-                    } 
+                    }
 
                      return response()->json(['status' => 1,'message' => 'Invoice successfully saved']); 
 

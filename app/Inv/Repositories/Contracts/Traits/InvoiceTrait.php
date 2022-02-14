@@ -408,7 +408,7 @@ trait InvoiceTrait
         if ($childAppData)
           $appId = $childAppData->app_id;
       }
-      return   AppProgramOffer::whereHas('productHas')->where(['app_id' => $appId,'anchor_id' => $getDetails['anchor_id'],'prgm_id'=> $getDetails['program_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');        
+      return   AppProgramOffer::whereHas('productHas')->where(['app_id' => $appId,'anchor_id' => $getDetails['anchor_id'],'prgm_id'=> $getDetails['program_id'], 'is_active' => 1, 'is_approve' => 1, 'status' => 1])->sum('prgm_limit_amt');
    }
      /* check the user app limit  */
     /* Use  app_limit table */
@@ -810,12 +810,15 @@ trait InvoiceTrait
             }   
             if($limit  >= $sum)
             {
-                $remain_amount =  $limit-$sum;
-                if($remain_amount >= $inv_details['invoice_approve_amount'])
+                $remain_amount =  $limit - $sum;
+                $invoice = BizInvoice::find($attr['invoice_id']);
+                $marginAmt = Helper::getOfferMarginAmtOfInvoiceAmt($invoice->prgm_offer_id, $inv_details['invoice_approve_amount']);
+                
+                if($remain_amount >= $marginAmt)
                 {
                   InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
-                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['invoice_margin_amount'=>$inv_apprv_amount,'is_margin_deduct' =>1,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
-                  return 1;        
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['invoice_margin_amount'=> $inv_apprv_amount,'is_margin_deduct' =>1,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 1;         
                 }
                 else 
                 {
@@ -1077,15 +1080,15 @@ trait InvoiceTrait
    public static function invoiceMargin($inv_details)
    {
        $res  = AppProgramOffer::where(['prgm_offer_id' => $inv_details['prgm_offer_id']])->first(); 
-      if($res->margin!=null &&  $res->margin!=0 && $inv_details['is_margin_deduct']==0)
-      {
-        $marginAmount  =  round($inv_details['invoice_approve_amount']*$res->margin/100);
-        return     $inv_details['invoice_approve_amount']-$marginAmount;
-      }
-     else 
-      {
-         return  $inv_details['invoice_approve_amount']; 
-      }
+      // if($res->margin!=null &&  $res->margin!=0 && $inv_details['is_margin_deduct']==0)
+      // {
+        $marginAmount  =  round(($inv_details['invoice_approve_amount'] * $res->margin / 100), 2);
+        return     round(($inv_details['invoice_approve_amount'] - $marginAmount), 2);
+      // }
+    //  else 
+    //   {
+    //      return  $inv_details['invoice_approve_amount']; 
+    //   }
    }
    
     public static function isLimitExceed($invoice_id) {

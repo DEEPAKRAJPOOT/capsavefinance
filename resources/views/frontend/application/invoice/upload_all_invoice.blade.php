@@ -133,6 +133,7 @@
                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
                            <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
                             <input type="hidden" value="" id="tenor" name="tenor">
+                            <input type="hidden" value="" id="margin" name="margin">
                              <input type="hidden" value="" id="exception" name="exception">
                              <input type="hidden" value="" id="tenor_old_invoice" name="tenor_old_invoice"> 
                              <input type="reset" id="cancel" class="btn btn-secondary btn-sm" value="Cancel">
