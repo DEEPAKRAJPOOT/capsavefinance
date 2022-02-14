@@ -1,7 +1,7 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
 
-  <form method="POST" style="width:100%;" action="{{route('update_limit_offer')}}" target="_top" onsubmit="return checkSupplyValidations()">
+  <form method="POST" style="width:100%;" action="{{route('update_limit_offer')}}" target="_top" onsubmit="return checkSupplyValidations(this)">
     @csrf
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
@@ -20,7 +20,6 @@
 
     @php
     $currentOfferAmount = $offerData->prgm_limit_amt ?? 0;
-    $limitBalance = (int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount;
     @endphp
 
     <div class="col-md-6">
@@ -48,7 +47,8 @@
     <div class="col-md-6">
       <div class="form-group">
         <label for="txtPassword">Select Program <span style="color: red;"> *</span></label> 
-            <select name="prgm_id" id="program_id" class="form-control">
+        <span class="float-right text-success d-none"><small>Anchor Balance: <i class="fa fa-inr"></i><span id="anchorBalLimitAmt"></span></small></span>    
+        <select name="prgm_id" id="program_id" class="form-control">
             </select>
         </div>
     </div>
@@ -57,7 +57,7 @@
       <div class="form-group INR">
         <label for="txtPassword">Program Limit <span style="color: red;"> *</span></label>
         <small><span class="text-success limit"></span></small>
-        <span class="float-right text-success"><small>Balance: <i class="fa fa-inr"></i>{{($limitBalance<0)? 0: $limitBalance}}</small></span>
+        <span class="float-right text-success d-none"><small>Balance: <i class="fa fa-inr"></i><span id="prgmBalLimitAmt"></span></small></span>
         <a href="javascript:void(0);" class="verify-owner-no"><i class="fa fa-inr"></i></a>
         <input type="text" name="prgm_limit_amt" class="form-control number_format" value="{{isset($offerData->prgm_limit_amt)? number_format($offerData->prgm_limit_amt): ''}}" placeholder="Program Limit" maxlength="15">
       </div>
@@ -919,13 +919,14 @@
 @endsection
 
 @section('jscript')
-<script>
+<script>    
     var bizOwners = {!! json_encode($bizOwners) !!};
     var anchors = {!! json_encode($anchors) !!};
     var appType = {{ config('common.app_type')[$appType] }};
-    var offerData = '{{ isset($offerData->prgm_offer_id) ? $offerData->prgm_offer_id : "" }}'
+    var offerData = '{{ isset($offerData->prgm_offer_id) ? $offerData->prgm_offer_id : "" }}';
+    var currentAppType = '{{ $appType }}';
+    var invUtilizedAmt = '{{ $invUtilizedAmt }}';
     
-
     function anchorDropdown(anchors){
         let $html='<option value="">Select Debtor</option>';
         $.each(anchors,function(i,anchor){
@@ -951,7 +952,7 @@
     var anchorPrgms = {!! json_encode($anchorPrgms) !!};
     var anchor_id = {{$offerData->anchor_id ?? 0}};
     var program_id = {{$offerData->prgm_id ?? 0}};
-    var limit_balance = {{$limitBalance}};
+    var limit_balance = 0;
     var max_prgm_limit=0;
     
     $(document).ready(function(){
@@ -1022,12 +1023,12 @@
             setLimit('input[name=interest_rate]', '('+program_min_rate+'%-'+program_max_rate+'%)');
         }
         let token = "{{ csrf_token() }}";            
-
+        var appId = $("input[name='app_id']").val();
         $('.isloader').show();
         $.ajax({
             'url':messages.get_program_balance_limit,
             'type':"POST",
-            'data':{"_token" : messages.token, "program_id" : program_id},
+            'data':{"_token" : messages.token, "program_id" : program_id, "app_id": appId, "offer_id":offerData},
             error:function (xhr, status, errorThrown) {
                 $('.isloader').hide();
                 alert(errorThrown);
@@ -1055,20 +1056,28 @@
                         $('input[name="document_fee"]').val(prgm_data.document_fee_amt);
                     }
                 }*/
+                
+                $("#anchorBalLimitAmt").text(res.anchorBalLimitAmt);
+                $("#prgmBalLimitAmt").text(res.prgmBalLimitAmt);
+                limit_balance = res.prgmBalLimitAmt; 
+                
+                $("#anchorBalLimitAmt").parent().parent().removeClass('d-none');
+                $("#prgmBalLimitAmt").parent().parent().removeClass('d-none');
                 prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;                  
                 $('.isloader').hide();
             }
         })
     });
 
-  function checkSupplyValidations(){
+  function checkSupplyValidations(event){
     var limitObj={
         'prgm_min_rate':$('#program_id option:selected').data('min_rate'),
         'prgm_max_rate':$('#program_id option:selected').data('max_rate'),
         'prgm_min_limit':$('#program_id option:selected').data('min_limit'),
         'prgm_max_limit':$('#program_id option:selected').data('max_limit'),
-        'limit_balance_amt':"{{(int)$limitData->limit_amt - (int)$subTotalAmount + (int)$currentOfferAmount}}",
+        'limit_balance_amt':limit_balance,
         'prgm_balance_limit':$('#program_id option:selected').data('sub_limit') - prgm_consumed_limit,
+        'anchor_bal_limit_amt': $("#anchorBalLimitAmt").text()
     };
 
     unsetError('select[name=anchor_id]');
@@ -1126,12 +1135,18 @@
         if((parseInt(prgm_limit_amt.replace(/,/g, '')) < parseInt(limitObj.prgm_min_limit)) ||(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_max_limit))){
             setError('input[name=prgm_limit_amt]', 'Limit amount should be ('+parseInt(limitObj.prgm_min_limit)+'-'+parseInt(limitObj.prgm_max_limit)+') program range');
             flag = false;
-        }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_balance_limit)){
+        }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.limit_balance_amt)){
             //setError('input[name=prgm_limit_amt]', 'Limit amount should be less than ('+limitObj.prgm_balance_limit+') program balance limit');
-            setError('input[name=prgm_limit_amt]', 'Limit amount should be less than program balance limit. (Remaining Program Balance: '+limitObj.prgm_balance_limit+')');
+            setError('input[name=prgm_limit_amt]', 'Limit amount should be less than program balance limit. (Remaining Program Balance: '+limitObj.limit_balance_amt+')');
             flag = false;
         }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limit_balance)){
             setError('input[name=prgm_limit_amt]', 'Limit amount should not greater than balance limit');
+            flag = false;
+        }else if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.anchor_bal_limit_amt)){
+            setError('input[name=prgm_limit_amt]', 'Limit amount should not greater than anchor balance limit');
+            flag = false;
+        }else if(currentAppType == 3 && parseInt(prgm_limit_amt.replace(/,/g, '')) <= parseInt(invUtilizedAmt)){
+            setError('input[name=prgm_limit_amt]', 'Limit amount can\'t be less than or equal to the previous utilized limit.');
             flag = false;
         }else{
             //TAKE REST limit_balance
@@ -1247,8 +1262,10 @@
     }*/
 
     if(flag){
+        $(event).find("button[type='submit']").prop('disabled', true);
         return true;
     }else{
+        $(event).find("button[type='submit']").prop('disabled', false);
         return false;
     }
   }
@@ -1553,16 +1570,16 @@
   function fillChargesBlock(program){
     let html='';
     $.each(program.program_charges, function(i,program_charge){
-//        if(program_charge.charge_name.chrg_tiger_id == 1){
-//            html += '<div class="col-md-6">'+
-//                '<div class="form-group">'+
-//                    '<label for="txtPassword">'+program_charge.charge_name.chrg_name+((program_charge.charge_name.chrg_calculation_type == 2)? ' (%)':' (&#8377;)')+'</label>'+
-//                    '<input type="text" name="charge_names['+program_charge.charge_id+'#'+program_charge.charge_name.chrg_calculation_type+']" value="'+program_charge.chrg_calculation_amt+'" data-type="'+program_charge.charge_name.chrg_calculation_type+'" class="form-control" data-name="'+program_charge.charge_name.chrg_name+'" placeholder="'+program_charge.charge_name.chrg_name+'" maxlength="6">'+
-//                '</div>'+
-//            '</div>';
-//            //value="'+program_charge.chrg_calculation_amt+'"
-//        }
-        console.log(program_charge, appType);
+            //if(program_charge.charge_name.chrg_tiger_id == 1){
+            //    html += '<div class="col-md-6">'+
+            //        '<div class="form-group">'+
+            //            '<label for="txtPassword">'+program_charge.charge_name.chrg_name+((program_charge.charge_name.chrg_calculation_type == 2)? ' (%)':' (&#8377;)')+'</label>'+
+            //            '<input type="text" name="charge_names['+program_charge.charge_id+'#'+program_charge.charge_name.chrg_calculation_type+']" value="'+program_charge.chrg_calculation_amt+'" data-type="'+program_charge.charge_name.chrg_calculation_type+'" class="form-control" data-name="'+program_charge.charge_name.chrg_name+'" placeholder="'+program_charge.charge_name.chrg_name+'" maxlength="6">'+
+            //        '</div>'+
+            //    '</div>';
+            //    //value="'+program_charge.chrg_calculation_amt+'"
+            //}
+        //console.log(program_charge, appType);
         var mst_chrg_tiger_id = program_charge.charge_name.chrg_tiger_id;
         //charges triggered on limit assignment will always popoulated
         if(mst_chrg_tiger_id == appType || mst_chrg_tiger_id == 1){

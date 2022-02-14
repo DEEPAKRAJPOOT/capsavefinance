@@ -96,6 +96,11 @@ class Application extends BaseModel
      /**
      * join with app limit table to get limit amount for application
      */
+    public function prgmOffer()
+    {
+        return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id');
+    }
+
     public function appPrgmOffer()
     {
         return $this->hasOne('App\Inv\Repositories\Models\AppProgramOffer', 'app_id')->where('is_active', 1);
@@ -143,7 +148,7 @@ class Application extends BaseModel
         $curUserId = \Auth::user()->user_id;
         $userArr = Helpers::getChildUsersWithParent($curUserId);
         $query = self::select('app.user_id','app.app_id', 'app.app_code' ,'app.curr_status_id', 'biz.biz_entity_name', 'biz.biz_id', 
-                'app.status','app_assign.to_id', 'users.anchor_id', 'users.is_buyer as user_type', 'app.renewal_status',
+                'app.status','app_assign.to_id', 'users.anchor_id', 'users.is_buyer as user_type', 'app.renewal_status', 'app.app_type',
                 DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
                 DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
                 DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),                
@@ -974,9 +979,11 @@ class Application extends BaseModel
         return $this->belongsTo('App\Inv\Repositories\Models\AppStatusLog', 'app_id', 'app_id')->where('status_id', '50');
     }
 
-
-
     public function bizInvoice() {
         return $this->hasMany('App\Inv\Repositories\Models\BizInvoice', 'app_id', 'app_id');
+    }
+
+    public static function getAppByParentAppId($appId) {
+        return self::where('parent_app_id', $appId)->first();
     }
 }

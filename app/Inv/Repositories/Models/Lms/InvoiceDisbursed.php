@@ -323,4 +323,13 @@ class InvoiceDisbursed extends BaseModel {
 	{
 		return $this->hasMany('App\Inv\Repositories\Models\Lms\TransactionsRunning','invoice_disbursed_id','invoice_disbursed_id');
 	}
+
+	public static function getInvoiceDisbursedAmountForSupplier($supplier_id, $anchor_id, $is_adhoc = false){
+		return  self::whereHas('invoice', function ($q) use ($supplier_id, $anchor_id){
+					$q->where('supplier_id', $supplier_id)
+					  ->where('is_adhoc', 0)
+					  ->where('anchor_id', $anchor_id)
+					  ->whereIn('status_id', [12,13,15]);
+				})->sum('disburse_amt');
+	}
 }

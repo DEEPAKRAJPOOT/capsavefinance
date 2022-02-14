@@ -255,7 +255,10 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'biz_entity_name',
                     function ($app) {                        
-                        $panInfo = $app->pan_no && !empty($app->pan_no) ? '<br><strong>PAN:</strong> ' . $app->pan_no : ''; 
+                        $panInfo = $app->pan_no && !empty($app->pan_no) ? '<br><strong>PAN:</strong> ' . $app->pan_no : '';
+                        if ($app->app_type != 0) {
+                            $panInfo .= '</br><small class="aprveAppListBtn">('. \Helpers::getAppTypeName($app->app_type) .')</small>';
+                        }
                         return $app->biz_entity_name ? $app->biz_entity_name . $panInfo : '';
                 })
                 ->addColumn(
@@ -3650,10 +3653,11 @@ class DataRenderer implements DataProviderInterface
                         }
                          * 
                          */
-                        $appPrgmLimit = AppProgramLimit::getUtilizeLimit($customer->app_id, 1);                        
-                        foreach ($appPrgmLimit as $value) {
-                            $this->totalCunsumeLimit += $value->utilize_limit;
-                        }
+                        // $appPrgmLimit = AppProgramLimit::getUtilizeLimit($customer->app_id, 1);                        
+                        // foreach ($appPrgmLimit as $value) {
+                        //     $this->totalCunsumeLimit += $value->utilize_limit;
+                        // }
+                        $this->totalCunsumeLimit += \Helpers::anchorSupplierUtilizedLimitByInvoice($customer->user_id, $customer->user->anchor_id);
                                                 
                     return '<label><i class="fa fa-inr">'.number_format($this->totalCunsumeLimit).'</i></label>';
                 })

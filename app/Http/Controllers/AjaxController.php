@@ -51,6 +51,7 @@ use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
 use App\Inv\Repositories\Models\Master\Permission;
+use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 
 class AjaxController extends Controller {
 
@@ -65,6 +66,7 @@ class AjaxController extends Controller {
     protected $invRepo;
     protected $docRepo;
     protected $lms_repo;
+    use ApplicationTrait;
     use LmsTrait;
     use ActivityLogTrait;
 
@@ -3651,14 +3653,11 @@ if ($err) {
      */
     public function getProgramBalanceLimit(Request $request)
     {
+        $appId = (int)$request->app_id;
         $program_id = (int)$request->program_id;
-        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
-        $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
-        $utilizedLimit = 0;
-        if ($prgm_data && $prgm_data->copied_prgm_id) {            
-            $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
-        }
-        return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
+        $offer_id = (int)$request->offer_id;
+        $data = $this->getAnchorProgramLimit($appId, $program_id, $offer_id);
+        return json_encode($data);
     }
     
      public function getProgramSingleList(Request $request)
@@ -3761,9 +3760,10 @@ if ($err) {
         $res['program_id']  = $res['prgm_id'];
         $getTenor   =  $this->invRepo->getTenor($res);
         $limit =   InvoiceTrait::ProgramLimit($res);
-        $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
         $is_adhoc   =  $this->invRepo->checkUserAdhoc($res);
-        $remainAmount = $limit-$sum;
+        $remainAmount = $limit - $sum;
         return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc]);
     }
     
@@ -3791,7 +3791,8 @@ if ($err) {
        else
        {
         $limit =   InvoiceTrait::ProgramLimit($res);
-        $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
         $remainAmount = $limit-$sum;
         $is_adhoc = 0;
        }
@@ -3983,7 +3984,6 @@ if ($err) {
             $arrActivity['app_id'] = null;
             $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
         } 
-       
       return \response()->json(['status' => 1,'msg' => substr($result,0,-1)]); 
        
    }  

@@ -15,9 +15,9 @@
          $("#invoice_approve_amount").val('');
          return false;
      }
-    /*  if(invoice_approve_amount  > pro_limit)
+     if(invoice_approve_amount  > pro_limit)
      {
-         $("#msgProLimit").text('Invoice amount should not be more than offered limit amount.');
+         $("#msgProLimit").text('Invoice amount should not be more than balance limit amount.');
          $("#submit").css("pointer-events","none");
          return false;
      }
@@ -26,8 +26,7 @@
          $("#msgProLimit").empty();
          $("#submit").css("pointer-events","auto");
          return true;
-     } */
-     
+     }     
 });
 
  //////////// check duplicate invoice ////////////////////

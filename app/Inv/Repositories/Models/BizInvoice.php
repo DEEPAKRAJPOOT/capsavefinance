@@ -530,7 +530,12 @@ class BizInvoice extends BaseModel
     public static function getInvoiceUtilizedAmount($attr)
     {
         return  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id'],'app_id' =>$attr['app_id']])->sum('invoice_approve_amount');       
-    }    
+    }
+
+    public static function getSettledInvoiceAmount($attr)
+    {
+        return  BizInvoice::whereIn('status_id',[13,15])->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id'],'program_id' => $attr['prgm_id'],'app_id' => $attr['app_id']])->sum('invoice_approve_amount');       
+    }
     
     public static function getAnchorInvoiceDataDetail($anchorId = null) 
     {  

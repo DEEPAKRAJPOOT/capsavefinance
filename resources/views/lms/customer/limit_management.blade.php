@@ -124,31 +124,31 @@
                         @foreach($limit->offer as $val) 
                         @php
                         $val['user_id']  = $uLimit->app->user_id;
-                        $inv_limit =  $obj->invoiceAnchorLimitApprove($val);
+                        $inv_limit =  $obj->anchorSupplierPrgmUtilizedLimitByInvoice($val);
                         $getAdhoc   = $obj->getAdhoc($val);
                         @endphp  
                         @if ($val->status !=2 )
                         <div class="row" style="margin-top:20px;">
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Anchor </label>
-                                <div class="label-bottom">{{ $val->anchor->comp_name}}</div>
+                                <div class="label-bottom">{{ $val->anchor->comp_name ?? ''}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Anchor sub program </label>
-                                <div class="label-bottom">{{ $val->program->prgm_name}}</div>
+                                <div class="label-bottom">{{ $val->program->prgm_name ?? ''}}</div>
                             </div>
 
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Program Limit </label>
-                                <div class="label-bottom">{{number_format($val->prgm_limit_amt)}}</div>
+                                <div class="label-bottom">{{number_format($val->prgm_limit_amt, 2)}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Utilize Limit	 </label>
-                                <div class="label-bottom">{{number_format($inv_limit)}}</div>
+                                <div class="label-bottom">{{number_format($inv_limit, 2)}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Available Limit </label>
-                                <div class="label-bottom">{{number_format($val->prgm_limit_amt-$inv_limit)}}</div>
+                                <div class="label-bottom">{{number_format(($val->prgm_limit_amt-$inv_limit), 2)}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                               
