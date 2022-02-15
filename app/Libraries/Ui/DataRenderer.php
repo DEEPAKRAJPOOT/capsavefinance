@@ -3646,7 +3646,7 @@ class DataRenderer implements DataProviderInterface
                         foreach ($appPrgmLimit as $value) {
                             $this->totalLimit += $value->product_limit;
                         }
-                    return '<label><i class="fa fa-inr">'.number_format($this->totalLimit).'</i></label>';
+                    return '<label><i class="fa fa-inr">'.number_format($this->totalLimit, 2).'</i></label>';
                 })
                 ->editColumn(
                     'consume_limit',
@@ -3666,13 +3666,13 @@ class DataRenderer implements DataProviderInterface
                         // }
                         $this->totalCunsumeLimit += \Helpers::anchorSupplierUtilizedLimitByInvoice($customer->user_id, $customer->user->anchor_id);
                                                 
-                    return '<label><i class="fa fa-inr">'.number_format($this->totalCunsumeLimit).'</i></label>';
+                    return '<label><i class="fa fa-inr">'.number_format($this->totalCunsumeLimit, 2).'</i></label>';
                 })
                 ->editColumn(
                     'available_limit',
                     function ($customer) {
                     
-                    return '<label><i class="fa fa-inr">'.number_format($this->totalLimit - $this->totalCunsumeLimit).'</i></label>';
+                    return '<label><i class="fa fa-inr">'.number_format(($this->totalLimit - $this->totalCunsumeLimit), 2).'</i></label>';
                 })
                 ->editColumn(
                     'anchor',
