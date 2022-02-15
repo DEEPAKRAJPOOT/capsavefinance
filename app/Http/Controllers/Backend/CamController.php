@@ -389,6 +389,7 @@ class CamController extends Controller
       $bizId = $request->get('biz_id');
       $leaseOfferData = $facilityTypeList = array();
       $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
+      $termLoanOfferData = AppProgramOffer::getAllOffers($appId, '2');
       $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
       $arrStaticData = array();
       $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
@@ -431,6 +432,7 @@ class CamController extends Controller
         'bizId' => $bizId, 
         'appId'=> $appId,
         'leaseOfferData'=> $leaseOfferData,
+        'termLoanOfferData'=> $termLoanOfferData,
         'reviewerSummaryData'=> $reviewerSummaryData,
         'offerPTPQ' => $offerPTPQ,
         'preCondArr' => $preCondArr,
@@ -2295,7 +2297,7 @@ class CamController extends Controller
 
     public function viewCamReport(Request $request){
       try{
-        $viewData = $this->getCamReportData($request);        
+        $viewData = $this->getCamReportData($request);
         return view('backend.cam.viewCamReport')->with($viewData);
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

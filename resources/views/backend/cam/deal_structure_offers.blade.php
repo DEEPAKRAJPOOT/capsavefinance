@@ -356,3 +356,125 @@
 <!----supply chain  offer ---->
 </div>
 @endif
+
+@if(isset($termLoanOfferData) && count($termLoanOfferData))
+<div class="data  col-md-12 mt-4">
+      <table class="table" cellpadding="0" cellspacing="0">
+          <tr>
+              <td style="color:#fff;font-size: 15px;font-weight: bold;" bgcolor="#8a8989">Term Loan Deal Structure </td>
+          </tr>
+       </table>
+      @forelse($termLoanOfferData as $key => $termLoanOffer)
+      @if ($termLoanOffer->status != 2) 
+         <table id="invoice_history" class="table   no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
+            <thead>
+               <tr role="row">
+                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="20%">Criteria</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending"  width="30%">Particulars</th>
+                  <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="20%">Criteria</th>
+                  <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending"  width="30%">Particulars</th>
+               </tr>
+
+            </thead>
+            <tbody>
+               <tr role="row" class="odd">
+                  <td class=""><b>Facility Type</b></td>
+                  <td class="">{{isset($termLoanOffer->facility_type_id) ?  $facilityTypeList[$termLoanOffer->facility_type_id]  : ''}}</td>
+                  <td class=""><b>Asset Type: </b></td>
+                  <td class="">{{ $termLoanOffer->asset->asset_type }}</td>
+               </tr>
+               <tr role="row" class="odd">
+                  <td class=""><b>Apply Loan Amount</b></td>
+                  <td class=""> {!! isset($termLoanOffer->prgm_limit_amt) ? ' INR '.number_format($termLoanOffer->prgm_limit_amt)  : '0' !!} </td>
+                  <td class=""><b>Tenor (Months)</b></td>
+                  <td class="">{{isset($termLoanOffer->tenor) ? $termLoanOffer->tenor : ''}}</td>
+               </tr>
+               <tr role="row" class="odd">
+                  <td class=""><b>Frequency Type</b></td>
+                  <td class="">{{ $termLoanOffer->rental_frequency_type == 1 ? 'Advance' : (($termLoanOffer->rental_frequency_type == 2) ? 'Arrears' : '')  }}</td>              
+                  <td class="" valign="top"><b>Payment Frequency</b></td>
+                  <td class="" valign="top">
+                    {{ (($termLoanOffer->rental_frequency == 1) ? 'Yearly' : (($termLoanOffer->rental_frequency == 2) ? 'Bi-Yearly' : (($termLoanOffer->rental_frequency == 3) ? 'Quaterly' : 'Monthly')))}}
+                  </td>
+               </tr>
+               <tr role="row" class="odd">
+                  <td class=""><b>Processing Fee (%)</b></td>
+                  <td class="">{{isset($termLoanOffer->processing_fee) ? $termLoanOffer->processing_fee.' %': ''}}</td>
+                  <td class=""><b>Interest Rate (%)</b></td>
+                  <td class="">{{isset($termLoanOffer->interest_rate) ? $termLoanOffer->interest_rate.' %': ''}}</td>                  
+               </tr>
+              <tr role="row" class="odd">
+                  <td colspan="4">
+                      <table width="100%">
+                          <tr style="background-color: #d2d4de;">
+                              <td rowspan="3" style="background-color: #fff;" width="10%"><b>Asset Insurance</b></td>
+                              <td rowspan="3" style="background-color: #fff;" width="10%">
+                                <b>{{ isset($termLoanOffer->asset_insurance) ? 'Applicable' : 'Not Applicable' }}</b>
+                              </td>
+                              <td width="25%"><b>Asset Name</b></td>
+                              <td width="25%"><b>Timelines For Insurance</b></td>
+                              <td width="30%"><b>Asset Comment</b></td>
+                          </tr>
+                          <tr>
+                              <td>{{ $termLoanOffer->asset_name ?? 'NA'}}</td>
+                              <td>{{ $termLoanOffer->timelines_for_insurance ?? 'NA'}}</td>
+                              <td>{{ $termLoanOffer->asset_comment ?? 'NA'}}</td>
+                          </tr>
+                      </table>
+                  </td>
+              </tr>
+               @if($termLoanOffer->offerPg->count() > 0)
+              <tr role="row" class="odd">
+                  <td colspan="4">
+                      <table width="100%">
+                          <tr style="background-color: #d2d4de;">
+                              <td rowspan="3" style="background-color: #fff;" width="10%"><b>Personal Guarantee</b></td>
+                              <td width="15%"><b>Guarantor</b></td>
+                              <td width="15%"><b>Time for security</b></td>
+                              <td width="10%"><b>Residential Address</b></td>
+                              <td width="25%"><b>Net worth as per ITR/CA Cert</b></td>
+                              <td width="25%"><b>Comments if any</b></td>
+                          </tr>
+                          @foreach($termLoanOffer->offerPg as $key => $opg)
+                          <tr>
+                              <td>{{($opg->owner)? $opg->owner->first_name: 'NA'}}</td>
+                              <td>{{($opg->pg_time_for_perfecting_security_id != null)? config('common.pg_time_for_perfecting_security_id')[$opg->pg_time_for_perfecting_security_id]: 'NA'}}</td>
+                              <td>{{$opg->pg_residential_address}}</td>
+                              <td>{{$opg->pg_net_worth}}</td>
+                              <td>{{$opg->pg_comments}}</td>
+                          </tr>
+                          @endforeach
+                      </table>
+                  </td>
+              </tr>
+              @endif
+               <tr role="row" class="odd">
+                    <td class=""><b>Additional Security</b></td>
+                    <td class="">
+                        @php
+                        $add_sec_arr = '';
+                        if(isset($termLoanOffer->addl_security) && $termLoanOffer->addl_security !=''){
+                            $addl_sec_arr = explode(',', $termLoanOffer->addl_security);
+                            foreach($addl_sec_arr as $k=>$v){
+                                $add_sec_arr .= config('common.addl_security')[$v].', ';
+                            }
+                        }
+                        if($termLoanOffer->comment != '' && $termLoanOffer->addl_security !=''){
+                            $add_sec_arr .= ' <b>Comment</b>:  '.$termLoanOffer->comment;
+                        }else{
+                            $add_sec_arr .= $termLoanOffer->comment;
+                        }
+                        @endphp 
+                        {!! trim($add_sec_arr,', ') !!}
+                    </td>
+               </tr>
+            </tbody>
+         </table>
+      @endif
+      @empty
+         <div class="pl-4 pr-4 pb-4 pt-2">
+             <p>No Offer Found</p>
+         </div>
+   @endforelse
+</div>
+@endif
