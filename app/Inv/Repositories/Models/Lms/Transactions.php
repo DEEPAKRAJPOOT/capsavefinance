@@ -860,13 +860,13 @@ class Transactions extends BaseModel {
             $q->where('supplier_id',$data['user_id'])->where('is_repayment','1');
         })->whereNotNull('invoice_disbursed_id')->pluck('invoice_disbursed_id')->toArray();
 
-        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id')->where('entry_type',0)->where('is_transaction', true)
-        ->whereNotIn('invoice_disbursed_id', $SettledInvoiceDisbursedId);
+        $query =  self::whereNull('parent_trans_id')->whereNull('payment_id')->where('entry_type',0)->where('is_transaction', true);
 
         $invoiceDisbursed = $data['invoiceDisbursed']??null;
         if(isset($invoiceDisbursed)){
-            $query->where(function($query2) use($invoiceDisbursed){
-                $query2->whereHas('invoiceDisbursed',function($query3) use ($invoiceDisbursed) {
+            $query->where(function($query2) use($invoiceDisbursed, $SettledInvoiceDisbursedId){
+                $query2->whereHas('invoiceDisbursed',function($query3) use ($invoiceDisbursed, $SettledInvoiceDisbursedId) {
+                    $query3->whereNotIn('invoice_disbursed_id', $SettledInvoiceDisbursedId);
                     if(isset($invoiceDisbursed['int_accrual_start_dt'])){
                         $query3->where('int_accrual_start_dt','<=',$invoiceDisbursed['int_accrual_start_dt']);
                     }
