@@ -1839,9 +1839,21 @@ class CamController extends Controller
         $prgmOfferedAmount = 0;
         $prgmLimit = 0;
       }
-
+      
+      if (isset($appData) && in_array($appData->app_type, [2])) {
+        $appAmtLimit = AppProgramOffer::getProgramOfferByAppId($appData->parent_app_id);
+        $parent_pf_amt = 0;
+        foreach ($appAmtLimit as $keyV => $offerV) {
+          if($offerV->chargeName->chrg_name == 'Processing Fee' && $offerV->chrg_type == 2){
+            $parent_pf_amt += round((($offerV->prgm_limit_amt * $offerV->chrg_value)/100),2);
+          }
+        }
+        $parent_pf_amt = $parent_pf_amt;
+      }else{
+        $parent_pf_amt = 0;
+      }
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType,'parent_pf_amt' =>$parent_pf_amt]);
     }
 
     /*function for updating offer data*/

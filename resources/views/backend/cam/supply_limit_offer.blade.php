@@ -141,6 +141,9 @@
         <div class="col-md-6">
           <div class="form-group">
               <label for="txtPassword">{!!$offerCharge->chargeName->chrg_name.(($offerCharge->chrg_type == 2)? ' (%)': ' (&#8377;)')!!} @Sanction level</label>
+                @if ($offerCharge->chargeName->chrg_name == 'Processing Fee' && $offerCharge->chrg_type == 2)
+                <small><span class="float-right text-success processinFeeAmount"><i class="fa fa-inr"></i></span></small>
+                @endif
                 <input type="text" name="charge_names[{{$offerCharge->charge_id.'#'.$offerCharge->chrg_type}}]" class="form-control" data-type="{{$offerCharge->chrg_type}}" data-name="{{$offerCharge->chargeName->chrg_name}}" value="{{$offerCharge->chrg_value}}" maxlength="6">
           </div>
         </div>
@@ -1566,9 +1569,26 @@
         var mst_chrg_tiger_id = program_charge.charge_name.chrg_tiger_id;
         //charges triggered on limit assignment will always popoulated
         if(mst_chrg_tiger_id == appType || mst_chrg_tiger_id == 1){
+            calProcesingFee = '';
+            if(program_charge.chrg_calculation_type == 2){
+                calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount"></span></small>';
+                if($('input[name=\'prgm_limit_amt\']').val()){
+                    limit_amt_total =  $('input[name=\'prgm_limit_amt\']').val();
+                    limit_amt_total = limit_amt_total.replace(',','');
+                    //Convert our percentage value into a decimal.
+                    percentInDecimal = parseFloat(program_charge.chrg_calculation_amt) / 100;
+                    //Get the result.
+                    processingFeeAmount = percentInDecimal *  limit_amt_total;
+                    if(appType == 4){
+                        parent_pf_amt = '{{ $parent_pf_amt }}'
+                        processingFeeAmount =processingFeeAmount - parent_pf_amt; 
+                    }
+                    calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount"><i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,')+'</span></small>'; 
+                }
+            }
             html += '<div class="col-md-6">'+
                 '<div class="form-group">'+
-                    '<label for="txtPassword">'+program_charge.charge_name.chrg_name+((program_charge.chrg_calculation_type == 2)? ' (%)':' (&#8377;)')+'</label>'+
+                    '<label for="txtPassword">'+program_charge.charge_name.chrg_name+((program_charge.chrg_calculation_type == 2)? ' (%)':' (&#8377;)')+'</label>'+calProcesingFee+
                     '<input type="text" name="charge_names['+program_charge.charge_id+'#'+program_charge.chrg_calculation_type+']" value="'+program_charge.chrg_calculation_amt+'" data-type="'+program_charge.chrg_calculation_type+'" class="form-control" data-name="'+program_charge.charge_name.chrg_name+'" placeholder="'+program_charge.charge_name.chrg_name+'" maxlength="6">'+
                 '</div>'+
             '</div>';
@@ -1598,5 +1618,49 @@
   $(document).on('change', '#invoice_processingfee_type', function(){
     $('#invoice_processingfee_value').val('');
   })
+
+  $(document).on('change', 'input[name=\'prgm_limit_amt\']', function() {
+    calProcesingFee = '';
+    if($(this).val()){
+        limit_amt_total =  $(this).val();
+        var processingFee = $("input[data-name=\"Processing Fee\"]")
+              .map(function(){return $(this).val();}).get();
+        limit_amt_total = limit_amt_total.replace(/,/g,'');
+        //Convert our percentage value into a decimal.
+        percentInDecimal = parseFloat(processingFee) / 100;
+        //Get the result.
+        processingFeeAmount = percentInDecimal *  limit_amt_total;
+        if(appType == 4){
+            parent_pf_amt = '{{ $parent_pf_amt }}'
+            processingFeeAmount =processingFeeAmount - parent_pf_amt; 
+        }
+        calProcesingFee  = '<i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,'); 
+    }
+    $('.processinFeeAmount').html(calProcesingFee);
+});
+
+$(document).on('change', 'input[data-name=\"Processing Fee\"]', function() {
+    calProcesingFee = '';
+    if($(this).val()){
+        limit_amt_total =  $('input[name=\'prgm_limit_amt\']').val();
+        var processingFee = $(this)
+              .map(function(){return $(this).val();}).get();
+        limit_amt_total = limit_amt_total.replace(/,/g,'');
+        //Convert our percentage value into a decimal.
+        percentInDecimal = parseFloat(processingFee) / 100;
+        //Get the result.
+        processingFeeAmount = percentInDecimal *  limit_amt_total;
+        if(appType == 4){
+            parent_pf_amt = '{{ $parent_pf_amt }}'
+            processingFeeAmount =processingFeeAmount - parent_pf_amt; 
+        }
+        calProcesingFee  = '<i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,'); 
+    }
+    $('.processinFeeAmount').html(calProcesingFee);
+});
+
+if(offerData != "") { 
+    $('input[name=\'prgm_limit_amt\']').trigger("change");
+}
 </script>
 @endsection

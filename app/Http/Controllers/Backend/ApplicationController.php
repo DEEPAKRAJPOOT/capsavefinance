@@ -1040,7 +1040,7 @@ class ApplicationController extends Controller
 					//$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
 					$userStateId = $this->appRepo->getUserAddress($app_id);
 					$companyStateId = $this->appRepo->companyAdress();
-					//if(isset($prcsAmt->offer)) {
+					//if($appData && !in_array($appData->app_type, [3])) {       //new code block app_type 3
 					  foreach ($prcsAmt->offer as $key => $offer) {
 						$offer_charges = AppProgramOffer::getProgramOfferByAppId($app_id, $offer->prgm_offer_id);
 						if (empty($offer_charges))
@@ -1051,7 +1051,16 @@ class ApplicationController extends Controller
 						  $PrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $ChargeMasterData->chrg_master_id);
 						  
 						  $pf_amt = round((($offer->prgm_limit_amt * $chrgs->chrg_value)/100),2);
-						 
+                          if ($appData && in_array($appData->app_type, [2])) {
+							    $appAmtLimit = AppProgramOffer::getProgramOfferByAppId($appData->parent_app_id);
+								$parent_pf_amt = 0;
+								foreach ($appAmtLimit as $keyV => $offerV) {
+									if($offerV->chargeName->chrg_name == 'Processing Fee' && $offerV->chrg_type == 2){
+										$parent_pf_amt += round((($offerV->prgm_limit_amt * $offerV->chrg_value)/100),2);
+									}
+								}
+								$pf_amt = $pf_amt - $parent_pf_amt;
+						  }
 						  if($chrgs->chrg_type == 1)
 						  $pf_amt = $chrgs->chrg_value;
 
@@ -1093,7 +1102,7 @@ class ApplicationController extends Controller
 							}
 						  }
 						  	if ($fData['amount'] > 0.00) {
-
+                             if($appData && !in_array($appData->app_type, [3]) && $chrgs->chargeName->chrg_name != 'Processing Fee') {
 							  	$fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
 								$fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
 								$id  = Auth::user()->user_id;
@@ -1110,6 +1119,7 @@ class ApplicationController extends Controller
 									'created_by' =>  $id,
 									'created_at' =>  $mytime ];
 								$chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);
+								}
 							}
 						}
 					  }
