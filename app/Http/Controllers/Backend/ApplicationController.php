@@ -1102,7 +1102,7 @@ class ApplicationController extends Controller
 							}
 						  }
 						  	if ($fData['amount'] > 0.00) {
-								if($appData && (in_array($appData->app_type, [3]) && $chrgs->chargeName->chrg_name == 'Document Fee') || $appData && in_array($appData->app_type, [0,1,2])) {
+								if($appData && (in_array($appData->app_type, [3]) && $chrgs->chargeName->chrg_name != 'Processing Fee') || $appData && in_array($appData->app_type, [0,1,2])) {
 									$fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
 									$fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
 									$id  = Auth::user()->user_id;
