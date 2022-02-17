@@ -200,7 +200,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'rm_sales'=>isset($salesDetails) ? $salesDetails->f_name . ' ' . $salesDetails->l_name : '',
 			'anchor_name'=>isset($invDisb->invoice->anchor) ? $invDisb->invoice->anchor->comp_name : '',
 			'anchor_prgm_name'=>isset($invDisb->invoice->program) ? $invDisb->invoice->program->prgm_name : '',
-			'vendor_ben_name'=>$invDisb->invoice->supplier_bank_detail->acc_name ?? '', // Amit sir
+			// 'vendor_ben_name'=>$invDisb->invoice->supplier_bank_detail->acc_name ?? '', // Amit sir
+			'vendor_ben_name'=>$invDisb->disbursal->account_holder_name ?? '', // Amit sir
 			'region'=>$invDisb->invoice->supplier_bank_detail->branch_name ?? '', // Amit sir
 			'sanction_number'=>$invDisb->invoice->app_id,
 			'sanction_date'=> $invDisb->invoice->appStatusLog->first()->created_at,
