@@ -1102,23 +1102,23 @@ class ApplicationController extends Controller
 							}
 						  }
 						  	if ($fData['amount'] > 0.00) {
-                             if($appData && !in_array($appData->app_type, [3]) && $chrgs->chargeName->chrg_name != 'Processing Fee') {
-							  	$fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
-								$fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
-								$id  = Auth::user()->user_id;
-								$mytime = Carbon::now();    
-								$arr  = [   
-									'app_id'=> $app_id,
-									"prgm_id" => $offer->prgm_id,
-									'trans_id' => $fDebitCreate->trans_id,
-									"chrg_master_id" => $chrgs->charge_id,
-									"percent" => $chrgs->chrg_value,
-									"chrg_applicable_id" =>  $chrgs->chrg_applicable_id, 
-									"amount" =>   $fData['amount'],
-									"virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($user_id),
-									'created_by' =>  $id,
-									'created_at' =>  $mytime ];
-								$chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);
+								if($appData && (in_array($appData->app_type, [3]) && $chrgs->chargeName->chrg_name == 'Document Fee') || $appData && in_array($appData->app_type, [0,1,2])) {
+									$fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
+									$fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
+									$id  = Auth::user()->user_id;
+									$mytime = Carbon::now();    
+									$arr  = [   
+										'app_id'=> $app_id,
+										"prgm_id" => $offer->prgm_id,
+										'trans_id' => $fDebitCreate->trans_id,
+										"chrg_master_id" => $chrgs->charge_id,
+										"percent" => $chrgs->chrg_value,
+										"chrg_applicable_id" =>  $chrgs->chrg_applicable_id, 
+										"amount" =>   $fData['amount'],
+										"virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($user_id),
+										'created_by' =>  $id,
+										'created_at' =>  $mytime ];
+									$chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);
 								}
 							}
 						}
