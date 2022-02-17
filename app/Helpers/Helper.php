@@ -1097,7 +1097,9 @@ class Helper extends PaypalHelper
                         $isViewOnly = 1;
                     } else if (isset($roleData[0]) && $roleData[0]->id == 11 && in_array(request()->route()->getName(), ['reject_app', 'save_app_rejection'])) {
                         $isViewOnly = 1;
-                    } else if (in_array(request()->route()->getName(), ['renew_application', 'create_enhanced_limit_app', 'create_reduced_limit_app'])) {
+                    } 
+                    // get_trans_name added by Sudesh but needs to be discussed with Gaurav
+                    else if (in_array(request()->route()->getName(), ['renew_application', 'create_enhanced_limit_app', 'create_reduced_limit_app','get_trans_name'])) {
                         $isViewOnly = 1;
                     } else {
                         $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
