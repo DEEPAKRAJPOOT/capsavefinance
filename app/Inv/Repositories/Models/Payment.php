@@ -328,7 +328,7 @@ class Payment extends BaseModel {
         $returnId = NULL;
         $payment = Transactions::join('payments', 'payments.payment_id', '=', 'transactions.payment_id')
                                 ->where('transactions.user_id',$this->user_id)
-                                ->whereNotIn('transactions.trans_type',[8,32])
+                                ->whereNotIn('transactions.trans_type',[config('lms.TRANS_TYPE.CANCEL'),config('lms.TRANS_TYPE.REFUND')])
                                 ->whereNotNull('transactions.apportionment_id')
                                 ->whereNotNull('transactions.payment_id')
                                 ->orderBy('payments.date_of_payment','DESC')
