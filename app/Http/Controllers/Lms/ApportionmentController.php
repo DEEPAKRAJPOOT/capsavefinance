@@ -1494,11 +1494,9 @@ class ApportionmentController extends Controller
         $interestAccruals   =   InterestAccrual::whereBetween('interest_date', [$from, $to])
                                             ->whereIn('invoice_disbursed_id', $uniqInvDisbIds)
                                             ->get();
-        $interestAccruals->each->delete();
 
         $maxTransId         =   $query1->max('trans_id');
         $transactions       =   $query1->get();
-        $transactions->each->delete();
 
         if ($maxTransId) {
             $trans          =   Transactions::whereIn('invoice_disbursed_id', $uniqInvDisbIds)
@@ -1508,8 +1506,21 @@ class ApportionmentController extends Controller
                                             ->whereNull('payment_id')
                                             ->whereNull('apportionment_id')
                                             ->get();
-            $trans->each->delete();
-            $result = true;
+            $billGeneratedTransCount = $trans->where('is_invoice_generated', '1')
+            ->where('entry_type','0')
+            ->whereIn('trans_type',[9,33])
+            ->count();
+            
+            if($billGeneratedTransCount > 0){
+                $errorMsg =  "Apportionment can't be reverted : After this settlement interest/overdue are posted and invoices have also been generated for them.";
+                $result = false;
+                return ['status' => $result, 'error' => $errorMsg];
+            }else{   
+                $interestAccruals->each->delete();
+                $transactions->each->delete();
+                $trans->each->delete();
+                $result = true;
+            }
         }
         if ($result) {
             //CustomerTransactionSOA::updateTransactionSOADetails($userId);
@@ -1522,7 +1533,7 @@ class ApportionmentController extends Controller
             }
         }
 
-        return $result;
+        return ['status' => $result, 'error' => $errorMsg];
     }
 
     private function apportionmentUndoProcess($payment){
@@ -1544,7 +1555,7 @@ class ApportionmentController extends Controller
         
         if(!$error){
             $result = $this->processApportionmentUndoTrans($payment, $result);
-            return ['status' => $result];
+            return ['status' => $result['status'], 'error' => $result['error']];
         }else{
             return ['status' => $result, 'error' => $error];
         }        
@@ -1574,13 +1585,16 @@ class ApportionmentController extends Controller
                             DB::commit();
                             return response()->json(['status' => 1,'message' => 'Successfully Apportionment Reverted']); 
                         }else{
+                            DB::rollback();
                             return response()->json(['status' => 0,'message' => $aporUndoPro['error']]);
                         }
 					}
 					else{
+                        DB::rollback();
 						return response()->json(['status' => 0,'message' => 'Invalid Request: Apportionment cannot be reverted']);
 					}
 				}
+                DB::rollback();
 				return response()->json(['status' => 0,'message' => 'Record Not Found / Apportionment already reverted']);
 			}
 			return response()->json(['status' => 0,'message' => 'Invalid Request: Payment details missing.']);
