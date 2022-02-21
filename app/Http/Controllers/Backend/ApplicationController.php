@@ -869,10 +869,12 @@ class ApplicationController extends Controller
 			}
 			$appData = $this->appRepo->getAppData($app_id);
 
-                        //$currnet_user_id  = Auth::user()->user_id;
-                       // $current_logedin_role_id = Role::getRole((int) $currnet_user_id);
-                        //dd(Auth::user()->user_id,$current_logedin_role_id);
+                        $currnet_user_id  = Auth::user()->user_id;
+                        $to_role_name = User::getUserRoles($currnet_user_id);
+                        $current_logedin_role_id = Role::getRole((int) $currnet_user_id);
                         
+                         $logedInroleData = $this->userRepo->getRoleDataById($currnet_user_id);
+                         dd($logedInroleData);
 			return view('backend.app.next_stage_confirmBox')
 				->with('app_id', $app_id)
 				->with('biz_id', $appData->biz_id)
