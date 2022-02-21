@@ -2377,4 +2377,26 @@ class Helper extends PaypalHelper
             return TRUE;
         }
     }
+
+
+     public static function uploadUserApprovalFile($attributes, $userId, $appId)
+    {
+        $inputArr = [];
+        if (isset($attributes['approval_doc_file'])) {
+            if (!Storage::exists('/public/user/' . $userId . '/'. $appId . '/')) {
+                Storage::makeDirectory('/public/user/' . $userId . '/'. $appId . '/', 0777, true);
+            }
+            $path = Storage::disk('public')->put('/user/' . $userId . '/'. $appId . '/', $attributes['approval_doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+
+        $inputArr['file_type'] = $attributes['approval_doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['approval_doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['approval_doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+
+        return $inputArr;
+    }
 }

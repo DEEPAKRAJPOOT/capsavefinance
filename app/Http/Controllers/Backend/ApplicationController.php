@@ -868,6 +868,10 @@ class ApplicationController extends Controller
 				$roleDropDown = $this->userRepo->getAllRole()->toArray();
 			}
 			$appData = $this->appRepo->getAppData($app_id);
+
+                        //$currnet_user_id  = Auth::user()->user_id;
+                       // $current_logedin_role_id = Role::getRole((int) $currnet_user_id);
+                        //dd(Auth::user()->user_id,$current_logedin_role_id);
                         
 			return view('backend.app.next_stage_confirmBox')
 				->with('app_id', $app_id)
@@ -892,9 +896,10 @@ class ApplicationController extends Controller
 	 */    
 	public function AcceptNextStage(Request $request) {
                           
-		try{    
+		try{
+                       
                    
-                       $approver_list = $request->get('approver_list');
+                        $approver_list = $request->get('approver_list');
                         $user_id = $request->get('user_id');
 			$app_id = $request->get('app_id');
                         $approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
@@ -903,7 +908,7 @@ class ApplicationController extends Controller
 			$sharing_comment = $request->get('sharing_comment');
 			$curr_role_id = $request->get('curr_role_id');
 			$movedInLms = false;
-						
+			$attributes = $request->all();
 			$addl_data = [];
 			$addl_data['sharing_comment'] = $sharing_comment;
 
@@ -1139,12 +1144,23 @@ class ApplicationController extends Controller
 					}                    
 					foreach($apprAuthUsers as $approver) {
                                              if(in_array($approver->user_id,$approver_list))
-                                             {                                
+                                             {
+
+                                                 if ($request->grm_doc_file) {
+                                                    $date = Carbon::now();
+                                                    $appData = $this->appRepo->getAppData($app_id);
+                                                    $supplier_id = $appData->user_id;
+                                                    $uploadApprovalDocData = Helpers::uploadUserApprovalFile($attributes, $supplier_id, $app_id);
+                                                    $userFile = $this->docRepo->saveFile($uploadApprovalDocData);
+                                                    $file_id = $userFile->file_id;
+                                                }
+
 						$appAssignData = [
 							'app_id' => $app_id,
 							'to_id' => $approver->user_id,
 							'assigned_user_id' => $user_id,
 							'sharing_comment' => $addl_data['sharing_comment'],
+                                                        'approval_file_id' => $file_id,
 						];
 						Helpers::assignAppUser($appAssignData);
                                             }

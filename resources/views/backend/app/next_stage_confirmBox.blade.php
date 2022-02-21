@@ -10,6 +10,7 @@
                     'method' => 'post',
                     'route' => 'accept_next_stage',
                     'id' => 'frmMoveStage',
+                    'enctype' => 'multipart/form-data'
                     )
                     ) 
                     !!}            
@@ -108,8 +109,21 @@
                     <div class="error"> <i>Approver is not found...</i></div>
                     @endif
                     @endif
-                      </br>
-                    {!! Form::hidden('app_id', $app_id) !!}
+                      </br>{{$curr_role_id}}
+                     @if($curr_role_id == 8)
+                      <div class="form-group">
+                        <label for="txtCreditPeriod">Upload<span class="f_date"><b>Approval Mails</b></span> Copy</label>
+                        <div class="custom-file">
+                           <label for="customApprovalFile">Upload Document</label>
+                           <input type="file" class="custom-file-input" id="customApprovalFile" name="approval_doc_file">
+                           <label class="custom-file-label" for="customApprovalFile">Choose file</label>
+                           <span id="grmMsgFile" class="text-success"></span>
+                        </div>
+                     </div>
+                     @endif
+
+
+                      {!! Form::hidden('app_id', $app_id) !!}
                     {!! Form::hidden('biz_id', $biz_id) !!}
                     {!! Form::hidden('user_id', $user_id) !!}
                     {!! Form::hidden('curr_role_id', $curr_role_id) !!}

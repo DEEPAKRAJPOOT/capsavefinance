@@ -63,6 +63,7 @@ class AppAssignment extends BaseModel
         'assign_status',
         'sharing_comment',
         'is_owner',
+        'approval_file_id',
      ];
     
     /**
