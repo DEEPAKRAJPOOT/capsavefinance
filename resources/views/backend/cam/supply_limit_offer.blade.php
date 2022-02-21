@@ -1637,9 +1637,11 @@
         calProcesingFee = '';
         if(currentAppType == 2){
                 limit_amt_total =  '{{ $parent_pf_amt }}';
-                limit_amt_total = limit_amt_total.replace(',','');
+                var processingFee = $("input[data-name=\"Processing Fee\"]")
+                        .map(function(){return $(this).val();}).get();
+                limit_amt_total = limit_amt_total.replace(/,/g,'');
                 //Convert our percentage value into a decimal.
-                percentInDecimal = parseFloat(program_charge.chrg_calculation_amt) / 100;
+                percentInDecimal = parseFloat(processingFee) / 100;
                 //Get the result.
                 processingFeeAmount = percentInDecimal *  limit_amt_total;
                 calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount">PF Amount: <i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,')+'</span></small>'; 
@@ -1667,9 +1669,12 @@ $(document).on('change', 'input[data-name=\"Processing Fee\"]', function() {
             calProcesingFee = '';
             if(currentAppType == 2){
                 limit_amt_total =  '{{ $parent_pf_amt }}';
-                limit_amt_total = limit_amt_total.replace(',','');
                 //Convert our percentage value into a decimal.
-                percentInDecimal = parseFloat(program_charge.chrg_calculation_amt) / 100;
+                var processingFee = $(this)
+                    .map(function(){return $(this).val();}).get();
+                limit_amt_total = limit_amt_total.replace(/,/g,'');
+                //Convert our percentage value into a decimal.
+                percentInDecimal = parseFloat(processingFee) / 100;
                 //Get the result.
                 processingFeeAmount = percentInDecimal *  limit_amt_total;
                 calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount">PF Amount: <i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,')+'</span></small>'; 
