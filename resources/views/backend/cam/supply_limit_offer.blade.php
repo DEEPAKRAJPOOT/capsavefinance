@@ -926,6 +926,7 @@
     var offerData = '{{ isset($offerData->prgm_offer_id) ? $offerData->prgm_offer_id : "" }}';
     var currentAppType = '{{ $appType }}';
     var invUtilizedAmt = '{{ $invUtilizedAmt }}';
+    var previousProductLimit = '{{ $previousProductLimit }}';
     
     function anchorDropdown(anchors){
         let $html='<option value="">Select Debtor</option>';
@@ -1147,6 +1148,9 @@
             flag = false;
         }else if(currentAppType == 3 && parseInt(prgm_limit_amt.replace(/,/g, '')) <= parseInt(invUtilizedAmt)){
             setError('input[name=prgm_limit_amt]', 'Limit amount can\'t be less than or equal to the previous utilized limit.');
+            flag = false;
+        }else if(currentAppType == 2 && parseInt(prgm_limit_amt.replace(/,/g, '')) <= parseInt(previousProductLimit)){
+            setError('input[name=prgm_limit_amt]', 'Limit amount can\'t be less than or equal to the previous product limit.');
             flag = false;
         }else{
             //TAKE REST limit_balance

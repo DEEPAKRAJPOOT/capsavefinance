@@ -1847,6 +1847,7 @@ class CamController extends Controller
       $limitData= $this->appRepo->getLimit($aplid);
       $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
       $invUtilizedAmt = 0;
+      $previousProductLimit = 0;
 
       if ($limitData->product_id == 1) {
         $appData = $this->appRepo->getAppData($appId);
@@ -1877,6 +1878,10 @@ class CamController extends Controller
             $invUtilizedAmt += Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($attr);
           }
         }
+
+        if ($appType == 2) {
+          $previousProductLimit += Helpers::getTotalProductLimit($appData->parent_app_id, $productId = 1);
+        }
       } else {
         $appType = '';
         $anchors = [];
@@ -1900,7 +1905,7 @@ class CamController extends Controller
       // $currentOfferAmount = $offerData->prgm_limit_amt ?? 0;
       // $limitBalance = (int)$limitData->limit_amt - (int)$totalSubLmtAmt + (int)$currentOfferAmount;
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType, 'invUtilizedAmt' => $invUtilizedAmt]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType, 'invUtilizedAmt' => $invUtilizedAmt, 'previousProductLimit' => $previousProductLimit]);
     }
 
     /*function for updating offer data*/
@@ -1954,6 +1959,14 @@ class CamController extends Controller
 
             if ($request->prgm_limit_amt <= $invUtilizedAmt) {
               Session::flash('error', 'Program Limit amount can\'t be less than or equal to the previous utilized limit.');
+              return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
+            }
+          }
+
+          if ($appData->app_type == 2) {
+            $previousProductLimit = Helpers::getTotalProductLimit($appData->parent_app_id, $productId = 1);
+            if ($request->prgm_limit_amt <= $previousProductLimit) {
+              Session::flash('error', 'Program Limit amount can\'t be less than or equal to the previous product limit.');
               return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
             }
           }
