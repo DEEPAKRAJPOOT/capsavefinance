@@ -242,6 +242,7 @@ trait LmsTrait
         $disbursalData['bank_name'] = ($user['is_buyer'] == 2) ? $user['anchor_bank_details']['bank']['bank_name'] : $user['supplier_bank_detail']['bank']['bank_name'] ;
         $disbursalData['ifsc_code'] = ($user['is_buyer'] == 2) ? $user['anchor_bank_details']['ifsc_code'] : $user['supplier_bank_detail']['ifsc_code'];
         $disbursalData['acc_no'] = ($user['is_buyer'] == 2) ? $user['anchor_bank_details']['acc_no'] : $user['supplier_bank_detail']['acc_no'];            
+        $disbursalData['account_holder_name'] = ($user['is_buyer'] == 2) ? $user['anchor_bank_details']['acc_name'] : $user['supplier_bank_detail']['acc_name'];            
         $disbursalData['virtual_acc_id'] = $user['lms_user']['virtual_acc_id'] ?? null;
        
         $disbursalData['status_id'] = 10;

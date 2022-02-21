@@ -990,7 +990,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $disburseAmount = 0;
             $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
             $userData['disbursal_batch_id'] =$disbursalBatchId;
-            $userData['ref_no'] =$exportData[$userid]['RefNo'];;
+            $userData['ref_no'] =$exportData[$userid]['RefNo'];
 
             $disbursalRequest = $this->createDisbursalData($userData, $disburseAmount, $disburseType);
             $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disbursalRequest);
