@@ -1041,18 +1041,17 @@ class ApplicationController extends Controller
 					//$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
 					$userStateId = $this->appRepo->getUserAddress($app_id);
 					$companyStateId = $this->appRepo->companyAdress();
-					$new_pf_amt_limit_enhanced = 0;
-					if (isset($appData) && in_array($appData->app_type, [2])) {
-						$appParentAmtLimit = AppProgramLimit::getProductLimit($appData->parent_app_id, 1);
-						$appChildAmtLimit =  AppProgramLimit::getProductLimit($appData->app_id, 1);
-						$parent_pf_amts = $child_pf_amts = 0;
-						foreach ($appParentAmtLimit as $valueP) {
-						  $parent_pf_amts += $valueP->product_limit;
+					$new_pf_amt_parent = 0;
+					if (isset($appData) && in_array($appData->app_type, [2])) {  //new code block app_type 2 processing fee
+						$appAmtLimit = AppProgramOffer::getProgramOfferByAppId($appData->parent_app_id);
+						$parent_pf_amts = 0;
+						foreach ($appAmtLimit as $keyV => $offerV) {
+							if($offerV->chargeName->chrg_name == 'Processing Fee' && $offerV->chrg_type == 2){
+								//$parent_pf_amt += round((($offerV->prgm_limit_amt * $offerV->chrg_value)/100),2);
+								$parent_pf_amts += round(($offerV->prgm_limit_amt),2);
+							}
 						}
-						foreach ($appChildAmtLimit as $valueC) {
-						  $child_pf_amts += $valueC->product_limit;
-						}
-						$new_pf_amt_limit_enhanced =  $child_pf_amts - $parent_pf_amts;
+						$new_pf_amt_parent =  $parent_pf_amts;
 					  }
 					//if($appData && !in_array($appData->app_type, [3])) {       //new code block app_type 3
 					  foreach ($prcsAmt->offer as $key => $offer) {
@@ -1065,10 +1064,11 @@ class ApplicationController extends Controller
 						  $PrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $ChargeMasterData->chrg_master_id);
 						  
 						  $pf_amt = round((($offer->prgm_limit_amt * $chrgs->chrg_value)/100),2);
-                          if ($appData && in_array($appData->app_type, [2])) {
+                          if ($appData && in_array($appData->app_type, [2])) {   //new code block app_type 2 processing fee
+							    $new_pf_amt_limit_enhanceds = $offer->prgm_limit_amt - $new_pf_amt_parent;
 								$parent_pf_amt = 0;
 								if($chrgs->chargeName->chrg_name == 'Processing Fee' && $chrgs->chrg_type == 2){
-									$parent_pf_amt += round((($new_pf_amt_limit_enhanced * $chrgs->chrg_value)/100),2);
+									$parent_pf_amt += round((($new_pf_amt_limit_enhanceds * $chrgs->chrg_value)/100),2);
 								}
 								$pf_amt = $parent_pf_amt;
 						  }
