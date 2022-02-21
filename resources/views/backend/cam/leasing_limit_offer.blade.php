@@ -623,7 +623,7 @@
         percentInDecimal = parseFloat(processingFee) / 100;
         //Get the result.
         processingFeeAmount = percentInDecimal *  limit_amt_total;
-        calProcesingFee  = '<i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,'); 
+        calProcesingFee  = 'PF Amount: <i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,'); 
     }
     $('.processinFeeAmount').html(calProcesingFee);
 });
@@ -639,7 +639,7 @@ $(document).on('change', 'input[name=\"processing_fee\"]', function() {
         percentInDecimal = parseFloat(processingFee) / 100;
         //Get the result.
         processingFeeAmount = percentInDecimal *  limit_amt_total;
-        calProcesingFee  = '<i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,'); 
+        calProcesingFee  = 'PF Amount: <i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,'); 
     }
     $('.processinFeeAmount').html(calProcesingFee);
 });
