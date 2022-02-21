@@ -2417,7 +2417,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     'Approver_ID : CAPSAVE.C2'
                 ];
                 $KotakObj = \App::make('App\Libraries\Kotak_lib');
-                $getResponse = true;
+                $getResponse = false;
                 $result = $KotakObj->callPaymentApi($requestData, $header, $getResponse);
                 if ($getResponse) {
                     dd($result);
