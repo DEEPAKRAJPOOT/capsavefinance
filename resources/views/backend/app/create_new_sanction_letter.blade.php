@@ -516,7 +516,7 @@
                                             <table width="100%" border="1">
                                                 <tr>
                                                     <td width="30%" valign="top"><b>Review Date</b></td>
-                                                    <td><input type="date" name="review_date" id="review_date" style="min-height:30px;" value="{{ $supplyChainFormData->review_date ??'' }}"></td>
+                                                    <td><input type="date" name="review_date" id="review_date" style="min-height:30px;" value="{{ $supplyChainFormData->review_date ?? '' }}"></td>
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Sanction validity for first disbursement</b>
@@ -953,6 +953,9 @@
 
     };
     $(document).ready(function() {
+        
+        setReviewDateByDefault();
+
         $('#payment_type').on('change', function() {
             $('#payment_type_comment').val('');
             if ($(this).val() == '5') {
@@ -991,6 +994,12 @@
         });
     });
 
+    function setReviewDateByDefault() {
+        var currentDate = new Date();
+        currentDate.setDate(currentDate.getDate() + 7);
+        var defaultDate = currentDate.getFullYear()+'-'+('0'+(currentDate.getMonth()+1)).slice(-2)+'-'+('0'+(currentDate.getDate())).slice(-2);
+        $('#review_date').attr('min', defaultDate);
+    }
 
     function ChangeDateFormat(dateObj, out_format = 'ymd', out_separator = '/', dateAddMinus = 0) {
         dateObj.setDate(dateObj.getDate() + dateAddMinus);

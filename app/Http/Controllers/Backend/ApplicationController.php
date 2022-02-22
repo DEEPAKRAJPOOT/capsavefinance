@@ -1182,31 +1182,42 @@ class ApplicationController extends Controller
 			  	$endDate = date('Y-m-d', strtotime('+1 years -1 day'));
 			  	$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($user_id, $app_id);
 				$appData = $this->appRepo->getAppData($app_id);
-				if ($appData && in_array($appData->app_type, [1,2]) ) {
+
+				$userLimit = $this->appRepo->getUserLimit($user_id);  
+				if ($userLimit && $userLimit->end_date) {
+					$currentdate     = strtotime(now()->format('d-m-Y'));
+					$limitExpiryDate = strtotime(Carbon::parse($userLimit->end_date)->format('d-m-Y'));
+					if ($limitExpiryDate < $curdate) {
+						Session::flash('error_code', 'limit_expired_found');
+						return redirect()->back();  
+					}
+				}
+				
+				if ($appData && in_array($appData->app_type, [1,2,3]) ) {
 					$parentAppId = $appData->parent_app_id;
 					$actualEndDate = $curDate;
-					// $appLimitData = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $parentAppId]);
-					// if (in_array($appData->app_type, [2])) {
-					// 	$curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
-					// 	$endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
-					// }
-
+					/*$appLimitData = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $parentAppId]);
+					if (in_array($appData->app_type, [2,3])) {
+						$curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
+						$endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
+					}
+					
 					$this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
 					$this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
-					\Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                
-					$this->appRepo->updateAppData($parentAppId, ['status' => 3, 'is_child_sanctioned' => 2]);
+					\Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));*/                                    
+					$this->appRepo->updateAppData($parentAppId, ['is_child_sanctioned' => 2]);
 				}
                                 
-        		if (!is_null($appLimitId)) {
-				  	$this->appRepo->saveAppLimit([
-				  		'status' => 1,
-				  		'start_date' => $curDate,
-				  		'end_date' => $endDate], $appLimitId);
-				  	$this->appRepo->updatePrgmLimitByLimitId([
-				  		'status' => 1,
-				  		'start_date' => $curDate,
-				  		'end_date' => $endDate], $appLimitId);
-			  	}
+        		// if (!is_null($appLimitId)) {
+				//   	$this->appRepo->saveAppLimit([
+				//   		'status' => 1,
+				//   		'start_date' => $curDate,
+				//   		'end_date' => $endDate], $appLimitId);
+				//   	$this->appRepo->updatePrgmLimitByLimitId([
+				//   		'status' => 1,
+				//   		'start_date' => $curDate,
+				//   		'end_date' => $endDate], $appLimitId);
+			  	// }
 			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
                                 UserDetail::where('user_id',$user_id)->update(['is_active' =>1]);
                                 $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction
