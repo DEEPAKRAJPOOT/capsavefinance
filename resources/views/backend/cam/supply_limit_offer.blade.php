@@ -1576,13 +1576,13 @@
         //charges triggered on limit assignment will always popoulated
         if(mst_chrg_tiger_id == appType || mst_chrg_tiger_id == 1){
             calProcesingFee = '';
+            readonly = '';
             if(program_charge.chrg_calculation_type == 2){
                 calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount"></span></small>';
-            }
-            readonly = '';
-            if (currentAppType == 3){
-                calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount">PF Amount: <i class="fa fa-inr"></i>0</span></small>';
-                readonly = 'readonly';
+                if (currentAppType == 3){
+                    calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount">PF Amount: <i class="fa fa-inr"></i>0</span></small>';
+                    readonly = 'readonly';
+                }
             }
             html += '<div class="col-md-6">'+
                 '<div class="form-group">'+
