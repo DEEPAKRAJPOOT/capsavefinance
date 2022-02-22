@@ -1,6 +1,11 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-
+    <style>
+    .processinFeeAmount {
+     font-size: 10px;
+     font-weight: bold;
+    }
+   </style>
   <form method="POST" style="width:100%;" action="{{route('update_limit_offer')}}" target="_top" onsubmit="return checkLeasingValidations()">
     @csrf
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
