@@ -407,7 +407,7 @@ class DataRenderer implements DataProviderInterface
                         
                         if (!empty($parent_app_id)) {
                             $aData = Application::getAppData((int)$parent_app_id);
-                            if ($permission) {
+                            if ($permission && $aData) {
                                 $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
                             } else {
                                 $ret .= "<br><small>Parent:</small><br><a rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
@@ -565,12 +565,7 @@ class DataRenderer implements DataProviderInterface
                                             $act = $act . $moveToBackStageUrl;
                                         }
                                     } else {
-                                        $status = DB::table('app_sanction_letter')->where(['app_id' => $app->app_id])->orderBy('sanction_letter_id', 'desc')->pluck('status')->first();
-                                       if($status == 3){
-                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" onclick="alert(\'You cannot move this case to next stage as sanction letter is in process/regenerated\')" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';
-                                       }else{
-                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';
-                                       }    
+                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';    
 
                                         if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
                                             $act = $act . $moveToBackStageUrl;
@@ -8985,7 +8980,7 @@ class DataRenderer implements DataProviderInterface
                     return \Carbon\Carbon::parse($data->created_at)->format('d-m-Y H:i:s');
                 }
             )  
-            ->editColumn('date_of_final_submission',  function ($data) {
+           ->editColumn('date_of_final_submission',  function ($data) {
                 if($data->date_of_final_submission){
                    return \Carbon\Carbon::parse($data->date_of_final_submission)->format('d-m-Y');
                 }else{
@@ -9001,12 +8996,12 @@ class DataRenderer implements DataProviderInterface
                 }
                 if(Helpers::checkPermission('create_new_sanction_letter') ){
                     if (in_array($data->status,[0,1])){
-                        $link .="<a href=\"".route('create_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' => $data->sanction_letter_id, 'action_type' => 'edit'] ) ."\" title='Edit' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></a>";
+                       $link .="<a href=\"".route('create_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' => $data->sanction_letter_id, 'action_type' => 'edit'] ) ."\" title='Edit' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></a>";
                     }
                 }
-                if(Helpers::checkPermission('download_new_sanction_letter') ){
+               if(Helpers::checkPermission('download_new_sanction_letter') ){
                     $link .="<a href=\"".route('download_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' => $data->sanction_letter_id, 'action_type' => 'download'] ) ."\" title='Download' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-download' aria-hidden='true'></i></a>";
-                }
+               }
                 if(Helpers::checkPermission('update_regenerate_sanction_letter') ){
                     if ($data->status == 2){
                         if($data->is_regenerated == 1){

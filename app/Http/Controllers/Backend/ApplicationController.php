@@ -2680,7 +2680,27 @@ class ApplicationController extends Controller
                 $activity_desc = 'Save Sanction Letter Of Supplychain My Application in Manage Application. AppID '. $appId;
                 $arrActivity['app_id'] = $appId;
                 $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($supplyChaindata), $arrActivity);
-            } 
+            }
+
+			if ($request->has('review_date') && $request->review_date && $appData) {
+				$reviewDate = Carbon::parse($request->review_date)->format('Y-m-d');
+				$userId = $appData->user_id;
+				$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($userId, $appId);
+				if (!is_null($appLimitId)) {
+					$curDate = now()->format('Y-m-d');
+					$this->appRepo->saveAppLimit([
+						'status' 	 => 1,
+						'start_date' => $curDate,
+						'end_date' 	 => $reviewDate
+					], $appLimitId);
+					$this->appRepo->updatePrgmLimitByLimitId([
+						'status' 	 => 1,
+						'start_date' => $curDate,
+						'end_date' 	 => $reviewDate
+					], $appLimitId);
+				}
+			}
+
 			if (!is_null($sanctionId)) {						           
 				Session::flash('message','Sanction Letter has been updated successfully.');
 			}else{
