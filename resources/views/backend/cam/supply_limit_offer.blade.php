@@ -926,7 +926,7 @@
     var offerData = '{{ isset($offerData->prgm_offer_id) ? $offerData->prgm_offer_id : "" }}';
     var currentAppType = '{{ $appType }}';
     var invUtilizedAmt = '{{ $invUtilizedAmt }}';
-    var previousProductLimit = '{{ $previousProductLimit }}';
+    var previousProgramLimit = 0;
     
     function anchorDropdown(anchors){
         let $html='<option value="">Select Debtor</option>';
@@ -1025,11 +1025,12 @@
         }
         let token = "{{ csrf_token() }}";            
         var appId = $("input[name='app_id']").val();
+        var anchorId = $("#anchor_id").val();
         $('.isloader').show();
         $.ajax({
             'url':messages.get_program_balance_limit,
             'type':"POST",
-            'data':{"_token" : messages.token, "program_id" : program_id, "app_id": appId, "offer_id":offerData},
+            'data':{"_token" : messages.token, "program_id" : program_id, "app_id": appId, "offer_id":offerData, "anchor_id": anchorId},
             error:function (xhr, status, errorThrown) {
                 $('.isloader').hide();
                 alert(errorThrown);
@@ -1064,7 +1065,10 @@
                 
                 $("#anchorBalLimitAmt").parent().parent().removeClass('d-none');
                 $("#prgmBalLimitAmt").parent().parent().removeClass('d-none');
-                prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;                  
+                prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;
+                if (typeof res.previousProgramLimit != 'undefined') {
+                    previousProgramLimit = parseFloat(res.previousProgramLimit);
+                }
                 $('.isloader').hide();
             }
         })
@@ -1149,8 +1153,8 @@
         }else if(currentAppType == 3 && parseInt(prgm_limit_amt.replace(/,/g, '')) <= parseInt(invUtilizedAmt)){
             setError('input[name=prgm_limit_amt]', 'Limit amount can\'t be less than or equal to the previous utilized limit.');
             flag = false;
-        }else if(currentAppType == 2 && parseInt(prgm_limit_amt.replace(/,/g, '')) <= parseInt(previousProductLimit)){
-            setError('input[name=prgm_limit_amt]', 'Limit amount can\'t be less than or equal to the previous product limit.');
+        }else if(currentAppType == 2 && previousProgramLimit > 0 && parseInt(prgm_limit_amt.replace(/,/g, '')) <= parseInt(previousProgramLimit)){
+            setError('input[name=prgm_limit_amt]', 'Limit amount can\'t be less than or equal to the previous program limit.');
             flag = false;
         }else{
             //TAKE REST limit_balance

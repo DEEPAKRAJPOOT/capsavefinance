@@ -3660,11 +3660,11 @@ class DataRenderer implements DataProviderInterface
                         }
                          * 
                          */
-                        // $appPrgmLimit = AppProgramLimit::getUtilizeLimit($customer->app_id, 1);                        
-                        // foreach ($appPrgmLimit as $value) {
-                        //     $this->totalCunsumeLimit += $value->utilize_limit;
-                        // }
-                        $this->totalCunsumeLimit += \Helpers::anchorSupplierUtilizedLimitByInvoice($customer->user_id, $customer->user->anchor_id);
+                        $appPrgmLimit = AppProgramLimit::getUtilizeLimit($customer->app_id, 1);                        
+                        foreach ($appPrgmLimit as $value) {
+                            $this->totalCunsumeLimit += $value->utilize_limit;
+                        }
+                        // $this->totalCunsumeLimit += \Helpers::anchorSupplierUtilizedLimitByInvoice($customer->user_id, $customer->user->anchor_id);
                                                 
                     return '<label><i class="fa fa-inr">'.number_format($this->totalCunsumeLimit, 2).'</i></label>';
                 })
