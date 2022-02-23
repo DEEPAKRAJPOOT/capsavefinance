@@ -109,7 +109,7 @@
                     <div class="error"> <i>Approver is not found...</i></div>
                     @endif
                     @endif
-                      </br>{{$curr_role_id}}
+                      </br>
                      @if($curr_role_id == 8)
                       <div class="form-group">
                         <label for="txtCreditPeriod">Upload<span class="f_date"><b>Approval Mails</b></span> Copy</label>

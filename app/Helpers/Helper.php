@@ -227,6 +227,7 @@ class Helper extends PaypalHelper
                     $dataArr['assign_type'] = '2';
                     $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';
                     $dataArr['is_owner'] = 1;
+                    $dataArr['approval_file_id'] = isset($addl_data['approval_file_id']) ? $addl_data['approval_file_id'] : null;
 
                     AppAssignment::saveData($dataArr, $sendEmail);
 
@@ -2383,8 +2384,8 @@ class Helper extends PaypalHelper
     {
         $inputArr = [];
         if (isset($attributes['approval_doc_file'])) {
-            if (!Storage::exists('/public/user/' . $userId . '/'. $appId . '/')) {
-                Storage::makeDirectory('/public/user/' . $userId . '/'. $appId . '/', 0777, true);
+            if (!Storage::exists('/public/user/' . $userId . '/'. $appId)) {
+                Storage::makeDirectory('/public/user/' . $userId . '/'. $appId , 0777, true);
             }
             $path = Storage::disk('public')->put('/user/' . $userId . '/'. $appId . '/', $attributes['approval_doc_file'], null);
             $inputArr['file_path'] = $path;
