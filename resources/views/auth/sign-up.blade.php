@@ -137,7 +137,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     
-                                    <input type="checkbox" name="termsConditions" id="termsConditions" >  I accept <a  data-toggle="modal" data-target="#termsConditionspop" data-url ="{{route('term_condition')}}" data-height="360px"  data-width="100%" data-placement="top" >Terms & Conditions</a>.
+                                    <input type="checkbox" name="is_term_accept" id="is_term_accept" value="1">  I accept <a  data-toggle="modal" data-target="#termsConditionspop" data-url ="{{route('term_condition')}}" data-height="360px"  data-width="100%" data-placement="top" style="text-decoration-line: underline;cursor:pointer;">Terms & Conditions</a>.
                                 </div>
                             </div>
                             
@@ -278,7 +278,7 @@ var messages={
                     messages:{'isexistemail' : "This email is already exist."}
                 });
 
-                $('#termsConditions').each(function () {
+                $('#is_term_accept').each(function () {
                     $(this).rules("add",
                         {
                             required: true

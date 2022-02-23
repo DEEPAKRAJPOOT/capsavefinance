@@ -295,7 +295,7 @@ use RegistersUsers,
 //            dd($AnchorData,'fdfjk');
             if($AnchorData && $AnchorData->pan_no){                    
                 //$arrFileData['h_anchor_id'] = $AnchorData->anchor_id;                
-            }          
+            }
             
             $user = $this->create($arrFileData);
             /// dd($user);

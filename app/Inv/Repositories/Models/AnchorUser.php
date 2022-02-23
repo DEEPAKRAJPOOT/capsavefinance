@@ -65,6 +65,7 @@ class AnchorUser extends BaseModel {
         'token',
         'is_registered',
         'registered_type',
+        'is_term_accept',
         'created_by',
         'created_at',
         'updated_at',
