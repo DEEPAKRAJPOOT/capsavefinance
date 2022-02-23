@@ -256,8 +256,8 @@
                                                     $arrStaticData['rentalFrequency'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
                                                 @endphp    
                                             </tr>
-                                                <td>{{ ($prgmOffer->facility_type_id != '') ? config('common.facility_type')[$prgmOffer->facility_type_id] : 'NA'}}</td>
-                                                <td>{{ $prgmOffer->asset_type_id && $prgmOffer->asset ? $prgmOffer->asset->asset_type : '' }}</td>
+                                                <td>{{($prgmOffer->facility_type_id !='')? config('common.facility_type')[$prgmOffer->facility_type_id]: 'NA'}}</td>
+                                                <td>{{ $prgmOffer->equipment_type_id ? \Helpers::getEquipmentTypeById($prgmOffer->equipment_type_id)->equipment_name : ''}}</td>
                                                 <td>&#8377; {{number_format($prgmOffer->prgm_limit_amt)}}</td>
                                                 <td>{{$prgmOffer->tenor}}</td>
                                                 {{--<td>
@@ -375,7 +375,7 @@
                                             @foreach($prgmLimit->offer as $k=>$prgmOffer)
                                             </tr>
                                                 <td>{{($prgmOffer->facility_type_id !='')? config('common.facility_type')[$prgmOffer->facility_type_id]: 'NA'}}</td>
-                                                <td>{{\Helpers::getEquipmentTypeById($prgmOffer->equipment_type_id)->equipment_name}}</td>
+                                                <td>{{ $prgmOffer->equipment_type_id ? \Helpers::getEquipmentTypeById($prgmOffer->equipment_type_id)->equipment_name : ''}}</td>
                                                 <td>&#8377; {{number_format($prgmOffer->prgm_limit_amt)}}</td>
                                                 <td>{{$prgmOffer->tenor}}</td>
                                                 <td>
