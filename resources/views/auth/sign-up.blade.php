@@ -135,6 +135,14 @@
                             </div>
                             @endif -->
                             <div class="col-md-6">
+                                <div class="form-group">
+                                    
+                                    <input type="checkbox" name="termsConditions" id="termsConditions" >  I accept <a  data-toggle="modal" data-target="#termsConditionspop" data-url ="{{route('term_condition')}}" data-height="360px"  data-width="100%" data-placement="top" >Terms & Conditions</a>.
+                                </div>
+                            </div>
+                            
+
+                            <div class="col-md-6">
                             <div class="g-recaptcha" id="recaptcha" data-sitekey="{{config('common.google_recaptcha_key')}}"></div>
                             <span class="text-danger error"> {{$errors->first('g-recaptcha-response')}} </span>
                             </div>
@@ -154,9 +162,10 @@
     </div>
 
 </div>
-
+{!!Helpers::makeIframePopup('termsConditionspop','Standard Terms and Conditions', 'modal-lg')!!}
 @endsection
 @section('scripts')
+<script src="{{ asset('common/js/iframePopup.js') }}"></script>
 <script src='https://www.google.com/recaptcha/api.js'></script>
 <script type="text/javascript">
 var messages={
@@ -267,6 +276,13 @@ var messages={
                     email: true,
                     isexistemail: true,
                     messages:{'isexistemail' : "This email is already exist."}
+                });
+
+                $('#termsConditions').each(function () {
+                    $(this).rules("add",
+                        {
+                            required: true
+                        });
                 });
                                
                 

@@ -780,4 +780,10 @@ use RegistersUsers,
                 
         return response()->json($result);
     }
+
+    public function showtermCondition() {
+
+        return view('auth.term-condition');
+    }
+    
 }
