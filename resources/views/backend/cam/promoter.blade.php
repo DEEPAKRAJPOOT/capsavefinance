@@ -69,7 +69,7 @@
                            
                                          } 
 
-
+                                         /*
                                         foreach($row->businessApi as $row1) {
                         
                                           if($row1->type == 3) { 
@@ -90,7 +90,7 @@
                                             }else if ($row1->type == 9) {
                                                 $arrPanVerifyNo[$key] = json_decode($row1->karza->req_file);
                                             }
-                                        } 
+                                        }  */
                                        
                                         ?>
 
@@ -293,6 +293,25 @@
                                                    
                                                 </td>
                                             </tr>
+                                            <tr>
+                                                <td>9</td>
+                                                <td>CKYC</td>
+                                                <td></td>
+                                                <td>{{isset($telephoneFileName[$j]) ? $telephoneFileName[$j] : '' }}</td>
+                                                <td>
+                                                <a  href="{{ isset($telephoneFileId[$j]) ? route('download_storage_file', ['file_id' => $telephoneFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($telephoneFilePath[$j]) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
+                                                <div class="upload-btn-wrapper setupload-btn">
+                                                    @if(request()->get('view_only'))
+                                                    @can('promoter_document_save')
+                                                    <button type='button' class="btn">Upload</button>
+                                                    @endcan
+                                                    @endif
+                                                    <input type="file" class="ckycfile"  name="ckycfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="ckycfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 77)">
+                                                </div>
+
+
+                                                </td>
+                                            </tr>
 
                                           </tbody>
                                        </table>
@@ -354,8 +373,12 @@
         filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'file' ])}}",
         filebrowserUploadMethod: 'form',
         imageUploadUrl:"{{ route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'image' ]) }}",
-        disallowedContent: 'img{width,height};'
+        disallowedContent: 'img{width,height};',
+        promoter_document_save: "{{ URL::route('promoter_document_save') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}"
       };   
 CKEDITOR.replace('promoter_cmnt', ckeditorOptions);
+<script src="http://admin-my-rentalpha.local/backend/js/promoter.js"></script>
 </script>
 @endsection

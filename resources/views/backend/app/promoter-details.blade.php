@@ -64,7 +64,7 @@
 
                             // dd($row->businessApi);
                             /* for get api response file data   */
-                            foreach ($row->businessApi as $row1) {
+                          /*  foreach ($row->businessApi as $row1) {
 
                                 if ($row1->type == 3) {
                                     $main[$key]['panNo'] = json_decode($row1->karza->req_file);
@@ -85,7 +85,7 @@
                                     $main[$key]['panVerifyNo'] = json_decode($row1->karza->req_file);
                                 }
                                 
-                            }
+                            } */
                        
                                 /* for get document file data   */
 
