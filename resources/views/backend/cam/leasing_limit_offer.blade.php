@@ -617,40 +617,5 @@
   $(document).on('change', '#invoice_processingfee_type', function(){
     $('#invoice_processingfee_value').val('');
   })
-  $(document).on('change', 'input[name=\'sub_limit\']', function() {
-    calProcesingFee = '';
-    if($(this).val() && $("input[name=\"processing_fee\"]").val()){
-        limit_amt_total =  $(this).val();
-        var processingFee = $("input[name=\"processing_fee\"]")
-              .map(function(){return $(this).val();}).get();
-        limit_amt_total = limit_amt_total.replace(/,/g,'');
-        //Convert our percentage value into a decimal.
-        percentInDecimal = parseFloat(processingFee) / 100;
-        //Get the result.
-        processingFeeAmount = percentInDecimal *  limit_amt_total;
-        calProcesingFee  = 'PF Amount: <i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,'); 
-    }
-    $('.processinFeeAmount').html(calProcesingFee);
-});
-
-$(document).on('change', 'input[name=\"processing_fee\"]', function() {
-    calProcesingFee = '';
-    if($(this).val() && $('input[name=\'sub_limit\']').val()){
-        limit_amt_total =  $('input[name=\'sub_limit\']').val();
-        var processingFee = $(this)
-              .map(function(){return $(this).val();}).get();
-        limit_amt_total = limit_amt_total.replace(/,/g,'');
-        //Convert our percentage value into a decimal.
-        percentInDecimal = parseFloat(processingFee) / 100;
-        //Get the result.
-        processingFeeAmount = percentInDecimal *  limit_amt_total;
-        calProcesingFee  = 'PF Amount: <i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,'); 
-    }
-    $('.processinFeeAmount').html(calProcesingFee);
-});
-
-if(offerData != "") { 
-    $('input[name=\'sub_limit\']').trigger("change");
-}
 </script>
 @endsection
