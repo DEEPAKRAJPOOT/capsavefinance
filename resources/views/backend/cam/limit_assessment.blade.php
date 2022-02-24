@@ -257,7 +257,7 @@
                                                 @endphp    
                                             </tr>
                                                 <td>{{ ($prgmOffer->facility_type_id != '') ? config('common.facility_type')[$prgmOffer->facility_type_id] : 'NA'}}</td>
-                                                <td>{{ $prgmOffer->asset->asset_type }}</td>
+                                                <td>{{ $prgmOffer->asset_type_id ? $prgmOffer->asset->asset_type : '' }}</td>
                                                 <td>&#8377; {{number_format($prgmOffer->prgm_limit_amt)}}</td>
                                                 <td>{{$prgmOffer->tenor}}</td>
                                                 {{--<td>
