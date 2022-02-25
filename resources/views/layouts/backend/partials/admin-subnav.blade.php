@@ -81,7 +81,7 @@
         <a href="{{ route('gen_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/sanction-letter') ? 'active' : '' }}">Sanction Letter</a>
     </li>
     @endcan 
-    @if($appSanctionLetterGenerated || !$appSanctionLetterDataFlag)
+    @if($appSanctionLetterGenerated && !$appSanctionLetterDataFlag)
     @if (in_array(1, $productsArr))
     @can('list_new_sanction_letter')
     <li>
