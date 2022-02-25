@@ -1923,6 +1923,13 @@ class CamController extends Controller
         }
 
         if($limitData->product_id == 2){
+          if (isset($offerData->asset_insurance) && $offerData->asset_insurance == 2 || !isset($offerData->asset_insurance)) {
+            $offerData->update([
+              'asset_name' => null,
+              'timelines_for_insurance' => null,
+              'asset_comment' => null,
+            ]);
+          }
           $this->addOfferPersonalGuarantee($request, $offerData->prgm_offer_id);
         }  
 
