@@ -2399,4 +2399,15 @@ class Helper extends PaypalHelper
         $application = Application::find($app_id);
         return $application;
     }
+
+    public static function appSanctionLetterGenerated($app_id)
+    {
+        $supplyChainFormFile = storage_path('app/public/user/'.$app_id.'_supplychain.json');
+        $arrFileData = false;
+        if (file_exists($supplyChainFormFile)) {
+          $arrFileData = true; 
+        }
+        return $arrFileData;
+    }
+
 }
