@@ -72,7 +72,8 @@
         $appSanctionLetterDataFlag = \Helpers::appSanctionLetterStatus(request()->get('app_id'));  
         $appCurrentStatus = \Helpers::appCurrentStatus(request()->get('app_id'));
         $appData = \Helpers::appDataCurrent(request()->get('app_id')); 
-        $productsArr = $appData->products->pluck('id')->toArray();     
+        $productsArr = $appData->products->pluck('id')->toArray();
+        $appSanctionLetterGenerated = \Helpers::appSanctionLetterGenerated(request()->get('app_id'));      
     @endphp
     {{--@if ($currentStage->stage_code == 'sanction_letter' && $isNavAccessible)--}}
     @can('gen_sanction_letter')
@@ -80,7 +81,7 @@
         <a href="{{ route('gen_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/sanction-letter') ? 'active' : '' }}">Sanction Letter</a>
     </li>
     @endcan 
-    @if($appSanctionLetterDataFlag && !$appCurrentStatus)
+    @if(!$appSanctionLetterDataFlag && !$appSanctionLetterGenerated)
     @if (in_array(1, $productsArr))
     @can('list_new_sanction_letter')
     <li>
