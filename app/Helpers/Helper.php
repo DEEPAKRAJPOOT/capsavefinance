@@ -2388,9 +2388,15 @@ class Helper extends PaypalHelper
     public static function appCurrentStatus($app_id)
     {
        $appCurrentStatusData = Application::getAppData((int) $app_id)->curr_status_id; 
-        if($appCurrentStatusData == config('common.mst_status_id.SANCTION_LETTER_GENERATED')){
+        if($appCurrentStatusData == config('common.mst_status_id.SANCTION_LETTER_GENERATED') || $appCurrentStatusData == config('common.mst_status_id.APP_SANCTIONED')){
             return true;
         }
         return false;
+    }
+
+    public static function appDataCurrent($app_id)
+    {
+        $application = Application::find($app_id);
+        return $application;
     }
 }

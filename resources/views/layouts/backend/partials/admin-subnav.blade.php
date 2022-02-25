@@ -70,21 +70,24 @@
     @endcan
     @php
         $appSanctionLetterDataFlag = \Helpers::appSanctionLetterStatus(request()->get('app_id'));  
-        $appCurrentStatus = \Helpers::appCurrentStatus(request()->get('app_id'));        
+        $appCurrentStatus = \Helpers::appCurrentStatus(request()->get('app_id'));
+        $appData = \Helpers::appDataCurrent(request()->get('app_id')); 
+        $productsArr = $appData->products->pluck('id')->toArray();     
     @endphp
     {{--@if ($currentStage->stage_code == 'sanction_letter' && $isNavAccessible)--}}
-    @if($appSanctionLetterDataFlag && $appCurrentStatus)
-        @can('gen_sanction_letter')
-        <li>
-            <a href="{{ route('gen_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/sanction-letter') ? 'active' : '' }}">Sanction Letter</a>
-        </li>
-        @endcan 
-    @else
+    @can('gen_sanction_letter')
+    <li>
+        <a href="{{ route('gen_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/sanction-letter') ? 'active' : '' }}">Sanction Letter</a>
+    </li>
+    @endcan 
+    @if($appSanctionLetterDataFlag && !$appCurrentStatus)
+    @if (in_array(1, $productsArr))
     @can('list_new_sanction_letter')
     <li>
         <a href="{{ route('list_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{ request()->is('application/new-sanction-letter','application/create-new-sanction-letter','application/view-new-sanction-letter') ? 'active' : '' }}">New Sanction Letter</a>
     </li>
-    @endcan   
+    @endcan 
+    @endif  
     @endif
     {{--@endif--}}
 </ul>

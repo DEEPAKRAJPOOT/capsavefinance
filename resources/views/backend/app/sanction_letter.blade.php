@@ -85,10 +85,22 @@
    height:48px;
    }
 </style>
+@php
+   $appSanctionLetterDataFlag = \Helpers::appSanctionLetterStatus(request()->get('app_id')); 
+   $appCurrentStatus = \Helpers::appCurrentStatus(request()->get('app_id')); 
+   $active = 'active';
+   $fadein = 'in';
+   if(!$appSanctionLetterDataFlag && $appCurrentStatus){
+      $active = 'active';
+      $fadein = 'in';
+   }
+@endphp
 <div class="content-wrapper">
    <ul class="nav nav-tabs sub-menu-main pl-0 m-0">
+      @if(!$appSanctionLetterDataFlag && $appCurrentStatus)
       <li class="active"><a data-toggle="tab" href="#sanctionSupplyChain">SupplyChain</a></li>
-      <li><a data-toggle="tab" href="#SanctionLeasing">Leasing</a></li>
+      @endif
+      <li class="{{ $active }}"><a data-toggle="tab" href="#SanctionLeasing">Leasing</a></li>
    </ul>
    <div class="row grid-margin mt-3 mb-2">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
@@ -113,6 +125,7 @@
                </div>
                <!-- add limit validity date -->
                <div class="tab-content">
+                  @if(!$appSanctionLetterDataFlag && $appCurrentStatus)
                   <div id="sanctionSupplyChain" class="tab-pane fadein active">
                      <form action="{{route('save_sanction_letter_supplychain')}}" id="frmSanctionLetter" method="POST">
                         @csrf
@@ -897,7 +910,8 @@
                         @endif
                      </form>
                   </div>
-                  <div id="SanctionLeasing" class="tab-pane fade">
+                  @endif
+                  <div id="SanctionLeasing" class="tab-pane fade{{ $fadein }} {{ $active }}">
                      <div class="card card-color mb-0 {{isset($sanction_expire_msg) && empty($sanction_expire_msg) ? 'hide' : '' }}">
                         <div class="card-header">
                            <a class="card-title ">{{$sanction_expire_msg ?? ''}}</a>
