@@ -403,14 +403,12 @@
                   <td class=""><b>Interest Rate (%)</b></td>
                   <td class="">{{isset($termLoanOffer->interest_rate) ? $termLoanOffer->interest_rate.' %': ''}}</td>                  
                </tr>
+               @if(isset($termLoanOffer->asset_insurance) && $termLoanOffer->asset_insurance == 1)
               <tr role="row" class="odd">
                   <td colspan="4">
                       <table width="100%">
                           <tr style="background-color: #d2d4de;">
                               <td rowspan="3" style="background-color: #fff;" width="10%"><b>Asset Insurance</b></td>
-                              <td rowspan="3" style="background-color: #fff;" width="10%">
-                              <b>{{ isset($termLoanOffer->asset_insurance) && $termLoanOffer->asset_insurance == 1 ? 'Applicable' : 'Not Applicable' }}</b>
-                              </td>
                               <td width="25%"><b>Asset Name</b></td>
                               <td width="25%"><b>Timelines For Insurance</b></td>
                               <td width="30%"><b>Asset Comment</b></td>
@@ -423,6 +421,7 @@
                       </table>
                   </td>
               </tr>
+              @endif
                @if($termLoanOffer->offerPg->count() > 0)
               <tr role="row" class="odd">
                   <td colspan="4">
