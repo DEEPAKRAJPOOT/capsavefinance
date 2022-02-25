@@ -409,7 +409,7 @@
                           <tr style="background-color: #d2d4de;">
                               <td rowspan="3" style="background-color: #fff;" width="10%"><b>Asset Insurance</b></td>
                               <td rowspan="3" style="background-color: #fff;" width="10%">
-                                <b>{{ isset($termLoanOffer->asset_insurance) ? 'Applicable' : 'Not Applicable' }}</b>
+                                <b>{{ isset($termLoanOffer->asset_insurance) && $termLoanOffer->asset_insurance ? 'Applicable' : 'Not Applicable' }}</b>
                               </td>
                               <td width="25%"><b>Asset Name</b></td>
                               <td width="25%"><b>Timelines For Insurance</b></td>
