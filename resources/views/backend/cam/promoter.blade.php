@@ -368,6 +368,7 @@
     
 @endsection
 @section('jscript')
+<script src="{{url('backend/js/promoter.js')}}"></script>
 <script>
       var ckeditorOptions =  {
         filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'file' ])}}",
@@ -379,6 +380,5 @@
         token: "{{ csrf_token() }}"
       };   
 CKEDITOR.replace('promoter_cmnt', ckeditorOptions);
-<script src="http://admin-my-rentalpha.local/backend/js/promoter.js"></script>
 </script>
 @endsection
