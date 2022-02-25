@@ -86,17 +86,19 @@
    }
 </style>
 @php
+   $appSanctionLetterDataFlag = \Helpers::appSanctionLetterStatus(request()->get('app_id'));  
+   $appCurrentStatus = \Helpers::appCurrentStatus(request()->get('app_id'));
    $appSanctionLetterGenerated = \Helpers::appSanctionLetterGenerated(request()->get('app_id'));  
    $active = 'active';
    $fadein = 'in';
-   if($appSanctionLetterGenerated){
+   if($appSanctionLetterGenerated && $appSanctionLetterDataFlag){
       $active = '';
       $fadein = '';
    }
 @endphp
 <div class="content-wrapper">
    <ul class="nav nav-tabs sub-menu-main pl-0 m-0">
-      @if($appSanctionLetterGenerated)
+      @if($appSanctionLetterGenerated && $appSanctionLetterDataFlag)
       <li class="active"><a data-toggle="tab" href="#sanctionSupplyChain">SupplyChain</a></li>
       @endif
       <li class="{{ $active }}"><a data-toggle="tab" href="#SanctionLeasing">Leasing</a></li>
@@ -124,7 +126,7 @@
                </div>
                <!-- add limit validity date -->
                <div class="tab-content">
-                  @if($appSanctionLetterGenerated)
+                  @if($appSanctionLetterGenerated && $appSanctionLetterDataFlag)
                   <div id="sanctionSupplyChain" class="tab-pane fadein active">
                      <form action="{{route('save_sanction_letter_supplychain')}}" id="frmSanctionLetter" method="POST">
                         @csrf
