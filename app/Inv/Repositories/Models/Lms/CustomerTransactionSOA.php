@@ -108,7 +108,7 @@ class CustomerTransactionSOA extends BaseModel
         $currency = '';
         $debitAmount = 0;
         $creditAmount = 0;
-        $transDate = $transaction->sys_created_at ?? $transaction->created_at;
+        $transDate = $transaction->created_at ?? $transaction->sys_created_at;
         if($transaction->payment_id && in_array($transaction->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
             //
         }else{
