@@ -30,6 +30,9 @@ function uploadFile(uploadId, ownerId, docId)
     else if(docId == 38) { 
         var file  = $("#telephonefile"+uploadId)[0].files[0];
     }
+    else if(docId == 77) { 
+        var file  = $("#ckycfile"+uploadId)[0].files[0];
+    }
 
    
     var extension = file.name.split('.').pop().toLowerCase();

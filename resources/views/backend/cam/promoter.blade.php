@@ -15,6 +15,11 @@
                      <div class="data">
                         <h2 class="sub-title bg">Management Information</h2>
                         <div class="p-2 full-width">
+                            <form id="signupForm" method="post">
+                                @csrf
+                            <input type="hidden" name="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />
+                            <input type="hidden" name="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />
+               
                            <div id="accordion" class="accordion d-table col-sm-12">
                               @php ($count = 0)
                               @php ($j = 0)
@@ -323,6 +328,7 @@
                             @endforeach  
   
                            </div>
+                            </form>
                         </div>
                      </div>
               <form method="POST" action="{{route('cam_promoter_comment_save')}}"> 
@@ -374,11 +380,15 @@
         filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'file' ])}}",
         filebrowserUploadMethod: 'form',
         imageUploadUrl:"{{ route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'image' ]) }}",
-        disallowedContent: 'img{width,height};',
+        disallowedContent: 'img{width,height};'
+        
+      };
+
+       var messages = {
         promoter_document_save: "{{ URL::route('promoter_document_save') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}"
-      };   
+    };
 CKEDITOR.replace('promoter_cmnt', ckeditorOptions);
 </script>
 @endsection
