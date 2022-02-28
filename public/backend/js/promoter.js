@@ -47,7 +47,7 @@ function uploadFile(uploadId, ownerId, docId)
     
     
     console.log(messages.promoter_document_save);
-    console.log(messages.token);
+    console.log(messages.app_id);
     $.ajax({
         headers: {'X-CSRF-TOKEN':  messages.token  },
         url : messages.promoter_document_save,

@@ -18,8 +18,8 @@
                             <form id="signupForm" method="post">
                                 @csrf
                                 
-                            <input type="hidden" name="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />
-                            <input type="hidden" name="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />
+                            <input type="hidden" name="app_id" id="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />
+                            <input type="hidden" name="biz_id" id="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />
                
                            <div id="accordion" class="accordion d-table col-sm-12">
                               @php ($count = 0)
@@ -105,9 +105,7 @@
                                         }  */
                                        
                                         ?>
-
-
-                              <div class="card card-color mb-0">
+                                <div class="card card-color mb-0">
                                  <div class="card-header collapsed" data-toggle="collapse" href="#collapse{{$count}}">
                                     <a class="card-title">
                                     Management Information ({{$count}})
