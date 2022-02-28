@@ -73,13 +73,14 @@
                                             }
 
                                             if ($row2->doc_id == 77) {
+                                                $doc_id_no = "";
                                                 $ckycFilePath[$key] = $row2->userFile->file_path;
                                                 $ckycFileName[$key] =   $row2->userFile->file_name;
-                                                $ckycFileId[$key] =   $row2->userFile->file_id;
-                                                $doc_id_no[$key] =    $row->document[$key]['doc_id_no'];
+                                                $ckycFileId[$key]   =   $row2->userFile->file_id;
+                                                $doc_id_no    =   $row2['doc_id_no'];
+                                                
                                             }
-                           
-                                         } 
+                                         }
 
                                          /*
                                         foreach($row->businessApi as $row1) {
@@ -306,7 +307,7 @@
                                             <tr>
                                                 <td>9</td>
                                                 <td>CKYC </td>
-                                                <td><input type="text"  value="{{ isset($doc_id_no[$j]) ? $doc_id_no[$j] : '' }}" name="ckycNumber" id="ckycNumber{{isset($row->first_name) ? $i : '1'}}"  class="form-control ckycNumber" ></td>
+                                                <td><input type="text"  value="{{ isset($doc_id_no) ? $doc_id_no : '' }}" name="ckycNumber" id="ckycNumber{{isset($row->first_name) ? $i : '1'}}"  class="form-control ckycNumber" ></td>
                                                 <td>{{isset($ckycFileName[$j]) ? $ckycFileName[$j] : '' }}</td>
                                                 <td>
                                                 <a  href="{{ isset($ckycFileId[$j]) ? route('download_storage_file', ['file_id' => $ckycFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($ckycFilePath[$j]) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
