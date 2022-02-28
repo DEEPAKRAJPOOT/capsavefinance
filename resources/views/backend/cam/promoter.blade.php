@@ -76,7 +76,7 @@
                                                 $ckycFilePath[$key] = $row2->userFile->file_path;
                                                 $ckycFileName[$key] =   $row2->userFile->file_name;
                                                 $ckycFileId[$key] =   $row2->userFile->file_id;
-                                                $doc_id_no[$key] =    $row->document[3]['doc_id_no'];
+                                                $doc_id_no[$key] =    $row->document[$key]['doc_id_no'];
                                             }
                            
                                          } 
