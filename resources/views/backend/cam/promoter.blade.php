@@ -17,6 +17,7 @@
                         <div class="p-2 full-width">
                             <form id="signupForm" method="post">
                                 @csrf
+                                
                             <input type="hidden" name="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />
                             <input type="hidden" name="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />
                
@@ -70,6 +71,12 @@
                                                 $telephoneFilePath[$key] = $row2->userFile->file_path;
                                                 $telephoneFileName[$key] =   $row2->userFile->file_name;
                                                 $telephoneFileId[$key] =   $row2->userFile->file_id;
+                                            }
+
+                                            if ($row2->doc_id == 77) {
+                                                $ckycFilePath[$key] = $row2->userFile->file_path;
+                                                $ckycFileName[$key] =   $row2->userFile->file_name;
+                                                $ckycFileId[$key] =   $row2->userFile->file_id;
                                             }
                            
                                          } 
@@ -168,8 +175,8 @@
                                                 <td width="20%"><b>S.No.</b></td>
                                                 <td width="20%"><b>Document Name</b></td>
                                                 <td width="20%"><b> Document ID No.</b></td>
-                                                <td width="20%"><b>File Name</b></td>
-                                                <td width="20%"><b>Action</b></td>
+                                                <td width="15%"><b>File Name</b></td>
+                                                <td width="25%"><b>Action</b></td>
                                              </tr>
                                              <tr>
                                                 <td>1</td>
@@ -302,9 +309,9 @@
                                                 <td>9</td>
                                                 <td>CKYC</td>
                                                 <td></td>
-                                                <td>{{isset($telephoneFileName[$j]) ? $telephoneFileName[$j] : '' }}</td>
+                                                <td>{{isset($ckycFileName[$j]) ? $ckycFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($telephoneFileId[$j]) ? route('download_storage_file', ['file_id' => $telephoneFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($telephoneFilePath[$j]) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
+                                                <a  href="{{ isset($ckycFileId[$j]) ? route('download_storage_file', ['file_id' => $ckycFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($ckycFilePath[$j]) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
                                                 <div class="upload-btn-wrapper setupload-btn">
                                                     @if(request()->get('view_only'))
                                                     @can('promoter_document_save')
@@ -312,6 +319,7 @@
                                                     @endcan
                                                     @endif
                                                     <input type="file" class="ckycfile"  name="ckycfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="ckycfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 77)">
+                                                <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}"> 
                                                 </div>
 
 
@@ -374,7 +382,7 @@
     
 @endsection
 @section('jscript')
-<script src="{{url('backend/js/promoter.js')}}"></script>
+
 <script>
       var ckeditorOptions =  {
         filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'file' ])}}",
@@ -391,4 +399,5 @@
     };
 CKEDITOR.replace('promoter_cmnt', ckeditorOptions);
 </script>
+<script src="{{url('backend/js/promoter.js')}}"></script>
 @endsection
