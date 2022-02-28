@@ -553,7 +553,8 @@ class LeadController extends Controller {
                     Session::flash('message', 'Please fill the correct details.');
                     return redirect()->back();                     
                 }
-                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
+                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));
+                $anchorData   =   $this->userRepo->getAnchorById($anchorId);
                 if(!empty($value) && !$anchUserInfo){
 
                     $hashval = time() . 'ANCHORLEAD' . $key;
@@ -581,7 +582,7 @@ class LeadController extends Controller {
 
                     $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
                     $businessName = trim($value[2]);
-                    $anchorName = $anchUserInfo['name']." ".$anchUserInfo['l_name'];
+                    $anchorName = $anchorData['comp_name'];
                     /*
                     $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
                     if($getAnchorId && $getAnchorId->anchor_id!=''){
@@ -843,7 +844,8 @@ class LeadController extends Controller {
             $whereCond[] = ['anchor_id', '>', '0'];
             //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
-            dd($anchUserData);
+            $anchorData   =   $this->userRepo->getAnchorById($anchorId);
+
             if (!isset($anchUserData[0])) {  
                 $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
                 $token = md5($hashval);
@@ -873,7 +875,7 @@ class LeadController extends Controller {
                 }
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
                 $businessName = $arrAnchorVal['comp_name'];
-                $anchorName = $anchUserData[0]['name']." ".$anchUserData[0]['l_name'];
+                $anchorName = $anchorData[0]['comp_name'];
                 /*
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
             
