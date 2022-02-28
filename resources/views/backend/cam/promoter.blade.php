@@ -310,8 +310,9 @@
                                                 <td><input type="text"  value="{{ isset($doc_id_no) ? $doc_id_no : '' }}" name="ckycNumber" id="ckycNumber{{isset($row->first_name) ? $i : '1'}}"  class="form-control ckycNumber" ></td>
                                                 <td>{{isset($ckycFileName[$j]) ? $ckycFileName[$j] : '' }}</td>
                                                 <td>
-                                                <a  href="{{ isset($ckycFileId[$j]) ? route('download_storage_file', ['file_id' => $ckycFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($ckycFilePath[$j]) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>
+                                                
                                                 <div class="upload-btn-wrapper setupload-btn">
+                                                    <a  href="{{ isset($ckycFileId[$j]) ? route('download_storage_file', ['file_id' => $ckycFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($ckycFilePath[$j]) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>&nbsp;&nbsp;
                                                     @if(request()->get('view_only'))
                                                     @can('promoter_document_save')
                                                     <button type='button' class="btn">Upload</button>
