@@ -580,6 +580,8 @@ class LeadController extends Controller {
                     ];
 
                     $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
+                    $businessName = trim($value[2]);
+                    $anchorName = $anchUserInfo['name']." ".$anchUserInfo['l_name'];
                     /*
                     $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
                     if($getAnchorId && $getAnchorId->anchor_id!=''){
@@ -595,6 +597,8 @@ class LeadController extends Controller {
                         $anchLeadMailArr['name'] = $arrAnchLeadData['name'];
                         $anchLeadMailArr['email'] =  trim($arrAnchLeadData['email']);
                         $anchLeadMailArr['url'] = $mailUrl;
+                        $anchLeadMailArr['businessName'] = $businessName;
+                        $anchLeadMailArr['anchorName'] = $anchorName;
                         Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
                     }
                 }
@@ -867,6 +871,8 @@ class LeadController extends Controller {
                     $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAnchorData));
                 }
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
+                $businessName = $arrAnchorVal['comp_name'];
+                $anchorName = $anchUserData[0]['name']." ".$anchUserData[0]['l_name'];
                 /*
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
             
@@ -885,6 +891,8 @@ class LeadController extends Controller {
                     $anchLeadMailArr['name'] = trim($arrAnchorData['name']);
                     $anchLeadMailArr['email'] =  trim($arrAnchorData['email']);
                     $anchLeadMailArr['url'] = $mailUrl;
+                    $anchLeadMailArr['businessName'] = $businessName;
+                    $anchLeadMailArr['anchorName'] = $anchorName;
                     Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
                     Session::flash('message', trans('backend_messages.anchor_lead_created'));
                     Session::flash('operation_status',1);

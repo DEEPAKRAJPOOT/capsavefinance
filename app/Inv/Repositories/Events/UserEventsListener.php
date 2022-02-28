@@ -406,7 +406,7 @@ class UserEventsListener extends BaseEvent
                     'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
-                    'subject' => $email_content->subject,
+                    'subject' => $email_content->subject."//".$user['businessName']."//".$user['anchorName'],
                     'body' => $mail_body,
                 ];
                 FinanceModel::logEmail($mailContent);
