@@ -843,6 +843,7 @@ class LeadController extends Controller {
             $whereCond[] = ['anchor_id', '>', '0'];
             //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+            dd($anchUserData);
             if (!isset($anchUserData[0])) {  
                 $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
                 $token = md5($hashval);
