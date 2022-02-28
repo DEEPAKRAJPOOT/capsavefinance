@@ -259,6 +259,24 @@ class DocumentRepository implements DocumentInterface
         
         return $doc;
     }
+
+
+    /**
+     * save app document method
+     *
+     * @param mixed $requests
+     */
+
+    public function updateAppDocNumberFile($ownerDocFile = [], $doc_id_no){
+        $doc = AppDocumentFile::find($ownerDocFile->app_doc_file_id);
+        if($doc)
+        {
+            $doc->doc_id_no = $doc_id_no;
+            $doc->save();
+        }
+
+        return $doc;
+    }
     
     /**
      * application document

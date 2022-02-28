@@ -26,10 +26,9 @@
                               @php ($j = 0)
                               @php ($i = 0)
                               @php ($panNoFilePath = $panNoFileName = $dlNoFilePath = $dlNoFileName = $voterNoFilePath = $voterNoFileName = $passNoFilePath = $passNoFileName = $photoFilePath = $photoFileName = $aadharFilePath = $aadharFileName = $arrPan = $arrDl = $arrVoterNo = $arrPassNo = $arrMobileNo = $arrMobileOtpNo = [])
-                             @foreach($arrPromoterData as $key=>$row)
+                              @foreach($arrPromoterData as $key=>$row)
                                         @php ($i++)
                                         @php ($count++)
-
                                          <?php 
                                          foreach($row->document as $row2) {
                                              if($row2->doc_id == 2) { 
@@ -77,6 +76,7 @@
                                                 $ckycFilePath[$key] = $row2->userFile->file_path;
                                                 $ckycFileName[$key] =   $row2->userFile->file_name;
                                                 $ckycFileId[$key] =   $row2->userFile->file_id;
+                                                $doc_id_no[$key] =    $row->document[3]['doc_id_no'];
                                             }
                            
                                          } 
@@ -305,8 +305,8 @@
                                             </tr>
                                             <tr>
                                                 <td>9</td>
-                                                <td>CKYC</td>
-                                                <td></td>
+                                                <td>CKYC </td>
+                                                <td><input type="text"  value="{{ isset($doc_id_no[$j]) ? $doc_id_no[$j] : '' }}" name="ckycNumber" id="ckycNumber{{isset($row->first_name) ? $i : '1'}}"  class="form-control ckycNumber" ></td>
                                                 <td>{{isset($ckycFileName[$j]) ? $ckycFileName[$j] : '' }}</td>
                                                 <td>
                                                 <a  href="{{ isset($ckycFileId[$j]) ? route('download_storage_file', ['file_id' => $ckycFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($ckycFilePath[$j]) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>

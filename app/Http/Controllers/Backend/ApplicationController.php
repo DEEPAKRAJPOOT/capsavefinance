@@ -354,12 +354,16 @@ class ApplicationController extends Controller
 				$ownerDocCheck = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
 				if(!empty($ownerDocCheck)) {
 					$appDocResponse = $this->docRepo->updateAppDocFile($ownerDocCheck, $userFile->file_id);
+                                        if($request->get('doc_id_no')!='') {
+                                            $appDocResponse = $this->docRepo->updateAppDocNumberFile($ownerDocCheck, $request->get('doc_id_no'));
+                                        }
 					$fileId = $appDocResponse->file_id;
 					$response = $this->docRepo->getFileByFileId($fileId);
 					
 				} else {
 					$appDocData = Helpers::appDocData($arrFileData, $userFile->file_id);
 					$appDocData['is_ovd_enabled'] = 1;
+                                        $appDocData['doc_id_no'] = ($request->get('doc_id_no')) ? $request->get('doc_id_no') : '';
 					$appDocResponse = $this->docRepo->saveAppDoc($appDocData);
 					$fileId = $appDocResponse->file_id;
 					$response = $this->docRepo->getFileByFileId($fileId);
