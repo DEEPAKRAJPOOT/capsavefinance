@@ -554,7 +554,7 @@ class LeadController extends Controller {
                     return redirect()->back();                     
                 }
                 $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));
-                $anchorData   =   $this->userRepo->getAnchorById($anchorId);
+                $anchorData   =   $this->userRepo->getAnchorById($anchorId)->toArray();
                 if(!empty($value) && !$anchUserInfo){
 
                     $hashval = time() . 'ANCHORLEAD' . $key;
@@ -844,7 +844,7 @@ class LeadController extends Controller {
             $whereCond[] = ['anchor_id', '>', '0'];
             //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
-            $anchorData   =   $this->userRepo->getAnchorById($anchorId);
+            $anchorData   =   $this->userRepo->getAnchorById($anchorId)->toArray();
 
             if (!isset($anchUserData[0])) {  
                 $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
@@ -875,7 +875,7 @@ class LeadController extends Controller {
                 }
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
                 $businessName = $arrAnchorVal['comp_name'];
-                $anchorName = $anchorData[0]['comp_name'];
+                $anchorName = $anchorData['comp_name'];
                 /*
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
             
