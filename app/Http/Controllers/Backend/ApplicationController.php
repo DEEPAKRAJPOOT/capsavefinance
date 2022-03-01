@@ -1185,9 +1185,9 @@ class ApplicationController extends Controller
 
 				$userLimit = $this->appRepo->getUserLimit($user_id);  
 				if ($userLimit && $userLimit->end_date) {
-					$currentdate     = strtotime(now()->format('d-m-Y'));
+					$currentDate     = strtotime(now()->format('d-m-Y'));
 					$limitExpiryDate = strtotime(Carbon::parse($userLimit->end_date)->format('d-m-Y'));
-					if ($limitExpiryDate < $curdate) {
+					if ($limitExpiryDate < $currentDate) {
 						Session::flash('error_code', 'limit_expired_found');
 						return redirect()->back();  
 					}
