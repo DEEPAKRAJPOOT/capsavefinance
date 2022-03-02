@@ -34,11 +34,13 @@ function uploadFile(uploadId, ownerId, docId)
     else if(docId == 77) { 
         var file  = $("#ckycfile"+uploadId)[0].files[0];
         var id_number  = $("#ckycNumber"+uploadId).val();
-        var letterNumber = /^[0-9a-zA-Z]+$/;
-        if((!id_number.match(letterNumber))) {
-          alert('CKYC allow only Alphanumbeic'); 
-           $(".isloader").hide();
-          return false;
+        if(id_number!='') {
+            var letterNumber = /^[0-9a-zA-Z]+$/;
+            if((!id_number.match(letterNumber))) {
+              alert('CKYC allow only Alphanumeric'); 
+               $(".isloader").hide();
+              return false;
+            }
         }
     }
 

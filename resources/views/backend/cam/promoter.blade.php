@@ -311,16 +311,24 @@
                                                 <td>{{isset($ckycFileName[$j]) ? $ckycFileName[$j] : '' }}</td>
                                                 <td>
                                                 
-                                                <div class="upload-btn-wrapper setupload-btn">
-                                                    <a  href="{{ isset($ckycFileId[$j]) ? route('download_storage_file', ['file_id' => $ckycFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($ckycFilePath[$j]) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>&nbsp;&nbsp;
-                                                    @if(request()->get('view_only'))
-                                                    @can('promoter_document_save')
-                                                    <button type='button' class="btn">Upload</button>
-                                                    @endcan
-                                                    @endif
-                                                    <input type="file" class="ckycfile"  name="ckycfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="ckycfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 77)">
-                                                <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}"> 
-                                                </div>
+                                                <table>
+                                                    <tr>
+                                                        <td><a  href="{{ isset($ckycFileId[$j]) ? route('download_storage_file', ['file_id' => $ckycFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($ckycFilePath[$j]) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>&nbsp;&nbsp;</td>
+                                                        <td>
+                                                            <div class="upload-btn-wrapper setupload-btn">
+                                                                @if(request()->get('view_only'))
+                                                                @can('promoter_document_save')
+                                                                <button type='button' class="btn">Upload</button>
+                                                                @endcan
+                                                                @endif
+                                                                <input type="file" class="ckycfile"  name="ckycfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="ckycfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 77)">
+                                                            <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}">
+                                                            </div>
+
+                                                        </td>
+                                                    </tr>
+                                                    </table>
+                                                
 
 
                                                 </td>
