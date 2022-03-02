@@ -307,7 +307,7 @@
                                             <tr>
                                                 <td>9</td>
                                                 <td>CKYC </td>
-                                                <td><input type="text"  value="{{ isset($doc_id_no) ? $doc_id_no : '' }}" name="ckycNumber" id="ckycNumber{{isset($row->first_name) ? $i : '1'}}"  class="form-control ckycNumber" ></td>
+                                                <td><input type="text"  value="{{ isset($doc_id_no) ? $doc_id_no : '' }}" name="ckycNumber" id="ckycNumber{{isset($row->first_name) ? $i : '1'}}"  class="form-control ckycNumber" maxlength="20"></td>
                                                 <td>{{isset($ckycFileName[$j]) ? $ckycFileName[$j] : '' }}</td>
                                                 <td>
                                                 
