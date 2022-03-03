@@ -2253,7 +2253,7 @@ class CamController extends Controller
     public function promoterCommentSave(Request $request){
        try{
             $arrCamData = $request->all();
-            //  dd($arrCamData);
+              dd($arrCamData);
             $userId = Auth::user()->user_id;
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updatePromoterComment($arrCamData, $userId);

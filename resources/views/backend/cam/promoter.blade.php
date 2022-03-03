@@ -12,15 +12,11 @@
             <div class=" form-fields">
                <div class="form-sections">
                      <!-- <div id="js-grid-static"></div>    -->
+                     <form method="POST" action="{{route('cam_promoter_comment_save')}}">
+                            @csrf
                      <div class="data">
                         <h2 class="sub-title bg">Management Information</h2>
                         <div class="p-2 full-width">
-                            <form id="signupForm" method="post">
-                                @csrf
-                                
-                            <input type="hidden" name="app_id" id="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />
-                            <input type="hidden" name="biz_id" id="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />
-               
                            <div id="accordion" class="accordion d-table col-sm-12">
                               @php ($count = 0)
                               @php ($j = 0)
@@ -307,7 +303,7 @@
                                             <tr>
                                                 <td>9</td>
                                                 <td>CKYC </td>
-                                                <td><input type="text"  value="{{ isset($doc_id_no) ? $doc_id_no : '' }}" name="ckycNumber" id="ckycNumber{{isset($row->first_name) ? $i : '1'}}"  class="form-control ckycNumber" maxlength="20"></td>
+                                                <td><input type="text"  value="{{ isset($doc_id_no) ? $doc_id_no : '' }}" name="ckycNumber[]" id="ckycNumber{{isset($row->first_name) ? $i : '1'}}"  class="form-control ckycNumber" maxlength="20"></td>
                                                 <td>{{isset($ckycFileName[$j]) ? $ckycFileName[$j] : '' }}</td>
                                                 <td>
                                                 
@@ -322,7 +318,7 @@
                                                                 @endcan
                                                                 @endif
                                                                 <input type="file" class="ckycfile"  name="ckycfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="ckycfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 77)">
-                                                            <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}">
+                                                                <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}">
                                                             </div>
 
                                                         </td>
@@ -344,11 +340,11 @@
                             @endforeach  
   
                            </div>
-                            </form>
+                            
+
                         </div>
                      </div>
-              <form method="POST" action="{{route('cam_promoter_comment_save')}}"> 
-                 @csrf
+              
 
                 <input type="hidden" name="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />             
                 <input type="hidden" name="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />             
