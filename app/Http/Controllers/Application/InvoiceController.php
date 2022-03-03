@@ -180,14 +180,14 @@ class InvoiceController extends Controller {
         $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
 
         $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($prgmOfferId, $invoice_amount);
-        $limit =   InvoiceTrait::ProgramLimit($attributes);
-        $sum   =   InvoiceTrait::invoiceApproveLimit($attributes);
-        $remainAmount = $limit - $sum;
+        // $limit =   InvoiceTrait::ProgramLimit($attributes);
+        // $sum   =   InvoiceTrait::invoiceApproveLimit($attributes);
+        // $remainAmount = $limit - $sum;
 
-        if ($marginAmt > $remainAmount) {
-            Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount.');
-            return back();
-        }
+        // if ($marginAmt > $remainAmount) {
+        //     Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount.');
+        //     return back();
+        // }
 
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);
@@ -335,14 +335,14 @@ class InvoiceController extends Controller {
                         $getInvDueDate =  InvoiceTrait::getInvoiceDueDate($dataAttr); /* get invoice due date*/
 
                         $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($dataAttr['prgm_offer_id'], $dataAttr['amount']);
-                        $limit =   InvoiceTrait::ProgramLimit($dataAttr);
-                        $sum   =   InvoiceTrait::invoiceApproveLimit($dataAttr);
-                        $remainAmount = $limit - $sum;
+                        // $limit =   InvoiceTrait::ProgramLimit($dataAttr);
+                        // $sum   =   InvoiceTrait::invoiceApproveLimit($dataAttr);
+                        // $remainAmount = $limit - $sum;
 
-                        if ($marginAmt > $remainAmount) {
-                            Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount for invoice no. '.$dataAttr['inv_no']);
-                            return back();
-                        }
+                        // if ($marginAmt > $remainAmount) {
+                        //     Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount for invoice no. '.$dataAttr['inv_no']);
+                        //     return back();
+                        // }
 
                         if($getInvDueDate['status']==0)
                         {
