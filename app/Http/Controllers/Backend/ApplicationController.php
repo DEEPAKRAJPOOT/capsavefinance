@@ -2118,14 +2118,15 @@ class ApplicationController extends Controller
 		$status_id = $request->get('curr_status_id') ?: '';
 		$note_id = $request->get('note_id');
 		$reason = '';
-		// dd($request->all());
+
 		if($note_id){
 			$noteData = $this->appRepo->getNoteDataById($note_id, $app_id);
 			$reason =  $noteData->note_data;
 		}
-                $appData = $this->appRepo->getAppData($app_id);
-                $curStatusId = $appData ? $appData->curr_status_id : 0;
-		// dd($request->all());
+		$appData = $this->appRepo->getAppData($app_id);
+		$curStatusId = $appData ? $appData->curr_status_id : 0;
+		$appType = $appData->app_type ?? 0;
+
 		return view('backend.app.reject_app_form')
 				->with('app_id', $app_id)
 				->with('biz_id', $biz_id)
@@ -2133,7 +2134,8 @@ class ApplicationController extends Controller
 				->with('reason', $reason)
 				->with('status_id', $status_id)
 				->with('note_id', $note_id)
-                                ->with('cur_status_id', $curStatusId);
+				->with('cur_status_id', $curStatusId)
+				->with('app_type', $appType);
 	}
         
     /**
@@ -2164,6 +2166,17 @@ class ApplicationController extends Controller
 				}
 		            
             if (isset(config('common.mst_status_id')[$appStatus]) && $cur_status_id != (int)config('common.mst_status_id')[$appStatus]) {
+
+				$appData = $this->appRepo->getAppData($app_id);
+				if ($appData && in_array($appData->app_type, [3]) && $appData->curr_status_id >= config('common.mst_status_id')['OFFER_LIMIT_APPROVED'] && $request->has('consent_process_rollback') && $request->get('consent_process_rollback') == 1) {
+					$parentAppId   = $appData->parent_app_id;
+					$actualEndDate = null;
+					$this->appRepo->updateAppLimit(['status' => 1, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
+					$this->appRepo->updatePrgmLimit(['status' => 1, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
+					\Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_SANCTIONED'));                               
+					$this->appRepo->updateAppData($parentAppId, ['status' => 2, 'is_child_sanctioned' => 1]);
+				}
+
                 $noteData = [
                         'app_id' => $app_id, 
                         'note_data' => $reason,
