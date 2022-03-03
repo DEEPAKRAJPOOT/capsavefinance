@@ -2253,8 +2253,32 @@ class CamController extends Controller
     public function promoterCommentSave(Request $request){
        try{
             $arrCamData = $request->all();
-              dd($arrCamData);
+            //  dd($arrCamData);
             $userId = Auth::user()->user_id;
+            $owneridArray = $arrCamData['ownerid'];
+            $ckycNumberArray = $arrCamData['ckycNumber'];
+            $appId = $arrCamData['app_id'];
+            $docId = 77;
+            foreach($owneridArray as $key => $ownerId) {
+                if(!empty($ckycNumberArray[$key])) {
+                    $ownerDocCheck  = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
+                   if(!empty($ownerDocCheck)) {
+                    $appDocResponse = $this->docRepo->updateAppDocNumberFilewithArray($ownerDocCheck, $ckycNumberArray[$key]);
+                   } else {
+                    $appDocData['is_ovd_enabled'] = 0;
+                    $appDocData['app_id'] = $appId;
+                    $appDocData['biz_owner_id'] = $ownerId;
+                    $appDocData['doc_id'] = $docId;
+                    $appDocData['is_active'] = 1;
+                    $appDocData['is_upload'] = 1;
+                    $appDocData['is_active'] = 1;
+                    $appDocData['doc_id_no'] = ($ckycNumberArray[$key]) ? $ckycNumberArray[$key] : '';
+                    $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+					
+                   }
+                }
+            }
+
             if($arrCamData['cam_report_id'] != ''){
                  $updateCamData = Cam::updatePromoterComment($arrCamData, $userId);
                  if($updateCamData){

@@ -277,6 +277,17 @@ class DocumentRepository implements DocumentInterface
 
         return $doc;
     }
+
+    public function updateAppDocNumberFilewithArray($ownerDocFile = [], $doc_id_no){
+        $doc = AppDocumentFile::find($ownerDocFile['app_doc_file_id']);
+        if($doc)
+        {
+            $doc->doc_id_no = $doc_id_no;
+            $doc->save();
+        }
+
+        return $doc;
+    }
     
     /**
      * application document

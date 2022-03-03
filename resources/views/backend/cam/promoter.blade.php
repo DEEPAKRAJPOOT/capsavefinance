@@ -12,8 +12,11 @@
             <div class=" form-fields">
                <div class="form-sections">
                      <!-- <div id="js-grid-static"></div>    -->
-                     <form method="POST" action="{{route('cam_promoter_comment_save')}}">
+                     <form method="POST" action="{{route('cam_promoter_comment_save')}}" name="signupForm" id="signupForm">
                             @csrf
+                             <input type="hidden" name="app_id" id="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />
+                            <input type="hidden" name="biz_id" id="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />
+               
                      <div class="data">
                         <h2 class="sub-title bg">Management Information</h2>
                         <div class="p-2 full-width">
@@ -67,13 +70,14 @@
                                                 $telephoneFileName[$key] =   $row2->userFile->file_name;
                                                 $telephoneFileId[$key] =   $row2->userFile->file_id;
                                             }
-
+                                            $doc_id_no = "";
                                             if ($row2->doc_id == 77) {
-                                                $doc_id_no = "";
-                                                $ckycFilePath[$key] = $row2->userFile->file_path;
-                                                $ckycFileName[$key] =   $row2->userFile->file_name;
-                                                $ckycFileId[$key]   =   $row2->userFile->file_id;
-                                                $doc_id_no    =   $row2['doc_id_no'];
+                                                if($row2['file_id'] > 0){
+                                                    $ckycFilePath[$key] = $row2->userFile->file_path;
+                                                    $ckycFileName[$key] =   $row2->userFile->file_name;
+                                                    $ckycFileId[$key]   =   $row2->userFile->file_id;
+                                                }
+                                                $doc_id_no          =   $row2['doc_id_no'];
                                                 
                                             }
                                          }
