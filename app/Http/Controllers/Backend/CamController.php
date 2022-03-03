@@ -2262,7 +2262,7 @@ class CamController extends Controller
             foreach($owneridArray as $key => $ownerId) {
                 echo "<br>-->".$ckycNumberArray[$key]."<br>";
                 if($ckycNumberArray[$key]!='') {
-                    if (preg_match('/^[a-zA-Z]+[a-zA-Z0-9._]+$/', $ckycNumberArray[$key])) {
+                    if (preg_match('/^[0-9a-zA-Z]+$/', $ckycNumberArray[$key])) {
                         if(!empty($ckycNumberArray[$key])) {
                             $ownerDocCheck  = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
                            if(!empty($ownerDocCheck)) {
