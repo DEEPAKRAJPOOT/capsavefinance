@@ -2260,22 +2260,30 @@ class CamController extends Controller
             $appId = $arrCamData['app_id'];
             $docId = 77;
             foreach($owneridArray as $key => $ownerId) {
-                if(!empty($ckycNumberArray[$key])) {
-                    $ownerDocCheck  = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
-                   if(!empty($ownerDocCheck)) {
-                    $appDocResponse = $this->docRepo->updateAppDocNumberFilewithArray($ownerDocCheck, $ckycNumberArray[$key]);
-                   } else {
-                    $appDocData['is_ovd_enabled'] = 0;
-                    $appDocData['app_id'] = $appId;
-                    $appDocData['biz_owner_id'] = $ownerId;
-                    $appDocData['doc_id'] = $docId;
-                    $appDocData['is_active'] = 1;
-                    $appDocData['is_upload'] = 1;
-                    $appDocData['is_active'] = 1;
-                    $appDocData['doc_id_no'] = ($ckycNumberArray[$key]) ? $ckycNumberArray[$key] : '';
-                    $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
-					
-                   }
+                echo "<br>-->".$ckycNumberArray[$key]."<br>";
+                if($ckycNumberArray[$key]!='') {
+                    if (preg_match('/^[a-zA-Z]+[a-zA-Z0-9._]+$/', $ckycNumberArray[$key])) {
+                        if(!empty($ckycNumberArray[$key])) {
+                            $ownerDocCheck  = $this->docRepo->appOwnerDocCheck($appId, $docId, $ownerId);
+                           if(!empty($ownerDocCheck)) {
+                            $appDocResponse = $this->docRepo->updateAppDocNumberFilewithArray($ownerDocCheck, $ckycNumberArray[$key]);
+                           } else {
+                            $appDocData['is_ovd_enabled'] = 0;
+                            $appDocData['app_id'] = $appId;
+                            $appDocData['biz_owner_id'] = $ownerId;
+                            $appDocData['doc_id'] = $docId;
+                            $appDocData['is_active'] = 1;
+                            $appDocData['is_upload'] = 1;
+                            $appDocData['is_active'] = 1;
+                            $appDocData['doc_id_no'] = ($ckycNumberArray[$key]) ? $ckycNumberArray[$key] : '';
+                            $appDocResponse = $this->docRepo->saveAppDoc($appDocData);
+
+                           }
+                        }
+                    } else {
+                        Session::flash('error',trans('CKYC allow only Alphanumeric'));
+                        return redirect()->route('cam_promoter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+                    }
                 }
             }
 
