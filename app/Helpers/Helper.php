@@ -40,6 +40,7 @@ use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\LmsUsersLog;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use App\Inv\Repositories\Models\AppProgramOffer;
 
 class Helper extends PaypalHelper
 {
