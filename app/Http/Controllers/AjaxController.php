@@ -3671,7 +3671,15 @@ if ($err) {
         $appId = (int)$request->app_id;
         $program_id = (int)$request->program_id;
         $offer_id = (int)$request->offer_id;
+        $anchorId = (int)$request->anchor_id;
+
         $data = $this->getAnchorProgramLimit($appId, $program_id, $offer_id);
+
+        $appData = $this->application->getAppData($appId);
+        if ($appData && in_array($appData->app_type, [2])) {
+            $data['previousProgramLimit'] = $this->invRepo->getAmountOfferLimit(['anchor_id' => $anchorId, 'prgm_id' => $program_id, 'app_id' => $appData->parent_app_id]);
+        }
+
         return json_encode($data);
         $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);
         $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
