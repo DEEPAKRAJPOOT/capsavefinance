@@ -1949,6 +1949,10 @@ class CamController extends Controller
         $limitData = $this->appRepo->getLimit($aplid);
         $anchorData = Anchor::getAnchorById($anchor_id);
         // enhancement check
+        $program_id = (int)$request->prgm_id;
+        $anchorId = (int)$request->anchor_id;
+        $prgm_data =  $this->appRepo->getProgram(['prgm_id' => $program_id]);
+
         if ($limitData->product_id == 1) {
           $program_id = (int)$request->prgm_id;
           $prgm_data =  $this->appRepo->getProgram(['prgm_id' => $program_id]);
@@ -1961,10 +1965,17 @@ class CamController extends Controller
 
           if ($prgm_data->product_id == 1) {
             $anchorPrgmLimit =  $this->getAnchorProgramLimit($appId, $program_id, $prgmOfferId);
+           // dd($anchorPrgmLimit,$request->prgm_limit_amt,$appId,$program_id,$prgmOfferId,$anchorPrgmLimit['prgm_limit']);
+            if ($anchorData->is_fungible == 1) {
+                /*if($request->prgm_limit_amt > $anchorPrgmLimit['prgm_limit']) {
+                  Session::flash('error', 'Program limit amount should not be greater than the balance limit.');
+                  return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+                }*/
 
-            if($request->prgm_limit_amt > $anchorPrgmLimit['prgmBalLimitAmt']) {
-              Session::flash('error', 'Program limit amount should not be greater than the balance limit.');
-              return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+                if($request->prgm_limit_amt > $anchorPrgmLimit['prgmBalLimitAmt']) {
+                  Session::flash('error', 'Program limit amount should not be greater than the balance limit.');
+                  return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+                }
             }
             if ($anchorData->is_fungible == 0) {
                 if ($request->prgm_limit_amt > $anchorPrgmLimit['anchorBalLimitAmt']) {
@@ -1994,6 +2005,14 @@ class CamController extends Controller
 
             if ($request->prgm_limit_amt <= $invUtilizedAmt) {
               Session::flash('error', 'Program Limit amount can\'t be less than or equal to the previous utilized limit.');
+              return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+            }
+          }
+
+          if ($appData->app_type == 2) {
+            $previousProgramLimit = AppProgramOffer::getAmountOfferLimit(['anchor_id' => $anchorId, 'prgm_id' => $program_id, 'app_id' => $appData->parent_app_id]);
+            if ($request->prgm_limit_amt <= $previousProgramLimit) {
+              Session::flash('error', 'Program Limit amount can\'t be less than or equal to the previous program limit.');
               return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             }
           }
@@ -2081,7 +2100,6 @@ class CamController extends Controller
             $arrActivity['app_id'] = $appId;
             $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($offerData), $arrActivity);
         }
-
         if($limitData->product_id == 1){
             $this->addOfferPrimarySecurity($request, $offerData->prgm_offer_id);
             $this->addOfferCollateralSecurity($request, $offerData->prgm_offer_id);
@@ -2104,6 +2122,13 @@ class CamController extends Controller
         }
 
         if($limitData->product_id == 2){
+          if (isset($offerData->asset_insurance) && $offerData->asset_insurance == 2 || !isset($offerData->asset_insurance)) {
+            $offerData->update([
+              'asset_name' => null,
+              'timelines_for_insurance' => null,
+              'asset_comment' => null,
+            ]);
+          }
           $this->addOfferPersonalGuarantee($request, $offerData->prgm_offer_id);
         }
 
@@ -2117,7 +2142,6 @@ class CamController extends Controller
             $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
         }
         */
-
         if($offerData){
           \DB::commit();
           if($prgmOfferId){
