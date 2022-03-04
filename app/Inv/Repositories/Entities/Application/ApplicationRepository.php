@@ -1587,6 +1587,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getSharedColender($where, $notColenderId = null){
         return ColenderShare::getSharedColender($where, $notColenderId);
     }
+    
+    public function getSharedColenderData($where){
+        return ColenderShare::getSharedColenderData($where);
+    }
 
     public function updateColenderData($attributes, $conditions){
         return ColenderShare::updateColenderData($attributes, $conditions);
