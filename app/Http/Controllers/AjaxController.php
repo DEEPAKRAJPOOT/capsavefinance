@@ -68,6 +68,7 @@ class AjaxController extends Controller {
     protected $invRepo;
     protected $docRepo;
     protected $lms_repo;
+    use ApplicationTrait;
     use LmsTrait;
     use ActivityLogTrait;
 
