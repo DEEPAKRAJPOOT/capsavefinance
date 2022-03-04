@@ -6,6 +6,7 @@ use App\Inv\Repositories\Models\Cam;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\Anchor;
 
 trait ApplicationTrait
 {
