@@ -174,7 +174,7 @@ $defaultMinimumLoanSize = ($anchorData->is_fungible) ? 1 : NULL;
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-12" style="display: {{$anchorData->is_fungible ? 'none' : 'block'}}">
+                                                    <div class="col-md-12" style="display: {{$anchorData->is_fungible ? 'block' : 'block'}}">
                                                         <div class="form-group INR">
                                                             <div class="row">
                                                                 <div class="col-md-6">
