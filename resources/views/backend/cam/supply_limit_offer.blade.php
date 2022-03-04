@@ -985,15 +985,15 @@
     }
 
     $('#program_id').on('change',function(){
-        if ($("#offer_id").val() == "") {            
+        if ($("#offer_id").val() == "") {
             $('input[name=margin]').val("");
-            $('input[name=overdue_interest_rate]').val("");                    
-            $('input[name=adhoc_interest_rate]').val("");                                        
-            $('input[name=grace_period]').val("");                                        
-            $('input[name="processing_fee"]').val("");                                        
-            $('input[name="document_fee"]').val(""); 
+            $('input[name=overdue_interest_rate]').val("");
+            $('input[name=adhoc_interest_rate]').val("");
+            $('input[name=grace_period]').val("");
+            $('input[name="processing_fee"]').val("");
+            $('input[name="document_fee"]').val("");
         }
-                        
+
         let base_rate = $('#program_id option:selected').data('base_rate');
         let bank_id = $('#program_id option:selected').data('bank_id');
         $('input[name="bank_id"]').val(bank_id);
@@ -1021,13 +1021,14 @@
             setLimit('input[name=prgm_limit_amt]', '(<i class="fa fa-inr" aria-hidden="true"></i> '+program_min_limit+'-<i class="fa fa-inr" aria-hidden="true"></i> '+program_max_limit+')');
             setLimit('input[name=interest_rate]', '('+program_min_rate+'%-'+program_max_rate+'%)');
         }
-        let token = "{{ csrf_token() }}";            
-
+        let token = "{{ csrf_token() }}";
+        var appId = $("input[name='app_id']").val();
+        var anchorId = $("#anchor_id").val();
         $('.isloader').show();
         $.ajax({
             'url':messages.get_program_balance_limit,
             'type':"POST",
-            'data':{"_token" : messages.token, "program_id" : program_id},
+            'data':{"_token" : messages.token, "program_id" : program_id, "app_id": appId, "offer_id":offerData, "anchor_id": anchorId},
             error:function (xhr, status, errorThrown) {
                 $('.isloader').hide();
                 alert(errorThrown);
@@ -1055,7 +1056,17 @@
                         $('input[name="document_fee"]').val(prgm_data.document_fee_amt);
                     }
                 }*/
-                prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;                  
+
+                $("#anchorBalLimitAmt").text(res.anchorBalLimitAmt);
+                $("#prgmBalLimitAmt").text(res.prgmBalLimitAmt);
+                limit_balance = res.prgmBalLimitAmt;
+
+                $("#anchorBalLimitAmt").parent().parent().removeClass('d-none');
+                $("#prgmBalLimitAmt").parent().parent().removeClass('d-none');
+                prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;
+                if (typeof res.previousProgramLimit != 'undefined') {
+                    previousProgramLimit = parseFloat(res.previousProgramLimit);
+                }
                 $('.isloader').hide();
             }
         })
