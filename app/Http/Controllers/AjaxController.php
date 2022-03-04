@@ -51,6 +51,9 @@ use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
 use App\Inv\Repositories\Models\Master\Permission;
+use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Models\AppSanctionLetter;
+use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
 class AjaxController extends Controller {
 
