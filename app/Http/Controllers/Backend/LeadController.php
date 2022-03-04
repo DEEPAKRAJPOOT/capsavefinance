@@ -553,7 +553,8 @@ class LeadController extends Controller {
                     Session::flash('message', 'Please fill the correct details.');
                     return redirect()->back();                     
                 }
-                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));  
+                $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($value[3]));
+                $anchorData   =   $this->userRepo->getAnchorById($anchorId)->toArray();
                 if(!empty($value) && !$anchUserInfo){
 
                     $hashval = time() . 'ANCHORLEAD' . $key;
@@ -580,6 +581,8 @@ class LeadController extends Controller {
                     ];
 
                     $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchLeadData);
+                    $businessName = trim($value[2]);
+                    $anchorName = $anchorData['comp_name'];
                     /*
                     $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
                     if($getAnchorId && $getAnchorId->anchor_id!=''){
@@ -595,6 +598,8 @@ class LeadController extends Controller {
                         $anchLeadMailArr['name'] = $arrAnchLeadData['name'];
                         $anchLeadMailArr['email'] =  trim($arrAnchLeadData['email']);
                         $anchLeadMailArr['url'] = $mailUrl;
+                        $anchLeadMailArr['businessName'] = $businessName;
+                        $anchLeadMailArr['anchorName'] = $anchorName;
                         Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
                     }
                 }
@@ -839,6 +844,8 @@ class LeadController extends Controller {
             $whereCond[] = ['anchor_id', '>', '0'];
             //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+            $anchorData   =   $this->userRepo->getAnchorById($anchorId)->toArray();
+
             if (!isset($anchUserData[0])) {  
                 $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
                 $token = md5($hashval);
@@ -867,6 +874,8 @@ class LeadController extends Controller {
                     $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrAnchorData));
                 }
                 $anchor_lead = $this->userRepo->saveAnchorUser($arrAnchorData);
+                $businessName = $arrAnchorVal['comp_name'];
+                $anchorName = $anchorData['comp_name'];
                 /*
                 $getAnchorId =$this->userRepo->getUserDetail(Auth::user()->user_id);
             
@@ -885,6 +894,8 @@ class LeadController extends Controller {
                     $anchLeadMailArr['name'] = trim($arrAnchorData['name']);
                     $anchLeadMailArr['email'] =  trim($arrAnchorData['email']);
                     $anchLeadMailArr['url'] = $mailUrl;
+                    $anchLeadMailArr['businessName'] = $businessName;
+                    $anchLeadMailArr['anchorName'] = $anchorName;
                     Event::dispatch("ANCHOR_CSV_LEAD_UPLOAD", serialize($anchLeadMailArr));
                     Session::flash('message', trans('backend_messages.anchor_lead_created'));
                     Session::flash('operation_status',1);

@@ -59,6 +59,11 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'as' => 'user_register_save',
         'uses' => 'Auth\RegisterController@register'
     ]);
+    Route::get('term-condition',
+        [
+        'as' => 'term_condition',
+        'uses' => 'Auth\RegisterController@showtermCondition'
+    ]);
     
     // for password
    Route::group(['prefix' => 'password'],
