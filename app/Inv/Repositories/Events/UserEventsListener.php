@@ -400,13 +400,14 @@ class UserEventsListener extends BaseEvent
                         $email = $user["email"];
                     }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to( $email, $user["name"])->subject($email_content->subject);
+                $subject = $email_content->subject."//".$user['businessName']."//".$user['anchorName'];
+                $message->to( $email, $user["name"])->subject($subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
-                    'subject' => $email_content->subject,
+                    'subject' => $email_content->subject."//".$user['businessName']."//".$user['anchorName'],
                     'body' => $mail_body,
                 ];
                 FinanceModel::logEmail($mailContent);

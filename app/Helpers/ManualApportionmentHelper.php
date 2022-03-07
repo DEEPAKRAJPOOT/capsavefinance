@@ -291,7 +291,7 @@ class ManualApportionmentHelper{
         $graceStartDate = $invdueDate;
         $graceEndDate = $odStartDate;
         $endOfMonthDate = Carbon::createFromFormat('Y-m-d', $intAccrualDate)->endOfMonth()->format('Y-m-d');
-        $lastDayofPreviousMonth = Carbon::createFromFormat('Y-m-d', $intAccrualDate)->subMonth()->endOfMonth()->format('Y-m-d');
+        $lastDayofPreviousMonth = Carbon::createFromFormat('Y-m-d', $intAccrualDt)->subMonth()->endOfMonth()->format('Y-m-d');
         $intTransactions = new collection();
         $odTransactions = new collection();
         $transactions = new collection();
@@ -459,7 +459,7 @@ class ManualApportionmentHelper{
         return $Dr-$Cr;
     }
     
-    private function overDuePosting($invDisbId, $userId){
+    private function overDuePosting($invDisbId, $userId, $transDate){
         $overdues = InterestAccrual::select(\DB::raw("sum(accrued_interest) as totalInt,max(interest_date) as interestDate"))
         ->where('invoice_disbursed_id','=',$invDisbId)
         ->whereNull('interest_rate')
@@ -709,12 +709,12 @@ class ManualApportionmentHelper{
                     ->where('interest_date','>=',$loopStratDate)
                     ->delete();
                 }
-                
+
                 if(strtotime($loopStratDate) <= strtotime($odStartDate))
                 $this->interestPosting($invDisbId, $userId, $payFreq, $loopStratDate, $gStartDate, $gEndDate);
                 
                 if(strtotime($loopStratDate) >= strtotime($odStartDate))
-                $this->overDuePosting($invDisbId, $userId);
+                $this->overDuePosting($invDisbId, $userId, $loopStratDate);
                 
                 $loopStratDate = $this->addDays($loopStratDate,1);
                 $this->runningToTransPosting($invDisbId, $loopStratDate, $payFreq, $payDueDate, $odStartDate);
