@@ -1897,6 +1897,7 @@ class DataRenderer implements DataProviderInterface
                        if(in_array($customer, $expl)) 
                        {
                         $action .='<option value="8">Approve</option>';
+                        $action .='<option value="7">Pending</option>';
                        }
                       }  
                      
