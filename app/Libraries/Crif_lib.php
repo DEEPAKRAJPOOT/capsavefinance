@@ -101,7 +101,7 @@ class Crif_lib {
     private function getCommercialCibilAcknowledgement($ArrData) {
       extract($ArrData);
       $this->random_no = $random_no;
-      $dummyXML = TRUE;
+      $dummyXML = FALSE;
       if ($dummyXML) {
           $request_xml = $this->_getDummyXML();
       }else{
