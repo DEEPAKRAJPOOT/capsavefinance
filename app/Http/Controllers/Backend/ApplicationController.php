@@ -1183,13 +1183,14 @@ class ApplicationController extends Controller
 			  	$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($user_id, $app_id);
 				$appData = $this->appRepo->getAppData($app_id);
 
-				$userLimit = $this->appRepo->getUserLimit($user_id);  
-				if ($userLimit && $userLimit->end_date) {
+				$userLimit = $this->appRepo->getUserLimit($user_id);
+				$isExistNewSanctionLetter = $this->appRepo->getOfferNewSanctionLetterData($whereCondition = ['app_id' => $app_id, 'status' => 2],'sanction_letter_id','yes');
+				if ($isExistNewSanctionLetter && $userLimit && $userLimit->end_date) {
 					$currentDate     = strtotime(now()->format('d-m-Y'));
 					$limitExpiryDate = strtotime(Carbon::parse($userLimit->end_date)->format('d-m-Y'));
 					if ($limitExpiryDate < $currentDate) {
 						Session::flash('error_code', 'limit_expired_found');
-						return redirect()->back();  
+						return redirect()->back();
 					}
 				}
 				
@@ -1207,17 +1208,24 @@ class ApplicationController extends Controller
 					\Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));*/                                    
 					$this->appRepo->updateAppData($parentAppId, ['is_child_sanctioned' => 2]);
 				}
-                                
-        		// if (!is_null($appLimitId)) {
-				//   	$this->appRepo->saveAppLimit([
-				//   		'status' => 1,
-				//   		'start_date' => $curDate,
-				//   		'end_date' => $endDate], $appLimitId);
-				//   	$this->appRepo->updatePrgmLimitByLimitId([
-				//   		'status' => 1,
-				//   		'start_date' => $curDate,
-				//   		'end_date' => $endDate], $appLimitId);
-			  	// }
+                
+        		if (!is_null($appLimitId)) {
+					if ($isExistNewSanctionLetter) {
+						$this->appRepo->saveAppLimit(['status' => 1], $appLimitId);
+						$this->appRepo->updatePrgmLimitByLimitId(['status' => 1], $appLimitId);
+					} else {
+						$this->appRepo->saveAppLimit([
+							'status' => 1,
+							'start_date' => $curDate,
+							'end_date' => $endDate
+					  	], $appLimitId);
+						$this->appRepo->updatePrgmLimitByLimitId([
+							'status' => 1,
+							'start_date' => $curDate,
+							'end_date' => $endDate
+					  	], $appLimitId);
+					}
+			  	}
 			  	$createCustomer = $this->appRepo->createCustomerId($lmsCustomerArray);
                                 UserDetail::where('user_id',$user_id)->update(['is_active' =>1]);
                                 $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction
@@ -2699,17 +2707,9 @@ class ApplicationController extends Controller
 				$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($userId, $appId);
 				if (!is_null($appLimitId)) {
 					$curDate = now()->format('Y-m-d');
-					$this->appRepo->saveAppLimit([
-						'status' 	 => 1,
-						'start_date' => $curDate,
-						'end_date' 	 => $reviewDate
-					], $appLimitId);
-					$this->appRepo->updatePrgmLimitByLimitId([
-						'status' 	 => 1,
-						'start_date' => $curDate,
-						'end_date' 	 => $reviewDate
-					], $appLimitId);
-				}
+					$this->appRepo->saveAppLimit(['start_date' => $curDate,'end_date' => $reviewDate], $appLimitId);
+					$this->appRepo->updatePrgmLimitByLimitId(['start_date' => $curDate,'end_date' => $reviewDate], $appLimitId);
+				} 
 			}
 
 			if (!is_null($sanctionId)) {						           

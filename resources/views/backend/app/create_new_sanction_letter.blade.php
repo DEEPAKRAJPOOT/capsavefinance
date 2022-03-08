@@ -995,10 +995,16 @@
     });
 
     function setReviewDateByDefault() {
-        var currentDate = new Date();
-        currentDate.setDate(currentDate.getDate() + 7);
-        var defaultDate = currentDate.getFullYear()+'-'+('0'+(currentDate.getMonth()+1)).slice(-2)+'-'+('0'+(currentDate.getDate())).slice(-2);
-        $('#review_date').attr('min', defaultDate);
+        var currentMinDate = new Date();
+        currentMinDate.setDate(currentMinDate.getDate() + 7);
+        var minDate = currentMinDate.getFullYear()+'-'+('0'+(currentMinDate.getMonth()+1)).slice(-2)+'-'+('0'+(currentMinDate.getDate())).slice(-2);
+        $('#review_date').attr('min', minDate);
+
+        var currentMaxDate = new Date();
+        currentMaxDate.setDate(currentMaxDate.getDate() + 7);
+        currentMaxDate.setFullYear(currentMaxDate.getFullYear() + 1);
+        var maxDate = currentMaxDate.getFullYear()+'-'+('0'+(currentMaxDate.getMonth()+1)).slice(-2)+'-'+('0'+(currentMaxDate.getDate())).slice(-2);
+        $('#review_date').attr('max', maxDate);
     }
 
     function ChangeDateFormat(dateObj, out_format = 'ymd', out_separator = '/', dateAddMinus = 0) {
