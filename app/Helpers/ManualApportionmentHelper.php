@@ -270,7 +270,7 @@ class ManualApportionmentHelper{
                             'trans_date' => $refundTransDate,
                             'amount' => abs($actualAmount),
                             'entry_type' => 1,
-                            'soa_flag' => $soaFlag,
+                            'soa_flag' => 1,
                             'trans_type' => config('lms.TRANS_TYPE.REFUND'),
                             'apportionment_id' =>$paidTrans->payment_id,
                             'created_at' => $refundCreatedAt,
