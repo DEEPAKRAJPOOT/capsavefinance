@@ -3514,10 +3514,10 @@ class DataRenderer implements DataProviderInterface
                             $ret .= '<strong>Total Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit) . '<br>';
 
                             if ($program->anchors->is_fungible) {
-                                $ret .= '<strong>Utilized Limit:</strong> '. \Helpers::formatCurrency(InvoiceTrait::anchorInvoiceApproveAmount($program->anchor_id));
-                                $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - InvoiceTrait::anchorInvoiceApproveAmount($program->anchor_id));
+                                $ret .= '<strong>Utilized Limit:</strong> '. \Helpers::formatCurrency(InvoiceTrait::anchorInvoiceApproveAmount($program->anchor_id)). '<br>';
+                                $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - InvoiceTrait::anchorInvoiceApproveAmount($program->anchor_id)). '<br>';
                             } else {
-                                $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - $this->anchor_utilized_balance );
+                                $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - $this->anchor_utilized_balance ). '<br>';
                             }
 
                             return $ret;
@@ -3526,12 +3526,12 @@ class DataRenderer implements DataProviderInterface
                                 'anchor_sub_limit',
                                 function ($program) {
                             $ret = '<strong>Limit:</strong> '. \Helpers::formatCurreny($program->anchor_sub_limit) . '<br>';
+                            $ret .= '<strong>Loan Size:</strong> '. \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size). '<br>';
                             if ($program->anchors->is_fungible) {
-                                $ret .= '<strong>Utilized Sub Program Limit:</strong> '. \Helpers::formatCurrency(InvoiceTrait::anchorPrgmInvoiceApproveAmount($program->anchor_id, $program->prgm_id));
+                                $ret .= '<strong>Utilized Sub Program Limit:</strong> '. \Helpers::formatCurrency(InvoiceTrait::anchorPrgmInvoiceApproveAmount($program->anchor_id, $program->prgm_id)). '<br>';
                             } else {
                                 $ret .= '<strong>Utilized Limit in Offer:</strong> '. \Helpers::formatCurreny(\Helpers::getPrgmBalLimit($program->prgm_id)) . '<br>';
-                            }    
-                            $ret .= '<strong>Loan Size:</strong> '. \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size);
+                            }
                             return  $ret;
                         })                       
                         ->addColumn(
