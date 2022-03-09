@@ -193,7 +193,7 @@ $defaultMinimumLoanSize = ($anchorData->is_fungible) ? 1 : NULL;
                                                                     <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('max_loan_size',
                                                                     isset($subProgramData->max_loan_size) ?  number_format($subProgramData->max_loan_size) : $defaultSubProgramLimit,
-                                                                    ['class'=>'form-control max_loan_size number_format','placeholder'=>'Max',$defaultSubProgramLimitReadOnly => $defaultSubProgramLimitReadOnly])   !!}
+                                                                    ['class'=>'form-control max_loan_size number_format','placeholder'=>'Max'])!!}
                                                                     </div>
                                                                 </div>
                                                             </div>
