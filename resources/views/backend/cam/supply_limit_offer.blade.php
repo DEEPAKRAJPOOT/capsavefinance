@@ -1148,6 +1148,11 @@
         }else{
             //TAKE REST limit_balance
         }
+    }else if (anchor_id !='' && prgm_id != '' && is_anchor_fungible == 1) {
+        if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limit_balance)) {
+            setError('input[name=prgm_limit_amt]', 'Limit amount should not greater than balance limit');
+            flag = false;
+        }
     }
 
     if(interest_rate == '' || isNaN(interest_rate)){
