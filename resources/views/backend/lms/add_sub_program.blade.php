@@ -48,31 +48,34 @@ $defaultMinimumLoanSize = ($anchorData->is_fungible) ? 1 : NULL;
                                                         </p>
                                                         &nbsp;&nbsp;&nbsp;
                                                         @if ($action == 'view')
-
-
                                                         <p class="float-right mb-0">
-                                                            <!--<b>Remaining Anchor Limit : </b>
-                                                            <i class="fa fa-inr" aria-hidden="true"></i>
-                                                            <span id="remaining-anchor-limit" class="number_format">{{ isset($programData->anchor_limit) ?  number_format($programData->anchor_limit - $anchorUtilizedBalance)  : null }}</span>
-                                                            <br>-->
-                                                            <b>Utilized Limit in Offer : </b>
-                                                            <i class="fa fa-inr" aria-hidden="true"></i>
-                                                            {{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}
+                                                            @if(isset($anchorData) && isset($anchorData->is_fungible) && $anchorData->is_fungible)
+                                                                <b>Utilized Limit in Offer : </b>
+                                                                <i class="fa fa-inr" aria-hidden="true"></i>
+                                                                <span>{{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}</span>
+                                                                <br>
+                                                            @else
+                                                                <b>Remaining Anchor Limit : </b>
+                                                                <i class="fa fa-inr" aria-hidden="true"></i>
+                                                                <span id="remaining-anchor-limit" class="number_format">{{ isset($programData->anchor_limit) ?  number_format($programData->anchor_limit - $anchorUtilizedBalance)  : null }}</span>
+                                                                <br>
+                                                            @endif
                                                         </p>
                                                         @else
-
-
                                                         <p class="float-right mb-0">
-                                                            <!--<b>Remaining Anchor Limit : </b>
-                                                            <i class="fa fa-inr" aria-hidden="true"></i>
-                                                            <span id="remaining-anchor-limit" class="number_format">{{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }}</span>
-                                                            <br>-->
-                                                            <b>Utilized Limit in Offer : </b>
-                                                            <i class="fa fa-inr" aria-hidden="true"></i>
-                                                            {{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}
+                                                            @if(isset($anchorData) && isset($anchorData->is_fungible) && $anchorData->is_fungible)
+                                                                <b>Utilized Limit in Offer : </b>
+                                                                <i class="fa fa-inr" aria-hidden="true"></i>
+                                                                <span>{{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}</span>
+                                                                <br>
+                                                            @else
+                                                                <b>Remaining Anchor Limit : </b>
+                                                                <i class="fa fa-inr" aria-hidden="true"></i>
+                                                                <span id="remaining-anchor-limit" class="number_format">{{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }}</span>
+                                                                <br>
+                                                            @endif
                                                         </p>
                                                         @endif
-
                                                     </div>
                                                     <!--                                                    <div class="col-sm-3 text-right">
                                                        <a class="edit-btn" href="{{route('add_program',['program_id'=> $program_id ,'anchor_id'=>$anchor_id ])}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
