@@ -1134,7 +1134,7 @@
     if(prgm_limit_amt.length == 0 || parseInt(prgm_limit_amt.replace(/,/g, '')) == 0){
         setError('input[name=prgm_limit_amt]', 'Please fill program limit amount');
         flag = false;
-    }else if(anchor_id !='' && prgm_id != '' && is_anchor_fungible == 0){
+    }else if(anchor_id !='' && prgm_id != ''){
         if((parseInt(prgm_limit_amt.replace(/,/g, '')) < parseInt(limitObj.prgm_min_limit)) ||(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_max_limit))){
             setError('input[name=prgm_limit_amt]', 'Limit amount should be ('+parseInt(limitObj.prgm_min_limit)+'-'+parseInt(limitObj.prgm_max_limit)+') program range');
             flag = false;
@@ -1147,14 +1147,6 @@
             flag = false;
         }else{
             //TAKE REST limit_balance
-        }
-    }else if (anchor_id !='' && prgm_id != '' && is_anchor_fungible == 1) {
-        if(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limit_balance)) {
-            setError('input[name=prgm_limit_amt]', 'Limit amount should not greater than balance limit');
-            flag = false;
-        }else if((parseInt(prgm_limit_amt.replace(/,/g, '')) < parseInt(limitObj.prgm_min_limit)) ||(parseInt(prgm_limit_amt.replace(/,/g, '')) > parseInt(limitObj.prgm_max_limit))){
-            setError('input[name=prgm_limit_amt]', 'Limit amount should be ('+parseInt(limitObj.prgm_min_limit)+'-'+parseInt(limitObj.prgm_max_limit)+') program range');
-            flag = false;
         }
     }
 
