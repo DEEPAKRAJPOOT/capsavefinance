@@ -1127,8 +1127,8 @@ trait InvoiceTrait
 
   // sub program utilized limit for fungible
   public static function anchorPrgmInvoiceApproveAmount($anchor_id, $prgm_id){
-    $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' => 0,'anchor_id' => $anchor_id, 'prgm_id' => $prgm_id])->sum('invoice_margin_amount');
-    $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' => 0,'anchor_id' => $anchor_id, 'prgm_id' => $prgm_id])->sum('principal_repayment_amt');
+    $marginApprAmt   =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' => 0,'anchor_id' => $anchor_id, 'program_id' => $prgm_id])->sum('invoice_margin_amount');
+    $marginReypayAmt =   BizInvoice::whereIn('status_id',[8,9,10,12])->where(['is_adhoc' => 0,'anchor_id' => $anchor_id, 'program_id' => $prgm_id])->sum('principal_repayment_amt');
     return $marginApprAmt-$marginReypayAmt;
   }
 
