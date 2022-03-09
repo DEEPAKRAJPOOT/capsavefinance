@@ -49,29 +49,27 @@ $defaultMinimumLoanSize = ($anchorData->is_fungible) ? 1 : NULL;
                                                         &nbsp;&nbsp;&nbsp;
                                                         @if ($action == 'view')
                                                         <p class="float-right mb-0">
-                                                            @if(isset($anchorData) && isset($anchorData->is_fungible) && $anchorData->is_fungible)
-                                                                <b>Utilized Limit in Offer : </b>
-                                                                <i class="fa fa-inr" aria-hidden="true"></i>
-                                                                <span>{{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}</span>
-                                                                <br>
-                                                            @else
+                                                            @if(isset($anchorData) && isset($anchorData->is_fungible) && !$anchorData->is_fungible)
                                                                 <b>Remaining Anchor Limit : </b>
                                                                 <i class="fa fa-inr" aria-hidden="true"></i>
                                                                 <span id="remaining-anchor-limit" class="number_format">{{ isset($programData->anchor_limit) ?  number_format($programData->anchor_limit - $anchorUtilizedBalance)  : null }}</span>
+                                                                <br>
+                                                                <b>Utilized Limit in Offer : </b>
+                                                                <i class="fa fa-inr" aria-hidden="true"></i>
+                                                                <span>{{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}</span>
                                                                 <br>
                                                             @endif
                                                         </p>
                                                         @else
                                                         <p class="float-right mb-0">
-                                                            @if(isset($anchorData) && isset($anchorData->is_fungible) && $anchorData->is_fungible)
-                                                                <b>Utilized Limit in Offer : </b>
-                                                                <i class="fa fa-inr" aria-hidden="true"></i>
-                                                                <span>{{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}</span>
-                                                                <br>
-                                                            @else
+                                                            @if(isset($anchorData) && isset($anchorData->is_fungible) && !$anchorData->is_fungible)
                                                                 <b>Remaining Anchor Limit : </b>
                                                                 <i class="fa fa-inr" aria-hidden="true"></i>
                                                                 <span id="remaining-anchor-limit" class="number_format">{{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }}</span>
+                                                                <br>
+                                                                <b>Utilized Limit in Offer : </b>
+                                                                <i class="fa fa-inr" aria-hidden="true"></i>
+                                                                <span>{{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}</span>                                                                
                                                                 <br>
                                                             @endif
                                                         </p>
