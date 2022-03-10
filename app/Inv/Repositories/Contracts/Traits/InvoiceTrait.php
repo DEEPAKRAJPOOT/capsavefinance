@@ -770,7 +770,6 @@ trait InvoiceTrait
                 $fungibleAnchorLimit = true;
             }
             if ($fungibleAnchorLimit) {
-              dd($attr['invoice_id'], $attr['anchor_id'], $fungibleAnchorLimit, $isAnchorLimitExceeded);
              // if ($fromTab == 'initiatediscount') {
                 InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28);
                 BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'Anchor limit exceeded','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]);
