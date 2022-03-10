@@ -55,7 +55,11 @@
                    
                    @if (Session::has('error_code') && Session::get('error_code') == 'limit_rejected')
                    <label class='error'>{{ trans('backend_messages.validate_limit_rejected') }}</label><br>                   
-                   @endif                      
+                   @endif
+
+                   @if (Session::has('error_code') && Session::get('error_code') == 'validate_fi_status')
+                   <label class='error'>You cannot move this application to the next stage as the fi verification is pending for this customer.</label><br>                   
+                   @endif
                    
                    @if ($assign_case)
                         <label for="txtCreditPeriod">Please select Assignee <span class="mandatory">*</span> </label>

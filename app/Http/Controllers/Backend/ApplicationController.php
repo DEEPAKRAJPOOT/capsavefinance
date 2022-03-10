@@ -982,6 +982,17 @@ class ApplicationController extends Controller
 						Session::flash('error_code', 'no_pre_docs_uploaded');
 						return redirect()->back();                                            
 					}
+				} else if ($currStage->stage_code == 'verify_uploaded_exe_doc') {
+					$fiWhere = [];
+					$fiWhere['app.app_id'] = $app_id;
+					$fiWhere['fi_addr.is_active'] = 1;
+					$fiWhere['fi_addr.cm_fi_status_id'] = 3;
+					$fiWhere['fi_addr.fi_status_id'] = 3;
+					$fiAddr = $this->appRepo->getFiAddressData($fiWhere);
+					if (count($fiAddr) == 0)  {
+						Session::flash('error_code', 'validate_fi_status');
+						return redirect()->back();
+					}
 				} else if ($currStage->stage_code == 'opps_checker') {
 				  $capId = sprintf('%09d', $user_id);
 				  $customerId = 'CAP'.$capId;
