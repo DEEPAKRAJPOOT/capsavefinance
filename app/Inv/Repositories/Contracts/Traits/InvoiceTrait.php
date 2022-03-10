@@ -542,9 +542,9 @@ trait InvoiceTrait
             else 
                {
 
-                   $status=28; 
-                   $limit_exceed='Auto Approve, Limit exceed';
-                   return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
+                  //  $status=28; 
+                  //  $limit_exceed='Auto Approve, Limit exceed';
+                  //  return   BizInvoice::where(['invoice_id' =>$invoice_id,'supplier_id' =>$cid])->update(['remark' =>$limit_exceed,'status_id' =>$status]);
 
                }
            }
