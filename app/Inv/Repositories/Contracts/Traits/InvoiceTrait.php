@@ -495,8 +495,19 @@ trait InvoiceTrait
             $prgmData = $anchorData->prgmData;
             $currInvoiceAmount = $inv_details['invoice_approve_amount'];
             $fungibleAnchorLimit = false;
-            if (($anchorApproveInvoiceAmt + $currInvoiceAmount) > $prgmData->anchor_limit && $anchorData->is_fungible == 1) {
+            
+            if ($anchorData->is_fungible == 1) {
+              $prmUtilizedLimit = self::anchorPrgmInvoiceApproveAmount($attr['anchor_id'], $attr['prgm_id']);
+              $prgmData        = Program::getProgram($attr['prgm_id']);
+              $remain_prgm_amount =  $prgmData->anchor_sub_limit - $prmUtilizedLimit;
+              if ($inv_details['invoice_approve_amount'] > $remain_prgm_amount) {
                 $fungibleAnchorLimit = true;
+              } else {
+                $remain_amount = $limit - $sum;
+                if($inv_details['invoice_approve_amount'] > $remain_amount) {
+                  $fungibleAnchorLimit = true;                  
+                }
+              }
             }
 
           if($inv_details['status_id']==8)  

@@ -467,7 +467,7 @@ function uploadFile(app_id,id)
                     else
                     {
                       
-                       localStorage.setItem('storageMsg', 'You cannot mark the invoice ('+data.msg+') as Approved as the limit has been exceeded for the customer Or (Exception Cases)');
+                       localStorage.setItem('storageMsg', 'You cannot move this invoice ('+data.msg+') to Approved tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
                        location.reload();
                     }
                }
