@@ -793,11 +793,19 @@ trait InvoiceTrait
             }   
             if($limit  >= $sum)
             {
-                $remain_amount =  $limit-$sum;
-                $prmLimit = self::anchorPrgmInvoiceApproveAmount($attr['anchor_id'], $attr['prgm_id']);
-                $remain_prgm_amount =  $prmLimit - $sum;
-                          
-                if($remain_prgm_amount >= $inv_details['invoice_approve_amount'] && $remain_amount >= $inv_details['invoice_approve_amount'])
+              
+              $anchorData = Anchor::getAnchorById($attr['anchor_id']);
+              if ($anchorData && isset($anchorData->is_fungible) && $anchorData->is_fungible == 1) {
+                $prmUtilizedLimit = self::anchorPrgmInvoiceApproveAmount($attr['anchor_id'], $attr['prgm_id']);
+                $prgmData        = Program::getProgram($attr['prgm_id']);
+                $remain_prgm_amount =  $prgmData->anchor_sub_limit - $prmUtilizedLimit;
+                if ($inv_details['invoice_approve_amount'] > $remain_prgm_amount) {
+                  return 2;
+                }
+              }
+              
+                $remain_amount    =  $limit - $sum;
+                if($remain_amount >= $inv_details['invoice_approve_amount'])
                 {
                          InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
                          BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['invoice_margin_amount'=>$inv_apprv_amount,'is_margin_deduct' =>1,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
