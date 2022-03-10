@@ -1001,7 +1001,7 @@
         $('#review_date').attr('min', minDate);
 
         var currentMaxDate = new Date();
-        currentMaxDate.setDate(currentMaxDate.getDate() + 7);
+        currentMaxDate.setDate(currentMaxDate.getDate() - 1);
         currentMaxDate.setFullYear(currentMaxDate.getFullYear() + 1);
         var maxDate = currentMaxDate.getFullYear()+'-'+('0'+(currentMaxDate.getMonth()+1)).slice(-2)+'-'+('0'+(currentMaxDate.getDate())).slice(-2);
         $('#review_date').attr('max', maxDate);
