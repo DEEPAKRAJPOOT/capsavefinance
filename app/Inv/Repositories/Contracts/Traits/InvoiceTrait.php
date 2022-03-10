@@ -26,6 +26,7 @@ use App\Inv\Repositories\Models\UserDetail;
 use App\Inv\Repositories\Models\Payment;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Program;
+use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 
 
@@ -763,11 +764,13 @@ trait InvoiceTrait
             $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']); /* get App limit by user_id*/
             $isOverDue     =  self::isOverDue($inv_details['supplier_id']); /* get overdue by user_id*/
             $isAnchorLimitExceeded = self::isAnchorLimitExceeded($attr['anchor_id'], $inv_details['invoice_approve_amount']);
+
             $fungibleAnchorLimit = false;
             if ($isAnchorLimitExceeded) {
                 $fungibleAnchorLimit = true;
             }
             if ($fungibleAnchorLimit) {
+              dd($attr['invoice_id'], $attr['anchor_id'], $fungibleAnchorLimit, $isAnchorLimitExceeded);
              // if ($fromTab == 'initiatediscount') {
                 InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28);
                 BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'Anchor limit exceeded','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]);
