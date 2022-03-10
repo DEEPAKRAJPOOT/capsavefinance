@@ -503,7 +503,7 @@ trait InvoiceTrait
               if ($inv_details['invoice_approve_amount'] > $remain_prgm_amount) {
                 $fungibleAnchorLimit = true;
               } else {
-                $remain_amount = $limit - $sum;
+                $remain_amount = $prgmData->anchor_limit - $anchorApproveInvoiceAmt;
                 if($inv_details['invoice_approve_amount'] > $remain_amount) {
                   $fungibleAnchorLimit = true;                  
                 }
