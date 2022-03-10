@@ -82,7 +82,7 @@
                                             }
                                          }
 
-                                         /*
+                                        
                                         foreach($row->businessApi as $row1) {
                         
                                           if($row1->type == 3) { 
@@ -103,7 +103,7 @@
                                             }else if ($row1->type == 9) {
                                                 $arrPanVerifyNo[$key] = json_decode($row1->karza->req_file);
                                             }
-                                        }  */
+                                        } 
                                        
                                         ?>
                                 <div class="card card-color mb-0">
