@@ -1409,7 +1409,7 @@ class ApportionmentController extends Controller
                     ->orderByRaw("FIELD(trans_id, ".implode(',',$transIds).")")
                     ->get();
                 }
-
+                $adjTransDate = date('Y-m-d H:i:s');
                 $payments = [];
                 foreach ($transactions as $trans){  
                     $transactionList[] = [
@@ -1418,17 +1418,17 @@ class ApportionmentController extends Controller
                         'parent_trans_id' => $trans->parent_trans_id ?? $trans->trans_id,
                         'invoice_disbursed_id' => $trans->invoice_disbursed_id,
                         'user_id' => $trans->user_id,
-                        'trans_date' => date('Y-m-d H:i:s'),
+                        'trans_date' => $adjTransDate,
                         'amount' => $refunds[$trans->trans_id],
                         'entry_type' => 0,
                         'soa_flag' => 1,
                         'trans_type' => config('lms.TRANS_TYPE.ADJUSTMENT'),
                         'trans_mode' => 2,
                     ];
-                    if(!isset($payments[$trans->trans_date]['amount'])){
-                        $payments[$trans->trans_date]['amount'] = 0;
+                    if(!isset($payments[$adjTransDate]['amount'])){
+                        $payments[$adjTransDate]['amount'] = 0;
                     }
-                    $payments[$trans->trans_date]['amount'] += $refunds[$trans->trans_id];
+                    $payments[$adjTransDate]['amount'] += $refunds[$trans->trans_id];
                     
                 }
 
@@ -1452,6 +1452,10 @@ class ApportionmentController extends Controller
                         'is_refundable' => 1
                     ];
                     $paymentId = Payment::insertPayments($paymentData);
+                    if(!is_int($paymentId)){
+                        DB::rollback();
+                        return redirect()->route('apport_refund_view', ['user_id' =>$userId,'sanctionPageView'=>$sanctionPageView])->with(['message' => $paymentId]);
+                    }
                 }
                 $whereActivi['activity_code'] = 'apport_mark_adjustment_save';
                 $activity = $this->master->getActivity($whereActivi);

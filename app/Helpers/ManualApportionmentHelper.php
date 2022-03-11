@@ -241,16 +241,18 @@ class ManualApportionmentHelper{
                     $actualAmount += $refundAmt;
 
                     if($payFrq == 1){
-                        $refundTranDetails = Transactions::where('invoice_disbursed_id',$invDisbId) ->where('entry_type','1') ->whereNotIn('trans_type',[8,10,32]) ->whereNotNull('payment_id') ->orderBy('trans_date', 'DESC') ->limit(1) ->first();
+                        $refundTranDetails = Transactions::where('invoice_disbursed_id',$invDisbId)->where('entry_type','1')->whereNotIn('trans_type',[8,10,32])->whereNotNull('payment_id')->orderBy('trans_date', 'DESC')->limit(1)->first();
+                        $refundPaymentId = $refundTranDetails->payment_id ?? $paidTrans->payment_id  ?? NULL;
                         $refundTransDate = $refundTranDetails->trans_date ?? $paidTrans->trans_date;
                         $refundCreatedAt = $refundTranDetails->created_at ?? $paidTrans->created_at;
                         $refundCreatedBy = $refundTranDetails->created_by ?? $paidTrans->created_by;
-                        $refundTransId = $refundTranDetails->trans_id ?? $paidTrans->trans_id;
+                        $refundTransId = $refundTranDetails->trans_id ?? $paidTrans->trans_id ?? NULL;
                     }else{
+                        $refundPaymentId = $paidTrans->payment_id ?? NULL;
                         $refundTransDate = $paidTrans->trans_date;
                         $refundCreatedAt = $paidTrans->created_at;
                         $refundCreatedBy = $paidTrans->created_by;
-                        $refundTransId = $paidTrans->trans_id;
+                        $refundTransId = $paidTrans->trans_id ?? NULL;
                     }
 /*                    $emptyTransId = null;
                     $emptyTransDetails = DB::select('SELECT DISTINCT trans_id +1 AS dd FROM rta_transactions_old WHERE trans_id + 1 NOT IN (SELECT DISTINCT trans_id FROM rta_transactions_old) AND trans_id  > ? ORDER BY dd ASC LIMIT 1',[$refundTransId]);
@@ -261,7 +263,7 @@ class ManualApportionmentHelper{
                     if($actualAmount < 0){
                         $soaFlag =  $paidTrans->trans_type == 7 ? 0:1;
                         $transactionList[] = [
-                            'payment_id' => $paidTrans->payment_id,
+                            'payment_id' => $refundPaymentId,
                             'link_trans_id' => $paidTrans->trans_id,
                             'parent_trans_id' => $paidTrans->parent_trans_id ?? $paidTrans->trans_id,
                             'trans_running_id'=> $paidTrans->trans_running_id,
@@ -272,7 +274,7 @@ class ManualApportionmentHelper{
                             'entry_type' => 1,
                             'soa_flag' => 1,
                             'trans_type' => config('lms.TRANS_TYPE.REFUND'),
-                            'apportionment_id' =>$paidTrans->payment_id,
+                            'apportionment_id' => $refundPaymentId,
                             'created_at' => $refundCreatedAt,
                             'created_by' => $refundCreatedBy
                         ];

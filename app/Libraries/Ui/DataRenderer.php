@@ -795,13 +795,17 @@ class DataRenderer implements DataProviderInterface
                 })
                  ->addColumn(            
                     'status',
-                    function ($invoice) {                        
-                    
+                    function ($invoice) {   
+                                             
                         $act = $invoice->mstStatus->status_name ? $invoice->mstStatus->status_name : '';
-                        
+                        if(($invoice->file_id != 0)) {
+                            $act .='&nbsp;<a href="'.route('download_storage_file', ['file_id' => $invoice->userFile->file_id ]).'" title="Download" target="_blank" class="btn btn-action-btn btn-sm"> <i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
+                            $act .='&nbsp;<a href="'.route('see_invoice_file', ['file_id' => $invoice->userFile->file_id ]).'" title="View Document" target="_blank" class="btn btn-action-btn btn-sm"> <i class="fa fa-eye" aria-hidden="true"></i></a>';
+                        }
+
                         if($invoice->invoice_disbursed) { 
                             if(Helpers::checkPermission('view_interest_accrual') ){
-                                $act .='&nbsp;&nbsp;<a data-toggle="modal"  data-height="550px" data-width="100%" data-target="#viewInterestAccrual" data-url="' . route('view_interest_accrual', ['invoice_disbursed_id' =>$invoice->invoice_disbursed->invoice_disbursed_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-eye"></i></a>';
+                                $act .='&nbsp;&nbsp;<a data-toggle="modal"  data-height="550px" data-width="100%" data-target="#viewInterestAccrual" data-url="' . route('view_interest_accrual', ['invoice_disbursed_id' =>$invoice->invoice_disbursed->invoice_disbursed_id]) . '"  data-placement="top" class="btn btn-action-btn btn-sm" title="View Interest Accrual"><i class="fa fa-info" aria-hidden="true"></i></a>';
                             }
                         }
                         return $act;
