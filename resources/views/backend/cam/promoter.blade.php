@@ -12,6 +12,11 @@
             <div class=" form-fields">
                <div class="form-sections">
                      <!-- <div id="js-grid-static"></div>    -->
+                     <form method="POST" action="{{route('cam_promoter_comment_save')}}" name="signupForm" id="signupForm">
+                            @csrf
+                             <input type="hidden" name="app_id" id="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />
+                            <input type="hidden" name="biz_id" id="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />
+               
                      <div class="data">
                         <h2 class="sub-title bg">Management Information</h2>
                         <div class="p-2 full-width">
@@ -20,10 +25,9 @@
                               @php ($j = 0)
                               @php ($i = 0)
                               @php ($panNoFilePath = $panNoFileName = $dlNoFilePath = $dlNoFileName = $voterNoFilePath = $voterNoFileName = $passNoFilePath = $passNoFileName = $photoFilePath = $photoFileName = $aadharFilePath = $aadharFileName = $arrPan = $arrDl = $arrVoterNo = $arrPassNo = $arrMobileNo = $arrMobileOtpNo = [])
-                             @foreach($arrPromoterData as $key=>$row)
+                              @foreach($arrPromoterData as $key=>$row)
                                         @php ($i++)
                                         @php ($count++)
-
                                          <?php 
                                          foreach($row->document as $row2) {
                                              if($row2->doc_id == 2) { 
@@ -66,10 +70,19 @@
                                                 $telephoneFileName[$key] =   $row2->userFile->file_name;
                                                 $telephoneFileId[$key] =   $row2->userFile->file_id;
                                             }
-                           
-                                         } 
+                                            $doc_id_no = "";
+                                            if ($row2->doc_id == 77) {
+                                                if($row2['file_id'] > 0){
+                                                    $ckycFilePath[$key] = $row2->userFile->file_path;
+                                                    $ckycFileName[$key] =   $row2->userFile->file_name;
+                                                    $ckycFileId[$key]   =   $row2->userFile->file_id;
+                                                }
+                                                $doc_id_no          =   $row2['doc_id_no'];
+                                                
+                                            }
+                                         }
 
-
+                                        
                                         foreach($row->businessApi as $row1) {
                         
                                           if($row1->type == 3) { 
@@ -93,9 +106,7 @@
                                         } 
                                        
                                         ?>
-
-
-                              <div class="card card-color mb-0">
+                                <div class="card card-color mb-0">
                                  <div class="card-header collapsed" data-toggle="collapse" href="#collapse{{$count}}">
                                     <a class="card-title">
                                     Management Information ({{$count}})
@@ -163,8 +174,8 @@
                                                 <td width="20%"><b>S.No.</b></td>
                                                 <td width="20%"><b>Document Name</b></td>
                                                 <td width="20%"><b> Document ID No.</b></td>
-                                                <td width="20%"><b>File Name</b></td>
-                                                <td width="20%"><b>Action</b></td>
+                                                <td width="15%"><b>File Name</b></td>
+                                                <td width="25%"><b>Action</b></td>
                                              </tr>
                                              <tr>
                                                 <td>1</td>
@@ -293,6 +304,35 @@
                                                    
                                                 </td>
                                             </tr>
+                                            <tr>
+                                                <td>9</td>
+                                                <td>CKYC </td>
+                                                <td><input type="text"  value="{{ isset($doc_id_no) ? $doc_id_no : '' }}" name="ckycNumber[]" id="ckycNumber{{isset($row->first_name) ? $i : '1'}}"  class="form-control ckycNumber" maxlength="20"></td>
+                                                <td>{{isset($ckycFileName[$j]) ? $ckycFileName[$j] : '' }}</td>
+                                                <td>
+                                                
+                                                <table>
+                                                    <tr>
+                                                        <td><a  href="{{ isset($ckycFileId[$j]) ? route('download_storage_file', ['file_id' => $ckycFileId[$j] ]) : '' }}" class="btn-upload   btn-sm" type="button"  style="display:{{ isset($ckycFilePath[$j]) ? 'inline' : 'none'}}"> <i class="fa fa-download"></i></a>&nbsp;&nbsp;</td>
+                                                        <td>
+                                                            <div class="upload-btn-wrapper setupload-btn">
+                                                                @if(request()->get('view_only'))
+                                                                @can('promoter_document_save')
+                                                                <button type='button' class="btn">Upload</button>
+                                                                @endcan
+                                                                @endif
+                                                                <input type="file" class="ckycfile"  name="ckycfile[]"  data-id="{{isset($row->first_name) ? $i : '1'}}"  id="ckycfile{{isset($row->first_name) ? $i : '1'}}"  onchange="uploadFile({{isset($row->first_name) ? $i : '1'}}, {{ $row->biz_owner_id }}, 77)">
+                                                                <input type="hidden" name="ownerid[]" id="ownerid{{isset($row->first_name) ? $i : '1'}}" value="{{$row->biz_owner_id}}">
+                                                            </div>
+
+                                                        </td>
+                                                    </tr>
+                                                    </table>
+                                                
+
+
+                                                </td>
+                                            </tr>
 
                                           </tbody>
                                        </table>
@@ -304,10 +344,11 @@
                             @endforeach  
   
                            </div>
+                            
+
                         </div>
                      </div>
-              <form method="POST" action="{{route('cam_promoter_comment_save')}}"> 
-                 @csrf
+              
 
                 <input type="hidden" name="app_id" value="{{isset($attribute['app_id']) ? $attribute['app_id'] : ''}}" />             
                 <input type="hidden" name="biz_id" value="{{isset($attribute['biz_id']) ? $attribute['biz_id'] : ''}}" />             
@@ -349,13 +390,22 @@
     
 @endsection
 @section('jscript')
+
 <script>
       var ckeditorOptions =  {
         filebrowserUploadUrl: "{{route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'file' ])}}",
         filebrowserUploadMethod: 'form',
         imageUploadUrl:"{{ route('upload_ckeditor_image', ['_token' => csrf_token(), 'type' => 'image' ]) }}",
         disallowedContent: 'img{width,height};'
-      };   
+        
+      };
+
+       var messages = {
+        promoter_document_save: "{{ URL::route('promoter_document_save') }}",
+        data_not_found: "{{ trans('error_messages.data_not_found') }}",
+        token: "{{ csrf_token() }}"
+    };
 CKEDITOR.replace('promoter_cmnt', ckeditorOptions);
 </script>
+<script src="{{url('backend/js/promoter.js')}}"></script>
 @endsection
