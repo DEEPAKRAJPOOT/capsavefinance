@@ -497,7 +497,7 @@ trait InvoiceTrait
             $fungibleAnchorLimit = false;
             
             if ($anchorData->is_fungible == 1) {
-              $subPrgmData        = Program::getProgram($attr['prgm_id']);
+                $subPrgmData        = Program::getProgram($attr['prgm_id']);
               if ($anchorApproveInvoiceAmt > $subPrgmData->anchor_sub_limit) {
                 $fungibleAnchorLimit = true;
               } else if ($anchorApproveInvoiceAmt > $subPrgmData->anchor_limit){
@@ -506,7 +506,7 @@ trait InvoiceTrait
             }
 
           if($inv_details['status_id']==8)  
-         {     
+            {
                $finalsum = $sum-$inv_details['invoice_approve_amount'];
                if($fungibleAnchorLimit) {
                    $status = 28;
@@ -530,6 +530,9 @@ trait InvoiceTrait
                else if($limit  >= $finalsum)
                 {
                     $remain_amount = $limit-$sum;
+
+                    dd($limit,$sum,$remain_amount,$inv_details['invoice_approve_amount']);
+
                    if($remain_amount >=$inv_details['invoice_approve_amount'])
                     { 
                        $status=8; 
