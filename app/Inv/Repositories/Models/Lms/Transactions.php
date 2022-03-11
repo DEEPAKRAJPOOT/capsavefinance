@@ -859,7 +859,7 @@ class Transactions extends BaseModel {
         // $SettledInvoiceDisbursedId = InvoiceDisbursed::whereHas('invoice',function($q) use($data){
         //     $q->where('supplier_id',$data['user_id'])->where('is_repayment','1');
         // })->whereNotNull('invoice_disbursed_id')->pluck('invoice_disbursed_id')->toArray();
-
+        $SettledInvoiceDisbursedId = null;
         $query =  self::whereNull('parent_trans_id')->whereNull('payment_id')->where('entry_type',0)->where('is_transaction', true);
          
         $invoiceDisbursed = $data['invoiceDisbursed']??null;
