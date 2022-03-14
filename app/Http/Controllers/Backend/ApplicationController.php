@@ -206,7 +206,7 @@ class ApplicationController extends Controller
 		$attribute['biz_id'] = $bizId;
 		$attribute['app_id'] = $appId;
 		$getCin = $this->userRepo->getCinByUserId($bizId);
-                $getProductType  =  $this->userRepo->checkLeasingProduct($appId);
+		$getProductType  =  $this->userRepo->checkLeasingProduct($appId);
 		if(!empty($getCin))
 		{
 			$cin =    $getCin->cin; 
@@ -215,15 +215,17 @@ class ApplicationController extends Controller
 		{
 			$cin =    ""; 
 		}
+		$appData 	 = $this->appRepo->getAppData($appId);
 		$OwnerPanApi = $this->userRepo->getOwnerApiDetail($attribute);
 		return view('backend.app.promoter-details')->with([
 			'ownerDetails' => $OwnerPanApi, 
 			'cin_no' => $cin,
 			'appId' => $appId, 
 			'bizId' => $bizId,
-			 'edit' => $editFlag,
-                         'is_lease' => $getProductType
-                        ]);
+			'edit' => $editFlag,
+			'is_lease' => $getProductType,
+			'appData' => $appData
+		]);
 			 
 		} catch (Exception $ex) {
 				return false;

@@ -1393,5 +1393,9 @@ Route::group(
     Route::post('lms_approve_chrg_deletion', [
         'as' => 'lms_approve_chrg_deletion',
         'uses' => 'AjaxController@approveChargeDeletion'
+     ]);
+    Route::post('delete_management_info', [
+        'as' => 'delete_management_info',
+        'uses' => 'AjaxController@deleteManagementInfo'
     ]);
 });
