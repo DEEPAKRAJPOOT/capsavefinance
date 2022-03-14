@@ -255,7 +255,10 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'biz_entity_name',
                     function ($app) {                        
-                        $panInfo = $app->pan_no && !empty($app->pan_no) ? '<br><strong>PAN:</strong> ' . $app->pan_no : ''; 
+                        $panInfo = $app->pan_no && !empty($app->pan_no) ? '<br><strong>PAN:</strong> ' . $app->pan_no : '';
+                        if ($app->app_type != 0) {
+                            $panInfo .= '</br><small class="aprveAppListBtn">('. \Helpers::getAppTypeName($app->app_type) .')</small>';
+                        }
                         return $app->biz_entity_name ? $app->biz_entity_name . $panInfo : '';
                 })
                 ->addColumn(
@@ -783,13 +786,14 @@ class DataRenderer implements DataProviderInterface
                       {   
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amount:&nbsp;</b>'.$invoice->invoice_amount.'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Approve Amount:&nbsp;</b>'.$invoice->invoice_approve_amount.'</span>' : '';
+                        $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                       }
                       else
                       {
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
+                        $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->principal_amount).'</span>' : '';
-                        $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Actual Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->disburse_amount).'</span>' : '';
-                       
+                        $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Actual Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->disburse_amount).'</span>' : '';                       
                       }
                         return $inv_amount;
                 })
@@ -916,6 +920,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
+                        $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         return $inv_amount;
                         
                 })
@@ -1165,6 +1170,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
+                        $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         return $inv_amount;
                 })
                  ->addColumn(            
@@ -1316,6 +1322,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span></br>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<span><b>Inv. Appr. Amt.</b>:&nbsp;'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
+                        $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         return $inv_amount;
                 })
                     ->addColumn(            
@@ -1650,6 +1657,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->principal_amount).'</span>' : '';
                         $inv_amount .= ($invoice->disbursal) ? '<br><span><b>Actual Disburse Amt.:&nbsp;</b>'.number_format($invoice->disbursal->disburse_amount).'</span>' : '';
                         $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
+                        $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         return $inv_amount;
                })
                  ->addColumn(            
@@ -1844,6 +1852,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
+                        $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         $inv_amount .= $invoice->limit_exceed ? '<br><span class="error">Limit Exceed</span>' : '';
                         return $inv_amount;
                        
@@ -1892,6 +1901,7 @@ class DataRenderer implements DataProviderInterface
                        if(in_array($customer, $expl)) 
                        {
                         $action .='<option value="8">Approve</option>';
+                        $action .='<option value="7">Pending</option>';
                        }
                       }  
                      
@@ -1985,6 +1995,7 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_amount ? '<span><b>Inv. Amt.:&nbsp;</b>'.number_format($invoice->invoice_amount).'</span>' : '';
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Inv. Appr. Amt.:&nbsp;</b>'.number_format($invoice->invoice_approve_amount).'</span>' : '';
                         $inv_amount .= $invoice->program_offer ? '<br><span><b>Margin.:&nbsp;</b>'.$invoice->program_offer->margin.' %</span>' : '';
+                        $inv_amount .= $invoice->invoice_margin_amount ? '</br><span><b>Inv. Margin Amt.</b>:&nbsp;'.number_format($invoice->invoice_margin_amount, 2).'</span>' : '';
                         return $inv_amount;
                 })
                    ->addColumn(            
@@ -3640,7 +3651,7 @@ class DataRenderer implements DataProviderInterface
                         foreach ($appPrgmLimit as $value) {
                             $this->totalLimit += $value->product_limit;
                         }
-                    return '<label><i class="fa fa-inr">'.number_format($this->totalLimit).'</i></label>';
+                    return '<label><i class="fa fa-inr">'.number_format($this->totalLimit, 2).'</i></label>';
                 })
                 ->editColumn(
                     'consume_limit',
@@ -3658,14 +3669,15 @@ class DataRenderer implements DataProviderInterface
                         foreach ($appPrgmLimit as $value) {
                             $this->totalCunsumeLimit += $value->utilize_limit;
                         }
+                        // $this->totalCunsumeLimit += \Helpers::anchorSupplierUtilizedLimitByInvoice($customer->user_id, $customer->user->anchor_id);
                                                 
-                    return '<label><i class="fa fa-inr">'.number_format($this->totalCunsumeLimit).'</i></label>';
+                    return '<label><i class="fa fa-inr">'.number_format($this->totalCunsumeLimit, 2).'</i></label>';
                 })
                 ->editColumn(
                     'available_limit',
                     function ($customer) {
                     
-                    return '<label><i class="fa fa-inr">'.number_format($this->totalLimit - $this->totalCunsumeLimit).'</i></label>';
+                    return '<label><i class="fa fa-inr">'.number_format(($this->totalLimit - $this->totalCunsumeLimit), 2).'</i></label>';
                 })
                 ->editColumn(
                     'anchor',

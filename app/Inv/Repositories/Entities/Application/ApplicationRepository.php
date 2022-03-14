@@ -2402,6 +2402,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return BizInvoice::getInvoiceUtilizedAmount($attr);
     }
+    
+    public function getSettledInvoiceAmount($attr)
+    {
+        return BizInvoice::getSettledInvoiceAmount($attr);
+    }
 
     public function getParentsPrograms($program_id, &$prgmIds=[])
     {
@@ -2574,7 +2579,8 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     {
         return BizOwner::getBizOwnerDataByOwnerId($bizOwnerId);
     }
+
+    public function getAnchorPrgmUserIdsInArray($anchorId, $prgmId){
+        return AppProgramOffer::getAnchorPrgmUserIdsInArray($anchorId, $prgmId);
+    }
 }
-
-
-

@@ -176,7 +176,7 @@
                                             @endforeach
                                             @else
                                                 <tr style="text-align: center;">
-                                                    <td>No offer found</td>
+                                                    <td colspan="9">No offer found</td>
                                                 </tr>
                                             @endif
                                             </tbody>
@@ -452,9 +452,21 @@
     </div>    
 </div>
 
+@php
+    if ($appType == 1) {
+        $offerHeading = "Add/Update Offer(Renewal)";
+    } elseif($appType == 2) {
+        $offerHeading = "Add/Update Offer(Limit Enhancement)";
+    } elseif($appType == 3) {
+        $offerHeading = "Add/Update Offer(Limit Reduction)";
+    } else {    
+        $offerHeading = "Add/Update Offer";
+    }
+@endphp
+
 {!!Helpers::makeIframePopup('shareColenderFrame','Share with Co-Lender', 'modal-md')!!}
 {!!Helpers::makeIframePopup('viewSharedColenderFrame','View shared Co-Lender', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('limitOfferFrame','Add/Update Offer', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('limitOfferFrame', $offerHeading, 'modal-lg')!!}
 {!!Helpers::makeIframePopup('editLimitFrame','Update Limit', 'modal-md')!!}
 
 @endsection

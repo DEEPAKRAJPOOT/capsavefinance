@@ -643,7 +643,7 @@ class ApplicationController extends Controller
                                     $endDate = date('Y-m-d', strtotime('+1 years -1 day'));
                                     //$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($userId, $appId);
 
-                                    if ($appData && in_array($appData->app_type, [1,2,3]) ) {
+                                    /*if ($appData && in_array($appData->app_type, [1,2,3]) ) {
                                         $parentAppId = $appData->parent_app_id;
                                         $actualEndDate = $curDate;
                                         $appLimitData = $this->appRepo->getAppLimitData(['user_id' => $userId, 'app_id' => $parentAppId]);
@@ -655,7 +655,7 @@ class ApplicationController extends Controller
                                        $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
                                        $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
                                        \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));
-                                    }            
+                                    }*/
                                     /*
                                     if (!is_null($appLimitId)) {
                                         $this->appRepo->saveAppLimit([
@@ -949,7 +949,7 @@ class ApplicationController extends Controller
 							return redirect()->back();
 						} else {
 							//$whereCondition = ['app_id' => $app_id];
-							//$offerData = $this->appRepo->getOfferData($whereCondition);
+							//$offerData = $this->appRepo->getOfferData($whereCondition);							
 							$this->appRepo->updateActiveOfferByAppId($app_id, ['is_approve' => 1]);
 						}
 					}
@@ -970,7 +970,7 @@ class ApplicationController extends Controller
 					$uploadDocStatus = $this->appRepo->isDocsUploaded($app_id, $docIds);                    
 					if(count($docIds) == 0 || !$uploadDocStatus)  {                    
 						Session::flash('error_code', 'no_post_docs_uploaded');
-						return redirect()->back();                                            
+						return redirect()->back();
 					}                                  
 				} else if ($currStage->stage_code == 'upload_pre_sanction_doc') {
 					
@@ -1008,21 +1008,21 @@ class ApplicationController extends Controller
 			  	$curDate = \Carbon\Carbon::now()->format('Y-m-d');
 			  	$endDate = date('Y-m-d', strtotime('+1 years -1 day'));
 			  	$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($user_id, $app_id);
-                                $appData = $this->appRepo->getAppData($app_id);
-                                if ($appData && in_array($appData->app_type, [1,2,3]) ) {
-                                    $parentAppId = $appData->parent_app_id;
-                                    $actualEndDate = $curDate;
-                                    /*$appLimitData = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $parentAppId]);
-                                    if (in_array($appData->app_type, [2,3])) {
-                                        $curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
-                                        $endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
-                                    }
-                                    
-                                    $this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
-                                    $this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
-                                    \Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));*/                                    
-                                    $this->appRepo->updateAppData($parentAppId, ['is_child_sanctioned' => 2]);
-                                }
+				$appData = $this->appRepo->getAppData($app_id);
+				if ($appData && in_array($appData->app_type, [1,2]) ) {
+					$parentAppId = $appData->parent_app_id;
+					$actualEndDate = $curDate;
+					$appLimitData = $this->appRepo->getAppLimitData(['user_id' => $user_id, 'app_id' => $parentAppId]);
+					if (in_array($appData->app_type, [2])) {
+						$curDate = isset($appLimitData[0]) ? $appLimitData[0]->start_date : null;
+						$endDate = isset($appLimitData[0]) ? $appLimitData[0]->end_date : null;
+					}
+
+					$this->appRepo->updateAppLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
+					$this->appRepo->updatePrgmLimit(['status' => 2, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
+					\Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_CLOSED'));                                
+					$this->appRepo->updateAppData($parentAppId, ['status' => 3, 'is_child_sanctioned' => 2]);
+				}
                                 
         		if (!is_null($appLimitId)) {
 				  	$this->appRepo->saveAppLimit([

@@ -583,8 +583,7 @@ class InvoiceController extends Controller {
 
     /*   save invoice */
 
-    public function saveInvoice(Request $request) {   
-       
+    public function saveInvoice(Request $request) {
         if ($request->get('eod_process')) {
             Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
             return back();
@@ -592,10 +591,11 @@ class InvoiceController extends Controller {
 
         $attributes = $request->all();
         $explode = explode(',', $attributes['supplier_id']);
-        $attributes['supplier_id'] = $explode[0];
+        $attributes['supplier_id'] = $attributes['user_id'] = $explode[0];
         $explode1 = explode(',', $attributes['program_id']);
-        $attributes['program_id'] = $explode1[0];
-        $appId = $explode[1];
+        $attributes['program_id'] = $attributes['prgm_id'] = $explode1[0];
+        $appId = $attributes['app_id'] = $explode[1];
+        $prgmOfferId = $explode[2];
         $date = Carbon::now();
         $id = Auth::user()->user_id;
         $res = $this->invRepo->getSingleAnchorDataByAppId($appId);
@@ -604,10 +604,29 @@ class InvoiceController extends Controller {
         $chkUser  = $this->application->chkUser();
         $customer  = 4;
         $expl  =  explode(",",$getPrgm->invoice_approval); 
+        
+        $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
+        $invoice_approve_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
+        $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($attributes['supplier_id'], $request->anchor_id);
+        $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
+        $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($prgmOfferId, $invoice_amount);
+
+        // $limit =   InvoiceTrait::ProgramLimit($attributes);
+        // $sum   =   InvoiceTrait::invoiceApproveLimit($attributes);
+        // $remainAmount = $limit - $sum;
+
+        // if ($marginAmt > $remainAmount) {
+        //     Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount.');
+        //     return back();
+        // }
+
+        // if ($totalProductLimit > 0 && $invoice_amount > 0 && $marginAmt > ($totalProductLimit - $invUtilizedAmt)) {
+        //     Session::flash('error', 'Invoice amount should not be greater than the balance limit amount.');
+        //     return back();
+        // }
         if (!empty($attributes['exception'])) {
             $statusId = 28;
-            $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';
-           
+            $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';           
         } else {
           if(in_array($customer, $expl))  
           {
@@ -635,10 +654,10 @@ class InvoiceController extends Controller {
         {
             $is_adhoc=0;
         }
+
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);
-        $invoice_approve_amount = str_replace(",", "", $attributes['invoice_approve_amount']);
-        $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
+
         $arr = array('anchor_id' => $attributes['anchor_id'],
             'supplier_id' => $attributes['supplier_id'],
             'program_id' => $attributes['program_id'],
@@ -657,7 +676,9 @@ class InvoiceController extends Controller {
             'file_id' => $userFile->file_id,
             'created_by' => $id,
             'updated_by' => $id,
-            'created_at' => $date);
+            'created_at' => $date,
+            'invoice_margin_amount' => $marginAmt
+        );
         $result = $this->invRepo->save($arr);
        
         if ($result) {
@@ -1659,7 +1680,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $dataAttr['amount']  =   $data[3]; 
                         $dataAttr['file_name']  =   $data[4];
                         $dataAttr['anchor_id']  =   $attributes['anchor_name'];
-                        $dataAttr['prgm_id']  =   $prgm_id;
+                        $dataAttr['prgm_id']  = $dataAttr['program_id'] =  $prgm_id;
                         $chlLmsCusto  = InvoiceTrait::getLimitProgram($dataAttr);
                         $getPrgm  = $this->application->getProgram($prgm_id);
                         if($chlLmsCusto['status']==0)
@@ -1675,7 +1696,23 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $dataAttr['old_tenor']  =   $chlLmsCusto['tenor_old_invoice'];
                         $dataAttr['prgm_offer_id']  =   $chlLmsCusto['prgm_offer_id'];
                         $dataAttr['approval']  =   $getPrgm;
+
+                        $invoice_amount = str_replace(',', '', $dataAttr['amount']);
+                        $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($dataAttr['user_id'], $dataAttr['anchor_id']);
+                        $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
+                        
+                        $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($dataAttr['prgm_offer_id'], $dataAttr['amount']);
+                        // $limit =   InvoiceTrait::ProgramLimit($dataAttr);
+                        // $sum   =   InvoiceTrait::invoiceApproveLimit($dataAttr);
+                        // $remainAmount = $limit - $sum;
+                        
+                        // if ($marginAmt > $remainAmount) {
+                        //     Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount for customer '.$dataAttr['cusomer_id']);
+                        //     return back();
+                        // }
+                        
                         $getInvDueDate =  InvoiceTrait::getInvoiceDueDate($dataAttr); /* get invoice due date*/
+
                         if($getInvDueDate['status']==0)
                         {
                            Session::flash('error', $getInvDueDate['message']);
@@ -1730,10 +1767,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $ins['file_id'] =  $FileId;
                         $ins['created_by'] =  $id;
                         $ins['created_at'] =  $date;
+                        $ins['invoice_margin_amount'] = $marginAmt;
                         $key++;
-                      
-                        $res =  $this->invRepo->saveInvoice($ins);
-                       
+                        $res =  $this->invRepo->saveInvoice($ins);                       
                     } 
 
                         $whereActivi['activity_code'] = 'upload_bulk_csv_Invoice';

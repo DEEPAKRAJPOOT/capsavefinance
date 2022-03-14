@@ -18,6 +18,8 @@ use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Contracts\Traits\InvoiceTrait;
+use App\Helpers\Helper;
+
 class BizInvoice extends BaseModel
 {
     /**
@@ -140,7 +142,16 @@ class BizInvoice extends BaseModel
         $id = Auth::user()->user_id;    
         $result =  User::getSingleUserDetails($id);
         InvoiceStatusLog::saveInvoiceLog($invoiceId,7,$amount,$comment);
-        return  self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
+        
+        $invoice = self::find($invoiceId);
+        $marginAmt = Helper::getOfferMarginAmtOfInvoiceAmt($invoice->prgm_offer_id, $amount);
+
+        return  self::where(['invoice_id' => $invoiceId])->update([
+            'invoice_approve_amount' => $amount,
+            'status_update_time' => $updated_at,
+            'updated_by' => $id,
+            'invoice_margin_amount' => $marginAmt
+        ]);
         
     } 
     
@@ -495,7 +506,9 @@ class BizInvoice extends BaseModel
                             'status_id' => $res->status_id,
                             'file_id' => $res->file_id,
                             'created_by' => $res->created_by,
-                            'created_at' =>  $mytime];
+                            'created_at' =>  $mytime,
+                            'invoice_margin_amount' => $res['invoice_margin_amount']
+                        ];
      return self::create($arr);   
    
     }
@@ -530,7 +543,12 @@ class BizInvoice extends BaseModel
     public static function getInvoiceUtilizedAmount($attr)
     {
         return  BizInvoice::whereIn('status_id',[8,9,10,12,13,15])->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id'],'program_id' =>$attr['prgm_id'],'app_id' =>$attr['app_id']])->sum('invoice_approve_amount');       
-    }    
+    }
+
+    public static function getSettledInvoiceAmount($attr)
+    {
+        return  BizInvoice::whereIn('status_id',[13,15])->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id'],'program_id' => $attr['prgm_id'],'app_id' => $attr['app_id']])->sum('invoice_approve_amount');       
+    }
     
     public static function getAnchorInvoiceDataDetail($anchorId = null) 
     {  
@@ -554,7 +572,15 @@ class BizInvoice extends BaseModel
         $id = Auth::user()->user_id;    
         $result =  User::getSingleUserDetails($id);
         InvoiceStatusLog::saveInvoiceLogWithStatusId($invoiceId,$statusId,$amount,$comment);
-        return  self::where(['invoice_id' => $invoiceId])->update(['invoice_approve_amount' => $amount,'status_update_time' => $updated_at,'updated_by' =>$id]);
+        $invoice = self::find($invoiceId);
+        $marginAmt = Helper::getOfferMarginAmtOfInvoiceAmt($invoice->prgm_offer_id, $amount);
+
+        return  self::where(['invoice_id' => $invoiceId])->update([
+            'invoice_approve_amount' => $amount,
+            'status_update_time' => $updated_at,
+            'updated_by' => $id,
+            'invoice_margin_amount' => $marginAmt
+        ]);
         
     }
     public static function getAllManageInvoice($request,$status)
