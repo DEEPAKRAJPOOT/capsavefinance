@@ -132,6 +132,9 @@ try {
                                 var p = window;
                                 p.location.reload();
                             }, 1000);  
+                          if(res.isFinalSubmit === 1){
+                               window.parent.$('#searchbtn').trigger('click');
+                           }
                         }else if (res.status === 0){
                             $('#tMsg').show().html('<span style="color: red;font-weight: 900;margin: 22px 5px 32px;font-size: 13px;">'+res.msg+'</span>');
                                 $('html, body').animate({

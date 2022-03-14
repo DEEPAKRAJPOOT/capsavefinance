@@ -5691,6 +5691,7 @@ if ($err) {
             $app_id = $request->app_id;
             $file_id = false;
             $currStage = Helpers::getCurrentWfStage($app_id);
+            $isFinalSubmit = 0;
             if ($currStage->stage_code == 'approver') {
                 $whereCondition = ['app_id' => $app_id, 'status' => null];
                 $offerData = $this->application->getOfferData($whereCondition);
@@ -5731,6 +5732,7 @@ if ($err) {
                                 Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);
                                 $application = $this->application->updateAppDetails($app_id, ['is_assigned'=>1]);
                                 $msg = 'Approval mail copy has been successfully uploaded and move the next stage (Sales).';
+                                $isFinalSubmit = 1;
                             }
                         }
                     }
@@ -5740,7 +5742,7 @@ if ($err) {
             return response()->json(['status' => 0,'msg' => 'No Authority']); 
         }
         \DB::commit();
-        return response()->json(['status' => 1,'msg' => $msg]);
+        return response()->json(['status' => 1,'msg' => $msg, 'isFinalSubmit' =>$isFinalSubmit]);
         } catch (Exception $ex) {
             \DB::rollback();
             return response()->json(['status' => 0,'msg' => Helpers::getExceptionMessage($ex)]);
