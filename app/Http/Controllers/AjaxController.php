@@ -5714,13 +5714,7 @@ if ($err) {
                 if($update){
                     $appApprData = AppApprover::getAppApprovers($app_id);
                     if (isset($appApprData[0])) {
-                        $isFinalUpload = true;
-                        foreach($appApprData as $appr) {
-                            if($appr->status == '' || $appr->status == NULL){
-                                $isFinalUpload = false;
-                                break;
-                            }
-                        }
+                        $isFinalUpload = Helpers::isAppApprByAuthority($app_id);
                         if($isFinalUpload){
                             if ($currStage->stage_code == 'approver') {
                                 $this->application->updateActiveOfferByAppId($app_id, ['is_approve' => 1]);

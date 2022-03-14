@@ -1819,7 +1819,7 @@ class ApplicationController extends Controller
 			$app_id = $request->get('app_id');
 			if($app_id){
 				$approvers = AppApprover::getAppApproversDetails($app_id);
-				$appApprData = AppApprover::getAppApprovers($app_id);
+				$isFinalUpload = Helpers::isAppApprByAuthority($app_id);
 				$data = array();
 				foreach($approvers as $key => $approver){
 					$data[$key]['approver'] = $approver->approver;
@@ -1832,15 +1832,6 @@ class ApplicationController extends Controller
 					$data[$key]['file_updated_at'] = ($approver->file_updated_at)?date('d-m-Y H:i:s',strtotime($approver->file_updated_at)):"";
 					$data[$key]['app_appr_status_id'] = ($approver->app_appr_status_id)?$approver->app_appr_status_id:"";
 					$data[$key]['app_id'] = ($approver->app_id)?$approver->app_id:"";
-				}
-				$isFinalUpload = true;
-				if (isset($appApprData[0])) {
-					foreach($appApprData as $appr) {
-						if($appr->status == '' || $appr->status == NULL){
-							$isFinalUpload = false;
-							break;
-						}
-					}
 				}
 				return view('backend.app.view_approvers')->with('approvers', $data)->with('isFinalUpload', $isFinalUpload);
 			}
