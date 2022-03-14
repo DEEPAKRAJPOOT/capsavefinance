@@ -227,7 +227,6 @@ class Helper extends PaypalHelper
                     $dataArr['assign_type'] = '2';
                     $dataArr['sharing_comment'] = isset($addl_data['sharing_comment']) ? $addl_data['sharing_comment'] : '';
                     $dataArr['is_owner'] = 1;
-                    $dataArr['approval_file_id'] = isset($addl_data['approval_file_id']) ? $addl_data['approval_file_id'] : null;
 
                     AppAssignment::saveData($dataArr, $sendEmail);
 
@@ -2395,8 +2394,8 @@ class Helper extends PaypalHelper
         $inputArr['file_name'] = $attributes['approval_doc_file']->getClientOriginalName();
         $inputArr['file_size'] = $attributes['approval_doc_file']->getClientSize();
         $inputArr['file_encp_key'] =  md5('2');
-        $inputArr['created_by'] = 1;
-        $inputArr['updated_by'] = 1;
+        $inputArr['created_by'] = \Auth::user()->user_id;
+        $inputArr['updated_by'] = \Auth::user()->user_id;
 
         return $inputArr;
     }

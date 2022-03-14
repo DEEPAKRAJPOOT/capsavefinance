@@ -585,6 +585,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
             ]);
 
+            Route::get('download-approval-file-copy', [
+                'as' => 'download_approval_file_copy',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            ]);
+
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 

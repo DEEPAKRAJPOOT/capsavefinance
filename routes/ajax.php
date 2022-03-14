@@ -1394,4 +1394,9 @@ Route::group(
         'as' => 'lms_approve_chrg_deletion',
         'uses' => 'AjaxController@approveChargeDeletion'
     ]);
+
+    Route::post('upload-approval-mail-copy', [
+        'as' => 'upload_approval_mail_copy',
+        'uses' => 'AjaxController@uploadApprovalMailCopy'
+    ]);
 });

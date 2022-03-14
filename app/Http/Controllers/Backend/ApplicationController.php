@@ -955,15 +955,6 @@ class ApplicationController extends Controller
 							//$whereCondition = ['app_id' => $app_id];
 							//$offerData = $this->appRepo->getOfferData($whereCondition);
 							$this->appRepo->updateActiveOfferByAppId($app_id, ['is_approve' => 1]);
-                                                        if ($request->approval_doc_file) {
-                                                            $date = Carbon::now();
-                                                            $appData = $this->appRepo->getAppData($app_id);
-                                                            $supplier_id = $appData->user_id;
-                                                            $uploadApprovalDocData = Helpers::uploadUserApprovalFile($attributes, $supplier_id, $app_id);
-                                                            $userFile = $this->docRepo->saveFile($uploadApprovalDocData);
-                                                            $file_id = $userFile->file_id;
-                                                            $addl_data['approval_file_id'] = $file_id;
-                                                        }
                                                 }
 					}
 				} else if ($currStage->stage_code == 'sales_queue') {
@@ -1828,6 +1819,7 @@ class ApplicationController extends Controller
 			$app_id = $request->get('app_id');
 			if($app_id){
 				$approvers = AppApprover::getAppApproversDetails($app_id);
+				$appApprData = AppApprover::getAppApprovers($app_id);
 				$data = array();
 				foreach($approvers as $key => $approver){
 					$data[$key]['approver'] = $approver->approver;
@@ -1835,8 +1827,22 @@ class ApplicationController extends Controller
 					$data[$key]['approver_role'] = $approver->approver_role;
 					$data[$key]['approved_date'] = ($approver->updated_at)? date('d-M-Y',strtotime($approver->updated_at)) : '---';
 					$data[$key]['stauts'] = ($approver->status == '1')?"Approved":"";
+					$data[$key]['approval_file_id'] = ($approver->approval_file_id)?$approver->approval_file_id:"";
+					$data[$key]['file_updated_by'] = ($approver->file_updated_by)?$approver->file_updated_by:"";
+					$data[$key]['file_updated_at'] = ($approver->file_updated_at)?date('d-m-Y H:i:s',strtotime($approver->file_updated_at)):"";
+					$data[$key]['app_appr_status_id'] = ($approver->app_appr_status_id)?$approver->app_appr_status_id:"";
+					$data[$key]['app_id'] = ($approver->app_id)?$approver->app_id:"";
 				}
-				return view('backend.app.view_approvers')->with('approvers', $data);
+				$isFinalUpload = true;
+				if (isset($appApprData[0])) {
+					foreach($appApprData as $appr) {
+						if($appr->status == '' || $appr->status == NULL){
+							$isFinalUpload = false;
+							break;
+						}
+					}
+				}
+				return view('backend.app.view_approvers')->with('approvers', $data)->with('isFinalUpload', $isFinalUpload);
 			}
 		} catch (Exception $ex){
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
