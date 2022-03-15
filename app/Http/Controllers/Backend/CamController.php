@@ -1915,15 +1915,16 @@ class CamController extends Controller
         // enhancement check
         $program_id = (int)$request->prgm_id;
         $anchorId = (int)$request->anchor_id;
-        $prgm_data =  $this->appRepo->getProgram(['prgm_id' => $program_id]);
-        $offerIsExist = \Helpers::checkAnchorPrgmOfferDuplicate($prgm_data->anchor_id, $program_id, $appId);
-
-        if ((!$prgmOfferId && $offerIsExist) || ($prgmOfferId && $offerIsExist && $prgmOfferId != $offerIsExist->prgm_offer_id)) {
-          Session::flash('error', 'Anchor Offer is already generated for this program.');
-          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
-        }
+        $prgm_data =  $this->appRepo->getProgram(['prgm_id' => $program_id]);        
         
-        if ($prgm_data->product_id == 1) {
+        if ($prgm_data && $prgm_data->product_id == 1) {
+          $offerIsExist = \Helpers::checkAnchorPrgmOfferDuplicate($prgm_data->anchor_id, $program_id, $appId);
+
+          if ((!$prgmOfferId && $offerIsExist) || ($prgmOfferId && $offerIsExist && $prgmOfferId != $offerIsExist->prgm_offer_id)) {
+            Session::flash('error', 'Anchor Offer is already generated for this program.');
+            return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);        
+          }
+          
           $anchorPrgmLimit =  $this->getAnchorProgramLimit($appId, $program_id, $prgmOfferId);
           
           if($request->prgm_limit_amt > $anchorPrgmLimit['prgmBalLimitAmt']) {
