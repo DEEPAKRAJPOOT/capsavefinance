@@ -307,7 +307,7 @@ class ApportionmentController extends Controller
                     'trans_id' => $resp->trans_id,
                     'comment' => $comment,
                 ];
-                if($TransDetail->disburse->invoice_disbursed_id){
+                if($TransDetail->invoice_disbursed_id){
                     $Obj = new ManualApportionmentHelper($this->lmsRepo);
                     $this->updateInvoiceRepaymentFlag([$TransDetail->disburse->invoice_disbursed_id]);
                     $Obj->refundProcess($TransDetail->disburse->invoice_disbursed_id);

@@ -37,6 +37,7 @@ class CustomerTransactionSOA extends BaseModel
         'user_id',
         'trans_id',
         'trans_date',
+        'trans_name',
         'value_date',
         'trans_type',
         'batch_no',
@@ -123,6 +124,7 @@ class CustomerTransactionSOA extends BaseModel
         return [
             'value_date'      =>  $transaction->trans_date,
             'trans_type'      =>  $transaction->trans_type,
+            'trans_name'      =>  $transaction->transName,
             'invoice_no'      =>  $transaction->invoiceno,
             'batch_no'        =>  $transaction->batchNo,
             'narration'       =>  $transaction->narration,
