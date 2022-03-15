@@ -46,18 +46,26 @@ Form::open(
         </div>
     </div>
 </div>
+
+@if($app_type == 3 && $isOfferLimitApproved)
 <div class="row d-none" id="consentProcessRollbackSection">
     <div class="col-12">
         <div class="form-group">
-            <label for="txtCreditPeriod">Consent</label><br/>
-            <div id="check_block">
-                <label class="checkbox-inline" style="vertical-align: middle; margin-right: 30px; margin-top: 8px;">
-                    <input type="checkbox" value="1" name="consent_process_rollback"> You want to reactivate the old limit ?                    
+            <label for="chrg_type"><strong>You want to reactivate the old limit ?</strong></label><br />
+            <div class="form-check-inline ">
+                <label class="fnt">
+                <input type="radio" class="form-check-input is_phy_inv_req" checked name="reactivate_parent_app" value="1">Yes
+                </label>
+            </div>
+            <div class="form-check-inline">
+                <label class="fnt">
+                <input type="radio" class="form-check-input is_phy_inv_req" name="reactivate_parent_app" value="0">No
                 </label>
             </div>
         </div>
     </div>
 </div>
+@endif
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">

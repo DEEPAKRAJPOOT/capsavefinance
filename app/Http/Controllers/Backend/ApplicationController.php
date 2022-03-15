@@ -2126,6 +2126,7 @@ class ApplicationController extends Controller
 		$appData = $this->appRepo->getAppData($app_id);
 		$curStatusId = $appData ? $appData->curr_status_id : 0;
 		$appType = $appData->app_type ?? 0;
+		$isOfferLimitApproved = $this->appRepo->getAppOfferLimitApproved($user_id, $app_id);
 
 		return view('backend.app.reject_app_form')
 				->with('app_id', $app_id)
@@ -2135,7 +2136,8 @@ class ApplicationController extends Controller
 				->with('status_id', $status_id)
 				->with('note_id', $note_id)
 				->with('cur_status_id', $curStatusId)
-				->with('app_type', $appType);
+				->with('app_type', $appType)
+				->with('isOfferLimitApproved', $isOfferLimitApproved);
 	}
         
     /**
@@ -2168,13 +2170,16 @@ class ApplicationController extends Controller
             if (isset(config('common.mst_status_id')[$appStatus]) && $cur_status_id != (int)config('common.mst_status_id')[$appStatus]) {
 
 				$appData = $this->appRepo->getAppData($app_id);
-				if ($appData && in_array($appData->app_type, [3]) && $appData->curr_status_id >= config('common.mst_status_id')['OFFER_LIMIT_APPROVED'] && $request->has('consent_process_rollback') && $request->get('consent_process_rollback') == 1) {
+				$isOfferLimitApproved = $this->appRepo->getAppOfferLimitApproved($user_id, $app_id);
+				if ($appData && in_array($appData->app_type, [3]) && $isOfferLimitApproved && $request->has('reactivate_parent_app') && $request->get('reactivate_parent_app') == 1) {
 					$parentAppId   = $appData->parent_app_id;
 					$actualEndDate = null;
 					$this->appRepo->updateAppLimit(['status' => 1, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId]);
 					$this->appRepo->updatePrgmLimit(['status' => 1, 'actual_end_date' => $actualEndDate], ['app_id' => $parentAppId, 'product_id' => 1]);  
 					\Helpers::updateAppCurrentStatus($parentAppId, config('common.mst_status_id.APP_SANCTIONED'));                               
 					$this->appRepo->updateAppData($parentAppId, ['status' => 2, 'is_child_sanctioned' => 1]);
+
+					$this->appRepo->updateAppDetails($app_id, ['reactivate_parent_app' => $request->get('reactivate_parent_app')]);
 				}
 
                 $noteData = [
@@ -2206,7 +2211,7 @@ class ApplicationController extends Controller
                     $this->appRepo->saveAppStatusLog($appStatusData);
                     
                     $arrUpdateApp=[
-			'curr_status_id'=>(int) config('common.mst_status_id')[$appStatus],
+						'curr_status_id'=>(int) config('common.mst_status_id')[$appStatus],
                         'curr_status_updated_at' => \Carbon\Carbon::now()
                     ];
 			

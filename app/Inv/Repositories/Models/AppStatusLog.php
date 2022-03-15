@@ -182,4 +182,11 @@ public static function saveAppStatusLog($arrAppStatusLog = [])
         return $appNote;
     }   
  
-}
+    public static function getAppOfferLimitApproved($userId, $appId){
+        return self::where([
+            'user_id'    => $userId,
+            'app_id'     => $appId,
+            'status_id'  => config('common.mst_status_id.OFFER_LIMIT_APPROVED'),
+        ])->first() ? true : false;
+    }    
+}   

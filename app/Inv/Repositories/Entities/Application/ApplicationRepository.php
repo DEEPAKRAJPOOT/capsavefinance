@@ -2569,6 +2569,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getInvoiceProcessingFeeCharge(){
         return Charges::find(12);
     }
+
+    public function getAppOfferLimitApproved($userId, $appId){
+        return AppStatusLog::getAppOfferLimitApproved($userId, $appId);
+    }
 }
 
 
