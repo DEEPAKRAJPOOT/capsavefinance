@@ -7,6 +7,7 @@
     <input type="hidden" value="{{request()->get('biz_id')}}" name="biz_id">
     <input type="hidden" value="{{request()->get('app_prgm_limit_id')}}" name="app_prgm_limit_id">
     <input type="hidden" value="{{request()->get('prgm_offer_id')}}" name="offer_id">
+    <input type="hidden" value="2" name="security_deposit_type">
     
     <div class="row">
         <div class="col-md-6 d-none">
@@ -95,6 +96,27 @@
             <label for="txtPassword"><b>Processing Fee (%) @Sanction level</b> <span style="color: red;"> *</span></label>
             <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
           </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group INR">
+                <label for="txtPassword"><b>Security Deposit (%)</b> <span style="color: red;"> *</span></label>
+                <input type="text" name="security_deposit" class="form-control" value="{{ isset($offerData->security_deposit) ? (int) $offerData->security_deposit : '' }}" placeholder="Security Deposit" maxlength="15">
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group INR">
+                <label for="txtPassword"><b>Margin Money (%)</b> <span style="color: red;"> *</span></label>
+                <input type="text" name="margin" class="form-control" value="{{ isset($offerData->margin) ? (int) $offerData->margin : '' }}" placeholder="Margin Money" maxlength="15">
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group INR">
+                <label for="txtPassword"><b>IRR (%)</b> <span style="color: red;"> *</span></label>
+                <input type="text" name="irr" class="form-control" value="{{ isset($offerData->irr) ? $offerData->irr : '' }}" placeholder="IRR" maxlength="15">
+            </div>
         </div>
         <!-- -------------- ASSET INSURANCE BLOCK ------------ -->
         <div class="col-md-12">
@@ -293,7 +315,9 @@
     unsetError('input[name=tenor]');
     // unsetError('select[name=equipment_type_id]');
     unsetError('select[name=facility_type_id]');
-    // unsetError('input[name=security_deposit]');
+    unsetError('input[name=security_deposit]');
+    unsetError('input[name=margin]');
+    unsetError('input[name=irr]');
     // unsetError('input[name=security_deposit_type]');
     unsetError('select[name=rental_frequency]');
     unsetError('select[name=rental_frequency_type]');
@@ -315,7 +339,9 @@
     let tenor = $('input[name=tenor]').val();
     // let equipment_type_id = $('select[name=equipment_type_id]').val();
     let facility_type_id = $('select[name=facility_type_id]').val();
-    // let security_deposit = $('input[name=security_deposit]').val();
+    let security_deposit = $('input[name=security_deposit]').val();
+    let margin = $('input[name=margin]').val();
+    let offer_irr = $('input[name=irr]').val();
     // let security_deposit_of = $('select[name=security_deposit_of]').val();
     let rental_frequency = $('select[name=rental_frequency]').val();
     let rental_frequency_type = $('select[name=rental_frequency_type]').val();
@@ -389,17 +415,36 @@
     //     flag = false;
     // }      
 
-    // if(security_deposit == '' || isNaN(security_deposit)){
-    //     setError('input[name=security_deposit]', 'Please fill security deposit');
-    //     flag = false;
-    // }else if(security_deposit_type == 2 && parseFloat(security_deposit) > 100){
+    if(security_deposit == '' || isNaN(security_deposit)){
+        setError('input[name=security_deposit]', 'Please fill security deposit');
+        flag = false;
+    }else if(parseFloat(security_deposit) > 100){
+        setError('input[name=security_deposit]', 'Security deposit can not be greater than 100 percent');
+        flag = false;
+    }
+    // else if(security_deposit_type == 2 && parseFloat(security_deposit) > 100){
     //     setError('input[name=security_deposit]', 'Security deposit can not be greater than 100 percent');
     //     flag = false;
     // }else if((security_deposit_type == 1) && (parseInt(security_deposit) != security_deposit)){
     //     setError('input[name=security_deposit]', 'Please fill correct security deposit amount');
     //     flag = false;
     // }
+       
+    if(margin == '' || isNaN(margin)){
+        setError('input[name=margin]', 'Please fill margin money');
+        flag = false;
+    }else if(parseFloat(margin) > 100){
+        setError('input[name=margin]', 'Margin money can not be greater than 100 percent');
+        flag = false;
+    }
 
+    if(offer_irr == '' || isNaN(offer_irr)){
+        setError('input[name=irr]', 'Please fill IRR');
+        flag = false;
+    }else if(parseFloat(offer_irr) > 100){
+        setError('input[name=irr]', 'IRR can not be greater than 100 percent');
+        flag = false;
+    }
     // if(security_deposit_of == ''){
     //     setError('select[name=security_deposit_of]', 'Please select security deposit type');
     //     flag = false;
@@ -532,20 +577,20 @@
         }
     });*/
 
-    $('input[name=security_deposit_type]').on('change', function(){
-        let sdt = $('input[name=security_deposit_type]:checked').val();
-        if(sdt == 1){
-            $('#sdt').text('Amount');
-            $('input[name=security_deposit]').val('');
-            $('.fa-change').removeClass('fa-percent').addClass('fa-inr');
-            $('input[name=security_deposit]').attr('Placeholder', 'Deposit Amount');
-        }else{
-            $('#sdt').text('Percent');
-            $('input[name=security_deposit]').val('');
-            $('.fa-change').removeClass('fa-inr').addClass('fa-percent');
-            $('input[name=security_deposit]').attr('Placeholder', 'Deposit Percent');
-        }
-    });
+    // $('input[name=security_deposit_type]').on('change', function(){
+    //     let sdt = $('input[name=security_deposit_type]:checked').val();
+    //     if(sdt == 1){
+    //         $('#sdt').text('Amount');
+    //         $('input[name=security_deposit]').val('');
+    //         $('.fa-change').removeClass('fa-percent').addClass('fa-inr');
+    //         $('input[name=security_deposit]').attr('Placeholder', 'Deposit Amount');
+    //     }else{
+    //         $('#sdt').text('Percent');
+    //         $('input[name=security_deposit]').val('');
+    //         $('.fa-change').removeClass('fa-inr').addClass('fa-percent');
+    //         $('input[name=security_deposit]').attr('Placeholder', 'Deposit Percent');
+    //     }
+    // });
 
   })
 

@@ -97,6 +97,7 @@ class AppProgramOffer extends BaseModel {
         'asset_name',
         'timelines_for_insurance',
         'asset_comment',
+        'irr',
         'is_approve',
         'payment_frequency',
         'status',

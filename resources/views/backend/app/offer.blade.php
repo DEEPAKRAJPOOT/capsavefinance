@@ -324,6 +324,19 @@ tr.border_bottom td {
                                                     <td>{{ $termOffer->processing_fee }}%</td>
                                                     <td></td>
                                                 </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td><b>Security Deposit (%): </b></td>
+                                                    <td>{{ $termOffer->security_deposit }}%</td>
+                                                    <td><b>Margin Money (%): </b></td>
+                                                    <td>{{ $termOffer->margin }}%</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td><b>IRR (%): </b></td>
+                                                    <td>{{ $termOffer->irr }}%</td>
+                                                </tr>
                                                 <td></td>
                                                     <td><b>Asset Insurance: </b></td>
                                                     <td>
