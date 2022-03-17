@@ -113,9 +113,13 @@ class userInvoiceController extends Controller
             $origin_of_recipient['interest_prefix'] = config('lms.INVOICE_TYPE.I'); 
             $latestUserInvoice = $this->UserInvRepo->getUserLastInvoiceNo();
             if($latestUserInvoice){
-                $fname = \Helpers::getUserInfo((int)$latestUserInvoice->created_by)->f_name;
-                $lname = \Helpers::getUserInfo((int)$latestUserInvoice->created_by)->l_name;
-                $created_by = $fname.' '.$lname;
+                if($latestUserInvoice->created_by){
+                    $fname = \Helpers::getUserInfo((int)$latestUserInvoice->created_by)->f_name;
+                    $lname = \Helpers::getUserInfo((int)$latestUserInvoice->created_by)->l_name;
+                    $created_by = $fname.' '.$lname;
+                }else{
+                    $created_by = 'System';
+                }
                 Session::flash('lastInvMsg','Last Invoice generated Number '.$latestUserInvoice->invoice_no .' created by '.$created_by.' created on '.$latestUserInvoice->created_at);
             }else{
                 Session::flash('lastInvMsg','Still Invoice not created for any customer.');

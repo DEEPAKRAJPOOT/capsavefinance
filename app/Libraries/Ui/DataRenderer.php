@@ -5504,7 +5504,7 @@ class DataRenderer implements DataProviderInterface
                                 }
 
                                 if(Helpers::checkPermission('apport_unsettled_view')){
-                                    if($dataRecords->action_type == '1' && $dataRecords->trans_type == '17'){
+                                    if($dataRecords->action_type == '1' && in_array($dataRecords->trans_type, [2,17])) {
                                         if($dataRecords->isApportPayValid['isValid']){
                                             if($dataRecords->is_settled == Payment::PAYMENT_SETTLED_PENDING){
                                                 $btn .= "<a title=\"Unsettled Transactions\"  class='btn btn-action-btn btn-sm' href ='".route('apport_unsettled_view',[ 'user_id' => $dataRecords->user_id , 'payment_id' => $dataRecords->payment_id])."'>Unsettled Transactions</a>"; 
