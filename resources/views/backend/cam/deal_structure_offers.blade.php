@@ -410,8 +410,8 @@
                   <td class="">{{isset($termLoanOffer->margin) ? $termLoanOffer->margin.' %': ''}}</td>                  
                </tr>
                <tr role="row" class="odd">
-                  <td class=""><b>IRR (%)</b></td>
-                  <td class="">{{isset($termLoanOffer->irr) ? $termLoanOffer->irr.' %': ''}}</td>                                   
+                  <td class=""><b>IRR</b></td>
+                  <td class="">{{isset($termLoanOffer->irr) ? $termLoanOffer->irr : ''}}</td>                                   
                </tr>
                @if(isset($termLoanOffer->asset_insurance) && $termLoanOffer->asset_insurance == 1)
               <tr role="row" class="odd">

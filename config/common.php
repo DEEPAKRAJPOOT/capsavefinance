@@ -224,13 +224,13 @@ return [
         '7'=>'with in 360 days from date of first disbsurement'
     ],
     'pg_time_for_perfecting_security_id'=>[
-        '1'=>'Before Disbusrement',
-        '2'=>'With in 30 days from date of first disbusrement',
-        '3'=>'With in 60 days from date of first disbsurement',
-        '4'=>'With in 90 days from date of first disbursement ',
+        '1'=>'Before Disbursement',
+        '2'=>'With in 30 days from date of first disbursement',
+        '3'=>'With in 60 days from date of first disbursement',
+        '4'=>'With in 90 days from date of first disbursement',
         '5'=>'With in 120 days from date of first disbursement',
         '6'=>'with in 180 days from date of first disbursement',
-        '7'=>'with in 360 days from date of first disbsurement'
+        '7'=>'with in 360 days from date of first disbursement'
     ],
     'cg_type_id'=>[
         '1'=>'Corporate Guarante with BR',

@@ -101,20 +101,20 @@
         <div class="col-md-6">
             <div class="form-group INR">
                 <label for="txtPassword"><b>Security Deposit (%)</b> <span style="color: red;"> *</span></label>
-                <input type="text" name="security_deposit" class="form-control" value="{{ isset($offerData->security_deposit) ? (int) $offerData->security_deposit : '' }}" placeholder="Security Deposit" maxlength="15">
+                <input type="text" name="security_deposit" class="form-control" value="{{ isset($offerData->security_deposit) ? $offerData->security_deposit : '' }}" placeholder="Security Deposit" maxlength="15">
             </div>
         </div>
 
         <div class="col-md-6">
             <div class="form-group INR">
                 <label for="txtPassword"><b>Margin Money (%)</b> <span style="color: red;"> *</span></label>
-                <input type="text" name="margin" class="form-control" value="{{ isset($offerData->margin) ? (int) $offerData->margin : '' }}" placeholder="Margin Money" maxlength="15">
+                <input type="text" name="margin" class="form-control" value="{{ isset($offerData->margin) ? $offerData->margin : '' }}" placeholder="Margin Money" maxlength="15">
             </div>
         </div>
 
         <div class="col-md-6">
             <div class="form-group INR">
-                <label for="txtPassword"><b>IRR (%)</b> <span style="color: red;"> *</span></label>
+                <label for="txtPassword"><b>IRR</b> <span style="color: red;"> *</span></label>
                 <input type="text" name="irr" class="form-control" value="{{ isset($offerData->irr) ? $offerData->irr : '' }}" placeholder="IRR" maxlength="15">
             </div>
         </div>
@@ -180,13 +180,13 @@
                             @endif
                             <select name="pg[pg_time_for_perfecting_security_id][]" class="form-control">
                                 <option value="">Select time for perfecting security</option>
-                                <option value="1" {{($pg->pg_time_for_perfecting_security_id == 1)? 'selected': ''}}>Before Disbusrement</option>
-                                <option value="2" {{($pg->pg_time_for_perfecting_security_id == 2)? 'selected': ''}}>With in 30 days from date of first disbusrement</option>
-                                <option value="3" {{($pg->pg_time_for_perfecting_security_id == 3)? 'selected': ''}}>With in 60 days from date of first disbsurement</option>
-                                <option value="4" {{($pg->pg_time_for_perfecting_security_id == 4)? 'selected': ''}}>With in 90 days from date of first disbursement </option>
+                                <option value="1" {{($pg->pg_time_for_perfecting_security_id == 1)? 'selected': ''}}>Before Disbursement</option>
+                                <option value="2" {{($pg->pg_time_for_perfecting_security_id == 2)? 'selected': ''}}>With in 30 days from date of first disbursement</option>
+                                <option value="3" {{($pg->pg_time_for_perfecting_security_id == 3)? 'selected': ''}}>With in 60 days from date of first disbursement</option>
+                                <option value="4" {{($pg->pg_time_for_perfecting_security_id == 4)? 'selected': ''}}>With in 90 days from date of first disbursement</option>
                                 <option value="5" {{($pg->pg_time_for_perfecting_security_id == 5)? 'selected': ''}}>With in 120 days from date of first disbursement</option>
                                 <option value="6" {{($pg->pg_time_for_perfecting_security_id == 6)? 'selected': ''}}>with in 180 days from date of first disbursement</option>
-                                <option value="7" {{($pg->pg_time_for_perfecting_security_id == 7)? 'selected': ''}}>with in 360 days from date of first disbsurement</option>
+                                <option value="7" {{($pg->pg_time_for_perfecting_security_id == 7)? 'selected': ''}}>with in 360 days from date of first disbursement</option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -231,13 +231,13 @@
                             <label for="txtPassword" >Time for<br> security</label>
                             <select name="pg[pg_time_for_perfecting_security_id][]" class="form-control">
                                 <option value="">Select time for perfecting security</option>
-                                <option value="1">Before Disbusrement</option>
-                                <option value="2">With in 30 days from date of first disbusrement</option>
-                                <option value="3">With in 60 days from date of first disbsurement</option>
-                                <option value="4">With in 90 days from date of first disbursement </option>
+                                <option value="1">Before Disbursement</option>
+                                <option value="2">With in 30 days from date of first disbursement</option>
+                                <option value="3">With in 60 days from date of first disbursement</option>
+                                <option value="4">With in 90 days from date of first disbursement</option>
                                 <option value="5">With in 120 days from date of first disbursement</option>
                                 <option value="6">with in 180 days from date of first disbursement</option>
-                                <option value="7">with in 360 days from date of first disbsurement</option>
+                                <option value="7">with in 360 days from date of first disbursement</option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -440,9 +440,6 @@
 
     if(offer_irr == '' || isNaN(offer_irr)){
         setError('input[name=irr]', 'Please fill IRR');
-        flag = false;
-    }else if(parseFloat(offer_irr) > 100){
-        setError('input[name=irr]', 'IRR can not be greater than 100 percent');
         flag = false;
     }
     // if(security_deposit_of == ''){
@@ -657,13 +654,13 @@
             '<div class="col-md-2">'+
                 '<select name="pg[pg_time_for_perfecting_security_id][]" class="form-control">'+
                     '<option value="">Select time for perfecting security</option>'+
-                    '<option value="1">Before Disbusrement</option>'+
-                    '<option value="2">With in 30 days from date of first disbusrement</option>'+
-                    '<option value="3">With in 60 days from date of first disbsurement</option>'+
-                    '<option value="4">With in 90 days from date of first disbursement </option>'+
+                    '<option value="1">Before Disbursement</option>'+
+                    '<option value="2">With in 30 days from date of first disbursement</option>'+
+                    '<option value="3">With in 60 days from date of first disbursement</option>'+
+                    '<option value="4">With in 90 days from date of first disbursement</option>'+
                     '<option value="5">With in 120 days from date of first disbursement</option>'+
                     '<option value="6">with in 180 days from date of first disbursement</option>'+
-                    '<option value="7">with in 360 days from date of first disbsurement</option>'+
+                    '<option value="7">with in 360 days from date of first disbursement</option>'+
                 '</select>'+
             '</div>'+
             '<div class="col-md-2">'+

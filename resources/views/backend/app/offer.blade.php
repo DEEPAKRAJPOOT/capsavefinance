@@ -316,7 +316,7 @@ tr.border_bottom td {
                                                 </tr>
                                                 <tr>
                                                 <td></td>
-                                                    <td><b>Intereset Rate (%): </b></td>
+                                                    <td><b>Interest Rate (%): </b></td>
                                                     <td>
                                                         {{ $termOffer->interest_rate }}%
                                                     </td>
@@ -334,7 +334,7 @@ tr.border_bottom td {
                                                 </tr>
                                                 <tr>
                                                     <td></td>
-                                                    <td><b>IRR (%): </b></td>
+                                                    <td><b>IRR: </b></td>
                                                     <td>{{ $termOffer->irr }}%</td>
                                                 </tr>
                                                 <td></td>
