@@ -109,6 +109,7 @@ try {
                 console.log(dataValues);
                 formdata.append("app_id", dataValues[0]);
                 formdata.append("app_appr_status_id", dataValues[1]);
+                formdata.append("uploadApprovalMailCopyViaApproverList", 1);
             }else{
                 isValidExt = false; 
             }

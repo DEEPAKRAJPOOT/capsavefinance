@@ -1091,6 +1091,9 @@ class Helper extends PaypalHelper
                           }
                       }
                       $isViewOnly = count($apprUsers) > 0 && in_array($to_id, $apprUsers) ? 1 : 0;
+                      if(request()->has('uploadApprovalMailCopyViaApproverList') && request()->get('uploadApprovalMailCopyViaApproverList') === '1'){
+                          $isViewOnly = 1;
+                      }
                     
                 } else {
                     if (isset($roleData[0]) && $roleData[0]->id == 6 && in_array(request()->route()->getName(), ['share_to_colender', 'save_share_to_colender'])) {
