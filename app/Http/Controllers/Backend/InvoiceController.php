@@ -1699,7 +1699,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
                         $invoice_amount = str_replace(',', '', $dataAttr['amount']);
                         $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($dataAttr['user_id'], $dataAttr['anchor_id']);
-                        $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
+                        $totalProductLimit = Helpers::getTotalProductLimit($dataAttr['app_id'], $productId = 1);
                         
                         $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($dataAttr['prgm_offer_id'], $dataAttr['amount']);
                         // $limit =   InvoiceTrait::ProgramLimit($dataAttr);
