@@ -193,6 +193,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'copy_app',
                         'uses' => 'Lms\CopyController@duplicateApp',
                     ]);
+
+                    Route::get('/chng-fi-status',[
+                        'as' => 'chng_fi_status',
+                        'uses' => 'Lms\AddressController@changeFIStatus'
+                    ]);
                 }
             });
 

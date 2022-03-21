@@ -4366,10 +4366,14 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'rcu_status',
                 function ($data) {
+                    $act = '';
+                    if (Helpers::checkPermission('chng_fi_status')) {
+                        $act .= '<a title="FI Status Change" href="'.route('chng_fi_status', ['user_id' => $data->Customer_id, 'biz_addr_id' => $data->biz_addr_id, 'status'=> $data->rcu_status]).'" class="btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                    }
                     if ($data->rcu_status) {
-                        return '<span class="badge badge-success">Done</span>';
+                        return '<span class="badge badge-success">Done</span>'.$act;
                     } else {
-                        return '<span class="badge badge-warning current-status">Pending</span>';
+                        return '<span class="badge badge-warning current-status">Pending</span>'.$act;
                     }
                 }
             )
