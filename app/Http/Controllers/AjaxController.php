@@ -5696,7 +5696,7 @@ if ($err) {
                 $whereCondition = ['app_id' => $app_id, 'status' => null];
                 $offerData = $this->application->getOfferData($whereCondition);
                 if (!$offerData) {
-                    return response()->json(['status' => 0,'msg' =>'No Offer Found']);
+                    return response()->json(['status' => 0,'msg' =>'You cannot move this application to next stage as offer still not created.']);
                 }
             if ($request->approval_doc_file) {
                 $date = Carbon::now();
@@ -5725,13 +5725,16 @@ if ($err) {
                             $roleArr = [$nextStage->role_id];
                             $roles = $this->application->getBackStageUsers($app_id, $roleArr);
                             $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
-                            $addl_data['sharing_comment'] = 'Automactically Assign via Approver List in Application';
+                            $addl_data['sharing_comment'] = 'Automatically Assigned to  Sales Manager from Approver List';
                             $assign = true;
                             $wf_status = 1;
                             if ($nextStage->stage_code == 'sales_queue') {
                                 Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);
                                 $application = $this->application->updateAppDetails($app_id, ['is_assigned'=>1]);
-                                $msg = 'Approval mail copy has been successfully uploaded and move the next stage (Sales).';
+                                //update approve status in offer table after all approver approve the offer.
+                                $this->application->changeOfferApprove((int)$app_id);
+                                Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+                                $msg = 'Approval mail copy has been successfully uploaded and moved the next stage (Sales).';
                                 $isFinalSubmit = 1;
                             }
                         }
