@@ -4371,9 +4371,9 @@ class DataRenderer implements DataProviderInterface
                         $act .= '<a title="FI Status Change" href="'.route('chng_fi_status', ['user_id' => $data->Customer_id, 'biz_addr_id' => $data->biz_addr_id, 'status'=> $data->rcu_status]).'" class="btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
                     }
                     if ($data->rcu_status) {
-                        return '<span class="badge badge-success">Done</span>'.$act;
+                        return '<span class="badge badge-success">Done</span>&nbsp;'.$act;
                     } else {
-                        return '<span class="badge badge-warning current-status">Pending</span>'.$act;
+                        return '<span class="badge badge-warning current-status">Pending</span>&nbsp;'.$act;
                     }
                 }
             )
