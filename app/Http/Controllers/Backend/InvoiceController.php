@@ -607,8 +607,8 @@ class InvoiceController extends Controller {
         
         $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
         $invoice_approve_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
-        $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($attributes['supplier_id'], $request->anchor_id);
-        $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
+        // $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($attributes['supplier_id'], $request->anchor_id);
+        // $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
         $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($prgmOfferId, $invoice_amount);
 
         // $limit =   InvoiceTrait::ProgramLimit($attributes);
@@ -1698,8 +1698,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $dataAttr['approval']  =   $getPrgm;
 
                         $invoice_amount = str_replace(',', '', $dataAttr['amount']);
-                        $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($dataAttr['user_id'], $dataAttr['anchor_id']);
-                        $totalProductLimit = Helpers::getTotalProductLimit($dataAttr['app_id'], $productId = 1);
+                        // $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($dataAttr['user_id'], $dataAttr['anchor_id']);
+                        // $totalProductLimit = Helpers::getTotalProductLimit($dataAttr['app_id'], $productId = 1);
                         
                         $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($dataAttr['prgm_offer_id'], $dataAttr['amount']);
                         // $limit =   InvoiceTrait::ProgramLimit($dataAttr);

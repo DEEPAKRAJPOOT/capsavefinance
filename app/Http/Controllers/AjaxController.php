@@ -3804,7 +3804,8 @@ if ($err) {
        {
         $limit =   InvoiceTrait::ProgramLimit($res);
         // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
-        $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
+        // $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
+        $sum   =   Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($res);
         $remainAmount = $limit-$sum;
         $is_adhoc = 0;
        }

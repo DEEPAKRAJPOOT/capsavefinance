@@ -534,7 +534,8 @@ trait InvoiceTrait
             $invoice_id =   $inv_details['invoice_id'];
             $cid = $inv_details['supplier_id'];
             // $sum =  self::invoiceApproveLimit($attr);
-            $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attr['user_id'], $attr['anchor_id']);
+            // $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attr['user_id'], $attr['anchor_id']);
+            $sum = Helper::anchorSupplierPrgmUtilizedLimitByInvoice($attr);
             $limit   =  self::ProgramLimit($inv_details);
             $getMargin =  self::invoiceMargin($inv_details);
             $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
@@ -791,7 +792,8 @@ trait InvoiceTrait
             $attr['app_id']   =     $inv_details['app_id'];
             $attr['prgm_offer_id'] = $inv_details['prgm_offer_id'];
             // $sum =  self::invoiceApproveLimit($attr);
-            $sum = Helper::anchorSupplierUtilizedLimitByInvoice($inv_details['supplier_id'], $inv_details['anchor_id']);
+            // $sum = Helper::anchorSupplierUtilizedLimitByInvoice($inv_details['supplier_id'], $inv_details['anchor_id']);
+            $sum = Helper::anchorSupplierPrgmUtilizedLimitByInvoice($attr);
             $limit   =  self::ProgramLimit($inv_details);
             $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']); /* get App limit by user_id*/
             $isOverDue     =  self::isOverDue($inv_details['supplier_id']); /* get overdue by user_id*/
@@ -836,71 +838,71 @@ trait InvoiceTrait
     /* Use bulk and invoice table */
     /* Created by gajendra chahan  */
     
-   public static function updateLimit($status_id,$limit,$inv_amout,$attr,$invoice_id)
-    {
-        $cid  = $attr['supplier_id'];
-        $attribute['prgm_id']  = $attr['program_id'];
-        $attribute['user_id']  = $attr['supplier_id'];
-        $attribute['anchor_id']  = $attr['anchor_id'];
-        $attribute['prgm_offer_id'] = $attr['prgm_offer_id'];
-        // $sum  = self::invoiceApproveLimit($attribute);
-        $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attribute['user_id'], $attribute['anchor_id']);
-        $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
-        $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
-        $uid = Auth::user()->user_id;
-        if($status_id==8)  
-         {  
+  //  public static function updateLimit($status_id,$limit,$inv_amout,$attr,$invoice_id)
+  //   {
+  //       $cid  = $attr['supplier_id'];
+  //       $attribute['prgm_id']  = $attr['program_id'];
+  //       $attribute['user_id']  = $attr['supplier_id'];
+  //       $attribute['anchor_id']  = $attr['anchor_id'];
+  //       $attribute['prgm_offer_id'] = $attr['prgm_offer_id'];
+  //       // $sum  = self::invoiceApproveLimit($attribute);
+  //       // $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attribute['user_id'], $attribute['anchor_id']);
+  //       $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
+  //       $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
+  //       $uid = Auth::user()->user_id;
+  //       if($status_id==8)  
+  //        {  
               
-                     if((float)$limit  >= $sum)
-                    {
-                        $remain_amount =  (float)$limit-$sum;
-                        if((float)$remain_amount >=  $inv_amout)
-                        { 
-                           $status=8; 
-                           $limit_exceed='Auto Approve';
-                        }
-                        else 
-                        {
-                           $status=28; 
-                           $limit_exceed='Auto Approve, Limit exceed';
-                        }
-                       }
-                    else 
-                       {
-                           $status=28; 
-                           $limit_exceed='Auto Approve, Limit exceed';
-                       }
-               if($isOverDue->is_overdue==1)
-                {
-                   $status=28; 
-                   $limit_exceed='Auto Approve, Overdue';
-                }   
-               if($dueDateGreaterCurrentdate)
-                {
-                          $status=28; 
-                          $limit_exceed='Customer limit has been expired.'; 
-                }
+  //                    if((float)$limit  >= $sum)
+  //                   {
+  //                       $remain_amount =  (float)$limit-$sum;
+  //                       if((float)$remain_amount >=  $inv_amout)
+  //                       { 
+  //                          $status=8; 
+  //                          $limit_exceed='Auto Approve';
+  //                       }
+  //                       else 
+  //                       {
+  //                          $status=28; 
+  //                          $limit_exceed='Auto Approve, Limit exceed';
+  //                       }
+  //                      }
+  //                   else 
+  //                      {
+  //                          $status=28; 
+  //                          $limit_exceed='Auto Approve, Limit exceed';
+  //                      }
+  //              if($isOverDue->is_overdue==1)
+  //               {
+  //                  $status=28; 
+  //                  $limit_exceed='Auto Approve, Overdue';
+  //               }   
+  //              if($dueDateGreaterCurrentdate)
+  //               {
+  //                         $status=28; 
+  //                         $limit_exceed='Customer limit has been expired.'; 
+  //               }
                  
-           }
-           if($status_id==7)  
-           { 
-               if($isOverDue->is_overdue==1)
-                {
-                    $status=28; 
-                    $limit_exceed='Overdue';
-                } 
-                if($dueDateGreaterCurrentdate)
-                 {
-                    $status=28; 
-                    $limit_exceed='Customer limit has been expired.'; 
-                 }
-             }
+  //          }
+  //          if($status_id==7)  
+  //          { 
+  //              if($isOverDue->is_overdue==1)
+  //               {
+  //                   $status=28; 
+  //                   $limit_exceed='Overdue';
+  //               } 
+  //               if($dueDateGreaterCurrentdate)
+  //                {
+  //                   $status=28; 
+  //                   $limit_exceed='Customer limit has been expired.'; 
+  //                }
+  //            }
        
-            $res['status']  = $status;
-            $res['remark']  = $limit_exceed;
-            return $res;
+  //           $res['status']  = $status;
+  //           $res['remark']  = $limit_exceed;
+  //           return $res;
         
-    }
+  //   }
     /* Check Bulk invoice status */
     /* Use bulk and invoice table */
     /* Created by gajendra chahan  */
@@ -913,7 +915,8 @@ trait InvoiceTrait
         $attribute['app_id']  = $attr['app_id'];
         $attribute['prgm_offer_id'] = $attr['prgm_offer_id'];
         // $sum  = self::invoiceApproveLimit($attribute);
-        $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attribute['user_id'], $attribute['anchor_id']);
+        // $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attribute['user_id'], $attribute['anchor_id']);
+        $sum = Helper::anchorSupplierPrgmUtilizedLimitByInvoice($attribute);
         $dueDateGreaterCurrentdate =  self::limitExpire($cid); /* get App limit by user_id*/
         $isOverDue     =  self::isOverDue($cid); /* get overdue by user_id*/
         $invoiceMargin  = self::invoiceMargin($attr);  ////*********Invoice Margin **********//////
@@ -1112,7 +1115,8 @@ trait InvoiceTrait
             //$attribute['is_po'] = $is_po;
             $attribute['app_id'] = $app_id;            
             // $sum   = self::invoiceApproveLimit($attribute);
-            $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attribute['user_id'], $attribute['anchor_id']);
+            // $sum = Helper::anchorSupplierUtilizedLimitByInvoice($attribute['user_id'], $attribute['anchor_id']);
+            $sum = Helper::anchorSupplierPrgmUtilizedLimitByInvoice($attribute);
             $limit = self::ProgramLimit($attribute);
             $finalsum = $sum - $po_inv_amount;
             if ($limit  >= $finalsum) {
