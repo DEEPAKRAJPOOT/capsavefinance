@@ -3769,7 +3769,8 @@ if ($err) {
         $getTenor   =  $this->invRepo->getTenor($res);
         $limit =   InvoiceTrait::ProgramLimit($res);
         // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
-        $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
+        // $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
+        $sum   =   Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($res);
         $is_adhoc   =  $this->invRepo->checkUserAdhoc($res);
         $remainAmount = round(($limit - $sum), 2);
         $offer = AppProgramOffer::getAppPrgmOfferById($res['prgm_offer_id']);
