@@ -566,7 +566,7 @@ class userInvoiceController extends Controller
         $reference_no = $invData->reference_no;
         $invoice_no = $invData->invoice_no;
 
-        $file = 'public\capsaveInvoice\\'.str_replace("/","_",strtoupper($invoice_no)).'.pdf';
+        $file = 'public/capsaveInvoice/'.str_replace("/","_",strtoupper($invoice_no)).'.pdf';
 
         if (Storage::disk('local')->exists($file)) {
             return Storage::download($file);
