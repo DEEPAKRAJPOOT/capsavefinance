@@ -249,7 +249,16 @@ class CamController extends Controller
             {
               $dataCheck = array_filter($arrCamData['security_doc_id']);
               $dataCheck1 = array_filter($arrCamData['doc_type']);
-              if(!empty($dataCheck) && !empty($dataCheck1)){
+              $dataCheck2 = array_filter($arrCamData['description']);
+              $dataCheck3 = array_filter($arrCamData['document_number']);
+              $dataCheck4 = array_filter($arrCamData['due_date']);
+              $dataCheck5 = array_filter($arrCamData['completed']);
+              $dataCheck6 = array_filter($arrCamData['maturity_date']);
+              $dataCheck7 = array_filter($arrCamData['renewal_reminder_days']);
+              $dataCheck8 = array_filter($arrCamData['amount_expected']);
+              $dataCheck9 = array_filter($arrCamData['document_amount']);
+              $dataCheck10 = array_filter($arrCamData['exception_received']);
+              if(!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2) && !empty($dataCheck3) && !empty($dataCheck4) && !empty($dataCheck5) && !empty($dataCheck6) && !empty($dataCheck7) && !empty($dataCheck8) && !empty($dataCheck9) && !empty($dataCheck10)){
                 foreach($arrCamData['security_doc_id'] as $key => $securityDocId) {
                   $is_upload = $file_id = '';   
                   if(isset($arrCamData['doc_file'][$key])){
