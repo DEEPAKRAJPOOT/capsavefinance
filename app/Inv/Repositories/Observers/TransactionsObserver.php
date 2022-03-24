@@ -20,12 +20,12 @@ class TransactionsObserver
         InvoiceDisbursedDetail::createTransactionDetails($transaction);
         CustomerTransactionSOA::createTransactionSOADetails($transaction);
         if($transaction->entry_type == 0 &&  is_null($transaction->parent_trans_id)){
-            if($transaction->trans_type > 50 && $transaction->transType->chrg_master_id > 0){
+            if($transaction->transType->chrg_master_id > 0){
                 $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
                 $invType = 'C';
                 $appId = $transaction->ChargesTransactions->app_id ?? null;
                 $controller->generateCapsaveInvoice([$transaction->trans_id], $transaction->user_id, $invType, $appId);
-            }elseif(in_array($transaction->trans_type, [9,33])){
+            }elseif(in_array($transaction->trans_type, [9])){
                 $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
                 $invType = 'I';
                 $appId = $transaction->invoiceDisbursed->invoice->app_id ?? null;
