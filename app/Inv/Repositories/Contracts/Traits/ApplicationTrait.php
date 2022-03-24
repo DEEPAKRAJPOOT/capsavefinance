@@ -659,10 +659,10 @@ trait ApplicationTrait
                     $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id, $offer_id);
                     $appUserBalLimit += $currOfferConsumAmt;
                 } else{
-                    if(!$appData->prgmOffer()->count()){
+                    // if(!$appData->prgmOffer()->count()){
                         $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->parent_app_id, null);
                         $totalBalanceAmt += $parentAppConsumAmt;
-                    }
+                    // }
                 }
             }
         }
