@@ -245,10 +245,11 @@ class CamController extends Controller
                 }
             }
             
-            if(isset($arrCamData['security_doc_id']) && !empty($arrCamData['security_doc_id']))
+            if(isset($arrCamData['security_doc_id']) && !empty($arrCamData['security_doc_id']) && isset($arrCamData['doc_type']) && !empty($arrCamData['doc_type']))
             {
               $dataCheck = array_filter($arrCamData['security_doc_id']);
-              if(!empty($dataCheck)){
+              $dataCheck1 = array_filter($arrCamData['doc_type']);
+              if(!empty($dataCheck) && !empty($dataCheck1)){
                 foreach($arrCamData['security_doc_id'] as $key => $securityDocId) {
                   $is_upload = $file_id = '';   
                   if(isset($arrCamData['doc_file'][$key])){

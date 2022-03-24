@@ -370,8 +370,25 @@
                                  $jsonDecode = json_decode($securityDocumentListJson,true);
                              @endphp
                             @foreach($arrAppSecurityDoc as $key=>$arr)
+                            @php
+                                  
+                                    $key =  $key+1;
+                                  
+                              @endphp
                             <div class="row  toRemoveDiv {{($loop->first)? '': 'mt10'}}" style="background-color: #e9e7e7;">
                                 <input type="hidden" name="app_security_doc_id[]" class="form-control app_security_doc_id" value="{{$arr['app_security_doc_id'] ?? ''}}"/>
+                                <div class="col-md-2 mt-4">
+                                    <label for="txtPassword"><b>Pre/Post</b></label>
+                                    <div class="relative">
+                                    <div class="d-flex">
+                                        <select class="form-control" name="doc_type[]">
+                                            <option value="">Select</option>
+                                            <option value="pre" {{(isset($arr['doc_type']) && $arr['doc_type'] == 'pre') ? 'selected': '' }}>Pre</option>
+                                            <option value="post" {{(isset($arr['doc_type']) && $arr['doc_type'] == 'post') ? 'selected': '' }}>Post</option>
+                                        </select>
+                                    </div>
+                                    </div>
+                                </div>
                                 <div class="col-md-2 mt-4">
                                     <label for="txtPassword"><b>Name of Document</b></label>
                                     <select class="form-control" name="security_doc_id[]" id="security_doc_id">
@@ -412,26 +429,26 @@
                               <div class="col-md-1 mt-4">
                                        <label for="txtPassword"><b>Exception Received</b></label>
                                        <div class="relative">
-                                           <select class="form-control" name="exception_received[]">
+                                           <select class="form-control" name="exception_received[]" onchange="displayExceptionFields(this.value,{{ $key }});">
                                                <option value="">Select</option>
                                                <option value="yes" {{(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'selected': '' }}>Yes</option>
                                                <option value="no" {{(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'selected': '' }}>No</option>
                                            </select>
                                        </div>
                                </div>
-                               <div class="col-md-2 mt-4">
+                               <div class="col-md-2 mt-4 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="display: none;"': '' !!}>
                                        <label for="txtPassword"><b>Exception Received From</b></label>
                                        <div class="relative">
                                        <input type="text" name="exception_received_from[]" class="form-control" value="{{$arr['exception_received_from'] ?? ''}}" placeholder="Exception Received From" autocomplete="off"/>
                                        </div>
                                </div>
-                               <div class="col-md-2 mt-4">
+                               <div class="col-md-2 mt-4 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="display: none;"': '' !!}>
                                        <label for="txtPassword"><b>Exception Received Date</b></label>
                                        <div class="relative">
-                                       <input type="text" name="exception_received_date[]" class="form-control sc-doc-date" value="{{\Carbon\Carbon::createFromFormat('Y-m-d', $arr['exception_received_date'])->format('d/m/Y') ?? ''}}" placeholder="Exception Received Date" autocomplete="off"/>
+                                       <input type="text" name="exception_received_date[]" class="form-control sc-doc-date" value ="{{(isset($arr['exception_received_date']) && $arr['exception_received_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['exception_received_date'])->format('d/m/Y'): '' }}" placeholder="Exception Received Date" autocomplete="off"/>
                                        </div>
                                </div>
-                               <div class="col-md-2 mt-4">
+                               <div class="col-md-2 mt-4 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="display: none;"': '' !!}>
                                    <label for="txtPassword"><b>Exception Remark</b></label>
                                    <div class="relative">
                                    <input type="text" name="exception_remark[]" class="form-control" value="{{$arr['exception_remark'] ?? ''}}" placeholder="Exception Remark" autocomplete="off"/>
@@ -446,7 +463,7 @@
                                <div class="col-md-2 mt-4">
                                    <label for="txtPassword"><b>Renewal Reminder Days</b></label>
                                    <div class="relative">
-                                   <input type="number" name="renewal_reminder_days[]" class="form-control" value="{{$arr['renewal_reminder_days'] ?? ''}}" placeholder="Renewal Reminder Days" autocomplete="off"/>
+                                   <input type="number" name="renewal_reminder_days[]" class="form-control digits" value="{{$arr['renewal_reminder_days'] ?? ''}}" placeholder="Renewal Reminder Days" autocomplete="off"/>
                                    </div>
                                </div>
                                <div class="col-md-2 mt-4 INR">
@@ -470,27 +487,17 @@
                                     @endif
                                   </label>
                                    <div class="relative">
-                                       <div class="custom-file upload-btn-cls mb-3 mt-2">
+                                    <div class="d-flex">
+                                       <div class="custom-file upload-btn-cls mb-3">
                                            <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file[]">
                                            <label class="custom-file-label" for="customFile">Choose file</label>
                                        </div>
-                                   </div>
-                               </div>
-                               <div class="col-md-2 mt-4">
-                                   <label for="txtPassword"><b>Pre/Post</b></label>
-                                   <div class="relative">
-                                   <div class="d-flex">
-                                       <select class="form-control" name="doc_type[]">
-                                           <option value="">Select</option>
-                                           <option value="pre" {{(isset($arr['doc_type']) && $arr['doc_type'] == 'pre') ? 'selected': '' }}>Pre</option>
-                                           <option value="post" {{(isset($arr['doc_type']) && $arr['doc_type'] == 'post') ? 'selected': '' }}>Post</option>
-                                       </select>
                                        @if($loop->first)
-                                       <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
-                                        @else
-                                        <i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;"></i>
-                                        @endif
-                                   </div>
+                                        <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
+                                         @else
+                                         <i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;"></i>
+                                         @endif
+                                    </div>
                                    </div>
                                </div>
                             </div>
@@ -499,6 +506,18 @@
                                 
                             <div class="row" style="background-color: #e9e7e7;">
                                 <input type="hidden" name="app_security_doc_id[]" class="form-control" value="" placeholder="Group Company" />
+                                <div class="col-md-2 mt-4">
+                                    <label for="txtPassword"><b>Pre/Post</b></label>
+                                    <div class="relative">
+                                    <div class="d-flex">
+                                        <select class="form-control" name="doc_type[]">
+                                            <option value="">Select</option>
+                                            <option value="pre">Pre</option>
+                                            <option value="post">Post</option>
+                                        </select>
+                                    </div>
+                                    </div>
+                                </div>
                                 <div class="col-md-2 mt-4">
                                      <label for="txtPassword"><b>Name of Document</b></label>
                                      <select class="form-control" name="security_doc_id[]" id="security_doc_id_1">
@@ -536,26 +555,26 @@
                                <div class="col-md-1 mt-4">
                                         <label for="txtPassword"><b>Exception Received</b></label>
                                         <div class="relative">
-                                            <select class="form-control" name="exception_received[]">
+                                            <select class="form-control" name="exception_received[]" onchange="displayExceptionFields(this.value,1);">
                                                 <option value="">Select</option>
                                                 <option value="yes">Yes</option>
                                                 <option value="no">No</option>
                                             </select>
                                         </div>
                                 </div>
-                                <div class="col-md-2 mt-4">
+                                <div class="col-md-2 mt-4 exceptionFields_1" style="display: none;">
                                         <label for="txtPassword"><b>Exception Received From</b></label>
                                         <div class="relative">
                                         <input type="text" name="exception_received_from[]" class="form-control" value="" placeholder="Exception Received From" autocomplete="off"/>
                                         </div>
                                 </div>
-                                <div class="col-md-2 mt-4">
+                                <div class="col-md-2 mt-4 exceptionFields_1" style="display: none;">
                                         <label for="txtPassword"><b>Exception Received Date</b></label>
                                         <div class="relative">
                                         <input type="text" name="exception_received_date[]" class="form-control sc-doc-date" value="" placeholder="Exception Received Date" autocomplete="off"/>
                                         </div>
                                 </div>
-                                <div class="col-md-2 mt-4">
+                                <div class="col-md-2 mt-4 exceptionFields_1" style="display: none;">
                                     <label for="txtPassword"><b>Exception Remark</b></label>
                                     <div class="relative">
                                     <input type="text" name="exception_remark[]" class="form-control" value="" placeholder="Exception Remark" autocomplete="off"/>
@@ -570,7 +589,7 @@
                                 <div class="col-md-2 mt-4">
                                     <label for="txtPassword"><b>Renewal Reminder Days</b></label>
                                     <div class="relative">
-                                    <input type="number" name="renewal_reminder_days[]" class="form-control" value="" placeholder="Renewal Reminder Days" autocomplete="off"/>
+                                    <input type="number" name="renewal_reminder_days[]" class="form-control digits" value="" placeholder="Renewal Reminder Days" autocomplete="off"/>
                                     </div>
                                 </div>
                                 <div class="col-md-2 mt-4 INR">
@@ -590,23 +609,13 @@
                                 <div class="col-md-2 mt-4">
                                     <label for="txtPassword"><b>Doc Upload</b></label>
                                     <div class="relative">
-                                        <div class="custom-file upload-btn-cls mb-3 mt-2">
+                                        <div class="d-flex">
+                                        <div class="custom-file upload-btn-cls mb-3">
                                             <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file[]">
                                             <label class="custom-file-label" for="customFile">Choose file</label>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-2 mt-4">
-                                    <label for="txtPassword"><b>Pre/Post</b></label>
-                                    <div class="relative">
-                                    <div class="d-flex">
-                                        <select class="form-control" name="doc_type[]">
-                                            <option value="">Select</option>
-                                            <option value="pre">Pre</option>
-                                            <option value="post">Post</option>
-                                        </select>
-                                    <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
-                                    </div>
+                                        <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -851,10 +860,20 @@ $('#camForm').validate({ // initialize the plugin
     }
 });
 });
-
+var counter = 1;
 $(document).on('click', '.add-security-doc-block', function(){
-    counter = $(".toRemoveDiv").length +2;
+    counter = $(".toRemoveDiv").length+1;
     let ptpq_block = '<div class="row  mt10 toRemoveDiv" style="background-color: #e9e7e7;">'+
+        '<div class="col-md-2 mt-4">'+
+        '<label for="txtPassword"><b>Pre/Post</b></label>'+
+        '<div class="relative">'+
+            '<select class="form-control" name="doc_type[]" required>'+
+                '<option value="">Select</option>'+
+                '<option value="pre">Pre</option>'+
+                '<option value="post">Post</option>'+
+            '</select>'+
+       '</div>'+
+    '</div>'+
     '<div class="col-md-2 mt-4">'+
             '<label for="txtPassword"><b>Name of Document</b></label>'+
             '<select class="form-control" name="security_doc_id[]" id="security_doc_id_'+counter+'" required>'+
@@ -892,26 +911,26 @@ $(document).on('click', '.add-security-doc-block', function(){
     '<div class="col-md-1 mt-4">'+
             '<label for="txtPassword"><b>Exception Received</b></label>'+
             '<div class="relative">'+
-                '<select class="form-control" name="exception_received[]" required>'+
+                '<select class="form-control" name="exception_received[]" onchange="displayExceptionFields(this.value,'+counter+');" required>'+
                     '<option value="">Select</option>'+
                     '<option value="yes">Yes</option>'+
                     '<option value="no">No</option>'+
                 '</select>'+
             '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4">'+
+    '<div class="col-md-2 mt-4 exceptionFields_'+counter+'" style="display: none;">'+
             '<label for="txtPassword"><b>Exception Received From</b></label>'+
             '<div class="relative">'+
             '<input type="text" name="exception_received_from[]" class="form-control" value="" placeholder="Exception Received From" autocomplete="off" required/>'+
             '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4">'+
+    '<div class="col-md-2 mt-4 exceptionFields_'+counter+'" style="display: none;">'+
             '<label for="txtPassword"><b>Exception Received Date</b></label>'+
             '<div class="relative">'+
             '<input type="text" name="exception_received_date[]" class="form-control sc-doc-date" value="" placeholder="Exception Received Date" autocomplete="off" required/>'+
             '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4">'+
+    '<div class="col-md-2 mt-4 exceptionFields_'+counter+'" style="display: none;">'+
         '<label for="txtPassword"><b>Exception Remark</b></label>'+
         '<div class="relative">'+
         '<input type="text" name="exception_remark[]" class="form-control" value="" placeholder="Exception Remark" autocomplete="off" required/>'+
@@ -926,7 +945,7 @@ $(document).on('click', '.add-security-doc-block', function(){
     '<div class="col-md-2 mt-4">'+
         '<label for="txtPassword"><b>Renewal Reminder Days</b></label>'+
         '<div class="relative">'+
-        '<input type="number" name="renewal_reminder_days[]" class="form-control" value="" placeholder="Renewal Reminder Days" autocomplete="off" required/>'+
+        '<input type="number" name="renewal_reminder_days[]" class="form-control digits" value="" placeholder="Renewal Reminder Days" autocomplete="off" required/>'+
         '</div>'+
     '</div>'+
     '<div class="col-md-2 mt-4 INR">'+
@@ -946,26 +965,17 @@ $(document).on('click', '.add-security-doc-block', function(){
     '<div class="col-md-2 mt-4">'+
         '<label for="txtPassword"><b>Doc Upload</b></label>'+
         '<div class="relative">'+
-            '<div class="custom-file upload-btn-cls mb-3 mt-2">'+
+            '<div class="custom-file upload-btn-cls mb-3">'+
                 '<input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file[]" required>'+
                 '<label class="custom-file-label" for="customFile">Choose file</label>'+
             '</div>'+
         '</div>'+
-    '</div>'+
-    '<div class="col-md-2 mt-4">'+
-        '<label for="txtPassword"><b>Pre/Post</b></label>'+
-        '<div class="relative">'+
-            '<select class="form-control" name="doc_type[]" required>'+
-                '<option value="">Select</option>'+
-                '<option value="pre">Pre</option>'+
-                '<option value="post">Post</option>'+
-            '</select>'+
-       '</div>'+
-       '<i class="fa fa-2x fa-times-circle remove-security-doc-block" style="color: red;margin-left: 267px;position: absolute;margin-top: -33px;"></i>'+
+        '<i class="fa fa-2x fa-times-circle remove-security-doc-block" style="color: red;margin-left: 267px;position: absolute;margin-top: -50px;"></i>'+
     '</div>'+
         '</div>';
     $('#security-doc-block').append(ptpq_block);
     getAllSecurityDocumentName(counter);
+    counter++;
     $('.sc-doc-date').datetimepicker({
      format: 'dd/mm/yyyy',
      pickTime: false,
@@ -1025,6 +1035,15 @@ function getAllSecurityDocumentName(selectId){
           .text(item.name));
     });
   }
+}
+function displayExceptionFields(exceptionVal,divId){
+    $(".exceptionFields_"+divId).css("display", "none");
+    if(exceptionVal == 'yes'){
+      $(".exceptionFields_"+divId).removeAttr("style");
+    }
+    if(exceptionVal == 'no'){
+        $(".exceptionFields_"+divId).find('input').val('');
+    }
 }
 </script>
 @endsection
