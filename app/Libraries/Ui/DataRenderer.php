@@ -8402,4 +8402,48 @@ class DataRenderer implements DataProviderInterface
             })
             ->make(true);
     }
+
+    public function getSecurityDocumentLists(Request $request, $securityDoc){
+
+        return DataTables::of($securityDoc)
+                ->rawColumns(['is_active'])
+                ->addColumn(
+                    'name',
+                    function ($securityDoc) {
+                    return $securityDoc->name;
+                }) 
+                ->addColumn(
+                    'location_code',
+                    function ($securityDoc) {
+                    return $securityDoc->location_code;
+                }) 
+                ->addColumn(
+                    'created_at',
+                    function ($securityDoc) {
+                    return ($securityDoc->created_at) ? date('d-M-Y',strtotime($securityDoc->created_at)) : '---';
+                })
+                ->addColumn(
+                    'created_by',
+                    function ($securityDoc) {
+                    return $securityDoc->userDetail->f_name.' '.$securityDoc->userDetail->l_name;
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($securityDoc) {
+                       $act = $securityDoc->is_active;
+                       $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editSecurityDocumentFrame" title="Edit Security Document Detail" data-url ="'.route('edit_security_document',['security_doc_id' => $securityDoc->security_doc_id]).'" data-height="320px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                       $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                     return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
 }

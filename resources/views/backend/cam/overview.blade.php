@@ -37,7 +37,7 @@
 
         <div class="card mt-4">
             <div class="card-body ">
-             <form method="POST" id="camForm" action="{{route('cam_information_save')}}"> 
+             <form method="POST" id="camForm" action="{{route('cam_information_save')}}" enctype="multipart/form-data"> 
              @csrf
 
                 <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
@@ -361,6 +361,262 @@
                     <!-- </div> -->
 
                 </div>
+                <div class="data mt-4">
+                    <h2 class="sub-title bg">Security Document
+                      </h2>                    
+                    <div class="col-md-12 mt-4" id="security-doc-block">
+                        @if(!empty($arrAppSecurityDoc))
+                             @php
+                                 $jsonDecode = json_decode($securityDocumentListJson,true);
+                             @endphp
+                            @foreach($arrAppSecurityDoc as $key=>$arr)
+                            <div class="row  toRemoveDiv {{($loop->first)? '': 'mt10'}}" style="background-color: #e9e7e7;">
+                                <input type="hidden" name="app_security_doc_id[]" class="form-control app_security_doc_id" value="{{$arr['app_security_doc_id'] ?? ''}}"/>
+                                <div class="col-md-2 mt-4">
+                                    <label for="txtPassword"><b>Name of Document</b></label>
+                                    <select class="form-control" name="security_doc_id[]" id="security_doc_id">
+                                       <option value="">Select</option>
+                                       @foreach ($jsonDecode as $key1 => $sectDoc)
+                                           <option value="{{ $sectDoc['security_doc_id'] }}" {{(isset($arr['security_doc_id']) && $sectDoc['security_doc_id'] == $arr['security_doc_id']) ? 'selected': '' }}>{{ $sectDoc['name'] }}</option>
+                                       @endforeach
+                                   </select>
+                               </div>
+                               <div class="col-md-2 mt-4">
+                                       <label for="txtPassword"><b>Description</b></label>
+                                       <div class="relative">
+                                           <input type="text" name="description[]" class="form-control" value="{{$arr['description'] ?? ''}}" placeholder="Description" autocomplete="off"/>
+                                       </div>
+                               </div>        
+                               <div class="col-md-2 mt-4">
+                                    <label for="txtPassword"><b>Document Number</b></label>
+                                    <div class="relative">
+                                       <input type="text" name="document_number[]" class="form-control" value="{{$arr['document_number'] ?? ''}}" placeholder="Document Number" autocomplete="off"/>
+                                    </div>
+                               </div>
+                               <div class="col-md-2 mt-4">
+                                    <label for="txtPassword"><b>Due Date</b></label>
+                                    <div class="relative">
+                                            <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date" value="{{\Carbon\Carbon::createFromFormat('Y-m-d', $arr['due_date'])->format('d/m/Y') ?? ''}}" placeholder="Due Date" autocomplete="off"/>
+                                    </div>
+                               </div>
+                               <div class="col-md-1 mt-4">
+                                   <label for="txtPassword"><b>Completed</b></label>
+                                   <div class="relative">
+                                       <select class="form-control" name="completed[]">
+                                           <option value="">Select</option>
+                                           <option value="yes" {{(isset($arr['completed']) && $arr['completed'] == 'yes') ? 'selected': '' }}>Yes</option>
+                                           <option value="no" {{(isset($arr['completed']) && $arr['completed'] == 'no') ? 'selected': '' }}>No</option>
+                                       </select>
+                                   </div>
+                              </div>
+                              <div class="col-md-1 mt-4">
+                                       <label for="txtPassword"><b>Exception Received</b></label>
+                                       <div class="relative">
+                                           <select class="form-control" name="exception_received[]">
+                                               <option value="">Select</option>
+                                               <option value="yes" {{(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'selected': '' }}>Yes</option>
+                                               <option value="no" {{(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'selected': '' }}>No</option>
+                                           </select>
+                                       </div>
+                               </div>
+                               <div class="col-md-2 mt-4">
+                                       <label for="txtPassword"><b>Exception Received From</b></label>
+                                       <div class="relative">
+                                       <input type="text" name="exception_received_from[]" class="form-control" value="{{$arr['exception_received_from'] ?? ''}}" placeholder="Exception Received From" autocomplete="off"/>
+                                       </div>
+                               </div>
+                               <div class="col-md-2 mt-4">
+                                       <label for="txtPassword"><b>Exception Received Date</b></label>
+                                       <div class="relative">
+                                       <input type="text" name="exception_received_date[]" class="form-control sc-doc-date" value="{{\Carbon\Carbon::createFromFormat('Y-m-d', $arr['exception_received_date'])->format('d/m/Y') ?? ''}}" placeholder="Exception Received Date" autocomplete="off"/>
+                                       </div>
+                               </div>
+                               <div class="col-md-2 mt-4">
+                                   <label for="txtPassword"><b>Exception Remark</b></label>
+                                   <div class="relative">
+                                   <input type="text" name="exception_remark[]" class="form-control" value="{{$arr['exception_remark'] ?? ''}}" placeholder="Exception Remark" autocomplete="off"/>
+                                   </div>
+                               </div>
+                               <div class="col-md-2 mt-4">
+                                   <label for="txtPassword"><b>Maturity Date</b></label>
+                                   <div class="relative">
+                                   <input type="text" name="maturity_date[]" class="form-control sc-doc-date" value="{{\Carbon\Carbon::createFromFormat('Y-m-d', $arr['maturity_date'])->format('d/m/Y') ?? ''}}" placeholder="Maturity Date" autocomplete="off"/>
+                                   </div>
+                               </div>
+                               <div class="col-md-2 mt-4">
+                                   <label for="txtPassword"><b>Renewal Reminder Days</b></label>
+                                   <div class="relative">
+                                   <input type="number" name="renewal_reminder_days[]" class="form-control" value="{{$arr['renewal_reminder_days'] ?? ''}}" placeholder="Renewal Reminder Days" autocomplete="off"/>
+                                   </div>
+                               </div>
+                               <div class="col-md-2 mt-4 INR">
+                                   <label for="txtPassword"><b>Amount Expected</b></label>
+                                   <div class="relative">
+                                   <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                   <input type="text" name="amount_expected[]" class="form-control number float_format" value="{{$arr['amount_expected'] ?? ''}}" placeholder="Amount Expected" autocomplete="off"/>
+                                   </div>
+                               </div>
+                               <div class="col-md-2 mt-4 INR">
+                                   <label for="txtPassword"><b>Document Amount</b></label>
+                                   <div class="relative">
+                                   <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                   <input type="text" name="document_amount[]" class="form-control number float_format" value="{{$arr['document_amount'] ?? ''}}" placeholder="Document Amount" autocomplete="off"/>
+                                   </div>
+                               </div>
+                               <div class="col-md-2 mt-4">
+                                   <label for="txtPassword"><b>Doc Upload</b>
+                                    @if ($arr['is_upload'] && $arr['is_upload'] == 1)
+                                    <a href="{{ route('download_storage_file', ['file_id' => $arr['file_id'] ]) }}" title="Download Document"><i class="fa fa-lg fa-download ml-3" aria-hidden="true"></i></a>  
+                                    @endif
+                                  </label>
+                                   <div class="relative">
+                                       <div class="custom-file upload-btn-cls mb-3 mt-2">
+                                           <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file[]">
+                                           <label class="custom-file-label" for="customFile">Choose file</label>
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="col-md-2 mt-4">
+                                   <label for="txtPassword"><b>Pre/Post</b></label>
+                                   <div class="relative">
+                                   <div class="d-flex">
+                                       <select class="form-control" name="doc_type[]">
+                                           <option value="">Select</option>
+                                           <option value="pre" {{(isset($arr['doc_type']) && $arr['doc_type'] == 'pre') ? 'selected': '' }}>Pre</option>
+                                           <option value="post" {{(isset($arr['doc_type']) && $arr['doc_type'] == 'post') ? 'selected': '' }}>Post</option>
+                                       </select>
+                                       @if($loop->first)
+                                       <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
+                                        @else
+                                        <i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;"></i>
+                                        @endif
+                                   </div>
+                                   </div>
+                               </div>
+                            </div>
+                            @endforeach
+                        @else
+                                
+                            <div class="row" style="background-color: #e9e7e7;">
+                                <input type="hidden" name="app_security_doc_id[]" class="form-control" value="" placeholder="Group Company" />
+                                <div class="col-md-2 mt-4">
+                                     <label for="txtPassword"><b>Name of Document</b></label>
+                                     <select class="form-control" name="security_doc_id[]" id="security_doc_id_1">
+                                        <option value="">Select</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mt-4">
+                                        <label for="txtPassword"><b>Description</b></label>
+                                        <div class="relative">
+                                            <input type="text" name="description[]" class="form-control" value="" placeholder="Description" autocomplete="off"/>
+                                        </div>
+                                </div>        
+                                <div class="col-md-2 mt-4">
+                                     <label for="txtPassword"><b>Document Number</b></label>
+                                     <div class="relative">
+                                        <input type="text" name="document_number[]" class="form-control" value="" placeholder="Document Number" autocomplete="off"/>
+                                     </div>
+                                </div>
+                                <div class="col-md-2 mt-4">
+                                     <label for="txtPassword"><b>Due Date</b></label>
+                                     <div class="relative">
+                                             <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date" value="" placeholder="Due Date" autocomplete="off"/>
+                                     </div>
+                                </div>
+                                <div class="col-md-1 mt-4">
+                                    <label for="txtPassword"><b>Completed</b></label>
+                                    <div class="relative">
+                                        <select class="form-control" name="completed[]">
+                                            <option value="">Select</option>
+                                            <option value="yes">Yes</option>
+                                            <option value="no">No</option>
+                                        </select>
+                                    </div>
+                               </div>
+                               <div class="col-md-1 mt-4">
+                                        <label for="txtPassword"><b>Exception Received</b></label>
+                                        <div class="relative">
+                                            <select class="form-control" name="exception_received[]">
+                                                <option value="">Select</option>
+                                                <option value="yes">Yes</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        </div>
+                                </div>
+                                <div class="col-md-2 mt-4">
+                                        <label for="txtPassword"><b>Exception Received From</b></label>
+                                        <div class="relative">
+                                        <input type="text" name="exception_received_from[]" class="form-control" value="" placeholder="Exception Received From" autocomplete="off"/>
+                                        </div>
+                                </div>
+                                <div class="col-md-2 mt-4">
+                                        <label for="txtPassword"><b>Exception Received Date</b></label>
+                                        <div class="relative">
+                                        <input type="text" name="exception_received_date[]" class="form-control sc-doc-date" value="" placeholder="Exception Received Date" autocomplete="off"/>
+                                        </div>
+                                </div>
+                                <div class="col-md-2 mt-4">
+                                    <label for="txtPassword"><b>Exception Remark</b></label>
+                                    <div class="relative">
+                                    <input type="text" name="exception_remark[]" class="form-control" value="" placeholder="Exception Remark" autocomplete="off"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mt-4">
+                                    <label for="txtPassword"><b>Maturity Date</b></label>
+                                    <div class="relative">
+                                    <input type="text" name="maturity_date[]" class="form-control sc-doc-date" value="" placeholder="Maturity Date" autocomplete="off"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mt-4">
+                                    <label for="txtPassword"><b>Renewal Reminder Days</b></label>
+                                    <div class="relative">
+                                    <input type="number" name="renewal_reminder_days[]" class="form-control" value="" placeholder="Renewal Reminder Days" autocomplete="off"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mt-4 INR">
+                                    <label for="txtPassword"><b>Amount Expected</b></label>
+                                    <div class="relative">
+                                    <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                    <input type="text" name="amount_expected[]" class="form-control number float_format" value="" placeholder="Amount Expected" autocomplete="off"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mt-4 INR">
+                                    <label for="txtPassword"><b>Document Amount</b></label>
+                                    <div class="relative">
+                                    <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
+                                    <input type="text" name="document_amount[]" class="form-control number float_format" value="" placeholder="Document Amount" autocomplete="off"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mt-4">
+                                    <label for="txtPassword"><b>Doc Upload</b></label>
+                                    <div class="relative">
+                                        <div class="custom-file upload-btn-cls mb-3 mt-2">
+                                            <input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file[]">
+                                            <label class="custom-file-label" for="customFile">Choose file</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mt-4">
+                                    <label for="txtPassword"><b>Pre/Post</b></label>
+                                    <div class="relative">
+                                    <div class="d-flex">
+                                        <select class="form-control" name="doc_type[]">
+                                            <option value="">Select</option>
+                                            <option value="pre">Pre</option>
+                                            <option value="post">Post</option>
+                                        </select>
+                                    <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="col-md-12 mt-4 mb-2" style="padding: 5px;">
+                        
+                    </div>    
+                </div> 
                 @if(request()->get('view_only'))
                 @can('cam_information_save')
                     <button class="btn btn-success pull-right  mt-3" type="Submit"> Save</button>
@@ -376,6 +632,7 @@
 @section('jscript')
 <script src="{{url('common/js/typehead.js')}}"></script>
 <script type="text/javascript">
+   getAllSecurityDocumentName(1);
    $('#debt_on').datetimepicker({
      format: 'dd/mm/yyyy',
      pickTime: false,
@@ -594,5 +851,180 @@ $('#camForm').validate({ // initialize the plugin
     }
 });
 });
+
+$(document).on('click', '.add-security-doc-block', function(){
+    counter = $(".toRemoveDiv").length +2;
+    let ptpq_block = '<div class="row  mt10 toRemoveDiv" style="background-color: #e9e7e7;">'+
+    '<div class="col-md-2 mt-4">'+
+            '<label for="txtPassword"><b>Name of Document</b></label>'+
+            '<select class="form-control" name="security_doc_id[]" id="security_doc_id_'+counter+'" required>'+
+            '<option value="">Select</option>'+
+            '</select>'+
+    '</div>'+
+    '<div class="col-md-2 mt-4">'+
+            '<label for="txtPassword"><b>Description</b></label>'+
+            '<div class="relative">'+
+                '<input type="text" name="description[]" class="form-control" value="" placeholder="Description" autocomplete="off" required/>'+
+            '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-4">'+
+            '<label for="txtPassword"><b>Document Number</b></label>'+
+            '<div class="relative">'+
+            '<input type="text" name="document_number[]" class="form-control" value="" placeholder="Document Number" autocomplete="off" required/>'+
+            '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-4">'+
+            '<label for="txtPassword"><b>Due Date</b></label>'+
+            '<div class="relative">'+
+                    '<input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date" value="" placeholder="Due Date" autocomplete="off" required/>'+
+            '</div>'+
+    '</div>'+
+    '<div class="col-md-1 mt-4">'+
+        '<label for="txtPassword"><b>Completed</b></label>'+
+        '<div class="relative">'+
+            '<select class="form-control" name="completed[]" required>'+
+                '<option value="">Select</option>'+
+                '<option value="yes">Yes</option>'+
+                '<option value="no">No</option>'+
+            '</select>'+
+        '</div>'+
+    '</div>'+
+    '<div class="col-md-1 mt-4">'+
+            '<label for="txtPassword"><b>Exception Received</b></label>'+
+            '<div class="relative">'+
+                '<select class="form-control" name="exception_received[]" required>'+
+                    '<option value="">Select</option>'+
+                    '<option value="yes">Yes</option>'+
+                    '<option value="no">No</option>'+
+                '</select>'+
+            '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-4">'+
+            '<label for="txtPassword"><b>Exception Received From</b></label>'+
+            '<div class="relative">'+
+            '<input type="text" name="exception_received_from[]" class="form-control" value="" placeholder="Exception Received From" autocomplete="off" required/>'+
+            '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-4">'+
+            '<label for="txtPassword"><b>Exception Received Date</b></label>'+
+            '<div class="relative">'+
+            '<input type="text" name="exception_received_date[]" class="form-control sc-doc-date" value="" placeholder="Exception Received Date" autocomplete="off" required/>'+
+            '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-4">'+
+        '<label for="txtPassword"><b>Exception Remark</b></label>'+
+        '<div class="relative">'+
+        '<input type="text" name="exception_remark[]" class="form-control" value="" placeholder="Exception Remark" autocomplete="off" required/>'+
+        '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-4">'+
+        '<label for="txtPassword"><b>Maturity Date</b></label>'+
+        '<div class="relative">'+
+        '<input type="text" name="maturity_date[]" class="form-control sc-doc-date" value="" placeholder="Maturity Date" autocomplete="off" required/>'+
+        '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-4">'+
+        '<label for="txtPassword"><b>Renewal Reminder Days</b></label>'+
+        '<div class="relative">'+
+        '<input type="number" name="renewal_reminder_days[]" class="form-control" value="" placeholder="Renewal Reminder Days" autocomplete="off" required/>'+
+        '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-4 INR">'+
+        '<label for="txtPassword"><b>Amount Expected</b></label>'+
+        '<div class="relative">'+
+        '<a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+        '<input type="text" name="amount_expected[]" class="form-control number float_format" value="" placeholder="Amount Expected" autocomplete="off" required/>'+
+        '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-4 INR">'+
+       '<label for="txtPassword"><b>Document Amount</b></label>'+
+        '<div class="relative">'+
+        '<a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>'+
+        '<input type="text" name="document_amount[]" class="form-control number float_format" value="" placeholder="Document Amount" autocomplete="off" required/>'+
+        '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-4">'+
+        '<label for="txtPassword"><b>Doc Upload</b></label>'+
+        '<div class="relative">'+
+            '<div class="custom-file upload-btn-cls mb-3 mt-2">'+
+                '<input type="file" class="custom-file-input getFileName doc_file" id="doc_file" name="doc_file[]" required>'+
+                '<label class="custom-file-label" for="customFile">Choose file</label>'+
+            '</div>'+
+        '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-4">'+
+        '<label for="txtPassword"><b>Pre/Post</b></label>'+
+        '<div class="relative">'+
+            '<select class="form-control" name="doc_type[]" required>'+
+                '<option value="">Select</option>'+
+                '<option value="pre">Pre</option>'+
+                '<option value="post">Post</option>'+
+            '</select>'+
+       '</div>'+
+       '<i class="fa fa-2x fa-times-circle remove-security-doc-block" style="color: red;margin-left: 267px;position: absolute;margin-top: -33px;"></i>'+
+    '</div>'+
+        '</div>';
+    $('#security-doc-block').append(ptpq_block);
+    getAllSecurityDocumentName(counter);
+    $('.sc-doc-date').datetimepicker({
+     format: 'dd/mm/yyyy',
+     pickTime: false,
+     minView: 2, 
+     pickerPosition: 'bottom-right', 
+   }).on('changeDate', function(e){
+       $(this).datetimepicker('hide');
+   });
+  });
+
+  $(document).on('click', '.remove-security-doc-block', function(){
+    var app_security_doc_id = $(this).closest('.toRemoveDiv').find('.app_security_doc_id').val();
+
+    if(app_security_doc_id > 0 && app_security_doc_id != 'undefined'){
+            var messages = {
+                update_app_security_doc: "{{ URL::route('update_app_security_doc') }}",
+                  token: "{{ csrf_token() }}",
+             };
+
+             var dataStore = {'app_security_doc_id': app_security_doc_id,'_token': messages.token };
+             jQuery.ajax({
+                 url: messages.update_app_security_doc,
+                 method: 'post',
+                 dataType: 'json',
+                 data: dataStore,
+                 error: function (xhr, status, errorThrown) {
+                                   // alert(errorThrown);
+                 },
+                 success: function (data) {  
+                 }
+             });   
+    }
+        $(this).closest('.toRemoveDiv').remove();
+  });
+  $(document).on('change','.getFileName',function(){
+        $(this).parent('div').children('.custom-file-label').html('Choose file');
+    });
+    
+    $(document).on('change','.getFileName',function(e) {
+        var fileName = e.target.files[0].name;
+        $(this).parent('div').children('.custom-file-label').html(fileName);
+    });
+    $('.sc-doc-date').datetimepicker({
+     format: 'dd/mm/yyyy',
+     pickTime: false,
+     minView: 2, 
+     pickerPosition: 'bottom-right', 
+   }).on('changeDate', function(e){
+       $(this).datetimepicker('hide');
+   });
+function getAllSecurityDocumentName(selectId){
+  var securityDoc= {!! $securityDocumentListJson !!};
+  if(securityDoc){
+    $.each(securityDoc, function(i, item) {
+        $('#security_doc_id_'+selectId)
+          .append($('<option>', { value : item.security_doc_id })
+          .text(item.name));
+    });
+  }
+}
 </script>
 @endsection

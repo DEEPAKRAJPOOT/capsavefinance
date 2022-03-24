@@ -1365,6 +1365,32 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'edit_location_type',
                 'uses' => 'Master\LocationTypeController@saveLocationType'
             ]);
+            //Start Security Document
+            Route::get('/list-security-document', [
+                'as' => 'list_security_document',
+                'uses' => 'Master\SecurityDocumentController@index'
+            ]);
+
+            Route::get('/add-security-document', [
+                'as' => 'add_security_document',
+                'uses' => 'Master\SecurityDocumentController@addSecurityDoc'
+            ]);
+
+            Route::post('/add-security-document', [
+                'as' => 'add_security_document',
+                'uses' => 'Master\SecurityDocumentController@saveSecurityDoc'
+            ]);
+
+            Route::get('/edit-security-document', [
+                'as' => 'edit_security_document',
+                'uses' => 'Master\SecurityDocumentController@editSecurityDoc'
+            ]);
+
+            Route::post('/edit-security-document', [
+                'as' => 'edit_security_document',
+                'uses' => 'Master\SecurityDocumentController@saveSecurityDoc'
+            ]);
+            //END Security Document
             
         });
 
