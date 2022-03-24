@@ -375,7 +375,7 @@
                                     $key =  $key+1;
                                   
                               @endphp
-                            <div class="row  toRemoveDiv {{($loop->first)? '': 'mt10'}}" style="background-color: #e9e7e7;">
+                            <div class="row  toRemoveDiv1 {{($loop->first)? '': 'mt10'}}" style="background-color: #e9e7e7;">
                                 <input type="hidden" name="app_security_doc_id[]" class="form-control app_security_doc_id" value="{{$arr['app_security_doc_id'] ?? ''}}"/>
                                 <div class="col-md-2 mt-4">
                                     <label for="txtPassword"><b>Pre/Post</b></label>
@@ -862,8 +862,8 @@ $('#camForm').validate({ // initialize the plugin
 });
 var counter = 1;
 $(document).on('click', '.add-security-doc-block', function(){
-    counter = $(".toRemoveDiv").length+1;
-    let ptpq_block = '<div class="row  mt10 toRemoveDiv" style="background-color: #e9e7e7;">'+
+    counter = $(".toRemoveDiv1").length+1;
+    let ptpq_block = '<div class="row  mt10 toRemoveDiv1" style="background-color: #e9e7e7;">'+
         '<div class="col-md-2 mt-4">'+
         '<label for="txtPassword"><b>Pre/Post</b></label>'+
         '<div class="relative">'+
@@ -987,7 +987,7 @@ $(document).on('click', '.add-security-doc-block', function(){
   });
 
   $(document).on('click', '.remove-security-doc-block', function(){
-    var app_security_doc_id = $(this).closest('.toRemoveDiv').find('.app_security_doc_id').val();
+    var app_security_doc_id = $(this).closest('.toRemoveDiv1').find('.app_security_doc_id').val();
 
     if(app_security_doc_id > 0 && app_security_doc_id != 'undefined'){
             var messages = {
@@ -1008,7 +1008,7 @@ $(document).on('click', '.add-security-doc-block', function(){
                  }
              });   
     }
-        $(this).closest('.toRemoveDiv').remove();
+        $(this).closest('.toRemoveDiv1').remove();
   });
   $(document).on('change','.getFileName',function(){
         $(this).parent('div').children('.custom-file-label').html('Choose file');
