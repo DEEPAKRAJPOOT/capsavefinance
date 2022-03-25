@@ -4367,7 +4367,7 @@ class DataRenderer implements DataProviderInterface
                 'rcu_status',
                 function ($data) {
                     $act = '';
-                    if (Helpers::checkPermission('chng_fi_status') && $data->rcu_status == 0) {
+                    if (Helpers::checkPermission('chng_fi_status') && $data->rcu_status == 0 && $data->is_active == 1) {
                         $act .= '<a title="Change FI Status" href="'.route('chng_fi_status', ['user_id' => $data->Customer_id, 'biz_addr_id' => $data->biz_addr_id, 'status'=> $data->rcu_status]).'" class="btn btn-action-btn btn-sm"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
                     }
                     if ($data->rcu_status) {
