@@ -4367,11 +4367,11 @@ class DataRenderer implements DataProviderInterface
                 'rcu_status',
                 function ($data) {
                     $act = '';
-                    if (Helpers::checkPermission('chng_fi_status')) {
-                        $act .= '<a title="FI Status Change" href="'.route('chng_fi_status', ['user_id' => $data->Customer_id, 'biz_addr_id' => $data->biz_addr_id, 'status'=> $data->rcu_status]).'" class="btn btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>';
+                    if (Helpers::checkPermission('chng_fi_status') && $data->rcu_status == 0) {
+                        $act .= '<a title="Change FI Status" href="'.route('chng_fi_status', ['user_id' => $data->Customer_id, 'biz_addr_id' => $data->biz_addr_id, 'status'=> $data->rcu_status]).'" class="btn btn-action-btn btn-sm"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
                     }
                     if ($data->rcu_status) {
-                        return '<span class="badge badge-success">Done</span>&nbsp;'.$act;
+                        return '<span class="badge badge-success">Approved</span>&nbsp;'.$act;
                     } else {
                         return '<span class="badge badge-warning current-status">Pending</span>&nbsp;'.$act;
                     }
@@ -6733,7 +6733,7 @@ class DataRenderer implements DataProviderInterface
                    $id = $data->user_invoice_rel_id;
                    $btn = '';
                    if(Helpers::checkPermission('get_user_invoice_unpublished') ){
-                    $btn = "<a title='Address Unpublish' href='".route('get_user_invoice_unpublished', ['user_id' => $data->user_id, 'user_invoice_rel_id' => $data->user_invoice_rel_id])."' class='btn btn-action-btn btn-sm'> <i class='fa fa-edit'></i></a>";
+                    $btn = "<a title='Address Unpublish' href='".route('get_user_invoice_unpublished', ['user_id' => $data->user_id, 'user_invoice_rel_id' => $data->user_invoice_rel_id])."' class='btn btn-action-btn btn-sm'><i class='fa fa-ban' aria-hidden='true'></i></a>";
                    }
                    $status = ($data->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>&nbsp;'. $btn.'</div></b>';
                    return $status;
