@@ -695,12 +695,15 @@ class AppProgramOffer extends BaseModel {
                 ->toArray();
     }
 
-    public static function getActiveProgramOfferByAppId($anchorId, $appId)
+    public static function getActiveProgramOfferByAppId($anchorId, $appId, $prgmId = null)
     {
-        $data = self::where('app_prgm_offer.anchor_id', $anchorId)
-                ->where('app_prgm_offer.app_id', $appId)
-                ->where('app_prgm_offer.is_active', '1')
-                ->first();
-        return $data;
+        $data = self::where('anchor_id', $anchorId)
+                ->where('app_id', $appId)
+                ->where('is_active', '1')
+                ->where('status',1);
+        if($prgmId){
+            $data->where('prgm_id',$prgmId); 
+        }
+        return $data->first();
     }
 }

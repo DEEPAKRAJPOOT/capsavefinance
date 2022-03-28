@@ -2445,6 +2445,7 @@ class Helper extends PaypalHelper
                                     ->where('prgm_id', $prgmId)
                                     ->where('app_id', $appId)
                                     ->where('is_active', 1)
+                                    ->whereNotIn('status', [2])
                                     ->first();
     }
 
@@ -2491,13 +2492,26 @@ class Helper extends PaypalHelper
             $appData = Application::getAppData((int) $attr['app_id']);
             if (in_array($appData->app_type, [1,2,3]) && $appData->parent_app_id) {
                 $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($attr['anchor_id'], $appData->parent_app_id);
-                if ($parentAppOffer && $parentAppOffer->prgm_offer_id && $parentAppOffer->prgm_id) {
+                if ($parentAppOffer && $parentAppOffer->prgm_offer_id && $parentAppOffer->prgm_id && $parentAppOffer->prgm_id == $attr['prgm_id']) {
                     $newAttr['prgm_id'] = $parentAppOffer->prgm_id;
                     $newAttr['app_id'] = $appData->parent_app_id;
                     $newAttr['user_id'] = $attr['user_id'];
                     $newAttr['anchor_id'] = $attr['anchor_id'];
                     $newAttr['prgm_offer_id'] = $parentAppOffer->prgm_offer_id;
                     $sum += self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
+                }
+                else {
+                    if ($prgmData && $prgmData->copied_prgm_id) {
+                        $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($attr['anchor_id'], $appData->parent_app_id, $prgmData->copied_prgm_id);
+                        if ($parentAppOffer && $parentAppOffer->prgm_offer_id && $parentAppOffer->prgm_id ) {
+                            $newAttr['prgm_id'] = $prgmData->copied_prgm_id;
+                            $newAttr['app_id'] = $appData->parent_app_id;
+                            $newAttr['user_id'] = $attr['user_id'];
+                            $newAttr['anchor_id'] = $attr['anchor_id'];
+                            $newAttr['prgm_offer_id'] = $parentAppOffer->prgm_offer_id;
+                            $sum += self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
+                        }
+                    }
                 }
             }
         }
