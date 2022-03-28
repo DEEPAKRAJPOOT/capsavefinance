@@ -5690,6 +5690,7 @@ if ($err) {
             ],['approval_doc_file.required' => 'Please select atleast one document']);
             $app_id = $request->app_id;
             $file_id = false;
+            $addl_data = [];
             $currStage = Helpers::getCurrentWfStage($app_id);
             $isFinalSubmit = 0;
             if ($currStage->stage_code == 'approver') {
@@ -5725,7 +5726,7 @@ if ($err) {
                             $roleArr = [$nextStage->role_id];
                             $roles = $this->application->getBackStageUsers($app_id, $roleArr);
                             $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
-                            $addl_data['sharing_comment'] = 'Automatically Assigned to  Sales Manager from Approver List';
+                            $addl_data['sharing_comment'] = 'Automatically Assigned to Sales Manager from Approver List';
                             $assign = true;
                             $wf_status = 1;
                             if ($nextStage->stage_code == 'sales_queue') {
