@@ -2498,16 +2498,17 @@ class Helper extends PaypalHelper
                     $newAttr['prgm_offer_id'] = $parentAppOffer->prgm_offer_id;
                     $sum += self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
                 }
-            }else {
-                if ($prgmData && $prgmData->copied_prgm_id) {
-                    $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($attr['anchor_id'], $appData->parent_app_id);
-                    if ($parentAppOffer && $parentAppOffer->prgm_offer_id && $parentAppOffer->prgm_id && $parentAppOffer->prgm_id == $prgmData->copied_prgm_id) {
-                        $newAttr['prgm_id'] = $prgmData->copied_prgm_id;
-                        $newAttr['app_id'] = $appData->parent_app_id;
-                        $newAttr['user_id'] = $attr['user_id'];
-                        $newAttr['anchor_id'] = $attr['anchor_id'];
-                        $newAttr['prgm_offer_id'] = $parentAppOffer->prgm_offer_id;
-                        $sum += self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
+                else {
+                    if ($prgmData && $prgmData->copied_prgm_id) {
+                        $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($attr['anchor_id'], $appData->parent_app_id, $prgmData->copied_prgm_id);
+                        if ($parentAppOffer && $parentAppOffer->prgm_offer_id && $parentAppOffer->prgm_id ) {
+                            $newAttr['prgm_id'] = $prgmData->copied_prgm_id;
+                            $newAttr['app_id'] = $appData->parent_app_id;
+                            $newAttr['user_id'] = $attr['user_id'];
+                            $newAttr['anchor_id'] = $attr['anchor_id'];
+                            $newAttr['prgm_offer_id'] = $parentAppOffer->prgm_offer_id;
+                            $sum += self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
+                        }
                     }
                 }
             }
