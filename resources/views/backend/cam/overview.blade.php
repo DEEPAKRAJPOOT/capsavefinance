@@ -443,7 +443,7 @@
                                <div class="col-md-2 mt-4 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="display: none;"': '' !!}>
                                        <label for="txtPassword"><b>Exception Received Date</b></label>
                                        <div class="relative">
-                                       <input type="text" name="exception_received_date[]" class="form-control sc-doc-date exception_received_date {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'required': '' !!}" value ="{{(isset($arr['exception_received_date']) && $arr['exception_received_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['exception_received_date'])->format('d/m/Y'): '' }}" placeholder="Exception Received Date" autocomplete="off" id="update_exception_received_date_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="visibility: hidden;height: 0;"': '' !!}/>
+                                       <input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r exception_received_date {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'required': '' !!}" value ="{{(isset($arr['exception_received_date']) && $arr['exception_received_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['exception_received_date'])->format('d/m/Y'): '' }}" placeholder="Exception Received Date" autocomplete="off" id="update_exception_received_date_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="visibility: hidden;height: 0;"': '' !!}/>
                                        </div>
                                </div>
                                <div class="col-md-2 mt-4 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="display: none;"': '' !!}>
@@ -487,7 +487,7 @@
                                    <div class="relative">
                                     <div class="d-flex">
                                        <div class="custom-file upload-btn-cls mb-3">
-                                           <input type="file" class="custom-file-input getFileName doc_file_sec" name="doc_file_sec[]" id="update_doc_file_{{ $key }}">
+                                           <input type="file" class="custom-file-input getFileName doc_file_sec {!!(isset($arr['is_upload']) && $arr['is_upload'] == 0) ? 'required': '' !!}" name="doc_file_sec[]" id="update_doc_file_{{ $key }}">
                                            <label class="custom-file-label" for="customFile">Choose file</label>
                                        </div>
                                        @if($loop->first)
@@ -529,7 +529,7 @@
                                 <div class="col-md-2 mt-4">
                                      <label for="txtPassword"><b>Document Number</b></label>
                                      <div class="relative">
-                                        <input type="text" name="document_number[]" class="form-control" value="" placeholder="Document Number" autocomplete="off" min="1" checkDocumentNumber="true"/>
+                                        <input type="text" name="document_number[]" class="form-control" value="" placeholder="Document Number" autocomplete="off" notOnlyZero="0" checkDocumentNumber="true" data-msg-notOnlyZero="Document Number can not be zero."/>
                                      </div>
                                 </div>
                                 <div class="col-md-2 mt-4">
@@ -567,7 +567,7 @@
                                 <div class="col-md-2 mt-4 exceptionFields_1" style="display: none;">
                                         <label for="txtPassword"><b>Exception Received Date</b></label>
                                         <div class="relative">
-                                        <input type="text" name="exception_received_date[]" class="form-control sc-doc-date" value="" placeholder="Exception Received Date" autocomplete="off"/>
+                                        <input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r" value="" placeholder="Exception Received Date" autocomplete="off"/>
                                         </div>
                                 </div>
                                 <div class="col-md-2 mt-4 exceptionFields_1" style="display: none;">
@@ -827,6 +827,13 @@ $(document).ready(function () {
     $.validator.addMethod('filesize', function (value, element, param) {
         return this.optional(element) || (element.files[0].size <= param)
     }, 'File size must be less than {0}');
+    $.validator.addMethod("notOnlyZero", function (value, element, param) {
+        return this.optional(element) || parseInt(value) > 0;
+    });
+    // $.validator.addMethod('notEqual', function (value, element, param) {
+    //     console.log(value);
+    //     return this.optional(element) || (element.files[0].size <= param)
+    // }, 'File size must be less than {0}');
     var messages = {
         unique_security_doc_number: "{{ URL::route('check_unique_security_doc_number') }}",
         token: "{{ csrf_token() }}",
@@ -922,10 +929,11 @@ $(document).on('submit', '#camForm', function(e) {
         $(this).rules("add",
             {
                 required: true,
-                min: 1,
+                notOnlyZero: '0',
                 checkDocumentNumber: true,
                 messages: {
                     required: "This field is required.",
+                    notOnlyZero:"Document Number can not be zero.",
                 }
             });
     });
@@ -1091,7 +1099,7 @@ $(document).on('click', '.add-security-doc-block', function(){
     '<div class="col-md-2 mt-4 exceptionFields_'+counter+'" style="display: none;">'+
             '<label for="txtPassword"><b>Exception Received Date</b></label>'+
             '<div class="relative">'+
-            '<input type="text" name="exception_received_date[]" class="form-control sc-doc-date exception_received_date required" value="" placeholder="Exception Received Date" autocomplete="off" id="exception_received_date_'+counter+'" style="visibility: hidden;height: 0;"/>'+
+            '<input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r exception_received_date required" value="" placeholder="Exception Received Date" autocomplete="off" id="exception_received_date_'+counter+'" style="visibility: hidden;height: 0;"/>'+
             '</div>'+
     '</div>'+
     '<div class="col-md-2 mt-4 exceptionFields_'+counter+'" style="display: none;">'+
@@ -1150,6 +1158,14 @@ $(document).on('click', '.add-security-doc-block', function(){
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
    });
+   $('.sc-doc-date-r').datetimepicker({
+     format: 'dd/mm/yyyy',
+     pickTime: false,
+     minView: 2, 
+     pickerPosition: 'bottom-right', 
+   }).on('changeDate', function(e){
+       $(this).datetimepicker('hide');
+   });
   });
 
   $(document).on('click', '.remove-security-doc-block', function(){
@@ -1190,6 +1206,14 @@ $(document).on('click', '.add-security-doc-block', function(){
      pickTime: false,
      minView: 2, 
      startDate: new Date(),
+     pickerPosition: 'bottom-right', 
+   }).on('changeDate', function(e){
+       $(this).datetimepicker('hide');
+   });
+   $('.sc-doc-date-r').datetimepicker({
+     format: 'dd/mm/yyyy',
+     pickTime: false,
+     minView: 2, 
      pickerPosition: 'bottom-right', 
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
@@ -1277,10 +1301,11 @@ function makeRequiredFields(counters, reqType){
         $(this).rules("add",
             {
                 required: true,
-                min: 1,
+                notOnlyZero: '0',
                 checkDocumentNumber: true,
                 messages: {
                     required: "This field is required.",
+                    notOnlyZero:"Document Number can not be zero.",
                 }
             });
     });
