@@ -1413,5 +1413,10 @@ Route::group(
         'as' => 'update_app_security_doc',
         'uses' => 'AjaxController@updateAppSecurityDoc'
     ]);
+
+    Route::post('unique-security-doc-number', [
+        'as' => 'check_unique_security_doc_number',
+        'uses' => 'AjaxController@checkUniqueSecurityDocNumber'
+    ]);
     //END Security Document
 });

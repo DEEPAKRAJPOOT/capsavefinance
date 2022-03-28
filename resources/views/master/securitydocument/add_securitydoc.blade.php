@@ -8,8 +8,8 @@
 
         <div class="row">
             <div class="form-group col-md-12">
-                <label for="name">Security Document Name</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Security Document Name"
+                <label for="name">Security Document Type</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Security Document Type"
                     maxlength="50">
             </div>
         </div>

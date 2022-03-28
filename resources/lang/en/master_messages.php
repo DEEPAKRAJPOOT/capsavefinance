@@ -34,7 +34,7 @@ return [
     'tds_edit_success' => 'TDS updated successfully.',
     'location_add_success' => 'Location added successfully',
     'location_edit_success' => 'Location updated successfully',
-    'security_document_add_success' => 'Security Document added successfully',
-    'security_document_edit_success' => 'Security Document updated successfully',    
+    'security_document_add_success' => 'Security Document Type added successfully',
+    'security_document_edit_success' => 'Security Document Type updated successfully',    
 ];
 

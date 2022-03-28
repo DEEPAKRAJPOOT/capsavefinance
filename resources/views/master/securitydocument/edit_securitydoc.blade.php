@@ -8,10 +8,10 @@
         <input type="hidden" name="security_doc_id" id="security_doc_id" value="{{ $securityDoc_data->security_doc_id }}">
         <div class="row">
             <div class="form-group col-md-12">
-                <label for="name">Security Document Name</label>
+                <label for="name">Security Document Type</label>
                 <input type="text" class="form-control" id="name" name="name"
                     value="{{ isset($securityDoc_data) ? $securityDoc_data->name : "old('name')" }}"
-                    placeholder="Enter Security Document Name" maxlength="50">
+                    placeholder="Enter Security Document Type" maxlength="50">
             </div>
         </div>
         <div class="row">

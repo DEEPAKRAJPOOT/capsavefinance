@@ -261,8 +261,8 @@ class CamController extends Controller
               if(!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2) && !empty($dataCheck3) && !empty($dataCheck4) && !empty($dataCheck5) && !empty($dataCheck6) && !empty($dataCheck7) && !empty($dataCheck8) && !empty($dataCheck9) && !empty($dataCheck10)){
                 foreach($arrCamData['security_doc_id'] as $key => $securityDocId) {
                   $is_upload = $file_id = '';   
-                  if(isset($arrCamData['doc_file'][$key])){
-                    $attributes['doc_file'] = $arrCamData['doc_file'][$key];
+                  if(isset($arrCamData['doc_file_sec'][$key])){
+                    $attributes['doc_file'] = $arrCamData['doc_file_sec'][$key];
                     $app_security_doc_id = isset($arrCamData['app_security_doc_id'][$key]) ? $arrCamData['app_security_doc_id'][$key] : null;
                     $uploadData = Helpers::uploadSecurityDocFile($attributes, $arrCamData['app_id'], $app_security_doc_id);
                     $secDocFile = $this->docRepo->saveFile($uploadData);
@@ -270,6 +270,14 @@ class CamController extends Controller
                       $is_upload = 1;
                       $file_id = $secDocFile->file_id;
                     }
+                  }
+                  $renewal_reminder_date = '';
+                  if(isset($arrCamData['maturity_date'][$key]) && !empty($arrCamData['maturity_date'][$key]) && isset($arrCamData['renewal_reminder_days'][$key])){
+                    $maturity_date =Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d');
+                    $renewal_reminder_days = $arrCamData['renewal_reminder_days'][$key];
+                    $rmd = strtotime('-'.$renewal_reminder_days.' days', strtotime($maturity_date));
+                    $rmd = date('Y-m-d', $rmd);
+                    $renewal_reminder_date = $rmd;
                   }
                     $inputArr= array(
                       'biz_id'=> $arrCamData['biz_id'] ,
@@ -288,7 +296,8 @@ class CamController extends Controller
                       'amount_expected'=> isset($arrCamData['amount_expected'][$key]) ? $arrCamData['amount_expected'][$key] : null,
                       'document_amount'=> isset($arrCamData['document_amount'][$key]) ? $arrCamData['document_amount'][$key] : null,
                       'doc_type'=> isset($arrCamData['doc_type'][$key]) ? $arrCamData['doc_type'][$key] : null,
-                      'created_by'=>$userId
+                      'created_by'=>$userId,
+                      'renewal_reminder_date'=>$renewal_reminder_date,
                   ); 
                   if($is_upload && $file_id){
                     $inputArr['is_upload']= isset($is_upload) ? $is_upload : null;

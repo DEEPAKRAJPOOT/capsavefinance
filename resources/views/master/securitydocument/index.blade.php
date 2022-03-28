@@ -8,12 +8,12 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Manage Security Document</h3>
-            <small>Security Document List</small>
+            <h3>Manage Security Document Type</h3>
+            <small>Security Document Type List</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li style="color:#374767;">Manage Security Document</li>
-                <li class="active">Security Document List</li>
+                <li style="color:#374767;">Manage Security Document Type</li>
+                <li class="active">Security Document Type List</li>
             </ol>
         </div>
     </section>
@@ -21,14 +21,14 @@
         <div class="card-body">
             <div class="row" style="margin-bottom: 25px;">
                 <div class="col-md-4">
-                    <input class="form-control" placeholder="Search by Security Document Name" name="search_keyword" type="text">
+                    <input class="form-control" placeholder="Search by Security Document Type" name="search_keyword" type="text">
                 </div>
                 <div class="col-md-1">
                     <button type="button" id="searchbtn" class="btn btn-success btn-sm float-right">Search</button>
                 </div>
                 <div class="col-md-7 text-right">
                     <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#addSecurityDocumentFrame" data-url ="{{route('add_security_document')}}" data-height="320px" data-width="100%" data-placement="top" >
-                            <i class="fa fa-plus"></i>Add Security Document
+                            <i class="fa fa-plus"></i>Add Security Document Type
                     </a>
                 </div>
            </div>
@@ -39,7 +39,7 @@
                         <table id="securityDocList" class="table white-space table-striped cell-border no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                             <thead>
                                 <tr role="row">
-                                    <th>Security Document Name</th>
+                                    <th>Security Document Type</th>
                                     <th>Created At</th>
                                     <th>Created By</th>
                                     <th>Status</th>
@@ -57,8 +57,8 @@
 </div>
 </div>
 </div>
-{!!Helpers::makeIframePopup('addSecurityDocumentFrame','Add Security Document', 'modal-md')!!}
-{!!Helpers::makeIframePopup('editSecurityDocumentFrame','Edit Security Document', 'modal-md')!!}
+{!!Helpers::makeIframePopup('addSecurityDocumentFrame','Add Security Document Type', 'modal-md')!!}
+{!!Helpers::makeIframePopup('editSecurityDocumentFrame','Edit Security Document Type', 'modal-md')!!}
 @endsection
 
 @section('jscript')

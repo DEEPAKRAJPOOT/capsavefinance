@@ -5754,4 +5754,23 @@ if ($err) {
         return response()->json($status);
     }
 
+     // Check Unique Security Document Number
+     public function checkUniqueSecurityDocNumber(Request $request) 
+     {        
+         $docNumber = $request->get('doc_number');
+         $appSecurityId = $request->has('id') ? $request->get('id'): null ;
+         $appId = $request->has('app_id') ? $request->get('app_id'): null ;
+         if($appSecurityId){
+            $result = AppSecurityDoc::where('document_number', $docNumber)->where('app_id', $appId)->where('is_active', 1)->where('app_security_doc_id','!=', $appSecurityId)->first();
+         }else{
+            $result = AppSecurityDoc::where('document_number', $docNumber)->where('app_id', $appId)->where('is_active', 1)->first(); 
+         }
+         if (isset($result)) {
+             $result = ['status' => 1];
+         } else {
+             $result = ['status' => 0];
+         }
+         return response()->json($result); 
+     }
+
 }

@@ -66,6 +66,7 @@ class AppSecurityDoc extends BaseModel
         'exception_remark',
         'maturity_date',
         'renewal_reminder_days',
+        'renewal_reminder_date',
         'amount_expected',
         'document_amount',
         'doc_type',
