@@ -411,7 +411,7 @@
                                <div class="col-md-2 mt-4">
                                     <label for="txtPassword"><b>Due Date</b></label>
                                     <div class="relative">
-                                            <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="{{\Carbon\Carbon::createFromFormat('Y-m-d', $arr['due_date'])->format('d/m/Y') ?? ''}}" placeholder="Due Date" autocomplete="off" id="update_due_date_{{ $key }}"/>
+                                            <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="{{\Carbon\Carbon::createFromFormat('Y-m-d', $arr['due_date'])->format('d/m/Y') ?? ''}}" placeholder="Due Date" autocomplete="off" id="update_due_date_{{ $key }}" readonly="readonly"/>
                                     </div>
                                </div>
                                <div class="col-md-1 mt-4">
@@ -443,7 +443,7 @@
                                <div class="col-md-2 mt-4 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="display: none;"': '' !!}>
                                        <label for="txtPassword"><b>Exception Received Date</b></label>
                                        <div class="relative">
-                                       <input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r exception_received_date {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'required': '' !!}" value ="{{(isset($arr['exception_received_date']) && $arr['exception_received_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['exception_received_date'])->format('d/m/Y'): '' }}" placeholder="Exception Received Date" autocomplete="off" id="update_exception_received_date_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="visibility: hidden;height: 0;"': '' !!}/>
+                                       <input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r exception_received_date {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'required': '' !!}" value ="{{(isset($arr['exception_received_date']) && $arr['exception_received_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['exception_received_date'])->format('d/m/Y'): '' }}" placeholder="Exception Received Date" autocomplete="off" id="update_exception_received_date_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="visibility: hidden;height: 0;"': '' !!} readonly="readonly"/>
                                        </div>
                                </div>
                                <div class="col-md-2 mt-4 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="display: none;"': '' !!}>
@@ -455,7 +455,7 @@
                                <div class="col-md-2 mt-4">
                                    <label for="txtPassword"><b>Maturity Date</b></label>
                                    <div class="relative">
-                                   <input type="text" name="maturity_date[]" class="form-control sc-doc-date maturity_date" value="{{\Carbon\Carbon::createFromFormat('Y-m-d', $arr['maturity_date'])->format('d/m/Y') ?? ''}}" placeholder="Maturity Date" autocomplete="off" id="update_maturity_date_{{ $key }}"/>
+                                   <input type="text" name="maturity_date[]" class="form-control sc-doc-date maturity_date" value="{{\Carbon\Carbon::createFromFormat('Y-m-d', $arr['maturity_date'])->format('d/m/Y') ?? ''}}" placeholder="Maturity Date" autocomplete="off" id="update_maturity_date_{{ $key }}" readonly="readonly"/>
                                    </div>
                                </div>
                                <div class="col-md-2 mt-4">
@@ -529,13 +529,13 @@
                                 <div class="col-md-2 mt-4">
                                      <label for="txtPassword"><b>Document Number</b></label>
                                      <div class="relative">
-                                        <input type="text" name="document_number[]" class="form-control" value="" placeholder="Document Number" autocomplete="off" notOnlyZero="0" checkDocumentNumber="true" data-msg-notOnlyZero="Document Number can not be zero."/>
+                                        <input type="text" name="document_number[]" class="form-control" value="" placeholder="Document Number" autocomplete="off" alphanumeric="true" checkDocumentNumber="true" data-msg-alphanumeric="Please enter letters and numbers only."/>
                                      </div>
                                 </div>
                                 <div class="col-md-2 mt-4">
                                      <label for="txtPassword"><b>Due Date</b></label>
                                      <div class="relative">
-                                             <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date" value="" placeholder="Due Date" autocomplete="off"/>
+                                             <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date" value="" placeholder="Due Date" autocomplete="off" readonly="readonly"/>
                                      </div>
                                 </div>
                                 <div class="col-md-1 mt-4">
@@ -567,7 +567,7 @@
                                 <div class="col-md-2 mt-4 exceptionFields_1" style="display: none;">
                                         <label for="txtPassword"><b>Exception Received Date</b></label>
                                         <div class="relative">
-                                        <input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r" value="" placeholder="Exception Received Date" autocomplete="off"/>
+                                        <input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r" value="" placeholder="Exception Received Date" autocomplete="off" readonly="readonly"/>
                                         </div>
                                 </div>
                                 <div class="col-md-2 mt-4 exceptionFields_1" style="display: none;">
@@ -579,7 +579,7 @@
                                 <div class="col-md-2 mt-4">
                                     <label for="txtPassword"><b>Maturity Date</b></label>
                                     <div class="relative">
-                                    <input type="text" name="maturity_date[]" class="form-control sc-doc-date" value="" placeholder="Maturity Date" autocomplete="off"/>
+                                    <input type="text" name="maturity_date[]" class="form-control sc-doc-date" value="" placeholder="Maturity Date" autocomplete="off" readonly="readonly"/>
                                     </div>
                                 </div>
                                 <div class="col-md-2 mt-4">
@@ -827,13 +827,17 @@ $(document).ready(function () {
     $.validator.addMethod('filesize', function (value, element, param) {
         return this.optional(element) || (element.files[0].size <= param)
     }, 'File size must be less than {0}');
-    $.validator.addMethod("notOnlyZero", function (value, element, param) {
-        return this.optional(element) || parseInt(value) > 0;
-    });
-    // $.validator.addMethod('notEqual', function (value, element, param) {
-    //     console.log(value);
-    //     return this.optional(element) || (element.files[0].size <= param)
-    // }, 'File size must be less than {0}');
+    // $.validator.addMethod("notOnlyZero", function (value, element, param) {
+    //     return this.optional(element) || parseInt(value) == 0;
+    // });
+    jQuery.validator.addMethod("alphanumeric", function(value, element) {
+        if(value != ''){
+          if(value == 0){
+            return false; 
+          }
+        }
+        return this.optional(element) || /^[a-zA-Z0-9]+$/.test(value);
+   }); 
     var messages = {
         unique_security_doc_number: "{{ URL::route('check_unique_security_doc_number') }}",
         token: "{{ csrf_token() }}",
@@ -859,7 +863,6 @@ $(document).ready(function () {
             return result;                
         },'Document Number is already exists'
     );
-    $('#camForm').validate({ignore: ".descexception_received_from"});
 $('#camForm').validate({ // initialize the plugin
     rules: {
         'group_company' : {
@@ -898,7 +901,7 @@ $(document).on('submit', '#camForm', function(e) {
 
         });
     });
-    $('select.doc_type').each(function () {
+    $('#security-doc-block select.doc_type').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -907,7 +910,7 @@ $(document).on('submit', '#camForm', function(e) {
                 }
             });
     });
-    $('select.security_doc_id').each(function () {
+    $('#security-doc-block select.security_doc_id').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -916,7 +919,7 @@ $(document).on('submit', '#camForm', function(e) {
                 }
             });
     });
-    $('input.description').each(function () {
+    $('#security-doc-block input.description').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -925,19 +928,21 @@ $(document).on('submit', '#camForm', function(e) {
                 }
             });
     });
-    $('input.document_number').each(function () {
+    $('#security-doc-block input.document_number').each(function () {
         $(this).rules("add",
             {
                 required: true,
-                notOnlyZero: '0',
+                //notOnlyZero: '0',
+                alphanumeric: true,
                 checkDocumentNumber: true,
                 messages: {
                     required: "This field is required.",
-                    notOnlyZero:"Document Number can not be zero.",
+                    //notOnlyZero:"Document Number can not be zero.",
+                    alphanumeric:"Please enter letters and numbers only.",
                 }
             });
     });
-    $('input.due_date').each(function () {
+    $('#security-doc-block input.due_date').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -946,7 +951,7 @@ $(document).on('submit', '#camForm', function(e) {
                 }
             });
     });
-    $('select.completed').each(function () {
+    $('#security-doc-block select.completed').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -955,7 +960,7 @@ $(document).on('submit', '#camForm', function(e) {
                 }
             });
     });
-    $('select.exception_received').each(function () {
+    $('#security-doc-block select.exception_received').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -965,7 +970,7 @@ $(document).on('submit', '#camForm', function(e) {
             });
     });
 
-    $('input.maturity_date').each(function () {
+    $('#security-doc-block input.maturity_date').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -974,7 +979,7 @@ $(document).on('submit', '#camForm', function(e) {
                 }
             });
     });
-    $('input.renewal_reminder_days').each(function () {
+    $('#security-doc-block input.renewal_reminder_days').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -986,7 +991,7 @@ $(document).on('submit', '#camForm', function(e) {
                 }
             });
     });
-    $('input.amount_expected').each(function () {
+    $('#security-doc-block input.amount_expected').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -997,7 +1002,7 @@ $(document).on('submit', '#camForm', function(e) {
                 }
             });
     });
-    $('input.document_amount').each(function () {
+    $('#security-doc-block input.document_amount').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -1008,7 +1013,7 @@ $(document).on('submit', '#camForm', function(e) {
                 }
             });
     });
-    $('input.doc_file_sec').each(function () {
+    $('#security-doc-block input.doc_file_sec').each(function () {
         $(this).rules("add",
             {
                 extension: "jpg,png,pdf,doc,docx",
@@ -1067,7 +1072,7 @@ $(document).on('click', '.add-security-doc-block', function(){
     '<div class="col-md-2 mt-4">'+
             '<label for="txtPassword"><b>Due Date</b></label>'+
             '<div class="relative">'+
-                    '<input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="" placeholder="Due Date" autocomplete="off" id="due_date_'+counter+'"/>'+
+                    '<input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="" placeholder="Due Date" autocomplete="off" id="due_date_'+counter+'" readonly="readonly"/>'+
             '</div>'+
     '</div>'+
     '<div class="col-md-1 mt-4">'+
@@ -1099,7 +1104,7 @@ $(document).on('click', '.add-security-doc-block', function(){
     '<div class="col-md-2 mt-4 exceptionFields_'+counter+'" style="display: none;">'+
             '<label for="txtPassword"><b>Exception Received Date</b></label>'+
             '<div class="relative">'+
-            '<input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r exception_received_date required" value="" placeholder="Exception Received Date" autocomplete="off" id="exception_received_date_'+counter+'" style="visibility: hidden;height: 0;"/>'+
+            '<input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r exception_received_date required" value="" placeholder="Exception Received Date" autocomplete="off" id="exception_received_date_'+counter+'" style="visibility: hidden;height: 0;" readonly="readonly"/>'+
             '</div>'+
     '</div>'+
     '<div class="col-md-2 mt-4 exceptionFields_'+counter+'" style="display: none;">'+
@@ -1111,7 +1116,7 @@ $(document).on('click', '.add-security-doc-block', function(){
     '<div class="col-md-2 mt-4">'+
         '<label for="txtPassword"><b>Maturity Date</b></label>'+
         '<div class="relative">'+
-        '<input type="text" name="maturity_date[]" class="form-control sc-doc-date maturity_date" value="" placeholder="Maturity Date" autocomplete="off" id="maturity_date_'+counter+'"/>'+
+        '<input type="text" name="maturity_date[]" class="form-control sc-doc-date maturity_date" value="" placeholder="Maturity Date" autocomplete="off" id="maturity_date_'+counter+'" readonly="readonly"/>'+
         '</div>'+
     '</div>'+
     '<div class="col-md-2 mt-4">'+
@@ -1245,14 +1250,13 @@ function resetIndexes() {
   var j = 1, id,name, $this;
   // for each element on the page with the class .input-wrap
   var previousId = [];  
-  $('.toRemoveDiv1').each(function() {
+  $('#security-doc-block .toRemoveDiv1').each(function() {
     if (j > 1) {
       // within each matched .input-wrap element, find each <input> element
       $(this).find('input, select').each(function() {
         $this = $(this);
         id = $this.attr("id");
         name = $this.attr("name");
-        console.log(name);
         if(name == 'exception_received[]'){
             $this.removeAttr("onchange");
             $this.attr("onchange",'displayExceptionFields(this.value,'+j+');');
@@ -1269,8 +1273,8 @@ function resetIndexes() {
   });
 }
 function makeRequiredFields(counters, reqType){
-    $('#camForm').validate({ignore: ".descexception_received_from"});
-    $('select.doc_type').each(function () {
+    $('#camForm').validate({ignore: ".desexception_received_from"});
+    $('#security-doc-block select.doc_type').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -1279,7 +1283,7 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('select.security_doc_id').each(function () {
+    $('#security-doc-block select.security_doc_id').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -1288,7 +1292,7 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('input.description').each(function () {
+    $('#security-doc-block input.description').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -1297,19 +1301,21 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('input.document_number').each(function () {
+    $('#security-doc-block input.document_number').each(function () {
         $(this).rules("add",
             {
                 required: true,
-                notOnlyZero: '0',
+                //notOnlyZero: '0',
+                alphanumeric: true,
                 checkDocumentNumber: true,
                 messages: {
                     required: "This field is required.",
-                    notOnlyZero:"Document Number can not be zero.",
+                    //notOnlyZero:"Document Number can not be zero.",
+                    alphanumeric:"Please enter letters and numbers only.",
                 }
             });
     });
-    $('input.due_date').each(function () {
+    $('#security-doc-block input.due_date').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -1318,7 +1324,7 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('select.completed').each(function () {
+    $('#security-doc-block select.completed').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -1327,7 +1333,7 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('select.exception_received').each(function () {
+    $('#security-doc-block select.exception_received').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -1337,7 +1343,7 @@ function makeRequiredFields(counters, reqType){
             });
     });
     
-    $('input.maturity_date').each(function () {
+    $('#security-doc-block input.maturity_date').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -1346,7 +1352,7 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('input.renewal_reminder_days').each(function () {
+    $('#security-doc-block input.renewal_reminder_days').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -1358,7 +1364,7 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('input.amount_expected').each(function () {
+    $('#security-doc-block input.amount_expected').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -1369,7 +1375,7 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('input.document_amount').each(function () {
+    $('#security-doc-block input.document_amount').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -1380,7 +1386,7 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('input.doc_file_sec').each(function () {
+    $('#security-doc-block input.doc_file_sec').each(function () {
         $(this).rules("add",
             {
                 extension: "jpg,png,pdf,doc,docx",
