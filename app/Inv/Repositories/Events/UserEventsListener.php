@@ -1455,6 +1455,51 @@ class UserEventsListener extends BaseEvent
     }
 
     /**
+     * App Security Document Renewal Alert
+     * 
+     * @param Array $attributes
+     */
+    public function appSecurityDocRenewalAlert($attributes) {
+        $data = unserialize($attributes); 
+        $this->func_name = __FUNCTION__;
+        $email_content = EmailTemplate::getEmailTemplate("APP_SECURITY_DOCUMENT_RENEWAL_ALERT");
+        if ($email_content) {
+            $userData['user_name'] = $data['user_name'];
+            $userData['email'] = $data['email'];
+            $securityDocData = view('emails.appsecuritydoc.app_security_doc_renewal_alert')->with(['data' => $data['data'], 'userData' => $userData])->render();
+            $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
+            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $securityDocData],
+                function ($message) use ($data, $mail_subject, $securityDocData, $email_content) {
+                    $cc = array_filter(explode(',', $email_content->cc));
+                    $bcc = array_filter(explode(',', $email_content->bcc));
+                    if (!empty($bcc)) {
+                        $message->bcc($bcc);
+                    }
+                    if (!empty($cc)) {
+                        $message->cc($cc);
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($data["email"], $data["user_name"]);
+                $message->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $data["email"],
+                    'email_cc' => $cc ?? NULL,
+                    'email_bcc' => $bcc ?? NULL,
+                    'email_type' => $this->func_name,
+                    'user_name' => $data['user_name'],
+                    'name' => $email_content->name,
+                    'subject' => $mail_subject,
+                    'body' => $securityDocData,
+                    // 'att_name' => $att_name ?? NULL,
+                    // 'attachment' => $data['attachment'] ?? NULL,
+                ];
+                FinanceModel::logEmail($mailContent);
+            }); 
+        }
+    }
+
+    /**
      * Event subscribers
      *
      * @param mixed $events
@@ -1648,6 +1693,11 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'CHARGE_DELETION_REQUEST_MAIL',
             'App\Inv\Repositories\Events\UserEventsListener@onChargeDeletionRequest'
+        );
+
+        $events->listen(
+            'APP_SECURITY_DOCUMENT_RENEWAL_ALERT',
+            'App\Inv\Repositories\Events\UserEventsListener@appSecurityDocRenewalAlert'
         );
     }
 }
