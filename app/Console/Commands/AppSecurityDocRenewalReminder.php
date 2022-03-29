@@ -45,33 +45,36 @@ class AppSecurityDocRenewalReminder extends Command
             $allEmailDataSecurity = [];
             if(!empty($appSecDoc) && isset($appSecDoc)){
                foreach($appSecDoc as $appSecDocV){
-                $allEmailDataSecurity[$appSecDocV->user_id]=AppSecurityDoc::getAppSecurityDocDetails($appSecDocV->app_id); 
+                $allEmailDataSecurity[$appSecDocV->email][]=$appSecDocV; 
                }
             }
             $emailData=array();
-            $emailIds = array();
             $userNameList = array();
             $dataFound = false;
             if(!empty($allEmailDataSecurity)){
-            foreach($allEmailDataSecurity as $userId=>$appSecurtyData){
-                $custDetails = Helpers::getUserInfo($userId);
-                $userNameList[] = $custDetails->f_name." ".$custDetails->l_name;
-            if(!empty($appSecurtyData) && $custDetails->email){
+            foreach($allEmailDataSecurity as $email=>$appSecurtyData){
+                $userNameLists = isset($appSecurtyData[0]['f_name'])?$appSecurtyData[0]['f_name']." ":'';
+                $userNameLists .= isset($appSecurtyData[0]['l_name'])?$appSecurtyData[0]['l_name']:'';
+                $userNameList[] = $userNameLists;
+            if(!empty($appSecurtyData) && $email){
                 $dataFound = true;
-                $fullCustName = $custDetails->f_name." ".$custDetails->l_name;
+                $fullCustName = $userNameLists;
                 $emailData = array(
                   'user_name' => $fullCustName,
-                  'email' => $custDetails->email,
+                  'email' => $email,
                   'name' => 'Capsave Finance PVT LTD.',
                   'subject' => 'subject',
                   'body' => 'body',
                   'data' => $appSecurtyData,
                 );
-                $emailIds[] = $custDetails->email;
                 \Event::dispatch("APP_SECURITY_DOCUMENT_RENEWAL_ALERT", serialize($emailData));
               }
             }
            }
+            if (!$dataFound) {
+              return printf('No coming Data Found.' .PHP_EOL);
+            }
+            return printf(implode(PHP_EOL . '<br />', $userNameList));
           } catch (\Exception $ex) {
               return Helpers::getExceptionMessage($ex);
           }

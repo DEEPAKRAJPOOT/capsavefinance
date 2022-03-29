@@ -92,25 +92,14 @@ class AppSecurityDoc extends BaseModel
         if (empty($renewalReminderDate)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
-        $appSecData =  self::select('a.app_id','u.user_id','u.email')
+        $appSecData =  self::select('a.app_id','u.user_id','u.email','mst_sec.name as doc_type_name','app_security_doc.*','u.f_name','u.l_name')
         ->join('app as a', 'app_security_doc.app_id', '=', 'a.app_id')
         ->join('users as u', 'a.user_id', '=', 'u.user_id')
-        ->where('app_security_doc.renewal_reminder_date', $renewalReminderDate)
+        ->join('mst_security_doc as mst_sec', 'app_security_doc.security_doc_id', '=', 'mst_sec.security_doc_id')
+        ->whereDate('app_security_doc.renewal_reminder_date', $renewalReminderDate)
         ->where('app_security_doc.is_active', 1)  
         ->where('a.is_assigned', 1) 
         ->where('u.is_active', 1)       
-        ->get();
-        return $appSecData;
-    }
-
-    public static function getAppSecurityDocDetails($appId){
-        if (empty($appId)) {
-            throw new BlankDataExceptions(trans('error_message.no_data_found'));
-        }
-        $appSecData =  self::select('app_security_doc.*','mst_sec.name as doc_type_name')
-        ->join('mst_security_doc as mst_sec', 'app_security_doc.security_doc_id', '=', 'mst_sec.security_doc_id')
-        ->where('app_security_doc.app_id', $appId)
-        ->where('app_security_doc.is_active', 1)    
         ->get();
         return $appSecData;
     }
