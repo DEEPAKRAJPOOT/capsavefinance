@@ -66,7 +66,7 @@
         </li>
     @endcan
 
-    @can('lead_list')
+    @canany(['lead_list', 'non_anchor_lead_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false"
                 aria-controls="collapseExample">
@@ -76,31 +76,20 @@
             </a>
             <div class="collapse" id="layoutsSubmenu1">
                 <ul class="nav flex-column sub-menu">
+                    @can('lead_list')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('lead_list') }}">My Leads</a>
                     </li>
-                </ul>
-            </div>
-        </li>
-    @endcan
-
-    @can('non_anchor_lead_list')
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false"
-                aria-controls="collapseExample">
-                <i class="fa fa-table" aria-hidden="true"></i>
-                <span class="menu-title">Manage Non Anchor Leads</span>
-                <i class="fa fa-angle-right" aria-hidden="true"></i>
-            </a>
-            <div class="collapse" id="layoutsSubmenu1">
-                <ul class="nav flex-column sub-menu">
+                    @endcan
+                    @can('non_anchor_lead_list')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('non_anchor_lead_list') }}">Non Anchor Leads List</a>
                     </li>
+                    @endcan
                 </ul>
             </div>
         </li>
-    @endcan
+    @endcan    
 
     @canany(['application_pool','application_list', 'colender_application_list', 'applicaiton_list'])
         <li class="nav-item">
