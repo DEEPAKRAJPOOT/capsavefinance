@@ -105,14 +105,7 @@ class UserInvoiceRepository extends BaseRepositories implements UserInvoiceInter
 		$UserInvoiceTxns = Transactions::getUserInvoiceTxns($userId, $invoiceType, $transIds, $is_force);
 		if (!empty($UserInvoiceTxns)) {
 			foreach ($UserInvoiceTxns as $key => $txn) {
-				if($txn->trans_type == config('lms.TRANS_TYPE.INVOICE_PROCESSING_FEE')){
-					$txn->amount = $txn->amount;
-				}else{
-					$txn->amount = $txn->FinalAmt;
-				}
-				// $waiveOffAmount = $txn->getWaiveOffAmount();
-				// $txn->amount = $txn->amount - $waiveOffAmount;
-				if ($txn->amount == 0) {
+				if ($txn->amount <= 0) {
 					unset($UserInvoiceTxns[$key]);
 				}
 			}

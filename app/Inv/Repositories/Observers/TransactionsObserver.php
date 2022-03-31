@@ -4,6 +4,7 @@ namespace App\Inv\Repositories\Observers;
 use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
+use App\Http\Controllers\Lms\userInvoiceController;
 
 class TransactionsObserver
 {
@@ -18,6 +19,19 @@ class TransactionsObserver
         $transaction->calculateOutstandingsCreate();
         InvoiceDisbursedDetail::createTransactionDetails($transaction);
         CustomerTransactionSOA::createTransactionSOADetails($transaction);
+        if($transaction->entry_type == 0 &&  is_null($transaction->parent_trans_id)){
+            if($transaction->transType->chrg_master_id > 0){
+                $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+                $invType = 'C';
+                $appId = $transaction->ChargesTransactions->app_id ?? null;
+                $controller->generateCapsaveInvoice([$transaction->trans_id], $transaction->user_id, $invType, $appId);
+            }elseif(in_array($transaction->trans_type, [9])){
+                $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+                $invType = 'I';
+                $appId = $transaction->invoiceDisbursed->invoice->app_id ?? null;
+                $controller->generateCapsaveInvoice([$transaction->trans_id], $transaction->user_id, $invType);
+            }
+        }
     }
 
     /**
