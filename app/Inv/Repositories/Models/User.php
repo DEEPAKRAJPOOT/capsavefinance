@@ -540,6 +540,22 @@ class User extends Authenticatable
          $users = self::getUserRoles($user_id);
          return $users;
     }
+
+    /**
+     * Get  user email exist
+     *
+     * @param integer $user_id
+     *
+     * @return array User List
+     */
+    public static function checkUserEmailExist($email,$anchId,$userType)
+    {
+        $userEmailExist = self::where('email','=',$email)
+                   ->where('user_type','!=',$userType)
+                   ->where('anchor_id','!=',$anchId)->count();
+         
+        return $userEmailExist;
+    }
     
     /**
      * Get User Details using anchor id
