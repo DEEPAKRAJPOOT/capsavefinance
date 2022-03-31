@@ -4987,6 +4987,12 @@ if ($err) {
             if (isset($anchUserData[0])) {
                 $result['status'] = false;
                 $result['message'] = trans('success_messages.existing_email');
+            } else {
+                $userData = $this->userRepo->getBackendUserByEmail(trim($email));
+                if ($userData) {
+                    $result['status'] = false;
+                    $result['message'] = trans('success_messages.existing_email');
+                }
             }
         }
         
@@ -5715,5 +5721,11 @@ if ($err) {
             \DB::rollback();
             return response()->json(['status' => 0,'message' => Helpers::getExceptionMessage($ex)]);
         }
+    }    
+
+    public function getNonAnchorLeads(DataProviderInterface $dataProvider) {
+        $leadsList = $this->userRepo->getAllNonAnchorLeads();
+        $leads = $dataProvider->getAllNonAnchorLeadsList($this->request, $leadsList);
+        return $leads;
     }
 }

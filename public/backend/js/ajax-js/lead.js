@@ -3,7 +3,7 @@
 
 try {
 
-    var oTable,oTables1,oTables2;
+    var oTable,oTables1,oTables2,oTables3;
     jQuery(document).ready(function ($) {
         
         //User Listing code
@@ -139,6 +139,44 @@ try {
 
         });
         
+         //Non Anchor Leads Listing code
+         oTables3 = $('#nonAnchleadList').DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: 25,
+            searching: false,
+            bSort: true,
+            order: [[7, "desc"]],
+            ajax: {
+                "url": messages.get_non_anchor_leads, // json datasource
+                "method": 'POST',
+                data: function (d) {
+                    d.by_email = $('input[name=by_email]').val();
+                    d._token = messages.token;
+                },
+                "error": function () {  // error handling            
+                    $("#nonAnchleadList").append('<tbody class="nonAnchleadList-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#nonAnchleadList_processing").css("display", "none");
+                }
+            },
+            columns: [
+                {data: 'non_anchor_lead_id'},
+                {data: 'name'},
+                {data: 'biz_name'},
+                {data: 'pan_no'},
+                {data: 'email'},
+                {data: 'phone'},
+                {data: 'user_type'},
+                {data: 'created_at'},
+                {data: 'status'}
+            ],
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [1,3,4,5,6,8]}]
+        });
+
+        //Search
+        $('#nonAnchleadListSearch').on('click', function (e) {
+            oTables3.draw();
+        });
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

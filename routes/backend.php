@@ -824,6 +824,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@downloadSample'
             ]);
         });
+
+
+        Route::group(['prefix' => 'non-anchor-leads'], function () {
+            Route::get('/', [
+                'as' => 'non_anchor_lead_list',
+                'uses' => 'Backend\LeadController@getNonAnchorLeads'
+            ]);
+        });
         
         Route::group(['prefix' => 'fircu'], function () {
             Route::get('/applications', [

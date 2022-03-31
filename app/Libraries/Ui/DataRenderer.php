@@ -149,8 +149,8 @@ class DataRenderer implements DataProviderInterface
                 // })
                 ->editColumn(
                     'active',
-                    function ($role) {
-                    return ($role->is_active == '0')?'<div class="btn-group ">
+                    function ($user) {
+                    return ($user->is_active == '0')?'<div class="btn-group ">
                                              <label class="badge badge-danger current-status">In Active</label>
                                              
                                           </div></b>':'<div class="btn-group ">
@@ -8401,5 +8401,64 @@ class DataRenderer implements DataProviderInterface
                 return '';
             })
             ->make(true);
+    }
+
+    public function getAllNonAnchorLeadsList(Request $request, $lead)
+    {        
+        return DataTables::of($lead)
+                ->rawColumns(['non_anchor_lead_id', 'email', 'user_type', 'status'])
+                ->addColumn('non_anchor_lead_id', function ($lead) {
+                    return '000'.$lead->id;
+                })
+                ->editColumn('name', function ($lead) {
+                    return $lead->full_name;
+                })               
+                ->editColumn('biz_name', function ($lead) {                    
+                    return ucwords(strtolower($lead->biz_name));                    
+                })
+                ->editColumn('pan_no', function ($lead) {
+                    return $lead->pan_no ?? '';                    
+                })
+                ->editColumn('email', function ($lead) {
+                    return $lead->email;
+                })
+                ->editColumn('phone', function ($lead) {
+                    return $lead->mobile_no;                     
+                })
+                ->addColumn('user_type', function ($lead) {
+                    $leadType = '';
+                    if($lead->is_buyer == 1){
+                        $leadType = 'Supplier';
+                    }else if($lead->is_buyer == 2){
+                        $leadType = 'Buyer';
+                    }
+                    return $leadType;
+                }) 
+                ->editColumn('created_at', function ($lead) {
+                    return ($lead->created_at)? date('d-M-Y',strtotime($lead->created_at)) : '---';
+                })
+                ->addColumn('status', function ($lead) {
+                    if($lead->is_registered == 1){
+                       return "<label class=\"badge badge-success current-status\">Registered</label>";
+                    } else {
+                        return "<label class=\"badge badge-warning current-status\">Unregistered</label>";
+                    }
+                })
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_nameOrEmail = trim($request->get('by_email'));
+                                $query->where('f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('l_name', 'like', "%$by_nameOrEmail%")                                  
+                                ->orWhere(\DB::raw("CONCAT(f_name,' ',l_name)"), 'like', "%$by_nameOrEmail%")
+                                ->orWhere('email', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('pan_no', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('biz_name', 'like', "%$by_nameOrEmail%");
+                            });
+                        }
+                    }          
+                })
+                ->make(true);
     }
 }

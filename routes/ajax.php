@@ -1072,7 +1072,7 @@ Route::group(
     Route::post('check-exist-email', [
         'as' => 'check_exist_email',
         'uses' => 'AjaxController@getExistEmailStatus'
-    ]);
+    ]);        
 
     //ajax route for check the email is exist or not
     Route::post('check-exist-emails-anchor', [
@@ -1397,5 +1397,10 @@ Route::group(
     Route::post('delete_management_info', [
         'as' => 'delete_management_info',
         'uses' => 'AjaxController@deleteManagementInfo'
+    ]);
+
+    Route::post('get-non-anchor-leads', [
+        'as' => 'get_non_anchor_leads',
+        'uses' => 'AjaxController@getNonAnchorLeads'
     ]);
 });

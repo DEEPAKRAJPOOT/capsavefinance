@@ -34,6 +34,7 @@ use App\Inv\Repositories\Models\CoLenderUsers;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Program;
+use App\Inv\Repositories\Models\NonAnchorLead;
 
 class UserRepository extends BaseRepositories implements UserInterface
 {
@@ -1809,6 +1810,50 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getActiveChrgDeleteEmailAllowedRoles()
     {
         return  Role::getActiveChrgDeleteEmailAllowedRoles();
+    }
+
+    public function getNonAnchorLeadByRegToken($token)
+    {
+        $result = NonAnchorLead::getNonAnchorLeadByRegToken($token);
+    
+        return $result ?: false;
+    }
+    
+    public function getNonAnchorLeadByPan($pan)
+    {
+        $result = NonAnchorLead::getNonAnchorLeadByPan($pan);
+    
+        return $result ?: false;
+    }
+
+    public function saveNonAnchorLead($data)
+    {
+        $result = NonAnchorLead::saveLead($data);
+    
+        return $result ?: false;
+    }
+
+    public function updateNonAnchorLead($whereCond, $attributes = []) {
+        $result = NonAnchorLead::updateNonAnchorLeadData($whereCond, $attributes);
+        return $result ?: false;
+    }
+
+    public function getNonAnchorLeadById($id)
+    {
+        $result = NonAnchorLead::getNonAnchorLeadById((int) $id);
+        return $result ?: false;
+    }
+
+    public function getAllNonAnchorLeads()
+    {
+        $result = NonAnchorLead::getAllNonAnchorLeads();
+        return $result ?: false;
+    }
+
+    public function getBackendUserByEmail($email)
+    {
+        $result = UserModel::getBackendUserByEmail($email);
+        return $result ?: false;
     }
 }
 
