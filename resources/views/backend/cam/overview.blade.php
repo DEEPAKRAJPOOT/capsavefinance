@@ -601,7 +601,7 @@
                                 <div class="col-md-2 mt-1">
                                     <label for="txtPassword"><b>Renewal Reminder Days</b></label>
                                     <div class="relative">
-                                    <input type="text" name="renewal_reminder_days[]" class="form-control digits" value="" placeholder="Renewal Reminder Days" autocomplete="off"  min="1" max="365"/>
+                                    <input type="text" name="renewal_reminder_days[]" class="form-control digits" value="" placeholder="Renewal Reminder Days" autocomplete="off"  min="0" max="365"/>
                                     </div>
                                 </div>
                                 <div class="col-md-2 mt-1 INR">
@@ -853,18 +853,10 @@ $(document).ready(function () {
     // });
 
     $.validator.addMethod('checkRenewalDate', function (value, element, param) {
-        // return this.optional(element) || (element.files[0].size <= param)
-        // console.log(element.id.split('_'));
-        // console.log(value);
         let cur_date_val = $((element.id.split('_')[0]=='update'?'#update_':'#')+'maturity_date_'+element.id.split('_')[element.id.split('_').length-1]).val().split("/");
 
         let cur_date = new Date(+cur_date_val[2], cur_date_val[1] - 1, +cur_date_val[0]);
-        // console.log(cur_date.toISOString().slice(0, 10));
         cur_date.setDate(cur_date.getDate()-value+1);
-        // let days = Math.round( (cur_date-(new Date())) / (1000 * 60 * 60 * 24))>0?Math.round( (cur_date-(new Date())) / (1000 * 60 * 60 * 24)):0;
-        // console.log(days);
-        // console.log(cur_date.toISOString().slice(0, 10));
-        // console.log(cur_date.toISOString().slice(0, 10)>=(new Date().toISOString().slice(0, 10)));
         
         if(cur_date.toISOString().slice(0, 10)>=(new Date().toISOString().slice(0, 10)))
             return true;
@@ -1323,7 +1315,6 @@ function resetIndexes() {
   });
 }
 function makeRequiredFields(counters, reqType){
-    console.log(reqType);
     $('#camForm').validate({ignore: ".desexception_received_from"});
     $('#security-doc-block select.doc_type').each(function () {
         $(this).rules("add",
@@ -1404,7 +1395,6 @@ function makeRequiredFields(counters, reqType){
             });
     });
     $('#security-doc-block input.renewal_reminder_days').each(function () {
-        console.log($(this).attr('id'));
         $(this).rules("add",
             {
                 required: true,
