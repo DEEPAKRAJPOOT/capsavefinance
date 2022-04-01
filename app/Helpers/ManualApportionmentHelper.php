@@ -754,6 +754,38 @@ class ManualApportionmentHelper{
         }
         // Update Invoice Disbursed Accrual Detail
         InvoiceDisbursedDetail::updateDailyInterestAccruedDetails();
+
+        $cDate = Carbon\Carbon::parse($curdate)->format('Y-m-d');
+        $transList = Transactions::whereNull('parent_trans_id')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+        ->whereDate('created_at',$cDate)
+        ->where('entry_type','0')
+        ->where('is_invoice_generated','0')
+        ->get();
+        
+        $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+        $billData = [];
+        foreach($transList as $trans){
+            $billData[$trans->user_id][$trans->trans_type][$trans->trans_id] = $trans->trans_id;
+        }
+
+        foreach($billData as $userId => $transTypes){
+            foreach($transTypes as $transType => $trans){
+                $transIds = array_keys($trans);
+                if(!empty($transIds)){
+                    $billType = null;
+                    if($transType == config('lms.TRANS_TYPE.INTEREST')){
+                        $billType = 'I';
+                    }elseif($transType == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                        $billType = 'C';
+                    }
+                    if($billType){
+                        $controller->generateCapsaveInvoice($transIds, $userId, $billType);
+                    }
+                }
+            }
+        }
+        
         /*foreach($transRunningTrans as $invId){
             $invDisbDetail = InvoiceDisbursed::find($invId);
             $offerDetails = $invDisbDetail->invoice->program_offer;
