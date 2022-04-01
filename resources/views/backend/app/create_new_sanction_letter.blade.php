@@ -67,7 +67,13 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <span><b>Kind Attention :</b> {{ $supplyChaindata['ConcernedPersonName'] }} <input type="text" style="width:250px; height:30px;" name="operational_person" id="operational_person" value="{{ $supplyChainFormData->operational_person??'' }}"></span>
+                                            <span><b>Kind Attention :</b>
+                                            @if($contact_person)
+                                                {{ $contact_person }}   
+                                            @else
+                                                <input type="text" style="width:250px; height:30px;" name="operational_person" id="operational_person" value="{{ $supplyChainFormData->operational_person??'' }}">  
+                                            @endif
+                                            </span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -214,9 +220,7 @@
                                             <table width="100%" border="1">
                                                 <tr>
                                                     <td width="30%" valign="top"><b>Facility</b></td>
-                                                    <td>Working Capital Demand Loan Facility (referred to as “Facility
-                                                        1”
-                                                        henceforth)</td>
+                                                    <td>Working Capital Demand Loan Facility (referred to as “Facility”henceforth)</td>
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Sanction Amount</b></td>
@@ -241,34 +245,27 @@
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Tenor for each tranche</b></td>
-                                                    <td>Upto {{$offerD->tenor}} days from date of disbursement of each tranche
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td valign="top"><b>Grace Period</b></td>
-                                                    <td>{{($offerD->grace_period)? $offerD->grace_period.' days':'NIL'}} (in case grace period is nil in offer – not to capture in
-                                                        final
-                                                        SL)
+                                                    <td>
+                                                        Upto {{($offerD->tenor + $offerD->grace_period)}} days (including grace period of {{($offerD->grace_period)? $offerD->grace_period.' days':'NIL'}}) from date of disbursement of each tranche
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Old Invoice</b></td>
                                                     <td>Borrower can submit invoices not older <input type="text" value="{{ $arrayOfferData[$offerD->prgm_offer_id ]->old_invoice??'than' }}" name="offerData[{{ $offerD->prgm_offer_id }}][old_invoice]" id="old_invoice" style=" min-height:30px;padding:0 5px; margin-top:5px;"> {{$offerD->tenor_old_invoice}}
-                                                        days
-                                                        (deviation upto <input type="text" value="{{ $arrayOfferData[$offerD->prgm_offer_id ]->deviation_first_disbursement??'90' }}" name="offerData[{{ $offerD->prgm_offer_id }}][deviation_first_disbursement]" id="deviation_first_disbursement" style=" min-height:30px;padding:0 5px; margin-top:5px;">
-                                                        days for first disbursement)
+                                                        days. Door to door tenor shall not exceed <input type="text" value="{{ $arrayOfferData[$offerD->prgm_offer_id ]->deviation_first_disbursement??($offerD->tenor + $offerD->grace_period + $offerD->tenor_old_invoice) }}" name="offerData[{{ $offerD->prgm_offer_id }}][deviation_first_disbursement]" id="deviation_first_disbursement" style=" min-height:30px;padding:0 5px; margin-top:5px;"> days 
+                                                        from date of invoice.
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Margin</b></td>
                                                     <td>
-                                                        {{($offerD->margin	)? $offerD->margin:'NIL'}}% on invoice
+                                                        {{($offerD->margin	)? $offerD->margin:'NIL'}}% on
                                                         <select style="min-height:30px; padding:0 5px; min-width:180px;" name="offerData[{{ $offerD->prgm_offer_id }}][margin]" id="margin">
                                                             <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->margin) && $arrayOfferData[$offerD->prgm_offer_id ]->margin == 'Purchase Order'?'selected':'' }}>Purchase Order</option>
                                                             <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->margin) && $arrayOfferData[$offerD->prgm_offer_id ]->margin == 'Invoice'?'selected':'' }}>Invoice</option>
                                                             <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->margin) && $arrayOfferData[$offerD->prgm_offer_id ]->margin == 'Proforma Invoice'?'selected':'' }}>Proforma Invoice</option>
                                                         </select>
-                                                        (in case margin is nil in offer – not to capture in final SL)
+                                                        value. (in case margin is nil in offer – not to capture in final SL)
                                                     </td>
                                                 </tr>
                                                 <tr>

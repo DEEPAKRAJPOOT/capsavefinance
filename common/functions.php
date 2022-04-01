@@ -941,40 +941,44 @@ function logFile($data, $w_mode = 'D', $w_filename = '', $w_folder = '', $txn_id
 }
 
 // Create a function for converting the amount in words
-function numberTowords(float $amount)
+function numberTowords($num = false)
 {
-	$amount_after_decimal = round($amount - ($num = floor($amount)), 2) * 100;
-	// Check if there is any number after decimal
-	$amt_hundred = null;
-	$count_length = strlen($num);
-	$x = 0;
-	$string = array();
-	$change_words = array(0 => '', 1 => 'One', 2 => 'Two',
-	  3 => 'Three', 4 => 'Four', 5 => 'Five', 6 => 'Six',
-	  7 => 'Seven', 8 => 'Eight', 9 => 'Nine',
-	  10 => 'Ten', 11 => 'Eleven', 12 => 'Twelve',
-	  13 => 'Thirteen', 14 => 'Fourteen', 15 => 'Fifteen',
-	  16 => 'Sixteen', 17 => 'Seventeen', 18 => 'Eighteen',
-	  19 => 'Nineteen', 20 => 'Twenty', 30 => 'Thirty',
-	  40 => 'Forty', 50 => 'Fifty', 60 => 'Sixty',
-	  70 => 'Seventy', 80 => 'Eighty', 90 => 'Ninety');
-   $here_digits = array('', 'Hundred','Thousand','Lakh', 'Crore','Million','Billion');
-   while( $x < $count_length ) {
-		$get_divider = ($x == 2) ? 10 : 100;
-		$amount = floor($num % $get_divider);
-		$num = floor($num / $get_divider);
-		$x += $get_divider == 10 ? 1 : 2;
-		if ($amount) {
-		  $add_plural = (($counter = count($string)) && $amount > 9) ? 's' : null;
-		  $amt_hundred = ($counter == 1 && $string[0]) ? ' and ' : null;
-		  $string [] = ($amount < 21) ? $change_words[$amount].' '. $here_digits[$counter]. $add_plural.' 
-		  '.$amt_hundred:$change_words[floor($amount / 10) * 10].' '.$change_words[$amount % 10]. ' 
-		  '.$here_digits[$counter].$add_plural.' '.$amt_hundred;
-		  }else $string[] = null;
-		}
-	$implode_to_Rupees = implode('', array_reverse($string));
-	$get_paise = ($amount_after_decimal > 0) ? "And " . ($change_words[$amount_after_decimal / 10] . " 
-	" . $change_words[$amount_after_decimal % 10]) . ' Paise' : '';
-	return ($implode_to_Rupees ? $implode_to_Rupees . ' ' : '') . $get_paise;
+    $num = str_replace(array(',', ' '), '' , trim($num));
+    if(! $num) {
+        return false;
+    }
+    $num = (int) $num;
+    $words = array();
+    $list1 = array('', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven',
+        'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
+    );
+    $list2 = array('', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety', 'hundred');
+    $list3 = array('', 'thousand', 'million', 'billion', 'trillion');
+    $num_length = strlen($num);
+    $levels = (int) (($num_length + 2) / 3);
+    $max_length = $levels * 3;
+    $num = substr('00' . $num, -$max_length);
+    $num_levels = str_split($num, 3);
+    for ($i = 0; $i < count($num_levels); $i++) {
+        $levels--;
+        $hundreds = (int) ($num_levels[$i] / 100);
+        $hundreds = ($hundreds ? ' ' . $list1[$hundreds] . ' hundred' . ' ' : '');
+        $tens = (int) ($num_levels[$i] % 100);
+        $singles = '';
+        if ( $tens < 20 ) {
+            $tens = ($tens ? ' ' . $list1[$tens] . ' ' : '' );
+        } else {
+            $tens = (int)($tens / 10);
+            $tens = ' ' . $list2[$tens] . ' ';
+            $singles = (int) ($num_levels[$i] % 10);
+            $singles = ' ' . $list1[$singles] . ' ';
+        }
+        $words[] = $hundreds . $tens . $singles . ( ( $levels && ( int ) ( $num_levels[$i] ) ) ? ' ' . $list3[$levels] . ' ' : '' );
+    } //end for loop
+    $commas = count($words);
+    if ($commas > 1) {
+        $commas = $commas - 1;
+    }
+    return implode(' ', $words);
 }
 ?>
