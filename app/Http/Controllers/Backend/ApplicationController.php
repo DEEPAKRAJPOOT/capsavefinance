@@ -872,6 +872,10 @@ class ApplicationController extends Controller
 				$roleDropDown = $this->userRepo->getAllRole()->toArray();
 			}
 			$appData = $this->appRepo->getAppData($app_id);
+			$isAppPullBack = false;
+			if ($request->has('app_pull_back') && $request->app_pull_back) {
+				$isAppPullBack = true;
+			}
                         
 			return view('backend.app.next_stage_confirmBox')
 				->with('app_id', $app_id)
@@ -882,12 +886,14 @@ class ApplicationController extends Controller
 				->with('curr_role_id', $curr_role_id)
 				->with('next_role_id', $next_role_id)
 				->with('biz_id', $appData->biz_id)
-                                ->with('approvers',$approvers)
-                                ->with('nextStage', $nextStage);
+				->with('approvers',$approvers)
+				->with('nextStage', $nextStage)
+				->with('isAppPullBack', $isAppPullBack);
 		} catch (Exception $ex) {
 			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 		}
 	}
+
 	/**
 	 * Save application note
 	 * 
@@ -937,6 +943,22 @@ class ApplicationController extends Controller
                                             return redirect()->back();
                                         }                                        
 				} else if ($currStage->stage_code == 'approver') {
+
+					if ($request->has('is_app_pull_back') && $request->is_app_pull_back) {
+						$selRoleId = config('common.user_role.REVIEWER');
+						$selUserId = Auth::user()->user_id;
+						$selRoleStage = Helpers::getCurrentWfStagebyRole($selRoleId, $user_journey = 2, $wf_start_order_no = $currStage->order_no, $orderBy='DESC');
+						if (Helpers::isAppApprByAuthority($app_id)) {
+							Session::flash('error_code', 'validate_offer_approved');
+							return redirect()->back();
+						}
+						Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
+
+						// Session::flash('message', 'Application successfully pulled back to reviewer');
+						Session::flash('is_accept', 1);
+						return redirect()->back();
+					}
+
 					$whereCondition = ['app_id' => $app_id, 'status' => null];
 					$offerData = $this->appRepo->getOfferData($whereCondition);
 					if (!$offerData) {
@@ -1178,7 +1200,6 @@ class ApplicationController extends Controller
 						return redirect()->back();                                            
 					}                    
 				} 
-				
 				Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);
                                 if ($movedInLms) {
                                     //Helpers::updateCurrentWfStage('disbursed_or_in_lms', $app_id, $wf_status=1);

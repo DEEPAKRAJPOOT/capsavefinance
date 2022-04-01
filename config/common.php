@@ -87,6 +87,7 @@ return [
     'user_role' => [
         'SALES'=>4,
         'CPA'=>5,
+        'REVIEWER'=>7,
         'APPROVER'=>8,
         'OPPS_CHECKER'=>10,
         'ANCHOR'=>11,
