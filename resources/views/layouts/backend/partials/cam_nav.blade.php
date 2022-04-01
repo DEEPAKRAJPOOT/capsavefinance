@@ -61,7 +61,11 @@
             <a href="{{ route('limit_assessment', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]) }}" class="{{$route_name == 'limit_assessment' ? 'active' : '' }}">Limit Assessment</a>
         </li>
       @endcan
-    
+      @can('security_deposit')
+      <li>
+        <a href="{{route('security_deposit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{ $route_name == 'security_deposit' ? 'active' : ''}}">Security Deposit</a>
+    </li>
+    @endcan
        <!--  <li>
             <a href="#" class="{{$route_name == 'cam_gst' ? 'active' : '' }}">Limit Management</a>
         </li> -->

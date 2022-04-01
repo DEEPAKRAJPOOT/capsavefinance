@@ -596,6 +596,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'cam_overview',
                     'uses' => 'Backend\CamController@index'
                 ]);
+                Route::get('security-deposit', [
+                    'as' => 'security_deposit',
+                    'uses' => 'Backend\CamController@index'
+                ]);
                 Route::get('cibil', [
                     'as' => 'cam_cibil',
                     'uses' => 'Backend\CamController@showCibilForm'

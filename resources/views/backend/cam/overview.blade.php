@@ -5,7 +5,10 @@
 <div class="content-wrapper">
     @include('layouts.backend.partials.cam_nav')
     <div class="inner-container">
-
+        @php
+            $route_name = \Request::route()->getName();
+            // echo $route_name;
+        @endphp
         <div class="card mt-3">
             <div class="card-body pt-3 pb-3">
                 <ul class="float-left mb-0 pl-0">
@@ -43,7 +46,7 @@
                 <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
                 <input type="hidden" name="biz_id" value="{{isset($arrRequest['biz_id']) ? $arrRequest['biz_id'] : ''}}" />             
                 <input type="hidden" name="cam_report_id" value="{{isset($arrCamData->cam_report_id) ? $arrCamData->cam_report_id : ''}}" />    
-
+                @if($route_name!="security_deposit")
                 <table class="table table-bordered overview-table" cellpadding="0" cellspacing="0" border="1">
                     <tbody>
                         <tr>
@@ -322,7 +325,7 @@
                         <textarea class="form-control" id="profile_of_company" name="t_o_f_profile_comp" rows="3" spellcheck="false" >{{isset($arrCamData->t_o_f_profile_comp) ? $arrCamData->t_o_f_profile_comp : ''}}</textarea>
                     <!-- </div> -->
                 </div>
-
+@endif
                 <!-- <div class="data mt-4">
                     <h2 class="sub-title bg" style="margin-bottom: 0px; border: 1px solid #d1d1d1;">Risk Comments</h2>
                   
@@ -343,6 +346,7 @@
                    
 
                 </div> -->
+                @if($route_name!="security_deposit")
                  <div class="data mt-4">
                     <h2 class="sub-title bg" style="border: 1px solid #d1d1d1;">Contigent Liabilities & Auditors Observations </h2>
                     <!-- <div class="pl-4 pr-4 pb-4 pt-2"> -->
@@ -361,6 +365,7 @@
                     <!-- </div> -->
 
                 </div>
+                @endif
                 <div class="data mt-4">
                     <h2 class="sub-title bg">Security Document
                       </h2>                    
@@ -375,9 +380,9 @@
                                     $key =  $key+1;
                                   
                               @endphp
-                            <div class="row  toRemoveDiv1 {{($loop->first)? '': 'mt10'}}" style="background-color: #e9e7e7;">
+                            <div class="row p-2 mt-1 toRemoveDiv1 {{($loop->first)? '': 'mt10'}}" style="background-color: #e9e7e7;">
                                 <input type="hidden" name="app_security_doc_id[]" class="form-control app_security_doc_id" value="{{$arr['app_security_doc_id'] ?? ''}}" id="app_security_doc_id_{{ $key }}"/>
-                                <div class="col-md-2 mt-4">
+                                <div class="col-md-2 mt-1">
                                     <label for="txtPassword"><b>Pre/Post</b></label>
                                     <div class="relative">
                                         <select class="form-control doc_type" name="doc_type[]" id="update_doc_type_{{ $key }}">
@@ -387,7 +392,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-2 mt-4">
+                                <div class="col-md-2 mt-1">
                                     <label for="txtPassword"><b>Type of Document</b></label>
                                     <select class="form-control security_doc_id" name="security_doc_id[]" id="update_security_doc_id_{{ $key }}">
                                        <option value="">Select</option>
@@ -396,25 +401,28 @@
                                        @endforeach
                                    </select>
                                </div>
-                               <div class="col-md-2 mt-4">
+                               <div class="col-md-2 mt-1">
                                        <label for="txtPassword"><b>Description</b></label>
                                        <div class="relative">
                                            <input type="text" name="description[]" class="form-control description" value="{{$arr['description'] ?? ''}}" placeholder="Description" autocomplete="off" id="update_description_{{ $key }}"/>
                                        </div>
-                               </div>        
-                               <div class="col-md-2 mt-4">
+                               </div>   
+                               @if($route_name=="security_deposit")    
+                               <div class="col-md-2 mt-1">
                                     <label for="txtPassword"><b>Document Number</b></label>
                                     <div class="relative">
                                        <input type="text" name="document_number[]" class="form-control document_number" value="{{$arr['document_number'] ?? ''}}" placeholder="Document Number" autocomplete="off" id="update_document_number_{{ $key }}"/>
                                     </div>
                                </div>
-                               <div class="col-md-2 mt-4">
+                               @endif
+                               <div class="col-md-2 mt-1">
                                     <label for="txtPassword"><b>Due Date</b></label>
                                     <div class="relative">
                                             <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="{{\Carbon\Carbon::createFromFormat('Y-m-d', $arr['due_date'])->format('d/m/Y') ?? ''}}" placeholder="Due Date" autocomplete="off" id="update_due_date_{{ $key }}" readonly="readonly"/>
                                     </div>
                                </div>
-                               <div class="col-md-1 mt-4">
+                               @if($route_name=="security_deposit")  
+                               <div class="col-md-1 mt-1">
                                    <label for="txtPassword"><b>Completed</b></label>
                                    <div class="relative">
                                        <select class="form-control completed" name="completed[]" id="update_completed_{{ $key }}">
@@ -424,7 +432,7 @@
                                        </select>
                                    </div>
                               </div>
-                              <div class="col-md-1 mt-4">
+                              <div class="col-md-1 mt-1">
                                        <label for="txtPassword"><b>Exception Received</b></label>
                                        <div class="relative">
                                            <select class="form-control exception_received" name="exception_received[]" onchange="displayExceptionFields(this.value,{{ $key }});" id="update_exception_received_{{ $key }}" data-previous="{{ $key }}">
@@ -434,51 +442,52 @@
                                            </select>
                                        </div>
                                </div>
-                               <div class="col-md-2 mt-4 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="display: none;"': '' !!}>
+                             
+                               <div class="col-md-2 mt-1 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no' || $arr['exception_received'] == null) ? 'style="display: none;"': '' !!}>
                                        <label for="txtPassword"><b>Exception Received From</b></label>
                                        <div class="relative">
                                        <input type="text" name="exception_received_from[]" class="form-control exception_received_from {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'required': '' !!}" value="{{$arr['exception_received_from'] ?? ''}}" placeholder="Exception Received From" autocomplete="off" id="update_exception_received_from_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="visibility: none;height: 0;"': '' !!}/>
                                        </div>
                                </div>
-                               <div class="col-md-2 mt-4 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="display: none;"': '' !!}>
+                               <div class="col-md-2 mt-1 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no' || $arr['exception_received'] == null) ? 'style="display: none;"': '' !!}>
                                        <label for="txtPassword"><b>Exception Received Date</b></label>
                                        <div class="relative">
                                        <input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r exception_received_date {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'required': '' !!}" value ="{{(isset($arr['exception_received_date']) && $arr['exception_received_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['exception_received_date'])->format('d/m/Y'): '' }}" placeholder="Exception Received Date" autocomplete="off" id="update_exception_received_date_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="visibility: hidden;height: 0;"': '' !!} readonly="readonly"/>
                                        </div>
                                </div>
-                               <div class="col-md-2 mt-4 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="display: none;"': '' !!}>
+                               <div class="col-md-2 mt-1 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no' || $arr['exception_received'] == null) ? 'style="display: none;"': '' !!}>
                                    <label for="txtPassword"><b>Exception Remark</b></label>
                                    <div class="relative">
                                    <input type="text" name="exception_remark[]" class="form-control exception_remark {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'required': '' !!}" value="{{$arr['exception_remark'] ?? ''}}" placeholder="Exception Remark" autocomplete="off" id="update_exception_remark_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="visibility: hidden;height: 0;"': '' !!}/>
                                    </div>
                                </div>
-                               <div class="col-md-2 mt-4">
+                               <div class="col-md-2 mt-1">
                                    <label for="txtPassword"><b>Maturity Date</b></label>
                                    <div class="relative">
-                                   <input type="text" name="maturity_date[]" class="form-control sc-doc-date maturity_date" value="{{\Carbon\Carbon::createFromFormat('Y-m-d', $arr['maturity_date'])->format('d/m/Y') ?? ''}}" placeholder="Maturity Date" autocomplete="off" id="update_maturity_date_{{ $key }}" readonly="readonly"/>
+                                   <input type="text" name="maturity_date[]" class="form-control sc-doc-date maturity_date" value="{{ $arr['maturity_date']!=null?\Carbon\Carbon::createFromFormat('Y-m-d', $arr['maturity_date'])->format('d/m/Y'):'' ?? ''}}" placeholder="Maturity Date" autocomplete="off" id="update_maturity_date_{{ $key }}" readonly="readonly"/>
                                    </div>
                                </div>
-                               <div class="col-md-2 mt-4">
+                               <div class="col-md-2 mt-1">
                                    <label for="txtPassword"><b>Renewal Reminder Days</b></label>
                                    <div class="relative">
                                    <input type="text" name="renewal_reminder_days[]" class="form-control digits renewal_reminder_days" value="{{$arr['renewal_reminder_days'] ?? ''}}" placeholder="Renewal Reminder Days" autocomplete="off" id="update_renewal_reminder_days_{{ $key }}"/>
                                    </div>
                                </div>
-                               <div class="col-md-2 mt-4 INR">
+                               <div class="col-md-2 mt-1 INR">
                                    <label for="txtPassword"><b>Amount Expected</b></label>
                                    <div class="relative">
                                    <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
                                    <input type="text" name="amount_expected[]" class="form-control number float_format amount_expected" value="{{$arr['amount_expected'] ?? ''}}" placeholder="Amount Expected" autocomplete="off" id="update_amount_expected_{{ $key }}"/>
                                    </div>
                                </div>
-                               <div class="col-md-2 mt-4 INR">
+                               <div class="col-md-2 mt-1 INR">
                                    <label for="txtPassword"><b>Document Amount</b></label>
                                    <div class="relative">
                                    <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
                                    <input type="text" name="document_amount[]" class="form-control number float_format document_amount" value="{{$arr['document_amount'] ?? ''}}" placeholder="Document Amount" autocomplete="off" id="update_document_amount_{{ $key }}"/>
                                    </div>
                                </div>
-                               <div class="col-md-2 mt-4">
+                               <div class="col-md-2 mt-1">
                                    <label for="txtPassword"><b>Doc Upload</b>
                                     @if ($arr['is_upload'] && $arr['is_upload'] == 1)
                                     <a href="{{ route('download_storage_file', ['file_id' => $arr['file_id'] ]) }}" title="Download Document"><i class="fa fa-lg fa-download ml-3" aria-hidden="true"></i></a>  
@@ -490,13 +499,17 @@
                                            <input type="file" class="custom-file-input getFileName doc_file_sec {!!(isset($arr['is_upload']) && $arr['is_upload'] == 0) ? 'required': '' !!}" name="doc_file_sec[]" id="update_doc_file_{{ $key }}">
                                            <label class="custom-file-label" for="customFile">Choose file</label>
                                        </div>
-                                       @if($loop->first)
-                                        <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
-                                         @else
-                                         <i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;"></i>
-                                         @endif
+                                      
                                     </div>
                                    </div>
+                               </div>
+                               @endif
+                               <div class="col-md-2 mt-1 center">
+                                @if($loop->first)
+                                <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;margin-top: 15%;"></i>
+                                 @else
+                                 <i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;margin-top: 15%;"></i>
+                                 @endif
                                </div>
                             </div>
                             @endforeach
@@ -504,7 +517,7 @@
                                 
                             <div class="row toRemoveDiv1" style="background-color: #e9e7e7;">
                                 <input type="hidden" name="app_security_doc_id[]" class="form-control" value="" placeholder="Group Company" />
-                                <div class="col-md-2 mt-4">
+                                <div class="col-md-2 mt-1">
                                     <label for="txtPassword"><b>Pre/Post</b></label>
                                     <div class="relative">
                                         <select class="form-control" name="doc_type[]" id="doc_type_1">
@@ -514,31 +527,34 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-2 mt-4">
+                                <div class="col-md-2 mt-1">
                                      <label for="txtPassword"><b>Type of Document</b></label>
                                      <select class="form-control" name="security_doc_id[]" id="security_doc_id_1">
                                         <option value="">Select</option>
                                     </select>
                                 </div>
-                                <div class="col-md-2 mt-4">
+                                <div class="col-md-2 mt-1">
                                         <label for="txtPassword"><b>Description</b></label>
                                         <div class="relative">
                                             <input type="text" name="description[]" class="form-control" value="" placeholder="Description" autocomplete="off"/>
                                         </div>
-                                </div>        
-                                <div class="col-md-2 mt-4">
+                                </div>      
+                                @if($route_name=="security_deposit")  
+                                <div class="col-md-2 mt-1">
                                      <label for="txtPassword"><b>Document Number</b></label>
                                      <div class="relative">
                                         <input type="text" name="document_number[]" class="form-control" value="" placeholder="Document Number" autocomplete="off" alphanumeric="true" checkDocumentNumber="true" data-msg-alphanumeric="Please enter letters and numbers only."/>
                                      </div>
                                 </div>
-                                <div class="col-md-2 mt-4">
+                                @endif
+                                <div class="col-md-2 mt-1">
                                      <label for="txtPassword"><b>Due Date</b></label>
                                      <div class="relative">
                                              <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date" value="" placeholder="Due Date" autocomplete="off" readonly="readonly"/>
                                      </div>
                                 </div>
-                                <div class="col-md-1 mt-4">
+                                @if($route_name=="security_deposit")
+                                <div class="col-md-1 mt-1">
                                     <label for="txtPassword"><b>Completed</b></label>
                                     <div class="relative">
                                         <select class="form-control" name="completed[]">
@@ -548,7 +564,7 @@
                                         </select>
                                     </div>
                                </div>
-                               <div class="col-md-1 mt-4">
+                               <div class="col-md-1 mt-1">
                                         <label for="txtPassword"><b>Exception Received</b></label>
                                         <div class="relative">
                                             <select class="form-control" name="exception_received[]" onchange="displayExceptionFields(this.value,1);" data-previous="1">
@@ -558,51 +574,51 @@
                                             </select>
                                         </div>
                                 </div>
-                                <div class="col-md-2 mt-4 exceptionFields_1" style="display: none;">
+                                <div class="col-md-2 mt-1 exceptionFields_1" style="display: none;">
                                         <label for="txtPassword"><b>Exception Received From</b></label>
                                         <div class="relative">
                                         <input type="text" name="exception_received_from[]" class="form-control" value="" placeholder="Exception Received From" autocomplete="off"/>
                                         </div>
                                 </div>
-                                <div class="col-md-2 mt-4 exceptionFields_1" style="display: none;">
+                                <div class="col-md-2 mt-1 exceptionFields_1" style="display: none;">
                                         <label for="txtPassword"><b>Exception Received Date</b></label>
                                         <div class="relative">
                                         <input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r" value="" placeholder="Exception Received Date" autocomplete="off" readonly="readonly"/>
                                         </div>
                                 </div>
-                                <div class="col-md-2 mt-4 exceptionFields_1" style="display: none;">
+                                <div class="col-md-2 mt-1 exceptionFields_1" style="display: none;">
                                     <label for="txtPassword"><b>Exception Remark</b></label>
                                     <div class="relative">
                                     <input type="text" name="exception_remark[]" class="form-control" value="" placeholder="Exception Remark" autocomplete="off"/>
                                     </div>
                                 </div>
-                                <div class="col-md-2 mt-4">
+                                <div class="col-md-2 mt-1">
                                     <label for="txtPassword"><b>Maturity Date</b></label>
                                     <div class="relative">
                                     <input type="text" name="maturity_date[]" class="form-control sc-doc-date" value="" placeholder="Maturity Date" autocomplete="off" readonly="readonly"/>
                                     </div>
                                 </div>
-                                <div class="col-md-2 mt-4">
+                                <div class="col-md-2 mt-1">
                                     <label for="txtPassword"><b>Renewal Reminder Days</b></label>
                                     <div class="relative">
                                     <input type="text" name="renewal_reminder_days[]" class="form-control digits" value="" placeholder="Renewal Reminder Days" autocomplete="off"  min="1" max="365"/>
                                     </div>
                                 </div>
-                                <div class="col-md-2 mt-4 INR">
+                                <div class="col-md-2 mt-1 INR">
                                     <label for="txtPassword"><b>Amount Expected</b></label>
                                     <div class="relative">
                                     <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     <input type="text" name="amount_expected[]" class="form-control number float_format" value="" placeholder="Amount Expected" autocomplete="off"/>
                                     </div>
                                 </div>
-                                <div class="col-md-2 mt-4 INR">
+                                <div class="col-md-2 mt-1 INR">
                                     <label for="txtPassword"><b>Document Amount</b></label>
                                     <div class="relative">
                                     <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
                                     <input type="text" name="document_amount[]" class="form-control number float_format" value="" placeholder="Document Amount" autocomplete="off"/>
                                     </div>
                                 </div>
-                                <div class="col-md-2 mt-4">
+                                <div class="col-md-2 mt-1">
                                     <label for="txtPassword"><b>Doc Upload</b></label>
                                     <div class="relative">
                                         <div class="d-flex">
@@ -611,15 +627,19 @@
                                             filesize = "200000000" data-msg-extension="Only support jpg,png,pdf,doc,docx type format." data-msg-filesize="maximum size for upload 20 MB.">
                                             <label class="custom-file-label" for="customFile">Choose file</label>
                                         </div>
-                                        <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
+                                        
                                         </div>
                                     </div>
+                                </div>
+                                @endif
+                                <div class="col-md-2 mt-1 center">
+                                    <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;margin-top: 15%;"></i>
                                 </div>
                             </div>
                         @endif
                     </div>
-
-                    <div class="col-md-12 mt-4 mb-2" style="padding: 5px;">
+                    <input type="hidden" name="{{$route_name}}" value="1">
+                    <div class="col-md-12 mt-1 mb-2" style="padding: 5px;">
                         
                     </div>    
                 </div> 
@@ -795,7 +815,7 @@
                                              +symbol_rs+ 
                                              '<div class="d-flex">' 
                                               +'<input type='+proposed_exposure_html+' name="proposed_exposure[]" class="form-control  calTotalExposure float_format" value="'+arr.proposed_exposure+'" placeholder="Proposed Exposure (In Mn)" required autocomplete="off">'
-                                             +'<i class="fa fa-2x fa-times-circle remove-ptpq-block ml-2" style="color: red;"></i></div>'+
+                                             +'<i class="fa fa-2x fa-times-circle remove-ptpq-block ml-2" style="color: red;margin-top: 15%;"></i></div>'+
                                         '</div>'+
                                     '</div>';
                     $('#ptpq-block').append(ptpq_block);
@@ -823,6 +843,7 @@ if(typeof num.split('.')[1] !== 'undefined' && num.split('.')[1].length > 1){
 return false;
 }
 });
+
 $(document).ready(function () {
     $.validator.addMethod('filesize', function (value, element, param) {
         return this.optional(element) || (element.files[0].size <= param)
@@ -830,6 +851,27 @@ $(document).ready(function () {
     // $.validator.addMethod("notOnlyZero", function (value, element, param) {
     //     return this.optional(element) || parseInt(value) == 0;
     // });
+
+    $.validator.addMethod('checkRenewalDate', function (value, element, param) {
+        // return this.optional(element) || (element.files[0].size <= param)
+        // console.log(element.id.split('_'));
+        // console.log(value);
+        let cur_date_val = $((element.id.split('_')[0]=='update'?'#update_':'#')+'maturity_date_'+element.id.split('_')[element.id.split('_').length-1]).val().split("/");
+
+        let cur_date = new Date(+cur_date_val[2], cur_date_val[1] - 1, +cur_date_val[0]);
+        // console.log(cur_date.toISOString().slice(0, 10));
+        cur_date.setDate(cur_date.getDate()-value+1);
+        // let days = Math.round( (cur_date-(new Date())) / (1000 * 60 * 60 * 24))>0?Math.round( (cur_date-(new Date())) / (1000 * 60 * 60 * 24)):0;
+        // console.log(days);
+        // console.log(cur_date.toISOString().slice(0, 10));
+        // console.log(cur_date.toISOString().slice(0, 10)>=(new Date().toISOString().slice(0, 10)));
+        
+        if(cur_date.toISOString().slice(0, 10)>=(new Date().toISOString().slice(0, 10)))
+            return true;
+        else
+            return false;
+    }, 'Renewal Reminder Days must be lower');
+
     jQuery.validator.addMethod("alphanumeric", function(value, element) {
         if(value != ''){
           if(value == 0){
@@ -983,9 +1025,10 @@ $(document).on('submit', '#camForm', function(e) {
         $(this).rules("add",
             {
                 required: true,
-                min: 1,
+                min: 0,
                 max: 365,
                 digits:true,
+                checkRenewalDate : $(this).attr('id'),
                 messages: {
                     required: "This field is required.",
                 }
@@ -1040,8 +1083,8 @@ $(document).on('click', '.add-security-doc-block', function(){
     $('.toRemoveDiv1').each(function() {
         $(this).find('div').removeClass('exceptionFields_'+counter);
     });
-    let scdocc_block = '<div class="row  mt10 toRemoveDiv1" style="background-color: #e9e7e7;">'+
-        '<div class="col-md-2 mt-4">'+
+    let scdocc_block = '<div class="row p-2 mt-1 toRemoveDiv1" style="background-color: #e9e7e7;">'+
+        '<div class="col-md-2 mt-1">'+
         '<label for="txtPassword"><b>Pre/Post</b></label>'+
         '<div class="relative">'+
             '<select class="form-control doc_type" name="doc_type[]" id="doc_type_'+counter+'">'+
@@ -1051,31 +1094,34 @@ $(document).on('click', '.add-security-doc-block', function(){
             '</select>'+
        '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4">'+
+    '<div class="col-md-2 mt-1">'+
             '<label for="txtPassword"><b>Type of Document</b></label>'+
             '<select class="form-control security_doc_id" name="security_doc_id[]" id="security_doc_id_'+counter+'">'+
             '<option value="">Select</option>'+
             '</select>'+
     '</div>'+
-    '<div class="col-md-2 mt-4">'+
+    '<div class="col-md-2 mt-1">'+
             '<label for="txtPassword"><b>Description</b></label>'+
             '<div class="relative">'+
                 '<input type="text" name="description[]" class="form-control description" value="" placeholder="Description" autocomplete="off" id="description_'+counter+'"/>'+
             '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4">'+
+    @if($route_name=="security_deposit")
+    '<div class="col-md-2 mt-1">'+
             '<label for="txtPassword"><b>Document Number</b></label>'+
             '<div class="relative">'+
             '<input type="text" name="document_number[]" class="form-control document_number" value="" placeholder="Document Number" autocomplete="off" id="document_number_'+counter+'"/>'+
             '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4">'+
+    @endif
+    '<div class="col-md-2 mt-1">'+
             '<label for="txtPassword"><b>Due Date</b></label>'+
             '<div class="relative">'+
                     '<input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="" placeholder="Due Date" autocomplete="off" id="due_date_'+counter+'" readonly="readonly"/>'+
             '</div>'+
     '</div>'+
-    '<div class="col-md-1 mt-4">'+
+    @if($route_name=="security_deposit")
+    '<div class="col-md-1 mt-1">'+
         '<label for="txtPassword"><b>Completed</b></label>'+
         '<div class="relative">'+
             '<select class="form-control completed" name="completed[]" id="completed_'+counter+'">'+
@@ -1085,7 +1131,7 @@ $(document).on('click', '.add-security-doc-block', function(){
             '</select>'+
         '</div>'+
     '</div>'+
-    '<div class="col-md-1 mt-4">'+
+    '<div class="col-md-1 mt-1">'+
             '<label for="txtPassword"><b>Exception Received</b></label>'+
             '<div class="relative">'+
                 '<select class="form-control exception_received" name="exception_received[]" onchange="displayExceptionFields(this.value,'+counter+');" id="exception_received_'+counter+'" data-previous="'+counter+'">'+
@@ -1095,51 +1141,51 @@ $(document).on('click', '.add-security-doc-block', function(){
                 '</select>'+
             '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4 exceptionFields_'+counter+'" style="display: none;">'+
+    '<div class="col-md-2 mt-1 exceptionFields_'+counter+'" style="display: none;">'+
             '<label for="txtPassword"><b>Exception Received From</b></label>'+
             '<div class="relative">'+
             '<input type="text" name="exception_received_from[]" class="form-control exception_received_from required" value="" placeholder="Exception Received From" autocomplete="off" id="exception_received_from_'+counter+'" style="visibility: hidden;height: 0;"/>'+
             '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4 exceptionFields_'+counter+'" style="display: none;">'+
+    '<div class="col-md-2 mt-1 exceptionFields_'+counter+'" style="display: none;">'+
             '<label for="txtPassword"><b>Exception Received Date</b></label>'+
             '<div class="relative">'+
             '<input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r exception_received_date required" value="" placeholder="Exception Received Date" autocomplete="off" id="exception_received_date_'+counter+'" style="visibility: hidden;height: 0;" readonly="readonly"/>'+
             '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4 exceptionFields_'+counter+'" style="display: none;">'+
+    '<div class="col-md-2 mt-1 exceptionFields_'+counter+'" style="display: none;">'+
         '<label for="txtPassword"><b>Exception Remark</b></label>'+
         '<div class="relative">'+
         '<input type="text" name="exception_remark[]" class="form-control exception_remark required" value="" placeholder="Exception Remark" autocomplete="off" id="exception_remark_'+counter+'" style="visibility: hidden;height: 0;"/>'+
         '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4">'+
+    '<div class="col-md-2 mt-1">'+
         '<label for="txtPassword"><b>Maturity Date</b></label>'+
         '<div class="relative">'+
         '<input type="text" name="maturity_date[]" class="form-control sc-doc-date maturity_date" value="" placeholder="Maturity Date" autocomplete="off" id="maturity_date_'+counter+'" readonly="readonly"/>'+
         '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4">'+
+    '<div class="col-md-2 mt-1">'+
         '<label for="txtPassword"><b>Renewal Reminder Days</b></label>'+
         '<div class="relative">'+
         '<input type="text" name="renewal_reminder_days[]" class="form-control digits renewal_reminder_days" value="" placeholder="Renewal Reminder Days" autocomplete="off" id="renewal_reminder_days_'+counter+'"/>'+
         '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4 INR">'+
+    '<div class="col-md-2 mt-1 INR">'+
         '<label for="txtPassword"><b>Amount Expected</b></label>'+
         '<div class="relative">'+
         '<a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>'+
         '<input type="text" name="amount_expected[]" class="form-control number float_format amount_expected" value="" placeholder="Amount Expected" autocomplete="off" id="amount_expected_'+counter+'"/>'+
         '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4 INR">'+
+    '<div class="col-md-2 mt-1 INR">'+
        '<label for="txtPassword"><b>Document Amount</b></label>'+
         '<div class="relative">'+
         '<a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>'+
         '<input type="text" name="document_amount[]" class="form-control number float_format document_amount" value="" placeholder="Document Amount" autocomplete="off" id="document_amount_'+counter+'"/>'+
         '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-4">'+
+    '<div class="col-md-2 mt-1">'+
         '<label for="txtPassword"><b>Doc Upload</b></label>'+
         '<div class="relative">'+
             '<div class="custom-file upload-btn-cls mb-3">'+
@@ -1147,10 +1193,14 @@ $(document).on('click', '.add-security-doc-block', function(){
                 '<label class="custom-file-label" for="customFile">Choose file</label>'+
             '</div>'+
         '</div>'+
-        '<i class="fa fa-2x fa-times-circle remove-security-doc-block" style="color: red;margin-left: 267px;position: absolute;margin-top: -50px;"></i>'+
+    '</div>'+
+    @endif
+    '<div class="col-md-2 mt-1">'+
+        '<i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;margin-top: 15%;"></i>'+
     '</div>'+
         '</div>';
     $('#security-doc-block').append(scdocc_block);
+    
     makeRequiredFields(counter,'add');
     getAllSecurityDocumentName(counter);
     counter++;
@@ -1273,6 +1323,7 @@ function resetIndexes() {
   });
 }
 function makeRequiredFields(counters, reqType){
+    console.log(reqType);
     $('#camForm').validate({ignore: ".desexception_received_from"});
     $('#security-doc-block select.doc_type').each(function () {
         $(this).rules("add",
@@ -1353,12 +1404,15 @@ function makeRequiredFields(counters, reqType){
             });
     });
     $('#security-doc-block input.renewal_reminder_days').each(function () {
+        console.log($(this).attr('id'));
         $(this).rules("add",
             {
                 required: true,
-                min: 1,
+                min: 0,
                 max: 365,
                 digits:true,
+                // checkRenewalDate : reqType=='update'?'#update_maturity_date_1':'#maturity_date_'+counter,
+                checkRenewalDate : $(this).attr('id'),
                 messages: {
                     required: "This field is required.",
                 }
