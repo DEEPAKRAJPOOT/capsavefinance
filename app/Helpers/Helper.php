@@ -1091,10 +1091,9 @@ class Helper extends PaypalHelper
                               $apprUsers[] = $appr->approver_user_id;
                           }
                       }
+                      $isViewOnly = count($apprUsers) > 0 && in_array($to_id, $apprUsers) ? 1 : 0;
                       if (isset($roleData[0]) && $roleData[0]->id == config('common.user_role.REVIEWER') && request()->has('is_app_pull_back')) {
                         $isViewOnly = 1;    
-                      }else {
-                        $isViewOnly = count($apprUsers) > 0 && in_array($to_id, $apprUsers) ? 1 : 0;
                       }
                     
                 } else {
