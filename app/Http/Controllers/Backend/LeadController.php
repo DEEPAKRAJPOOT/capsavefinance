@@ -90,13 +90,27 @@ class LeadController extends Controller {
      */
     public function editBackendLead(Request $request) {
         try {
+            
             $user_id = $request->get('user_id');
+            $is_registered = $request->get('is_registered');
             $arr = [];
-            if ($user_id) {
+            $anchLeadList = $this->userRepo->getAllAnchor($orderBy='comp_name');
+            if ($is_registered === '1') {
+                
+                
                 $userInfo = $this->userRepo->getUserDetail($user_id);
                 $arr['full_name'] = $userInfo->f_name;
+            }else{
+
+                $userInfo = $this->userRepo->getAnchorUsersByanchorId($user_id);
+                $arr['full_name'] = $userInfo->name.' '.$userInfo->l_name;
+                $userInfo['f_name'] = $userInfo->name;
+                $userInfo['mobile_no'] = $userInfo->phone;
+
             }
-            return view('backend.edit_lead')->with('userInfo', $userInfo);
+
+          return view('backend.edit_lead')->with('userInfo', $userInfo)->with('anchDropUserList',$anchLeadList);
+
         } catch (Exception $ex) {
             dd($ex);
         }
@@ -117,6 +131,7 @@ class LeadController extends Controller {
 
     public function updateBackendLead(Request $request) {
         try {
+                dd($request->all());
                 $userId = $request->get('userId'); 
                 $attributes['f_name'] = $request->get('f_name'); 
                 $attributes['biz_name'] = $request->get('biz_name'); 

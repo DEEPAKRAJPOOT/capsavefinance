@@ -90,7 +90,8 @@
                                                 <th>Mobile</th>
                                                 <th>Anchor</th>
                                                 <th>Created At</th>
-                                                 <th>Status</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -111,7 +112,8 @@
     </div>
 </div>
 {!!Helpers::makeIframePopup('addAnchorFrm','Add Anchor Lead', 'modal-md')!!}
-{!!Helpers::makeIframePopup('editAnchorFrm','Update Anchor', 'modal-md')!!}
+{!!Helpers::makeIframePopup('editLead','Edit Lead Detail', 'modal-md')!!}
+<!-- {!!Helpers::makeIframePopup('editAnchorFrm','Update Anchor', 'modal-md')!!} -->
 {!!Helpers::makeIframePopup('uploadAnchLead','Upload User List', 'modal-md')!!}
 @endsection
 

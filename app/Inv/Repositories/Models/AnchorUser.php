@@ -132,6 +132,18 @@ class AnchorUser extends BaseModel {
             ->first();
            return ($arrUser ? $arrUser : FALSE);
     }
+
+    /**
+     * function for get particular user detail
+     * @param type $email
+     * @return type
+     */
+    public static function getAnchorUsersByanchorId($anchor_user_id){
+        $arrUser = self::select('anchor_user.*')
+             ->where('anchor_user_id', '=', $anchor_user_id)
+            ->first();
+           return ($arrUser ? $arrUser : FALSE);
+    }
     
     /**
     * 

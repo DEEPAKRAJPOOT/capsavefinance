@@ -2714,7 +2714,8 @@ if ($err) {
     
     public function getAnchorLeadLists(DataProviderInterface $dataProvider){
       $anchLeadList = $this->userRepo->getAllAnchorUsers(true);
-        $users = $dataProvider->getAnchorLeadList($this->request, $anchLeadList);
+      $users = $dataProvider->getAnchorLeadList($this->request, $anchLeadList);
+        
         return $users; 
     }
 

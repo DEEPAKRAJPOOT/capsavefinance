@@ -921,7 +921,6 @@ class UserRepository extends BaseRepositories implements UserInterface
         public function getAllAnchorUsers($datatable=false)
         {
           $result = AnchorUser::getAllAnchorUsers($datatable);
-        
           return $result ?: false;
         }
     
@@ -976,6 +975,19 @@ class UserRepository extends BaseRepositories implements UserInterface
         return BizOwner::getOwnerByBizId($attributes['biz_id']); 
     }
     
+    
+    /**
+      * function for get all anchor unregistered user detail
+      * @return type
+      */
+     
+      public function getAnchorUsersByanchorId($anchor_user_id)
+      {
+        $result = AnchorUser::getAnchorUsersByanchorId($anchor_user_id);
+      
+        return $result ?: false;
+      }
+
     /**
       * function for get all anchor register user detail
       * @return type
