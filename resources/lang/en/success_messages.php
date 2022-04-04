@@ -50,4 +50,5 @@ return [
     'nach_updated' => 'NACH data successfully updated',
     'update_bank_successfully' => 'Bank Detail successfully updated',
     'save_bank_successfully' => 'Bank Detail successfully Created',
+    'fi_status_success' => 'FI Status updated successfully',
 ];
