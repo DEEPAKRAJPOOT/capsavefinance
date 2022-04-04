@@ -77,6 +77,7 @@ use App\Inv\Repositories\Models\BizEntityCin;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\UserNach;
 use App\Inv\Repositories\Models\Lms\NachBatch;
+use App\Inv\Repositories\Models\Master\Asset;
 use App\Inv\Repositories\Models\NachStatusLog;
 
 /**
@@ -2575,6 +2576,9 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return Charges::find(12);
     }
 
+    public function getAssetList(){
+        return Asset::getAssetList();
+    }
     public function getBizOwnerDataByOwnerId($bizOwnerId)
     {
         return BizOwner::getBizOwnerDataByOwnerId($bizOwnerId);

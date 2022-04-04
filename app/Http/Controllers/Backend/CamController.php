@@ -392,6 +392,7 @@ class CamController extends Controller
       $bizId = $request->get('biz_id');
       $leaseOfferData = $facilityTypeList = array();
       $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
+      $termLoanOfferData = AppProgramOffer::getAllOffers($appId, '2');
       $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
       $arrStaticData = array();
       $arrStaticData['rentalFrequency'] = array('1'=>'Yearly','2'=>'Bi-Yearly','3'=>'Quarterly','4'=>'Monthly');
@@ -434,6 +435,7 @@ class CamController extends Controller
         'bizId' => $bizId, 
         'appId'=> $appId,
         'leaseOfferData'=> $leaseOfferData,
+        'termLoanOfferData'=> $termLoanOfferData,
         'reviewerSummaryData'=> $reviewerSummaryData,
         'offerPTPQ' => $offerPTPQ,
         'preCondArr' => $preCondArr,
@@ -1847,7 +1849,6 @@ class CamController extends Controller
       $limitData= $this->appRepo->getLimit($aplid);
       $offerData= $this->appRepo->getOfferData(['prgm_offer_id' => $prgmOfferId]);
       $invUtilizedAmt = 0;
-
       if ($limitData->product_id == 1) {
         $appData = $this->appRepo->getAppData($appId);
         $appType = $appData->app_type;
@@ -1897,10 +1898,13 @@ class CamController extends Controller
         $prgmOfferedAmount = 0;
         $prgmLimit = 0;
       }
-      // $currentOfferAmount = $offerData->prgm_limit_amt ?? 0;
-      // $limitBalance = (int)$limitData->limit_amt - (int)$totalSubLmtAmt + (int)$currentOfferAmount;
+      $assets = [];
+      if ($limitData->product_id == 2) {
+        $assets = $this->appRepo->getAssetList();
+      }  
+
       $page = ($limitData->product_id == 1)? 'supply_limit_offer': (($limitData->product_id == 2)? 'term_limit_offer': 'leasing_limit_offer');
-      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType, 'invUtilizedAmt' => $invUtilizedAmt]);
+      return view('backend.cam.'.$page, ['offerData'=>$offerData, 'limitData'=>$limitData, 'totalOfferedAmount'=>$totalOfferedAmount, 'programOfferedAmount'=>$prgmOfferedAmount, 'totalLimit'=> $totalLimit->tot_limit_amt, 'currentOfferAmount'=> $currentOfferAmount, 'programLimit'=> $prgmLimit, 'equips'=> $equips, 'facilityTypeList'=>$facilityTypeList, 'subTotalAmount'=>$totalSubLmtAmt, 'anchors'=>$anchors, 'anchorPrgms'=>$anchorPrgms, 'bizOwners'=>$bizOwners, 'appType'=>$appType, 'assets' => $assets]);
     }
 
     /*function for updating offer data*/
@@ -1979,7 +1983,6 @@ class CamController extends Controller
         if($request->has('sub_limit')) {
             $request['prgm_limit_amt'] = str_replace(',', '', $request->sub_limit);
         }
-
         if($request->has('facility_type_id') && $request->facility_type_id != 3){
           $request['discounting'] = null;
         }elseif($request->has('facility_type_id') && $request->facility_type_id == 3){
@@ -1992,18 +1995,18 @@ class CamController extends Controller
         
         //$checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
         //if($checkApprovalStatus->count()){
-        $whereCondition = ['app_id' => $appId, 'is_approve' => 1, 'status_is_null_or_accepted' =>1];        
-        $offerData = $this->appRepo->getOfferData($whereCondition);
-        if ($offerData && isset($offerData->prgm_offer_id) ) {             
-          Session::flash('message', trans('backend_messages.under_approval'));
-          return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
-        }
+          $whereCondition = ['app_id' => $appId, 'is_approve' => 1, 'status_is_null_or_accepted' =>1];        
+          $offerData = $this->appRepo->getOfferData($whereCondition);
+          if ($offerData && isset($offerData->prgm_offer_id)) {          
+            Session::flash('message', trans('backend_messages.under_approval'));
+            return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
+          }
         \DB::beginTransaction();
-        //if (empty($prgmOfferId)) {
+          //if (empty($prgmOfferId)) {
             Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_GENERATED'));
-        //}
+            //}
         $offerData= $this->appRepo->addProgramOffer($request->all(), $aplid, $prgmOfferId);
-
+            
         $whereActivi['activity_code'] = 'update_limit_offer';
         $activity = $this->mstRepo->getActivity($whereActivi);
         if(!empty($activity)) {
@@ -2011,7 +2014,7 @@ class CamController extends Controller
             $activity_desc = 'Add/Update Offer. AppID '. $appId;
             $arrActivity['app_id'] = $appId;
             $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($offerData), $arrActivity);
-        }         
+        }
         
         $limitData = $this->appRepo->getLimit($aplid);
         if($limitData->product_id == 1){
@@ -2021,7 +2024,7 @@ class CamController extends Controller
             $this->addOfferCorporateGuarantee($request, $offerData->prgm_offer_id);
             $this->addOfferEscrowMechanism($request, $offerData->prgm_offer_id);
             $this->addOfferCharges($request, $offerData->prgm_offer_id);
-        }elseif(($request->has('facility_type_id') && $request->facility_type_id != 3) && ($limitData->product_id == 2 || $limitData->product_id == 3)){
+        }elseif(($request->has('facility_type_id') && $request->facility_type_id != 3) && ($limitData->product_id == 3)){
           /*Add offer PTPQ block*/
           $ptpqArr =[];
           foreach($request->ptpq_from as $key=>$val){
@@ -2034,6 +2037,17 @@ class CamController extends Controller
           }
           $this->appRepo->addOfferPTPQ($ptpqArr);
         }
+
+        if($limitData->product_id == 2){
+          if (isset($offerData->asset_insurance) && $offerData->asset_insurance == 2 || !isset($offerData->asset_insurance)) {
+            $offerData->update([
+              'asset_name' => null,
+              'timelines_for_insurance' => null,
+              'asset_comment' => null,
+            ]);
+          }
+          $this->addOfferPersonalGuarantee($request, $offerData->prgm_offer_id);
+        }  
 
         /*
         if (\Helpers::checkApprPrgm($request->prgm_id)) {
@@ -2444,7 +2458,7 @@ class CamController extends Controller
 
     public function viewCamReport(Request $request){
       try{
-        $viewData = $this->getCamReportData($request);        
+        $viewData = $this->getCamReportData($request);
         return view('backend.cam.viewCamReport')->with($viewData);
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
