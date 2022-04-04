@@ -438,7 +438,7 @@ class DataRenderer implements DataProviderInterface
 
                         $userRoles = $roleData->pluck('id')->toArray();
                         if (in_array(config('common.user_role.REVIEWER'), $userRoles) && Helpers::checkPermission('app_pull_back_confirmBox') && in_array($app->app_type, [2,3]) && $currentStage->stage_code == 'approver' && !Helpers::isAppApprByAuthority($app->app_id)) {
-                            $act .= '&nbsp;<a href="#" title="App Pull Back" data-toggle="modal" data-target="#pullBackAssignCaseFrame" data-url="' . route('app_pull_back_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_pull_back' => true, ]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-reply" aria-hidden="true"></i></a> ';
+                            $act .= '&nbsp;<a href="#" title="App Pull Back" data-toggle="modal" data-target="#pullBackAssignCaseFrame" data-url="' . route('app_pull_back_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_pull_back' => true, ]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-undo" aria-hidden="true"></i></a> ';
                         }
                         
                         return $act;
