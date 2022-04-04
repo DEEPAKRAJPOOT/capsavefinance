@@ -144,6 +144,7 @@
         is_accept: "{{ Session::get('is_accept') }}",
         message: "{{ Session::pull('message') }}",
     };
+    
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
@@ -151,13 +152,20 @@
      $(document).ready(function(){
          
      if(messages.is_accept == 1){
+        
         var parent =  window.parent;     
         parent.jQuery("#editLead").modal('hide');  
         //window.parent.jQuery('#my-loading').css('display','block');        
         var alertmsg = '<div class=" alert-success alert" role="alert"> <span><i class="fa fa-bell fa-lg" aria-hidden="true"></i></span><button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">×</span> </button>' + messages.message + '</div>';
         parent.$("#iframeMessage").html(alertmsg);
         parent.oTables.draw();
-       //window.parent.location.href = messages.paypal_gatway;
+        var isRegistered = "{{$userInfo->is_registered}}";
+        if(isRegistered === '0')
+          setInterval(function () {window.parent.location.href = "{{ URL::route('get_anchor_lead_list') }}"}, 1000);   
+        else
+          setInterval(function () {window.parent.location.href = "{{ URL::route('lead_list') }}"}, 1000);
+          
+        
     }
         
 })

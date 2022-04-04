@@ -1046,7 +1046,7 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function getUserByAnchorId($anchId)
     {
-        $result = UserModel::getUserByAnchorId((int)$anchId);
+         $result = UserModel::getUserByAnchorId((int)$anchId);
          return $result ?: false;
     } 
     /**
@@ -1058,7 +1058,8 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
         $result = Anchor::checkAnchorEmail($email,(int)$anchId);
          return $result ?: false;
-    } 
+    }
+     
     /**
      * function for get user details using anchor id
      * @param type $userName
@@ -1094,6 +1095,17 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $user;
     }
 
+    /**
+     * function for check all anchor user email using email and anchor id
+     * @param type $userName
+     * @return type
+     */
+    public function checkallanchorUserEmail($email,$anchId,$is_registered)
+    {
+         $result = AnchorUser::checkallanchorUserEmail($email,(int)$anchId,$is_registered);
+         return $result ?: false;
+    }
+
    /**
      * 
      * @param type $anchoId
@@ -1111,17 +1123,31 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @return type
      */
      public function getAnchorUsersByEmail($email)
-        {
+     {
           $result = AnchorUser::getAnchorUsersByEmail($email);
         
           return $result ?: false;
-        } 
+     } 
         
-        /**
-         * function for get state list
-         * @return type
-         */
-        public function getStateList() {
+    /**
+     * 
+     * @param type $user_id
+     * @return type
+     */  
+    public function getAnchorUsersByUserId($user_id)
+    {
+        $result = AnchorUser::getAnchorUsersByUserId($user_id);
+        if($result == false){
+            $result = UserModel::getUserDetail((int)$user_id);
+        }
+        return $result ?: false;
+    }  
+
+    /**
+     * function for get state list
+     * @return type
+     */
+    public function getStateList() {
         $all_state = State::getStateList();        
         return $all_state ?: false;
     }

@@ -131,11 +131,50 @@ class LeadController extends Controller {
 
     public function updateBackendLead(Request $request) {
         try {
-                dd($request->all());
+                
                 $userId = $request->get('userId'); 
-                $attributes['f_name'] = $request->get('f_name'); 
+                $attributes['f_name'] = $request->get('f_name');
+                $attributes['l_name'] = $request->get('f_name'); 
                 $attributes['biz_name'] = $request->get('biz_name'); 
+                $email = $request->get('email'); 
+                 
+                $attributes['user_type'] = $request->get('anchor_user_type');
+                $is_registerd = $request->get('is_registerd');
+                $prevanchorInfo = $this->userRepo->getAnchorUsersByUserId($userId);
+                
+                if($is_registerd === "1"){
+                    
+                    if($prevanchorInfo['email'] !== $email){
 
+                            $checkallanchorEmail = $this->userRepo->checkallanchorUserEmail($email,$userId,1);
+                            $checkallUserEmail = $this->userRepo->checkallUserEmail($email,$userId,1);
+                            if(($checkallanchorEmail == false && $checkallUserEmail == false) || $checkallUserEmail == false){
+
+                                $attributes['email'] = $email;
+
+                            }else{
+                                
+                                Session::flash('error', trans('error_messages.anchor_duplicate_email_error'));
+                                return redirect()->back();
+                            }                            
+                    }
+                }else{
+                        
+                        if($prevanchorInfo['email'] !== $email){
+
+                            $checkallanchorEmail = $this->userRepo->checkallanchorUserEmail($email,$userId,1);
+                            if($checkallanchorEmail == false){
+
+                                $attributes['email'] = $email;
+                                
+                            }else{
+                                
+                                Session::flash('error', trans('error_messages.anchor_duplicate_email_error'));
+                                return redirect()->back();
+                            }                            
+                        }
+                } 
+                
                 $whereActivi['activity_code'] = 'update_backend_lead';
                 $activity = $this->mstRepo->getActivity($whereActivi);
                 if(!empty($activity)) {
@@ -144,7 +183,21 @@ class LeadController extends Controller {
                     $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($attributes));
                 }                
                 
-                $userInfo = $this->userRepo->updateUser($attributes, $userId);
+                if($is_registerd === "1"){
+                    $attributes['mobile_no'] = $request->get('mobile_no');
+                    $attributes['assigned_anchor'] = $request->get('assigned_anchor');
+                    $userInfo = $this->userRepo->updateUser($attributes, $userId);
+                    if($prevanchorInfo['anchor_user_id'] != null)
+                        $anchoruserInfo =$this->userRepo->updateAnchorUser($prevanchorInfo['anchor_user_id'],$attributes);
+
+                }else{
+
+                    $attributes['phone'] = $request->get('mobile_no');
+                    $attributes['anchor_id'] = $request->get('assigned_anchor');
+                    $anchoruserInfo =$this->userRepo->updateAnchorUser($userId,$attributes);
+
+                }
+                
                 Session::flash('operation_status', 1); 
                 //return view('backend.lead.index');
                 Session::flash('message', 'Lead is updated successfully.'); 

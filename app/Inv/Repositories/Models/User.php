@@ -144,7 +144,7 @@ class User extends Authenticatable
      */
     public static function getUserDetail($user_id)
     {
-        //dd($user_id);
+        
         //Check id is not blank
 
         if (empty($user_id)) {
@@ -161,7 +161,7 @@ class User extends Authenticatable
             ->where('u.user_id', (int) $user_id)
             ->first();
          
-
+            
         return ($arrUser ?: false);
     }
 
@@ -551,8 +551,8 @@ class User extends Authenticatable
     public static function checkUserEmailExist($email,$anchId,$userType)
     {
         $userEmailExist = self::where('email','=',$email)
-                   ->where('user_type','!=',$userType)
-                   ->where('anchor_id','!=',$anchId)->count();
+                   ->where('user_type','=',$userType)
+                   ->where('user_id','!=',$anchId)->count();
          
         return $userEmailExist;
     }
