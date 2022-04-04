@@ -1050,6 +1050,26 @@ class UserRepository extends BaseRepositories implements UserInterface
          return $result ?: false;
     } 
     /**
+     * function for check all anchor email using email and anchor id
+     * @param type $userName
+     * @return type
+     */
+    public function checkallanchorEmail($email,$anchId)
+    {
+        $result = Anchor::checkAnchorEmail($email,(int)$anchId);
+         return $result ?: false;
+    } 
+    /**
+     * function for get user details using anchor id
+     * @param type $userName
+     * @return type
+     */
+    public function checkallUserEmail($email,$anchId,$userType)
+    {
+        $result = UserModel::checkUserEmailExist($email,(int)$anchId,$userType);
+        return $result ?: false;
+    }
+    /**
      * function for get user details using app id
      * @param type $userName
      * @return type

@@ -40,7 +40,7 @@
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="email" name="email" id="email" value="@if($anchorData){{$anchorData->comp_email}}@else{}@endif" class="form-control email" tabindex="4" placeholder="Email" readonly="">
+                                 <input type="email" name="email" id="email" value="@if($anchorData){{$anchorData->comp_email}}@else{}@endif" class="form-control email" tabindex="4" placeholder="Email" >
                               </div>
                            </div>
 
@@ -353,11 +353,7 @@
         }
         
         
-$(document).ready(function(){
-  $("#email").click(function(){
-    $("#email").attr("readonly","readonly");  
-  });  
-})
+
 </script>
 <script type="text/javascript">
    $(".custom-file-input").on("change", function() {

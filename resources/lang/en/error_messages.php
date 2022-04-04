@@ -23,6 +23,7 @@ return [
     'invalid_email' => 'Please enter a valid email address.',
     'email_max_length' => 'More than 50 characters are not allowed.',
     'email_already_exists' => 'The email is already registered.',
+    'anchor_duplicate_email_error'=>'Email already exist.',
     'buis_business' => 'Please enter a valid business name',
     'req_pan' => 'Pan number is required',
     'pan_max_length' => 'More than 10 characters are not allowed.',

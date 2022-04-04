@@ -755,13 +755,40 @@ class LeadController extends Controller {
                 'comp_zip' => $arrAnchorVal['pin_code'],
                 'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req']
             ];
-            $updateAnchInfo = $this->userRepo->updateAnchor($anchId, $arrAnchorData);            
-            $anchorInfo = $this->userRepo->getUserByAnchorId($anchId);
+            $prevanchorInfo = $this->userRepo->getUserByAnchorId($anchId);
+            $userEmailMatched = false;
+            if(isset($arrAnchorVal['email']) && !empty($arrAnchorVal['email'])){
+                
+                if($prevanchorInfo['email'] !== $arrAnchorVal['email']){
+
+                    $checkallanchorEmail = $this->userRepo->checkallanchorEmail($arrAnchorVal['email'],$anchId);
+                    $checkallUserEmail = $this->userRepo->checkallUserEmail($arrAnchorVal['email'],$anchId,2);
+                    
+                    if($checkallanchorEmail == false && $checkallUserEmail == false){
+
+                        $arrAnchorData['comp_email'] = $arrAnchorVal['email'];
+                        $userEmailMatched = true;
+                        
+
+                    }else{
+                        
+                        Session::flash('error', trans('error_messages.anchor_duplicate_email_error'));
+                        return redirect()->route('get_anchor_list');
+                    }                            
+                }
+            }
+            
+            $updateAnchInfo = $this->userRepo->updateAnchor($anchId, $arrAnchorData);
             $arrAnchorUserData = [
                 'f_name' => $arrAnchorVal['employee'],
                 'biz_name' => $arrAnchorData['comp_name'],
                 'mobile_no' => $arrAnchorData['comp_phone'],
-            ];
+            ];  
+            if($userEmailMatched)
+              $arrAnchorUserData['email'] = $arrAnchorVal['email']; 
+
+              
+            $anchorInfo = $this->userRepo->getUserByAnchorId($anchId);
             $Updateanchorinfo = $this->userRepo->updateUser($arrAnchorUserData, (int) $anchorInfo->user_id);
             
             if($request->doc_file){

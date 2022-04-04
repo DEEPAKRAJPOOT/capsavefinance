@@ -156,6 +156,19 @@ public static function saveAnchor($arrAnchor = [])
             ->first();
            return ($arrUser ? $arrUser : FALSE);
     }
+
+    /**
+     * function for check anchor email
+     * @param type $email
+     * @return type
+     */
+    public static function checkAnchorEmail($email,$anchId){
+
+        $isanchorEmailexist =  self::where('comp_email','=',$email)
+              ->where('anchor_id','!=',$anchId)->count();
+ 
+         return ($isanchorEmailexist ? $isanchorEmailexist : false);
+     }
     
     
     /**
