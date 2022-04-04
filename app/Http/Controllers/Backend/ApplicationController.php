@@ -953,7 +953,8 @@ class ApplicationController extends Controller
 							return redirect()->back();
 						}
 						Helpers::updateWfStageManual($app_id, $selRoleStage->order_no, $currStage->order_no, $wf_status = 2, $selUserId, $addl_data);
-
+						AppApprover::updateAppApprActiveFlag($app_id); //update rows with is_active => 0
+						
 						// Session::flash('message', 'Application successfully pulled back to reviewer');
 						Session::flash('is_accept', 1);
 						return redirect()->back();
