@@ -24,19 +24,19 @@ Form::open(
         <div class="form-group form-check">
             <ul class="custom-check-label">                
                 <li>
-                    <input type="radio" class="form-check-input" @if(!$is_enabled) disabled="disabled" @endif {{($status_id == config('common.mst_status_id')['APP_REJECTED']) ? 'checked' : ''}} id="status1" name="status" value="1" data-error="#errNm1">
+                    <input type="radio" class="form-check-input" onchange="showHideConsentSection(this, {{ $app_type }})" @if(!$is_enabled) disabled="disabled" @endif {{($status_id == config('common.mst_status_id')['APP_REJECTED']) ? 'checked' : ''}} id="status1" name="status" value="1" data-error="#errNm1">
                     <label class="form-check-label" for="status1">Reject</label>
                 </li>
                 <li>
-                    <input type="radio" class="form-check-input" @if(!$is_enabled) disabled="disabled" @endif {{($status_id == config('common.mst_status_id')['APP_CANCEL']) ? 'checked' : ''}} id="status2" name="status" value="2" data-error="#errNm1">
+                    <input type="radio" class="form-check-input" onchange="showHideConsentSection(this, {{ $app_type }})" @if(!$is_enabled) disabled="disabled" @endif {{($status_id == config('common.mst_status_id')['APP_CANCEL']) ? 'checked' : ''}} id="status2" name="status" value="2" data-error="#errNm1">
                     <label class="form-check-label" for="status2">Cancel</label> 
                 </li>                
                 <li>
-                    <input type="radio" class="form-check-input" @if(!$is_enabled) disabled="disabled" @endif {{($status_id == config('common.mst_status_id')['APP_HOLD']) ? 'checked' : ''}} id="status3" name="status" value="3" data-error="#errNm1">
+                    <input type="radio" class="form-check-input" onchange="showHideConsentSection(this, {{ $app_type }})" @if(!$is_enabled) disabled="disabled" @endif {{($status_id == config('common.mst_status_id')['APP_HOLD']) ? 'checked' : ''}} id="status3" name="status" value="3" data-error="#errNm1">
                     <label class="form-check-label" for="status3">Hold</label>
                 </li>
                 <li>
-                    <input type="radio" class="form-check-input" @if(!$is_enabled) disabled="disabled" @endif {{($status_id == config('common.mst_status_id')['APP_DATA_PENDING']) ? 'checked' : ''}} id="status4" name="status" value="4" data-error="#errNm1">
+                    <input type="radio" class="form-check-input" onchange="showHideConsentSection(this, {{ $app_type }})" @if(!$is_enabled) disabled="disabled" @endif {{($status_id == config('common.mst_status_id')['APP_DATA_PENDING']) ? 'checked' : ''}} id="status4" name="status" value="4" data-error="#errNm1">
                     <label class="form-check-label" for="status4">Data Pending</label>
                 </li>                
             </ul>
@@ -46,6 +46,26 @@ Form::open(
         </div>
     </div>
 </div>
+
+@if($app_type == 3 && $isOfferLimitApproved)
+<div class="row d-none" id="consentProcessRollbackSection">
+    <div class="col-12">
+        <div class="form-group">
+            <label for="chrg_type"><strong>You want to reactivate the old limit ?</strong></label><br />
+            <div class="form-check-inline ">
+                <label class="fnt">
+                <input type="radio" class="form-check-input is_phy_inv_req" checked name="reactivate_parent_app" value="1">Yes
+                </label>
+            </div>
+            <div class="form-check-inline">
+                <label class="fnt">
+                <input type="radio" class="form-check-input is_phy_inv_req" name="reactivate_parent_app" value="0">No
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
@@ -73,8 +93,17 @@ Form::close()
 
 @section('jscript')
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="{{ asset('backend/assets/js/application.js') }}" type="text/javascript"></script>
+<!-- <script src="{{ asset('backend/assets/js/application.js') }}" type="text/javascript"></script> -->
 <script type="text/javascript">
+    function showHideConsentSection(event, appType) {
+        status = $(event).val();
+        if (status == '1' && appType == 3) {
+            $("#consentProcessRollbackSection").removeClass("d-none");
+        } else {
+            $("#consentProcessRollbackSection").addClass("d-none");
+        }
+    }
+
     $(document).ready(function($){
         $(document).on('click', '.submit', function (e) {
 //            e.preventDefault();
