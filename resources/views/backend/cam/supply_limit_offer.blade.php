@@ -38,7 +38,7 @@
             <select name="anchor_id" id="anchor_id" class="form-control">
                 <option value="">Select Anchor</option>
                 @foreach($anchors as $key=>$anchor)
-                <option value="{{$anchor->anchor_id}}" {{(isset($offerData->anchor_id) && $anchor->anchor_id == $offerData->anchor_id)? 'selected': ''}}>{{$anchor->comp_name}}</option>
+                <option value="{{$anchor->anchor_id}}" is_fungible="{{$anchor->is_fungible}}" {{(isset($offerData->anchor_id) && $anchor->anchor_id == $offerData->anchor_id)? 'selected': ''}}>{{$anchor->comp_name}}</option>
                 @endforeach
             </select>
         </div>
@@ -987,15 +987,15 @@
     }
 
     $('#program_id').on('change',function(){
-        if ($("#offer_id").val() == "") {            
+        if ($("#offer_id").val() == "") {
             $('input[name=margin]').val("");
-            $('input[name=overdue_interest_rate]').val("");                    
-            $('input[name=adhoc_interest_rate]').val("");                                        
-            $('input[name=grace_period]').val("");                                        
-            $('input[name="processing_fee"]').val("");                                        
-            $('input[name="document_fee"]').val(""); 
+            $('input[name=overdue_interest_rate]').val("");
+            $('input[name=adhoc_interest_rate]').val("");
+            $('input[name=grace_period]').val("");
+            $('input[name="processing_fee"]').val("");
+            $('input[name="document_fee"]').val("");
         }
-                        
+
         let base_rate = $('#program_id option:selected').data('base_rate');
         let bank_id = $('#program_id option:selected').data('bank_id');
         $('input[name="bank_id"]').val(bank_id);
@@ -1023,7 +1023,7 @@
             setLimit('input[name=prgm_limit_amt]', '(<i class="fa fa-inr" aria-hidden="true"></i> '+program_min_limit+'-<i class="fa fa-inr" aria-hidden="true"></i> '+program_max_limit+')');
             setLimit('input[name=interest_rate]', '('+program_min_rate+'%-'+program_max_rate+'%)');
         }
-        let token = "{{ csrf_token() }}";            
+        let token = "{{ csrf_token() }}";
         var appId = $("input[name='app_id']").val();
         var anchorId = $("#anchor_id").val();
         $('.isloader').show();
@@ -1058,11 +1058,11 @@
                         $('input[name="document_fee"]').val(prgm_data.document_fee_amt);
                     }
                 }*/
-                
+
                 $("#anchorBalLimitAmt").text(res.anchorBalLimitAmt);
                 $("#prgmBalLimitAmt").text(res.prgmBalLimitAmt);
-                limit_balance = res.prgmBalLimitAmt; 
-                
+                limit_balance = res.prgmBalLimitAmt;
+
                 $("#anchorBalLimitAmt").parent().parent().removeClass('d-none');
                 $("#prgmBalLimitAmt").parent().parent().removeClass('d-none');
                 prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;
@@ -1106,6 +1106,7 @@
 
     let flag = true;
     let anchor_id = $('select[name=anchor_id]').val();
+    let is_anchor_fungible = $('select[name=anchor_id] option:selected').attr('is_fungible');
     let prgm_id = $('select[name=prgm_id]').val();
     let prgm_limit_amt = $('input[name=prgm_limit_amt]').val();
     let interest_rate = $('input[name=interest_rate]').val();
@@ -1164,7 +1165,7 @@
     if(interest_rate == '' || isNaN(interest_rate)){
         setError('input[name=interest_rate]', 'Please fill intereset rate');
         flag = false;
-    }else if(anchor_id !='' && prgm_id != ''){
+    }else if(anchor_id !='' && prgm_id != '' && is_anchor_fungible == 1){
         if(parseFloat(interest_rate) > 100){
             setError('input[name=interest_rate]', 'Please fill correct intereset rate');
             flag = false;

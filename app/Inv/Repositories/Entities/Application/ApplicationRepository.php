@@ -1588,6 +1588,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getSharedColender($where, $notColenderId = null){
         return ColenderShare::getSharedColender($where, $notColenderId);
     }
+    
+    public function getSharedColenderData($where){
+        return ColenderShare::getSharedColenderData($where);
+    }
 
     public function updateColenderData($attributes, $conditions){
         return ColenderShare::updateColenderData($attributes, $conditions);
@@ -2575,6 +2579,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getInvoiceProcessingFeeCharge(){
         return Charges::find(12);
     }
+    
+    public function getAnchorPrgmUserIdsInArray($anchorId, $prgmId){
+        return AppProgramOffer::getAnchorPrgmUserIdsInArray($anchorId, $prgmId);
+    }
 
     public function getAppOfferLimitApproved($userId, $appId){
         return AppStatusLog::getAppOfferLimitApproved($userId, $appId);
@@ -2585,9 +2593,5 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getBizOwnerDataByOwnerId($bizOwnerId)
     {
         return BizOwner::getBizOwnerDataByOwnerId($bizOwnerId);
-    }
-
-    public function getAnchorPrgmUserIdsInArray($anchorId, $prgmId){
-        return AppProgramOffer::getAnchorPrgmUserIdsInArray($anchorId, $prgmId);
     }
 }
