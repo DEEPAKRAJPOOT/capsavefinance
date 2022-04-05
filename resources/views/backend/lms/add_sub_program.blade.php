@@ -3,6 +3,9 @@
 @php
 $dis_element = $copied_prgm_id ? ['readonly' => true] : [];
 $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
+$defaultSubProgramLimit = ($programData->anchor_limit && $anchorData->is_fungible) ? number_format($programData->anchor_limit ) : NULL;
+$defaultSubProgramLimitReadOnly = ($anchorData->is_fungible) ? 'readonly' : '';
+$defaultMinimumLoanSize = ($anchorData->is_fungible) ? 1 : NULL;
 @endphp
 <div class="content-wrapper">
     <section class="content-header">
@@ -11,7 +14,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
         </div>
         <div class="header-title">
             <h3>
-                {{ trans('backend.mange_program.add_sub_program') }} 
+                {{ trans('backend.mange_program.add_sub_program') }}
             </h3>
             <ol class="breadcrumb">
                 <li style="color:#374767;">  {{ trans('backend.mange_program.home') }} </li>
@@ -40,69 +43,70 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                         </div>
                                                         <p class="ml-auto">
                                                             <b>Total Anchor Limit : </b>
-                                                            <i class="fa fa-inr" aria-hidden="true"></i> 
+                                                            <i class="fa fa-inr" aria-hidden="true"></i>
                                                             <span id="total-anchor-limit" class="number_format">{!! isset($programData->anchor_limit) ?  number_format($programData->anchor_limit )   : null !!}</span>
                                                         </p>
                                                         &nbsp;&nbsp;&nbsp;
                                                         @if ($action == 'view')
-
-
                                                         <p class="float-right mb-0">
-                                                            <b>Remaining Anchor Limit : </b>
-                                                            <i class="fa fa-inr" aria-hidden="true"></i>
-                                                            <span id="remaining-anchor-limit" class="number_format">{{ isset($programData->anchor_limit) ?  number_format($programData->anchor_limit - $anchorUtilizedBalance)  : null }}</span>
-                                                            <br>
-                                                            <b>Utilized Limit in Offer : </b>
-                                                            <i class="fa fa-inr" aria-hidden="true"></i>
-                                                            {{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}                                                             
-                                                        </p>                                                        
+                                                            @if(isset($anchorData) && isset($anchorData->is_fungible) && !$anchorData->is_fungible)
+                                                                <b>Remaining Anchor Limit : </b>
+                                                                <i class="fa fa-inr" aria-hidden="true"></i>
+                                                                <span id="remaining-anchor-limit" class="number_format">{{ isset($programData->anchor_limit) ?  number_format($programData->anchor_limit - $anchorUtilizedBalance)  : null }}</span>
+                                                                <br>
+                                                                <b>Utilized Limit in Offer : </b>
+                                                                <i class="fa fa-inr" aria-hidden="true"></i>
+                                                                <span>{{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}</span>
+                                                                <br>
+                                                            @endif
+                                                        </p>
                                                         @else
-
-
                                                         <p class="float-right mb-0">
-                                                            <b>Remaining Anchor Limit : </b>
-                                                            <i class="fa fa-inr" aria-hidden="true"></i>
-                                                            <span id="remaining-anchor-limit" class="number_format">{{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }}</span>
-                                                            <br>
-                                                            <b>Utilized Limit in Offer : </b>
-                                                            <i class="fa fa-inr" aria-hidden="true"></i>
-                                                            {{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}                                                             
+                                                            @if(isset($anchorData) && isset($anchorData->is_fungible) && !$anchorData->is_fungible)
+                                                                <b>Remaining Anchor Limit : </b>
+                                                                <i class="fa fa-inr" aria-hidden="true"></i>
+                                                                <span id="remaining-anchor-limit" class="number_format">{{ isset($remaningAmount) ?  number_format($remaningAmount)  : null }}</span>
+                                                                <br>
+                                                                <b>Utilized Limit in Offer : </b>
+                                                                <i class="fa fa-inr" aria-hidden="true"></i>
+                                                                <span>{{ isset($utilizedLimit) ?  number_format($utilizedLimit)  : null }}</span>                                                                
+                                                                <br>
+                                                            @endif
                                                         </p>
                                                         @endif
-                                                   
                                                     </div>
                                                     <!--                                                    <div class="col-sm-3 text-right">
                                                        <a class="edit-btn" href="{{route('add_program',['program_id'=> $program_id ,'anchor_id'=>$anchor_id ])}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                                       
+
                                                        </div>-->
                                                 </div>
                                             </div>
                                             </br>
 
-                                            
+
                                             {{ Form::open(['url'=>$actionUrl,'id'=>'add_sub_program']) }}
                                             {!! Form::hidden('parent_prgm_id',$program_id) !!}
-                                            {!! Form::hidden('program_id',isset($subProgramData->prgm_id) ? $subProgramData->prgm_id : null) !!}                                            
+                                            {!! Form::hidden('program_id',isset($subProgramData->prgm_id) ? $subProgramData->prgm_id : null) !!}
                                             {!! Form::hidden('product_id',isset($programData) ? $programData->product_id : null) !!}
                                             {!! Form::hidden('anchor_limit_re',isset($remaningAmount) ?  number_format($remaningAmount)  : null,['id'=>'anchor_limit_re'])   !!}
                                             {!! Form::hidden('anchor_id',$anchor_id) !!}
                                             {!! Form::hidden('anchor_user_id',isset($programData->anchor_user_id) ?$programData->anchor_user_id  : null ) !!}
-                                            {!! Form::hidden('copied_prgm_id', $copied_prgm_id) !!}                                            
+                                            {!! Form::hidden('copied_prgm_id', $copied_prgm_id) !!}
                                             {!! Form::hidden('utilized_amount', $utilizedLimit, ['id'=>'utilized_amount']) !!}
                                             {!! Form::hidden('total_anchor_sub_limit', $anchorSubLimitTotal, ['id'=>'total_anchor_sub_limit']) !!}
                                             {!! Form::hidden('old_anchor_limit', $pAnchorLimit, ['id'=>'old_anchor_limit']) !!}
                                             {!! Form::hidden('old_anchor_sub_limit', $pAnchorSubLimit, ['id'=>'old_anchor_sub_limit']) !!}
                                             {!! Form::hidden('is_reject', 0, ['id'=>'is_reject']) !!}
                                             {!! Form::hidden('reason_type', $reason_type, ['id'=>'reason_type']) !!}
-                                            
-                                            
+
+
                                             <div class="sub-form renew-form " id="subform">
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div class="row">
                                                             <div class="col-md-12">
                                                                 <div class="form-group INR">
-                                                                    <div class="row">                                                                        
+                                                                    <div class="row">
                                                                         <div class="col-md-6">
                                                                             <label for="txtCreditPeriod">Total Anchor Limit <span class="error_message_label">*</span> </label>
                                                                             <div class="relative">
@@ -114,7 +118,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>                                                            
+                                                            </div>
                                                             <div class="col-md-12">
                                                                 <div class="form-group">
                                                                     <label for="txtCreditPeriod">
@@ -126,7 +130,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                                 <label class="form-check-label fnt" for="prgm_type">
                                                                                     {!! Form::radio('prgm_type','1',($programData->prgm_type=="1")? "checked" : "", ['class'=>'form-check-input'] + $dis_element) !!}
                                                                                     <strong>
-                                                                                        {{ trans('backend.add_program.vendor_finance') }}   
+                                                                                        {{ trans('backend.add_program.vendor_finance') }}
                                                                                     </strong>
                                                                                 </label>
                                                                             </div>
@@ -134,7 +138,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                                 <label class="form-check-label fnt" for="prgm_type">
                                                                                     {!! Form::radio('prgm_type','2',($programData->prgm_type=="2")? "checked" : "", ['class'=>'form-check-input'] + $dis_element) !!}
                                                                                     <strong>
-                                                                                        {{ trans('backend.add_program.channel_finance') }}    
+                                                                                        {{ trans('backend.add_program.channel_finance') }}
                                                                                     </strong>
                                                                                 </label>
                                                                             </div>
@@ -164,14 +168,14 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                     <div class="relative">
                                                                     <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('anchor_sub_limit',
-                                                                    isset($subProgramData->anchor_sub_limit) ? number_format($subProgramData->anchor_sub_limit) : null,
-                                                                    ['class'=>'form-control number_format '])   !!}
+                                                                    isset($subProgramData->anchor_sub_limit) ? number_format($subProgramData->anchor_sub_limit) : $defaultSubProgramLimit,
+                                                                    ['id' => 'anchor_sub_limit','class'=>'form-control number_format '])   !!}
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-12">
+                                                    <div class="col-md-12" style="display: {{$anchorData->is_fungible ? 'block' : 'block'}}">
                                                         <div class="form-group INR">
                                                             <div class="row">
                                                                 <div class="col-md-6">
@@ -180,7 +184,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                     <a href="javascript:void(0);" class="remaining">
                                                                         <i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('min_loan_size',
-                                                                    isset($subProgramData->min_loan_size) ?  number_format($subProgramData->min_loan_size) : null,
+                                                                    isset($subProgramData->min_loan_size) ?  number_format($subProgramData->min_loan_size) : $defaultMinimumLoanSize,
                                                                     ['class'=>'form-control number_format ','placeholder'=>'Min'])   !!}
                                                                     </div>
                                                                 </div>
@@ -189,8 +193,8 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                     <div class="relative">
                                                                     <a href="javascript:void(0);" class="remaining"><i class="fa fa-inr" aria-hidden="true"></i></a>
                                                                     {!! Form::text('max_loan_size',
-                                                                    isset($subProgramData->max_loan_size) ?  number_format($subProgramData->max_loan_size) : null,
-                                                                    ['class'=>'form-control max_loan_size number_format','placeholder'=>'Max'])   !!}
+                                                                    isset($subProgramData->max_loan_size) ?  number_format($subProgramData->max_loan_size) : $defaultSubProgramLimit,
+                                                                    ['class'=>'form-control max_loan_size number_format','placeholder'=>'Max'])!!}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -210,7 +214,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
 
                                                                                     {!! Form::radio('interest_rate','1',
                                                                                     isset($subProgramData->interest_rate) && ($subProgramData->interest_rate=="1") ? "checked" : "",
-                                                                                    ['class'=>'form-check-input int-checkbox '])    !!} 
+                                                                                    ['class'=>'form-check-input int-checkbox '])    !!}
                                                                                     Fixed
                                                                                 </label>
                                                                             </div>
@@ -218,7 +222,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                                 <label class="form-check-label fnt">
                                                                                     {!! Form::radio('interest_rate','2',
                                                                                     isset($subProgramData->interest_rate) && ($subProgramData->interest_rate=="2") ? "checked" : "",
-                                                                                    ['class'=>'form-check-input int-checkbox']) !!} 
+                                                                                    ['class'=>'form-check-input int-checkbox']) !!}
                                                                                     Floating
                                                                                 </label>
                                                                             </div>
@@ -255,7 +259,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                             </label>
                                                                             {!! Form::text('max_interest_rate',
                                                                             isset($subProgramData->max_interest_rate) ? $subProgramData->max_interest_rate : null,
-                                                                            ['class'=>'form-control percentage ','placeholder'=>'Max', 'id'=>'max_interest_rate'])   
+                                                                            ['class'=>'form-control percentage ','placeholder'=>'Max', 'id'=>'max_interest_rate'])
                                                                             !!}
 
                                                                         </div>
@@ -274,7 +278,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                     {!! Form::text('overdue_interest_rate',
                                                                     isset($subProgramData->overdue_interest_rate) ? $subProgramData->overdue_interest_rate : null,
                                                                     ['class'=>'form-control valid_perc percentage','placeholder'=>'Overdue interest rate',
-                                                                    'id'=>'overdue_interest_rate'])   
+                                                                    'id'=>'overdue_interest_rate'])
                                                                     !!}
                                                                 </div>
                                                             </div>
@@ -284,7 +288,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                     {!! Form::text('margin',
                                                                     isset($subProgramData->margin) ? $subProgramData->margin : null,
                                                                     ['class'=>'form-control valid_perc percentage','placeholder'=>'Margin',
-                                                                    'id'=>'margin'])   
+                                                                    'id'=>'margin'])
                                                                     !!}
 
                                                                 </div>
@@ -321,7 +325,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                                         1,
                                                                                         isset($subProgramData->is_adhoc_facility) && ($subProgramData->is_adhoc_facility == 1) ? true : false,
                                                                                         ['class'=>'form-check-input adhoc',
-                                                                                        'id'=>'is_adhoc_facility'])   
+                                                                                        'id'=>'is_adhoc_facility'])
                                                                                         !!}
 
                                                                                         Yes
@@ -333,7 +337,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                                         0,
                                                                                         isset($subProgramData->is_adhoc_facility) && ($subProgramData->is_adhoc_facility == 0) ? true : false,
                                                                                         ['class'=>'form-check-input adhoc',
-                                                                                        'id'=>'is_adhoc_facility'])   
+                                                                                        'id'=>'is_adhoc_facility'])
                                                                                         !!}No
                                                                                     </label>
                                                                                 </div>
@@ -347,7 +351,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                                 {!! Form::text('adhoc_interest_rate',
                                                                                 isset($subProgramData->adhoc_interest_rate) ? $subProgramData->adhoc_interest_rate : null,
                                                                                 ['class'=>'form-control  percentage','placeholder'=>'Max interset rate',
-                                                                                'id'=>'employee'])   
+                                                                                'id'=>'employee'])
                                                                                 !!}
 
                                                                             </div>
@@ -374,7 +378,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                                         '1',
                                                                                         isset($subProgramData->is_grace_period) && ($subProgramData->is_grace_period == 1) ? true : false,
                                                                                         ['class'=>'form-check-input grace',
-                                                                                        'id'=>'is_grace_period'])   
+                                                                                        'id'=>'is_grace_period'])
                                                                                         !!}
 
                                                                                         Yes
@@ -386,7 +390,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                                         '0',
                                                                                         isset($subProgramData->is_grace_period) && ($subProgramData->is_grace_period == 0) ? true : false,
                                                                                         ['class'=>'form-check-input grace',
-                                                                                        'id'=>'is_grace_period'])   
+                                                                                        'id'=>'is_grace_period'])
                                                                                         !!}
 
                                                                                         No
@@ -403,7 +407,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                             {!! Form::text('grace_period',
                                                                             isset($subProgramData->grace_period) ? $subProgramData->grace_period : null,
                                                                             ['class'=>'form-control numberOnly','placeholder'=>'Grace Period (In Days)',
-                                                                            'id'=>'grace_period'])   
+                                                                            'id'=>'grace_period'])
                                                                             !!}
                                                                         </div>
                                                                     </div>
@@ -504,7 +508,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                 @if(isset($subProgramData->bulk_invoice_upload))
                                                                 @php  $bulk_invoice_upload = explode(',',  $subProgramData->bulk_invoice_upload);  @endphp
                                                                 @endif
-                                                                @php   
+                                                                @php
 
                                                                 $admin_checked = in_array(1 , $bulk_invoice_upload) ;
                                                                 $anchor_checked = in_array(2 , $bulk_invoice_upload) ;
@@ -569,7 +573,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                 @php  $invoice_approval = explode(',',  $subProgramData->invoice_approval);  @endphp
                                                                 @endif
 
-                                                                @php   
+                                                                @php
 
                                                                 $admin_checked = in_array(1 , $invoice_approval) ;
                                                                 $anchor_checked = in_array(2 , $invoice_approval) ;
@@ -604,7 +608,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                                         !!}
                                                                         <label for="invoice_approval_1"> Anchor</label>
                                                                     </div>
-                                                                
+
                                                                     <div class="col-md-3">
                                                                         {!!
                                                                         Form::checkbox('invoice_approval[]',
@@ -655,7 +659,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
+
                                     <div class="col-md-12">
                                         <div class="form-group password-input">
                                             <div class="row">
@@ -667,7 +671,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                             </div>
                                         </div>
                                     </div>
-                                                
+
                                                 <div class="col-md-12">
                                                     <h5 class="card-title">Charges</h5>
                                                 </div>
@@ -708,14 +712,14 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                                     </div>
                                                     <div class="col-md-12 col-sm-12">
                                                         <div class="html_append">
-                                                            @include('backend/lms/charges_html', ['data'=> (object) $programChrg , 'len'=>$keys ]) 
+                                                            @include('backend/lms/charges_html', ['data'=> (object) $programChrg , 'len'=>$keys ])
                                                         </div>
                                                     </div>
 
                                                 </div>
 
                                                 @endforeach
-                                                @else 
+                                                @else
 
                                                 <div class="charge_parent_div">
                                                     <div class="row" style="background-color: #e1f0eb;">
@@ -758,14 +762,14 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
                                     </div>
                                     <div class="col-md-12">
                                         <div class="text-right mt-3">
-                                            
+
                                             <!--<a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>-->
-                                            @if ($reason_type != '' && isset($subProgramData->status) && $subProgramData->status == '0') 
+                                            @if ($reason_type != '' && isset($subProgramData->status) && $subProgramData->status == '0')
                                             <input type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program" name="reject_btn" id="reject_btn" value="Reject">
                                             @else
                                             <a class="btn btn-secondary btn-sm" href='{{  route('manage_sub_program', ['anchor_id' => $anchor_id, 'program_id' => \Session::get('list_program_id')]) }}'>  Cancel</a>
                                             @endif
-                                            
+
                                             @if (\Helpers::checkPermission('save_sub_program') && $action != 'view')
                                             <button type="submit"  class="btn btn-primary ml-2 btn-sm save_sub_program"> Save</button>
                                             @endif
@@ -790,15 +794,20 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
 @endsection
 @section('jscript')
 <script>
+
+    $(document).on('keyup','#anchor_sub_limit', function () {
+       let $anchor_sub_limit = $(this).val();
+       $('input[name="max_loan_size"]').val($anchor_sub_limit || 0);
+    })
    $(document).on('click','.customer_upload',function(){
-      
+
         if ($('#invoice_upload_2').is(":checked") || $('#bulk_invoice_upload_2').is(":checked"))
-        {  
+        {
             admin_app    = ($("#invoice_approval_0").is(":checked"));
             admin_anc    = ($("#invoice_approval_1").is(":checked"));
             admin_auto    = ($("#invoice_approval_4").is(":checked"));
             if(admin_app==false && admin_anc==false && admin_auto==true)
-            { 
+            {
                 $("#invoice_approval_4").prop("checked", false)
                 $("#invoice_approval_4").attr("disabled", true);
                 return false;
@@ -806,16 +815,16 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
             else
             {
                 $("#invoice_approval_4").attr("disabled", false);
-                return true; 
+                return true;
             }
-        } 
+        }
         else
         {
                 $("#invoice_approval_4").attr("disabled", false);
-                return true; 
+                return true;
         }
-        
-       
+
+
    })
 </script>
 <script>
@@ -824,6 +833,7 @@ $actionUrl = $action != 'view' ? route('save_sub_program') : '#';
         get_charges_html: "{{ URL::route('get_charges_html') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
+        is_fungible: "{{ $anchorData->is_fungible }}",
         please_select: "{{ trans('backend.please_select') }}",
         invoiceDataCount: "{{ ($invoiceDataCount > 0) ? 'true' : 'false' }}"
     };

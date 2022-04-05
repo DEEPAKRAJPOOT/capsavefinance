@@ -2410,7 +2410,7 @@ class Helper extends PaypalHelper
                 ->orderBy('prgm_offer_id', 'asc');
         if($app_id){
             $results->where('app.app_id', $app_id);
-        }                
+        }
         if($offer_id){
             $results->where('app_prgm_offer.prgm_offer_id',$offer_id);
         }

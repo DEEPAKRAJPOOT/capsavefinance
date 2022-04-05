@@ -72,6 +72,7 @@ class Application extends BaseModel
         'app_type',
         'renewal_status',
         'is_child_sanctioned',
+        'reactivate_parent_app',
         'app_code',
         'created_by',
         'created_at',

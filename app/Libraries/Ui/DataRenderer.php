@@ -1268,12 +1268,16 @@ class DataRenderer implements DataProviderInterface
                                 }
                             }
                         }
+                        $IsOverdue = InvoiceTrait::invoiceOverdueCheck($invoice->invoice_id);
                         $isLimitExpired = InvoiceTrait::limitExpire($invoice->supplier_id);
                         $isLimitExceed = InvoiceTrait::isLimitExceed($invoice->invoice_id);
-                        $this->isLimitExpired = $isLimitExpired;  
-                        $this->isLimitExceed  = $isLimitExceed;                          
+                        $isAnchorLimitExceeded = InvoiceTrait::isAnchorLimitExceeded($invoice->anchor_id, 0);
+                        $this->IsOverdue = $IsOverdue;  
+                        $this->isLimitExpired = $isLimitExpired;
+                        $this->isLimitExceed  = $isLimitExceed;
+                        $this->isAnchorLimitExceeded  = $isAnchorLimitExceeded;
                        // return  "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
-                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";   
+                        return ($this->overDueFlag == 1 || $chkUser->id == 11  || $this->isLimitExpired || $this->isLimitExceed || $isAnchorLimitExceeded) ? '-' : "<input type='checkbox' class='invoice_id' name='checkinvoiceid' value=".$invoice->invoice_id.">";
                      })
                 ->addColumn(
                     'anchor_id',
@@ -1365,8 +1369,20 @@ class DataRenderer implements DataProviderInterface
                           }
                            $action .='<option value="14">Reject</option></select></div>';
                         
-                     }    
-                        return  $action;
+                     }
+
+                     if ($this->isLimitExpired) {
+                        $remark = '<span class="badge badge-danger">Limit Expired</span><br>';
+                    } else if ($this->isLimitExceed) {
+                        $remark = '<span class="badge badge-danger">Limit Exceed</span><br>';
+                    } else if ($this->IsOverdue) {
+                        $remark = '<span class="badge badge-danger">Customer A/C is in Overdue</span><br>';
+                    } else if ($this->isAnchorLimitExceeded) {
+                        $remark = '<span class="badge badge-danger">Anchor Limit Exceeded</span><br>';
+                    } else {
+                        $remark = '';
+                    }
+                        return  $remark . $action;
                 })
                  ->filter(function ($query) use ($request) {
                   
@@ -3529,15 +3545,26 @@ class DataRenderer implements DataProviderInterface
                                 function ($program) {
                             $ret = '<strong>Name:</strong> '. $program->f_name . '<br>';
                             $ret .= '<strong>Total Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit) . '<br>';
-                            $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - $this->anchor_utilized_balance );
+
+                            if ($program->anchors->is_fungible) {
+                                $ret .= '<strong>Utilized Limit:</strong> '. \Helpers::formatCurrency(InvoiceTrait::anchorInvoiceApproveAmount($program->anchor_id)). '<br>';
+                                $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - InvoiceTrait::anchorInvoiceApproveAmount($program->anchor_id)). '<br>';
+                            } else {
+                                $ret .= '<strong>Remaining Limit:</strong> '. \Helpers::formatCurreny($program->anchor_limit - $this->anchor_utilized_balance ). '<br>';
+                            }
+
                             return $ret;
                         })                        
                         ->editColumn(
                                 'anchor_sub_limit',
                                 function ($program) {
                             $ret = '<strong>Limit:</strong> '. \Helpers::formatCurreny($program->anchor_sub_limit) . '<br>';
-                            $ret .= '<strong>Utilized Limit in Offer:</strong> '. \Helpers::formatCurreny(\Helpers::getPrgmBalLimit($program->prgm_id)) . '<br>';
-                            $ret .= '<strong>Loan Size:</strong> '. \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size);
+                            $ret .= '<strong>Loan Size:</strong> '. \Helpers::formatCurreny($program->min_loan_size) .'-' . \Helpers::formatCurreny($program->max_loan_size). '<br>';
+                            if ($program->anchors->is_fungible) {
+                                $ret .= '<strong>Utilized Sub Program Limit:</strong> '. \Helpers::formatCurrency(InvoiceTrait::anchorPrgmInvoiceApproveAmount($program->anchor_id, $program->prgm_id)). '<br>';
+                            } else {
+                                $ret .= '<strong>Utilized Limit in Offer:</strong> '. \Helpers::formatCurreny(\Helpers::getPrgmBalLimit($program->prgm_id)) . '<br>';
+                            }
                             return  $ret;
                         })                       
                         ->addColumn(
@@ -4382,10 +4409,14 @@ class DataRenderer implements DataProviderInterface
             ->editColumn(
                 'rcu_status',
                 function ($data) {
+                    $act = '';
+                    if (Helpers::checkPermission('chng_fi_status') && $data->rcu_status == 0 && $data->is_active == 1) {
+                        $act .= '<a title="Change FI Status" href="'.route('chng_fi_status', ['user_id' => $data->Customer_id, 'biz_addr_id' => $data->biz_addr_id, 'status'=> $data->rcu_status]).'" class="btn btn-action-btn btn-sm"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
+                    }
                     if ($data->rcu_status) {
-                        return '<span class="badge badge-success">Done</span>';
+                        return '<span class="badge badge-success">Approved</span>&nbsp;'.$act;
                     } else {
-                        return '<span class="badge badge-warning current-status">Pending</span>';
+                        return '<span class="badge badge-warning current-status">Pending</span>&nbsp;'.$act;
                     }
                 }
             )
@@ -6745,7 +6776,7 @@ class DataRenderer implements DataProviderInterface
                    $id = $data->user_invoice_rel_id;
                    $btn = '';
                    if(Helpers::checkPermission('get_user_invoice_unpublished') ){
-                    $btn = "<a title='Address Unpublish' href='".route('get_user_invoice_unpublished', ['user_id' => $data->user_id, 'user_invoice_rel_id' => $data->user_invoice_rel_id])."' class='btn btn-action-btn btn-sm'> <i class='fa fa-edit'></i></a>";
+                    $btn = "<a title='Address Unpublish' href='".route('get_user_invoice_unpublished', ['user_id' => $data->user_id, 'user_invoice_rel_id' => $data->user_invoice_rel_id])."' class='btn btn-action-btn btn-sm'><i class='fa fa-ban' aria-hidden='true'></i></a>";
                    }
                    $status = ($data->is_active == '2')?'<div class="btn-group "> <label class="badge badge-warning current-status">In Active</label> </div></b>':'<div class="btn-group "> <label class="badge badge-success current-status">Active</label>&nbsp;'. $btn.'</div></b>';
                    return $status;

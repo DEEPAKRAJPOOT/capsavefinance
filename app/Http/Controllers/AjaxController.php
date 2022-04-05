@@ -52,8 +52,9 @@ use App\Inv\Repositories\Models\Lms\ChargesTransactions;
 use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
 use App\Inv\Repositories\Models\Master\Permission;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Models\AppSanctionLetter;
 use App\Inv\Repositories\Models\AppProgramOffer;
-
+use App\Inv\Repositories\Models\Anchor;
 class AjaxController extends Controller {
 
     /**
@@ -3653,21 +3654,48 @@ if ($err) {
      * @param program_id
      * @return program limit
      */
+    public function getProgramBalanceLimit_11_feb(Request $request)
+    {
+        $appId = (int)$request->app_id;
+        $program_id = (int)$request->program_id;
+        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
+        $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
+        $anchorData = Anchor::getAnchorById($anchor_id);
+        $utilizedLimit = 0;
+        if ($prgm_data && $prgm_data->copied_prgm_id) {            
+            $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
+        }
+        if($anchorData->is_fungible == 0) {
+            return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
+        } else {
+            return json_encode(['prgm_limit' => $prgm_limit , 'prgm_data' => $prgm_data]);
+        }
+    }
+
     public function getProgramBalanceLimit(Request $request)
     {
         $appId = (int)$request->app_id;
         $program_id = (int)$request->program_id;
         $offer_id = (int)$request->offer_id;
         $anchorId = (int)$request->anchor_id;
-        
-        $data = $this->getAnchorProgramLimit($appId, $program_id, $offer_id);
 
+        $data = $this->getAnchorProgramLimit($appId, $program_id, $offer_id);
+        
         $appData = $this->application->getAppData($appId);
         if ($appData && in_array($appData->app_type, [2])) {
             $data['previousProgramLimit'] = $this->invRepo->getAmountOfferLimit(['anchor_id' => $anchorId, 'prgm_id' => $program_id, 'app_id' => $appData->parent_app_id]);
-        }        
+        }
 
         return json_encode($data);
+        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);
+        $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
+        $anchor_id = $prgm_data->anchor_id;
+        $anchorData = Anchor::getAnchorById($anchor_id);
+        $utilizedLimit = 0;
+        if ($prgm_data && $prgm_data->copied_prgm_id) {
+            $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
+        }
+            return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
     }
     
      public function getProgramSingleList(Request $request)

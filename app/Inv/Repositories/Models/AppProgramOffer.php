@@ -92,6 +92,12 @@ class AppProgramOffer extends BaseModel {
         'invoice_processingfee_type',
         'invoice_processingfee_value',
         'comment',
+        'asset_type_id',
+        'asset_insurance',
+        'asset_name',
+        'timelines_for_insurance',
+        'asset_comment',
+        'irr',
         'is_approve',
         'payment_frequency',
         'status',
@@ -337,7 +343,7 @@ class AppProgramOffer extends BaseModel {
                 $prgmOffer = $rejectPrgmOffer;
             }
             if($prgmOffer){
-                $prgmOffer->update(['is_active'=>0]);
+                $prgmOffer->update(['is_active' => 0]);
             }
             //AppProgramLimit::where('app_prgm_limit_id', $app_prgm_limit_id)->update(['limit_amt'=> $data['prgm_limit_amt']]);
             return AppProgramOffer::create($data);
@@ -705,5 +711,9 @@ class AppProgramOffer extends BaseModel {
             $data->where('prgm_id',$prgmId); 
         }
         return $data->first();
+    }
+    public function asset()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Asset', 'asset_type_id', 'id');
     }
 }

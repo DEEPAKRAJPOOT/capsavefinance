@@ -410,6 +410,7 @@ class LeadController extends Controller {
            
             $validator = Validator::make($request->all(), [
                 'doc_file' => 'required|mimes:jpeg,jpg,png,pdf',
+                'is_fungible' => 'required|numeric',
             ],['doc_file.mimes'=> 'Invalid file format']);
     
             if ($validator->fails()) {
@@ -430,7 +431,8 @@ class LeadController extends Controller {
                     'comp_state' => $arrAnchorVal['state'],
                     'comp_city' => $arrAnchorVal['city'],
                     'comp_zip' => $arrAnchorVal['pin_code'],
-                    'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req']
+                    'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req'],
+                    'is_fungible' => $arrAnchorVal['is_fungible']
                 ];
 
                 $anchor_info = $this->userRepo->saveAnchor($arrAnchorData);
@@ -788,6 +790,7 @@ class LeadController extends Controller {
             $arrAnchorVal = $request->all();
             $validator = Validator::make($request->all(), [
                 'doc_file' => 'mimes:jpeg,jpg,png,pdf',
+                'is_fungible' => 'required|numeric',
             ],['doc_file.mimes'=> 'Invalid file format']);
     
             if ($validator->fails()) {
@@ -806,7 +809,8 @@ class LeadController extends Controller {
                 'comp_state' => $arrAnchorVal['state'],
                 'comp_city' => $arrAnchorVal['city'],
                 'comp_zip' => $arrAnchorVal['pin_code'],
-                'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req']
+                'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req'],
+                'is_fungible' => $arrAnchorVal['is_fungible']
             ];
             $prevanchorInfo = $this->userRepo->getUserByAnchorId($anchId);
             $userEmailMatched = false;

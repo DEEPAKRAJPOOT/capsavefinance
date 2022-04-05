@@ -238,11 +238,13 @@
                                             <thead>
                                             <tr class="sub-heading">
                                                 <td width="10%" >Facility Type</td>
-                                                <td width="20%" >Equipment Type</td>
-                                                <td width="10%" >Limit of the Equipment</td>
+                                                <td width="20%" >Asset Type</td>
+                                                <td width="10%" >Limit</td>
                                                 <td width="10%" >Tenor (Months)</td>
-                                                <td width="20%" >PTP Frequency</td>
-                                                <td width="10%" >XIRR (%)</td>
+                                                <td width="10%" >Payment Frequency</td>
+                                                {{--<td width="20%" >PTP Frequency</td>
+                                                <td width="10%" >XIRR (%)</td>--}}
+                                                <td width="10%" >Interest Rate (%)</td>
                                                 <td width="10%" >Processing Fee (%)</td>
                                                 <td width="5%" >Action</td>
                                             </tr>
@@ -250,12 +252,15 @@
                                             <tbody>
                                             @if($prgmLimit->offer->count() != 0)
                                             @foreach($prgmLimit->offer as $k=>$prgmOffer)
+                                                @php
+                                                    $arrStaticData['rentalFrequency'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
+                                                @endphp    
                                             </tr>
-                                                <td>{{($prgmOffer->facility_type_id !='')? config('common.facility_type')[$prgmOffer->facility_type_id]: 'NA'}}</td>
-                                                <td>{{\Helpers::getEquipmentTypeById($prgmOffer->equipment_type_id)->equipment_name}}</td>
+                                                <td>{{ ($prgmOffer->facility_type_id != '') ? config('common.facility_type')[$prgmOffer->facility_type_id] : 'NA'}}</td>
+                                                <td>{{ $prgmOffer->asset_type_id && $prgmOffer->asset ? $prgmOffer->asset->asset_type : '' }}</td>
                                                 <td>&#8377; {{number_format($prgmOffer->prgm_limit_amt)}}</td>
                                                 <td>{{$prgmOffer->tenor}}</td>
-                                                <td>
+                                                {{--<td>
                                                     @php 
                                                         $i = 1;
                                                         $arrStaticData['rentalFrequencyForPTPQ'] = array('1'=>'Year','2'=>'Bi-Yearly','3'=>'Quarter','4'=>'Months');
@@ -277,7 +282,9 @@
                                                         }
                                                     @endphp
                                                 </td>
-                                                <td><b>Ruby Sheet</b>: {{$prgmOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$prgmOffer->cash_flow_xirr}}%</td>
+                                                <td><b>Ruby Sheet</b>: {{$prgmOffer->ruby_sheet_xirr}}%<br/><b>Cash Flow</b>: {{$prgmOffer->cash_flow_xirr}}%</td>--}}
+                                                <td>{{ $arrStaticData['rentalFrequency'][$prgmOffer->rental_frequency] }}</td>
+                                                <td>{{$prgmOffer->interest_rate}}%</td>
                                                 <td>{{$prgmOffer->processing_fee}}%</td>
                                                 <td>
                                                     @if($prgmOffer->status == 2)
@@ -292,7 +299,7 @@
                                             @endforeach
                                             @else
                                                 <tr style="text-align: center;">
-                                                    <td>No offer found</td>
+                                                    <td colspan="8">No offer found</td>
                                                 </tr>
                                             @endif
                                             </tbody>

@@ -6,6 +6,7 @@ use App\Inv\Repositories\Models\Cam;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\Anchor;
 
 trait ApplicationTrait
 {
@@ -624,14 +625,15 @@ trait ApplicationTrait
 
         return $array;
 
-    }    
+    }
 
     public function getAnchorProgramLimit(int $appId, int $program_id, int $offer_id = null){
         $utilizedLimit = 0;
 
-        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
+        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);
         $prgm_data =  $this->application->getProgram(['prgm_id' => $program_id]);
-        
+        $anchor_id = $prgm_data->anchor_id;
+        $anchorData = Anchor::getAnchorById($anchor_id);
         # product Type 1=> Supply Chain
         if ($prgm_data->product_id == 1) {
             $totalConsumtionAmt = 0;
@@ -642,13 +644,18 @@ trait ApplicationTrait
                 $totalConsumtionAmt += \Helpers::getPrgmBalLimitAmt($user_id, $program_id);
             }
 
-            $totalBalanceAmt = $prgm_data->anchor_sub_limit - $totalConsumtionAmt;
+            if($anchorData->is_fungible == 0) {
+                $totalBalanceAmt = $prgm_data->anchor_sub_limit - $totalConsumtionAmt;
+            } else {
+                $totalBalanceAmt = $prgm_data->anchor_sub_limit;
+            }
+
             $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id,$appData->app_id);
             $appPrgmLimit = $this->application->getProgramLimitData($appId,1);
             $appUserBalLimit = $appPrgmLimit[0]->limit_amt - $appUserConsumtionLimit;
-            /** Enhancement || Reduction */ 
+            /** Enhancement || Reduction */
             if ($appData->app_type == 2 || $appData->app_type == 3) {
-                
+
                 /**  Current Offer Consumed Limit */
                 if($offer_id){
                     if($appData->app_id){
@@ -659,18 +666,17 @@ trait ApplicationTrait
                     $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id, $offer_id);
                     $appUserBalLimit += $currOfferConsumAmt;
                 } else{
-                    // if(!$appData->prgmOffer()->count()){
+                    if(!$appData->prgmOffer()->count()){
                         $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->parent_app_id, null);
                         $totalBalanceAmt += $parentAppConsumAmt;
-                    // }
+                    }
                 }
             }
         }
-        
-        if ($prgm_data && $prgm_data->copied_prgm_id) {            
+
+        if ($prgm_data && $prgm_data->copied_prgm_id) {
             $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
         }
-        
         return ['prgm_limit' => $prgm_limit + $utilizedLimit, 'prgm_data' => $prgm_data, 'prgmBalLimitAmt' => $appUserBalLimit ?? 0, 'anchorBalLimitAmt' => $totalBalanceAmt ?? 0];
     }
 }
