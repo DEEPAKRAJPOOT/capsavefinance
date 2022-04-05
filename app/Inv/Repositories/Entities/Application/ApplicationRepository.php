@@ -1036,6 +1036,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function checkduplicateProgram($data){
         return AppProgramLimit::checkduplicateProgram($data);
     }
+    
+    public function checkduplicateOffer($data){
+        return AppProgramOffer::checkduplicateOffer($data);
+    }
+
   
     /**
      * update program data
@@ -2587,9 +2592,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getAppOfferLimitApproved($userId, $appId){
         return AppStatusLog::getAppOfferLimitApproved($userId, $appId);
     }
+
     public function getAssetList(){
         return Asset::getAssetList();
     }
+
     public function getBizOwnerDataByOwnerId($bizOwnerId)
     {
         return BizOwner::getBizOwnerDataByOwnerId($bizOwnerId);
