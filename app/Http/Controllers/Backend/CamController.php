@@ -181,119 +181,99 @@ class CamController extends Controller
     }
 
     public function camInformationSave(Request $request){
-       try{
+      try{
 
-            $arrCamData = $request->all();
-            $arrBizData = Business::getApplicationById($arrCamData['biz_id']);
-            $arrGroupCompData = GroupCompany::where(['group_Id'=>$arrCamData['group_company'], 'company_name'=>$arrBizData->biz_entity_name, 'is_active'=>1])->first();
-            $userId = Auth::user()->user_id;
+           $arrCamData = $request->all();
 
-            if(!isset($arrCamData['t_o_f_takeout'])){
-              $arrCamData['t_o_f_takeout'] = NULL;
-            }
-            if(!isset($arrCamData['rating_no'])){
-                    $arrCamData['rating_no'] = NULL;
-            }
-            if(!isset($arrCamData['t_o_f_security_check'])){
-                    $arrCamData['t_o_f_security_check'] = NULL;
-            }else{
-                  $arrCamData['t_o_f_security_check'] = implode(',', $arrCamData['t_o_f_security_check']);
-            }
-            if(!isset($arrCamData['debt_on'])){
-                    $arrCamData['debt_on'] = NULL;
-            }else{
-                     $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
-            }
+           $userId = Auth::user()->user_id;
 
-            if(isset($arrCamData['group_company'])){
-//                $masterGroupData= array(
-//                    'name'=> $arrCamData['group_company'],
-//                    'is_active' => '1',
-//                    'created_by'=>Auth::user()->user_id
-//                );
-//
-//                $arrMstGroup = Group::updateOrcreate($masterGroupData)->toArray();
-//                $arrCamData['group_company'] = $arrMstGroup['id'];
+           if(!isset($arrCamData['t_o_f_takeout'])){
+             $arrCamData['t_o_f_takeout'] = NULL; 
+           }
+           if(!isset($arrCamData['rating_no'])){
+                   $arrCamData['rating_no'] = NULL;
+           }
+           if(!isset($arrCamData['t_o_f_security_check'])){
+                   $arrCamData['t_o_f_security_check'] = NULL;
+           }else{
+                 $arrCamData['t_o_f_security_check'] = implode(',', $arrCamData['t_o_f_security_check']);
+           }
+           if(!isset($arrCamData['debt_on'])){
+                   $arrCamData['debt_on'] = NULL;
+           }else{
+                    $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
+           }
 
+           if(isset($arrCamData['group_company'])){
+               $masterGroupData= array(
+                   'name'=> $arrCamData['group_company'],
+                   'is_active' => '1',
+                   'created_by'=>Auth::user()->user_id
+               );
+                  
+               $arrMstGroup = Group::updateOrcreate($masterGroupData)->toArray();
+               $arrCamData['group_company'] = $arrMstGroup['id'];
 
+               
+               
+               // dd($arrCamData);
+               if(isset($arrCamData['group_company_name']))
+               {
 
-                // dd($arrCamData);
-                if(isset($arrCamData['group_company_name']))
-                {
-                   $arrSaveData = [];
-                   $attributes = ['is_active' => 2];
-                   $whereCond = ['app_id' => $arrCamData['app_id'], 'biz_id'=> $arrCamData['biz_id']];
-                   $this->mstRepo->updateGroupCompanyExposure($attributes, $whereCond);
-                  //GroupCompanyExposure::where('group_Id', $arrMstGroup['id'])->delete();
-                    foreach($arrCamData['group_company_name'] as $key => $groupCompanyName) {
-                       $inputArr= array(
-                          'biz_id'=> $arrCamData['biz_id'] ,
-                          'app_id'=> $arrCamData['app_id'],
-                          'group_Id'=> $arrCamData['group_company'],
-                          'group_company_name'=> $groupCompanyName ?? null,
-                          'product_type'=> isset($arrCamData['product_type'][$key]) ? $arrCamData['product_type'][$key] : 0 ,
-                          'sanction_limit'=> isset($arrCamData['sanction_limit'][$key]) ? $arrCamData['sanction_limit'][$key] : null ,
-                          'outstanding_exposure'=> isset($arrCamData['outstanding_exposure'][$key]) ? $arrCamData['outstanding_exposure'][$key] : null,
+                 //GroupCompanyExposure::where('group_Id', $arrMstGroup['id'])->delete();
+                   foreach($arrCamData['group_company_name'] as $key => $groupCompanyName) {
+                      $inputArr= array(
+                         'biz_id'=> $arrCamData['biz_id'] ,
+                         'app_id'=> $arrCamData['app_id'],
+                         'group_Id'=> $arrMstGroup['id'],
+                         'group_company_name'=> $groupCompanyName ?? null,
+                         'sanction_limit'=> isset($arrCamData['sanction_limit'][$key]) ? $arrCamData['sanction_limit'][$key] : null ,
+                         'outstanding_exposure'=> isset($arrCamData['outstanding_exposure'][$key]) ? $arrCamData['outstanding_exposure'][$key] : null,
+                         
+                         'created_by'=>$userId
+                     );  
+                       if(isset($arrCamData['proposed_exposure'][$key])){
+                          $inputArr['proposed_exposure'] = $arrCamData['proposed_exposure'][$key];
+                       }
+                       if(isset($arrCamData['group_company_expo_id'][$key])){
+                          $group_company_expo_id = $arrCamData['group_company_expo_id'][$key];
+                       }else{
+                          $group_company_expo_id = null;
+                       }
+                      GroupCompanyExposure::updateOrcreate(['group_company_expo_id' => $group_company_expo_id], $inputArr);
+                   }
+               }
+           }
 
-                          'created_by'=>$userId
-                      );
-                        if(isset($arrCamData['proposed_exposure'][$key])){
-                           $inputArr['proposed_exposure'] = $arrCamData['proposed_exposure'][$key];
-                        }
-//                        if(isset($arrCamData['group_company_expo_id'][$key])){
-//                           $group_company_expo_id = $arrCamData['group_company_expo_id'][$key];
-//                        }else{
-//                           $group_company_expo_id = null;
-//                        }
-                        if (($key == 0) && ($arrGroupCompData==null)) {
-                            $arrSaveData['group_id'] = $arrCamData['group_company'];
-                            $arrSaveData['user_id'] = $arrBizData->user_id;
-                            $arrSaveData['app_id'] = $arrCamData['app_id'];
-                            $arrSaveData['company_name'] = $groupCompanyName ?? null;
-                            $arrSaveData['product_type'] = isset($arrCamData['product_type'][$key]) ? $arrCamData['product_type'][$key] : 0 ;
-                            $arrSaveData['sanction_limit'] = isset($arrCamData['sanction_limit'][$key]) ? $arrCamData['sanction_limit'][$key] : null;
-                            $arrSaveData['outstanding_exposure'] = isset($arrCamData['outstanding_exposure'][$key]) ? $arrCamData['outstanding_exposure'][$key] : null;
-                            $arrSaveData['proposed_exposure'] = isset($arrCamData['proposed_exposure'][$key]) ? $arrCamData['proposed_exposure'][$key] : null;
-                            $arrSaveData['is_active'] = 1;
-                            $arrSaveData['created_by'] = Auth::user()->user_id;
-                            $this->mstRepo->updateOrCreateGroupCompany($arrSaveData);
-                        }
-
-                        $this->mstRepo->saveGroupCompanyExposure($inputArr);
-//                       GroupCompanyExposure::updateOrcreate(['group_company_expo_id' => $group_company_expo_id], $inputArr);
-                    }
+           $whereActivi['activity_code'] = 'cam_information_save';
+           $activity = $this->mstRepo->getActivity($whereActivi);
+           if(!empty($activity)) {
+               $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+               $activity_desc = 'Cam Inforamtion Save (Overview). AppID '. $arrCamData['app_id'];
+               $arrActivity['app_id'] = $arrCamData['app_id'];
+               $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrCamData), $arrActivity);
+           }             
+           
+           $arrCamData['proposed_exposure'] = $arrCamData['proposed_exposure']['0'] ?? '';
+           if($arrCamData['cam_report_id'] != ''){
+                $updateCamData = Cam::updateCamData($arrCamData, $userId);
+                if($updateCamData){
+                       Session::flash('message',trans('CAM information updated successfully'));
+                }else{
+                      Session::flash('message',trans('CAM information not updated successfully'));
                 }
-            }
-
-            $whereActivi['activity_code'] = 'cam_information_save';
-            $activity = $this->mstRepo->getActivity($whereActivi);
-            if(!empty($activity)) {
-                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
-                $activity_desc = 'Cam Inforamtion Save (Overview). AppID '. $arrCamData['app_id'];
-                $arrActivity['app_id'] = $arrCamData['app_id'];
-                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrCamData), $arrActivity);
-            }
-
-            $arrCamData['proposed_exposure'] = $arrCamData['proposed_exposure']['0'] ?? '';
-            if($arrCamData['cam_report_id'] != ''){
-                 $updateCamData = Cam::updateCamData($arrCamData, $userId);
-                 if($updateCamData){
-                        Session::flash('message',trans('CAM information updated successfully'));
-                 }else{
-                       Session::flash('message',trans('CAM information not updated successfully'));
-                 }
-            }else{
-                $saveCamData = Cam::creates($arrCamData, $userId);
-                if($saveCamData){
-                        Session::flash('message',trans('CAM information saved successfully'));
-                 }else{
-                       Session::flash('message',trans('CAM information not saved successfully'));
-                 }
-            }
-            return redirect()->route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
-        } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
-        }
+           }else{
+               $saveCamData = Cam::creates($arrCamData, $userId);
+               if($saveCamData){
+                       Session::flash('message',trans('CAM information saved successfully'));
+                }else{
+                      Session::flash('message',trans('CAM information not saved successfully'));
+                }
+           }    
+           return redirect()->route('cam_overview', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+       } catch (Exception $ex) {
+           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+       }
     }
 
     public function showCibilForm(Request $request){
