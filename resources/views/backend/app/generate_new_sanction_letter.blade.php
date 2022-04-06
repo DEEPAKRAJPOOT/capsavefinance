@@ -181,7 +181,9 @@
             </tr>
          </tbody>
       </table>
-      {{-- <div class="page-break"></div> --}}
+      @if(!empty($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count() == 1)
+        <div style="page-break-before: always;"></div>
+      @endif
       <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify; margin-top:25px;">
          <thead>
             <tr>
