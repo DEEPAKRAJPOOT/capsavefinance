@@ -268,7 +268,7 @@
                                                                 @endif     
                                                         @endforeach
                                                         @else
-                                                        {{ $arrayOfferData[$offerD->prgm_offer_id]->margin }}
+                                                        {{ $arrayOfferData[$offerD->prgm_offer_id]->margin??'' }}
                                                         @endif 
                                                          value. (in case margin is nil in offer – not to capture in final SL)
                                                     </td>
@@ -280,7 +280,7 @@
                                                             @if($offerD->payment_frequency == 1)
                                                                 @if($offerD->program->interest_borne_by == 1)
                                                                     <tr>
-                                                                        <td valign="top" width="1%">●
+                                                                        <td valign="top" width="1%">&bull;
                                                                         </td>
                                                                         <td valign="top">
                                                                                 To be paid by Anchor
@@ -290,7 +290,7 @@
                                                                     </tr>
                                                                 @else
                                                                 <tr>
-                                                                    <td valign="top" width="1%">●</td>
+                                                                    <td valign="top" width="1%">&bull;</td>
                                                                     <td valign="top">Lender will deduct upfront interest for
                                                                         a
                                                                         period upto 30 days at the time of disbursement of
@@ -301,7 +301,7 @@
                                                             @else
                                                             @if($offerD->payment_frequency == 2)
                                                             <tr>
-                                                                <td valign="top" width="1%">●
+                                                                <td valign="top" width="1%">&bull;
                                                                 </td>
                                                                 <td valign="top">
                                                                     Lender shall charge monthly interest to the
@@ -365,7 +365,7 @@
                                                             @if (isset($arrayOfferData[$offerD->prgm_offer_id]->ps_security) && !empty($arrayOfferData[$offerD->prgm_offer_id]->ps_security))
                                                             @foreach($arrayOfferData[$offerD->prgm_offer_id]->ps_security as $PrimarySecurityS)
                                                             <tr>
-                                                                <td valign="top" width="1%">●</td>
+                                                                <td valign="top" width="1%">&bull;</td>
                                                                 <td>{!! $PrimarySecurityS !!}
                                                                 </td>
                                                             </tr>
@@ -374,7 +374,7 @@
                                                             @if (isset($arrayOfferData[$offerD->prgm_offer_id]->cs_security) && !empty($arrayOfferData[$offerD->prgm_offer_id]->cs_security))
                                                             @foreach($arrayOfferData[$offerD->prgm_offer_id]->cs_security as $CsSecurityS)
                                                             <tr>
-                                                                <td valign="top" width="1%">●</td>
+                                                                <td valign="top" width="1%">&bull;</td>
                                                                 <td>{!! $CsSecurityS !!}
                                                                 </td>
                                                             </tr>
@@ -382,7 +382,7 @@
                                                             @endif
                                                             @if(isset($arrayOfferData[$offerD->prgm_offer_id ]->pg_guarantor) &&  $arrayOfferData[$offerD->prgm_offer_id ]->pg_guarantor != '')
                                                             <tr>
-                                                            <td valign="top" width="1%">●</td>
+                                                            <td valign="top" width="1%">&bull;</td>
                                                             <td>Personal Guarantee of
                                                                 {!! $arrayOfferData[$offerD->prgm_offer_id ]->pg_guarantor??''!!}
                                                              </td>
@@ -506,7 +506,7 @@
                                                             @if(!empty($supplyChainFormData))
                                                             @foreach($supplyChainFormData->defaultEvent as $defaultEvent)
                                                             <tr>
-                                                                <td valign="top" width="1%">●</td>
+                                                                <td valign="top" width="1%">&bull;</td>
                                                                 <td>{{ $defaultEvent??'' }}
                                                                 </td>
                                                             </tr>
@@ -549,23 +549,23 @@
                                                                         @endphp
                                                                        @if ($bizConstitution)
                                                                        <tr>
-                                                                        <td valign="top" width="1%">●</td>
+                                                                        <td valign="top" width="1%">&bull;</td>
                                                                         <td>
                                                                            {{ $bizConstitution }} 
                                                                           </td>
                                                                         </tr>
                                                                        @endif
                                                                         <tr>
-                                                                            <td valign="top" width="1%">●</td>
+                                                                            <td valign="top" width="1%">&bull;</td>
                                                                             <td>Valid Address Proof
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <td valign="top" width="1%">●</td>
+                                                                            <td valign="top" width="1%">&bull;</td>
                                                                             <td>PAN Card</td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <td valign="top" width="1%">●</td>
+                                                                            <td valign="top" width="1%">&bull;</td>
                                                                             <td>GST Registration Certificate</td>
                                                                         </tr>
                                                                     </table>
@@ -589,14 +589,14 @@
                                                                     KYC of authorized signatory:
                                                                     <table width="100%" border="0">
                                                                         <tr>
-                                                                            <td valign="top" width="3%">●</td>
+                                                                            <td valign="top" width="3%">&bull;</td>
                                                                             <td>Name of authorized signatories with
                                                                                 their
                                                                                 Self Attested ID proof and address proof
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <td valign="top" width="3%">●</td>
+                                                                            <td valign="top" width="3%">&bull;</td>
                                                                             <td>Signature Verification of authorized
                                                                                 signatories from Borrower's banker
                                                                             </td>
@@ -747,13 +747,13 @@
                                                                            
                                                                         </tr>
                                                                         <tr>
-                                                                            <td valign="top" width="3%">●</td>
+                                                                            <td valign="top" width="3%">&bull;</td>
                                                                             <td>Any amount due to the lender under any credit facility is ‘overdue’ if it is not paid on the due date fixed by the Lender. If there is any overdue in an account, the default/ non-repayment is reported with the credit bureau companies like CIBIL etc. and the CIBIL report of the customer will reflect defaults and its classification status.
 
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <td valign="top" width="3%">●</td>
+                                                                            <td valign="top" width="3%">&bull;</td>
                                                                             <td>Once an account is classified as NPAs then it shall be upgraded as ‘standard’ asset only if entire arrears of interest and principal are paid by the borrower.
                                                                             </td>
                                                                         </tr>

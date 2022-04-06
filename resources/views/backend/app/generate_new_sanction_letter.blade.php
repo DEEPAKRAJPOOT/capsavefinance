@@ -12,7 +12,6 @@
          
          table {
             border-collapse: collapse;
-            
          }
          table, tr, td, th, tbody, thead, tfoot {
             page-break-inside: avoid !important;
@@ -25,7 +24,7 @@
          /* thead { display:table-header-group } */
          tfoot { display:table-footer-group }
          thead {display: table-row-group;}
-         </style>
+   </style>
    </head>
    <body>
       <script type="text/php">
@@ -276,7 +275,7 @@
                                      @endif     
                              @endforeach
                              @else
-                                 {{ $arrayOfferData[$offerD->prgm_offer_id]->margin }}
+                                 {{ $arrayOfferData[$offerD->prgm_offer_id]->margin??'' }}
                              @endif
                               value. (in case margin is nil in offer – not to capture in final SL)
                          </td>

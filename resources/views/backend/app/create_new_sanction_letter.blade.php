@@ -290,7 +290,7 @@
                                                                        }
                                                                    @endphp
                                                                 @endif
-                                                               <input type = "checkbox" id = "margin1" name="offerData[{{ $offerD->prgm_offer_id }}][margin][]" value = "{{ $a }}" {{ $checked }}> {{ $a }} 
+                                                               <input type = "checkbox" id = "margin1" name="offerData[{{ $offerD->prgm_offer_id }}][margin][]" class="margin_input" value = "{{ $a }}" {{ $checked }} required> {{ $a }} 
                                                                @endforeach
                                                                value. (in case margin is nil in offer – not to capture in final SL)
                                                     </td>
@@ -302,7 +302,7 @@
                                                             @if($offerD->payment_frequency == 1)
                                                                 @if($offerD->program->interest_borne_by == 1)
                                                                     <tr>
-                                                                        <td valign="top" width="1%">●
+                                                                        <td valign="top" width="1%">&bull;
                                                                         </td>
                                                                         <td valign="top">
                                                                                 To be paid by Anchor
@@ -312,7 +312,7 @@
                                                                     </tr>
                                                                 @else
                                                                 <tr>
-                                                                    <td valign="top" width="1%">●</td>
+                                                                    <td valign="top" width="1%">&bull;</td>
                                                                     <td valign="top">Lender will deduct upfront interest for
                                                                         a
                                                                         period upto 30 days at the time of disbursement of
@@ -323,7 +323,7 @@
                                                             @else
                                                             @if($offerD->payment_frequency == 2)
                                                             <tr>
-                                                                <td valign="top" width="1%">●
+                                                                <td valign="top" width="1%">&bull;
                                                                 </td>
                                                                 <td valign="top">
                                                                     Lender shall charge monthly interest to the
@@ -420,7 +420,7 @@
                                                             @if (isset($arrayOfferData[$offerD->prgm_offer_id]->ps_security) && !empty($arrayOfferData[$offerD->prgm_offer_id]->ps_security))
                                                             @foreach($arrayOfferData[$offerD->prgm_offer_id]->ps_security as $PrimarySecurityS)
                                                             <tr>
-                                                                <td valign="top" width="1%">●</td>
+                                                                <td valign="top" width="1%">&bull;</td>
                                                                 <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][ps_security][]" class="form-control form-control-sm">{!! $PrimarySecurityS !!}</textarea>
                                                                 </td>
                                                             </tr>
@@ -428,7 +428,7 @@
                                                             @else
                                                             @foreach($offerD->offerPs as $PrimarySecurity)
                                                             <tr>
-                                                                <td valign="top" width="1%">●</td>
+                                                                <td valign="top" width="1%">&bull;</td>
                                                                 <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][ps_security][]" class="form-control form-control-sm">{{config('common.ps_security_id.'.$PrimarySecurity->ps_security_id)}} / {{config('common.ps_type_of_security_id.'.$PrimarySecurity->ps_type_of_security_id)}} / {{config('common.ps_status_of_security_id.'.$PrimarySecurity->ps_status_of_security_id)}} /{{config('common.ps_time_for_perfecting_security_id.'.$PrimarySecurity->ps_time_for_perfecting_security_id)}} / {{$PrimarySecurity->ps_desc_of_security}}</textarea>
                                                                 </td>
                                                             </tr>
@@ -439,7 +439,7 @@
                                                             @if (isset($arrayOfferData[$offerD->prgm_offer_id]->cs_security) && !empty($arrayOfferData[$offerD->prgm_offer_id]->cs_security))
                                                             @foreach($arrayOfferData[$offerD->prgm_offer_id]->cs_security as $CsSecurityS)
                                                             <tr>
-                                                                <td valign="top" width="1%">●</td>
+                                                                <td valign="top" width="1%">&bull;</td>
                                                                 <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][cs_security][]" class="form-control form-control-sm">{!! $CsSecurityS !!}</textarea>
                                                                 </td>
                                                             </tr>
@@ -447,7 +447,7 @@
                                                             @else
                                                             @foreach($offerD->offerCs as $CollateralSecurity)
                                                             <tr>
-                                                                <td valign="top" width="1%">●</td>
+                                                                <td valign="top" width="1%">&bull;</td>
                                                                 <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][cs_security][]" class="form-control form-control-sm">{{config('common.cs_desc_security_id.'.$CollateralSecurity->cs_desc_security_id)}} / {{config('common.cs_type_of_security_id.'.$CollateralSecurity->cs_type_of_security_id)}} / {{config('common.cs_status_of_security_id.'.$CollateralSecurity->cs_status_of_security_id)}} / {{config('common.cs_time_for_perfecting_security_id.'.$CollateralSecurity->cs_time_for_perfecting_security_id)}} / {{$CollateralSecurity->cs_desc_of_security}}</textarea>
                                                                 </td>
                                                             </tr>
@@ -456,7 +456,7 @@
                                                             @endif
                                                             @if($offerD->offerPg->count())
                                                             <tr>
-                                                            <td valign="top" width="1%">●</td>
+                                                            <td valign="top" width="1%">&bull;</td>
                                                             <td>Personal Guarantee of
                                                             @php
                                                                 $Pg='';
@@ -512,7 +512,44 @@
                                                 <tr>
                                                     <td valign="top"><b>Transaction process</b></td>
                                                     <td>
-                                                        <textarea class="form-control textarea transaction_process" name="offerData[{{ $offerD->prgm_offer_id }}][transaction_process]" id="transaction_process{{ $offerD->prgm_offer_id }}" cols="30" rows="10">@if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->transaction_process) && $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process){!! $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process !!} @else  @endif</textarea>
+                                                        <textarea class="form-control textarea transaction_process" name="offerData[{{ $offerD->prgm_offer_id }}][transaction_process]" id="transaction_process{{ $offerD->prgm_offer_id }}" cols="30" rows="10">@if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->transaction_process) && $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process){!! $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process !!} @else  
+                                                            <table width="100%" border="0">
+                                                                <tr>
+                                                                   <td>&bull;</td>
+                                                                   <td>Borrower will submit a disbursal request along with
+                                                                      proforma invoices / invoices and Anchor will
+                                                                      confirm the proforma invoices / invoices.
+                                                                   </td>
+                                                                </tr>
+                                                                <tr>
+                                                                   <td>&bull;</td>
+                                                                   <td>Lender will disburse the payment against the
+                                                                      proforma
+                                                                      invoice / invoices in Borrower’s
+                                                                      working capital account/current account / Anchor's
+                                                                      working capital account
+                                                                      (in case of re-imbursement) post receiving
+                                                                      confirmation
+                                                                      from Anchor.
+                                                                   </td>
+                                                                </tr>
+                                                                <tr>
+                                                                   <td>&bull;</td>
+                                                                   <td>Disbursement amount should not exceed 70% of
+                                                                      proforma
+                                                                      invoices / invoices.
+                                                                   </td>
+                                                                </tr>
+                                                                <tr>
+                                                                   <td>&bull;</td>
+                                                                   <td>On due date, Anchor will make payment to Lender
+                                                                      within
+                                                                      credit period of 30 days.
+                                                                   </td>
+                                                                </tr>
+                                                             </table>
+                                                        
+                                                            @endif</textarea>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -636,18 +673,18 @@
                                                             @if(!empty($supplyChainFormData))
                                                             @foreach($supplyChainFormData->defaultEvent as $defaultEvent)
                                                             <tr>
-                                                                <td valign="top" width="1%">●</td>
+                                                                <td valign="top" width="1%">&bull;</td>
                                                                 <td><input type="text" value="{{ $defaultEvent }}" name="defaultEvent[]" style=" min-height:30px;padding:0 5px; min-width:100%;">
                                                                 </td>
                                                             </tr>
                                                             @endforeach
                                                             @else
                                                             <tr>
-                                                                <td valign="top" width="1%">●</td>
+                                                                <td valign="top" width="1%">&bull;</td>
                                                                 <td><input type="text" value="Payments not received on or before the due date will be treated as overdue / default by the Borrower." name="defaultEvent[]" style=" min-height:30px;padding:0 5px; min-width:100%;"> </td>
                                                              </tr>
                                                              <tr>
-                                                                <td valign="top" width="1%">●</td>
+                                                                <td valign="top" width="1%">&bull;</td>
                                                                 <td><input type="text" value="No further disbursement will be made in case of any default under the Facility." name="defaultEvent[]" style=" min-height:30px;padding:0 5px; min-width:100%;"></td>
                                                              </tr>
                                                             @endif
@@ -691,23 +728,23 @@
                                                                         @endphp
                                                                        @if ($bizConstitution)
                                                                        <tr>
-                                                                        <td valign="top" width="1%">●</td>
+                                                                        <td valign="top" width="1%">&bull;</td>
                                                                         <td>
                                                                            {{ $bizConstitution }} 
                                                                           </td>
                                                                         </tr>
                                                                        @endif         
                                                                         <tr>
-                                                                            <td valign="top" width="1%">●</td>
+                                                                            <td valign="top" width="1%">&bull;</td>
                                                                             <td>Valid Address Proof
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <td valign="top" width="1%">●</td>
+                                                                            <td valign="top" width="1%">&bull;</td>
                                                                             <td>PAN Card</td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <td valign="top" width="1%">●</td>
+                                                                            <td valign="top" width="1%">&bull;</td>
                                                                             <td>GST Registration Certificate</td>
                                                                         </tr>
                                                                     </table>
@@ -729,14 +766,14 @@
                                                                     KYC of authorized signatory:
                                                                     <table width="100%" border="0">
                                                                         <tr>
-                                                                            <td valign="top" width="3%">●</td>
+                                                                            <td valign="top" width="3%">&bull;</td>
                                                                             <td>Name of authorized signatories with
                                                                                 their
                                                                                 Self Attested ID proof and address proof
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <td valign="top" width="3%">●</td>
+                                                                            <td valign="top" width="3%">&bull;</td>
                                                                             <td>Signature Verification of authorized
                                                                                 signatories from Borrower's banker??
                                                                             </td>
@@ -919,13 +956,13 @@
                                                                            
                                                                         </tr>
                                                                         <tr>
-                                                                            <td valign="top" width="3%">●</td>
+                                                                            <td valign="top" width="3%">&bull;</td>
                                                                             <td>Any amount due to the lender under any credit facility is ‘overdue’ if it is not paid on the due date fixed by the Lender. If there is any overdue in an account, the default/ non-repayment is reported with the credit bureau companies like CIBIL etc. and the CIBIL report of the customer will reflect defaults and its classification status.
 
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <td valign="top" width="3%">●</td>
+                                                                            <td valign="top" width="3%">&bull;</td>
                                                                             <td>Once an account is classified as NPAs then it shall be upgraded as ‘standard’ asset only if entire arrears of interest and principal are paid by the borrower.
                                                                             </td>
                                                                         </tr>
@@ -1073,17 +1110,18 @@
                 { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
                 { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
                 { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
-                { name: 'forms', groups: [ 'forms' ] },
+                // { name: 'forms', groups: [ 'forms' ] },
                 { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
                 { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
                 { name: 'links', groups: [ 'links' ] },
-                // { name: 'insert', groups: [ 'insert' ] },
+                { name: 'insert', groups: [ 'insert' ] },
                 { name: 'styles', groups: [ 'styles' ] },
                 { name: 'colors', groups: [ 'colors' ] },
                 { name: 'tools', groups: [ 'tools' ] },
                 { name: 'others', groups: [ 'others' ] },
                 { name: 'about', groups: [ 'about' ] }
-            ]
+            ],
+            removePlugins: 'link,image,flash,smiley,pagebreak,iframe'
 };
    CKEDITOR.replace('monitoring_covenants_select_text',ckeditorOptions);
     $(document).ready(function() {
@@ -1185,7 +1223,7 @@
     $(document).on('click', '.clone_defaultevent', function() {
         // covenants_clone_tr_html =  $('.covenants_clone_tr').html();
         covenants_clone_tr_html =
-            '<td valign="top" width="1%">●</td><td><input type="text" name="defaultEvent[]" value="" style=" min-height:30px;padding:0 5px; min-width:100%;" id="row_defEvent_'+counter+'" class="row_defevent_input" required></td>';
+            '<td valign="top" width="1%">&bull;</td><td><input type="text" name="defaultEvent[]" value="" style=" min-height:30px;padding:0 5px; min-width:100%;" id="row_defEvent_'+counter+'" class="row_defevent_input" required></td>';
         $('#defaultEvent').append("<tr>" + covenants_clone_tr_html + "</tr>");
         $("#new_sanction_letter_form .row_defevent_input").each(function () {
             $(this).rules('add', {
@@ -1245,15 +1283,21 @@
                 // }
                 , "monitoring_covenants_select_text": {
                     required : true,
-                    alphanumeric: true
+                    // alphanumeric: true
                 },
                 "sanction_validity_for_first_disbursement": {
                     required : true,
-                    alphanumeric: true
+                    min:1,
+                    max:365
+                    // alphanumeric: true
                 }
                 // , "general_pre_disbursement_condition[]": {
                 //     required : true,
                 // }
+                ,
+                'margin_input': {
+                    required: true
+                }
             }
         });
 
