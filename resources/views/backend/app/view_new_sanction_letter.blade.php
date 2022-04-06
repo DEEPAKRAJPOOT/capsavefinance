@@ -261,7 +261,7 @@
                                                     <td valign="top"><b>Margin</b></td>
                                                     <td>
                                                         {{($offerD->margin	)? $offerD->margin:'NIL'}}% on 
-                                                        @if (!empty($arrayOfferData[$offerD->prgm_offer_id]->margin))   
+                                                        @if (isset($arrayOfferData[$offerD->prgm_offer_id]->margin) && !empty($arrayOfferData[$offerD->prgm_offer_id]->margin))   
                                                         @foreach ($arrayOfferData[$offerD->prgm_offer_id]->margin as $g=>$r)
                                                                  {{ $r }} 
                                                                 @if( !$loop->last),
