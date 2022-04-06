@@ -2473,6 +2473,7 @@ class ApplicationController extends Controller
 				'action_type' => $action_type,
 				'arrayOfferData' => $arrayOfferData,
 				'date_of_final_submission' => $data['date_of_final_submission'],
+				'contact_person' => $data['contact_person'],
 				'sanctionData'  => $data['sanctionData'],
 				'appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'sanctionId' => $sanctionId,'download'=> false
 	
@@ -2511,6 +2512,7 @@ class ApplicationController extends Controller
             'action_type' => $action_type,
             'arrayOfferData' => $arrayOfferData,
 			'date_of_final_submission' => $santionData['date_of_final_submission'],
+			'contact_person' => $santionData['contact_person'],
 			'sanctionData'  => $santionData['sanctionData']
 
         ];
@@ -2529,8 +2531,9 @@ class ApplicationController extends Controller
 		  //return  $html;
 		  ob_start();
           $pdf = NewPDF::loadView('backend.app.generate_new_sanction_letter');
-		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true]);
-		  $pdf->setPaper('A4', 'Portrait');
+		  $customPaper = [0,0,899,1800];
+		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true,'dpi' => 96]);
+		  $pdf->setPaper($customPaper);
           return $pdf->download('sanctionLetter.pdf');
         }
         $html = view('backend.app.preview_new_sanction_letter')->render();
@@ -2574,6 +2577,7 @@ class ApplicationController extends Controller
 				'action_type' => $action_type,
 				'arrayOfferData' => $arrayOfferData,
 				'date_of_final_submission' => $santionData['date_of_final_submission'],
+				'contact_person' => $santionData['contact_person'],
 				'sanctionData'  => $santionData['sanctionData'],
 				'appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'sanctionId' => $sanctionId,'download'=> false
 

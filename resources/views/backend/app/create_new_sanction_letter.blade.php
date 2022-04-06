@@ -3,6 +3,11 @@
 @endsection
 @section('content')
 @include('layouts.backend.partials.admin-subnav')
+<style>
+#cke_monitoring_covenants_select_text {
+    margin-top: 8px;
+}
+</style>
 @php $actionText = (!empty($actionType) && $actionType == 'add')?'Create':'Edit'; @endphp
 @php $actionIcon = (!empty($actionType) && $actionType == 'add')?'fa fa-plus':'fa fa-pencil'; @endphp
 <div class="content-wrapper">
@@ -195,6 +200,7 @@
 
                                     @php
                                       $check = 'no';  
+                                      echo "<pre/>";print_r($arrayOfferData);
                                     @endphp
                                     @else
                                     @php
@@ -258,14 +264,30 @@
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Margin</b></td>
+                                                    @php
+                                                        $list_type = array('Tax Invoice','Proforma Invoice','Purchase Order');
+                                                    @endphp
                                                     <td>
-                                                        {{($offerD->margin	)? $offerD->margin:'NIL'}}% on
-                                                        <select style="min-height:30px; padding:0 5px; min-width:180px;" name="offerData[{{ $offerD->prgm_offer_id }}][margin]" id="margin">
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->margin) && $arrayOfferData[$offerD->prgm_offer_id ]->margin == 'Purchase Order'?'selected':'' }}>Purchase Order</option>
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->margin) && $arrayOfferData[$offerD->prgm_offer_id ]->margin == 'Invoice'?'selected':'' }}>Invoice</option>
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->margin) && $arrayOfferData[$offerD->prgm_offer_id ]->margin == 'Proforma Invoice'?'selected':'' }}>Proforma Invoice</option>
-                                                        </select>
-                                                        value. (in case margin is nil in offer – not to capture in final SL)
+                                                        @php
+                                                                   $checked = '';
+                                                               @endphp
+                                                        {{($offerD->margin	)? $offerD->margin:'NIL'}}% on 
+                                                               @foreach ($list_type as $l=>$a)
+                                                               @php
+                                                                   $checked = '';
+                                                               @endphp
+                                                               @if (!empty($arrayOfferData[$offerD->prgm_offer_id]->margin))
+                                                                   @foreach ($arrayOfferData[$offerD->prgm_offer_id]->margin as $g=>$r)
+                                                                       @if ($r == $a)
+                                                                           @php
+                                                                               $checked = 'checked';
+                                                                           @endphp
+                                                                       @endif
+                                                                   @endforeach  
+                                                                @endif
+                                                               <input type = "checkbox" id = "margin1" name="offerData[{{ $offerD->prgm_offer_id }}][margin][]" value = "{{ $a }}" {{ $checked }}> {{ $a }} 
+                                                               @endforeach
+                                                               value. (in case margin is nil in offer – not to capture in final SL)
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -325,41 +347,59 @@
                                                             @foreach($offerD->offerCharges as $key=>$offerCharge)
                                                             @if($offerCharge->chargeName->chrg_name == 'Processing Fee')
                                                              @if($offerCharge->chrg_type == '2')
-                                                                {{$offerCharge->chrg_value}}
+                                                                {{$offerCharge->chrg_value}}%
                                                                 @endif
                                                               @endif
                                                             @endforeach
-                                                            @endif
-                                                         % of the sanctioned limit + applicable taxes payable by the
+                                                            @endif of the sanctioned limit + applicable taxes payable by the
+                                                         @php
+                                                            $selected1 = $selected2 = '';
+                                                            if(isset($arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges) &&  $arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges == 'Anchor'){
+                                                                $selected1 = 'selected';
+                                                            }elseif (isset($arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges) &&  $arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges == 'Borrower') {
+                                                                $selected2 = 'selected';
+                                                            }elseif (isset($offerD->program->interest_borne_by) && $offerD->program->interest_borne_by == 1) {
+                                                                $selected1 = 'selected';
+                                                            }elseif (isset($offerD->program->interest_borne_by) && $offerD->program->interest_borne_by == 2) {
+                                                                $selected2 = 'selected';
+                                                            }
+                                                         @endphp
                                                         <select style="min-height:30px; padding:0 5px; min-width:180px;" name="offerData[{{ $offerD->prgm_offer_id }}][one_time_processing_charges]" id="one_time_processing_charges">
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges) &&  $arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges == 'Purchase Order'?'selected':'' }}>Purchase Order</option>
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges) &&  $arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges == 'Invoice'?'selected':'' }}>Invoice</option>
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges) &&  $arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges == 'Proforma Invoice'?'selected':'' }}>Proforma Invoice</option>
+                                                            <option {{ $selected1 }}>Anchor</option>
+                                                            <option {{ $selected2 }}>Borrower</option>
                                                         </select>
-                                                        . *(If Nil is selected in offer– not to capture in final SL).
+                                                        (non-refundable). *(If Nil is selected in offer– not to capture in final SL).
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td valign="top"><b>Penal Interest</b></td>
-                                                    <td>
+                                                    <td valign="top"><b>Default/Penal Interest</b></td>
+                                                    <td><b>
                                                         @php
                                                             $penelInterestRate = (($offerD['overdue_interest_rate'] ?? 0) + ($offerD['interest_rate'] ?? 0))/12; 
                                                         @endphp
-                                                        {{number_format($penelInterestRate, 2, '.', '')}}% per month in case any tranche remains unpaid after the expiry
-                                                        of
-                                                        approved tenor from the
-                                                        disbursement date. Penal interest to be charged for the relevant
-                                                        tranche for such overdue period
-                                                        till actual payment of such tranche.
+                                                        {{number_format($penelInterestRate, 2, '.', '')}}% per annum including above regular rate of interest in case any tranche remains unpaid after the expiry of approved tenor from the disbursement date. Penal interest to be charged for the relevant tranche for such overdue period till actual payment of such tranche.</b>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Applicable Taxes</b></td>
                                                     <td>
                                                         @php
-                                                            $interest_borne_by = ($offerD->program->interest_borne_by == 1)?'Anchor':'Borrower';
+                                                            $selected3 = $selected4 = '';
+                                                            if(isset($arrayOfferData[$offerD->prgm_offer_id ]->applicable_taxes) &&  $arrayOfferData[$offerD->prgm_offer_id ]->applicable_taxes == 'Anchor'){
+                                                                $selected3 = 'selected';
+                                                            }elseif (isset($arrayOfferData[$offerD->prgm_offer_id ]->applicable_taxes) &&  $arrayOfferData[$offerD->prgm_offer_id ]->applicable_taxes == 'Borrower') {
+                                                                $selected4 = 'selected';
+                                                            }elseif (isset($offerD->program->interest_borne_by) && $offerD->program->interest_borne_by == 1) {
+                                                                $selected3 = 'selected';
+                                                            }elseif (isset($offerD->program->interest_borne_by) && $offerD->program->interest_borne_by == 2) {
+                                                                $selected4 = 'selected';
+                                                            }
                                                         @endphp
-                                                        Any charges/interest payable by the {{ $interest_borne_by }} as mentioned
+                                                        Any charges/interest payable by the 
+                                                        <select style="min-height:30px; padding:0 5px; min-width:180px;" name="offerData[{{ $offerD->prgm_offer_id }}][applicable_taxes]" id="applicable_taxes">
+                                                            <option {{ $selected3 }}>Anchor</option>
+                                                            <option {{ $selected4 }}>Borrower</option>
+                                                        </select> as mentioned
                                                         in
                                                         the sanction letter are
                                                         excluding applicable taxes. Taxes applicable would be levied
@@ -371,28 +411,51 @@
                                                     <td valign="top"><b>Security from Borrower</b></td>
                                                     <td>
                                                         <table width="100%" border="0">
-                                                            @if($offerD->offerPs->count())
+                                                            @if($offerD->offerPs->count() || isset($arrayOfferData[$offerD->prgm_offer_id]->ps_security))
+                                                            @if (isset($arrayOfferData[$offerD->prgm_offer_id]->ps_security) && !empty($arrayOfferData[$offerD->prgm_offer_id]->ps_security))
+                                                            @foreach($arrayOfferData[$offerD->prgm_offer_id]->ps_security as $PrimarySecurityS)
+                                                            <tr>
+                                                                <td valign="top" width="1%">●</td>
+                                                                <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][ps_security][]" class="form-control form-control-sm">{!! $PrimarySecurityS !!}</textarea>
+                                                                </td>
+                                                            </tr>
+                                                              @endforeach 
+                                                            @else
                                                             @foreach($offerD->offerPs as $PrimarySecurity)
                                                             <tr>
                                                                 <td valign="top" width="1%">●</td>
-                                                                <td>{{config('common.ps_security_id.'.$PrimarySecurity->ps_security_id)}} / {{config('common.ps_type_of_security_id.'.$PrimarySecurity->ps_type_of_security_id)}} / {{config('common.ps_status_of_security_id.'.$PrimarySecurity->ps_status_of_security_id)}} /{{config('common.ps_time_for_perfecting_security_id.'.$PrimarySecurity->ps_time_for_perfecting_security_id)}} / {{$PrimarySecurity->ps_desc_of_security}}
+                                                                <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][ps_security][]" class="form-control form-control-sm">{{config('common.ps_security_id.'.$PrimarySecurity->ps_security_id)}} / {{config('common.ps_type_of_security_id.'.$PrimarySecurity->ps_type_of_security_id)}} / {{config('common.ps_status_of_security_id.'.$PrimarySecurity->ps_status_of_security_id)}} /{{config('common.ps_time_for_perfecting_security_id.'.$PrimarySecurity->ps_time_for_perfecting_security_id)}} / {{$PrimarySecurity->ps_desc_of_security}}</textarea>
                                                                 </td>
                                                             </tr>
                                                               @endforeach
+                                                              @endif
                                                             @endif
-                                                            @if($offerD->offerCs->count())
+                                                            @if($offerD->offerCs->count() || isset($arrayOfferData[$offerD->prgm_offer_id]->cs_security))
+                                                            @if (isset($arrayOfferData[$offerD->prgm_offer_id]->cs_security) && !empty($arrayOfferData[$offerD->prgm_offer_id]->cs_security))
+                                                            @foreach($arrayOfferData[$offerD->prgm_offer_id]->cs_security as $CsSecurityS)
+                                                            <tr>
+                                                                <td valign="top" width="1%">●</td>
+                                                                <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][cs_security][]" class="form-control form-control-sm">{!! $CsSecurityS !!}</textarea>
+                                                                </td>
+                                                            </tr>
+                                                            @endforeach   
+                                                            @else
                                                             @foreach($offerD->offerCs as $CollateralSecurity)
                                                             <tr>
                                                                 <td valign="top" width="1%">●</td>
-                                                                <td>{{config('common.cs_desc_security_id.'.$CollateralSecurity->cs_desc_security_id)}} / {{config('common.cs_type_of_security_id.'.$CollateralSecurity->cs_type_of_security_id)}} / {{config('common.cs_status_of_security_id.'.$CollateralSecurity->cs_status_of_security_id)}} / {{config('common.cs_time_for_perfecting_security_id.'.$CollateralSecurity->cs_time_for_perfecting_security_id)}} / {{$CollateralSecurity->cs_desc_of_security}}
+                                                                <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][cs_security][]" class="form-control form-control-sm">{{config('common.cs_desc_security_id.'.$CollateralSecurity->cs_desc_security_id)}} / {{config('common.cs_type_of_security_id.'.$CollateralSecurity->cs_type_of_security_id)}} / {{config('common.cs_status_of_security_id.'.$CollateralSecurity->cs_status_of_security_id)}} / {{config('common.cs_time_for_perfecting_security_id.'.$CollateralSecurity->cs_time_for_perfecting_security_id)}} / {{$CollateralSecurity->cs_desc_of_security}}</textarea>
                                                                 </td>
                                                             </tr>
                                                             @endforeach
+                                                            @endif
                                                             @endif
                                                             @if($offerD->offerPg->count())
                                                             <tr>
                                                             <td valign="top" width="1%">●</td>
                                                             <td>Personal Guarantee of
+                                                            @php
+                                                                $Pg='';
+                                                            @endphp
                                                             @foreach($offerD->offerPg as $key=>$PersonalGuarantee)
                                                                 @php
                                                                    $Pg = ($supplyChaindata['bizOwnerData'][$PersonalGuarantee->pg_name_of_guarantor_id]['first_name']) ?$supplyChaindata['bizOwnerData'][$PersonalGuarantee->pg_name_of_guarantor_id]['first_name'] : '';
@@ -400,8 +463,12 @@
                                                                         $Pg .= ($supplyChaindata['bizOwnerData'][$PersonalGuarantee->pg_name_of_guarantor_id]['first_name']) ?' and '.$supplyChaindata['bizOwnerData'][$PersonalGuarantee->pg_name_of_guarantor_id]['first_name'] : '';
                                                                     }
                                                                 @endphp
-                                                            {{ $t }}
                                                             @endforeach
+                                                            @if(isset($arrayOfferData[$offerD->prgm_offer_id ]->pg_guarantor) &&  $arrayOfferData[$offerD->prgm_offer_id ]->pg_guarantor != '')
+                                                            <textarea name="offerData[{{ $offerD->prgm_offer_id }}][pg_guarantor]" class="form-control form-control-sm">{!! $arrayOfferData[$offerD->prgm_offer_id ]->pg_guarantor??''!!}</textarea>
+                                                            @else
+                                                            <textarea name="offerData[{{ $offerD->prgm_offer_id }}][pg_guarantor]" class="form-control form-control-sm">{{ $Pg }}</textarea>
+                                                            @endif
                                                             </td>
                                                         </tr>
                                                         @endif
@@ -412,64 +479,63 @@
                                                 <tr>
                                                     <td valign="top"><b>Payment mechanism</b></td>
                                                     <td>
-                                                        <select style="min-height:30px; padding:0 5px; min-width:180px;" name="offerData[{{ $offerD->prgm_offer_id }}][payment_mechanism]" id="payment_mechanism">
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) && $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism == 'NACH Mandate from the Borrower.'?'selected':'' }}>NACH Mandate from the Borrower.</option>
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) && $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism == 'RTGS from its customers on or before due date.'?'selected':'' }}>RTGS from its customers on or before due date.
+                                                        @php
+                                                            $selected5 = $selected6 = '';
+                                                            if(isset($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) &&  $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism == 'Anchor'){
+                                                                $selected5 = 'selected';
+                                                            }elseif (isset($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) &&  $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism == 'Borrower') {
+                                                                $selected6 = 'selected';
+                                                            }elseif (isset($offerD->program->interest_borne_by) && $offerD->program->interest_borne_by == 1) {
+                                                                $selected5 = 'selected';
+                                                            }elseif (isset($offerD->program->interest_borne_by) && $offerD->program->interest_borne_by == 2) {
+                                                                $selected6 = 'selected';
+                                                            }
+                                                        @endphp
+                                                        Direct payment by the <select style="min-height:30px; padding:0 5px; min-width:180px;" name="offerData[{{ $offerD->prgm_offer_id }}][payment_mechanism]" id="payment_mechanism">
+                                                            <option {{ $selected5 }}>Anchor</option>
+                                                            <option {{ $selected6 }}>Borrower
                                                             </option>
-                                                            <option {{ isset($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) && $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism == 'Repayment through NACH/PDC/RTGS/NEFT from Anchor on or before due date.'?'selected':'' }}>Repayment through NACH/PDC/RTGS/NEFT from Anchor on
-                                                                or before due date.</option>
-                                                        </select>
+                                                        </select> to the Lender on or before the tranche due date based on tranche tenure through RTGS/NEFT/NACH/Cheque or any other mode acceptable to Lender.
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td valign="top"><b>Moratorium (if applicable)</b></td>
+                                                    <td>
+                                                        <textarea class="form-control textarea moratorium" name="offerData[{{ $offerD->prgm_offer_id }}][moratorium]" id="moratorium{{ $offerD->prgm_offer_id }}" cols="30" rows="10">@if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->moratorium) && $arrayOfferData[$offerD->prgm_offer_id ]->moratorium){!! $arrayOfferData[$offerD->prgm_offer_id ]->moratorium !!} @else NA @endif</textarea>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Transaction process</b></td>
                                                     <td>
-                                                        <table width="100%" border="0">
-                                                            <tr>
-                                                                <td valign="top" width="1%">●</td>
-                                                                <td>Borrower will submit a disbursal request along with
-                                                                    proforma invoices / invoices and Anchor will
-                                                                    confirm the proforma invoices / invoices.
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td valign="top" width="1%">●</td>
-                                                                <td>Lender will disburse the payment against the
-                                                                    proforma
-                                                                    invoice / invoices in Borrower’s
-                                                                    working capital account/current account / Anchor's
-                                                                    working capital account
-                                                                    (in case of re-imbursement) post receiving
-                                                                    confirmation
-                                                                    from <input type="text" value="{{ $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process ??'Anchor' }}" style=" min-height:30px;padding:0 5px; margin-top:5px;" name="offerData[{{ $offerD->prgm_offer_id }}][transaction_process]" id="transaction_process">.
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td valign="top" width="1%">●</td>
-                                                                <td>Disbursement amount should not exceed 70% of
-                                                                    proforma
-                                                                    invoices / invoices.</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td valign="top" width="1%">●</td>
-                                                                <td>On due date, Anchor will make payment to Lender
-                                                                    within
-                                                                    credit period of 30 days.</td>
-                                                            </tr>
-                                                        </table>
+                                                        <textarea class="form-control textarea transaction_process" name="offerData[{{ $offerD->prgm_offer_id }}][transaction_process]" id="transaction_process{{ $offerD->prgm_offer_id }}" cols="30" rows="10">@if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->transaction_process) && $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process){!! $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process !!} @else  @endif</textarea>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Specific pre-disbursement conditions</b></td>
                                                     <td>
-                                                        <table width="100%" border="0">
+                                                        <table width="100%" border="1">
                                                             @if(!empty($supplyChaindata['reviewerSummaryData']['preCond']))
+                                                            <thead>
+                                                                <tr>
+                                                                   <th>Condition</th>
+                                                                   <th>Timeline</th>
+                                                                </tr>
+                                                             </thead>
                                                             @foreach($supplyChaindata['reviewerSummaryData']['preCond'] as $k => $precond)
                                                             <tr>
-                                                                <td valign="top" width="1%">{!! nl2br($precond) !!}</td>
-                                                                <td>                                   
-                                                                {!! isset($supplyChaindata['reviewerSummaryData']['preCondTimeline'][$k]) ? nl2br($supplyChaindata['reviewerSummaryData']['preCondTimeline'][$k]) : '' !!}                           
+                                                                @if(isset($arrayOfferData[$offerD->prgm_offer_id]->pre_cond[$k]) && !empty($arrayOfferData[$offerD->prgm_offer_id ]->pre_cond[$k]))
+                                                                <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][pre_cond][]" value="" class="form-control form-control-sm">{!! nl2br($arrayOfferData[$offerD->prgm_offer_id]->pre_cond[$k]) !!}</textarea></td>
+                                                                @else
+                                                                
+                                                                <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][pre_cond][]" value="" class="form-control form-control-sm">{!! nl2br($precond) !!}</textarea></td>
+                                                                @endif
+                                                                @if(isset($arrayOfferData[$offerD->prgm_offer_id]->pre_timeline[$k]) && !empty($arrayOfferData[$offerD->prgm_offer_id ]->pre_timeline[$k]))
+                                                                <td>  <textarea name="offerData[{{ $offerD->prgm_offer_id }}][pre_timeline][]" value="" class="form-control form-control-sm">{!! isset($arrayOfferData[$offerD->prgm_offer_id ]->pre_timeline[$k]) ? nl2br($arrayOfferData[$offerD->prgm_offer_id ]->pre_timeline[$k]) : '' !!} </textarea>                                                         
                                                                 </td>
+                                                                @else
+                                                                <td>  <textarea name="offerData[{{ $offerD->prgm_offer_id }}][pre_timeline][]" value="" class="form-control form-control-sm">{!! isset($supplyChaindata['reviewerSummaryData']['preCondTimeline'][$k]) ? nl2br($supplyChaindata['reviewerSummaryData']['preCondTimeline'][$k]) : '' !!} </textarea>                                                         
+                                                                </td>
+                                                                @endif
                                                             </tr>
                                                             @endforeach
                                                             @endif
@@ -479,14 +545,29 @@
                                                 <tr>
                                                 <td valign="top"><b>Specific post-disbursement conditions</b></td>
                                                 <td>
-                                                    <table width="100%" border="0">
+                                                    <table width="100%" border="1">
                                                         @if(!empty($supplyChaindata['reviewerSummaryData']['postCond']))
+                                                        <thead>
+                                                            <tr>
+                                                               <th>Condition</th>
+                                                               <th>Timeline</th>
+                                                            </tr>
+                                                         </thead>
                                                             @foreach($supplyChaindata['reviewerSummaryData']['postCond'] as $k => $postcond)                                          
                                                             <tr>
-                                                                <td valign="top" width="1%">{!! nl2br($postcond) !!}</td>                    
-                                                                <td>                                   
-                                                                {!! isset($supplyChaindata['reviewerSummaryData']['postCondTimeline'][$k]) ? nl2br($supplyChaindata['reviewerSummaryData']['postCondTimeline'][$k]) : '' !!}                          
+                                                                @if(isset($arrayOfferData[$offerD->prgm_offer_id]->post_cond[$k]) && !empty($arrayOfferData[$offerD->prgm_offer_id ]->post_cond[$k]))
+                                                                <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][post_cond][]" value="" class="form-control form-control-sm">{!! nl2br($arrayOfferData[$offerD->prgm_offer_id ]->post_cond[$k]) !!}</textarea></td> 
+                                                                @else
+                                                                <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][post_cond][]" value="" class="form-control form-control-sm">{!! nl2br($postcond) !!}</textarea></td>
+                                                                @endif
+                                                                @if(isset($arrayOfferData[$offerD->prgm_offer_id]->post_timeline[$k]) && !empty($arrayOfferData[$offerD->prgm_offer_id ]->post_timeline[$k]))
+                                                                <td>
+                                                                    <textarea name="offerData[{{ $offerD->prgm_offer_id }}][post_timeline][]"value="" class="form-control form-control-sm">{!! isset($arrayOfferData[$offerD->prgm_offer_id ]->post_timeline[$k]) ? nl2br($arrayOfferData[$offerD->prgm_offer_id ]->post_timeline[$k]) : '' !!}</textarea>                                                     
                                                                 </td>
+                                                                @else
+                                                                <td>
+                                                                <textarea name="offerData[{{ $offerD->prgm_offer_id }}][post_timeline][]"value="" class="form-control form-control-sm">{!! isset($supplyChaindata['reviewerSummaryData']['postCondTimeline'][$k]) ? nl2br($supplyChaindata['reviewerSummaryData']['postCondTimeline'][$k]) : '' !!}</textarea> </td>
+                                                                @endif
                                                             </tr>
                                                             @endforeach
                                                             @endif
@@ -518,8 +599,30 @@
                                                 <tr>
                                                     <td valign="top"><b>Sanction validity for first disbursement</b>
                                                     </td>
-                                                    <td><input type="text" value="{{ $supplyChainFormData->sanction_validity_for_first_disbursement ??'60 days' }}" name="sanction_validity_for_first_disbursement" id="sanction_validity_for_first_disbursement" style=" min-height:30px;padding:0 5px; "> from the date of
-                                                        sanction.</td>
+                                                    <td>
+                                                        <select style="min-height:30px; padding:0 5px; min-width:180px;" name="sanction_applicable" id="sanction_applicable">
+                                                            <option value="A" {{ isset($supplyChainFormData->sanction_applicable) && $supplyChainFormData->sanction_applicable == 'A'?'selected':'' }}>Applicable</option>
+                                                            <option value="NA" {{ isset($supplyChainFormData->sanction_applicable) && $supplyChainFormData->sanction_applicable == 'NA'?'selected':'' }}>Not applicable</option>
+                                                        </select>
+                                                        @php
+                                                        $class = '';  
+                                                        @endphp 
+                                                  @if(!empty($supplyChainFormData))
+                                                     @if(isset($supplyChainFormData->sanction_applicable)  &&$supplyChainFormData->sanction_applicable == 'A')
+                                                         @php
+                                                           $class = '';  
+                                                         @endphp   
+                                                     @else
+                                                        @php
+                                                           $class = 'hide';         
+                                                        @endphp  
+                                                     @endif
+                                                     @endif
+                                                     <div class="clearfix"></div>
+                                                     <div class="{{ $class }}" id="sanction_validity_for_first_disbursement_div">
+                                                     <input value="{{ $supplyChainFormData->sanction_validity_for_first_disbursement ??'' }}" type="text" name="sanction_validity_for_first_disbursement" id="sanction_validity_for_first_disbursement" class="input_sanc {{ $class }}" style=" min-height:30px;padding:0 5px;margin-top: 1%;" placeholder="Sanction validity for first disbursement"> days from the date of sanction.
+                                                     </div>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Default Event</b></td>
@@ -553,7 +656,8 @@
                                                 <tr>
                                                     <td valign="top"><b>General pre-disbursement conditions</b></td>
                                                     <td>
-                                                        <table width="100%" border="0">
+                                                        <table width="100%" border="0" id="general_pre_disbursement_conditions">
+                                                            <tbody id="ger_cond">
                                                             <tr>
                                                                 <td colspan="2">One-time requirement:</td>
                                                             </tr>
@@ -590,7 +694,7 @@
                                                                        @endif         
                                                                         <tr>
                                                                             <td valign="top" width="1%">●</td>
-                                                                            <td>Address Proof (Not older than 60 days)
+                                                                            <td>Valid Address Proof
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -599,7 +703,7 @@
                                                                         </tr>
                                                                         <tr>
                                                                             <td valign="top" width="1%">●</td>
-                                                                            <td>GST registration letter</td>
+                                                                            <td>GST Registration Certificate</td>
                                                                         </tr>
                                                                     </table>
                                                                 </td>
@@ -607,14 +711,11 @@
                                                             <tr>
                                                                 <td valign="top" width="1%"><b>4.</b></td>
                                                                 <td>
-                                                                    <select style="width:200px; min-height:30px; padding:0 5px; margin-top:10px;" name="general_pre_disbursement_conditions_second" id="general_pre_disbursement_conditions_second">
-                                                                        <option value="Board Resolution" {{ isset($supplyChainFormData->general_pre_disbursement_conditions_second) &&$supplyChainFormData->general_pre_disbursement_conditions_second == 'Board Resolution'?'selected':'' }}>BR</option>
-                                                                        <option value="Partnership Authority Letter" {{ isset($supplyChainFormData->general_pre_disbursement_conditions_second) &&$supplyChainFormData->general_pre_disbursement_conditions_second == 'Partnership Authority Letter'?'selected':'' }}>PAL</option>
-                                                                        <option value="Proprietorship Declaration" {{ isset($supplyChainFormData->general_pre_disbursement_conditions_second) &&$supplyChainFormData->general_pre_disbursement_conditions_second == 'Proprietorship Declaration'?'selected':'' }}>PD</option>
-                                                                    </select> signed by 2
-                                                                    directors or Company Secretary in favour of company
-                                                                    officials to execute such agreements or
-                                                                    documents.
+                                                                    <select style="width:200px; min-height:30px; padding:0 5px; margin-top:0px;" name="general_pre_disbursement_conditions_second" id="general_pre_disbursement_conditions_second">
+                                                                        <option value="Partnership Authority Letter" {{ isset($supplyChainFormData->general_pre_disbursement_conditions_second) &&$supplyChainFormData->general_pre_disbursement_conditions_second == 'Partnership Authority Letter'?'selected':'' }}>Partnership firm</option>
+                                                                        <option value="Proprietorship Declaration" {{ isset($supplyChainFormData->general_pre_disbursement_conditions_second) &&$supplyChainFormData->general_pre_disbursement_conditions_second == 'Proprietorship Declaration'?'selected':'' }}>Proprietorhsip firm</option>
+                                                                        <option value="Board Resolution" {{ isset($supplyChainFormData->general_pre_disbursement_conditions_second) &&$supplyChainFormData->general_pre_disbursement_conditions_second == 'Board Resolution'?'selected':'' }}>HUF</option>
+                                                                    </select>
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -632,7 +733,7 @@
                                                                         <tr>
                                                                             <td valign="top" width="3%">●</td>
                                                                             <td>Signature Verification of authorized
-                                                                                signatories from Borrower's banker
+                                                                                signatories from Borrower's banker??
                                                                             </td>
                                                                         </tr>
                                                                     </table>
@@ -645,18 +746,39 @@
                                                                     time to time
                                                                 </td>
                                                             </tr>
+                                                            @if(!empty($supplyChainFormData->general_pre_disbursement_condition))
+                                                            @foreach($supplyChainFormData->general_pre_disbursement_condition as $k=>$genCondition)
+                                                            <tr class='row_gen'>
+                                                                <td valign="top" width="1%"><b>{{ $k+7 }}.</b></td>
+                                                                <td><input type="text" value="{{ $genCondition }}" name="general_pre_disbursement_condition[]" style=" min-height:30px;padding:0 5px; min-width:100%;">
+                                                                </td>
+                                                            </tr>
+                                                            @endforeach
+                                                            @endif
+                                                        </tbody>
                                                         </table>
+                                                        <span class="btn btn-danger btn-sm remove_general_pre_disbursement_conditions" style="float: right;margin: 5px;cursor: pointer;">Remove
+                                                            -</span>
+                                                        <span class="btn btn-success btn-sm clone_general_pre_disbursement_conditions" style="float: right;margin: 5px;cursor: pointer;">Add More
+                                                            +</span>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td width="30%" valign="top"><b>Monitoring Covenants</b></td>
                                                     <td>
                                                         <select style="width:200px; min-height:30px; padding:0 5px;" name="monitoring_covenants_select" id="monitoring_covenants_select">
-                                                            <option {{  isset($supplyChainFormData->monitoring_covenants_select) &&$supplyChainFormData->monitoring_covenants_select == 'Applicable'?'selected':'' }}>Applicable</option>
-                                                            <option {{  isset($supplyChainFormData->monitoring_covenants_select) &&$supplyChainFormData->monitoring_covenants_select == 'Not applicable'?'selected':'' }}>Not applicable</option>
+                                                            <option value="Applicable" {{  isset($supplyChainFormData->monitoring_covenants_select) &&$supplyChainFormData->monitoring_covenants_select == 'Applicable'?'selected':'' }}>Applicable</option>
+                                                            <option value="Not applicable" {{  isset($supplyChainFormData->monitoring_covenants_select) &&$supplyChainFormData->monitoring_covenants_select == 'Not applicable'?'selected':'' }}>Not applicable</option>
                                                         </select>
                                                         @php
-                                                        $class = '';  
+                                                        $class = ''; 
+                                                        if(!empty($actionType) && $actionType == 'add'){
+                                                        echo '<style>
+                                                            #cke_monitoring_covenants_select_text {
+                                                                display: none;
+                                                            }
+                                                            </style>'; 
+                                                        }
                                                         @endphp 
                                                   @if(!empty($supplyChainFormData))
                                                      @if(isset($supplyChainFormData->monitoring_covenants_select)  &&$supplyChainFormData->monitoring_covenants_select == 'Applicable')
@@ -665,12 +787,17 @@
                                                          @endphp   
                                                      @else
                                                         @php
-                                                           $class = ' hide';         
+                                                           $class = ' hide'; 
+                                                           echo '<style>
+                                                            #cke_monitoring_covenants_select_text {
+                                                                display: none;
+                                                            }
+                                                            </style>';
                                                         @endphp  
                                                      @endif
                                                      @endif
                                                      <div class="clearfix"></div>
-                                                     <input maxlength="100" value="{{ $supplyChainFormData->monitoring_covenants_select_text ??'' }}" type="text" name="monitoring_covenants_select_text" id="monitoring_covenants_select_text" class="input_sanc{{ $class }}" style=" min-height:30px;padding:0 5px; min-width:80%;margin-top: 1%;" placeholder="Enter Covenants"> 
+                                                     <textarea class="form-control textarea" name="monitoring_covenants_select_text" id="monitoring_covenants_select_text" cols="30" rows="10">@if(!empty($supplyChainFormData->monitoring_covenants_select_text) && $supplyChainFormData->monitoring_covenants_select_text){!! $supplyChainFormData->monitoring_covenants_select_text !!} @else NA @endif</textarea>
                                                        
                                                     </td>
                                                 </tr>
@@ -680,17 +807,12 @@
                                                         <table width="100%" border="0">
                                                             <tr>
                                                                 <td valign="top" width="5%">1.</td>
-                                                                <td>Borrower undertakes that no deferral or moratorium
-                                                                    will
-                                                                    be sought by the borrower during the tenure
-                                                                    of the facility
+                                                                <td>Borrower undertakes that no deferral or moratorium will be sought by the borrower at any time during the tenor of the facility.
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%">2.</td>
-                                                                <td>The loan shall be utilized for the purpose for which
-                                                                    it
-                                                                    is sanctioned, and it should not be utilized for –
+                                                                <td>The loan shall be utilized for the purpose for which it is sanctioned, and it should not be utilized for –
                                                                     <table width="100%" border="0">
                                                                         <tr>
                                                                             <td valign="top" width="3%">a.</td>
@@ -707,140 +829,132 @@
                                                                             <td>Any speculative purposes.
                                                                             </td>
                                                                         </tr>
+                                                                        <tr>
+                                                                            <td valign="top" width="3%">d.</td>
+                                                                            <td>Purchase/payment towards any immovable property.
+                                                                            </td>
+                                                                        </tr>
                                                                     </table>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%">3.</td>
-                                                                <td>The Borrower shall maintain adequate books and
-                                                                    records
-                                                                    which should correctly reflect their
-                                                                    financial position and operations and it should
-                                                                    submit
-                                                                    to CFPL at regular intervals such statements
-                                                                    as may be prescribed by CFPL in terms of the RBI /
-                                                                    Bank’s instructions issued from time to time.
+                                                                <td>The Borrower shall maintain adequate books and records which should correctly reflect their financial position and operations and it should submit to Lender at regular intervals such statements as may be prescribed by Lender in terms of the RBI / Bank’s instructions issued from time to time.
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%">4.</td>
-                                                                <td>The Borrower will keep CFPL informed of the
-                                                                    happening of
-                                                                    any event which is likely to have an
-                                                                    impact on their profit or business and more
-                                                                    particularly, if the monthly production or sale and
-                                                                    profit are likely to be substantially lower than
-                                                                    already
-                                                                    indicated to CFPL. The Borrower will
-                                                                    inform accordingly with reasons and the remedial
-                                                                    steps
-                                                                    proposed to be taken.
+                                                                <td>The Borrower will keep Lender informed of the happening of any event which is likely to have an impact on their profit or business and more particularly, if the monthly production or sale and profit are likely to be substantially lower than already indicated to Lender. The Borrower will inform accordingly with reasons and the remedial steps proposed to be taken. 
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%">5.</td>
-                                                                <td>CFPL will have the right to examine at all times the
-                                                                    Borrower’s books of accounts and to have
-                                                                    the Borrower’s factory(s)/branches inspected from
-                                                                    time
-                                                                    to time by officer(s) of the CFPL and/or
-                                                                    qualified auditors including stock audit and/or
-                                                                    technical experts and/or management consultants of
-                                                                    CFPL’s choice and/or we can also get the stock audit
-                                                                    conducted by other banker. The cost of such
-                                                                    inspections will be borne by the Borrower
+                                                                <td>Lender will have the right to examine at all times the Borrower’s books of accounts and to have the Borrower’s factory(s)/branches inspected from time to time by officer(s) of the Lender and/or qualified auditors including stock audit and/or technical experts and/or management consultants of Lender’s choice and/or we can also get the stock audit conducted by other banker. The cost of such inspections will be borne by the Borrower.
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%">6.</td>
-                                                                <td>The Borrower should not pay any consideration by way
-                                                                    of
-                                                                    commission, brokerage, fees or in any
-                                                                    other form to guarantors directly or indirectly.
+                                                                <td>The Borrower should not pay any consideration by way of commission, brokerage, fees or in any other form to guarantors directly or indirectly.
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%">7.</td>
-                                                                <td>The Borrower and Guarantor(s) shall be deemed to
-                                                                    have
-                                                                    given their express consent to CFPL to disclose the
-                                                                    information and data furnished by them to CFPL and
-                                                                    also
-                                                                    those regarding the credit facility/ies enjoyed by
-                                                                    the
-                                                                    Borrower, conduct of accounts and guarantee
-                                                                    obligations
-                                                                    undertaken by guarantor to the Credit Information
-                                                                    Bureau
-                                                                    (India) Ltd. (“CIBIL”), or RBI or any other agencies
-                                                                    specified by RBI who are authorized to seek and
-                                                                    publish
-                                                                    information.
+                                                                <td>The Borrower and Guarantor(s) shall be deemed to have given their express consent to Lender to disclose the information and data furnished by them to Lender and also those regarding the credit facility/ies enjoyed by the Borrower, conduct of accounts and guarantee obligations undertaken by guarantor to the Credit Information Bureau (India) Ltd. (“CIBIL”), or RBI or any other agencies specified by RBI who are authorized to seek and publish information.
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%">8.</td>
-                                                                <td>The Borrower will keep the CFPL advised of any
-                                                                    circumstances adversely affecting their financial
-                                                                    position including any action taken by any creditor,
-                                                                    Government authority against them.
+                                                                <td>The Borrower will keep the Lender advised of any circumstances adversely affecting their financial position including any action taken by any creditor, Government authority against them.
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%">9.</td>
-                                                                <td>The Borrower shall procure consent every year from
-                                                                    the
-                                                                    auditors appointed by the borrower to
-                                                                    comply with and give report / specific comments in
-                                                                    respect of any query or requisition made by us
-                                                                    as regards the audited accounts or balance sheet of
-                                                                    the
-                                                                    Borrower. We may provide information and
-                                                                    documents to the Auditors in order to enable the
-                                                                    Auditors to carry out the investigation requested
-                                                                    for by us. In that event, we shall be entitled to
-                                                                    make
-                                                                    specific queries to the Auditors in the light
-                                                                    of Statements, particulars and other information
-                                                                    submitted by the Borrower to us for the purpose of
-                                                                    availing finance, and the Auditors shall give
-                                                                    specific
-                                                                    comments on the queries made by us
+                                                                <td>In order to remove any ambiguity, it is clarified that the intervals are intended to be continuous and accordingly, the basis for classification of SMA/NPA categories shall be considered as follows:
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top" width="5%"></td>
+                                                                <td valign="top" width="100%">
+                                                                    <table width="100%" border="0" style="border:1px #181616 solid;">
+                                                                        <tr valign="top" width="100%">
+                                                                            <td valign="top" width="100%"style="
+                                                                            text-align: center;
+                                                                            text-decoration: underline;
+                                                                        " colspan="2">
+                                                                            <b>“Example of SMA/NPA”</b>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td valign="top" width="1%" colspan="2">
+                                                                                <table width="100%" border="1" style="
+                                                                                font-weight: bold;
+                                                                            ">
+                                                                                    <tr>
+                                                                                        <td valign="top" width="50%">If the EMI / Tranche Amount/Interest is not paid within 30 days from the due date of repayment</td>
+                                                                                        <td>SMA-0
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td valign="top" width="50%">If the EMI / Tranche Amount/Interest is not paid within 60 days from the due date of repayment</td>
+                                                                                        <td>SMA-1
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td valign="top" width="50%">If the EMI / Tranche Amount/Interest is not paid within 90 days from the due date of repayment</td>
+                                                                                        <td>SMA-2
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td valign="top" width="50%">If the EMI / Tranche Amount/Interest is not paid for more than 90 days from the due date of repayment</td>
+                                                                                        <td>NPA
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </td>
+                                                                           
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td valign="top" width="3%">●</td>
+                                                                            <td>Any amount due to the lender under any credit facility is ‘overdue’ if it is not paid on the due date fixed by the Lender. If there is any overdue in an account, the default/ non-repayment is reported with the credit bureau companies like CIBIL etc. and the CIBIL report of the customer will reflect defaults and its classification status.
+
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td valign="top" width="3%">●</td>
+                                                                            <td>Once an account is classified as NPAs then it shall be upgraded as ‘standard’ asset only if entire arrears of interest and principal are paid by the borrower.
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%">10.</td>
-                                                                <td>The sanction limits would be valid for acceptance
-                                                                    for 30
-                                                                    days from the date of the issuance
-                                                                    of letter.
+                                                                <td>The Borrower shall procure consent every year from the auditors appointed by the borrower to comply with and give report / specific comments in respect of any query or requisition made by us as regards the audited accounts or balance sheet of the Borrower. We may provide information and documents to the Auditors in order to enable the Auditors to carry out the investigation requested for by us. In that event, we shall be entitled to make specific queries to the Auditors in the light of Statements, particulars and other information submitted by the Borrower to us for the purpose of availing finance, and the Auditors shall give specific comments on the queries made by us
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%">11.</td>
-                                                                <td>CFPL reserves the right to alter, amend any of the
-                                                                    condition or withdraw the facility,
-                                                                    at any time without assigning any reason and also
-                                                                    without giving any notice.
+                                                                <td>The sanction limits would be valid for acceptance for 60 days from the date of the issuance of letter.
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%">12.</td>
-                                                                <td>Provided further that notwithstanding anything to
-                                                                    the
-                                                                    contrary contained in this Agreement,
-                                                                    CFPL may at its sole and absolute discretion at any
-                                                                    time, terminate, cancel or withdraw the Loan
-                                                                    or any part thereof (even if partial or no
-                                                                    disbursement
-                                                                    is made) without any liability and without
-                                                                    any obligations to give any reason whatsoever,
-                                                                    whereupon
-                                                                    all principal monies, interest thereon and
-                                                                    all other costs, charges, expenses and other monies
-                                                                    outstanding (if any) shall become due and payable
-                                                                    to CFPL by the Borrower forthwith upon demand from
-                                                                    CFPL
+                                                                <td>Lender reserves the right to alter, amend any of the condition or withdraw the facility, at any time without assigning any reason and also without giving any notice.
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top" width="5%">13.</td>
+                                                                <td>Borrower have read and understood the terms and conditions of the Loan including the annual rate of interest and the approach for gradation of risk and rationale for charging different rates of interest to different categories of borrowers adopted by the Lender(s). The Borrower understand the Lender (s) has its own model for arriving at lending interest rates on the basis of  various (i) risks such as interest rate risk, credit  and default risk in the related business segment, (ii)based on various cost such as  average cost of borrowed funds, matching tenure cost ,market liquidity, cost of underwriting, cost of customer acquisition etc. and other factors like profile of the borrower, repayment track record of the existing customer, future potential, deviations permitted , tenure of relationship with the borrower, overall  customer yield etc. Such information is gathered based on the information provided by the borrower, credit reports, data sources and market intelligence. The Borrower accept the terms and conditions and agree that these terms and conditions may be changed by the Lender at any time, and the Borrower shall be bound by the amended terms and conditions.
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top" width="5%">14.</td>
+                                                                <td>Lender(s) reserves the right to change the rate of interest and other charges, at any time, with previous notice/intimation, and any such changes shall have prospective effect.
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td valign="top" width="5%">15.</td>
+                                                                <td>Provided further that notwithstanding anything to the contrary contained in this Agreement, Lender may at its sole and absolute discretion at any time, terminate, cancel or withdraw the Loan or any part thereof (even if partial or no disbursement is made) without any liability and without any obligations to give any reason whatsoever, whereupon all principal monies, interest thereon and all other costs, charges, expenses and other monies outstanding (if any) shall become due and payable to Lender by the Borrower forthwith upon demand from Lender.
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -903,7 +1017,7 @@
                                         <td align="center">
                                             <div><span style="font-size:20px; font-weight:bold;">CAPSAVE FINANCE PRIVATE
                                                     LIMITED</span><br />
-                                                Registered office: Unit No.501 Wing-D, Lotus Corporate Park, Western
+                                                Registered office: Unit No.1501 Wing-D, Lotus Corporate Park, Western
                                                 Express
                                                 Highway, Goregaon (East), Mumbai - 400063<br />
                                                 Ph: +91 22 6173 7600, CIN No: U67120MH1992PTC068062
@@ -949,24 +1063,43 @@
         , token: "{{ csrf_token() }}",
 
     };
+    var ckeditorOptions =  {
+        toolbarGroups : [
+                { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+                { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+                { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+                { name: 'forms', groups: [ 'forms' ] },
+                { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+                { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+                { name: 'links', groups: [ 'links' ] },
+                // { name: 'insert', groups: [ 'insert' ] },
+                { name: 'styles', groups: [ 'styles' ] },
+                { name: 'colors', groups: [ 'colors' ] },
+                { name: 'tools', groups: [ 'tools' ] },
+                { name: 'others', groups: [ 'others' ] },
+                { name: 'about', groups: [ 'about' ] }
+            ]
+};
+   CKEDITOR.replace('monitoring_covenants_select_text',ckeditorOptions);
     $(document).ready(function() {
-        $('#payment_type').on('change', function() {
-            $('#payment_type_comment').val('');
-            if ($(this).val() == '5') {
-                $('#payment_type_comment').removeClass('hide');
-            } else {
-                $('#payment_type_comment').addClass('hide');
-            }
-        })
-
+        $('.moratorium').each(function () {
+            CKEDITOR.replace($(this).prop('id'),ckeditorOptions);
+        });
+        $('.transaction_process').each(function () {
+            CKEDITOR.replace($(this).prop('id'),ckeditorOptions);
+        });
         $('#monitoring_covenants_select').on('change', function() {
-            $('#monitoring_covenants_select_text').val('');
+            $('#cke_monitoring_covenants_select_text').hide();
             if ($(this).val() == 'Applicable') {
-                $('#monitoring_covenants_select_text').removeClass('hide');
+                $('#monitoring_covenants_select_text,#cke_monitoring_covenants_select_text').removeClass('hide');
                 $('#monitoring_covenants_select_text-error').remove();
+                $('#cke_monitoring_covenants_select_text').show();
             } else {
-                $('#monitoring_covenants_select_text').addClass('hide');
+                CKEDITOR.instances['monitoring_covenants_select_text'].setData('');
+                $('#monitoring_covenants_select_text').val('');
+                $('#monitoring_covenants_select_text,#cke_monitoring_covenants_select_text').addClass('hide');
                 $('#monitoring_covenants_select_text-error').remove();
+                $('#cke_monitoring_covenants_select_text').hide();
             }
         });
 
@@ -986,6 +1119,31 @@
             , minView: 2
             , startDate: '+1m'
         });
+
+        $('#sanction_applicable').on('change', function() {
+            if ($(this).val() == 'A') {
+                $('#sanction_validity_for_first_disbursement,#sanction_validity_for_first_disbursement_div').removeClass('hide');
+                $('#sanction_validity_for_first_disbursement-error').remove();
+            } else {
+                $('#sanction_validity_for_first_disbursement').val('');
+                $('#sanction_validity_for_first_disbursement,#sanction_validity_for_first_disbursement_div').addClass('hide');
+                $('#sanction_validity_for_first_disbursement-error').remove();
+            }
+        });
+        @if(!empty($actionType) && $actionType == 'add')
+            $('#sanction_applicable').val('NA').trigger('change');
+            $('#monitoring_covenants_select').val('Not applicable').trigger('change');
+            CKEDITOR.instances['monitoring_covenants_select_text'].setData('');
+            $('#monitoring_covenants_select_text').val('');
+        @endif
+
+        @if(!empty($actionType) && $actionType == 'edit')
+            if($('#monitoring_covenants_select').val() == 'Not applicable'){
+                $('#monitoring_covenants_select_text,#cke_monitoring_covenants_select_text').addClass('hide');
+                $('#monitoring_covenants_select_text-error').remove();
+                $('#cke_monitoring_covenants_select_text').hide();
+            }
+        @endif
     });
 
 
@@ -1022,13 +1180,39 @@
     $(document).on('click', '.clone_defaultevent', function() {
         // covenants_clone_tr_html =  $('.covenants_clone_tr').html();
         covenants_clone_tr_html =
-            '<td valign="top" width="1%">●</td><td><input type="text" name="defaultEvent[]" value="" style=" min-height:30px;padding:0 5px; min-width:100%;"></td>';
+            '<td valign="top" width="1%">●</td><td><input type="text" name="defaultEvent[]" value="" style=" min-height:30px;padding:0 5px; min-width:100%;" id="row_defEvent_'+counter+'" class="row_defevent_input" required></td>';
         $('#defaultEvent').append("<tr>" + covenants_clone_tr_html + "</tr>");
+        $("#new_sanction_letter_form .row_defevent_input").each(function () {
+            $(this).rules('add', {
+                required: true
+            });
+        }); 
     })
     $(document).on('click', '.remove_defaultevent', function() {
         totalrows = $('#defaultEvent tbody').children().length - 1;
         if (totalrows > 1) {
             $('#defaultEvent tbody tr:last-child').remove();
+        }
+    })
+    var counter = 7;
+    $(document).on('click', '.clone_general_pre_disbursement_conditions', function() {
+        // covenants_clone_tr_html =  $('.covenants_clone_tr').html();
+        counter=$('#general_pre_disbursement_conditions > tbody > tr.row_gen').length+7;
+        covenants_clone_tr_html =
+            '<td valign="top" width="1%"><b>'+counter+'.</b></td><td><input type="text" name="general_pre_disbursement_condition[]" value="" style=" min-height:30px;padding:0 5px; min-width:100%;" id="row_gen_'+counter+'" class="row_gen_input" required></td>';
+        $('#general_pre_disbursement_conditions').append("<tr class='row_gen'>" + covenants_clone_tr_html + "</tr>");
+        $("#new_sanction_letter_form .row_gen_input").each(function () {
+            $(this).rules('add', {
+                required: true
+            });
+        });  
+        counter++;
+    })
+    $(document).on('click', '.remove_general_pre_disbursement_conditions', function() {
+        totalrows = $('#general_pre_disbursement_conditions tbody').children().length - 1;
+        if (totalrows > 1) {
+            console.log('remove');
+            $('#general_pre_disbursement_conditions > tbody > tr.row_gen:last-child').remove();
         }
     })
 
@@ -1051,13 +1235,20 @@
                 , "operational_person": {
                     required : true,
                 }
-                , "defaultEvent[]": {
-                    required : true,
-                }
+                // , "defaultEvent[]": {
+                //     required : true,
+                // }
                 , "monitoring_covenants_select_text": {
                     required : true,
                     alphanumeric: true
+                },
+                "sanction_validity_for_first_disbursement": {
+                    required : true,
+                    alphanumeric: true
                 }
+                // , "general_pre_disbursement_condition[]": {
+                //     required : true,
+                // }
             }
         });
 
@@ -1072,7 +1263,18 @@
     });
     let whichPressed;
     function submitAlert()
-    {               
+    {  
+        $("#new_sanction_letter_form .row_defevent_input").each(function () {
+            $(this).rules('add', {
+                required: true
+            });
+        }); 
+
+        $("#new_sanction_letter_form .row_gen_input").each(function () {
+            $(this).rules('add', {
+                required: true
+            });
+        });            
         if(whichPressed=="final_submit")
         {
             return confirm('Are you sure you want to generate the sanction letter?');
