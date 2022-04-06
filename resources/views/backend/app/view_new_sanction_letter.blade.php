@@ -194,8 +194,7 @@
                                     @if(!empty($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count() == 1)
 
                                     @php
-                                      $check = 'no';
-                                      //echo "<pre/>";print_r($arrayOfferData);  
+                                      $check = 'no'; 
                                     @endphp
                                     @else
                                     @php
