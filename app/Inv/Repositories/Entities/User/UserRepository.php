@@ -1810,5 +1810,17 @@ class UserRepository extends BaseRepositories implements UserInterface
     {
         return  Role::getActiveChrgDeleteEmailAllowedRoles();
     }
+    
+    /**
+     * Get Anchor 
+     * 
+     * @param array $where
+     * @return mixed mixed
+     */
+    public function getAnchorData($where=[])
+    {
+        return Anchor::getAnchorData($where);
+    }
+
 }
 

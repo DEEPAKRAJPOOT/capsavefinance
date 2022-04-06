@@ -5259,6 +5259,35 @@ if ($err) {
         }
     }
 
+    // Check frontend PAN validation
+    public function checkAnchorPanAjax(Request $request) {
+        $data = $request->all();
+
+        $anchrUserDataByPan = $this->userRepo->getAnchorByPan($data['pan_no']);
+        $anchorDataByPan = $this->userRepo->getAnchorData(['pan_no' => $data['pan_no']]);
+        
+        // if($anchrUserDataByPan) {
+        //     return 'false';
+        // } 
+        if(count($anchorDataByPan) > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }
+    }    
+
+    // Check frontend GST validation
+    public function checkAnchorGstAjax(Request $request) {
+        $data = $request->all();
+        
+        $anchorDataByPan = $this->userRepo->getAnchorData(['gst_no' => $data['gst_no']]);
+        if(count($anchorDataByPan) > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }
+    }    
+
     public function backendGetInvoiceProcessingGstAmount(Request $request) {
         $invoiceId = $request->get('invoice_id');
         $typeFlag = $request->get('chrg_type');
