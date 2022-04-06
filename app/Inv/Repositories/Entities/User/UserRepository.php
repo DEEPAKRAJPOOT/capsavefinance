@@ -1100,9 +1100,9 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @param type $userName
      * @return type
      */
-    public function checkallanchorUserEmail($email,$anchId,$is_registered)
+    public function checkallanchorUserEmail($email,$anchId,$is_registerd,$userType)
     {
-         $result = AnchorUser::checkallanchorUserEmail($email,(int)$anchId,$is_registered);
+         $result = AnchorUser::checkallanchorUserEmail($email,(int)$anchId,$is_registerd,$userType);
          return $result ?: false;
     }
 

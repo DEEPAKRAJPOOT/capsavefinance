@@ -217,16 +217,18 @@ class AnchorUser extends BaseModel {
      * @param type $email
      * @return type
      */
-    public static function checkallanchorUserEmail($email,$anchId,$is_registerd){
+    public static function checkallanchorUserEmail($email,$anchId,$is_registerd,$userType){
 
         if($is_registerd){
 
            $isanchorEmailexist =  self::where('email','=',$email)
+              ->where('user_type','=',$userType)
               ->where('user_id','!=',$anchId)->count();
 
            }else{
 
             $isanchorEmailexist =  self::where('email','=',$email)
+            ->where('user_type','=',$userType)
             ->where('anchor_user_id','!=',$anchId)->count();
 
           }

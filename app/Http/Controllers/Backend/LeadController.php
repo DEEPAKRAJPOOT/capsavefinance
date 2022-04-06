@@ -146,7 +146,7 @@ class LeadController extends Controller {
                     
                     if($prevanchorInfo['email'] !== $email){
 
-                            $checkallanchorEmail = $this->userRepo->checkallanchorUserEmail($email,$userId,1);
+                            $checkallanchorEmail = $this->userRepo->checkallanchorUserEmail($email,$userId,1,1);
                             $checkallUserEmail = $this->userRepo->checkallUserEmail($email,$userId,1);
                             if(($checkallanchorEmail == false && $checkallUserEmail == false) || $checkallUserEmail == false){
 
@@ -162,7 +162,7 @@ class LeadController extends Controller {
                         
                         if($prevanchorInfo['email'] !== $email){
 
-                            $checkallanchorEmail = $this->userRepo->checkallanchorUserEmail($email,$userId,1);
+                            $checkallanchorEmail = $this->userRepo->checkallanchorUserEmail($email,$userId,0,1);
                             if($checkallanchorEmail == false){
 
                                 $attributes['email'] = $email;
