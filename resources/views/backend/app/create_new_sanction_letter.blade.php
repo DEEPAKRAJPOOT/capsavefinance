@@ -275,7 +275,7 @@
                                                                @php
                                                                    $checked = '';
                                                                @endphp
-                                                               @if (!empty($arrayOfferData[$offerD->prgm_offer_id]->margin))
+                                                               @if (!empty($arrayOfferData[$offerD->prgm_offer_id]->margin) && is_array($arrayOfferData[$offerD->prgm_offer_id]->margin))
                                                                    @foreach ($arrayOfferData[$offerD->prgm_offer_id]->margin as $g=>$r)
                                                                        @if ($r == $a)
                                                                            @php
@@ -283,6 +283,12 @@
                                                                            @endphp
                                                                        @endif
                                                                    @endforeach  
+                                                                   @else
+                                                                   @php
+                                                                       if(isset($arrayOfferData[$offerD->prgm_offer_id]->margin) && ($arrayOfferData[$offerD->prgm_offer_id]->margin == $a)){
+                                                                            $checked = 'checked';
+                                                                       }
+                                                                   @endphp
                                                                 @endif
                                                                <input type = "checkbox" id = "margin1" name="offerData[{{ $offerD->prgm_offer_id }}][margin][]" value = "{{ $a }}" {{ $checked }}> {{ $a }} 
                                                                @endforeach

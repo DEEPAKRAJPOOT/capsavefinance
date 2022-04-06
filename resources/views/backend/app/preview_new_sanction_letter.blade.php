@@ -294,12 +294,14 @@
                                                     <td valign="top"><b>Margin</b></td>
                                                     <td>
                                                         {{($offerD->margin	)? $offerD->margin:'NIL'}}% on 
-                                                        @if (isset($arrayOfferData[$offerD->prgm_offer_id]->margin) && !empty($arrayOfferData[$offerD->prgm_offer_id]->margin))   
+                                                        @if (isset($arrayOfferData[$offerD->prgm_offer_id]->margin) && !empty($arrayOfferData[$offerD->prgm_offer_id]->margin) && is_array($arrayOfferData[$offerD->prgm_offer_id]->margin))   
                                                         @foreach ($arrayOfferData[$offerD->prgm_offer_id]->margin as $g=>$r)
                                                                  {{ $r }} 
                                                                 @if( !$loop->last),
                                                                 @endif     
                                                         @endforeach
+                                                        @else
+                                                        {{ $arrayOfferData[$offerD->prgm_offer_id]->margin }}
                                                         @endif  
                                                          value. (in case margin is nil in offer – not to capture in final SL)
                                                     </td>
