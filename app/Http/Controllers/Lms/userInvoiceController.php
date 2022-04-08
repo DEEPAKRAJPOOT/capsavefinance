@@ -1037,10 +1037,10 @@ class userInvoiceController extends Controller
             $origin_of_recipient = $origin_of_recipient['data'];
             $invCat = null;
             if(strtoupper($invoiceType) == 'I'){
-                $invCat = 'NZ';
+                $invCat = 'ZR';
             }
             elseif(strtoupper($invoiceType) == 'C'){
-                $invCat = 'ZR';
+                $invCat = 'NZ';
             }
             
             $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoiceType);
