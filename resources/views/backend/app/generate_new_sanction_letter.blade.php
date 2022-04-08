@@ -2,12 +2,11 @@
 <html>
    <head>
       <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
       <link href="https://fonts.googleapis.com/css2?family=Federo&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
       {{-- <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" /> --}}
-      <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}""/>
+      {{-- <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}""/> --}}
       <style>
          
          table {
@@ -24,13 +23,32 @@
          /* thead { display:table-header-group } */
          tfoot { display:table-footer-group }
          thead {display: table-row-group;}
+         @page { margin-top: 110px; margin-bottom: 110px}
+         header { position: fixed; left: 0px; top: -50px; right: 0px;}
+         #footer { position: fixed; left: 0px; bottom: -145px; right: 0px; height: 150px; }
+         table tr td{position:relative; padding: .3rem !important;}
+         /* Create two equal columns that floats next to each other */
+         .column {
+            float: left;
+         }
+
+         .column1 {
+            float: right;
+         }
+         /* Clear floats after the columns */
+         .row:after {
+         content: "";
+         display: table;
+         clear: both;
+         }
+         header{padding:-20px 0;border-bottom:2px solid #ffa500;}
    </style>
    </head>
-   <body>
+   <body style="font-size: 15px;">
       <script type="text/php">
          if (isset($pdf)) {
-            $x = 90;
-            $y = 1750;
+            $y = $pdf->get_height() - 50; 
+            $x = $pdf->get_width() - 900;
             //$text = "Page {PAGE_NUM} of {PAGE_COUNT}";
             $text = "{PAGE_NUM}";
             $font = $fontMetrics->getFont("Federo", "regular");
@@ -40,8 +58,25 @@
             $char_space = 0.0;  //  default
             $angle = 0.0;   //  default
             $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+            {{-- $image1 = "{{url('backend/assets/images/letterHeadLogo.png')}}";
+            $x1 = 90;
+            $y2 = 10;
+            $pdf->image($image1,  $x1, $y2, 100,20); --}}
        }
       </script>
+      <header style="width: 100%; margin-top: 0px;">
+         <div class="row">
+            <div class="column">
+               <img src="{{url('backend/assets/images/letterHeadLogo.png')}}" alt="header" style="width: 15%;">
+            </div>
+            <div class="column1">
+               CIN Number: U67120MH1992PTC068062
+            </div>
+          </div>
+     </header>
+     {{-- <footer style="width: 100%;" id="footer">
+         <img src="{{ public_path('img/invoice_footer.png') }}" alt="footer" style="width: 100%;">
+     </footer> --}}
       <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify;">
          <thead>
             <tr>
@@ -184,7 +219,7 @@
       @if(!empty($supplyChaindata['offerData']) && $supplyChaindata['offerData']->count() == 1)
         <div style="page-break-before: always;"></div>
       @endif
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify; margin-top:25px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify;">
          <thead>
             <tr>
                <th bgcolor="#cccccc" class="text-center" height="30" style="text-align: center;">Annexure I – Specific
@@ -493,7 +528,7 @@
          </tbody>
       </table>
       {{-- <div class="page-break"></div> --}}
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify; margin-top:25px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify;">
          <thead>
             <tr>
                <th bgcolor="#cccccc" class="text-center" height="30" style="text-align: center;">  {{ $supplyChainFormData->annexure_general_terms_and_condition ??'' }}</th>
@@ -628,9 +663,7 @@
                                 </tr>
                                 <tr>
                                     <td valign="top" width="5%"><b>6.</b></td>
-                                    <td>Any other documents considered necessary by Lender
-                                        from
-                                        time to time
+                                    <td>{{ $supplyChainFormData->any_other??'Any other documents considered necessary by Lender from time to time' }}
                                     </td>
                                 </tr>
                                 @if(!empty($supplyChainFormData->general_pre_disbursement_condition))

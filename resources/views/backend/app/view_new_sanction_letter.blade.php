@@ -606,9 +606,7 @@
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%"><b>6.</b></td>
-                                                                <td>Any other documents considered necessary by Lender
-                                                                    from
-                                                                    time to time
+                                                                <td>{{ $supplyChainFormData->any_other??'Any other documents considered necessary by Lender from time to time' }}
                                                                 </td>
                                                             </tr>
                                                             @if(!empty($supplyChainFormData->general_pre_disbursement_condition))

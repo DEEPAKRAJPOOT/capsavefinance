@@ -2531,8 +2531,8 @@ class ApplicationController extends Controller
 		  //return  $html;
 		  ob_start();
           $pdf = NewPDF::loadView('backend.app.generate_new_sanction_letter',[],[],'UTF-8');
-		  $customPaper = [0,0,899,1800];
-		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true,'dpi'=>96]);
+		  $customPaper = [0,0,999,2000];
+		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true,'dpi'=>96,'disable-smart-shrinking'=> false]);
 		  $pdf->setPaper($customPaper);
           return $pdf->download('sanctionLetter.pdf');
         }
@@ -2583,11 +2583,15 @@ class ApplicationController extends Controller
 
 			];
 			$htmlContent = view('backend.app.generate_new_sanction_letter')->with($data)->render();
+			$pdf = NewPDF::loadView('backend.app.generate_new_sanction_letter',$data,[],'UTF-8');
+			$customPaper = [0,0,999,2000];
+			$pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true,'dpi'=>96,'disable-smart-shrinking'=> false]);
+			$pdf->setPaper($customPaper);
 			$userData =  $this->userRepo->getUserByAppId($appId);
 			$emailData['email'] = $userData->email;
 			$emailData['name'] = $userData->f_name . ' ' . $userData->l_name;
 			$emailData['body'] = $htmlContent;
-			$emailData['attachment'] = $this->pdf->render($htmlContent);
+			$emailData['attachment'] = $pdf->output();
 			$emailData['subject'] ="Sanction Letter for SupplyChain";
 			\Event::dispatch("SANCTION_LETTER_MAIL", serialize($emailData));
 			Session::flash('message',trans('Sanction Letter for Supply Chain sent successfully.'));

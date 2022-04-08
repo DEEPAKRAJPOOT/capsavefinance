@@ -674,18 +674,18 @@
                                                             @foreach($supplyChainFormData->defaultEvent as $defaultEvent)
                                                             <tr>
                                                                 <td valign="top" width="1%">&bull;</td>
-                                                                <td><input type="text" value="{{ $defaultEvent }}" name="defaultEvent[]" style=" min-height:30px;padding:0 5px; min-width:100%;">
+                                                                <td><input type="text" value="{{ $defaultEvent }}" name="defaultEvent[]" style=" min-height:30px;padding:0 5px; min-width:100%;" class="row_defevent_input">
                                                                 </td>
                                                             </tr>
                                                             @endforeach
                                                             @else
                                                             <tr>
                                                                 <td valign="top" width="1%">&bull;</td>
-                                                                <td><input type="text" value="Payments not received on or before the due date will be treated as overdue / default by the Borrower." name="defaultEvent[]" style=" min-height:30px;padding:0 5px; min-width:100%;"> </td>
+                                                                <td><input type="text" value="Payments not received on or before the due date will be treated as overdue / default by the Borrower." name="defaultEvent[]" style=" min-height:30px;padding:0 5px; min-width:100%;" class="row_defevent_input"> </td>
                                                              </tr>
                                                              <tr>
                                                                 <td valign="top" width="1%">&bull;</td>
-                                                                <td><input type="text" value="No further disbursement will be made in case of any default under the Facility." name="defaultEvent[]" style=" min-height:30px;padding:0 5px; min-width:100%;"></td>
+                                                                <td><input type="text" value="No further disbursement will be made in case of any default under the Facility." name="defaultEvent[]" style=" min-height:30px;padding:0 5px; min-width:100%;" class="row_defevent_input"></td>
                                                              </tr>
                                                             @endif
                                                         </table>
@@ -783,16 +783,14 @@
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%"><b>6.</b></td>
-                                                                <td>Any other documents considered necessary by Lender
-                                                                    from
-                                                                    time to time
+                                                                <td><input type="text" value="{{isset($supplyChainFormData->any_other) && $supplyChainFormData->any_other?$supplyChainFormData->any_other:'Any other documents considered necessary by Lender from time to time'}}" name="any_other" style=" min-height:30px;padding:0 5px; min-width:100%;" class="row_gen_input">
                                                                 </td>
                                                             </tr>
                                                             @if(!empty($supplyChainFormData->general_pre_disbursement_condition))
                                                             @foreach($supplyChainFormData->general_pre_disbursement_condition as $k=>$genCondition)
                                                             <tr class='row_gen'>
                                                                 <td valign="top" width="1%"><b>{{ $k+7 }}.</b></td>
-                                                                <td><input type="text" value="{{ $genCondition }}" name="general_pre_disbursement_condition[]" style=" min-height:30px;padding:0 5px; min-width:100%;">
+                                                                <td><input type="text" value="{{ $genCondition }}" name="general_pre_disbursement_condition[]" style=" min-height:30px;padding:0 5px; min-width:100%;" class="row_gen_input">
                                                                 </td>
                                                             </tr>
                                                             @endforeach
