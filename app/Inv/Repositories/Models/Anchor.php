@@ -66,6 +66,8 @@ class Anchor extends BaseModel
         'logo_file_id',
         'logo_align',
         'is_phy_inv_req',
+        'pan_no',
+        'gst_no',        
         'is_fungible',
         'created_by',
         'created_at',
@@ -272,6 +274,22 @@ public static function saveAnchor($arrAnchor = [])
       
     }
 
+    /**
+     * Get Anchor 
+     * 
+     * @param array $where
+     * @return mixed mixed
+     */
+    public static function getAnchorData($where=[])
+    {
+        if (count($where) > 0) {
+            $res = self::select('*')->where($where)->get();
+        } else {
+            $res = self::select('*')->get();
+        }
+        return $res ?: [];
+    }     
+    
     public function scopeActive($query)
     {
         return $query->where('is_active', 1);

@@ -373,6 +373,15 @@ class AppProgramOffer extends BaseModel {
         return $tot_offered_limit;
     }
 
+
+    public static function checkduplicateOffer($data){
+        if(!is_array($data)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }else{
+            return AppProgramOffer::where($data)->get();
+        }
+    }
+
     public static function getOfferStatus($where_condition){
         if(!is_array($where_condition)){
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));

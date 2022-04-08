@@ -1294,6 +1294,11 @@ Route::group(
         'uses' => 'AjaxController@getAllBankList'
     ]);
 
+
+    // Check frontend PAN and GST validation
+    Route::match(['get', 'post'], '/check_anchor_pan_ajax', 'AjaxController@checkAnchorPanAjax');
+    Route::match(['get', 'post'], '/check_anchor_gst_ajax', 'AjaxController@checkAnchorGstAjax');    
+    
     Route::post('chk_anchor_phy_inv_req',[
         'as' => 'chk_anchor_phy_inv_req',
         'uses' => 'AjaxController@chkAnchorPhyInvReq'
