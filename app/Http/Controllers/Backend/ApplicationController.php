@@ -34,12 +34,13 @@ use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Master\LocationType;
 use App\Inv\Repositories\Models\AppSanctionLetter;
 use PDF as NewPDF;
+use App\Inv\Repositories\Contracts\Traits\CamTrait;
 
 class ApplicationController extends Controller
 {
 	use ApplicationTrait;
 	use LmsTrait;
-	
+	use CamTrait;
 	protected $appRepo;
 	protected $userRepo;
 	protected $docRepo;
@@ -2411,6 +2412,15 @@ class ApplicationController extends Controller
 			}
 			//dd($sanctionData);
 			$sanction_info = $this->appRepo->saveNewSanctionLetterData($sanctionData,$sanctionId);
+			if($sanction_info){
+				foreach ($request->offerData as $offerId => $offerValue) {
+					$request->pre_cond = $offerValue['pre_cond'];
+					$request->pre_timeline = $offerValue['pre_timeline'];
+					$request->post_cond = $offerValue['post_cond'];
+					$request->post_timeline = $offerValue['post_timeline'];
+					$this->savePrePostConditions($request, $request->cam_reviewer_summary_id);
+				}
+			}
             //if($appData->curr_status_id == config('common.mst_status_id.APP_SANCTIONED')){
 			if( $status == 2){
 				Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.SANCTION_LETTER_GENERATED'));

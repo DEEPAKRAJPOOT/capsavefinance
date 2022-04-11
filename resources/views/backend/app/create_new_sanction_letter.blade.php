@@ -557,6 +557,7 @@
                                                     <td>
                                                         <table width="100%" border="1">
                                                             @if(!empty($supplyChaindata['reviewerSummaryData']['preCond']))
+                                                            <input type="hidden" value="{{ $supplyChaindata['reviewerSummaryData']['reviewerSummaryData']['cam_reviewer_summary_id'] }}" name="cam_reviewer_summary_id"/>
                                                             <thead>
                                                                 <tr>
                                                                    <th>Condition</th>
@@ -589,6 +590,7 @@
                                                 <td>
                                                     <table width="100%" border="1">
                                                         @if(!empty($supplyChaindata['reviewerSummaryData']['postCond']))
+                                                        <input type="hidden" value="{{ $supplyChaindata['reviewerSummaryData']['reviewerSummaryData']['cam_reviewer_summary_id'] }}" name="cam_reviewer_summary_id"/>
                                                         <thead>
                                                             <tr>
                                                                <th>Condition</th>
