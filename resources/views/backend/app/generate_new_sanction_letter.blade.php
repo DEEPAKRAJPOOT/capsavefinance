@@ -24,7 +24,7 @@
          tfoot { display:table-footer-group }
          thead {display: table-row-group;}
          @page { margin-top: 110px; margin-bottom: 110px}
-         header { position: fixed; left: 0px; top: -50px; right: 0px;}
+         header { position: fixed; left: 0px; top: -80px; right: 0px;}
          #footer { position: fixed; left: 0px; bottom: -145px; right: 0px; height: 150px; }
          table tr td{position:relative; padding: .3rem !important;}
          /* Create two equal columns that floats next to each other */
@@ -41,7 +41,9 @@
          display: table;
          clear: both;
          }
-         header{padding:-20px 0;border-bottom:2px solid #ffa500;}
+         hr.new5 {
+            border: 1px solid #ffa500;
+         }
    </style>
    </head>
    <body style="font-size: 15px;">
@@ -58,13 +60,9 @@
             $char_space = 0.0;  //  default
             $angle = 0.0;   //  default
             $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
-            {{-- $image1 = "{{url('backend/assets/images/letterHeadLogo.png')}}";
-            $x1 = 90;
-            $y2 = 10;
-            $pdf->image($image1,  $x1, $y2, 100,20); --}}
        }
       </script>
-      <header style="width: 100%; margin-top: 0px;">
+      <header style="width: 100%;">
          <div class="row">
             <div class="column">
                <img src="{{url('backend/assets/images/letterHeadLogo.png')}}" alt="header" style="width: 15%;">
@@ -73,6 +71,7 @@
                CIN Number: U67120MH1992PTC068062
             </div>
           </div>
+          <hr class="new5">
      </header>
      {{-- <footer style="width: 100%;" id="footer">
          <img src="{{ public_path('img/invoice_footer.png') }}" alt="footer" style="width: 100%;">
