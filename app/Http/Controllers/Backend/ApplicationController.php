@@ -2414,10 +2414,14 @@ class ApplicationController extends Controller
 			$sanction_info = $this->appRepo->saveNewSanctionLetterData($sanctionData,$sanctionId);
 			if($sanction_info){
 				foreach ($request->offerData as $offerId => $offerValue) {
-					$request->pre_cond = $offerValue['pre_cond'];
-					$request->pre_timeline = $offerValue['pre_timeline'];
-					$request->post_cond = $offerValue['post_cond'];
-					$request->post_timeline = $offerValue['post_timeline'];
+					if(isset($offerValue['pre_cond']) && !empty($offerValue['pre_cond'])){
+						$request->pre_cond = $offerValue['pre_cond'];
+						$request->pre_timeline = $offerValue['pre_timeline'];
+					}
+					if(isset($offerValue['post_cond']) && !empty($offerValue['post_cond'])){
+						$request->post_cond = $offerValue['post_cond'];
+						$request->post_timeline = $offerValue['post_timeline'];
+					}
 					$this->savePrePostConditions($request, $request->cam_reviewer_summary_id);
 				}
 			}
