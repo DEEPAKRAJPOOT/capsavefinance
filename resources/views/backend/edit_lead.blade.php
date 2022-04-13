@@ -92,38 +92,7 @@
                                  
                               </div>
                               </div>
-                              @if ($role_id[0]->pivot->role_id!= '11')
-                              <div  class="row">  
-                                 <div class="col-6">
-                                       <div class="form-group">
-                                          <label for="anchor_user_type">User Type
-                                          <span class="mandatory">*</span>
-                                          </label>
-                                          <select class="form-control anchor_user_type" name="anchor_user_type" id="anchor_user_type">
-                                             <option value="">Please Select</option>
-                                             <option value="1" {{ ($userInfo->user_type == "1" ? "selected":"") }}>Supplier</option>
-                                             <option value="2" {{ ($userInfo->user_type == "2" ? "selected":"") }}>Buyer</option>
-                                          </select>
-                                          {!! $errors->first('anchor_user_type', '<span class="error">:message</span>') !!}
-                                       </div>
-                                    </div>
-                                    <div class="col-6">
-                                       <div class="form-group">
-                                       <label for="assigned_anchor">Anchor
-                                       <span class="mandatory">*</span>
-                                       </label>        
-                                      <select class="form-control assigned_anchor" name="assigned_anchor" id="assigned_anchor">
-                                          <option value="">Please Select</option>
-                                          @foreach($anchDropUserList as $key => $value)
-                                          <option value="{{$value->anchor_id}}" @if($value->anchor_id == $userInfo->anchor_id) selected @endif> {{$value->comp_name}} </option>
-                                          @endforeach
-                                       </select>
-                                       {!! $errors->first('assigned_anchor', '<span class="error">:message</span>') !!}    
-                                       </div>
-                                    </div> 
-                                    
-                              </div>
-                           @endif
+                              
                         
                         <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
                     </form>

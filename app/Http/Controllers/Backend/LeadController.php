@@ -134,11 +134,11 @@ class LeadController extends Controller {
                 
                 $userId = $request->get('userId'); 
                 $attributes['f_name'] = $request->get('f_name');
-                $attributes['l_name'] = $request->get('f_name'); 
+                $attributes['l_name'] = $request->get('l_name'); 
                 $attributes['biz_name'] = $request->get('biz_name'); 
                 $email = $request->get('email'); 
                  
-                $attributes['user_type'] = $request->get('anchor_user_type');
+                // $attributes['user_type'] = $request->get('anchor_user_type');
                 $is_registerd = $request->get('is_registerd');
                 $prevanchorInfo = $this->userRepo->getAnchorUsersByUserId($userId);
                 
@@ -432,8 +432,17 @@ class LeadController extends Controller {
                     'comp_city' => $arrAnchorVal['city'],
                     'comp_zip' => $arrAnchorVal['pin_code'],
                     'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req'],
-                    'is_fungible' => $arrAnchorVal['is_fungible']
+                    'is_fungible' => $arrAnchorVal['is_fungible'],
+                    'gst_no'      => $arrAnchorVal['gst_no'],
                 ];
+
+                if(isset($arrAnchorVal['gst_no']) && !empty($arrAnchorVal['gst_no']))
+                   $arrAnchorData['gst_no'] = $arrAnchorVal['gst_no'];
+                
+
+                if(isset($arrAnchorVal['pan_no']) && !empty($arrAnchorVal['pan_no']))
+                    $arrAnchorData['pan_no'] = $arrAnchorVal['pan_no'];
+                
 
                 $anchor_info = $this->userRepo->saveAnchor($arrAnchorData);
 
