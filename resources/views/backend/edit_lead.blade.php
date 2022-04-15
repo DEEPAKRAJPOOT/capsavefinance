@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="modal-body text-left">
-                    <form action="{{route('update_backend_lead')}}" method="POST">
+                    <form id="anchorForm" name="anchorForm" action="{{route('update_backend_lead')}}" method="POST" >
                        @csrf
                            
                           <input type="hidden" name="userId" value="{{$userInfo->user_id?$userInfo->user_id:$userInfo->anchor_user_id}}" />
@@ -80,7 +80,7 @@
                                     <label for="txtMobile">Mobile
                                     <span class="mandatory">*</span>
                                     </label>
-                                   
+                                    <input type="hidden" name="anchor_user_id" id="anchor_user_id" value="{{$userInfo->anchor_user_id}}" >
                                     <input class="form-control numbercls" name="mobile_no" id="phone" tabindex="6" type="text" maxlength="10" placeholder="Mobile" value='{{$userInfo->mobile_no}}' required>
                                     <div class="failed">
                                        <div style="color:#FF0000">
@@ -92,9 +92,8 @@
                                  
                               </div>
                               </div>
-                              
                         
-                        <button type="submit" class="btn  btn-success btn-sm float-right">Submit</button>  
+                        <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch" >Submit</button>  
                     </form>
          </div>
      
@@ -107,6 +106,7 @@
 <script>
 
     var messages = {
+        check_exist_email: "{{ URL::route('check_exist_anchor_lead') }}",
         get_lead: "{{ URL::route('get_lead') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
@@ -119,7 +119,52 @@
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
 <script>   
      $(document).ready(function(){
-         
+
+        $(document).on('blur', '#email', function(){
+              
+              var email = $(this).val();
+              if (!email.length) {
+                  return false;
+              }
+              if(emailExtention(email) == null){
+
+                $('#saveAnch').prop('disabled', true);
+                $('#email').after('<label id="email-error" class="error" for="email">Please enter valid email</label>');
+
+              }else{
+                  
+                    $.ajax({
+                        url: messages.check_exist_email,
+                        type: 'POST',
+                        datatype: 'json',
+                        async: false,
+                        cache: false,
+                        data: {
+                            'email' : email,
+                            anchor_user_id : $("#anchor_user_id").val(),
+                            '_token' : messages.token
+                        },
+                    success: function(response){
+                        console.log(response);
+                        var nameclass = response.status ? 'success' : 'error';
+                        $('#email-error').remove();
+                        $('#email-error').removeClass('error success');
+                        if(response.status == false){
+                            $('#saveAnch').prop('disabled', true);
+                            $('#email').after('<label id="email-error" class="'+ nameclass +'" for="email">'+response.message+'</label>');
+                        }else{
+                            $('#saveAnch').prop('disabled', false);
+                            $('#email-error').remove();
+                        }
+                    }
+                });
+
+              }
+              
+          });
+    function emailExtention(value) {
+        return value.match(/^[a-zA-Z0-9_\.%\+\-]+@[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,}$/);
+        }
      if(messages.is_accept == 1){
         
         var parent =  window.parent;     
@@ -190,7 +235,14 @@
 //                    return false;
 //                }
 //            });
-            
+             // this function is to accept only email
+             
+
+
+        jQuery.validator.addMethod("emailExt", function(value, element, param) {
+            return value.match(/^[a-zA-Z0-9_\.%\+\-]+@[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,}$/);
+         },'please enter a valid email');
+
             $.validator.addMethod("isexistemail", function(value, element) {
                 var email = value;
                 let status = false;
@@ -202,7 +254,7 @@
                     cache: false,
                     data: {
                         'email' : email,
-                        anchor_id : $("#assigned_anchor").val(),
+                        anchor_user_id : $("#anchor_user_id").val(),
                         '_token' : messages.token
                     },
                     success: function(response){
@@ -236,7 +288,7 @@
                                 messages: {'alphaSpace' : "Only letters allowed" }
                             })
                 });
-                $('input.comp_name').each(function () {
+                $('input.biz_name').each(function () {
                     $(this).rules("add",
                             {
                                 required: true,
@@ -244,25 +296,17 @@
                                 messages: {'alphabetsnspacendot' : "Only letters, space and dot allowed" }
                             })
                 });
-//                $('input.pan_no').each(function () {
-//                    $(this).rules("add",
-//                        {
-//                            required: true,
-//                            maxlength: 10,
-//                            panValidator: true,
-//                            messages: {'panValidator': 'Please enter correct PAN No.'}
-//                        })
-//                });
-                //$('input.email').each(function () {
+                $('input.email').each(function () {
                     $("#email").rules("add",
                     {
                         required: true,
                         email: true,
                         isexistemail: true,
+                        emailExt :true,
                         messages:{'isexistemail' : "This email is already exist."}
                     });
-                //});
-                $('input.phone').each(function () {
+                });
+                $('input.mobile_no').each(function () {
                     $(this).rules("add",
                             {
                                 required: true,
@@ -271,45 +315,7 @@
                                 messages: {'minlength' : "Number should be 10 digits"}
                             })
                 });
-                $('select.anchor_user_type').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('input.city').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });
-                $('input.comp_addr').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });                
-                $('input.pin_code').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true,
-                                number: true,
-                            })
-                });
-                
-                $('select.assigned_anchor').each(function (){
-                    $(this).rules("add",
-                            {
-                                required: true,
-                            })
-                }); 
-
-                $('#supplier_code').each(function () {
-                    $(this).rules("add",
-                            {
-                                required: true
-                            })
-                });               
+                              
                 
                 // test if form is valid                
                 if (!$('#anchorForm').valid()) {
@@ -321,6 +327,7 @@
             //$("#btnAddMore").on('click', addInput);
             $('form#anchorForm').validate();
         });
+       
 
 </script>
 

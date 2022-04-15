@@ -8,6 +8,7 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Models\User;
+use DB;
 
 class AnchorUser extends BaseModel {
 
@@ -106,7 +107,7 @@ class AnchorUser extends BaseModel {
      */
     public static function getAllAnchorUsers($datatable=false) {
         $roleData = User::getBackendUser(\Auth::user()->user_id);
-        
+        DB::enableQueryLog();
         $result = self::select('anchor_user.*', 'anchor.comp_name')
              ->join('anchor', 'anchor_user.anchor_id', '=', 'anchor.anchor_id');
         
@@ -117,6 +118,8 @@ class AnchorUser extends BaseModel {
         if (!$datatable) {
             $result =  $result->orderByRaw('anchor_user_id DESC');
         }
+        //$result->get();
+        //dd(DB::getQueryLog());
                 //->where('user_type', 1);
         return ($result ? $result : '');
     }

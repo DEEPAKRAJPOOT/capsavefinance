@@ -249,7 +249,7 @@
 </script>
 <script type="text/javascript">
         $(document).ready(function () {
-            $('#saveAnch').on('click', function (event) {
+         $('#saveAnch').on('click', function (event) {
                 $('input.employee').each(function () {
                     $(this).rules("add",
                             {
@@ -266,10 +266,10 @@
                     $(this).rules("add",
                             {
                                 required: true,
-                                 email: true,
-                                 //accept:"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}"
+                                emailExt:true,
                             })
                 });
+
                 $('input.phone').each(function () {
                     $(this).rules("add",
                             {
@@ -285,7 +285,13 @@
                                 required: true
                             })
                 });
-                $('input.city').each(function () {
+                $('select.city').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });
+                $('input.comp_addr').each(function () {
                     $(this).rules("add",
                             {
                                 required: true
@@ -296,6 +302,7 @@
                             {
                                 required: true,
                                 number: true,
+                                minlength: 6
                             })
                 });
                 $('input.assigned_sale_mgr').each(function () {
@@ -303,12 +310,17 @@
                             {
                                 required: true,
                             })
-                }); 
-                // test if form is valid                
-            })
+                });
+                
+            });
+            
             //$("#btnAddMore").on('click', addInput);
-            $('#editAchorForm').validate( {
+            $('form#editAchorForm').validate( {
                   rules: {
+                     email:{
+                        required:true,
+                        email:true,
+                     },
                      doc_file: {
                         required: true,
                         extension: "jpg,jpeg,png,pdf",
@@ -351,6 +363,12 @@
 
                });
         });
+
+        // this function is to accept only email
+
+        jQuery.validator.addMethod("emailExt", function(value, element, param) {
+            return value.match(/^[a-zA-Z0-9_\.%\+\-]+@[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,}$/);
+         },'please enter a valid email');
 
         function checkValidation(e) {
             let employee = document.getElementById('employee').value;

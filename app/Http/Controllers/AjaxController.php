@@ -4993,9 +4993,9 @@ if ($err) {
     }
     public function checkExistAnchorLead(Request $request)
     {
-        $email = $request->get('email');        
+        $email = $request->get('email'); 
+        $data = $request->all();       
         $assocAnchId = $request->get('anchor_id');
-      
         $result = [];
         $result['message'] = '';
         $result['status'] = true;        
@@ -5014,10 +5014,38 @@ if ($err) {
             $whereCond[] = ['anchor_id', '=', $anchorId];
             //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
-
-            if (isset($anchUserData[0])) {
+            $Anchorstatus = $this->userRepo->getExistEmailStatusAnchor(trim($email));
+            if (!empty($anchUserData->toArray())) {
                 $result['status'] = false;
                 $result['message'] = trans('success_messages.existing_email');
+            }else{
+
+                if($Anchorstatus != false){
+                    $result['status'] = false;
+                    $result['message'] = trans('success_messages.existing_email');
+                }
+            }
+
+        }else{
+            $whereCond=[];
+            $whereCond[] = ['email', '=', trim($email)];
+            if(isset($data['anchor_user_id'])){
+                $whereCond[] = ['anchor_user_id', '!=', $data['anchor_user_id']];
+            }
+            
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+            $Anchorstatus = $this->userRepo->getExistEmailStatusAnchor(trim($email));
+            if(!empty($anchUserData->toArray())){
+
+                $result['status'] = false;
+                $result['message'] = trans('success_messages.existing_email');
+
+            }else{
+
+                if($Anchorstatus != false){
+                    $result['status'] = false;
+                    $result['message'] = trans('success_messages.existing_email');
+                }
             }
         }
         

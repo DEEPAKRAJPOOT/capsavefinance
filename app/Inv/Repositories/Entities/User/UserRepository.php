@@ -1038,7 +1038,28 @@ class UserRepository extends BaseRepositories implements UserInterface
      public function updateAnchor($anchoId, $attributes = []){
         $result = Anchor::updateAnchor((int) $anchoId, $attributes);
         return $result ?: false;
-    }    
+    }
+    /**
+     * function for get Anchor details using anchor id
+     * @param type $userName
+     * @return type
+     */
+    public function getAnchorByAnchorId($anchId){
+        
+         
+         $result = UserModel::getAnchorByAnchorId((int)$anchId);
+         if($result == false){
+
+            $AnchorResult = Anchor::getAnchorById((int)$anchId);
+            return $AnchorResult ?: false;
+
+         }else{
+
+            return $result;
+         }
+         
+
+    }   
     /**
      * function for get user details using anchor id
      * @param type $userName

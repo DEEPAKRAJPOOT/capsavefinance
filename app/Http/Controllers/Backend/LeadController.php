@@ -187,13 +187,14 @@ class LeadController extends Controller {
                     $attributes['mobile_no'] = $request->get('mobile_no');
                     $attributes['assigned_anchor'] = $request->get('assigned_anchor');
                     $userInfo = $this->userRepo->updateUser($attributes, $userId);
-                    if($prevanchorInfo['anchor_user_id'] != null)
+                    if($prevanchorInfo['anchor_user_id'] != null){
                         $anchoruserInfo =$this->userRepo->updateAnchorUser($prevanchorInfo['anchor_user_id'],$attributes);
+                    }
+                        
 
                 }else{
 
                     $attributes['phone'] = $request->get('mobile_no');
-                    $attributes['anchor_id'] = $request->get('assigned_anchor');
                     $anchoruserInfo =$this->userRepo->updateAnchorUser($userId,$attributes);
 
                 }
@@ -442,7 +443,19 @@ class LeadController extends Controller {
 
                 if(isset($arrAnchorVal['pan_no']) && !empty($arrAnchorVal['pan_no']))
                     $arrAnchorData['pan_no'] = $arrAnchorVal['pan_no'];
-                
+                    
+                    if(isset($arrAnchorVal['email']) && !empty($arrAnchorVal['email'])){
+        
+                            $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
+                            
+                            if($anchUserInfo == true){
+        
+                                Session::flash('error', trans('error_messages.anchor_duplicate_email_error'));
+                                return redirect()->route('anchor');
+                                
+        
+                            }                            
+                    }
 
                 $anchor_info = $this->userRepo->saveAnchor($arrAnchorData);
 
@@ -821,7 +834,9 @@ class LeadController extends Controller {
                 'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req'],
                 'is_fungible' => $arrAnchorVal['is_fungible']
             ];
-            $prevanchorInfo = $this->userRepo->getUserByAnchorId($anchId);
+            
+            $prevanchorInfo = $this->userRepo->getAnchorByAnchorId($anchId);
+            // $prevanchorInfo = $this->userRepo->getUserByAnchorId($anchId);
             $userEmailMatched = false;
             if(isset($arrAnchorVal['email']) && !empty($arrAnchorVal['email'])){
                 
@@ -829,8 +844,9 @@ class LeadController extends Controller {
 
                     $checkallanchorEmail = $this->userRepo->checkallanchorEmail($arrAnchorVal['email'],$anchId);
                     $checkallUserEmail = $this->userRepo->checkallUserEmail($arrAnchorVal['email'],$anchId,2);
+                    $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
                     
-                    if($checkallanchorEmail == false && $checkallUserEmail == false){
+                    if($checkallanchorEmail == false && $checkallUserEmail == false && $anchUserInfo == false){
 
                         $arrAnchorData['comp_email'] = $arrAnchorVal['email'];
                         $userEmailMatched = true;
@@ -854,7 +870,7 @@ class LeadController extends Controller {
               $arrAnchorUserData['email'] = $arrAnchorVal['email']; 
 
               
-            $anchorInfo = $this->userRepo->getUserByAnchorId($anchId);
+            $anchorInfo = $this->userRepo->getAnchorByAnchorId($anchId);
             $Updateanchorinfo = $this->userRepo->updateUser($arrAnchorUserData, (int) $anchorInfo->user_id);
             
             if($request->doc_file){
