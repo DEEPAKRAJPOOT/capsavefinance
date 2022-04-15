@@ -8,9 +8,9 @@
       {{-- <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" /> --}}
       {{-- <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}""/> --}}
       <style>
-         
          table {
             border-collapse: collapse;
+            width: 100% !important;
          }
          table, tr, td, th, tbody, thead, tfoot {
             page-break-inside: avoid !important;
@@ -46,7 +46,7 @@
          }
    </style>
    </head>
-   <body style="font-size: 15px;">
+   <body style="font-size: 15px;background-color: #fff">
       <script type="text/php">
          if (isset($pdf)) {
             $y = $pdf->get_height() - 50; 
@@ -60,8 +60,18 @@
             $char_space = 0.0;  //  default
             $angle = 0.0;   //  default
             $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+            $size1 = 14;
+            $text1 = date('d/m/Y');
+            $font1 = $fontMetrics->getFont("Federo", "regular");
+            $text_height1 = $fontMetrics->getFontHeight($font1, $size1);
+            $width1 = $fontMetrics->getTextWidth($text, $font1, $size1);
+            $w1 = $pdf->get_width() - $width1 - 30;
+            $y1 = $pdf->get_height() - $text_height1 - 30;
+
+            $pdf->page_text($w1, $y1, $text1, $font1, $size1,$color, $word_space, $char_space, $angle);
        }
       </script>
+      @if (isset($templateType) && $templateType == 'pdfTemplate')
       <header style="width: 100%;">
          <div class="row">
             <div class="column">
@@ -73,6 +83,7 @@
           </div>
           <hr class="new5">
      </header>
+      @endif
      {{-- <footer style="width: 100%;" id="footer">
          <img src="{{ public_path('img/invoice_footer.png') }}" alt="footer" style="width: 100%;">
      </footer> --}}

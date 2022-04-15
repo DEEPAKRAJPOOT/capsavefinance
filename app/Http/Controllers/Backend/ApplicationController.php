@@ -2538,6 +2538,7 @@ class ApplicationController extends Controller
      *
      */
     public function downloadNewSanctionLetterAsPDF($pdfData = [], $download = false) {
+		$pdfData['templateType'] = 'pdfTemplate';
         view()->share($pdfData);
         set_time_limit(0);
         if ($download==true) {
@@ -2596,7 +2597,9 @@ class ApplicationController extends Controller
 				'appId' => $appId, 'bizId' => $bizId, 'offerId'=>$offerId,'sanctionId' => $sanctionId,'download'=> false
 
 			];
+			$data['templateType'] = 'mailTemplate';
 			$htmlContent = view('backend.app.generate_new_sanction_letter')->with($data)->render();
+			$data['templateType'] = 'pdfTemplate';
 			$pdf = NewPDF::loadView('backend.app.generate_new_sanction_letter',$data,[],'UTF-8');
 			$customPaper = [0,0,999,2000];
 			$pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true,'dpi'=>96,'disable-smart-shrinking'=> false]);
