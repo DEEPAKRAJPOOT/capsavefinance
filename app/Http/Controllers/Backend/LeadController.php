@@ -820,6 +820,35 @@ class LeadController extends Controller {
                             ->withErrors($validator)
                             ->withInput();
             }
+            
+            if(!$request->get('readonly_gst') || !$request->get('readonly_pan')){
+
+                if((isset($arrAnchorVal['pan_no']) && !empty($arrAnchorVal['pan_no'])) || (isset($arrAnchorVal['gst_no']) && !empty($arrAnchorVal['gst_no']))){
+
+                    if(isset($arrAnchorVal['pan_no'])){
+                        $anchrUserDataByPan = $this->userRepo->getAnchorByPan($arrAnchorVal['pan_no']);
+                        $anchorDataByPan = $this->userRepo->getAnchorData(['pan_no' => $arrAnchorVal['pan_no']]);
+                        if(count($anchorDataByPan) > 0){
+                            return redirect('anchor')
+                            ->withErrors("Anchor already registered with this Pan No. ".$arrAnchorVal['pan_no'])
+                            ->withInput();
+                        }
+                        
+                    }
+
+                    if(isset($arrAnchorVal['gst_no'])){
+                        $anchorDataByGst = $this->userRepo->getAnchorData(['gst_no' => $arrAnchorVal['gst_no']]);
+                        if(count($anchorDataByGst) > 0){
+
+                            return redirect('anchor')
+                            ->withErrors("Anchor already registered with this GST No. ".$arrAnchorVal['gst_no'])
+                            ->withInput();
+
+                        }
+                    }
+                }
+                
+            } 
 
             $anchId = $request->post('anchor_id');
             $anchId=(int)$anchId;
@@ -834,6 +863,13 @@ class LeadController extends Controller {
                 'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req'],
                 'is_fungible' => $arrAnchorVal['is_fungible']
             ];
+            if(isset($arrAnchorVal['pan_no']) && !empty($arrAnchorVal['pan_no'])){
+                $arrAnchorData['pan_no'] = $arrAnchorVal['pan_no'];
+            }
+
+            if(isset($arrAnchorVal['gst_no']) && !empty($arrAnchorVal['gst_no'])){
+                $arrAnchorData['gst_no'] = $arrAnchorVal['gst_no'];
+            }
             
             $prevanchorInfo = $this->userRepo->getAnchorByAnchorId($anchId);
             // $prevanchorInfo = $this->userRepo->getUserByAnchorId($anchId);

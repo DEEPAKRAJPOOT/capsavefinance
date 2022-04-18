@@ -222,6 +222,22 @@
                            </div>
                      </div>   
                 
+                     <div class="row">
+                        <div class="form-group col-md-6">
+                           <label for="gst_no">GST No. <span class="mandatory"></span></label>
+                           <input type="text" class="form-control gstnumber" id="gst_no" @if(isset($anchorData['gst_no'])) name="readonly_gst" @else name="gst_no" @endif placeholder="Enter GST No." maxlength="15" value="{{ isset($anchorData['gst_no']) ? $anchorData['gst_no'] : old('gst_no')}}" {{$anchorData['gst_no'] ? 'readonly' : ''}}>
+                           <span class="gst_error"></span>
+                           {!! $errors->first('gst_no', '<span class="error">:message</span>') !!}
+                        </div>
+                        <div class="form-group col-md-6">
+                           <label for="pan_no">PAN No. <span class="mandatory"></span></label>
+                           <input type="text" class="form-control pannumber" id="pan_no" @if(isset($anchorData['pan_no'])) name="readonly_pan" @else name="pan_no" @endif placeholder="Enter Pan No." maxlength="10" value="{{ isset($anchorData['pan_no']) ? $anchorData['pan_no'] : old('pan_no')}}" {{$anchorData['pan_no'] ? 'readonly' : ''}}>
+                           <span class="pan_error"></span>
+                           {!! $errors->first('pan_no', '<span class="error">:message</span>') !!}
+                        </div>            
+                     </div> 
+
+                     
                 {!! Form::hidden('anchor_id', $anchor_id) !!}
                 <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
         {!!
