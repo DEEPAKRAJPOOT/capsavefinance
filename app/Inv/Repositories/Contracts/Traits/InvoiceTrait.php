@@ -877,7 +877,7 @@ trait InvoiceTrait
               }
               
                 $remain_amount    =  $limit - $sum;
-                if($remain_amount >= $inv_details['invoice_approve_amount'])
+                if($remain_amount >= $inv_details['invoice_margin_amount'])
                 {
                   InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
                   BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['invoice_margin_amount'=> $inv_apprv_amount,'is_margin_deduct' =>1,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
