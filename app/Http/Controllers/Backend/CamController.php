@@ -91,11 +91,6 @@ class CamController extends Controller
         try{
             $arrRequest['biz_id'] = $request->get('biz_id');
             $arrRequest['app_id'] = $request->get('app_id');
-            if($request->has('data') && $request->get('data')){
-              $queryData =explode('%',base64_decode($request->get('data')));
-              $arrRequest['biz_id'] = $queryData[1];
-              $arrRequest['app_id'] = $queryData[0];
-            }
             $arrBizData = Business::getApplicationById($arrRequest['biz_id']);
             $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
             foreach ($arrOwnerData as $key => $arr) {
