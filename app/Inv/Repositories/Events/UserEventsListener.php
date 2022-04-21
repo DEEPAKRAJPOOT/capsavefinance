@@ -11,6 +11,7 @@ use Storage;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Mail\ReviewerSummary;
 
+
 class UserEventsListener extends BaseEvent
 {
 
@@ -1464,6 +1465,7 @@ class UserEventsListener extends BaseEvent
             $rowData = '';
             foreach($data['data'] as $key=>$val){
                $int = $val['interest_rate'] ?? 0;
+               $requestPara = $val['app_id'].'%'.$val['biz_id'];
             $rowData .='<tr>
               <td
                 style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">

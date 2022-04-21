@@ -135,7 +135,7 @@ class AppApprover extends BaseModel
 
     public static function mailsForPendingCases(){
         return self::select(DB::raw("CONCAT_WS(' ',rta_a.f_name,rta_a.l_name) AS approver_name"),DB::raw("CONCAT_WS(' ',rta_c.f_name,rta_c.l_name) AS customer_name"),
-        'app_approval_status.app_id','app_prgm_offer.prgm_limit_amt','app_prgm_offer.interest_rate','a.email','app.app_code')
+        'app_approval_status.app_id','app_prgm_offer.prgm_limit_amt','app_prgm_offer.interest_rate','a.email','app.app_code','app.biz_id')
         ->join('app', 'app_approval_status.app_id', '=', 'app.app_id')
         ->join('app_prgm_offer', 'app.app_id', '=', 'app_prgm_offer.app_id')
         ->join('users as c', 'app.user_id', '=', 'c.user_id')
@@ -147,7 +147,6 @@ class AppApprover extends BaseModel
         ->where('app_approval_status.is_active', 1)
         ->where('c.is_active', 1)
         ->where('a.is_active', 1)
-        ->limit(5) 
         ->get();
     }
 }
