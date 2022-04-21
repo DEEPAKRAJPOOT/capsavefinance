@@ -2290,5 +2290,32 @@ class ApplicationController extends Controller
             return Helpers::getExceptionMessage($ex);
         }
 	}   
+
+	public function pendingCasesMail(){
+        $pendingData = $this->lmsRepo->mailsForPendingCases();
+		$approverData = array();
+		foreach ($pendingData as $key=>$value) {
+			$approverData[$value->email][] = $value;
+		}
+		if(!empty($approverData)){
+			foreach ($approverData as $email => $approverAppData ) {
+				if(!empty($approverAppData) && $email){
+					$emailData = array(
+						'approver_name' => $approverAppData[0]['approver_name'],
+						'email' => $email,
+						'name' => 'Capsave Finance PVT LTD.',
+						'subject' => 'subject',
+						'body' => 'body',
+						'data' => $approverAppData,
+					  );
+					  
+					\Event::dispatch("APPROVER_MAIL_FOR_PENDING_CASES", serialize($emailData));
+				}
+				
+			}
+		}
+		
+		
+    }
     
 }

@@ -73,6 +73,7 @@ use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
+use App\Inv\Repositories\Models\AppApprover;
 
 /**
  * Lms Repository class
@@ -1883,4 +1884,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 			   ->with(['program_offer','lms_user' , 'supplier.anchor_bank_details.bank', 'supplier_bank_detail.bank', 'program','supplier.apps.disbursed_invoices.invoice_disbursed'])
 			   ->first();
 	}
+    public function mailsForPendingCases()
+	{
+		return AppApprover::mailsForPendingCases();
+	}
+
+	
 }
