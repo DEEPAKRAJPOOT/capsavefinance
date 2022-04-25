@@ -127,7 +127,7 @@
                   return false;
               }
               if(emailExtention(email) == null){
-
+                $('#email-error').remove();
                 $('#saveAnch').prop('disabled', true);
                 $('#email').after('<label id="email-error" class="error" for="email">Please enter valid email</label>');
 

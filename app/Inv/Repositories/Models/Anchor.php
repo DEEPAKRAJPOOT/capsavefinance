@@ -267,6 +267,14 @@ public static function saveAnchor($arrAnchor = [])
             ->first();
            return ($arrEmailUser ? $arrEmailUser : FALSE);
     }
+
+    public static function getExistUserEmailStatusAnchor($anchor_id,$comp_email){
+        $arrEmailUser = self::select('anchor.*')
+             ->where('comp_email', '=', $comp_email)
+             ->where('anchor_id', '!=', $anchor_id)
+            ->first();
+           return ($arrEmailUser ? $arrEmailUser : FALSE);
+    }
     
     function anchorAccount()
     {

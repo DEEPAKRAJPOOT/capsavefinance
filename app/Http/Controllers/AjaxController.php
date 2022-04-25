@@ -4612,6 +4612,30 @@ if ($err) {
         return $response;
     }
 
+    // check email status of anchor
+    public function getExistUserEmailStatusAnchor(Request $req){
+        $response = [
+            'status' => false,
+            'message' => 'Some error occured. Please try again'
+        ];
+        $comp_email = $req->get('email');
+        $anchor_id = $req->get('anchor_id');
+        if (!filter_var($comp_email, FILTER_VALIDATE_EMAIL)) {
+           $response['message'] =  'Email Id is not valid';
+           return $response;
+        }
+        
+        $status = $this->userRepo->getExistUserEmailStatusAnchor($anchor_id,$comp_email);
+        if($status != false){
+           $response['status'] = false;
+           $response['message'] =  'Sorry! Email is already in use.';
+        }else{
+            $response['status'] = true;
+            $response['message'] =  '';
+        }
+        return $response;
+    }
+
     public function getSoaClientDetails(DataProviderInterface $dataProvider){
         $user_id = $this->request->get('user_id');
         $biz_id = $this->request->get('biz_id');

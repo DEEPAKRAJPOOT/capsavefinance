@@ -258,6 +258,7 @@
 
     var messages = {
         //get_lead: "{{ URL::route('get_lead') }}",
+        check_exist_user_email: "{{ URL::route('check_exist_user_email_anchor') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
@@ -420,9 +421,38 @@
 <script>
                 
     let email_error = document.getElementById('email_error');
-    email.addEventListener('keyup', searchFunction);
+    $(document).on('blur', '#email', function(){
+              var email = $(this).val();
+              if (!email.length) {
+                  return false;
+              }
+              $.ajax({
+                  url: messages.check_exist_user_email,
+                  type: 'POST',
+                  data: {
+                      'email' : email,
+                      'anchor_id':$("input[name=anchor_id]").val(),
+                      '_token' : messages.token,
+                  },
+                  success: function(response){
+                     var nameclass = response.status ? 'success' : 'error';
+                     $('#email-error').remove();
+                      $('#email-error').removeClass('error success');
+                     if(response.status == false){
+                        $('#saveAnch').prop('disabled', true);
+                         $('#email').after('<label id="email-error" class="'+ nameclass +'" for="email">'+response.message+'</label>');
+                     }else{
+                        $('#saveAnch').prop('disabled', false);
+                        $('#email-error').remove();
+                     }
+                  }
+              });
+          });
+    
     
 
+   /*
+    email.addEventListener('keyup', searchFunction);
     function searchFunction(event) {
 
         let search = document.getElementById('email').value;
@@ -454,7 +484,7 @@
             .catch(error => console.log(error))
 
         event.preventDefault();
-    }
+    }*/
 
 
 // 
