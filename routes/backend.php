@@ -846,7 +846,19 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@listRCU'
             ]);   
         });
-        
+        Route::group(['prefix' => 'transfer-lead'], function(){
+
+            Route::get('lead-assign', [
+                'as' => 'assign_lead',
+                'uses' => 'Backend\LeadController@assignedLead'
+            ]);
+
+            Route::get('case-assign', [
+                'as' => 'assign_cases',
+                'uses' => 'Backend\LeadController@assignedCases'
+            ]);
+        });
+
         Route::group(['prefix' => 'anchor'], function(){
             Route::get('/', [
                 'as' => 'get_anchor_list',

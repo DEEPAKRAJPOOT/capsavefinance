@@ -242,6 +242,13 @@ Route::group(
         'as' => 'get_lead',
         'uses' => 'AjaxController@getLeads'
         ]
+    );
+    Route::post(
+        'get-assigned-user-lead',
+        [
+        'as' => 'get_assigned_user_lead',
+        'uses' => 'AjaxController@getUserLead'
+        ]
     ); 
    Route::post(
         'get-case-pool',
@@ -256,6 +263,21 @@ Route::group(
         [
         'as' => 'ajax_app_list',
         'uses' => 'AjaxController@getApplications'
+        ]
+    );
+
+    Route::post(
+        'get-backendusers',
+        [
+        'as' => 'get_backend_users',
+        'uses' => 'AjaxController@getBackendUsers'
+        ]
+    );
+    Route::post(
+        'get-users-leads',
+        [
+            'as'=>'get_users_leads',
+            'uses'=>'AjaxController@getUsersLeads'
         ]
     );
 

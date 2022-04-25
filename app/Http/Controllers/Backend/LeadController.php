@@ -59,7 +59,7 @@ class LeadController extends Controller {
         
         $whereCond=[];
         $roleData = $this->userRepo->getBackendUser(\Auth::user()->user_id);
-
+        
         if ($roleData && $roleData->id == 11) {
             $whereCond[] = ['anchor_id', '=', \Auth::user()->anchor_id];                
         }
@@ -983,6 +983,38 @@ class LeadController extends Controller {
             $this->userRepo->updateAnchor($anchorId, $arrData);
             
         }
+    }
+
+    /**
+     *  function for assigned lead
+     * @param Request $arrFileData
+     * @param Int $leadId
+     * @param Int $anchorId
+     * @return type
+     */
+
+    public function assignedLead() {
+        $anchRoleList = $this->userRepo->getRoleList();
+        $roleList = [];
+        if($anchRoleList != false)
+           $roleList = $anchRoleList->get()->toArray();
+
+        return view('backend.leadtransfer.leadlist')->with(['roles'=>$roleList]);
+
+    }
+
+    /**
+     *  function for assigned cases
+     * @param Request $arrFileData
+     * @param Int $leadId
+     * @param Int $anchorId
+     * @return type
+     */
+
+    public function assignedCases() {
+
+        return view('backend.leadtransfer.applist');
+
     }
     
 }

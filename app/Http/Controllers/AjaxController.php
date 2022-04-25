@@ -104,6 +104,18 @@ class AjaxController extends Controller {
     }
 
     /**
+     * Get all User assigned lead list
+     *
+     * @return json user leads data
+     */
+    public function getUserLead(DataProviderInterface $dataProvider) {
+        $data = $this->request->all();
+        $usersList = $this->userRepo->getAssignedUsers($data['role_id'],$data['user_id']);
+        $users = $dataProvider->getUsersList($this->request, $usersList);
+        return $users;
+    }
+
+    /**
      * Get all country list ajax
      *
      * @return json country data
@@ -5774,5 +5786,57 @@ if ($err) {
             \DB::rollback();
             return response()->json(['status' => 0,'message' => Helpers::getExceptionMessage($ex)]);
         }
+    }
+
+    public function getBackendUsers(Request $request){
+
+        try{
+
+            $data = $request->all();
+            $validator =Validator::make($request->all(),[
+                'role_id' => 'required'
+            ],['role_id.required' => 'Please select role.']);
+            
+            if ($validator->fails()) {
+                $getErrorVar = $validator->messages()->get('*');
+                return response()->json(['status' => '2','message' => 'Please select role.','data'=>$getErrorVar]);
+            }
+
+            $role_id = (int)$data['role_id'];
+            $userData = Helpers::getAllUsersByRoleId($role_id);
+            if(!empty($userData))
+                return response()->json(['status' => '1','message' => 'User data according to role.','data'=>$userData]);
+            else
+                return response()->json(['status' => '0','message' => 'Users not found','data'=>array()]);
+            
+
+        } catch (Exception $ex) {
+            
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+
+    }
+
+    public function getUsersLeads(Request $request){
+
+        try{ 
+
+            $validator =Validator::make($request->all(),[
+                'role_id' => 'required',
+                'user_id' => 'required'
+            ],['role_id.required' => 'Please select role.','user_id.required'=>'Please select user.']);
+            $data = $request->all();
+            if ($validator->fails()) {
+
+                $getErrorVar = $validator->messages()->get('*');
+                return response()->json(['status' => '2','message' => 'validation error','data'=>$getErrorVar]);
+            }
+            
+            return response()->json(['status' => '1','message' => 'validation done','data'=>array()]);
+            
+        } catch (Exception $ex) {
+            
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }    
     }
 }

@@ -3,7 +3,7 @@
 
 try {
 
-    var oTable,oTables1,oTables2;
+    var oTable,oTables1,oTables2,oTables3;
     jQuery(document).ready(function ($) {
         
         //User Listing code
@@ -138,6 +138,22 @@ try {
             oTables2.draw();
 
         });
+
+        //User Listing code
+        
+
+        //Search
+        // $('#leadsearchbtn').on('click', function (e) {
+            
+        //     var role_id = $('#selectedrole').find(":selected").val();
+        //     var user_id = $('#selecteduser').find(":selected").val();
+        //     console.log(role_id);console.log(user_id);
+        //     if(role_id != '' && user_id != ''){
+
+                
+        //     }
+        // });
+
         
     });
 } catch (e) {

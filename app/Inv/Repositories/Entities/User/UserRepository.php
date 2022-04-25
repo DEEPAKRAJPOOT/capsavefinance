@@ -436,6 +436,22 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return $result ?: false;
     }
+
+    /**
+     * Get a user model by role's user
+     *
+     * @param integer $userId
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getAssignedUsers($role_id,$user_id)
+    {
+        $result = UserModel::getAssignedUsers($role_id,$user_id);
+        return $result ?: false;
+    }
+    
     
     
     /**
