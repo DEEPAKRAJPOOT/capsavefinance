@@ -238,8 +238,7 @@
 <script type="text/javascript">
         $(document).ready(function () {
 
-
-         $(document).on('keyup', '#email', function(){
+         $(document).on('blur', '#email', function(){
               var email = $(this).val();
               if (!email.length) {
                   return false;
@@ -253,17 +252,18 @@
                   },
                   success: function(response){
                      var nameclass = response.status ? 'success' : 'error';
+                     $('#email-error').remove();
                       $('#email-error').removeClass('error success');
-                     if($('#email-error').length){
-                        $('#email-error').text(response.message).addClass(nameclass);
-                     }else{
+                     if(response.status == false){
+                        $('#saveAnch').prop('disabled', true);
                          $('#email').after('<label id="email-error" class="'+ nameclass +'" for="email">'+response.message+'</label>');
+                     }else{
+                        $('#saveAnch').prop('disabled', false);
+                        $('#email-error').remove();
                      }
                   }
               });
           });
-
-
 
             $('#saveAnch').on('click', function (event) {
                 $('input.employee').each(function () {
@@ -281,7 +281,8 @@
                 $('input.email').each(function () {
                     $(this).rules("add",
                             {
-                                required: true
+                                required: true,
+                                emailExt:true,
                             })
                 });
 
@@ -337,6 +338,10 @@
             $('form#anchorForm').validate(
                {
                   rules: {
+                     email:{
+                        required:true,
+                        email:true,
+                     },
                      doc_file: {
                         required: true,
                         extension: "jpg,jpeg,png,pdf",
@@ -407,6 +412,11 @@
 
         });
 
+        // this function is to accept only email
+
+         jQuery.validator.addMethod("emailExt", function(value, element, param) {
+            return value.match(/^[a-zA-Z0-9_\.%\+\-]+@[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,}$/);
+         },'please enter a valid email');
 
         function checkValidation(e) {
             let employee = document.getElementById('employee').value;

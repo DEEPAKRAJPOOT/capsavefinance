@@ -1080,6 +1080,11 @@ Route::group(
         'uses' => 'AjaxController@getExistEmailStatusAnchor'
     ]);
 
+    Route::post('check_exist_user_email_anchor',[
+        'as' => 'check_exist_user_email_anchor',
+        'uses' => 'AjaxController@getExistUserEmailStatusAnchor'
+    ]);
+
     Route::post('get-soa-client-details',[
         'as' => 'get_soa_client_details',
         'uses' => 'AjaxController@getSoaClientDetails'
