@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\EtlReportSync::class,
         \App\Console\Commands\OverdueReport::class,
         \App\Console\Commands\OverdueReportManual::class,
-        \App\Console\Commands\UserInvoice::class,
+        \App\Console\Commands\UserInvoiceCron::class,
     ];
 
     /**
