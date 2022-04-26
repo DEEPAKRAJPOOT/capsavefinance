@@ -27,6 +27,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\EtlReportSync::class,
         \App\Console\Commands\OverdueReport::class,
         \App\Console\Commands\OverdueReportManual::class,
+        \App\Console\Commands\UserInvoice::class,
     ];
 
     /**
@@ -84,6 +85,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('etl:report_utilization')->timezone(config('common.timezone'))->dailyAt('01:25');
         $schedule->command('etl:report_disbursal')->timezone(config('common.timezone'))->dailyAt('01:30');
         $schedule->command('etl:report_account_disbursal')->timezone(config('common.timezone'))->dailyAt('01:35');
+        $schedule->command('alert:userInvoicePdfMail')->timezone(config('common.timezone'))->dailyAt('01:35');
     }
     
     /**

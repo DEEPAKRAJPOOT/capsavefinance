@@ -1281,4 +1281,8 @@ class userInvoiceController extends Controller
         return $result;
     }
 
+    public function userInvoiceMail(){
+        dd('aaaaaa');
+    }
+
 }
