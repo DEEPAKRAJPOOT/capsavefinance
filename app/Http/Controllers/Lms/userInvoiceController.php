@@ -1296,7 +1296,6 @@ class userInvoiceController extends Controller
         // $pdf = PDF::loadView('lms.invoice.generate_invoice');
 
         $emailData = array(
-            'approver_name' => $approverAppData[0]['approver_name'],
             'email' => $email,
             'name' => 'Capsave Finance PVT LTD.',
             'subject' => 'subject',
