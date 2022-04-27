@@ -1294,6 +1294,8 @@ class userInvoiceController extends Controller
         view()->share($data);
         ini_set("memory_limit", "-1");
         $pdf = PDF::loadView('lms.invoice.generate_invoice');
+
+        \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
     }
 
 }
