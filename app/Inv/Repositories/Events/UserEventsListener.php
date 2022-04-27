@@ -11,7 +11,6 @@ use Storage;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Mail\ReviewerSummary;
 
-
 class UserEventsListener extends BaseEvent
 {
 
@@ -1455,72 +1454,39 @@ class UserEventsListener extends BaseEvent
         }
     }
 
-    public function approverMailForPendingCases($attributes){
-        $data = unserialize($attributes);
+    public function userInvoiceMail($attributes) {
+        $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
-        $email_content = EmailTemplate::getEmailTemplate("APPROVER_MAIL_FOR_PENDING_CASES");
-        if ($email_content) {
-            $userData['approver_name'] = $data['approver_name'];
-            $userData['email'] = $data['email'];
-            $rowData = '';
-            foreach($data['data'] as $key=>$val){
-               $int = $val['interest_rate'] ?? 0;
-               $requestPara = $val['app_id'].'%'.$val['biz_id'];
-            $rowData .='<tr>
-              <td
-                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                '.$val['app_code'].'
-              </td>
-              <td
-                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                '. $val['customer_name'].'
-              </td>
-              <td
-                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                '.\Helpers::formatCurreny($val['prgm_limit_amt']).'
-              </td>
-              <td
-                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
-                '. $int .'
-              </td>
-            </tr>';
+        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
+            function ($message) use ($data) {
+                if( env('SEND_MAIL_ACTIVE') == 1){
+                    $email = explode(',', env('SEND_MAIL'));
+                    $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+                    $message->cc(explode(',', env('SEND_MAIL_CC')));
+                }else{
+                    $email = $data["email"];
+                }
+            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            if(!empty($data['attachment'])){
+                $att_name = 'sanction.pdf';
+                $message->attachData($data['attachment'], $att_name);
             }
-            $mail_subject = str_replace(['%name'], [$data['approver_name']],$email_content->subject);
-            $mail_body = str_replace(
-                ['%name', '%allData'],
-                [$userData['approver_name'], $rowData],
-                $email_content->message
-            );
-            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $mail_body],
-                function ($message) use ($data, $mail_subject, $mail_body, $email_content) {
-                    $cc = array_filter(explode(',', $email_content->cc));
-                    $bcc = array_filter(explode(',', $email_content->bcc));
-                    if (!empty($bcc)) {
-                        $message->bcc($bcc);
-                    }
-                    if (!empty($cc)) {
-                        $message->cc($cc);
-                    }
-                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $message->to($data["email"], $data["approver_name"]);
-                $message->subject($mail_subject);
-                $mailContent = [
-                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
-                    'email_to' => $data["email"],
-                    'email_cc' => $cc ?? NULL,
-                    'email_bcc' => $bcc ?? NULL,
-                    'email_type' => $this->func_name,
-                    'user_name' => $data['approver_name'],
-                    'name' => $email_content->name,
-                    'subject' => $mail_subject,
-                    'body' => $mail_body,
-                    // 'att_name' => $att_name ?? NULL,
-                    // 'attachment' => $data['attachment'] ?? NULL,
-                ];
-                FinanceModel::logEmail($mailContent);
-            }); 
-        }
+
+            $message->to($email, $data["name"])->subject($data['subject']);
+            $mailContent = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_to' => $email,
+                'email_type' => $this->func_name,
+                'name' => $data['name'],
+                'subject' => $data['subject'],
+                'body' => $data['body'],
+                'att_name' => $att_name ?? NULL,
+                'attachment' => $data['attachment'] ?? NULL,
+            ];
+            FinanceModel::logEmail($mailContent);
+        }); 
     }
+
 
     /**
      * Event subscribers
@@ -1718,8 +1684,11 @@ class UserEventsListener extends BaseEvent
             'App\Inv\Repositories\Events\UserEventsListener@onChargeDeletionRequest'
         );
         $events->listen(
-            'APPROVER_MAIL_FOR_PENDING_CASES',
-            'App\Inv\Repositories\Events\UserEventsListener@approverMailForPendingCases'
+            'USER_INVOICE_MAIL',
+            'App\Inv\Repositories\Events\UserEventsListener@userInvoiceMail'
         );
     }
+
+    
+
 }
