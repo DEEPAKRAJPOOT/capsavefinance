@@ -1454,6 +1454,40 @@ class UserEventsListener extends BaseEvent
         }
     }
 
+    public function userInvoiceMail($attributes) {
+        $data = unserialize($attributes); 
+        $this->func_name = __FUNCTION__;
+        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
+            function ($message) use ($data) {
+                if( env('SEND_MAIL_ACTIVE') == 1){
+                    $email = explode(',', env('SEND_MAIL'));
+                    $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+                    $message->cc(explode(',', env('SEND_MAIL_CC')));
+                }else{
+                    $email = $data["email"];
+                }
+            $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+            if(!empty($data['attachment'])){
+                $att_name = 'sanction.pdf';
+                $message->attachData($data['attachment'], $att_name);
+            }
+
+            $message->to($email, $data["name"])->subject($data['subject']);
+            $mailContent = [
+                'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                'email_to' => $email,
+                'email_type' => $this->func_name,
+                'name' => $data['name'],
+                'subject' => $data['subject'],
+                'body' => $data['body'],
+                'att_name' => $att_name ?? NULL,
+                'attachment' => $data['attachment'] ?? NULL,
+            ];
+            FinanceModel::logEmail($mailContent);
+        }); 
+    }
+
+
     /**
      * Event subscribers
      *
@@ -1648,6 +1682,10 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'CHARGE_DELETION_REQUEST_MAIL',
             'App\Inv\Repositories\Events\UserEventsListener@onChargeDeletionRequest'
+        );
+        $events->listen(
+            'USER_INVOICE_MAIL',
+            'App\Inv\Repositories\Events\UserEventsListener@userInvoiceMail'
         );
     }
 
