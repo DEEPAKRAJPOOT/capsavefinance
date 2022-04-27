@@ -1282,19 +1282,27 @@ class userInvoiceController extends Controller
     }
 
     public function userInvoiceMail(){
-        $data = [
-            'company_data' => $company_data,
-            'billingDetails' => $billingDetails,
-            'origin_of_recipient' => $origin_of_recipient, 
-            'intrest_charges' => $intrest_charges,
-            'total_sum_of_rental' => $total_sum_of_rental,
-            'registeredCompany' => $registeredCompany,
-        ];
-        dd($data);
-        view()->share($data);
-        ini_set("memory_limit", "-1");
-        $pdf = PDF::loadView('lms.invoice.generate_invoice');
+        // $data = [
+        //     'company_data' => $company_data,
+        //     'billingDetails' => $billingDetails,
+        //     'origin_of_recipient' => $origin_of_recipient, 
+        //     'intrest_charges' => $intrest_charges,
+        //     'total_sum_of_rental' => $total_sum_of_rental,
+        //     'registeredCompany' => $registeredCompany,
+        // ];
+        // dd($data);
+        // view()->share($data);
+        // ini_set("memory_limit", "-1");
+        // $pdf = PDF::loadView('lms.invoice.generate_invoice');
 
+        $emailData = array(
+            'approver_name' => $approverAppData[0]['approver_name'],
+            'email' => $email,
+            'name' => 'Capsave Finance PVT LTD.',
+            'subject' => 'subject',
+            'body' => 'body',
+            'data' => $approverAppData,
+          );
         \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
     }
 
