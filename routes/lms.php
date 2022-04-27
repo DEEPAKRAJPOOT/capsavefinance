@@ -97,6 +97,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\userInvoiceController@listUserInvoice',
             ]);
 
+            Route::get('/cron-user-invoice', [
+                'as' => 'cron_user_invoice',
+                'uses' => 'Lms\userInvoiceController@userInvoiceMail',
+            ]);
+
             Route::post('/get_invoice_transaction', [
                 'as' => 'get_invoice_transaction',
                 'uses' => 'Lms\userInvoiceController@getUserInvoiceTxns',
