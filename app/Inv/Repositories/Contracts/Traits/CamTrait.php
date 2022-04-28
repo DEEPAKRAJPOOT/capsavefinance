@@ -115,7 +115,7 @@ trait CamTrait
                 }
                 $arrGroupCompany = array();
                 if(isset($arrCamData['group_company']) && is_numeric($arrCamData['group_company'])){
-                  $arrGroupCompany = GroupCompanyExposure::where(['group_Id'=>$arrCamData['group_company'], 'is_active'=>1])->get()->toArray();
+                  $arrGroupCompany = GroupCompanyExposure::where(['group_Id'=>$arrCamData['group_company'], 'app_id' => $arrRequest['app_id'], 'is_active'=>1])->get()->toArray();
                   $arrMstGroup =  Group::where('id', $arrCamData['group_company'])->first()->toArray();
                   if(!empty($arrMstGroup)){
                     $arrCamData['group_company'] = $arrMstGroup['name'];
