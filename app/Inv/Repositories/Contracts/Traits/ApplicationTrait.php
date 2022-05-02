@@ -671,6 +671,11 @@ trait ApplicationTrait
                         $totalBalanceAmt += $parentAppConsumAmt;
                     }
                 }
+            }else {
+                if (($appData->app_type == 0 && $offer_id) || ($appData->app_type == 1 && $offer_id)) {
+                    $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id, $offer_id);
+                    $appUserBalLimit += $currOfferConsumAmt;
+                }
             }
         }
 
