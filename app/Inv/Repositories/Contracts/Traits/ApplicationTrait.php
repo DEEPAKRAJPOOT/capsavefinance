@@ -650,9 +650,10 @@ trait ApplicationTrait
                 $totalBalanceAmt = $prgm_data->anchor_sub_limit;
             }
 
-            $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id,$appData->app_id);
+            $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id);
             $appPrgmLimit = $this->application->getProgramLimitData($appId,1);
             $appUserBalLimit = $appPrgmLimit[0]->limit_amt - $appUserConsumtionLimit;
+            
             /** Enhancement || Reduction */
             if ($appData->app_type == 2 || $appData->app_type == 3) {
 
@@ -672,7 +673,7 @@ trait ApplicationTrait
                     }
                 }
             }else {
-                if (($appData->app_type == 0 && $offer_id) || ($appData->app_type == 1 && $offer_id)) {
+                if (in_array($appData->app_type, [0]) && $offer_id) {
                     $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id, $offer_id);
                     $appUserBalLimit += $currOfferConsumAmt;
                 }
