@@ -40,7 +40,7 @@
                                  <label for="txtEmail">Email
                                  <span class="mandatory">*</span>
                                  </label>
-                                 <input type="email" name="email" id="email" value="@if($anchorData){{$anchorData->comp_email}}@else{}@endif" class="form-control email" tabindex="4" placeholder="Email" readonly="">
+                                 <input type="email" name="email" id="email" value="@if($anchorData){{$anchorData->comp_email}}@else{}@endif" class="form-control email" tabindex="4" placeholder="Email" >
                               </div>
                            </div>
 
@@ -222,6 +222,22 @@
                            </div>
                      </div>   
                 
+                     <div class="row">
+                        <div class="form-group col-md-6">
+                           <label for="gst_no">GST No. <span class="mandatory"></span></label>
+                           <input type="text" class="form-control gstnumber" id="gst_no" @if(isset($anchorData['gst_no'])) name="readonly_gst" @else name="gst_no" @endif placeholder="Enter GST No." maxlength="15" value="{{ isset($anchorData['gst_no']) ? $anchorData['gst_no'] : old('gst_no')}}" {{$anchorData['gst_no'] ? 'readonly' : ''}}>
+                           <span class="gst_error"></span>
+                           {!! $errors->first('gst_no', '<span class="error">:message</span>') !!}
+                        </div>
+                        <div class="form-group col-md-6">
+                           <label for="pan_no">PAN No. <span class="mandatory"></span></label>
+                           <input type="text" class="form-control pannumber" id="pan_no" @if(isset($anchorData['pan_no'])) name="readonly_pan" @else name="pan_no" @endif placeholder="Enter Pan No." maxlength="10" value="{{ isset($anchorData['pan_no']) ? $anchorData['pan_no'] : old('pan_no')}}" {{$anchorData['pan_no'] ? 'readonly' : ''}}>
+                           <span class="pan_error"></span>
+                           {!! $errors->first('pan_no', '<span class="error">:message</span>') !!}
+                        </div>            
+                     </div> 
+
+                     
                 {!! Form::hidden('anchor_id', $anchor_id) !!}
                 <button type="submit" class="btn  btn-success btn-sm float-right" id="saveAnch">Submit</button>  
         {!!
@@ -242,6 +258,7 @@
 
     var messages = {
         //get_lead: "{{ URL::route('get_lead') }}",
+        check_exist_user_email: "{{ URL::route('check_exist_user_email_anchor') }}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
@@ -249,7 +266,7 @@
 </script>
 <script type="text/javascript">
         $(document).ready(function () {
-            $('#saveAnch').on('click', function (event) {
+         $('#saveAnch').on('click', function (event) {
                 $('input.employee').each(function () {
                     $(this).rules("add",
                             {
@@ -266,10 +283,10 @@
                     $(this).rules("add",
                             {
                                 required: true,
-                                 email: true,
-                                 //accept:"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}"
+                                emailExt:true,
                             })
                 });
+
                 $('input.phone').each(function () {
                     $(this).rules("add",
                             {
@@ -285,7 +302,13 @@
                                 required: true
                             })
                 });
-                $('input.city').each(function () {
+                $('select.city').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true
+                            })
+                });
+                $('input.comp_addr').each(function () {
                     $(this).rules("add",
                             {
                                 required: true
@@ -296,6 +319,7 @@
                             {
                                 required: true,
                                 number: true,
+                                minlength: 6
                             })
                 });
                 $('input.assigned_sale_mgr').each(function () {
@@ -303,12 +327,17 @@
                             {
                                 required: true,
                             })
-                }); 
-                // test if form is valid                
-            })
+                });
+                
+            });
+            
             //$("#btnAddMore").on('click', addInput);
-            $('#editAchorForm').validate( {
+            $('form#editAchorForm').validate( {
                   rules: {
+                     email:{
+                        required:true,
+                        email:true,
+                     },
                      doc_file: {
                         required: true,
                         extension: "jpg,jpeg,png,pdf",
@@ -352,6 +381,12 @@
                });
         });
 
+        // this function is to accept only email
+
+        jQuery.validator.addMethod("emailExt", function(value, element, param) {
+            return value.match(/^[a-zA-Z0-9_\.%\+\-]+@[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,}$/);
+         },'please enter a valid email');
+
         function checkValidation(e) {
             let employee = document.getElementById('employee').value;
             let phone = document.getElementById('phone').value; 
@@ -373,11 +408,7 @@
         }
         
         
-$(document).ready(function(){
-  $("#email").click(function(){
-    $("#email").attr("readonly","readonly");  
-  });  
-})
+
 </script>
 <script type="text/javascript">
    $(".custom-file-input").on("change", function() {
@@ -390,9 +421,38 @@ $(document).ready(function(){
 <script>
                 
     let email_error = document.getElementById('email_error');
-    email.addEventListener('keyup', searchFunction);
+    $(document).on('blur', '#email', function(){
+              var email = $(this).val();
+              if (!email.length) {
+                  return false;
+              }
+              $.ajax({
+                  url: messages.check_exist_user_email,
+                  type: 'POST',
+                  data: {
+                      'email' : email,
+                      'anchor_id':$("input[name=anchor_id]").val(),
+                      '_token' : messages.token,
+                  },
+                  success: function(response){
+                     var nameclass = response.status ? 'success' : 'error';
+                     $('#email-error').remove();
+                      $('#email-error').removeClass('error success');
+                     if(response.status == false){
+                        $('#saveAnch').prop('disabled', true);
+                         $('#email').after('<label id="email-error" class="'+ nameclass +'" for="email">'+response.message+'</label>');
+                     }else{
+                        $('#saveAnch').prop('disabled', false);
+                        $('#email-error').remove();
+                     }
+                  }
+              });
+          });
+    
     
 
+   /*
+    email.addEventListener('keyup', searchFunction);
     function searchFunction(event) {
 
         let search = document.getElementById('email').value;
@@ -424,7 +484,7 @@ $(document).ready(function(){
             .catch(error => console.log(error))
 
         event.preventDefault();
-    }
+    }*/
 
 
 // 

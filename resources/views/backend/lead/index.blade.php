@@ -70,6 +70,7 @@
                             <div class="row">
                                 <div class="col-sm-12">
 
+                                
                                     <table id="leadMaster" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                         <thead>
                                             <tr role="row">

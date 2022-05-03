@@ -91,13 +91,27 @@ class LeadController extends Controller {
      */
     public function editBackendLead(Request $request) {
         try {
+            
             $user_id = $request->get('user_id');
+            $is_registered = $request->get('is_registered');
             $arr = [];
-            if ($user_id) {
+            $anchLeadList = $this->userRepo->getAllAnchor($orderBy='comp_name');
+            if ($is_registered === '1') {
+                
+                
                 $userInfo = $this->userRepo->getUserDetail($user_id);
                 $arr['full_name'] = $userInfo->f_name;
+            }else{
+
+                $userInfo = $this->userRepo->getAnchorUsersByanchorId($user_id);
+                $arr['full_name'] = $userInfo->name.' '.$userInfo->l_name;
+                $userInfo['f_name'] = $userInfo->name;
+                $userInfo['mobile_no'] = $userInfo->phone;
+
             }
-            return view('backend.edit_lead')->with('userInfo', $userInfo);
+
+          return view('backend.edit_lead')->with('userInfo', $userInfo)->with('anchDropUserList',$anchLeadList);
+
         } catch (Exception $ex) {
             dd($ex);
         }
@@ -118,10 +132,50 @@ class LeadController extends Controller {
 
     public function updateBackendLead(Request $request) {
         try {
+                
                 $userId = $request->get('userId'); 
-                $attributes['f_name'] = $request->get('f_name'); 
+                $attributes['f_name'] = $request->get('f_name');
+                $attributes['l_name'] = $request->get('l_name'); 
                 $attributes['biz_name'] = $request->get('biz_name'); 
+                $email = $request->get('email'); 
+                 
+                // $attributes['user_type'] = $request->get('anchor_user_type');
+                $is_registerd = $request->get('is_registerd');
+                $prevanchorInfo = $this->userRepo->getAnchorUsersByUserId($userId);
+                
+                if($is_registerd === "1"){
+                    
+                    if($prevanchorInfo['email'] !== $email){
 
+                            $checkallanchorEmail = $this->userRepo->checkallanchorUserEmail($email,$userId,1,1);
+                            $checkallUserEmail = $this->userRepo->checkallUserEmail($email,$userId,1);
+                            if(($checkallanchorEmail == false && $checkallUserEmail == false) || $checkallUserEmail == false){
+
+                                $attributes['email'] = $email;
+
+                            }else{
+                                
+                                Session::flash('error', trans('error_messages.anchor_duplicate_email_error'));
+                                return redirect()->back();
+                            }                            
+                    }
+                }else{
+                        
+                        if($prevanchorInfo['email'] !== $email){
+
+                            $checkallanchorEmail = $this->userRepo->checkallanchorUserEmail($email,$userId,0,1);
+                            if($checkallanchorEmail == false){
+
+                                $attributes['email'] = $email;
+                                
+                            }else{
+                                
+                                Session::flash('error', trans('error_messages.anchor_duplicate_email_error'));
+                                return redirect()->back();
+                            }                            
+                        }
+                } 
+                
                 $whereActivi['activity_code'] = 'update_backend_lead';
                 $activity = $this->mstRepo->getActivity($whereActivi);
                 if(!empty($activity)) {
@@ -130,7 +184,22 @@ class LeadController extends Controller {
                     $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($attributes));
                 }                
                 
-                $userInfo = $this->userRepo->updateUser($attributes, $userId);
+                if($is_registerd === "1"){
+                    $attributes['mobile_no'] = $request->get('mobile_no');
+                    $attributes['assigned_anchor'] = $request->get('assigned_anchor');
+                    $userInfo = $this->userRepo->updateUser($attributes, $userId);
+                    if($prevanchorInfo['anchor_user_id'] != null){
+                        $anchoruserInfo =$this->userRepo->updateAnchorUser($prevanchorInfo['anchor_user_id'],$attributes);
+                    }
+                        
+
+                }else{
+
+                    $attributes['phone'] = $request->get('mobile_no');
+                    $anchoruserInfo =$this->userRepo->updateAnchorUser($userId,$attributes);
+
+                }
+                
                 Session::flash('operation_status', 1); 
                 //return view('backend.lead.index');
                 Session::flash('message', 'Lead is updated successfully.'); 
@@ -365,8 +434,29 @@ class LeadController extends Controller {
                     'comp_city' => $arrAnchorVal['city'],
                     'comp_zip' => $arrAnchorVal['pin_code'],
                     'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req'],
-                    'is_fungible' => $arrAnchorVal['is_fungible']
+                    'is_fungible' => $arrAnchorVal['is_fungible'],
+                    'gst_no'      => $arrAnchorVal['gst_no'],
                 ];
+
+                if(isset($arrAnchorVal['gst_no']) && !empty($arrAnchorVal['gst_no']))
+                   $arrAnchorData['gst_no'] = $arrAnchorVal['gst_no'];
+                
+
+                if(isset($arrAnchorVal['pan_no']) && !empty($arrAnchorVal['pan_no']))
+                    $arrAnchorData['pan_no'] = $arrAnchorVal['pan_no'];
+                    
+                    if(isset($arrAnchorVal['email']) && !empty($arrAnchorVal['email'])){
+        
+                            $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
+                            
+                            if($anchUserInfo == true){
+        
+                                Session::flash('error', trans('error_messages.anchor_duplicate_email_error'));
+                                return redirect()->route('anchor');
+                                
+        
+                            }                            
+                    }
 
                 $anchor_info = $this->userRepo->saveAnchor($arrAnchorData);
 
@@ -731,6 +821,35 @@ class LeadController extends Controller {
                             ->withErrors($validator)
                             ->withInput();
             }
+            
+            if(!$request->get('readonly_gst') || !$request->get('readonly_pan')){
+
+                if((isset($arrAnchorVal['pan_no']) && !empty($arrAnchorVal['pan_no'])) || (isset($arrAnchorVal['gst_no']) && !empty($arrAnchorVal['gst_no']))){
+
+                    if(isset($arrAnchorVal['pan_no'])){
+                        $anchrUserDataByPan = $this->userRepo->getAnchorByPan($arrAnchorVal['pan_no']);
+                        $anchorDataByPan = $this->userRepo->getAnchorData(['pan_no' => $arrAnchorVal['pan_no']]);
+                        if(count($anchorDataByPan) > 0){
+                            return redirect('anchor')
+                            ->withErrors("Anchor already registered with this Pan No. ".$arrAnchorVal['pan_no'])
+                            ->withInput();
+                        }
+                        
+                    }
+
+                    if(isset($arrAnchorVal['gst_no'])){
+                        $anchorDataByGst = $this->userRepo->getAnchorData(['gst_no' => $arrAnchorVal['gst_no']]);
+                        if(count($anchorDataByGst) > 0){
+
+                            return redirect('anchor')
+                            ->withErrors("Anchor already registered with this GST No. ".$arrAnchorVal['gst_no'])
+                            ->withInput();
+
+                        }
+                    }
+                }
+                
+            } 
 
             $anchId = $request->post('anchor_id');
             $anchId=(int)$anchId;
@@ -745,13 +864,50 @@ class LeadController extends Controller {
                 'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req'],
                 'is_fungible' => $arrAnchorVal['is_fungible']
             ];
-            $updateAnchInfo = $this->userRepo->updateAnchor($anchId, $arrAnchorData);            
-            $anchorInfo = $this->userRepo->getUserByAnchorId($anchId);
+            if(isset($arrAnchorVal['pan_no']) && !empty($arrAnchorVal['pan_no'])){
+                $arrAnchorData['pan_no'] = $arrAnchorVal['pan_no'];
+            }
+
+            if(isset($arrAnchorVal['gst_no']) && !empty($arrAnchorVal['gst_no'])){
+                $arrAnchorData['gst_no'] = $arrAnchorVal['gst_no'];
+            }
+            
+            $prevanchorInfo = $this->userRepo->getAnchorByAnchorId($anchId);
+            // $prevanchorInfo = $this->userRepo->getUserByAnchorId($anchId);
+            $userEmailMatched = false;
+            if(isset($arrAnchorVal['email']) && !empty($arrAnchorVal['email'])){
+                
+                if($prevanchorInfo['email'] !== $arrAnchorVal['email']){
+
+                    $checkallanchorEmail = $this->userRepo->checkallanchorEmail($arrAnchorVal['email'],$anchId);
+                    $checkallUserEmail = $this->userRepo->checkallUserEmail($arrAnchorVal['email'],$anchId,2);
+                    $anchUserInfo=$this->userRepo->getAnchorUsersByEmail(trim($arrAnchorVal['email']));
+                    
+                    if($checkallanchorEmail == false && $checkallUserEmail == false && $anchUserInfo == false){
+
+                        $arrAnchorData['comp_email'] = $arrAnchorVal['email'];
+                        $userEmailMatched = true;
+                        
+
+                    }else{
+                        
+                        Session::flash('error', trans('error_messages.anchor_duplicate_email_error'));
+                        return redirect()->route('get_anchor_list');
+                    }                            
+                }
+            }
+            
+            $updateAnchInfo = $this->userRepo->updateAnchor($anchId, $arrAnchorData);
             $arrAnchorUserData = [
                 'f_name' => $arrAnchorVal['employee'],
                 'biz_name' => $arrAnchorData['comp_name'],
                 'mobile_no' => $arrAnchorData['comp_phone'],
-            ];
+            ];  
+            if($userEmailMatched)
+              $arrAnchorUserData['email'] = $arrAnchorVal['email']; 
+
+              
+            $anchorInfo = $this->userRepo->getAnchorByAnchorId($anchId);
             $Updateanchorinfo = $this->userRepo->updateUser($arrAnchorUserData, (int) $anchorInfo->user_id);
             
             if($request->doc_file){

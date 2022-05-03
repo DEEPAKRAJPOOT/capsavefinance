@@ -144,7 +144,7 @@ class User extends Authenticatable
      */
     public static function getUserDetail($user_id)
     {
-        //dd($user_id);
+        
         //Check id is not blank
 
         if (empty($user_id)) {
@@ -161,7 +161,7 @@ class User extends Authenticatable
             ->where('u.user_id', (int) $user_id)
             ->first();
          
-
+            
         return ($arrUser ?: false);
     }
 
@@ -570,6 +570,52 @@ class User extends Authenticatable
          $users = self::getUserRoles($user_id);
          return $users;
     }
+
+    /**
+     * Get  user email exist
+     *
+     * @param integer $user_id
+     *
+     * @return array User List
+     */
+    public static function checkUserEmailExist($email,$anchId,$userType)
+    {
+        $userEmailExist = self::where('email','=',$email)
+                   ->where('user_type','=',$userType)
+                   ->where('user_id','!=',$anchId)->count();
+         
+        return $userEmailExist;
+    }
+
+    /**
+     * Get Anchor Details using anchor id
+     *
+     * @param  integer $anchId
+     * @return array
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     * Since 0.1
+     */
+    public static function getAnchorByAnchorId($anchId)
+    {
+        
+        //Check anchId is not blank
+        if (empty($anchId)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        //Check anchId is not an integer
+
+        if (!is_int($anchId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $arrAnchUser = self::select('users.*')
+            ->where('users.anchor_id', (int) $anchId)
+            ->first();
+
+        return ($arrAnchUser ?: false);
+    }
+
     
     /**
      * Get User Details using anchor id

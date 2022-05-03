@@ -127,7 +127,8 @@ try {
                     {data: 'phone'},
                     {data: 'assoc_anchor'},
                     {data: 'created_at'},
-                    {data: 'status'}
+                    {data: 'status'},
+                    {data:'action'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [1,3,4,5,6,8]}]
 

@@ -70,6 +70,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getUsersList(Request $request, $user)
     {
+        
         return DataTables::of($user)
                 ->rawColumns(['id','name', 'checkbox', 'anchor', 'action', 'email','assigned', 'active'])
                 ->addColumn(
@@ -176,7 +177,7 @@ class DataRenderer implements DataProviderInterface
                     function ($users) {
                     $link = '';
                         if(Helpers::checkPermission('edit_backend_lead') ){
-                            $link = "<a title=\"edit Lead\"  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
+                            $link = "<a title=\"edit Lead\"  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id,'is_registered'=>'1']) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
                         }
                     return $link;
                     }
@@ -2861,8 +2862,9 @@ class DataRenderer implements DataProviderInterface
     public function getAnchorLeadList(Request $request, $user)
     {
         
+        
         return DataTables::of($user)
-                ->rawColumns(['id', 'checkbox', 'action', 'assoc_anchor', 'email','assigned', 'status'])
+                ->rawColumns(['id','name', 'checkbox', 'action', 'assoc_anchor', 'email','assigned', 'status'])
                 ->addColumn(
                     'id',
                     function ($user) {
@@ -2931,6 +2933,20 @@ class DataRenderer implements DataProviderInterface
                     } else {
                         return "<label class=\"badge badge-warning current-status\">Unregistered</label>";
                     }
+                    }
+                )->addColumn(
+                    'action',
+                    function ($users) {  
+                    $link = '';
+                    if($users->user_id == null){
+                        if(Helpers::checkPermission('edit_backend_lead') ){
+                            
+                            $link = "<a title=\"edit Lead\"  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id?$users->user_id:$users->anchor_user_id,'is_registered'=>$users->is_registered]) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
+                        }
+                    }
+                        
+                        
+                    return $link;
                     }
                 )
                 ->filter(function ($query) use ($request) {
