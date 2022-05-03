@@ -1018,6 +1018,18 @@ class Helper extends PaypalHelper
     }
 
     /**
+     * Get Application current assignee all data
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function getAppCurrentAssigneedata($app_id)
+    {
+        $assigneeData = AppAssignment::getAppCurrentAssigneedata($app_id);
+        return $assigneeData;
+    }
+
+    /**
      * Check access of application is view only or not
      * 
      * @param integer $app_id

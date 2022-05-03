@@ -261,7 +261,8 @@ class User extends Authenticatable
                 'users.is_buyer as AnchUserType','lead_assign.to_id','anchor_user.pan_no')                
                 ->join('lead_assign', function ($join) {
                     $join->on('lead_assign.assigned_user_id', '=', 'users.user_id');
-                    $join->on('lead_assign.is_owner', '=', DB::raw("1"));                    
+                    $join->on('lead_assign.is_owner', '=', DB::raw("1"));
+                    $join->on('lead_assign.is_deleted', '=', DB::raw("0"));                    
                 })
                 ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'users.user_id')
                  ->where('users.user_type', 1);
@@ -294,7 +295,8 @@ class User extends Authenticatable
                 'users.is_buyer as AnchUserType','lead_assign.to_id','anchor_user.pan_no')                
                 ->join('lead_assign', function ($join) {
                     $join->on('lead_assign.assigned_user_id', '=', 'users.user_id');
-                    $join->on('lead_assign.is_owner', '=', DB::raw("1"));                    
+                    $join->on('lead_assign.is_owner', '=', DB::raw("1"));
+                    $join->on('lead_assign.is_deleted', '=', DB::raw("0"));                    
                 })
                 ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'users.user_id')
                  ->where('users.user_type', 1);

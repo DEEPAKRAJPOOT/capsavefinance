@@ -740,6 +740,90 @@ class ApplicationController extends Controller
 				  ->with('assignee', $assignee);
 	}  
 	
+
+	/**
+	 * Render for assign application view
+	 * 
+	 * @param Request $request
+	 * @return view
+	 */  
+	public function assignUserApplication(){
+
+		
+            $toAssignedData = json_decode(Session::get('toAssignedData'));
+            // Session::forget('toAssignedData');
+            $role_id = $toAssignedData->role_id;
+            $assigneduser_id = $toAssignedData->assigneduser_id;
+
+            $anchRoleList = $this->userRepo->getRoleList();
+            $roleList = [];
+            if($anchRoleList != false)
+            $roleList = $anchRoleList->get()->toArray();
+
+            $roleUsers = Helpers::getAllUsersByRoleId($role_id);
+            unset($roleUsers[(int)$assigneduser_id]);
+            $allCollectedData['roleList'] = $roleList;
+            $allCollectedData['roleUsers'] = $roleUsers;
+            $toAssignedData->role_id = (int)$toAssignedData->role_id;
+            $allCollectedData['toAssignedData'] = $toAssignedData;
+            return view('backend.leadtransfer.assign_user_application')->with('allCollectedData',$allCollectedData);
+
+        
+	}
+
+	public function saveassignUserApplication(Request $request){
+
+	  try{
+
+		$data = $request->all();
+		$user_role = $data['user_role'];
+		$prevFromUser = $data['assigneduser_id'];
+		$nextToUser = $data['role_user'];
+		$role_id = $data['role_id'];
+		$allApps = $data['selected_application'];
+		$assigned = false;
+		for($i=0;$i<count($allApps);$i++){
+
+			$userInfo = Helpers::getAppCurrentAssigneedata($allApps[$i]);
+			$app_Assigned_id = $userInfo['app_assign_id'];
+			$assignedData['from_id'] = $prevFromUser;
+			$assignedData['to_id'] = $nextToUser;
+			$assignedData['role_id'] = $role_id;
+			$assignedData['assigned_user_id'] = $userInfo['assigned_user_id'];
+			$assignedData['app_id'] = $allApps[$i];
+			$assignedData['assign_status'] = $userInfo['assign_status'];
+			if($userInfo['assign_type'] == 0){
+				$assignedData['assign_type'] = 0;
+			}else{
+				$assignedData['assign_type'] = 2;
+			}
+			$assignedData['is_owner'] = $userInfo['is_owner'];
+			$assignedData['created_by'] = $prevFromUser;
+			$this->appRepo->updateAppAssignById($allApps[$i], ['is_deleted'=>1]);
+			$applicationCreated = $this->appRepo->saveShaircase($assignedData);
+			if($i == count($allApps)-1)
+			   $assigned = true;
+			  
+		}
+
+		if($assigned){
+			Session::forget('toAssignedData');
+			Session::flash('message', trans('backend_messages.app_assigned'));
+			return redirect()->route('assign_cases');
+			
+		}else{
+
+			Session::flash('error', trans('error_messages.limit_assessment_fail'));
+			return redirect()->route('assign_cases');
+		}
+
+		} catch (Exception $ex) {
+
+			Session::flash('error', trans('error_messages.limit_assessment_fail'));
+			return redirect()->route('assign_cases');
+		}
+		
+	}
 	/**
 	 * Update application status
 	 * 

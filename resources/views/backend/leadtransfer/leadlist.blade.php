@@ -66,6 +66,7 @@
                             <table id="assignleadMaster" class="table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                 <thead>
                                     <tr role="row">
+                                        <th style="width: 2%;">Select Lead.</th>
                                         <th>Lead.ID.</th>
                                         <th>Name</th>
                                         <th>Email</th>
@@ -81,13 +82,24 @@
 
                                 </tbody>
                             </table>
+                            
                             <div id="supplier-listing_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
+                            <div class="col-md-1">
+                              <a data-toggle="modal" data-target="#assignUserLeads" data-url="{{route('assign_user_leads')}}" data-height="400px" data-width="100%" data-placement="top">
+                                 <button type="button" id="assignedhbtn" class="btn btn-success btn-sm float-right" disabled style="padding: 10px;margin: 21px;line-height: 25px;margin-top: 41px;margin-right: -5px;">
+                                        <span class="btn-label">
+                                            <i class="fa fa-exchange"></i>
+                                        </span>
+                                        Assigned Leads
+                                  </button>
+                                </a> 
+                            </div>
                         </div>
                     </div>
         </div>
       </div>
     </div>
-{!!Helpers::makeIframePopup('addAnchorFrm','Add Anchor', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('assignUserLeads','Assign Laeds', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('editAnchorFrm','Edit Anchor Detail', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('add_bank_account','Add Bank Detail', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('edit_bank_account','Edit Bank Detail', 'modal-lg')!!}
@@ -101,6 +113,7 @@
     var messages = {
         get_assigned_user_lead:"{{ URL::route('get_assigned_user_lead') }}",
         get_lead: "{{ URL::route('get_lead') }}",
+        set_users_leads : "{{URL::route('set_users_leads')}}",
         get_backend_users: "{{ URL::route('get_backend_users') }}",
         get_users_leads:"{{URL::route('get_users_leads')}}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
@@ -109,6 +122,7 @@
     };
 </script>
 <script>
+    var selected = new Array();
   $('#selectedrole').on('change', function() {
     var selectedroleId = $(this).find(":selected").val();
     var lenderSelect = $('#selecteduser');
@@ -165,6 +179,7 @@
 
 <script>
     $('#selecteduser').on('change', function() {
+        selected = new Array();
         $('#hiddenUserid').val($(this).val());
         $('#searchbtn').attr('disabled',false);
         $('#role_error').text('');
@@ -175,7 +190,7 @@ jQuery(document).ready(function ($) {
     $('#leadsearchbtn').on('click', function() {
         var role_id = $('#hiddenRoleid').val();
         var user_id = $('#hiddenUserid').val();
-
+        console.log(oTables3);
         if(oTables3 != undefined){
             oTables3.destroy();
         }
@@ -214,7 +229,7 @@ jQuery(document).ready(function ($) {
                             }
                         },
                         columns: [
-                                    // {data: 'checkbox'},
+                                    {data: 'checkbox'},
                                     {data: 'id'},
                                     {data: 'name'},
                                     {data: 'email'},
@@ -256,7 +271,51 @@ jQuery(document).ready(function ($) {
                 },
         })
     });
+
+    
 });
+    
+    function selectLeadToassign(element){
+        var leaduser_id = $(element).val();
+        var prevassigneduser_id = $('#hiddenUserid').val();
+        var currentRoleId = $('#hiddenRoleid').val();
+        if ($(element).is(":checked")) {
+                selected.push($(element).val());
+        }else{
+
+            for(var i = 0; i<selected.length;i++) {
+                if (selected[i] == $(element).val()) {
+                    // remove the item from the array
+                    selected.splice(i, 1);
+                }
+            }
+        } 
+      if(selected.length > 0){
+        $('#assignedhbtn').attr('disabled',false);
+      }else{
+        $('#assignedhbtn').attr('disabled',true);
+      }
+        
+        $.ajax({
+                url  : messages.set_users_leads,
+                type :'POST',
+                data : {role_id : currentRoleId,assigneduser_id:prevassigneduser_id,selected_leads:selected, _token : messages.token},
+                beforeSend: function() {
+                    //$(".isloader").show();
+                },
+                dataType : 'json',
+                success:function(result) {
+                    console.log(result);
+                },
+                error:function(error) {
+
+                    
+                },
+                complete: function() {
+                    //$(".isloader").hide();
+                },
+        })    
+    }
 </script>
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>

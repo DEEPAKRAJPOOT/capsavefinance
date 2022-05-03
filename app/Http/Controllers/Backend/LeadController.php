@@ -11,6 +11,7 @@ use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Inv\Repositories\Models\Master\State;
+use App\Inv\Repositories\Models\AppAssignment;
 use App\Http\Requests\AnchorRegistrationFormRequest;
 use App\Http\Requests\Lms\BankAccountRequest;
 use App\Inv\Repositories\Contracts\UserInterface as InvUserRepoInterface;
@@ -824,6 +825,115 @@ class LeadController extends Controller {
         }
     }
   
+    public function assignUserLeads(){
+     try{
+            $toAssignedData = json_decode(Session::get('toAssignedData'));
+            // Session::forget('toAssignedData');
+            $role_id = $toAssignedData->role_id;
+            $assigneduser_id = $toAssignedData->assigneduser_id;
+
+            $anchRoleList = $this->userRepo->getRoleList();
+            $roleList = [];
+            if($anchRoleList != false)
+            $roleList = $anchRoleList->get()->toArray();
+
+            $roleUsers = Helpers::getAllUsersByRoleId($role_id);
+            unset($roleUsers[(int)$assigneduser_id]);
+            $allCollectedData['roleList'] = $roleList;
+            $allCollectedData['roleUsers'] = $roleUsers;
+            $toAssignedData->role_id = (int)$toAssignedData->role_id;
+            $allCollectedData['toAssignedData'] = $toAssignedData;
+            return view('backend.leadtransfer.assign_user_lead')->with('allCollectedData',$allCollectedData);
+
+        } catch (Exception $ex) {
+            dd($ex);
+        } 
+    }
+
+    public function saveassignUserLeads(Request $request){
+      try{
+            $data = $request->all();
+            $user_role = $data['user_role'];
+            $prevFromUser = $data['assigneduser_id'];
+            $nextToUser = $data['role_user'];
+            $role_id = $data['role_id'];
+            $allLeads = $data['selected_leads'];
+
+            
+            $getUserLeadData = $this->userRepo->getUserLeadData($role_id,$prevFromUser,$allLeads);
+            $getnextUserLeadData = $this->userRepo->getUserLeadData($role_id,$nextToUser,$allLeads);
+            if(!empty($getUserLeadData->toArray()) && empty($getnextUserLeadData->toArray())){
+
+                $toAssignedData=[];
+                $is_Assigned = false;
+                $i = 1;
+                foreach($getUserLeadData as $leadData){
+
+                    $lead_assign_id = $leadData['lead_assign_id'];
+
+                    $toAssignedData['from_id']          = $leadData['from_id'];
+                    $toAssignedData['to_id']            = $nextToUser;
+                    $toAssignedData['assigned_user_id'] = $leadData['assigned_user_id'];
+                    $toAssignedData['is_owner']         = $leadData['is_owner'];
+                    $toAssignedData['created_by']       = $leadData['from_id'];
+                    $toAssignedData['created_at']       = \Carbon\Carbon::now();
+
+                    $lead_id = $this->userRepo->createLeadAssign($toAssignedData);
+                    $is_deletePrevLead = $this->userRepo->updateDeleteStatus($lead_assign_id);
+                    $whereCond=[];
+                    $whereCond[] = ['to_id', '=', (int)$prevFromUser];
+                    $whereCond[] = ['assigned_user_id', '=', $leadData['assigned_user_id']];
+                    $getAppAssignmentData = AppAssignment::getAllAppAssignmentData($whereCond);
+                    if(!empty($getAppAssignmentData->toArray())){
+
+                        foreach($getAppAssignmentData as $assignedData){
+
+                            $app_assign_id = $assignedData['app_assign_id'];
+                            $dataArr['from_id'] = $prevFromUser;
+                            $dataArr['to_id'] = $nextToUser;
+                            $dataArr['role_id'] = $role_id;
+                            $dataArr['assigned_user_id'] = $leadData['assigned_user_id'];
+                            $dataArr['app_id'] = $assignedData['app_id'];
+                            $dataArr['assign_status'] = $assignedData['assign_status'];
+                            $dataArr['assign_type'] = $assignedData['assign_type'];
+                            $dataArr['sharing_comment'] = $assignedData['sharing_comment'];
+                            $dataArr['created_by'] = $leadData['from_id'];
+                            $dataArr['is_owner'] = $assignedData['is_owner'];
+                            $toAssignedAppData = AppAssignment::saveappData($dataArr, $sendEmail=true);
+                            $deleted = AppAssignment::updateDeleteStatus($app_assign_id);
+
+
+                        }
+                    }
+                    if($i == count($getUserLeadData))
+                    $is_Assigned = true;
+
+                    $i++;
+                }
+
+                if($is_Assigned){
+                    Session::forget('toAssignedData');
+                    Session::flash('message', trans('backend_messages.lead_assigned'));
+                    return redirect()->route('assign_lead');
+                    
+                }else{
+
+                    Session::flash('error', trans('error_messages.limit_assessment_fail'));
+                    return redirect()->route('assign_lead');
+                }
+            }else{
+
+                    Session::flash('error', trans('error_messages.limit_assessment_fail'));
+                    return redirect()->route('assign_lead');
+            }
+
+        } catch (Exception $ex) {
+
+            Session::flash('error', trans('error_messages.limit_assessment_fail'));
+            return redirect()->route('assign_lead');
+        }
+        
+    }
     /**
      * function for save manual anchor lead
      * @return type
@@ -999,6 +1109,10 @@ class LeadController extends Controller {
         if($anchRoleList != false)
            $roleList = $anchRoleList->get()->toArray();
 
+        if(Session::has('toAssignedData')){
+            Session::forget('toAssignedData');
+        }
+
         return view('backend.leadtransfer.leadlist')->with(['roles'=>$roleList]);
 
     }
@@ -1013,7 +1127,14 @@ class LeadController extends Controller {
 
     public function assignedCases() {
 
-        return view('backend.leadtransfer.applist');
+        $anchRoleList = $this->userRepo->getRoleList();
+        $roleList = [];
+        if($anchRoleList != false)
+           $roleList = $anchRoleList->get()->toArray();
+        if(Session::has('toAssignedData')){
+            Session::forget('toAssignedData');
+        }
+        return view('backend.leadtransfer.applist')->with(['roles'=>$roleList]);
 
     }
     

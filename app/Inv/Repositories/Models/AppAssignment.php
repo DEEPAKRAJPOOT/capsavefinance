@@ -169,6 +169,7 @@ class AppAssignment extends BaseModel
                 ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')                   
                 ->where('app_id', $app_id)                
                 ->where('is_owner', '0')
+                ->where('is_deleted', '0')
                 ->orderBy('app_assign_id', 'DESC')
                 ->first();
         return $assignData ? $assignData : false;
@@ -188,10 +189,33 @@ class AppAssignment extends BaseModel
                 ->leftJoin('role_user as to_ru', 'app_assign.to_id', '=', 'to_ru.user_id')
                 ->leftJoin('roles as to_r', 'to_ru.role_id', '=', 'to_r.id')                   
                 ->where('app_id', $app_id)
-                ->where('is_owner', '1')                
+                ->where('is_owner', '1')
+                ->where('is_deleted', '0')                
                 ->first();
         return $assignData ? $assignData : false;
-    }     
+    } 
+    
+    
+    /**
+     * Get Application current assignee
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function getAppCurrentAssigneedata($app_id)
+    {
+        $assignData = self::select('app_assign.*',DB::raw("CONCAT_WS(' ', rta_to_u.f_name, rta_to_u.l_name) AS assignee"), 
+                'to_r.name as assignee_role')
+                ->leftJoin('users as to_u', 'app_assign.to_id', '=', 'to_u.user_id')
+                ->leftJoin('role_user as to_ru', 'app_assign.to_id', '=', 'to_ru.user_id')
+                ->leftJoin('roles as to_r', 'to_ru.role_id', '=', 'to_r.id')                   
+                ->where('app_id', $app_id)
+                ->where('is_owner', '1')
+                ->where('is_deleted', '0')                
+                ->first();
+        return $assignData ? $assignData : false;
+    }
+
   
     /**
      * Check logged in user is application owner or not
@@ -205,7 +229,7 @@ class AppAssignment extends BaseModel
     { 
         
         $assignData = self::where('app_id', $app_id)
-                ->where('is_owner', '1');
+                ->where('is_owner', '1')->where('is_deleted', '0');
         $assignData->where(function($q) use($to_id, $to_role_id) {
             if (is_array($to_id)) {
                 $q->orWhereIn('to_id', $to_id);
@@ -236,6 +260,7 @@ class AppAssignment extends BaseModel
                 ->join('role_user as ru', 'u.user_id', '=', 'ru.user_id')
                 ->join('roles as r', 'ru.role_id', '=', 'r.id')
                 ->where('app_assign.app_id', $app_id)
+                ->where('app_assign.is_deleted', '0')
                 ->whereIn('r.id', $roles)
                 ->groupBy('u.user_id')
                 ->get();
@@ -302,6 +327,8 @@ class AppAssignment extends BaseModel
         ->leftjoin('users as from_u','from_u.user_id', '=', 'app_assign.from_id')
         ->leftjoin('users as to_u','to_u.user_id', '=', 'app_assign.to_id')
         ->where('app_assign.app_id', (int) $app_id)
+        ->where('app_assign.is_deleted', '0')
+        
         ->get();
 
     }
@@ -338,6 +365,7 @@ class AppAssignment extends BaseModel
         ->join('role_user', 'role_user.user_id', '=', 'app_assign.to_id')
         ->where('app_assign.to_id', '>', 0)
         ->whereIn('role_user.role_id', [5,6])
+        ->where('app_assign.is_deleted', '0')
         ->groupBy('app_assign.to_id')
         ->get();
 
@@ -351,6 +379,57 @@ class AppAssignment extends BaseModel
                         ->whereNotIn('role_id', [5, 6])
                         ->get();
         return ($arrRoles ? : false);
+    }
+
+    /**
+     * Get Application assign data
+     * 
+     * @param array $whereCondition
+     * @return mixed
+     */
+    public static function getAllAppAssignmentData ($whereCondition=[])
+    {
+        $assignData = self::where($whereCondition)->get();
+        return $assignData ? $assignData : false;
+    }
+
+
+    /**
+     * Validating and parsing data passed thos this method
+     *
+     * @param array $attributes
+     * @param mixed $user_id
+     *
+     * @return New record ID that was added
+     *
+     * @since 0.1
+     */
+    public static function saveappData($attributes = [], $sendEmail = true)
+    {
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+
+        $status =  self::create($attributes);
+        /*if($sendEmail)
+        dispatch(new ProcessMails($status));*/
+        return true;
+    }
+
+    public static function updateDeleteStatus($app_assign_id){
+
+        $updated = self::where('app_assign_id',$app_assign_id)->update(['is_deleted'=>1]);
+        return $updated ? true : false;
     }
 
 }

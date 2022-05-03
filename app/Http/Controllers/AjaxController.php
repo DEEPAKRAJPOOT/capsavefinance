@@ -110,9 +110,71 @@ class AjaxController extends Controller {
      */
     public function getUserLead(DataProviderInterface $dataProvider) {
         $data = $this->request->all();
+        
         $usersList = $this->userRepo->getAssignedUsers($data['role_id'],$data['user_id']);
-        $users = $dataProvider->getUsersList($this->request, $usersList);
+        $users = $dataProvider->getUsersLeadList($this->request, $usersList);
         return $users;
+    }
+
+    /**
+     * set all selected lead to session
+     *
+     * @return json set leads data
+     */
+    public function setUsersLeads() {
+        try{
+
+            $data = $this->request->all();
+            if(!Session::has('toAssignedData'))
+            {
+                Session::put('toAssignedData',json_encode($data));
+            }else{
+
+                Session::forget('toAssignedData');
+                Session::put('toAssignedData',json_encode($data));
+            }
+            
+            $toAssignedData = Session::get('toAssignedData');
+            if($toAssignedData != null)
+                return response()->json(['status' => 1,'message' => 'User\'s lead set successfully.']);
+            else
+                return response()->json(['status' => 0,'message' => 'Something went wrong!']);   
+            
+        } catch (Exception $ex) {
+            return response()->json(['status' => 0,'message' => $ex]);
+            
+        }    
+    }
+
+
+    /**
+     * set all selected lead to session
+     *
+     * @return json set leads data
+     */
+    public function setUsersApplication() {
+        try{
+
+            $data = $this->request->all();
+            if(!Session::has('toAssignedData'))
+            {
+                Session::put('toAssignedData',json_encode($data));
+            }else{
+
+                Session::forget('toAssignedData');
+                Session::put('toAssignedData',json_encode($data));
+            }
+            
+            $toAssignedData = Session::get('toAssignedData');
+            if($toAssignedData != null)
+                return response()->json(['status' => 1,'message' => 'User\'s application set successfully.']);
+            else
+                return response()->json(['status' => 0,'message' => 'Something went wrong!']);   
+            
+        } catch (Exception $ex) {
+            return response()->json(['status' => 0,'message' => $ex]);
+            
+        }    
     }
 
     /**
@@ -2704,6 +2766,17 @@ if ($err) {
     public function getApplications(DataProviderInterface $dataProvider) {
         $appList = $this->application->getApplications();
         $applications = $dataProvider->getAppList($this->request, $appList);
+        return $applications;
+    }
+
+    /**
+     * Get all Application list
+     *
+     * @return json user data
+     */
+    public function getAssignedApplications(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getAssignedApplications($this->request);
+        $applications = $dataProvider->getAssignedAppList($this->request, $appList);
         return $applications;
     }
     

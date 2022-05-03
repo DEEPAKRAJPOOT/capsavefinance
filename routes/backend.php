@@ -922,6 +922,25 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@getCityList'
             ]);
             
+            Route::get('assign-user-lead', [
+                'as' => 'assign_user_leads',
+                'uses' => 'Backend\LeadController@assignUserLeads'
+            ]);
+
+            Route::post('assign-user-lead', [
+                'as' => 'assign_user_leads',
+                'uses' => 'Backend\LeadController@saveassignUserLeads'
+            ]);
+
+            Route::get('assign-user-application',[
+                'as' => 'assign_user_application',
+                'uses' => 'Backend\ApplicationController@assignUserApplication'
+                ]);
+
+            Route::post('assign-user-application',[
+                'as' => 'assign_user_application',
+                'uses' => 'Backend\ApplicationController@saveassignUserApplication'
+                ]);
             //add anchor bank details
             
             Route::get('add-anchor-bank', [

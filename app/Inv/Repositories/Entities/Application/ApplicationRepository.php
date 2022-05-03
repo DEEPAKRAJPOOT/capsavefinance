@@ -191,6 +191,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 		return Application::getApplications();
 	}
 
+    /**
+	 * Get Applications for Application list data tables
+	 */
+	public function getAssignedApplications($request) 
+	{
+		return Application::getAssignedApplications($request['role_id'],$request['user_id']);
+	}
+
 	/**
 	 * Get business information according to app id
 	 */

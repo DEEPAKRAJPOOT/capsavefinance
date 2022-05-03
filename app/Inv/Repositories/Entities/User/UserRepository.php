@@ -1725,6 +1725,17 @@ class UserRepository extends BaseRepositories implements UserInterface
         return AnchorUser::getAnchorUserData($whereCond);
     }    
 
+    
+    public function getUserLeadData($role_id,$fromUser,$selectedLeads){
+
+        return LeadAssign::getAssigneLeadByUserId($role_id,$fromUser,$selectedLeads);
+    }
+
+
+    public function updateDeleteStatus($lead_id){
+
+        return LeadAssign::updateDeleteStatus($lead_id);
+    }
     /**
      * Get a sales user model by id
      *
