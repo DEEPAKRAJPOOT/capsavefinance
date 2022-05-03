@@ -596,10 +596,6 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     'as' => 'cam_overview',
                     'uses' => 'Backend\CamController@index'
                 ]);
-                Route::get('security-deposit', [
-                    'as' => 'security_deposit',
-                    'uses' => 'Backend\CamController@index'
-                ]);
                 Route::get('cibil', [
                     'as' => 'cam_cibil',
                     'uses' => 'Backend\CamController@showCibilForm'
@@ -739,7 +735,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 Route::get('/finstmt-download', [
                 'as' => 'download_fin_stmt_doc',
                 'uses' => 'Backend\DocumentController@downloadStorageFile'
-            ]);
+                ]);
+                Route::get('security-deposit', [
+                    'as' => 'security_deposit',
+                    'uses' => 'Backend\CamController@securityDeposit'
+                ]);
+                Route::post('save-security-deposit', [
+                    'as' => 'save_security_deposit',
+                    'uses' => 'Backend\CamController@saveSecurityDeposit'
+                ]);
             }); //end of cam   
                         
             Route::get('copy-app-confirmBox', [

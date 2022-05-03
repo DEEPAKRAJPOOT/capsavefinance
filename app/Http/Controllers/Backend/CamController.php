@@ -205,13 +205,6 @@ class CamController extends Controller
         $arrCamData['debt_on'] =  Carbon::createFromFormat('d/m/Y', request()->get('debt_on'))->format('Y-m-d');
       }
 
-      //process only security deposit
-      if($request->has("security_deposit")){
-        $this->saveSecurityDeposit($request);
-        Session::flash('message', trans('Security document information saved successfully'));
-        return redirect()->route('security_deposit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
-      }
-
       if (isset($arrCamData['group_company'])) {
         $masterGroupData = array(
           'name' => $arrCamData['group_company'],
@@ -247,35 +240,6 @@ class CamController extends Controller
               $group_company_expo_id = null;
             }
             GroupCompanyExposure::updateOrcreate(['group_company_expo_id' => $group_company_expo_id], $inputArr);
-          }
-        }
-      }
-
-      if (isset($arrCamData['security_doc_id']) && !empty($arrCamData['security_doc_id']) && isset($arrCamData['doc_type']) && !empty($arrCamData['doc_type'])) {
-        $dataCheck = array_filter($arrCamData['security_doc_id']);
-        $dataCheck1 = array_filter($arrCamData['doc_type']);
-        $dataCheck2 = array_filter($arrCamData['description']);
-        $dataCheck4 = array_filter($arrCamData['due_date']);
-
-        if (!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2) && !empty($dataCheck4)) {
-          foreach ($arrCamData['security_doc_id'] as $key => $securityDocId) {
-
-            $inputArr = array(
-              'biz_id' => $arrCamData['biz_id'],
-              'app_id' => $arrCamData['app_id'],
-              'security_doc_id' => $securityDocId,
-              'description' => isset($arrCamData['description'][$key]) ? $arrCamData['description'][$key] : null,
-              'due_date' => isset($arrCamData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['due_date'][$key])->format('Y-m-d') : null,
-              'doc_type' => isset($arrCamData['doc_type'][$key]) ? $arrCamData['doc_type'][$key] : null,
-              'created_by' => $userId,
-            );
-            if (isset($arrCamData['app_security_doc_id'][$key])) {
-              $app_security_doc_id = $arrCamData['app_security_doc_id'][$key];
-              $inputArr['updated_by'] = $userId;
-            } else {
-              $app_security_doc_id = null;
-            }
-            AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
           }
         }
       }
@@ -476,6 +440,9 @@ class CamController extends Controller
 
     $roleData =  Helpers::getUserRole()->first();
     $is_editable = ($roleData->id == config('common.user_role.APPROVER')) ? 0 : 1;
+    $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
+    $securityDocumentListJson = json_encode($securityDocumentList);
+    $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $appId, 'is_active' => 1])->get()->toArray();
     return view('backend.cam.reviewer_summary', [
       'bizId' => $bizId,
       'appId' => $appId,
@@ -489,7 +456,9 @@ class CamController extends Controller
       'is_editable' => $is_editable,
       'supplyOfferData' => $supplyOfferData,
       'positiveRiskCmntArr' => $positiveRiskCmntArr,
-      'negativeRiskCmntArr' => $negativeRiskCmntArr
+      'negativeRiskCmntArr' => $negativeRiskCmntArr,
+      'securityDocumentListJson' => $securityDocumentListJson,
+      'arrAppSecurityDoc' => $arrAppSecurityDoc
     ]);
   }
 
@@ -518,7 +487,34 @@ class CamController extends Controller
           Session::flash('message', trans('Reviewer Summary not saved'));
         }
       }
+      if (isset($arrData['security_doc_id']) && !empty($arrData['security_doc_id']) && isset($arrData['doc_type']) && !empty($arrData['doc_type'])) {
+        $dataCheck = array_filter($arrData['security_doc_id']);
+        $dataCheck1 = array_filter($arrData['doc_type']);
+        $dataCheck2 = array_filter($arrData['description']);
+        $dataCheck4 = array_filter($arrData['due_date']);
 
+        if (!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2) && !empty($dataCheck4)) {
+          foreach ($arrData['security_doc_id'] as $key => $securityDocId) {
+
+            $inputArr = array(
+              'biz_id' => $arrData['biz_id'],
+              'app_id' => $arrData['app_id'],
+              'security_doc_id' => $securityDocId,
+              'description' => isset($arrData['description'][$key]) ? $arrData['description'][$key] : null,
+              'due_date' => isset($arrData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrData['due_date'][$key])->format('Y-m-d') : null,
+              'doc_type' => isset($arrData['doc_type'][$key]) ? $arrData['doc_type'][$key] : null,
+              'created_by' => $userId,
+            );
+            if (isset($arrData['app_security_doc_id'][$key])) {
+              $app_security_doc_id = $arrData['app_security_doc_id'][$key];
+              $inputArr['updated_by'] = $userId;
+            } else {
+              $app_security_doc_id = null;
+            }
+            AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
+          }
+        }
+      }
       $whereActivi['activity_code'] = 'save_reviewer_summary';
       $activity = $this->mstRepo->getActivity($whereActivi);
       if (!empty($activity)) {
@@ -2778,89 +2774,116 @@ class CamController extends Controller
     }
   }
 
+  public function securityDeposit(Request $request)
+  {
+    try {
+      $arrRequest['biz_id'] = $request->get('biz_id');
+      $arrRequest['app_id'] = $request->get('app_id');
+      $arrCamData = Cam::where('biz_id', '=', $arrRequest['biz_id'])->where('app_id', '=', $arrRequest['app_id'])->first();
+      $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
+      $securityDocumentListJson = json_encode($securityDocumentList);
+      $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $arrRequest['app_id'], 'is_active' => 1])->get()->toArray();
+      return view('backend.cam.security_deposit')->with([
+        'arrCamData' => $arrCamData,
+        'arrRequest' => $arrRequest,
+        'securityDocumentListJson' => $securityDocumentListJson,
+        'arrAppSecurityDoc' => $arrAppSecurityDoc
+      ]);
+    } catch (Exception $ex) {
+      return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+    }
+  }
 
   //function to save security document
   public function saveSecurityDeposit(Request $request)
   {
-    $arrCamData = $request->all();
-    $userId = Auth::user()->user_id;
+    try {
+        $arrCamData = $request->all();
+        $userId = Auth::user()->user_id;
 
-    if (isset($arrCamData['security_doc_id']) && !empty($arrCamData['security_doc_id']) && isset($arrCamData['doc_type']) && !empty($arrCamData['doc_type'])) {
-      
-      $dataCheck = array_filter($arrCamData['security_doc_id']);
-      $dataCheck1 = array_filter($arrCamData['doc_type']);
-      $dataCheck2 = array_filter($arrCamData['description']);
-      $dataCheck4 = array_filter($arrCamData['due_date']);
-      $dataCheck3 = array_filter($arrCamData['document_number']);
-      $dataCheck5 =array_filter($arrCamData['completed']);
-      $dataCheck6 = array_filter($arrCamData['maturity_date']);
-      $dataCheck7 = count($arrCamData['renewal_reminder_days']);
-      $dataCheck8 = array_filter($arrCamData['amount_expected']);
-      $dataCheck9 = array_filter($arrCamData['document_amount']);
-      $dataCheck10 = array_filter($arrCamData['exception_received']);
-      if (!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2) && !empty($dataCheck3) && !empty($dataCheck4) && !empty($dataCheck5) && !empty($dataCheck6) && $dataCheck7>0 && !empty($dataCheck8) && !empty($dataCheck9) && !empty($dataCheck10)) {
-        foreach ($arrCamData['security_doc_id'] as $key => $securityDocId) {
-          $is_upload = $file_id = '';
-          if (isset($arrCamData['doc_file_sec'][$key])) {
-            $attributes['doc_file'] = $arrCamData['doc_file_sec'][$key];
-            $app_security_doc_id = isset($arrCamData['app_security_doc_id'][$key]) ? $arrCamData['app_security_doc_id'][$key] : null;
-            $uploadData = Helpers::uploadSecurityDocFile($attributes, $arrCamData['app_id'], $app_security_doc_id);
-            $secDocFile = $this->docRepo->saveFile($uploadData);
-            if (!empty($secDocFile->file_id)) {
-              $is_upload = 1;
-              $file_id = $secDocFile->file_id;
+        if (isset($arrCamData['security_doc_id']) && !empty($arrCamData['security_doc_id']) && isset($arrCamData['doc_type']) && !empty($arrCamData['doc_type'])) {
+          
+          $dataCheck = array_filter($arrCamData['security_doc_id']);
+          $dataCheck1 = array_filter($arrCamData['doc_type']);
+          $dataCheck2 = array_filter($arrCamData['description']);
+          $dataCheck4 = array_filter($arrCamData['due_date']);
+          $dataCheck3 = array_filter($arrCamData['document_number']);
+          $dataCheck5 =array_filter($arrCamData['completed']);
+          $dataCheck6 = array_filter($arrCamData['maturity_date']);
+          $dataCheck7 = count($arrCamData['renewal_reminder_days']);
+          $dataCheck8 = array_filter($arrCamData['amount_expected']);
+          $dataCheck9 = array_filter($arrCamData['document_amount']);
+          $dataCheck10 = array_filter($arrCamData['exception_received']);
+          if (!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2) && !empty($dataCheck3) && !empty($dataCheck4) && !empty($dataCheck5) && !empty($dataCheck6) && $dataCheck7>0 && !empty($dataCheck8) && !empty($dataCheck9) && !empty($dataCheck10)) {
+            foreach ($arrCamData['security_doc_id'] as $key => $securityDocId) {
+              $is_upload = $file_id = '';
+              if (isset($arrCamData['doc_file_sec'][$key])) {
+                $attributes['doc_file'] = $arrCamData['doc_file_sec'][$key];
+                $app_security_doc_id = isset($arrCamData['app_security_doc_id'][$key]) ? $arrCamData['app_security_doc_id'][$key] : null;
+                $uploadData = Helpers::uploadSecurityDocFile($attributes, $arrCamData['app_id'], $app_security_doc_id);
+                $secDocFile = $this->docRepo->saveFile($uploadData);
+                if (!empty($secDocFile->file_id)) {
+                  $is_upload = 1;
+                  $file_id = $secDocFile->file_id;
+                }
+              }
+              $renewal_reminder_date = '';
+              if (isset($arrCamData['maturity_date'][$key]) && !empty($arrCamData['maturity_date'][$key]) && isset($arrCamData['renewal_reminder_days'][$key])) {
+                $maturity_date = Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d');
+                $renewal_reminder_days = $arrCamData['renewal_reminder_days'][$key];
+                $rmd = strtotime('-' . $renewal_reminder_days . ' days', strtotime($maturity_date));
+                $rmd = date('Y-m-d', $rmd);
+                $renewal_reminder_date = $rmd;
+              }
+              $inputArr = array(
+                'biz_id' => $arrCamData['biz_id'],
+                'app_id' => $arrCamData['app_id'],
+                'security_doc_id' => $securityDocId,
+                'description' => isset($arrCamData['description'][$key]) ? $arrCamData['description'][$key] : null,
+                'document_number' => isset($arrCamData['document_number'][$key]) ? $arrCamData['document_number'][$key] : null,
+                'due_date' => isset($arrCamData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['due_date'][$key])->format('Y-m-d') : null,
+                'completed' => isset($arrCamData['completed'][$key]) ? $arrCamData['completed'][$key] : null,
+                'exception_received' => isset($arrCamData['exception_received'][$key]) ? $arrCamData['exception_received'][$key] : null,
+                'exception_received_from' => isset($arrCamData['exception_received_from'][$key]) ? $arrCamData['exception_received_from'][$key] : null,
+                'exception_received_date' => isset($arrCamData['exception_received_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['exception_received_date'][$key])->format('Y-m-d') : null,
+                'exception_remark' => isset($arrCamData['exception_remark'][$key]) ? $arrCamData['exception_remark'][$key] : null,
+                'maturity_date' => isset($arrCamData['maturity_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d') : null,
+                'renewal_reminder_days' => isset($arrCamData['renewal_reminder_days'][$key]) ? $arrCamData['renewal_reminder_days'][$key] : null,
+                'amount_expected' => isset($arrCamData['amount_expected'][$key]) ? $arrCamData['amount_expected'][$key] : null,
+                'document_amount' => isset($arrCamData['document_amount'][$key]) ? $arrCamData['document_amount'][$key] : null,
+                'doc_type' => isset($arrCamData['doc_type'][$key]) ? $arrCamData['doc_type'][$key] : null,
+                'created_by' => $userId,
+                'renewal_reminder_date' => $renewal_reminder_date,
+              );
+              if ($is_upload && $file_id) {
+                $inputArr['is_upload'] = isset($is_upload) ? $is_upload : null;
+                $inputArr['file_id'] =  isset($file_id) ? $file_id : null;
+              }
+              if (isset($arrCamData['app_security_doc_id'][$key])) {
+                $app_security_doc_id = $arrCamData['app_security_doc_id'][$key];
+                $inputArr['updated_by'] = $userId;
+              } else {
+                $app_security_doc_id = null;
+              }
+              AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
             }
           }
-          $renewal_reminder_date = '';
-          if (isset($arrCamData['maturity_date'][$key]) && !empty($arrCamData['maturity_date'][$key]) && isset($arrCamData['renewal_reminder_days'][$key])) {
-            $maturity_date = Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d');
-            $renewal_reminder_days = $arrCamData['renewal_reminder_days'][$key];
-            $rmd = strtotime('-' . $renewal_reminder_days . ' days', strtotime($maturity_date));
-            $rmd = date('Y-m-d', $rmd);
-            $renewal_reminder_date = $rmd;
-          }
-          $inputArr = array(
-            'biz_id' => $arrCamData['biz_id'],
-            'app_id' => $arrCamData['app_id'],
-            'security_doc_id' => $securityDocId,
-            'description' => isset($arrCamData['description'][$key]) ? $arrCamData['description'][$key] : null,
-            'document_number' => isset($arrCamData['document_number'][$key]) ? $arrCamData['document_number'][$key] : null,
-            'due_date' => isset($arrCamData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['due_date'][$key])->format('Y-m-d') : null,
-            'completed' => isset($arrCamData['completed'][$key]) ? $arrCamData['completed'][$key] : null,
-            'exception_received' => isset($arrCamData['exception_received'][$key]) ? $arrCamData['exception_received'][$key] : null,
-            'exception_received_from' => isset($arrCamData['exception_received_from'][$key]) ? $arrCamData['exception_received_from'][$key] : null,
-            'exception_received_date' => isset($arrCamData['exception_received_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['exception_received_date'][$key])->format('Y-m-d') : null,
-            'exception_remark' => isset($arrCamData['exception_remark'][$key]) ? $arrCamData['exception_remark'][$key] : null,
-            'maturity_date' => isset($arrCamData['maturity_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d') : null,
-            'renewal_reminder_days' => isset($arrCamData['renewal_reminder_days'][$key]) ? $arrCamData['renewal_reminder_days'][$key] : null,
-            'amount_expected' => isset($arrCamData['amount_expected'][$key]) ? $arrCamData['amount_expected'][$key] : null,
-            'document_amount' => isset($arrCamData['document_amount'][$key]) ? $arrCamData['document_amount'][$key] : null,
-            'doc_type' => isset($arrCamData['doc_type'][$key]) ? $arrCamData['doc_type'][$key] : null,
-            'created_by' => $userId,
-            'renewal_reminder_date' => $renewal_reminder_date,
-          );
-          if ($is_upload && $file_id) {
-            $inputArr['is_upload'] = isset($is_upload) ? $is_upload : null;
-            $inputArr['file_id'] =  isset($file_id) ? $file_id : null;
-          }
-          if (isset($arrCamData['app_security_doc_id'][$key])) {
-            $app_security_doc_id = $arrCamData['app_security_doc_id'][$key];
-            $inputArr['updated_by'] = $userId;
-          } else {
-            $app_security_doc_id = null;
-          }
-          AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
         }
+        $whereActivi['activity_code'] = 'security_deposit_save';
+        $activity = $this->mstRepo->getActivity($whereActivi);
+        if (!empty($activity)) {
+          $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+          $activity_desc = 'Security document Save (Security document). AppID ' . $arrCamData['app_id'];
+          $arrActivity['app_id'] = $arrCamData['app_id'];
+          $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrCamData), $arrActivity);
+        }
+        //process only security deposit
+        if($request->has("security_deposit")){
+          Session::flash('message', trans('Security document information saved successfully'));
+          return redirect()->route('security_deposit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
+        }
+      } catch (Exception $ex) {
+        return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
-    }
-
-    $whereActivi['activity_code'] = 'security_deposit_save';
-    $activity = $this->mstRepo->getActivity($whereActivi);
-    if (!empty($activity)) {
-      $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
-      $activity_desc = 'Security document Save (Security document). AppID ' . $arrCamData['app_id'];
-      $arrActivity['app_id'] = $arrCamData['app_id'];
-      $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrCamData), $arrActivity);
-    }
-  }
+   }
 }
