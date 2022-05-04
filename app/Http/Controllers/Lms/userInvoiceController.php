@@ -15,6 +15,7 @@ use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\Lms\PaymentApportionment;
+use App\Inv\Repositories\Events\UserEventsListener;
 use DB;
 use Carbon\Carbon;
 use PDF;
@@ -406,7 +407,7 @@ class userInvoiceController extends Controller
      * Save invoice as per User.
      *
      */
-    public function saveUserInvoice(Request $request) {
+    public function saveUserInvoice(Request $request ) {
         try {
             $url_user_id = $request->get('user_id');
             $invoice_type = $request->get('invoice_type');
@@ -527,6 +528,12 @@ class userInvoiceController extends Controller
                    $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
+                $pdfResult = $this->generateCapsaveInvoicePdf($userInvoice_id);
+                $getEmail = $this->userRepo->find($requestedData['user_id']);
+                if($getEmail){
+                    $this->sendCapsaveInvoiceMail($pdfResult['pdf_attachment'],$newInvoiceNo,$getEmail->email);
+                }
+
                 // $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions);
                 if ($UserInvoiceTxns == true) {
 
@@ -1112,8 +1119,13 @@ class userInvoiceController extends Controller
                     $success[] = 'Invoice generated Successfully';
                     DB::commit();
                     $pdfResult = $this->generateCapsaveInvoicePdf($userInvoice_id);
+                    
                     if($pdfResult['status']){
                         $success = array_merge($success,$pdfResult['success']);
+                        $getEmail = $this->userRepo->find($requestedData['user_id']);
+                        if($getEmail){
+                            $this->sendCapsaveInvoiceMail($pdfResult['pdf_attachment'],$newInvoiceNo,$getEmail->email);
+                        }
                     }
                     return $result;
                 }
@@ -1136,9 +1148,8 @@ class userInvoiceController extends Controller
             $user_invoice_id = $userInvoiceId;
             $invData = $this->UserInvRepo->getInvoiceById($user_invoice_id);
             $user_id = $invData->user_id;
-
             if (empty($invData)) {
-                $error[] = 'No Detail found for the Invoice.'; 
+                $error[] = 'No Detail found for the Invoice.';
                 return $result;
             }
 
@@ -1154,10 +1165,9 @@ class userInvoiceController extends Controller
             $totalTxnsInInvoice = $invData->userInvoiceTxns;
             $userStateId = $invData->user_gst_state_id;
             $companyStateId = $invData->comp_gst_state_id;
-
             $trans_ids = [];
             foreach ($totalTxnsInInvoice as $key => $value) {
-            $trans_ids[] =  $value->trans_id;
+                $trans_ids[] =  $value->trans_id;
             }
             if (!in_array($invoice_type, ['I', 'C'])) {
                 $error[] = 'Invalid Invoice Type found.'; 
@@ -1167,19 +1177,19 @@ class userInvoiceController extends Controller
                 $error[] = 'Invalid UserId Found.';
                 return $result;
             }
-      
+            
             $stateDetail = $this->UserInvRepo->getStateById($userStateId);
             if (empty($stateDetail)) {
                 $error[] = 'State detail not found for the user address.';
                 return $result;
             }
-
+            
             $lmsDetails = LmsUser::getLmsDetailByUserId($user_id);
             if (empty($lmsDetails) ||  $lmsDetails->isEmpty()) {
                 $error[] = 'Lms Detail not found for the user.';
                 return $result;
             }
-
+            
             $virtual_acc_id = $lmsDetails[0]->virtual_acc_id;
             $billingDetails = [
                 'name' => $invData->biz_entity_name,
@@ -1229,7 +1239,7 @@ class userInvoiceController extends Controller
                 if (isset($invoiceNoFound)) {
                 $invoice_no = "($invoiceNoFound)";
                 }
-                $desc = $txn->transType->trans_name;
+                $desc = $txn->transType->trans_name ?? 'N/A';
                 if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST')) {
                     $desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
                 } 
@@ -1274,35 +1284,26 @@ class userInvoiceController extends Controller
             view()->share($data);
             ini_set("memory_limit", "-1");
             $pdf = PDF::loadView('lms.invoice.generate_invoice');
-            Storage::disk('local')->put('public/capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf', $pdf->output());
+            $path ='public/capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
+            $result['path'] = $path;
+            Storage::disk('local')->put($path, $pdf->output());
             $status = 1;             
             $success[] = 'Invoice PDF generated Successfully';
+            $result['pdf_attachment'] = $pdf->output();
         }
         return $result;
     }
 
-    public function userInvoiceMail(){
-        // $data = [
-        //     'company_data' => $company_data,
-        //     'billingDetails' => $billingDetails,
-        //     'origin_of_recipient' => $origin_of_recipient, 
-        //     'intrest_charges' => $intrest_charges,
-        //     'total_sum_of_rental' => $total_sum_of_rental,
-        //     'registeredCompany' => $registeredCompany,
-        // ];
-        // dd($data);
-        // view()->share($data);
-        // ini_set("memory_limit", "-1");
-        // $pdf = PDF::loadView('lms.invoice.generate_invoice');
-
+    public function sendCapsaveInvoiceMail($pdfResult,$newInvoiceNo,$getEmail){
+        
         $emailData = array(
-            'email' => $email,
-            'name' => 'Capsave Finance PVT LTD.',
-            'subject' => 'subject',
+            'invoice_no' => $newInvoiceNo,
+            'email' => $getEmail,
             'body' => 'body',
-            'data' => $approverAppData,
+            'attachment' => $pdfResult,
           );
         \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
     }
 
+    
 }

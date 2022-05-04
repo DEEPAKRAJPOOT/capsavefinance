@@ -1457,8 +1457,17 @@ class UserEventsListener extends BaseEvent
     public function userInvoiceMail($attributes) {
         $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
-        Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $data['body']],
-            function ($message) use ($data) {
+        $email_content = EmailTemplate::getEmailTemplate("USER_INVOICE_MAIL");
+        // dd($email_content);
+        if($email_content) {
+            // $mail_body = str_replace(
+            //     ['%name', '%email', '%org_name', '%password'], [ucwords($userData['name']), $userData['email'], $userData['org_name'], $userData['password']], $email_data->message);
+
+            $mail_subject = str_replace(
+                ['%invoice_no'], [ucwords($data['invoice_no'])], $email_content->subject);
+
+            Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $email_content->message],
+            function ($message) use ($data,$email_content,$mail_subject) {
                 if( env('SEND_MAIL_ACTIVE') == 1){
                     $email = explode(',', env('SEND_MAIL'));
                     $message->bcc(explode(',', env('SEND_MAIL_BCC')));
@@ -1468,23 +1477,25 @@ class UserEventsListener extends BaseEvent
                 }
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
             if(!empty($data['attachment'])){
-                $att_name = 'sanction.pdf';
+                $att_name = 'invoice.pdf';
                 $message->attachData($data['attachment'], $att_name);
             }
 
-            $message->to($email, $data["name"])->subject($data['subject']);
+            $message->to($email)->subject($mail_subject);
             $mailContent = [
                 'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                 'email_to' => $email,
                 'email_type' => $this->func_name,
-                'name' => $data['name'],
-                'subject' => $data['subject'],
-                'body' => $data['body'],
+                'name' => null,
+                'subject' => $mail_subject,
+                'body' => $email_content,
                 'att_name' => $att_name ?? NULL,
                 'attachment' => $data['attachment'] ?? NULL,
             ];
             FinanceModel::logEmail($mailContent);
         }); 
+        }
+        
     }
 
 
