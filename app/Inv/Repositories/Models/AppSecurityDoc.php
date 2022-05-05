@@ -56,6 +56,7 @@ class AppSecurityDoc extends BaseModel
      * @var array
      */
     protected $fillable = [
+        'cam_reviewer_summary_id',
         'biz_id',
         'app_id',
         'security_doc_id',

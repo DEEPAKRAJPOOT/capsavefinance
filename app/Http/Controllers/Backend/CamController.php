@@ -497,6 +497,7 @@ class CamController extends Controller
           foreach ($arrData['security_doc_id'] as $key => $securityDocId) {
 
             $inputArr = array(
+              'cam_reviewer_summary_id'=>isset($arrData['cam_reviewer_summary_id']) ? $arrData['cam_reviewer_summary_id'] : $result->cam_reviewer_summary_id??NULL,
               'biz_id' => $arrData['biz_id'],
               'app_id' => $arrData['app_id'],
               'security_doc_id' => $securityDocId,
@@ -2779,12 +2780,13 @@ class CamController extends Controller
     try {
       $arrRequest['biz_id'] = $request->get('biz_id');
       $arrRequest['app_id'] = $request->get('app_id');
-      $arrCamData = Cam::where('biz_id', '=', $arrRequest['biz_id'])->where('app_id', '=', $arrRequest['app_id'])->first();
+      // $arrCamData = Cam::where('biz_id', '=', $arrRequest['biz_id'])->where('app_id', '=', $arrRequest['app_id'])->first();
+      $reviewerSummaryData = CamReviewerSummary::where('biz_id', '=', $arrRequest['biz_id'])->where('app_id', '=', $arrRequest['app_id'])->first();
       $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
       $securityDocumentListJson = json_encode($securityDocumentList);
       $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $arrRequest['app_id'], 'is_active' => 1])->get()->toArray();
       return view('backend.cam.security_deposit')->with([
-        'arrCamData' => $arrCamData,
+        'reviewerSummaryData' => $reviewerSummaryData,
         'arrRequest' => $arrRequest,
         'securityDocumentListJson' => $securityDocumentListJson,
         'arrAppSecurityDoc' => $arrAppSecurityDoc

@@ -15,7 +15,7 @@
              @csrf
                 <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
                 <input type="hidden" name="biz_id" value="{{isset($arrRequest['biz_id']) ? $arrRequest['biz_id'] : ''}}" />             
-                <input type="hidden" name="cam_report_id" value="{{isset($arrCamData->cam_report_id) ? $arrCamData->cam_report_id : ''}}" />
+                <input type="hidden" name="cam_reviewer_summary_id" value="{{isset($reviewerSummaryData->cam_reviewer_summary_id) ? $reviewerSummaryData->cam_reviewer_summary_id : ''}}" />
                 @include('backend.cam.security_deposit_form',['route_name'=>$route_name,'arrAppSecurityDoc'=>$arrAppSecurityDoc,'securityDocumentListJson'=>$securityDocumentListJson])
                 @if(request()->get('view_only'))
                 @can('save_security_deposit')
