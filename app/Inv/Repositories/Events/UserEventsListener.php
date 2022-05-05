@@ -1458,11 +1458,7 @@ class UserEventsListener extends BaseEvent
         $data = unserialize($attributes); 
         $this->func_name = __FUNCTION__;
         $email_content = EmailTemplate::getEmailTemplate("USER_INVOICE_MAIL");
-        // dd($email_content);
         if($email_content) {
-            // $mail_body = str_replace(
-            //     ['%name', '%email', '%org_name', '%password'], [ucwords($userData['name']), $userData['email'], $userData['org_name'], $userData['password']], $email_data->message);
-
             $mail_subject = str_replace(
                 ['%invoice_no'], [ucwords($data['invoice_no'])], $email_content->subject);
 
