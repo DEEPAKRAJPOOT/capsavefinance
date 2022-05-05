@@ -1473,8 +1473,7 @@ class UserEventsListener extends BaseEvent
                 }
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
             if(!empty($data['attachment'])){
-                $att_name = 'invoice.pdf';
-                $message->attachData($data['attachment'], $att_name);
+                $message->attach($data['attachment']);
             }
 
             $message->to($email)->subject($mail_subject);

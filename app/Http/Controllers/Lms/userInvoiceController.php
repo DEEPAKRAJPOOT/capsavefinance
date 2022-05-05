@@ -1286,10 +1286,11 @@ class userInvoiceController extends Controller
             $pdf = PDF::loadView('lms.invoice.generate_invoice');
             $path ='public/capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
             $result['path'] = $path;
-            Storage::disk('local')->put($path, $pdf->output());
+            Storage::disk('local')->put($path,$pdf->output());
+            $uploadFilePath = storage_path('app/public/capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf');
             $status = 1;             
             $success[] = 'Invoice PDF generated Successfully';
-            $result['pdf_attachment'] = $pdf->output();
+            $result['pdf_attachment'] = $uploadFilePath;
         }
         return $result;
     }
