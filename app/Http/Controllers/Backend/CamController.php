@@ -2799,12 +2799,12 @@ class CamController extends Controller
   //function to save security document
   public function saveSecurityDeposit(Request $request)
   {
+    \DB::beginTransaction();
     try {
         $arrCamData = $request->all();
         $userId = Auth::user()->user_id;
 
         if (isset($arrCamData['security_doc_id']) && !empty($arrCamData['security_doc_id']) && isset($arrCamData['doc_type']) && !empty($arrCamData['doc_type'])) {
-          
           $dataCheck = array_filter($arrCamData['security_doc_id']);
           $dataCheck1 = array_filter($arrCamData['doc_type']);
           $dataCheck2 = array_filter($arrCamData['description']);
@@ -2881,10 +2881,12 @@ class CamController extends Controller
         }
         //process only security deposit
         if($request->has("security_deposit")){
+          \DB::commit();
           Session::flash('message', trans('Security document information saved successfully'));
           return redirect()->route('security_deposit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
         }
       } catch (Exception $ex) {
+        \DB::rollBack();
         return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
       }
    }
