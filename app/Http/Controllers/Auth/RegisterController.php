@@ -325,7 +325,8 @@ use RegistersUsers,
                     $this->verifyUser($verifyLink);
                     Session::flash('message', trans('success_messages.basic_saved_successfully'));
                     //return redirect(route('education_details'));
-                    return redirect()->route('otp', ['token' => Crypt::encrypt($user['email'])]);
+                    // return redirect()->route('otp', ['token' => Crypt::encrypt($user['email'])]);
+                    return redirect()->route('otp', Crypt::encrypt($user['email']));
                 }                
             } else {
                 return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
