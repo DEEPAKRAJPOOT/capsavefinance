@@ -511,7 +511,8 @@ use RegistersUsers,
 
                     $alluserData = $this->userRepo->getUserDetail((int) $userId);
                     //$verifyLink             = route('verify_email', ['token' => Crypt::encrypt($userArr['email'])]);
-                    return redirect()->route('otp', ['token' => Crypt::encrypt($userMailArr['email'])]);
+                    // return redirect()->route('otp', ['token' => Crypt::encrypt($userMailArr['email'])]);
+                    return redirect()->route('otp', Crypt::encrypt($userMailArr['email']));
                 } else {
                     return redirect(route('login_open'))->withErrors(trans('error_messages.invalid_token'));
                 }
