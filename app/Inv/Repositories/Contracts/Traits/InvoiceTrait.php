@@ -1079,7 +1079,7 @@ trait InvoiceTrait
     {
         $mytime = Carbon::now();
         $dateTime  =  $mytime->toDateTimeString();
-        return AppOfferAdhocLimit::where(['user_id' => $attr['user_id'] ?? $attr['supplier_id'],'prgm_offer_id' => $attr['prgm_offer_id'],'status' => 1])->whereRaw('"'.$dateTime.'" between `start_date` and `end_date`')->sum('limit_amt');
+        return AppOfferAdhocLimit::where(['user_id' => $attr['user_id'] ?? $attr['supplier_id'],'prgm_offer_id' => $attr['prgm_offer_id'],'status' => 1])->whereRaw('CAST("'.$dateTime.'" AS DATE) between `start_date` and `end_date`')->sum('limit_amt');
 
     }
   public static function updateReject($attr)
