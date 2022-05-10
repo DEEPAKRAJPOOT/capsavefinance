@@ -2556,18 +2556,16 @@ class Helper extends PaypalHelper
 
     public static function checkActiveAdhocLimit($adhocLimits)
     {
-        $active = false;
+        $activeArray = [];
         if ($adhocLimits && count($adhocLimits)) {
             foreach($adhocLimits as $adhocLimit) {
                 $curDate = strtotime(now()->format('Y-m-d'));
                 $adhocExpirDate = strtotime($adhocLimit->end_date);
-                if ($adhocExpirDate <= $curDate) {
-                    $active = true;
-                }else {
-                    $active = false;
+                if ($curDate > $adhocExpirDate) {
+                    $activeArray[] = false;
                 }
             }
-        }
-        return $active;
+        }        
+        return count($activeArray) == count($adhocLimits) ? false : true;
     }
 }
