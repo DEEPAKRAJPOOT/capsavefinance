@@ -2563,6 +2563,8 @@ class Helper extends PaypalHelper
                 $adhocExpirDate = strtotime($adhocLimit->end_date);
                 if ($adhocExpirDate <= $curDate) {
                     $active = true;
+                }else {
+                    $active = false;
                 }
             }
         }
