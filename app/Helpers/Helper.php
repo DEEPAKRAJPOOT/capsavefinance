@@ -2553,4 +2553,19 @@ class Helper extends PaypalHelper
         }
         return $sum;
     }
+
+    public static function checkActiveAdhocLimit($adhocLimits)
+    {
+        $active = false;
+        if ($adhocLimits && count($adhocLimits)) {
+            foreach($adhocLimits as $adhocLimit) {
+                $curDate = strtotime(now()->format('Y-m-d'));
+                $adhocExpirDate = strtotime($adhocLimit->end_date);
+                if ($adhocExpirDate <= $curDate) {
+                    $active = true;
+                }
+            }
+        }
+        return $active;
+    }
 }
