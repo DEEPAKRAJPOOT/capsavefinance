@@ -167,7 +167,7 @@
                         @php 
                         $mytime = \Carbon\Carbon::now();
                         $adhocLimitCurDt =  $mytime->format('Y-m-d');                                  
-                        $adhocLimitEndDt   =  $limit->end_date;
+                        $adhocLimitEndDt   =  $adc->end_date;
                         $isAdhocLimitExpired = strtotime($adhocLimitCurDt) > strtotime($adhocLimitEndDt);
                         @endphp 
                         
@@ -193,7 +193,7 @@
                                 @if($adc->status==0) 
                                 <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
                                 @elseif($adc->status==1) 
-                                <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
+                                <button type="button" class="badge {{ $isLimitExpired || $isAdhocLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired || $isAdhocLimitExpired ? 'Limit Expired' : 'Active' }} </button>
                                 @else
                                 <button type="button" class="badge badge-danger btn-sm float-right">Closed </button>
                                 @endif
