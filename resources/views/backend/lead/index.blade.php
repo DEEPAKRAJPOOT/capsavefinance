@@ -100,7 +100,7 @@
     </div>
 </div>
 {!!Helpers::makeIframePopup('editLead','Edit Lead Detail', 'modal-md')!!}
-{!!Helpers::makeIframePopup('createLeadForm','Create Lead', 'modal-lg')!!}
+{{-- {!!Helpers::makeIframePopup('createLeadForm','Create Lead', 'modal-lg')!!} --}}
 @endsection
 @section('additional_css')
 <style>

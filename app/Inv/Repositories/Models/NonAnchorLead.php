@@ -11,6 +11,20 @@ class NonAnchorLead extends BaseModel
      * @var string
      */
     protected $table = 'non_anchor_leads';
+
+    /**
+     * Maintain created_at and updated_at automatically
+     *
+     * @var boolean
+     */
+    public $timestamps = true;
+
+    /**
+     * Maintain created_by and updated_by automatically
+     *
+     * @var boolean
+     */
+    public $userstamps = true;
     
     protected $fillable = [
         'user_id',

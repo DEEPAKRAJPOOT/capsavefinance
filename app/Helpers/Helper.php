@@ -2539,4 +2539,20 @@ class Helper extends PaypalHelper
         }
         return $sum;
     }
+
+    /**
+     * Separated cc or bcc emails and return array
+     *
+     * @var array
+     */
+    public static function ccOrBccEmailsArray($cc_bcc_email)
+    {
+        $emails = [];
+        $separator = ',';
+
+        if ($cc_bcc_email) {
+            $emails = array_filter(explode($separator, $cc_bcc_email));
+        }
+        return $emails;
+    }
 }

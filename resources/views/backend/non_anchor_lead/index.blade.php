@@ -92,7 +92,3 @@
 <script src="{{ asset('common/js/jquery.validate.js') }}"></script>
 <script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
 @endsection
-
-
-
-

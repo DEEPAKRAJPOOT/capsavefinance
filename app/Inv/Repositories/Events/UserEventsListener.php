@@ -1474,13 +1474,8 @@ class UserEventsListener extends BaseEvent
                     //     $message->cc(explode(',', env('SEND_MAIL_CC')));
                     // }else{
                         $email = $user["email"];
-                        if ($email_content->bcc) {
-                            $message->bcc(array_filter(explode(',', $email_content->bcc)));
-                        }
-
-                        if ($email_content->cc) {
-                            $message->cc(array_filter(explode(',', $email_content->cc)));
-                        }
+                        $message->bcc(\Helpers::ccOrBccEmailsArray($email_content->bcc));
+                        $message->cc(\Helpers::ccOrBccEmailsArray($email_content->cc));
                     // }
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $subject = $email_content->subject."//".$user['businessName'];
