@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use App\Http\Requests\RegistrationFormRequest;
+use App\Http\Requests\NonAnchorLeadRegistrationRequest;
 use App\Http\Requests\PartnerFormRequest;
 use App\Http\Requests\BusinessDocumentRequest;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -98,11 +99,9 @@ use RegistersUsers,
         $arrData['user_type'] = 1;
         $arrData['is_email_verified'] = 0;
         $arrData['is_pwd_changed'] = 0;
-        $arrData['is_email_verified'] = 0;
         $arrData['is_otp_verified'] = 0;
         $arrData['is_buyer'] = $lead_type;
         $arrData['parent_id'] = 0;
-        $arrData['is_active'] = 0;
         $arrData['is_active'] = 0;
         // $arrData['supplier_code'] = isset($data['supplier_code']) ? $data['supplier_code'] : null;
         $userId = null;
@@ -463,6 +462,7 @@ use RegistersUsers,
             if (isset($token) && !empty($token)) {
                 $email = Crypt::decrypt($token);
                 $userCheckArr = $this->userRepo->getuserByEmail($email);
+
                 // echo "==>".count($userCheckArr); exit;
                 if ($userCheckArr != false) {
                     /* if ($userCheckArr->status == config('inv_common.USER_STATUS.Active')) {
@@ -788,4 +788,144 @@ use RegistersUsers,
         return view('auth.term-condition');
     }
     
+    /**
+     * Show the non anchor lead application registration form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showRegistrationFormForNonAnchorLead(Request $request)
+    {
+        try{
+            $token = $request->get('token');
+            $leadInfo = $this->userRepo->getNonAnchorLeadByRegToken($token);
+            
+            $userArr = [];
+            if(!empty($leadInfo) && $leadInfo->is_registered == 1){
+               $email = $leadInfo->email;
+            //    return redirect(route('otp', ['token' => Crypt::encrypt($email)]));
+               return redirect()->route('otp', Crypt::encrypt($email));
+            } else if(!empty($leadInfo) && $leadInfo->is_registered == 0){
+                $leadDetail = $leadInfo;
+            }else{
+                $leadDetail = '';
+                return redirect(route('login_open'));
+            }
+            return view('auth.non_anchor_lead_sign_up', compact('userArr','leadDetail'));
+        
+        }catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    public function registerNonAnchorLead(NonAnchorLeadRegistrationRequest $request, StorageManagerInterface $storage)
+    {
+        try {
+            \DB::beginTransaction();
+
+            $arrFileData = $request->all();
+            $user = $this->nonAnchorLeadCreate($arrFileData);
+
+            if ($user) {
+                if (!Session::has('userId')) {
+                    Session::put('userId', (int) $user->user_id);
+                }
+                $verifyLink = Crypt::encrypt($user['email']);
+                $this->verifyUser($verifyLink);
+                Session::flash('message', trans('success_messages.basic_saved_successfully'));
+
+                \DB::commit();                
+                return redirect()->route('otp', Crypt::encrypt($user['email']));
+            } else {
+                \DB::rollback();
+                return redirect()->back()->withErrors(trans('auth.oops_something_went_wrong'));
+            }
+        } catch (Exception $ex) {
+            \DB::rollback();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array  $data
+     * @return \App\User
+     */
+    protected function nonAnchorLeadCreate(array $data)
+    {
+        $arrData['f_name'] = $data['f_name'];
+        $arrData['l_name'] = $data['l_name'];
+        $arrData['biz_name'] = $data['business_name'];
+        $arrData['email'] = $data['email'];
+        $arrData['password'] = bcrypt($data['password']);
+        $arrData['mobile_no'] = $data['mobile_no'];
+        $arrData['user_type'] = 1;
+        $arrData['is_pwd_changed'] = 0;
+        $arrData['is_email_verified'] = 0;
+        $arrData['is_otp_verified'] = 0;
+        $arrData['is_buyer'] = $data['lead_type'];
+        $arrData['parent_id'] = 0;
+        $arrData['is_active'] = 0;
+        $userId = null;
+
+        $userData = $this->userRepo->getUserByemail($data['email']);
+        
+        if ($userData && $userData->user_id) {
+            $userDataArray = $userData;
+        } else {
+            $userDataArray = $this->userRepo->save($arrData, $userId);
+            if ($userDataArray) {
+                $detailArr['user_id'] = $userDataArray->user_id;
+                $detailArr['access_token'] = bcrypt($userDataArray->email);
+                $detailArr['created_by'] = $userDataArray->user_id;
+                $this->userRepo->saveUserDetails($detailArr);
+            }
+        }
+
+        if ($userDataArray) {
+            if (isset($data['non_anchor_lead_id']) && !empty($data['non_anchor_lead_id'])) {                                                    
+                $arrNonAnchUser['is_registered'] = 1;
+                $arrNonAnchUser['user_id'] = $userDataArray->user_id;
+                $arrNonAnchUser['pan_no']  = $data['pan_no'];
+                $arrNonAnchUser['is_term_accept']  = $data['is_term_accept'];
+                $this->userRepo->updateNonAnchorLead(['id' => $data['non_anchor_lead_id']], $arrNonAnchUser);
+            }
+            
+            $nonAnchorLead = $this->userRepo->getNonAnchorLeadById($data['non_anchor_lead_id']);
+            if ($nonAnchorLead) {
+                $arrLeadAssingData = [
+                    'from_id'  => $userDataArray->user_id,
+                    'to_id'    => $nonAnchorLead->assign_sale_manager,
+                    'is_owner' => 1,
+                    'assigned_user_id' => $userDataArray->user_id,          
+                    'created_by' => $userDataArray->user_id,
+                    'created_at' => \Carbon\Carbon::now(),
+                ];
+                $this->userRepo->createLeadAssign($arrLeadAssingData);
+            }
+            
+            //Add application workflow stages
+            Helpers::addWfAppStage('new_case', $userDataArray->user_id);                          
+        }
+        return $userDataArray;
+    }
+
+    public function getExistEmailStatusForNonAnchorLead(Request $req)
+    {        
+        $email = $req->get('email');
+        $status = $this->userRepo->getUserByEmail(trim($email));
+        $response['status'] = $status ? false : true;        
+        
+        return response()->json($response);
+    }
+    
+    public function getExistPanUserStatusForNonAnchorLead(Request $req)
+    {
+        $pan    = $req->get('pan');
+        $status = $this->userRepo->getNonAnchorLeadByPan(trim($pan));
+        $result['validate'] = $status ? '0' : '1';        
+        $result['message']  = $status ? trans('error_messages.pan_already_exists') : '';        
+        
+        return response()->json($result);
+    }
 }

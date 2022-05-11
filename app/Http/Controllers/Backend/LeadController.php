@@ -217,49 +217,43 @@ class LeadController extends Controller {
     public function saveBackendLead(CreateLeadRequest $request) {
         try {
             $string = time();
-            $reqData = $request->all();
+            $reqData = $request->all();            
             $user_info = $this->userRepo->getUserByEmail($reqData['email']);
-            //dd($reqData);
-            if(!$user_info){
-                $arrUserData = [
-                    'anchor_id' => NULL,
-                    'f_name' => $reqData['full_name'],
-                    'biz_name' => $reqData['comp_name'],
-                    'email' => $reqData['email'],
-                    'mobile_no' => $reqData['phone'],
-                    'is_buyer' => $reqData['is_buyer'],
-                    'user_type' => 1,
-                    'is_email_verified' => 1,
-                    'is_active' => 1,
-                    'password' => bcrypt($string)
-                ];
-                $userDataArray = $this->userRepo->save($arrUserData);
 
-                $arrLeadAssingData = [
-                    'from_id' => $userDataArray->user_id,
-                    'to_id' => $reqData['assigned_sale_mgr'],
-                    'is_owner'=>1,
-                    'assigned_user_id' => $userDataArray->user_id,             
-                    'created_by' => Auth::user()->user_id,
-                    'created_at' => \Carbon\Carbon::now(),
+            if(!$user_info){
+                $hashval = time() . '2348923NONANCHORLEAD'.$reqData['email'];
+                $token   = md5($hashval);
+                $arrUserData = [
+                    'f_name'     => $reqData['f_name'],
+                    'l_name'     => $reqData['l_name'],
+                    'biz_name'   => $reqData['comp_name'],
+                    'email'      => $reqData['email'],
+                    'mobile_no'  => $reqData['phone'],
+                    'is_buyer'   => $reqData['is_buyer'],
+                    'reg_token'  => $token,
+                    'assign_sale_manager' => $reqData['assigned_sale_mgr']
                 ];
-                $this->userRepo->createLeadAssign($arrLeadAssingData);
+                $userDataArray = $this->userRepo->saveNonAnchorLead($arrUserData);                
 
                 $whereActivi['activity_code'] = 'save_backend_lead';
                 $activity = $this->mstRepo->getActivity($whereActivi);
+
                 if(!empty($activity)) {
                     $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
                     $activity_desc = 'Add Non-Anchor Lead registration';
-                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['arrLeadAssingData' => $arrLeadAssingData, 'arrUserData' => $arrUserData]));
+                    $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['arrNonAnchorLeadData' => $arrUserData]));
                 }                
-                //Add application workflow stages
-                Helpers::addWfAppStage('new_case', $userDataArray->user_id);
 
-                $userMailArr = [];
-                $userMailArr['email'] = $arrUserData['email'];
-                $userMailArr['name'] = $arrUserData['f_name'];
-                $userMailArr['password'] = $string;
-                Event::dispatch("user.registered", serialize($userMailArr));
+                if ($userDataArray) {
+                    $businessName = $reqData['comp_name'];
+                    $mailUrl = config('proin.frontend_uri') . '/lead-sign-up?token=' . $arrUserData['reg_token'];
+                    $nonAnchLeadMailArr['name'] = trim($arrUserData['f_name']).' '.trim($arrUserData['l_name']);
+                    $nonAnchLeadMailArr['email'] =  trim($arrUserData['email']);
+                    $nonAnchLeadMailArr['url'] = $mailUrl;
+                    $nonAnchLeadMailArr['businessName'] = $businessName;
+                    Event::dispatch("NON_ANCHOR_CSV_LEAD_UPLOAD", serialize($nonAnchLeadMailArr));
+                }
+
                 Session::flash('message', 'Non-Anchor Lead registered successfully'); 
                 Session::flash('is_accept', 1);
                 return redirect()->back();                      
@@ -1006,7 +1000,16 @@ class LeadController extends Controller {
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
             $anchorData   =   $this->userRepo->getAnchorById($anchorId)->toArray();
 
-            if (!isset($anchUserData[0])) {  
+            if (!isset($anchUserData[0])) { 
+                if (isset($arrAnchorVal['email'])) {
+                    $userData = $this->userRepo->getBackendUserByEmail(trim($arrAnchorVal['email']));
+                    if ($userData) {
+                        Session::flash('error', trans('error_messages.email_already_exists'));                        
+                        Session::flash('operation_status', 1);
+                        return redirect()->route('get_anchor_lead_list');
+                    }
+                }
+                 
                 $hashval = time() . '2348923ANCHORLEAD'.$arrAnchorVal['email'];
                 $token = md5($hashval);
                 $arrAnchorData = [
@@ -1063,7 +1066,8 @@ class LeadController extends Controller {
                 }
             }else{
                 Session::flash('error', trans('error_messages.email_already_exists'));
-                return redirect()->back()->withInput();
+                Session::flash('operation_status', 1);
+                return redirect()->route('get_anchor_lead_list');
             }
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -1139,6 +1143,11 @@ class LeadController extends Controller {
             $this->userRepo->updateAnchor($anchorId, $arrData);
             
         }
+    }
+
+    public function getNonAnchorLeads()
+    {
+        return view('backend.non_anchor_lead.index');
     }
     
 }

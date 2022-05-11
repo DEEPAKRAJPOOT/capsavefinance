@@ -51,7 +51,7 @@
                     <button id="searchB" type="button" class="btn  btn-success btn-sm">Search</button>
                 </div>
                 @can('create_backend_lead')
-                <div class="col-md-2 text-right">
+                {{--<div class="col-md-2 text-right">
                     <div class="float-right" style="margin-bottom: 10px;margin-right: 12px;">
                         <a  data-toggle="modal" data-target="#createLeadForm" data-url ="{{route('create_backend_lead')}}" data-height="420px" data-width="100%" data-placement="top" >
                             <button class="btn  btn-success btn-sm" type="button">
@@ -62,7 +62,7 @@
                             </button>
                         </a>
                     </div>                
-                </div>    
+                </div>--}}
                 @endcan  
                 <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
@@ -101,7 +101,7 @@
     </div>
 </div>
 {!!Helpers::makeIframePopup('editLead','Edit Lead Detail', 'modal-md')!!}
-{!!Helpers::makeIframePopup('createLeadForm','Create Lead', 'modal-lg')!!}
+{{-- {!!Helpers::makeIframePopup('createLeadForm','Create Lead', 'modal-lg')!!} --}}
 @endsection
 @section('additional_css')
 <style>

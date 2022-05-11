@@ -1452,7 +1452,46 @@ class UserEventsListener extends BaseEvent
                 FinanceModel::logEmail($mailContent);
             });
         }
-    }
+    } 
+
+    public function onNonAnchorLeadUpload($userData) {
+        $this->func_name = __FUNCTION__;
+        $user = unserialize($userData);
+        $email_content = EmailTemplate::getEmailTemplate("NON_ANCHOR_CSV_LEAD_UPLOAD");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%name', '%url'],
+                [ucwords($user['name']),$user['url']],
+                $email_content->message
+            );
+
+            Mail::send('email', ['baseUrl' => env('REDIRECT_URL', ''),'varContent' => $mail_body,
+                ],
+                function ($message) use ($user, $email_content, $mail_body) {
+                    // if( env('SEND_MAIL_ACTIVE') == 1){
+                    //     $email = explode(',', env('SEND_MAIL'));
+                    //     $message->bcc(explode(',', env('SEND_MAIL_BCC')));
+                    //     $message->cc(explode(',', env('SEND_MAIL_CC')));
+                    // }else{
+                        $email = $user["email"];
+                        $message->bcc(\Helpers::ccOrBccEmailsArray($email_content->bcc));
+                        $message->cc(\Helpers::ccOrBccEmailsArray($email_content->cc));
+                    // }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $subject = $email_content->subject."//".$user['businessName'];
+                $message->to( $email, $user["name"])->subject($subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_type' => $this->func_name,
+                    'name' => $user['name'],
+                    'subject' => $email_content->subject."//".$user['businessName'],
+                    'body' => $mail_body,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }      
 
     /**
      * Event subscribers
@@ -1648,6 +1687,11 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'CHARGE_DELETION_REQUEST_MAIL',
             'App\Inv\Repositories\Events\UserEventsListener@onChargeDeletionRequest'
+        );
+
+        $events->listen(
+            'NON_ANCHOR_CSV_LEAD_UPLOAD',
+            'App\Inv\Repositories\Events\UserEventsListener@onNonAnchorLeadUpload'
         );
     }
 }
