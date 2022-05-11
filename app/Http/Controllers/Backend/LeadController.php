@@ -40,7 +40,7 @@ class LeadController extends Controller {
      *
      * @return void
      */
-    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo,InvDocumentRepoInterface $doc_repo, InvMasterRepoInterface $mstRepo) {
+    public function __construct(InvUserRepoInterface $user, InvAppRepoInterface $app_repo,InvDocumentRepoInterface $doc_repo, InvMasterRepoInterface $mstRepo, FileHelper $file_helper) {
         $this->middleware('guest')->except('logout');
         $this->middleware('checkBackendLeadAccess');
 
@@ -48,6 +48,7 @@ class LeadController extends Controller {
         $this->appRepo = $app_repo;
         $this->docRepo = $doc_repo;
         $this->mstRepo = $mstRepo;
+        $this->fileHelper = $file_helper;
     }
 
     /**
@@ -593,8 +594,9 @@ class LeadController extends Controller {
                 0,1,2,3,4,5
             ];
 
-            $fileHelper = new FileHelper();
-            $fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
+            // $fileHelper = new FileHelper();
+            // $fileArrayData = $fileHelper->excelNcsv_to_array($fullFilePath, $header);
+            $fileArrayData = $this->fileHelper->excelNcsv_to_array($fullFilePath, $header);
             // dd($fileArrayData);
             if($fileArrayData['status'] != 'success'){
                 Session::flash('message', 'Please fill the data countiously till 6th column in the sheet');
