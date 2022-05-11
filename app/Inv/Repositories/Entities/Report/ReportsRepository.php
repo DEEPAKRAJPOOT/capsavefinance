@@ -438,7 +438,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		})
 		->whereDate('int_accrual_start_dt','<=',$curdate)
 		->get();
-
+		
 		$outstandingData = self::getOutstandingData($curdate);
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
@@ -461,10 +461,18 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$diff=date_diff(date_create($invDisb->payment_due_date),date_create($curdate));
 			$maturityDays = $diff->format("%a");
 			$invDetails = $invDisb->invoice;
+			$anchor_name = $invDetails->anchor->comp_name;
 			$offerDetails = $invDetails->program_offer->toArray();
 			$offerDetails['user_id'] = $invDetails->supplier_id;
 			$prgmDetails = $invDetails->program;
-			
+			$payment_frequency='none';
+			if($invDisb->invoice->program_offer->payment_frequency == '1'){
+				$payment_frequency = 'Up Front';
+			}else if($invDisb->invoice->program_offer->payment_frequency == '2'){
+				$payment_frequency = 'Monthly';
+			}else if($invDisb->invoice->program_offer->payment_frequency == '3'){
+				$payment_frequency = 'Rear Ended';
+			}
 			// $limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::invoiceAnchorLimitApprove($offerDetails),2);
 			$limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::anchorSupplierPrgmUtilizedLimitByInvoice($offerDetails),2);
 			$limitAvl[$offerDetails['prgm_offer_id']] = $limitAvl[$offerDetails['prgm_offer_id']] ?? $offerDetails['prgm_limit_amt'] - $limitUsed[$offerDetails['prgm_offer_id']];
@@ -473,9 +481,14 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
 				'cust_name' => $invDisb->invoice->business->biz_entity_name,
 				'customer_id' => $invDisb->invoice->lms_user->customer_id??null,
+				'anchor_name'=> $anchor_name,
 				'invoice_no' => $invDisb->invoice->invoice_no,
+				'disbursement_date'=>Carbon::parse($invDisb->disbursal->funded_date)->format('Y-m-d'),
 				'payment_due_date' => $invDisb->payment_due_date,
 				'virtual_ac' => $invDisb->invoice->lms_user->virtual_acc_id,
+				'payment_frequency'=>$payment_frequency,
+				'disburse_amount'=>$invDisb->disburse_amt,
+				'interest_amount'=>number_format($invDisb->total_interest,2),
 				'client_sanction_limit' => $offerDetails['prgm_limit_amt'],
 				'limit_available' => $limitAvl[$offerDetails['prgm_offer_id']],
 				'principalOut' => $principalOut,
@@ -492,7 +505,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			if($principalOut > 100 && ($result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] ?? 0) < $odDaysWithoutGrace){
 				$result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] = $odDaysWithoutGrace;
 			}
+			
 		}
+		
 		return $result;
 	}
 
