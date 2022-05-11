@@ -6857,7 +6857,7 @@ class DataRenderer implements DataProviderInterface
            })   
            ->editColumn('interest_prd',  function ($invoiceRec) {
              $txn = Transactions::find($invoiceRec->transId);
-             $desc = $txn->transType->trans_name;
+             $desc = $txn->transType->trans_name ?? NULL;
             if ($txn->transTypeId == config('lms.TRANS_TYPE.INTEREST')) {
                 $desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
             } 
