@@ -6858,11 +6858,11 @@ class DataRenderer implements DataProviderInterface
            ->editColumn('interest_prd',  function ($invoiceRec) {
              $txn = Transactions::find($invoiceRec->transId);
              $desc = $txn->transType->trans_name ?? NULL;
-            if ($txn->transTypeId == config('lms.TRANS_TYPE.INTEREST')) {
+            if ($invoiceRec->transTypeId == config('lms.TRANS_TYPE.INTEREST')) {
                 $desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
             } 
 
-            if ($txn->transTypeId == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+            if ($invoiceRec->transTypeId == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
                 $dueDate = strtotime($txn->toIntDate); // or your date as well
                 $now = strtotime($txn->fromIntDate);
                 $datediff = ($dueDate - $now);
