@@ -294,11 +294,11 @@ class ReportController extends Controller
 			$total_amount =  ($lease->base_amount + $lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
 			$txn = Transactions::find($lease->transId);
 			$desc = $txn->transType->trans_name ?? NULL;
-			if ($lease->transType == config('lms.TRANS_TYPE.INTEREST')) {
+			if ($lease->transTypeId == config('lms.TRANS_TYPE.INTEREST')) {
 				$desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
 			} 
 
-			if ($lease->transType == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+			if ($lease->transTypeId == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
 				$dueDate = strtotime($txn->toIntDate); // or your date as well
 				$now = strtotime($txn->fromIntDate);
 				$datediff = ($dueDate - $now);
