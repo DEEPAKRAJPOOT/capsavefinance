@@ -222,17 +222,20 @@ class LeadController extends Controller {
             $user_info = $this->userRepo->getUserByEmail($reqData['email']);
 
             if(!$user_info){
+                DB::beginTransaction();
+                
                 $hashval = time() . '2348923NONANCHORLEAD'.$reqData['email'];
                 $token   = md5($hashval);
                 $arrUserData = [
-                    'f_name'     => $reqData['f_name'],
-                    'l_name'     => $reqData['l_name'],
-                    'biz_name'   => $reqData['comp_name'],
-                    'email'      => $reqData['email'],
-                    'mobile_no'  => $reqData['phone'],
-                    'is_buyer'   => $reqData['is_buyer'],
-                    'reg_token'  => $token,
-                    'assign_sale_manager' => $reqData['assigned_sale_mgr']
+                    'f_name'              => $reqData['f_name'],
+                    'l_name'              => $reqData['l_name'],
+                    'biz_name'            => $reqData['comp_name'],
+                    'email'               => $reqData['email'],
+                    'mobile_no'           => $reqData['phone'],
+                    'is_buyer'            => $reqData['is_buyer'],
+                    'reg_token'           => $token,
+                    'assign_sale_manager' => $reqData['assigned_sale_mgr'],
+                    'product_id'          => $reqData['product_type'],
                 ];
                 $userDataArray = $this->userRepo->saveNonAnchorLead($arrUserData);                
 
@@ -252,8 +255,11 @@ class LeadController extends Controller {
                     $nonAnchLeadMailArr['email'] =  trim($arrUserData['email']);
                     $nonAnchLeadMailArr['url'] = $mailUrl;
                     $nonAnchLeadMailArr['businessName'] = $businessName;
+                    $nonAnchLeadMailArr['productType']  = $arrUserData['product_id'] == config('common.PRODUCT.TERM_LOAN') ? 'Term Loan' : ($arrUserData['product_id'] == config('common.PRODUCT.LEASE_LOAN') ? 'Leasing' : '');
                     Event::dispatch("NON_ANCHOR_CSV_LEAD_UPLOAD", serialize($nonAnchLeadMailArr));
                 }
+
+                DB::commit();
 
                 Session::flash('message', 'Non-Anchor Lead registered successfully'); 
                 Session::flash('is_accept', 1);
@@ -264,6 +270,7 @@ class LeadController extends Controller {
             }
         
         } catch (Exception $ex) {
+            DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }

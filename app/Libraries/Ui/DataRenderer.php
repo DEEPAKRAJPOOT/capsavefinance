@@ -85,7 +85,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                         'name',
                         function ($user) {
-                    $panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ''; 
+                    $panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ((isset($user->nonAnchorPanNo) && $user->nonAnchorPanNo && !empty($user->nonAnchorPanNo)) ? '<br><strong>PAN:</strong> ' . $user->nonAnchorPanNo : ''); 
                     $full_name = $user->f_name.' '.$user->l_name . $panInfo;
                     return $full_name;
                     
@@ -8453,7 +8453,7 @@ class DataRenderer implements DataProviderInterface
     public function getAllNonAnchorLeadsList(Request $request, $lead)
     {        
         return DataTables::of($lead)
-                ->rawColumns(['non_anchor_lead_id', 'email', 'user_type', 'status'])
+                ->rawColumns(['non_anchor_lead_id', 'email', 'user_type', 'status', 'product_type'])
                 ->addColumn('non_anchor_lead_id', function ($lead) {
                     return '000'.$lead->id;
                 })
@@ -8480,7 +8480,16 @@ class DataRenderer implements DataProviderInterface
                         $leadType = 'Buyer';
                     }
                     return $leadType;
-                }) 
+                })
+                ->addColumn('product_type', function ($lead) {
+                    $productType = '';
+                    if($lead->product_id == config('common.PRODUCT.TERM_LOAN')){
+                        $productType = 'Term Loan';
+                    }else if($lead->product_id == config('common.PRODUCT.LEASE_LOAN')){
+                        $productType = 'Leasing';
+                    }
+                    return $productType;
+                })
                 ->editColumn('created_at', function ($lead) {
                     return ($lead->created_at)? date('d-M-Y',strtotime($lead->created_at)) : '---';
                 })
