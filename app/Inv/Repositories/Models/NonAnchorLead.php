@@ -39,6 +39,8 @@ class NonAnchorLead extends BaseModel
         'is_registered',
         'assign_sale_manager',
         'reg_token',
+        'is_term_accept',
+        'product_id',
         'created_at',
         'created_by',
         'updated_at',
@@ -105,6 +107,11 @@ class NonAnchorLead extends BaseModel
     {
         $result = self::where('user_type', 1);
         return ($result ? $result : '');
+    }
+
+    public function product()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Product', 'product_id', 'id');
     }
 }
 

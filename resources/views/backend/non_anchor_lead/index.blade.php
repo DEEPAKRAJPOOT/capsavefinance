@@ -64,6 +64,7 @@
                                     <th>Email</th>
                                     <th>Mobile</th>
                                     <th>User Type</th>
+                                    <th>Product Type</th>
                                     <th>Created At</th>
                                     <th>Status</th>
                                 </tr>

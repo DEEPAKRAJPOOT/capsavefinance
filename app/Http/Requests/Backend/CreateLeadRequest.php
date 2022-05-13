@@ -30,16 +30,20 @@ class CreateLeadRequest extends Request
             'email'             => 'required|email|max:50|unique:non_anchor_leads,email|unique:users,email',
             'phone'             => 'required|numeric|digits:10',
             'is_buyer'          => 'required|numeric',
-            'assigned_sale_mgr' => 'required|numeric'
+            'assigned_sale_mgr' => 'required|numeric',
+            'product_type'      => 'required|numeric'
         ];
     }
 
     public function attributes()
     {
         return [
-            'f_name'     => "First name",
-            'l_name'     => "Last name",
-            'comp_name'  => "Business name",
+            'f_name'            => "First name",
+            'l_name'            => "Last name",
+            'comp_name'         => "Business name",
+            'is_buyer'          => "User type",
+            'assigned_sale_mgr' => "Sales manager",
+            'product_type'      => "Product type",
         ];
     }
 
@@ -54,8 +58,9 @@ class CreateLeadRequest extends Request
             'comp_name.regex'            => 'Business name should only contain letters, numbers, space and dot',
             'email.required'             => 'Email is required',
             'phone.required'             => 'Phone is required',
-            'is_buyer.required'          => 'User Type is required',
-            'assigned_sale_mgr.required' => 'Sales manager is required'
+            'is_buyer.required'          => 'User type is required',
+            'assigned_sale_mgr.required' => 'Sales manager is required',
+            'product_type.required'      => 'Product type is required',
         ];
     }
 }

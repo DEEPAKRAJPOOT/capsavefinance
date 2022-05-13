@@ -31,6 +31,19 @@
                {!! $errors->first('comp_name', '<span class="error">:message</span>') !!}
             </div>
          </div>
+         <div class="col-6">
+            <div class="form-group">
+               <label for="product_type">Product Type
+                  <span class="mandatory">*</span>
+               </label>
+               <select name="product_type" id="product_type" class="form-control">
+                  <option value="">Select Product Type</option>
+                  <option value="{{ config('common.PRODUCT.TERM_LOAN') }}">Term Loan</option>
+                  <option value="{{ config('common.PRODUCT.LEASE_LOAN') }}">Leasing</option>
+               </select>
+               {!! $errors->first('product_type', '<span class="error">:message</span>') !!}
+            </div>
+         </div>
       </div>
 
       <div class="row">
@@ -52,7 +65,7 @@
                <span class="mandatory">*</span>
                </label>
 
-               <input class="form-control numbercls phone number_format" name="phone" id="phone" value="{{ old('phone') }}" tabindex="4" type="text" maxlength="10" placeholder="Mobile" required="">
+               <input class="form-control numbercls phone number_format" name="phone" id="phone" value="{{ old('phone') }}" tabindex="4" type="text" maxlength="10" placeholder="Mobile">
                {!! $errors->first('phone', '<span class="error">:message</span>') !!}
             </div>
          </div>
@@ -198,6 +211,12 @@ $(document).ready(function () {
                      })
          });
          $('#is_buyer').each(function () {
+            $(this).rules("add",
+                     {
+                        required: true
+                     })
+         });
+         $('#product_type').each(function () {
             $(this).rules("add",
                      {
                         required: true

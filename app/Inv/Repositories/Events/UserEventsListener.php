@@ -1489,9 +1489,15 @@ class UserEventsListener extends BaseEvent
                 $email_content->message
             );
 
+            $mail_subject = str_replace(
+                ['%productType'],
+                [$user['productType']],
+                $email_content->subject
+            );
+
             Mail::send('email', ['baseUrl' => env('REDIRECT_URL', ''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content, $mail_body) {
+                function ($message) use ($user, $email_content, $mail_body, $mail_subject) {
                     // if( env('SEND_MAIL_ACTIVE') == 1){
                     //     $email = explode(',', env('SEND_MAIL'));
                     //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
@@ -1504,14 +1510,14 @@ class UserEventsListener extends BaseEvent
                 $message->bcc($emailBcc);
                 $message->cc($emailCc);    
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
-                $subject = $email_content->subject."//".$user['businessName'];
+                $subject = $mail_subject." - ".$user['businessName'];
                 $message->to( $email, $user["name"])->subject($subject);
                 $mailContent = [
                     'email_from' => config('common.FRONTEND_FROM_EMAIL'),
                     'email_to' => $email,
                     'email_type' => $this->func_name,
                     'name' => $user['name'],
-                    'subject' => $email_content->subject."//".$user['businessName'],
+                    'subject' => $subject,
                     'body' => $mail_body,
                     'email_bcc' => $emailBcc,
                     'email_cc' => $emailCc,

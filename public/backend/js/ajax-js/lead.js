@@ -147,7 +147,7 @@ try {
             pageLength: 25,
             searching: false,
             bSort: true,
-            order: [[7, "desc"]],
+            order: [[8, "desc"]],
             ajax: {
                 "url": messages.get_non_anchor_leads, // json datasource
                 "method": 'POST',
@@ -168,10 +168,11 @@ try {
                 {data: 'email'},
                 {data: 'phone'},
                 {data: 'user_type'},
+                {data: 'product_type'},
                 {data: 'created_at'},
                 {data: 'status'}
             ],
-            aoColumnDefs: [{'bSortable': false, 'aTargets': [1,3,4,5,6,8]}]
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [1,3,4,5,6,7,9]}]
         });
 
         //Search
