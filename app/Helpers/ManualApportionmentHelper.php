@@ -755,7 +755,7 @@ class ManualApportionmentHelper{
         // Update Invoice Disbursed Accrual Detail
         InvoiceDisbursedDetail::updateDailyInterestAccruedDetails();
 
-        $cDate = Carbon\Carbon::parse($curdate)->format('Y-m-d');
+        $cDate = Carbon::parse($curdate)->format('Y-m-d');
         $transList = Transactions::whereNull('parent_trans_id')
         ->whereHas('transType', function($query){
             $query->where('chrg_master_id','>','0')
