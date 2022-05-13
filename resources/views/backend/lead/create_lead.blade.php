@@ -38,8 +38,8 @@
                </label>
                <select name="product_type" id="product_type" class="form-control">
                   <option value="">Select Product Type</option>
-                  <option value="{{ config('common.PRODUCT.TERM_LOAN') }}">Term Loan</option>
-                  <option value="{{ config('common.PRODUCT.LEASE_LOAN') }}">Leasing</option>
+                  <option value="{{ config('common.PRODUCT.TERM_LOAN') }}" {{ old('product_type') == config('common.PRODUCT.TERM_LOAN') ? 'selected' : '' }}>Term Loan</option>
+                  <option value="{{ config('common.PRODUCT.LEASE_LOAN') }}"  {{ old('product_type') == config('common.PRODUCT.LEASE_LOAN') ? 'selected' : '' }}>Leasing</option>
                </select>
                {!! $errors->first('product_type', '<span class="error">:message</span>') !!}
             </div>
