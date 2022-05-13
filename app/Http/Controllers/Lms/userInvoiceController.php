@@ -396,6 +396,7 @@ class userInvoiceController extends Controller
             'intrest_charges' => $intrest_charges,
             'total_sum_of_rental' => $total_sum_of_rental,
             'registeredCompany' => $registeredCompany,
+            'invoice_type'=>$invoice_type,
         ];
         $view = $this->viewInvoiceAsPDF($data);
         return response()->json(['status' => 1,'view' => base64_encode($view)]); 
@@ -702,6 +703,7 @@ class userInvoiceController extends Controller
             $registeredCompany = $registeredCompany[0];
           //return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No bank detail found for the Registered Company.'); 
         }
+        
         $data = [
             'company_data' => $company_data,
             'billingDetails' => $billingDetails,
@@ -709,6 +711,7 @@ class userInvoiceController extends Controller
             'intrest_charges' => $intrest_charges,
             'total_sum_of_rental' => $total_sum_of_rental,
             'registeredCompany' => $registeredCompany,
+            'invoice_type'=>$invoice_type,
         ];
         return $this->viewInvoiceAsPDF($data, true);
     }
@@ -1270,6 +1273,7 @@ class userInvoiceController extends Controller
                 'intrest_charges' => $intrest_charges,
                 'total_sum_of_rental' => $total_sum_of_rental,
                 'registeredCompany' => $registeredCompany,
+                'invoice_type'=>$invoice_type,
             ];
             view()->share($data);
             ini_set("memory_limit", "-1");
