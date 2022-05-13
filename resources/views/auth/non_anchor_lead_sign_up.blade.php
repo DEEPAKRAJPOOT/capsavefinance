@@ -129,7 +129,7 @@
                         </div>
                         <div class="d-flex btn-section sign-UP">
                             <div class="col-md-4 mt-3">
-                                <input type="hidden" name="lead_type" id="lead_type" value="@if($leadDetail){{$leadDetail->user_type}}@endif">
+                                <input type="hidden" name="lead_type" id="lead_type" value="@if($leadDetail){{$leadDetail->is_buyer}}@endif">
                                 <input type="hidden" name="non_anchor_lead_id" id="non_anchor_lead_id" value="@if($leadDetail){{$leadDetail->id}}@endif">
                                 <input type="submit" value="Submit" tabindex="9" id="SaveUser" class="btn btn-primary">
                             </div>
