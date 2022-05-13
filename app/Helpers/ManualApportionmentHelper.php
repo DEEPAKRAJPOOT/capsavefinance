@@ -757,7 +757,10 @@ class ManualApportionmentHelper{
 
         $cDate = Carbon\Carbon::parse($curdate)->format('Y-m-d');
         $transList = Transactions::whereNull('parent_trans_id')
-        ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
+        ->whereHas('transType', function($query){
+            $query->where('chrg_master_id','>','0')
+            ->orWhere('id',config('lms.TRANS_TYPE.INTEREST'));
+        })
         ->whereDate('created_at',$cDate)
         ->where('entry_type','0')
         ->where('is_invoice_generated','0')
