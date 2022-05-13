@@ -258,12 +258,13 @@ class User extends Authenticatable
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         $result = self::select('users.user_id','users.f_name','users.l_name','users.email',
                 'users.mobile_no','users.created_at', 'users.anchor_id as UserAnchorId',
-                'users.is_buyer as AnchUserType','lead_assign.to_id','anchor_user.pan_no','users.is_active')                
+                'users.is_buyer as AnchUserType','lead_assign.to_id','anchor_user.pan_no','users.is_active','non_anchor_leads.pan_no as nonAnchorPanNo')                
                 ->join('lead_assign', function ($join) {
                     $join->on('lead_assign.assigned_user_id', '=', 'users.user_id');
                     $join->on('lead_assign.is_owner', '=', DB::raw("1"));                    
                 })
                 ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'users.user_id')
+                ->leftJoin('non_anchor_leads', 'non_anchor_leads.user_id', '=', 'users.user_id')
                  ->where('users.user_type', 1);
         if ($roleData[0]->id == 11) {
             //$result->where('users.anchor_id', \Auth::user()->anchor_id);                        

@@ -85,7 +85,7 @@ class DataRenderer implements DataProviderInterface
                 ->editColumn(
                         'name',
                         function ($user) {
-                    $panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ''; 
+                    $panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ((isset($user->nonAnchorPanNo) && $user->nonAnchorPanNo && !empty($user->nonAnchorPanNo)) ? '<br><strong>PAN:</strong> ' . $user->nonAnchorPanNo : ''); 
                     $full_name = $user->f_name.' '.$user->l_name . $panInfo;
                     return $full_name;
                     
