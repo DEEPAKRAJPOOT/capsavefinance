@@ -1,6 +1,12 @@
 @if($route_name != "cam_overview")
+@php
+    $mdCls = 'md-5';
+    if($route_name=="security_deposit"){
+        $mdCls = 'md-4';
+    }
+@endphp
 <div class="data mt-4">
-    <h2 class="sub-title bg">Security Documents
+    <h2 class="sub-title bg">Pre/Post Disbursement Condition
       </h2>                    
     <div class="col-md-12 mt-4" id="security-doc-block">
         @if(!empty($arrAppSecurityDoc))
@@ -16,7 +22,7 @@
             <div class="row p-2 mt-1 toRemoveDiv1 {{($loop->first)? '': 'mt10'}}" style="background-color: #e9e7e7;">
                 <input type="hidden" name="app_security_doc_id[]" class="form-control app_security_doc_id" value="{{$arr['app_security_doc_id'] ?? ''}}" id="app_security_doc_id_{{ $key }}"/>
                 <div class="col-md-2 mt-1">
-                    <label for="txtPassword"><b>Pre/Post</b></label>
+                    <label for="txtPassword"><b>Pre/Post Disbursement</b></label>
                     <div class="relative">
                         <select class="form-control doc_type" name="doc_type[]" id="update_doc_type_{{ $key }}">
                             <option value="">Select</option>
@@ -34,10 +40,10 @@
                        @endforeach
                    </select>
                </div>
-               <div class="col-md-2 mt-1">
+               <div class="col-{{ $mdCls }} mt-1">
                        <label for="txtPassword"><b>Description</b></label>
                        <div class="relative">
-                           <input type="text" name="description[]" class="form-control description" value="{{$arr['description'] ?? ''}}" placeholder="Description" autocomplete="off" id="update_description_{{ $key }}"/>
+                           <textarea name="description[]" class="form-control description" placeholder="Description" autocomplete="off" id="update_description_{{ $key }}">{{$arr['description'] ?? ''}}</textarea>
                        </div>
                </div>   
                @if($route_name=="security_deposit")    
@@ -49,13 +55,13 @@
                </div>
                @endif
                <div class="col-md-2 mt-1">
-                    <label for="txtPassword"><b>Due Date</b></label>
+                    <label for="txtPassword"><b>Original Due Date</b></label>
                     <div class="relative">
-                            <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="{{\Carbon\Carbon::createFromFormat('Y-m-d', $arr['due_date'])->format('d/m/Y') ?? ''}}" placeholder="Due Date" autocomplete="off" id="update_due_date_{{ $key }}" readonly="readonly"/>
+                            <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value ="{{(isset($arr['due_date']) && $arr['due_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['due_date'])->format('d/m/Y'): '' }}" placeholder="Original Due Date" autocomplete="off" id="update_due_date_{{ $key }}" readonly="readonly"/>
                     </div>
                </div>
                @if($route_name=="security_deposit")  
-               <div class="col-md-1 mt-1">
+               <div class="col-md-2 mt-1">
                    <label for="txtPassword"><b>Completed</b></label>
                    <div class="relative">
                        <select class="form-control completed" name="completed[]" id="update_completed_{{ $key }}">
@@ -65,7 +71,7 @@
                        </select>
                    </div>
               </div>
-              <div class="col-md-1 mt-1">
+              <div class="col-md-2 mt-1">
                        <label for="txtPassword"><b>Exception Received</b></label>
                        <div class="relative">
                            <select class="form-control exception_received" name="exception_received[]" onchange="displayExceptionFields(this.value,{{ $key }});" id="update_exception_received_{{ $key }}" data-previous="{{ $key }}">
@@ -94,6 +100,12 @@
                    <input type="text" name="exception_remark[]" class="form-control exception_remark {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'required': '' !!}" value="{{$arr['exception_remark'] ?? ''}}" placeholder="Exception Remark" autocomplete="off" id="update_exception_remark_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="visibility: hidden;height: 0;"': '' !!}/>
                    </div>
                </div>
+               <div class="col-md-2 mt-1 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no' || $arr['exception_received'] == null) ? 'style="display: none;"': '' !!}>
+                    <label for="txtPassword"><b>Extended Due Date</b></label>
+                    <div class="relative">
+                    <input type="text" name="extended_due_date[]" class="form-control sc-doc-date-r extended_due_date {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'required': '' !!}" value ="{{(isset($arr['extended_due_date']) && $arr['extended_due_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['extended_due_date'])->format('d/m/Y'): '' }}" placeholder="Extended Due Date" autocomplete="off" id="update_exception_received_date_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="visibility: hidden;height: 0;"': '' !!} readonly="readonly"/>
+                    </div>
+                </div>
                <div class="col-md-2 mt-1">
                    <label for="txtPassword"><b>Maturity Date</b></label>
                    <div class="relative">
@@ -120,7 +132,7 @@
                    <input type="text" name="document_amount[]" class="form-control number float_format document_amount" value="{{$arr['document_amount'] ?? ''}}" placeholder="Document Amount" autocomplete="off" id="update_document_amount_{{ $key }}"/>
                    </div>
                </div>
-               <div class="col-md-2 mt-1">
+               <div class="col-md-3 mt-1">
                    <label for="txtPassword"><b>Doc Upload</b>
                     @if ($arr['is_upload'] && $arr['is_upload'] == 1)
                     <a href="{{ route('download_storage_file', ['file_id' => $arr['file_id'] ]) }}" title="Download Document"><i class="fa fa-lg fa-download ml-3" aria-hidden="true"></i></a>  
@@ -137,9 +149,9 @@
                    </div>
                </div>
                @endif
-               <div class="col-md-2 mt-1 center">
+               <div class="col-md-1 mt-1 center" style="display: flex;flex-direction: column;justify-content: center;align-items: center;padding-top: 0px;">
                 @if($loop->first)
-                <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;margin-top: 15%;"></i>
+                <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
                  @else
                  <i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;margin-top: 15%;"></i>
                  @endif
@@ -151,7 +163,7 @@
             <div class="row p-2 mt-1 toRemoveDiv1" style="background-color: #e9e7e7;">
                 <input type="hidden" name="app_security_doc_id[]" class="form-control" value="" placeholder="Group Company" />
                 <div class="col-md-2 mt-1">
-                    <label for="txtPassword"><b>Pre/Post</b></label>
+                    <label for="txtPassword"><b>Pre/Post Disbursement</b></label>
                     <div class="relative">
                         <select class="form-control" name="doc_type[]" id="doc_type_1">
                             <option value="">Select</option>
@@ -166,10 +178,10 @@
                         <option value="">Select</option>
                     </select>
                 </div>
-                <div class="col-md-2 mt-1">
+                <div class="col-{{ $mdCls }} mt-1">
                         <label for="txtPassword"><b>Description</b></label>
                         <div class="relative">
-                            <input type="text" name="description[]" class="form-control" value="" placeholder="Description" autocomplete="off"/>
+                            <textarea type="text" name="description[]" class="form-control" value="" placeholder="Description" autocomplete="off"></textarea>
                         </div>
                 </div>      
                 @if($route_name=="security_deposit")  
@@ -181,13 +193,13 @@
                 </div>
                 @endif
                 <div class="col-md-2 mt-1">
-                     <label for="txtPassword"><b>Due Date</b></label>
+                     <label for="txtPassword"><b>Original Due Date</b></label>
                      <div class="relative">
-                             <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date" value="" placeholder="Due Date" autocomplete="off" readonly="readonly"/>
+                             <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date" value="" placeholder="Original Due Date" autocomplete="off" readonly="readonly"/>
                      </div>
                 </div>
                 @if($route_name=="security_deposit")
-                <div class="col-md-1 mt-1">
+                <div class="col-md-2 mt-1">
                     <label for="txtPassword"><b>Completed</b></label>
                     <div class="relative">
                         <select class="form-control" name="completed[]">
@@ -197,7 +209,7 @@
                         </select>
                     </div>
                </div>
-               <div class="col-md-1 mt-1">
+               <div class="col-md-2 mt-1">
                         <label for="txtPassword"><b>Exception Received</b></label>
                         <div class="relative">
                             <select class="form-control" name="exception_received[]" onchange="displayExceptionFields(this.value,1);" data-previous="1">
@@ -225,6 +237,12 @@
                     <input type="text" name="exception_remark[]" class="form-control" value="" placeholder="Exception Remark" autocomplete="off"/>
                     </div>
                 </div>
+                <div class="col-md-2 mt-1 exceptionFields_1" style="display: none;">
+                    <label for="txtPassword"><b>Extended Due Date</b></label>
+                    <div class="relative">
+                    <input type="text" name="extended_due_date[]" class="form-control extended_due_date sc-doc-date required" value="" placeholder="Extended Due Date" autocomplete="off" id="exception_remark_1" readonly="readonly"/>
+                    </div>
+                </div>
                 <div class="col-md-2 mt-1">
                     <label for="txtPassword"><b>Maturity Date</b></label>
                     <div class="relative">
@@ -234,7 +252,7 @@
                 <div class="col-md-2 mt-1">
                     <label for="txtPassword"><b>Renewal Reminder Days</b></label>
                     <div class="relative">
-                    <input type="text" name="renewal_reminder_days[]" class="form-control digits" value="" placeholder="Renewal Reminder Days" autocomplete="off"  min="0" max="365"/>
+                    <input type="text" name="renewal_reminder_days[]" class="form-control digits renewal_reminder_days" value="" placeholder="Renewal Reminder Days" autocomplete="off"  min="0" max="365"/>
                     </div>
                 </div>
                 <div class="col-md-2 mt-1 INR">
@@ -251,12 +269,12 @@
                     <input type="text" name="document_amount[]" class="form-control number float_format" value="" placeholder="Document Amount" autocomplete="off"/>
                     </div>
                 </div>
-                <div class="col-md-2 mt-1">
+                <div class="col-md-3 mt-1">
                     <label for="txtPassword"><b>Doc Upload</b></label>
                     <div class="relative">
                         <div class="d-flex">
                         <div class="custom-file upload-btn-cls mb-3">
-                            <input type="file" class="custom-file-input getFileName" name="doc_file_sec[]" extension="jpg,png,pdf,doc,docx"
+                            <input type="file" class="custom-file-input getFileName doc_file_sec" name="doc_file_sec[]" extension="jpg,png,pdf,doc,docx"
                             filesize = "200000000" data-msg-extension="Only support jpg,png,pdf,doc,docx type format." data-msg-filesize="maximum size for upload 20 MB.">
                             <label class="custom-file-label" for="customFile">Choose file</label>
                         </div>
@@ -265,7 +283,7 @@
                     </div>
                 </div>
                 @endif
-                <div class="col-md-2 mt-1 center">
+                <div class="col-md-1 mt-1 center" style="display: flex;flex-direction: column;justify-content: center;align-items: center;padding-top: 15px;">
                     <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;margin-top: 15%;"></i>
                 </div>
             </div>

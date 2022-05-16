@@ -11,7 +11,7 @@
         @endphp
         <div class="card mt-4">
             <div class="card-body ">
-             <form method="POST" id="camForm" action="{{route('save_security_deposit')}}" enctype="multipart/form-data"> 
+             <form method="POST" id="camForm" enctype="multipart/form-data" action="{{route('save_security_deposit')}}"> 
              @csrf
                 <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
                 <input type="hidden" name="biz_id" value="{{isset($arrRequest['biz_id']) ? $arrRequest['biz_id'] : ''}}" />             
@@ -58,17 +58,17 @@ $(document).ready(function () {
     //     return this.optional(element) || parseInt(value) == 0;
     // });
 
-    $.validator.addMethod('checkRenewalDate', function (value, element, param) {
-        let cur_date_val = $((element.id.split('_')[0]=='update'?'#update_':'#')+'maturity_date_'+element.id.split('_')[element.id.split('_').length-1]).val().split("/");
+    // $.validator.addMethod('checkRenewalDate', function (value, element, param) {
+    //     let cur_date_val = $((element.id.split('_')[0]=='update'?'#update_':'#')+'maturity_date_'+element.id.split('_')[element.id.split('_').length-1]).val().split("/");
 
-        let cur_date = new Date(+cur_date_val[2], cur_date_val[1] - 1, +cur_date_val[0]);
-        cur_date.setDate(cur_date.getDate()-value+1);
+    //     let cur_date = new Date(+cur_date_val[2], cur_date_val[1] - 1, +cur_date_val[0]);
+    //     cur_date.setDate(cur_date.getDate()-value+1);
         
-        if(cur_date.toISOString().slice(0, 10)>=(new Date().toISOString().slice(0, 10)))
-            return true;
-        else
-            return false;
-    }, 'Renewal Reminder Days must be lower');
+    //     if(cur_date.toISOString().slice(0, 10)>=(new Date().toISOString().slice(0, 10)))
+    //         return true;
+    //     else
+    //         return false;
+    // }, 'Renewal Reminder Days must be lower');
 
     jQuery.validator.addMethod("alphanumeric", function(value, element) {
         if(value != ''){
@@ -113,7 +113,7 @@ $(document).on('submit', '#camForm', function(e) {
             $(item1).removeAttr("style");
             if ($(item1).val() == $(item2).val()) {
                 $(item1).css("border-color", "red");
-                valid = false;
+                valid = true;
             }
 
         });
@@ -136,7 +136,7 @@ $(document).on('submit', '#camForm', function(e) {
                 }
             });
     });
-    $('#security-doc-block input.description').each(function () {
+    $('#security-doc-block textarea.description').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -159,15 +159,15 @@ $(document).on('submit', '#camForm', function(e) {
                 }
             });
     });
-    $('#security-doc-block input.due_date').each(function () {
-        $(this).rules("add",
-            {
-                required: true,
-                messages: {
-                    required: "This field is required.",
-                }
-            });
-    });
+    // $('#security-doc-block input.due_date').each(function () {
+    //     $(this).rules("add",
+    //         {
+    //             required: true,
+    //             messages: {
+    //                 required: "This field is required.",
+    //             }
+    //         });
+    // });
     $('#security-doc-block select.completed').each(function () {
         $(this).rules("add",
             {
@@ -203,7 +203,7 @@ $(document).on('submit', '#camForm', function(e) {
                 min: 0,
                 max: 365,
                 digits:true,
-                checkRenewalDate : $(this).attr('id'),
+                // checkRenewalDate : $(this).attr('id'),
                 messages: {
                     required: "This field is required.",
                 }
@@ -260,7 +260,7 @@ $(document).on('click', '.add-security-doc-block', function(){
     });
     let scdocc_block = '<div class="row p-2 mt-1 toRemoveDiv1" style="background-color: #e9e7e7;">'+
         '<div class="col-md-2 mt-1">'+
-        '<label for="txtPassword"><b>Pre/Post</b></label>'+
+        '<label for="txtPassword"><b>Pre/Post Disbursement</b></label>'+
         '<div class="relative">'+
             '<select class="form-control doc_type" name="doc_type[]" id="doc_type_'+counter+'">'+
                 '<option value="">Select</option>'+
@@ -275,10 +275,10 @@ $(document).on('click', '.add-security-doc-block', function(){
             '<option value="">Select</option>'+
             '</select>'+
     '</div>'+
-    '<div class="col-md-2 mt-1">'+
+    '<div class="col-md-4 mt-1">'+
             '<label for="txtPassword"><b>Description</b></label>'+
             '<div class="relative">'+
-                '<input type="text" name="description[]" class="form-control description" value="" placeholder="Description" autocomplete="off" id="description_'+counter+'"/>'+
+                '<textarea name="description[]" class="form-control description" placeholder="Description" autocomplete="off" id="description_'+counter+'"></textarea>'+
             '</div>'+
     '</div>'+
     @if($route_name=="security_deposit")
@@ -290,13 +290,13 @@ $(document).on('click', '.add-security-doc-block', function(){
     '</div>'+
     @endif
     '<div class="col-md-2 mt-1">'+
-            '<label for="txtPassword"><b>Due Date</b></label>'+
+            '<label for="txtPassword"><b>Original Due Date</b></label>'+
             '<div class="relative">'+
-                    '<input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="" placeholder="Due Date" autocomplete="off" id="due_date_'+counter+'" readonly="readonly"/>'+
+                    '<input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="" placeholder="Original Due Date" autocomplete="off" id="due_date_'+counter+'" readonly="readonly"/>'+
             '</div>'+
     '</div>'+
     @if($route_name=="security_deposit")
-    '<div class="col-md-1 mt-1">'+
+    '<div class="col-md-2 mt-1">'+
         '<label for="txtPassword"><b>Completed</b></label>'+
         '<div class="relative">'+
             '<select class="form-control completed" name="completed[]" id="completed_'+counter+'">'+
@@ -306,7 +306,7 @@ $(document).on('click', '.add-security-doc-block', function(){
             '</select>'+
         '</div>'+
     '</div>'+
-    '<div class="col-md-1 mt-1">'+
+    '<div class="col-md-2 mt-1">'+
             '<label for="txtPassword"><b>Exception Received</b></label>'+
             '<div class="relative">'+
                 '<select class="form-control exception_received" name="exception_received[]" onchange="displayExceptionFields(this.value,'+counter+');" id="exception_received_'+counter+'" data-previous="'+counter+'">'+
@@ -332,6 +332,12 @@ $(document).on('click', '.add-security-doc-block', function(){
         '<label for="txtPassword"><b>Exception Remark</b></label>'+
         '<div class="relative">'+
         '<input type="text" name="exception_remark[]" class="form-control exception_remark required" value="" placeholder="Exception Remark" autocomplete="off" id="exception_remark_'+counter+'" style="visibility: hidden;height: 0;"/>'+
+        '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-1 exceptionFields_'+counter+'" style="display: none;">'+
+        '<label for="txtPassword"><b>Extended Due Date</b></label>'+
+        '<div class="relative">'+
+        '<input type="text" name="extended_due_date[]" class="form-control extended_due_date required" value="" placeholder="Extended Due Date" autocomplete="off" id="exception_remark_'+counter+'" style="visibility: hidden;height: 0;" readonly="readonly"/>'+
         '</div>'+
     '</div>'+
     '<div class="col-md-2 mt-1">'+
@@ -360,7 +366,7 @@ $(document).on('click', '.add-security-doc-block', function(){
         '<input type="text" name="document_amount[]" class="form-control number float_format document_amount" value="" placeholder="Document Amount" autocomplete="off" id="document_amount_'+counter+'"/>'+
         '</div>'+
     '</div>'+
-    '<div class="col-md-2 mt-1">'+
+    '<div class="col-md-3 mt-1">'+
         '<label for="txtPassword"><b>Doc Upload</b></label>'+
         '<div class="relative">'+
             '<div class="custom-file upload-btn-cls mb-3">'+
@@ -370,8 +376,8 @@ $(document).on('click', '.add-security-doc-block', function(){
         '</div>'+
     '</div>'+
     @endif
-    '<div class="col-md-2 mt-1">'+
-        '<i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;margin-top: 15%;"></i>'+
+    '<div class="col-md-1 mt-1" style="display: flex;flex-direction: column;justify-content: center;align-items: center;padding-top: 15px;">'+
+        '<i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;"></i>'+
     '</div>'+
         '</div>';
     $('#security-doc-block').append(scdocc_block);
@@ -488,7 +494,7 @@ function resetIndexes() {
         }
         ids=id.replace(/\d/g, '');
         $(this).attr('id', ids+''+j);
-            if(name == 'exception_received_from[]' || name == 'exception_received_date[]' || name == 'exception_remark[]'){
+            if(name == 'exception_received_from[]' || name == 'exception_received_date[]' || name == 'exception_remark[]' || name == 'extended_due_date[]'){
                 previousIds = $this.attr("data-previous");
                 $(this).parent().parent().removeClass('exceptionFields_'+previousIds).addClass('exceptionFields_'+j);
         }
@@ -498,7 +504,7 @@ function resetIndexes() {
   });
 }
 function makeRequiredFields(counters, reqType){
-    $('#camForm').validate({ignore: ".desexception_received_from"});
+    $('#camForm').validate();
     $('#security-doc-block select.doc_type').each(function () {
         $(this).rules("add",
             {
@@ -517,7 +523,7 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('#security-doc-block input.description').each(function () {
+    $('#security-doc-block textarea.description').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -540,15 +546,15 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('#security-doc-block input.due_date').each(function () {
-        $(this).rules("add",
-            {
-                required: true,
-                messages: {
-                    required: "This field is required.",
-                }
-            });
-    });
+    // $('#security-doc-block input.due_date').each(function () {
+    //     $(this).rules("add",
+    //         {
+    //             required: true,
+    //             messages: {
+    //                 required: "This field is required.",
+    //             }
+    //         });
+    // });
     $('#security-doc-block select.completed').each(function () {
         $(this).rules("add",
             {
@@ -585,7 +591,7 @@ function makeRequiredFields(counters, reqType){
                 max: 365,
                 digits:true,
                 // checkRenewalDate : reqType=='update'?'#update_maturity_date_1':'#maturity_date_'+counter,
-                checkRenewalDate : $(this).attr('id'),
+                // checkRenewalDate : $(this).attr('id'),
                 messages: {
                     required: "This field is required.",
                 }

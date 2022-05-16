@@ -63,7 +63,7 @@
       @endcan
       @can('security_deposit')
       <li>
-        <a href="{{route('security_deposit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{ $route_name == 'security_deposit' ? 'active' : ''}}">Security Deposit</a>
+        <a href="{{route('security_deposit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')])}}" class="{{ $route_name == 'security_deposit' ? 'active' : ''}}">Pre/Post Disbursement</a>
     </li>
     @endcan
        <!--  <li>

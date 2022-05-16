@@ -68,6 +68,7 @@ class AppSecurityDoc extends BaseModel
         'exception_received_from',
         'exception_received_date',
         'exception_remark',
+        'extended_due_date',
         'maturity_date',
         'renewal_reminder_days',
         'renewal_reminder_date',
@@ -101,6 +102,7 @@ class AppSecurityDoc extends BaseModel
         ->where('app_security_doc.is_active', 1)  
         ->where('a.is_assigned', 1) 
         ->where('u.is_active', 1)       
+        ->where('app_security_doc.completed', 'no')       
         ->get();
         return $appSecData;
     }

@@ -432,7 +432,8 @@ $(document).ready(function() {
       return false;
       }
       });
-   $.validator.addMethod('filesize', function (value, element, param) {
+
+      $.validator.addMethod('filesize', function (value, element, param) {
         return this.optional(element) || (element.files[0].size <= param)
     }, 'File size must be less than {0}');
     $.validator.addMethod('checkRenewalDate', function (value, element, param) {
@@ -480,6 +481,7 @@ $(document).ready(function() {
             return result;                
         },'Document Number is already exists'
     );
+
    $('#camReviewerForm').validate(); // initialize the plugin
    //End code security document
 });
@@ -495,7 +497,7 @@ $(document).on('click', '.add-security-doc-block', function(){
     });
     let scdocc_block = '<div class="row p-2 mt-1 toRemoveDiv1" style="background-color: #e9e7e7;">'+
         '<div class="col-md-2 mt-1">'+
-        '<label for="txtPassword"><b>Pre/Post</b></label>'+
+        '<label for="txtPassword"><b>Pre/Post Disbursement</b></label>'+
         '<div class="relative">'+
             '<select class="form-control doc_type" name="doc_type[]" id="doc_type_'+counter+'">'+
                 '<option value="">Select</option>'+
@@ -510,102 +512,19 @@ $(document).on('click', '.add-security-doc-block', function(){
             '<option value="">Select</option>'+
             '</select>'+
     '</div>'+
-    '<div class="col-md-2 mt-1">'+
+    '<div class="col-md-5 mt-1">'+
             '<label for="txtPassword"><b>Description</b></label>'+
             '<div class="relative">'+
-                '<input type="text" name="description[]" class="form-control description" value="" placeholder="Description" autocomplete="off" id="description_'+counter+'"/>'+
+                '<textarea name="description[]" class="form-control description" placeholder="Description" autocomplete="off" id="description_'+counter+'"></textarea>'+
             '</div>'+
     '</div>'+
-    @if($route_name=="security_deposit")
     '<div class="col-md-2 mt-1">'+
-            '<label for="txtPassword"><b>Document Number</b></label>'+
+            '<label for="txtPassword"><b>Original Due Date</b></label>'+
             '<div class="relative">'+
-            '<input type="text" name="document_number[]" class="form-control document_number" value="" placeholder="Document Number" autocomplete="off" id="document_number_'+counter+'"/>'+
+                    '<input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="" placeholder="Original Due Date" autocomplete="off" id="due_date_'+counter+'" readonly="readonly"/>'+
             '</div>'+
     '</div>'+
-    @endif
-    '<div class="col-md-2 mt-1">'+
-            '<label for="txtPassword"><b>Due Date</b></label>'+
-            '<div class="relative">'+
-                    '<input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="" placeholder="Due Date" autocomplete="off" id="due_date_'+counter+'" readonly="readonly"/>'+
-            '</div>'+
-    '</div>'+
-    @if($route_name=="security_deposit")
-    '<div class="col-md-1 mt-1">'+
-        '<label for="txtPassword"><b>Completed</b></label>'+
-        '<div class="relative">'+
-            '<select class="form-control completed" name="completed[]" id="completed_'+counter+'">'+
-                '<option value="">Select</option>'+
-                '<option value="yes">Yes</option>'+
-                '<option value="no">No</option>'+
-            '</select>'+
-        '</div>'+
-    '</div>'+
-    '<div class="col-md-1 mt-1">'+
-            '<label for="txtPassword"><b>Exception Received</b></label>'+
-            '<div class="relative">'+
-                '<select class="form-control exception_received" name="exception_received[]" onchange="displayExceptionFields(this.value,'+counter+');" id="exception_received_'+counter+'" data-previous="'+counter+'">'+
-                    '<option value="">Select</option>'+
-                    '<option value="yes">Yes</option>'+
-                    '<option value="no">No</option>'+
-                '</select>'+
-            '</div>'+
-    '</div>'+
-    '<div class="col-md-2 mt-1 exceptionFields_'+counter+'" style="display: none;">'+
-            '<label for="txtPassword"><b>Exception Received From</b></label>'+
-            '<div class="relative">'+
-            '<input type="text" name="exception_received_from[]" class="form-control exception_received_from required" value="" placeholder="Exception Received From" autocomplete="off" id="exception_received_from_'+counter+'" style="visibility: hidden;height: 0;"/>'+
-            '</div>'+
-    '</div>'+
-    '<div class="col-md-2 mt-1 exceptionFields_'+counter+'" style="display: none;">'+
-            '<label for="txtPassword"><b>Exception Received Date</b></label>'+
-            '<div class="relative">'+
-            '<input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r exception_received_date required" value="" placeholder="Exception Received Date" autocomplete="off" id="exception_received_date_'+counter+'" style="visibility: hidden;height: 0;" readonly="readonly"/>'+
-            '</div>'+
-    '</div>'+
-    '<div class="col-md-2 mt-1 exceptionFields_'+counter+'" style="display: none;">'+
-        '<label for="txtPassword"><b>Exception Remark</b></label>'+
-        '<div class="relative">'+
-        '<input type="text" name="exception_remark[]" class="form-control exception_remark required" value="" placeholder="Exception Remark" autocomplete="off" id="exception_remark_'+counter+'" style="visibility: hidden;height: 0;"/>'+
-        '</div>'+
-    '</div>'+
-    '<div class="col-md-2 mt-1">'+
-        '<label for="txtPassword"><b>Maturity Date</b></label>'+
-        '<div class="relative">'+
-        '<input type="text" name="maturity_date[]" class="form-control sc-doc-date maturity_date" value="" placeholder="Maturity Date" autocomplete="off" id="maturity_date_'+counter+'" readonly="readonly"/>'+
-        '</div>'+
-    '</div>'+
-    '<div class="col-md-2 mt-1">'+
-        '<label for="txtPassword"><b>Renewal Reminder Days</b></label>'+
-        '<div class="relative">'+
-        '<input type="text" name="renewal_reminder_days[]" class="form-control digits renewal_reminder_days" value="" placeholder="Renewal Reminder Days" autocomplete="off" id="renewal_reminder_days_'+counter+'"/>'+
-        '</div>'+
-    '</div>'+
-    '<div class="col-md-2 mt-1 INR">'+
-        '<label for="txtPassword"><b>Amount Expected</b></label>'+
-        '<div class="relative">'+
-        '<a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>'+
-        '<input type="text" name="amount_expected[]" class="form-control number float_format amount_expected" value="" placeholder="Amount Expected" autocomplete="off" id="amount_expected_'+counter+'"/>'+
-        '</div>'+
-    '</div>'+
-    '<div class="col-md-2 mt-1 INR">'+
-       '<label for="txtPassword"><b>Document Amount</b></label>'+
-        '<div class="relative">'+
-        '<a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>'+
-        '<input type="text" name="document_amount[]" class="form-control number float_format document_amount" value="" placeholder="Document Amount" autocomplete="off" id="document_amount_'+counter+'"/>'+
-        '</div>'+
-    '</div>'+
-    '<div class="col-md-2 mt-1">'+
-        '<label for="txtPassword"><b>Doc Upload</b></label>'+
-        '<div class="relative">'+
-            '<div class="custom-file upload-btn-cls mb-3">'+
-                '<input type="file" class="custom-file-input getFileName doc_file_sec required" id="doc_file_'+counter+'" name="doc_file_sec[]">'+
-                '<label class="custom-file-label" for="customFile">Choose file</label>'+
-            '</div>'+
-        '</div>'+
-    '</div>'+
-    @endif
-    '<div class="col-md-2 mt-1">'+
+    '<div class="col-md-1 mt-1" style="display: flex;flex-direction: column;justify-content: center;align-items: center;padding-top: 2px;">'+
         '<i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;margin-top: 15%;"></i>'+
     '</div>'+
         '</div>';
@@ -752,7 +671,7 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('#security-doc-block input.description').each(function () {
+    $('#security-doc-block textarea.description').each(function () {
         $(this).rules("add",
             {
                 required: true,
@@ -761,106 +680,15 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
-    $('#security-doc-block input.document_number').each(function () {
-        $(this).rules("add",
-            {
-                required: true,
-                //notOnlyZero: '0',
-                alphanumeric: true,
-                checkDocumentNumber: true,
-                messages: {
-                    required: "This field is required.",
-                    //notOnlyZero:"Document Number can not be zero.",
-                    alphanumeric:"Please enter letters and numbers only.",
-                }
-            });
-    });
-    $('#security-doc-block input.due_date').each(function () {
-        $(this).rules("add",
-            {
-                required: true,
-                messages: {
-                    required: "This field is required.",
-                }
-            });
-    });
-    $('#security-doc-block select.completed').each(function () {
-        $(this).rules("add",
-            {
-                required: true,
-                messages: {
-                    required: "This field is required.",
-                }
-            });
-    });
-    $('#security-doc-block select.exception_received').each(function () {
-        $(this).rules("add",
-            {
-                required: true,
-                messages: {
-                    required: "This field is required.",
-                }
-            });
-    });
-    
-    $('#security-doc-block input.maturity_date').each(function () {
-        $(this).rules("add",
-            {
-                required: true,
-                messages: {
-                    required: "This field is required.",
-                }
-            });
-    });
-    $('#security-doc-block input.renewal_reminder_days').each(function () {
-        $(this).rules("add",
-            {
-                required: true,
-                min: 0,
-                max: 365,
-                digits:true,
-                // checkRenewalDate : reqType=='update'?'#update_maturity_date_1':'#maturity_date_'+counter,
-                checkRenewalDate : $(this).attr('id'),
-                messages: {
-                    required: "This field is required.",
-                }
-            });
-    });
-    $('#security-doc-block input.amount_expected').each(function () {
-        $(this).rules("add",
-            {
-                required: true,
-                min: 1,
-                number: true,
-                messages: {
-                    required: "This field is required.",
-                }
-            });
-    });
-    $('#security-doc-block input.document_amount').each(function () {
-        $(this).rules("add",
-            {
-                required: true,
-                min: 1,
-                number: true,
-                messages: {
-                    required: "This field is required.",
-                }
-            });
-    });
-    $('#security-doc-block input.doc_file_sec').each(function () {
-        $(this).rules("add",
-            {
-                extension: "jpg,png,pdf,doc,docx",
-                filesize : 200000000,
-                messages: {
-                    required: "This field is required.",
-                    extension:"Only support jpg,png,pdf,doc,docx type format.",
-                    filesize:"maximum size for upload 20 MB.",
-                }
-            });
-    });
-    
+   //  $('#security-doc-block input.due_date').each(function () {
+   //      $(this).rules("add",
+   //          {
+   //              required: true,
+   //              messages: {
+   //                  required: "This field is required.",
+   //              }
+   //          });
+   //  });
 }
 @if(!empty($arrAppSecurityDoc))
         @foreach($arrAppSecurityDoc as $key=>$arr)

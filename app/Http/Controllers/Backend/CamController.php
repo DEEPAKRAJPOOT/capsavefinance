@@ -496,23 +496,25 @@ class CamController extends Controller
         if (!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2) && !empty($dataCheck4)) {
           foreach ($arrData['security_doc_id'] as $key => $securityDocId) {
 
-            $inputArr = array(
-              'cam_reviewer_summary_id'=>isset($arrData['cam_reviewer_summary_id']) ? $arrData['cam_reviewer_summary_id'] : $result->cam_reviewer_summary_id??NULL,
-              'biz_id' => $arrData['biz_id'],
-              'app_id' => $arrData['app_id'],
-              'security_doc_id' => $securityDocId,
-              'description' => isset($arrData['description'][$key]) ? $arrData['description'][$key] : null,
-              'due_date' => isset($arrData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrData['due_date'][$key])->format('Y-m-d') : null,
-              'doc_type' => isset($arrData['doc_type'][$key]) ? $arrData['doc_type'][$key] : null,
-              'created_by' => $userId,
-            );
-            if (isset($arrData['app_security_doc_id'][$key])) {
-              $app_security_doc_id = $arrData['app_security_doc_id'][$key];
-              $inputArr['updated_by'] = $userId;
-            } else {
-              $app_security_doc_id = null;
+            if(!empty($securityDocId) && isset($securityDocId) && $securityDocId !='' && $securityDocId !=null){
+              $inputArr = array(
+                'cam_reviewer_summary_id'=>isset($arrData['cam_reviewer_summary_id']) ? $arrData['cam_reviewer_summary_id'] : $result->cam_reviewer_summary_id??NULL,
+                'biz_id' => $arrData['biz_id'],
+                'app_id' => $arrData['app_id'],
+                'security_doc_id' => $securityDocId,
+                'description' => isset($arrData['description'][$key]) ? $arrData['description'][$key] : null,
+                'due_date' => isset($arrData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrData['due_date'][$key])->format('Y-m-d') : null,
+                'doc_type' => isset($arrData['doc_type'][$key]) ? $arrData['doc_type'][$key] : null,
+                'created_by' => $userId,
+              );
+              if (isset($arrData['app_security_doc_id'][$key])) {
+                $app_security_doc_id = $arrData['app_security_doc_id'][$key];
+                $inputArr['updated_by'] = $userId;
+              } else {
+                $app_security_doc_id = null;
+              }
+              AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
             }
-            AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
           }
         }
       }
@@ -2802,6 +2804,7 @@ class CamController extends Controller
     \DB::beginTransaction();
     try {
         $arrCamData = $request->all();
+        // dd($arrCamData['security_doc_id']);
         $userId = Auth::user()->user_id;
 
         if (isset($arrCamData['security_doc_id']) && !empty($arrCamData['security_doc_id']) && isset($arrCamData['doc_type']) && !empty($arrCamData['doc_type'])) {
@@ -2818,7 +2821,8 @@ class CamController extends Controller
           $dataCheck10 = array_filter($arrCamData['exception_received']);
           if (!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2) && !empty($dataCheck3) && !empty($dataCheck4) && !empty($dataCheck5) && !empty($dataCheck6) && $dataCheck7>0 && !empty($dataCheck8) && !empty($dataCheck9) && !empty($dataCheck10)) {
             foreach ($arrCamData['security_doc_id'] as $key => $securityDocId) {
-              $is_upload = $file_id = '';
+              if(!empty($securityDocId) && isset($securityDocId) && $securityDocId!= '' && $securityDocId != null){
+                $is_upload = $file_id = '';
               if (isset($arrCamData['doc_file_sec'][$key])) {
                 $attributes['doc_file'] = $arrCamData['doc_file_sec'][$key];
                 $app_security_doc_id = isset($arrCamData['app_security_doc_id'][$key]) ? $arrCamData['app_security_doc_id'][$key] : null;
@@ -2849,6 +2853,7 @@ class CamController extends Controller
                 'exception_received_from' => isset($arrCamData['exception_received_from'][$key]) ? $arrCamData['exception_received_from'][$key] : null,
                 'exception_received_date' => isset($arrCamData['exception_received_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['exception_received_date'][$key])->format('Y-m-d') : null,
                 'exception_remark' => isset($arrCamData['exception_remark'][$key]) ? $arrCamData['exception_remark'][$key] : null,
+                'extended_due_date' => isset($arrCamData['extended_due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['extended_due_date'][$key])->format('Y-m-d') : null,
                 'maturity_date' => isset($arrCamData['maturity_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d') : null,
                 'renewal_reminder_days' => isset($arrCamData['renewal_reminder_days'][$key]) ? $arrCamData['renewal_reminder_days'][$key] : null,
                 'amount_expected' => isset($arrCamData['amount_expected'][$key]) ? $arrCamData['amount_expected'][$key] : null,
@@ -2868,6 +2873,8 @@ class CamController extends Controller
                 $app_security_doc_id = null;
               }
               AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
+              }
+              
             }
           }
         }
