@@ -1,5 +1,11 @@
 @extends('layouts.backend.admin-layout')
 @section('additional_css')
+<style>
+.modal-dialog {
+    max-width: 988px;
+    margin: 2rem auto;
+}
+</style>
 @endsection
 @section('content')
 @include('layouts.backend.partials.admin-subnav')
@@ -45,6 +51,9 @@
                              @endcan
                                 @else
                              @endif
+                             @can('download_new_sanction_letter')
+                             <a href="{{ route('download_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' =>$sanctionData->sanction_letter_id, 'action_type' => 'download'] ) }}" title='Download SL' class="btn btn-success btn-sm float-right ml-3" style="margin: 0px 0 10px 0;"><i class='fa fa-download' aria-hidden='true'></i> Download</a>
+                             @endcan
                             @endif
                         </div>
                         <div class=" form-fields">
@@ -239,9 +248,15 @@
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Rate of Interest </b></td>
+                                                    @if(isset($offerD->is_lending_rate) && $offerD->is_lending_rate == 1)
+                                                    <td>{{$offerD->interest_rate}}% per annum i.e., ROI equal to CFPL Benchmark Lending Rate less {{ $offerD->lending_rate_diff??0.00 }}% (to be reckoned from the date of disbursement until the date on which repayment becomes due).
+                                                    Presently Benchmark Lending Rate (BLR) as on date is {{ $offerD->lending_rate??0.00 }}%. Interest rate on repayment would change based on the changes in BLR as announced by Lender from time to time. This would lead to change in interest payable to Lender.
+                                                    </td>
+                                                    @else
                                                     <td>{{$offerD->interest_rate}}% per annum reckoned from the date of disbursement until the
                                                         date on which repayment becomes due.
                                                     </td>
+                                                    @endif
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Tenor for each tranche</b></td>

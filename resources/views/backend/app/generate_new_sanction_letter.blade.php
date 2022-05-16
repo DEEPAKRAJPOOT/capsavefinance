@@ -289,10 +289,16 @@
                      </tr>
                      <tr>
                         <td valign="top"><b>Rate of Interest </b></td>
-                        <td>{{$offerD->interest_rate}}% per annum reckoned from the date of disbursement until the
-                           date on which repayment becomes due.
+                        @if(isset($offerD->is_lending_rate) && $offerD->is_lending_rate == 1)
+                        <td>{{$offerD->interest_rate}}% per annum i.e., ROI equal to CFPL Benchmark Lending Rate less {{ $offerD->lending_rate_diff??0.00 }}% (to be reckoned from the date of disbursement until the date on which repayment becomes due).
+                        Presently Benchmark Lending Rate (BLR) as on date is {{ $offerD->lending_rate??0.00 }}%. Interest rate on repayment would change based on the changes in BLR as announced by Lender from time to time. This would lead to change in interest payable to Lender.
                         </td>
-                     </tr>
+                        @else
+                        <td>{{$offerD->interest_rate}}% per annum reckoned from the date of disbursement until the
+                            date on which repayment becomes due.
+                        </td>
+                        @endif
+                    </tr>
                      @if($offerD->grace_period && $offerD->tenor)
                      <tr>
                         <td valign="top"><b>Tenor for each tranche</b></td>
@@ -322,7 +328,7 @@
                              @else
                                  {{ $arrayOfferData[$offerD->prgm_offer_id]->margin??'' }}
                              @endif
-                              value. (in case margin is nil in offer – not to capture in final SL)
+                              value.
                          </td>
                      </tr>
                      @endif

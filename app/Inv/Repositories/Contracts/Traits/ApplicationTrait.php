@@ -746,6 +746,14 @@ trait ApplicationTrait
                 $bizOwnerData[$bizOwner['biz_owner_id']]  = $bizOwner->toArray();
             }
         }
+        $offerData = $this->appRepo->getAllOffers($appId, 1);
+        $tot_offer_amt = 0;
+        if (!empty($offerData) &&  $offerData->count()) {
+            foreach ($offerData as $key => $offerDataV) {
+                $tot_offer_amt += $offerDataV->prgm_limit_amt;
+            }
+        }
+        $supplyChainOffer['limit_amt'] = $tot_offer_amt;
         $app_prgm_limit_id = $supplyChainOffer['app_prgm_limit_id'] ?? 0;
         $data['ConcernedPersonName'] = $CamData['operational_person'] ?? NULL ;
         $data['purpose'] = $CamData['t_o_f_purpose'] ?? NULL;
@@ -754,7 +762,7 @@ trait ApplicationTrait
         $data['BizConstitution'] = $EntityData['name'];
         $data['EmailId'] = $EntityData['email'];
         $data['MobileNumber'] = $EntityData['mobile_no'];
-        $data['limit_amt'] = $supplyChainOffer['limit_amt'] ?? 0;
+        $data['limit_amt'] = $supplyChainOffer['limit_amt']?? 0;
         $data['product_id'] = $supplyChainOffer['product_id'] ?? 0;
         $data['prgm_type'] = $ProgramData['prgm_type'] ?? 0;
         $data['product_name'] = $ProgramData['product_name'] ?? 0;
