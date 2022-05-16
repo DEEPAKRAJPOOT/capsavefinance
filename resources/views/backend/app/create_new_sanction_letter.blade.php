@@ -116,23 +116,23 @@
                                         <td>
                                             <table width="100%" border="1">
                                                 <tr>
-                                                    <td width="30%">Borrower</td>
+                                                    <td width="30%"><b>Borrower</b></td>
                                                     <td>{{ $supplyChaindata['EntityName'] }} (referred to as “Borrower” henceforth)
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td width="30%">Lender</td>
+                                                    <td width="30%"><b>Lender</b></td>
                                                     <td>Capsave Finance Private Limited (referred to as “Lender”
                                                         henceforth)
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td width="30%">Corporate Anchor</td>
+                                                    <td width="30%"><b>Corporate Anchor</b></td>
                                                     <td>{{ $supplyChaindata['anchorData'][0]['comp_name'] }} (referred to as
                                                         “Anchor” henceforth)</td>
                                                 </tr>
                                                 <tr>
-                                                    <td width="30%">Total Sanction Amount</td>
+                                                    <td width="30%"><b>Total Sanction Amount</b></td>
                                                     <td>INR {{ \Helpers::formatCurrencyNoSymbol($supplyChaindata['limit_amt']) }} (Rupees {{ $supplyChaindata['amountInwords'] }} only)</td>
                                                 </tr>
                                             </table>
@@ -251,16 +251,17 @@
                                                 <tr>
                                                     <td valign="top"><b>Tenor for each tranche</b></td>
                                                     <td>
-                                                        Upto {{($offerD->tenor + $offerD->grace_period)}} days (including grace period of {{($offerD->grace_period)? $offerD->grace_period.' days':'NIL'}}) from date of disbursement of each tranche
+                                                        Upto {{($offerD->tenor + $offerD->grace_period)}} days{{($offerD->grace_period)?' (including grace period of '.$offerD->grace_period.' days)':''}} from date of disbursement of each tranche
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Old Invoice</b></td>
-                                                    <td>Borrower can submit invoices not older <input type="text" value="{{ $arrayOfferData[$offerD->prgm_offer_id ]->old_invoice??'than' }}" name="offerData[{{ $offerD->prgm_offer_id }}][old_invoice]" id="old_invoice" style=" min-height:30px;padding:0 5px; margin-top:5px;"> {{$offerD->tenor_old_invoice}}
+                                                    <td>Borrower can submit invoices not older than {{$offerD->tenor_old_invoice}}
                                                         days. Door to door tenor shall not exceed <input type="text" value="{{ $arrayOfferData[$offerD->prgm_offer_id ]->deviation_first_disbursement??($offerD->tenor + $offerD->grace_period + $offerD->tenor_old_invoice) }}" name="offerData[{{ $offerD->prgm_offer_id }}][deviation_first_disbursement]" id="deviation_first_disbursement" style=" min-height:30px;padding:0 5px; margin-top:5px;"> days 
                                                         from date of invoice.
                                                     </td>
                                                 </tr>
+                                                @if($offerD->margin)
                                                 <tr>
                                                     <td valign="top"><b>Margin</b></td>
                                                     @php
@@ -295,6 +296,7 @@
                                                                value. (in case margin is nil in offer – not to capture in final SL)
                                                     </td>
                                                 </tr>
+                                                @endif
                                                 <tr>
                                                     <td valign="top"><b>Interest frequency </b></td>
                                                     <td>
@@ -306,7 +308,7 @@
                                                                         </td>
                                                                         <td valign="top">
                                                                                 To be paid by Anchor
-                                                                                upfront for a period upto 30 days at the time of
+                                                                                upfront for a period upto {{($offerD->tenor)}} days at the time of
                                                                                 disbursement of each tranche.
                                                                         </td>
                                                                     </tr>
@@ -315,7 +317,7 @@
                                                                     <td valign="top" width="1%">&bull;</td>
                                                                     <td valign="top">Lender will deduct upfront interest for
                                                                         a
-                                                                        period upto 30 days at the time of disbursement of
+                                                                        period upto {{($offerD->tenor)}} days at the time of disbursement of
                                                                         each
                                                                         tranche.</td>
                                                                 </tr>
@@ -380,7 +382,8 @@
                                                     <td valign="top"><b>Default/Penal Interest</b></td>
                                                     <td><b>
                                                         @php
-                                                            $penelInterestRate = (($offerD['overdue_interest_rate'] ?? 0) + ($offerD['interest_rate'] ?? 0))/12; 
+                                                            //$penelInterestRate = (($offerD['overdue_interest_rate'] ?? 0) + ($offerD['interest_rate'] ?? 0))/12; 
+                                                            $penelInterestRate = $offerD['overdue_interest_rate'];
                                                         @endphp
                                                         {{number_format($penelInterestRate, 2, '.', '')}}% per annum including above regular rate of interest in case any tranche remains unpaid after the expiry of approved tenor from the disbursement date. Penal interest to be charged for the relevant tranche for such overdue period till actual payment of such tranche.</b>
                                                     </td>
@@ -512,44 +515,7 @@
                                                 <tr>
                                                     <td valign="top"><b>Transaction process</b></td>
                                                     <td>
-                                                        <textarea class="form-control textarea transaction_process" name="offerData[{{ $offerD->prgm_offer_id }}][transaction_process]" id="transaction_process{{ $offerD->prgm_offer_id }}" cols="30" rows="10">@if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->transaction_process) && $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process){!! $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process !!} @else  
-                                                            <table width="100%" border="0">
-                                                                <tr>
-                                                                   <td>&bull;</td>
-                                                                   <td>Borrower will submit a disbursal request along with
-                                                                      proforma invoices / invoices and Anchor will
-                                                                      confirm the proforma invoices / invoices.
-                                                                   </td>
-                                                                </tr>
-                                                                <tr>
-                                                                   <td>&bull;</td>
-                                                                   <td>Lender will disburse the payment against the
-                                                                      proforma
-                                                                      invoice / invoices in Borrower’s
-                                                                      working capital account/current account / Anchor's
-                                                                      working capital account
-                                                                      (in case of re-imbursement) post receiving
-                                                                      confirmation
-                                                                      from Anchor.
-                                                                   </td>
-                                                                </tr>
-                                                                <tr>
-                                                                   <td>&bull;</td>
-                                                                   <td>Disbursement amount should not exceed 70% of
-                                                                      proforma
-                                                                      invoices / invoices.
-                                                                   </td>
-                                                                </tr>
-                                                                <tr>
-                                                                   <td>&bull;</td>
-                                                                   <td>On due date, Anchor will make payment to Lender
-                                                                      within
-                                                                      credit period of 30 days.
-                                                                   </td>
-                                                                </tr>
-                                                             </table>
-                                                        
-                                                            @endif</textarea>
+                                                        <textarea class="form-control textarea transaction_process" name="offerData[{{ $offerD->prgm_offer_id }}][transaction_process]" id="transaction_process{{ $offerD->prgm_offer_id }}" cols="30" rows="10">@if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->transaction_process) && $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process){!! $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process !!} @else  @endif</textarea>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -777,7 +743,7 @@
                                                                         <tr>
                                                                             <td valign="top" width="3%">&bull;</td>
                                                                             <td>Signature Verification of authorized
-                                                                                signatories from Borrower's banker??
+                                                                                signatories from Borrower's banker
                                                                             </td>
                                                                         </tr>
                                                                     </table>

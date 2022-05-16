@@ -2549,7 +2549,7 @@ class ApplicationController extends Controller
 		  $customPaper = [0,0,999,2000];
 		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true,'dpi'=>96,'disable-smart-shrinking'=> false]);
 		  $pdf->setPaper($customPaper);
-          return $pdf->download('sanctionLetter.pdf');
+          return $pdf->stream('sanctionLetter.pdf');
         }
         $html = view('backend.app.preview_new_sanction_letter')->render();
 		return  $html;
