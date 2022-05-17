@@ -2015,40 +2015,7 @@ class CamController extends Controller
           $request['security_deposit_type'] = null;
           $request['security_deposit_of'] = null;
         }
-
-        if ($limitData->product_id == 1) {
-          if (empty($prgmOfferId)) {
-            $checkProgram = $this->appRepo->checkduplicateOffer([
-                        'app_id'=>$appId,
-                  'anchor_id' => $request->get('anchor_id'),
-                        'prgm_id'=>$request->get('prgm_id')
-                        ]);
-
-                if($checkProgram->count()){
-                  Session::flash('error',trans('backend_messages.already_exist_offer'));
-                  return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
-                }
-            } else {
-              $checkProgram = $this->appRepo->checkduplicateOffer(['prgm_offer_id'=>$prgmOfferId]);
-              if($checkProgram->count()){
-                $ExitsAnchor_id = $checkProgram[0]['anchor_id'];
-                $ExitsPrgm_id = $checkProgram[0]['prgm_id'];
-              }
-              if(($ExitsAnchor_id == $request->get('anchor_id')) && ($ExitsPrgm_id == $request->get('prgm_id'))) {
-              } else {
-                $checkProgram = $this->appRepo->checkduplicateOffer([
-                      'app_id'=>$appId,
-                      'anchor_id' => $request->get('anchor_id'),
-                      'prgm_id'=>$request->get('prgm_id')
-                      ]);
-
-                  if($checkProgram->count()){
-                    Session::flash('error',trans('backend_messages.already_exist'));
-                    return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
-                  }
-              }
-          }
-        }
+        
         //$checkApprovalStatus = $this->appRepo->getAppApprovers($appId);
         //if($checkApprovalStatus->count()){
         $whereCondition = ['app_id' => $appId, 'is_approve' => 1, 'status_is_null_or_accepted' =>1];
