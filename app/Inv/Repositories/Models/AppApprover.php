@@ -57,7 +57,8 @@ class AppApprover extends BaseModel
         'created_by',
         'created_at',
         'updated_at',
-        'updated_by'
+        'updated_by',
+        'approval_file_id'
     ];
 
     
@@ -121,10 +122,11 @@ class AppApprover extends BaseModel
        
         $appApprovers =  self::select(DB::raw("CONCAT_WS(' ',rta_u.f_name,rta_u.l_name) AS approver"), 
         'u.email as approver_email','u.user_id', 'r.name as approver_role', 'app_approval_status.status', 
-        'app_approval_status.updated_at')
+        'app_approval_status.updated_at','app_approval_status.approval_file_id','f.updated_by as file_updated_by','f.updated_at as file_updated_at','app_approval_status.app_appr_status_id','app_approval_status.app_id')
         ->join('users as u', 'app_approval_status.approver_user_id', '=', 'u.user_id')
         ->join('role_user as ru', 'ru.user_id', '=', 'u.user_id')
         ->join('roles as r', 'r.id', '=','ru.role_id')
+        ->leftJoin('file as f', 'f.file_id', '=','app_approval_status.approval_file_id')
         ->where('app_approval_status.app_id', (int) $app_id)
         ->where('app_approval_status.is_active', 1)  
         ->where('ru.is_logged_in_role', 1)        

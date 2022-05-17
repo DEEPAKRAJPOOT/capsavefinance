@@ -62,7 +62,7 @@ class AppAssignment extends BaseModel
         'assign_type',
         'assign_status',
         'sharing_comment',
-        'is_owner',
+        'is_owner'
      ];
     
     /**

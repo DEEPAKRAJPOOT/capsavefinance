@@ -10,6 +10,7 @@
                     'method' => 'post',
                     'route' => 'accept_next_stage',
                     'id' => 'frmMoveStage',
+                    'enctype' => 'multipart/form-data'
                     )
                     ) 
                     !!}            
@@ -116,8 +117,7 @@
                             @endif
                         @endif
                     @endif
-                    </br>
-                    {!! Form::hidden('app_id', $app_id) !!}
+                      {!! Form::hidden('app_id', $app_id) !!}
                     {!! Form::hidden('biz_id', $biz_id) !!}
                     {!! Form::hidden('user_id', $user_id) !!}
                     {!! Form::hidden('curr_role_id', $curr_role_id) !!}

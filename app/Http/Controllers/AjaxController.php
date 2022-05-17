@@ -55,6 +55,7 @@ use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Models\AppSanctionLetter;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\AppApprover;
 class AjaxController extends Controller {
 
     /**
@@ -5833,5 +5834,81 @@ if ($err) {
         $leadsList = $this->userRepo->getAllNonAnchorLeads();
         $leads = $dataProvider->getAllNonAnchorLeadsList($this->request, $leadsList);
         return $leads;
+    }
+    
+    public function uploadApprovalMailCopy(Request $request)
+    {
+        \DB::beginTransaction();
+        try {
+            //dd($request->all());
+            $attributes = $request->all();
+            $request->validate([
+                'approval_doc_file' => 'required',
+                'app_appr_status_id' => 'required',
+                'app_id' => 'required'
+            ],['approval_doc_file.required' => 'Please select atleast one document']);
+            $app_id = $request->app_id;
+            $file_id = false;
+            $addl_data = [];
+            $currStage = Helpers::getCurrentWfStage($app_id);
+            $isFinalSubmit = 0;
+            if ($currStage->stage_code == 'approver') {
+                $whereCondition = ['app_id' => $app_id, 'status' => null];
+                $offerData = $this->application->getOfferData($whereCondition);
+                if (!$offerData) {
+                    return response()->json(['status' => 0,'msg' =>'You cannot move this application to next stage as offer still not created.']);
+                }
+            if ($request->approval_doc_file) {
+                $date = Carbon::now();
+                $appData = $this->application->getAppData($app_id);
+                $supplier_id = $appData->user_id;
+                $uploadApprovalDocData = Helpers::uploadUserApprovalFile($attributes, $supplier_id, $app_id);
+                $userFile = $this->docRepo->saveFile($uploadApprovalDocData);
+                $file_id = $userFile->file_id;
+            }
+            if($file_id){
+                $update = AppApprover::where('app_appr_status_id', '=', $attributes['app_appr_status_id'])
+                ->where('app_id', '=', $attributes['app_id'])
+                ->where('is_active', '=', 1)
+                ->update(['approval_file_id'=>$file_id,'status' => 1]);
+                $msg = 'Approval mail copy has been successfully uploaded.';
+                if($update){
+                    $appApprData = AppApprover::getAppApprovers($app_id);
+                    if (isset($appApprData[0])) {
+                        $isFinalUpload = Helpers::isAppApprByAuthority($app_id);
+                        if($isFinalUpload){
+                            if ($currStage->stage_code == 'approver') {
+                                $this->application->updateActiveOfferByAppId($app_id, ['is_approve' => 1]);
+                            }
+                            $wf_order_no = $currStage->order_no;
+                            $nextStage = Helpers::getNextWfStage($wf_order_no);
+                            $roleArr = [$nextStage->role_id];
+                            $roles = $this->application->getBackStageUsers($app_id, $roleArr);
+                            $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
+                            $addl_data['sharing_comment'] = 'Automatically Assigned to Sales Manager from Approver List';
+                            $assign = true;
+                            $wf_status = 1;
+                            if ($nextStage->stage_code == 'sales_queue') {
+                                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);
+                                $application = $this->application->updateAppDetails($app_id, ['is_assigned'=>1]);
+                                //update approve status in offer table after all approver approve the offer.
+                                $this->application->changeOfferApprove((int)$app_id);
+                                Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+                                $msg = 'Approval mail copy has been successfully uploaded and moved the next stage (Sales).';
+                                $isFinalSubmit = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            return response()->json(['status' => 0,'msg' => 'No Authority']); 
+        }
+        \DB::commit();
+        return response()->json(['status' => 1,'msg' => $msg, 'isFinalSubmit' =>$isFinalSubmit]);
+        } catch (Exception $ex) {
+            \DB::rollback();
+            return response()->json(['status' => 0,'msg' => Helpers::getExceptionMessage($ex)]);
+        }
     }
 }

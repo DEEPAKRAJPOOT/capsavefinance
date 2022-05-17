@@ -1766,11 +1766,37 @@ class CamController extends Controller
                 'approver_user_id' => \Auth::user()->user_id,
                 'status' => 1
               ];
+            $app_id = $appId;
             $this->appRepo->saveAppApprovers($appApprData);
-
-            //update approve status in offer table after all approver approve the offer.
-            $this->appRepo->changeOfferApprove((int)$appId);
-            Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+            $appApprData = AppApprover::getAppApprovers($app_id);
+            $currStage = Helpers::getCurrentWfStage($app_id);
+            $addl_data = [];
+            if (isset($appApprData[0])) {
+                $isFinalUpload = Helpers::isAppApprByAuthority($app_id);
+                if($isFinalUpload){
+                    if ($currStage->stage_code == 'approver') {
+                        $this->appRepo->updateActiveOfferByAppId($app_id, ['is_approve' => 1]);
+                    }
+                    $wf_order_no = $currStage->order_no;
+                    $nextStage = Helpers::getNextWfStage($wf_order_no);
+                    $roleArr = [$nextStage->role_id];
+                    $roles = $this->appRepo->getBackStageUsers($app_id, $roleArr);
+                    $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
+                    $addl_data['sharing_comment'] = 'Automatically Assigned to Sales Manager from CAM Report (Approve Limit)';
+                    $assign = true;
+                    $wf_status = 1;
+                    if ($nextStage->stage_code == 'sales_queue') {
+                        Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);
+                        $application = $this->appRepo->updateAppDetails($app_id, ['is_assigned'=>1]);
+                        //update approve status in offer table after all approver approve the offer.
+                        $this->appRepo->changeOfferApprove((int)$app_id);
+                        Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+                    }
+                }
+            }
+            // //update approve status in offer table after all approver approve the offer.
+            // $this->appRepo->changeOfferApprove((int)$appId);  //previous code
+            // Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
             \DB::commit();
             Session::flash('message',trans('backend_messages.offer_approved'));
             return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
