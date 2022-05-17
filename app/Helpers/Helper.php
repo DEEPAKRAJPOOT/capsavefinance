@@ -2397,7 +2397,7 @@ class Helper extends PaypalHelper
                 ->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
                 ->join('app_product', 'app.app_id', '=', 'app_product.app_id')
                 ->where('app_product.product_id', 1)
-                ->where('prgm.prgm_id', $prgmId)
+                // ->where('prgm.prgm_id', $prgmId)
                 ->where('app.user_id', $userId)
                 ->where('app_prgm_offer.is_active', 1)
                 ->whereNotIn('app.curr_status_id', $appStatusList)
