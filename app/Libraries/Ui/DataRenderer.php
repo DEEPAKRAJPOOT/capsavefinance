@@ -381,17 +381,18 @@ class DataRenderer implements DataProviderInterface
                         $act = '';
                         $lmsStatus = config('lms.LMS_STATUS');
                         $view_only = Helpers::isAccessViewOnly($app->app_id);
+                        $currentStage = Helpers::getCurrentWfStage($app->app_id);
+                        $roleData = Helpers::getUserRole();     
+
                         if ($view_only && in_array($app->status, [0,1,2])) {
                            if(Helpers::checkPermission('add_app_note')){
                                 $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
                             }                            
                         }
+
                         if ($view_only && $app->status == 1) {
                           //// $act = $act . '<a title="Copy application" href="#" data-toggle="modal" data-target="#addAppCopy" data-url="' . route('add_app_copy', ['user_id' =>$app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Copy Application</a>';
-
                             if(Helpers::checkPermission('send_case_confirmBox')){
-                                $currentStage = Helpers::getCurrentWfStage($app->app_id);
-                                $roleData = Helpers::getUserRole();     
                                 $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
                                 if ($currentStage && ( (!$lmsStatus && $currentStage->order_no < 16) || ($lmsStatus && $currentStage->order_no <= 16) ) ) {                                                                                                           
                                     $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-reply" aria-hidden="true"></i></a> ';
@@ -434,6 +435,11 @@ class DataRenderer implements DataProviderInterface
                         // if (Helpers ::checkPermission('reject_app') && ($app->curr_status_id === null && $app->curr_status_id !== config('common.mst_status_id')['APP_REJECTED'])) {
                         if (Helpers::isChangeAppStatusAllowed($app->curr_status_id) && Helpers ::checkPermission('reject_app')) {
                            $act = $act . '<a title="Modify Status" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></a>';
+                        }
+
+                        $userRoles = $roleData->pluck('id')->toArray();
+                        if (in_array(config('common.user_role.REVIEWER'), $userRoles) && Helpers::checkPermission('app_pull_back_confirmBox') && in_array($app->app_type, [2,3]) && $currentStage->stage_code == 'approver' && !Helpers::isAppApprByAuthority($app->app_id)) {
+                            $act .= '&nbsp;<a href="#" title="App Pull Back" data-toggle="modal" data-target="#pullBackAssignCaseFrame" data-url="' . route('app_pull_back_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_pull_back' => true, ]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-undo" aria-hidden="true"></i></a> ';
                         }
                         
                         return $act;

@@ -585,6 +585,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
             ]);
 
+            Route::get('app-pull-back-confirmBox', [
+                'as' => 'app_pull_back_confirmBox',
+                'uses' => 'Backend\ApplicationController@sendCaseConfirmbox'
+            ]); 
+
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 

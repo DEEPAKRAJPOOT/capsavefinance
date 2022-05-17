@@ -1077,7 +1077,7 @@ class Helper extends PaypalHelper
             } else {
                 $userArr = self::getChildUsersWithParent($to_id);
                 $curStage = WfAppStage::getCurrentWfStage($app_id);
-                if ($curStage && $curStage->stage_code == 'approver') {
+                if ($curStage && $curStage->stage_code == 'approver') {                    
                     //$whereCond=[];
                     //$whereCond['to_id'] = $to_id;
                     //$whereCond['app_id'] = $app_id;
@@ -1092,6 +1092,9 @@ class Helper extends PaypalHelper
                           }
                       }
                       $isViewOnly = count($apprUsers) > 0 && in_array($to_id, $apprUsers) ? 1 : 0;
+                      if (isset($roleData[0]) && $roleData[0]->id == config('common.user_role.REVIEWER') && request()->has('is_app_pull_back')) {
+                        $isViewOnly = 1;    
+                      }
                     
                 } else {
                     if (isset($roleData[0]) && $roleData[0]->id == 6 && in_array(request()->route()->getName(), ['share_to_colender', 'save_share_to_colender'])) {
