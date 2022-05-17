@@ -513,10 +513,11 @@ trait ApplicationTrait
             $whereCond['app_id'] = $appId;
             $camReportData = $this->appRepo->getCamReportData($whereCond);
             foreach($camReportData as $camReport) {
-                $camReportArrData = $camReport ? $this->arrayExcept($camReport->toArray(), array_merge($excludeKeys, ['cam_report_id'])) : [];
+                $camReportArrData = $camReport ? $this->arrayExcept($camReport->toArray(), array_merge($excludeKeys, ['cam_report_id','contact_person','operational_person','program','rating_no','rating_comment','existing_exposure','proposed_exposure','sanction_limit_cam','outstanding_exposure_cam','group_company','total_exposure','t_o_f_limit','t_o_f_purpose','t_o_f_takeout','t_o_f_recourse','t_o_f_security_check','t_o_f_security','t_o_f_adhoc_limit','t_o_f_covenants','risk_comments','cm_comment','promoter_cmnt'])) : [];
                 $camReportArrData['app_id'] = $newAppId; 
                 $camReportArrData['biz_id'] = $newBizId;
-                $this->appRepo->saveAppBizFinDetail($camReportArrData);
+                //$this->appRepo->saveAppBizFinDetail($camReportArrData); //Previous call
+                $this->appRepo->saveCamReportData($camReportArrData);
             }    
             
             //rta_cam_hygiene
