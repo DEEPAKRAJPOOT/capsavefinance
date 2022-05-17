@@ -1103,7 +1103,7 @@ class Helper extends PaypalHelper
                         $isViewOnly = 1;
                     } 
                     // get_trans_name added by Sudesh but needs to be discussed with Gaurav
-                    else if (in_array(request()->route()->getName(), ['list_lms_charges','get_chrg_amount','renew_application', 'create_enhanced_limit_app', 'create_reduced_limit_app','get_trans_name'])) {
+                    else if (in_array(request()->route()->getName(), ['list_lms_charges','get_chrg_amount','renew_application', 'create_enhanced_limit_app', 'create_reduced_limit_app','get_trans_name', 'ajax_get_program_balance_limit'])) {
                         $isViewOnly = 1;
                     } else {
                         $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);

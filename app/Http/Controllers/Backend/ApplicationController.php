@@ -32,6 +32,7 @@ use App\Helpers\Helper;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Master\LocationType;
+use App\Inv\Repositories\Models\AppProgramLimit;
 
 class ApplicationController extends Controller
 {
@@ -1078,7 +1079,19 @@ class ApplicationController extends Controller
 					//$prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
 					$userStateId = $this->appRepo->getUserAddress($app_id);
 					$companyStateId = $this->appRepo->companyAdress();
-					//if(isset($prcsAmt->offer)) {
+					$new_pf_amt_parent = 0;
+					if (isset($appData) && in_array($appData->app_type, [2])) {  //new code block app_type 2 processing fee
+						$appAmtLimit = AppProgramOffer::getProgramOfferByAppId($appData->parent_app_id);
+						$parent_pf_amts = 0;
+						foreach ($appAmtLimit as $keyV => $offerV) {
+							if($offerV->chargeName->chrg_name == 'Processing Fee' && $offerV->chrg_type == 2){
+								//$parent_pf_amt += round((($offerV->prgm_limit_amt * $offerV->chrg_value)/100),2);
+								$parent_pf_amts += round(($offerV->prgm_limit_amt),2);
+							}
+						}
+						$new_pf_amt_parent =  $parent_pf_amts;
+					  }
+					//if($appData && !in_array($appData->app_type, [3])) {       //new code block app_type 3
 					  foreach ($prcsAmt->offer as $key => $offer) {
 						$offer_charges = AppProgramOffer::getProgramOfferByAppId($app_id, $offer->prgm_offer_id);
 						if (empty($offer_charges))
@@ -1089,7 +1102,14 @@ class ApplicationController extends Controller
 						  $PrgmChrg = $this->appRepo->getPrgmChrgeData($offer->prgm_id, $ChargeMasterData->chrg_master_id);
 						  
 						  $pf_amt = round((($offer->prgm_limit_amt * $chrgs->chrg_value)/100),2);
-						 
+                          if ($appData && in_array($appData->app_type, [2])) {   //new code block app_type 2 processing fee
+							    $new_pf_amt_limit_enhanceds = $offer->prgm_limit_amt - $new_pf_amt_parent;
+								$parent_pf_amt = 0;
+								if($chrgs->chargeName->chrg_name == 'Processing Fee' && $chrgs->chrg_type == 2){
+									$parent_pf_amt += round((($new_pf_amt_limit_enhanceds * $chrgs->chrg_value)/100),2);
+								}
+								$pf_amt = $parent_pf_amt;
+						  }
 						  if($chrgs->chrg_type == 1)
 						  $pf_amt = $chrgs->chrg_value;
 
@@ -1131,23 +1151,24 @@ class ApplicationController extends Controller
 							}
 						  }
 						  	if ($fData['amount'] > 0.00) {
-
-							  	$fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
-								$fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
-								$id  = Auth::user()->user_id;
-								$mytime = Carbon::now();    
-								$arr  = [   
-									'app_id'=> $app_id,
-									"prgm_id" => $offer->prgm_id,
-									'trans_id' => $fDebitCreate->trans_id,
-									"chrg_master_id" => $chrgs->charge_id,
-									"percent" => $chrgs->chrg_value,
-									"chrg_applicable_id" =>  $chrgs->chrg_applicable_id, 
-									"amount" =>   $fData['amount'],
-									"virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($user_id),
-									'created_by' =>  $id,
-									'created_at' =>  $mytime ];
-								$chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);
+								if($appData && (in_array($appData->app_type, [3]) && $chrgs->chargeName->chrg_name != 'Processing Fee') || $appData && in_array($appData->app_type, [0,1,2])) {
+									$fDebitData = $this->createTransactionData($user_id, $fData, $ChargeId, 0);
+									$fDebitCreate = $this->appRepo->saveTransaction($fDebitData);
+									$id  = Auth::user()->user_id;
+									$mytime = Carbon::now();    
+									$arr  = [   
+										'app_id'=> $app_id,
+										"prgm_id" => $offer->prgm_id,
+										'trans_id' => $fDebitCreate->trans_id,
+										"chrg_master_id" => $chrgs->charge_id,
+										"percent" => $chrgs->chrg_value,
+										"chrg_applicable_id" =>  $chrgs->chrg_applicable_id, 
+										"amount" =>   $fData['amount'],
+										"virtual_acc_id" =>  $this->lmsRepo->getVirtualAccIdByUserId($user_id),
+										'created_by' =>  $id,
+										'created_at' =>  $mytime ];
+									$chrgTransId =   $this->lmsRepo->saveChargeTrans($arr);
+								}
 							}
 						}
 					  }

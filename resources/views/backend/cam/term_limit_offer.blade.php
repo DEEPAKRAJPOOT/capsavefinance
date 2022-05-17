@@ -1,6 +1,11 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-
+    <style>
+    .processinFeeAmount {
+     font-size: 10px;
+     font-weight: bold;
+    }
+   </style>
   <form method="POST" style="width:100%;" action="{{route('update_limit_offer')}}" target="_top" onsubmit="return checkLeasingValidations()">
     @csrf
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
@@ -110,6 +115,11 @@
                 <label for="txtPassword"><b>Margin Money (%)</b> <span style="color: red;"> *</span></label>
                 <input type="text" name="margin" class="form-control" value="{{ isset($offerData->margin) ? $offerData->margin : '' }}" placeholder="Margin Money" maxlength="15">
             </div>
+          <div class="form-group">
+            <label for="txtPassword"><b>Processing Fee (%) @Sanction level</b> <span style="color: red;"> *</span></label>
+            <small><span class="float-right text-success processinFeeAmount"></span></small>
+            <input type="text" name="processing_fee" class="form-control" value="{{isset($offerData->processing_fee)? $offerData->processing_fee: ''}}" placeholder="Processing Fee" maxlength="6">
+          </div>
         </div>
 
         <div class="col-md-6">
@@ -299,7 +309,7 @@
 @section('jscript')
 <script>
   var bizOwners = {!! json_encode($bizOwners) !!};
-
+  var offerData = '{{ isset($offerData->prgm_offer_id) ? $offerData->prgm_offer_id : "" }}';
   function checkLeasingValidations(){
     let limit_amt = "{{$limitData->limit_amt}}"; //limit from app_prgm_limit table
     let total_limit = "{{$totalLimit}}"; //total exposure limit amount
