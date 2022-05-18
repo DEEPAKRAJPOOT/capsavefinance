@@ -308,7 +308,7 @@ class ManualApportionmentHelper{
         // Interest Posting
         if($payFreq == 2){
 
-            if( (strtotime($endOfMonthDate) == strtotime($intAccrualDate) || strtotime($invdueDate) == strtotime($intAccrualDate) ||  $check1 )){
+            if((strtotime($endOfMonthDate) == strtotime($intAccrualDate) ||  $check1 )){
 
                 $intTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
@@ -317,7 +317,6 @@ class ManualApportionmentHelper{
                 ->where(function($query)use($invdueDate,$intAccrualDt){
                     $firtOfMonth = Carbon::parse($intAccrualDt)->firstOfMonth()->format('Y-m-d');
                     $query->whereDate('trans_date','<',$firtOfMonth);
-                    $query->OrwhereDate('trans_date','=',$invdueDate);
                 })
                 ->get()
                 ->filter(function($item){
@@ -346,7 +345,7 @@ class ManualApportionmentHelper{
         if( ((strtotime($endOfMonthDate) == strtotime($intAccrualDate)) && strtotime($intAccrualDate) >= strtotime($odStartDate)) || $checkByPass){
 
             $odTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
-            ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+            ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
             ->where('entry_type','=',0)
             ->whereDate('trans_date','<=',$lastDayofPreviousMonth)
             ->get()
