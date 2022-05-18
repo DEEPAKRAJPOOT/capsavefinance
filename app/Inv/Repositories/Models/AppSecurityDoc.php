@@ -107,6 +107,16 @@ class AppSecurityDoc extends BaseModel
         return $appSecData;
     }
 
+    public function mstSecurityDocs()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\SecurityDocument','security_doc_id','security_doc_id')->where('is_active',1);
+    }
+
+    public function createdByUser()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\User','created_by','user_id')->where('is_active',1);
+    }
+
 }
 
 

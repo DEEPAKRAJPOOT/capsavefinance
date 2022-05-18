@@ -53,6 +53,7 @@ use App\Inv\Repositories\Models\CamReviewSummRiskCmnt;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Models\AppSecurityDoc;
+use App\Inv\Repositories\Models\DocumentMaster;
 
 class CamController extends Controller
 {
@@ -493,7 +494,7 @@ class CamController extends Controller
         $dataCheck2 = array_filter($arrData['description']);
         $dataCheck4 = array_filter($arrData['due_date']);
 
-        if (!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2) && !empty($dataCheck4)) {
+        if (!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2)) {
           foreach ($arrData['security_doc_id'] as $key => $securityDocId) {
 
             if(!empty($securityDocId) && isset($securityDocId) && $securityDocId !='' && $securityDocId !=null){
@@ -2780,6 +2781,7 @@ class CamController extends Controller
   public function securityDeposit(Request $request)
   {
     try {
+      $userId = Auth::user()->user_id;
       $arrRequest['biz_id'] = $request->get('biz_id');
       $arrRequest['app_id'] = $request->get('app_id');
       // $arrCamData = Cam::where('biz_id', '=', $arrRequest['biz_id'])->where('app_id', '=', $arrRequest['app_id'])->first();
@@ -2787,11 +2789,16 @@ class CamController extends Controller
       $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
       $securityDocumentListJson = json_encode($securityDocumentList);
       $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $arrRequest['app_id'], 'is_active' => 1])->get()->toArray();
+      $securityListingData = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where('is_active',1)->get();
+      // dd(($securityListingData[0]->createdByUser->user_id));
+      // dd($listingDatas[0]->mstDocs->doc_name);
       return view('backend.cam.security_deposit')->with([
         'reviewerSummaryData' => $reviewerSummaryData,
         'arrRequest' => $arrRequest,
         'securityDocumentListJson' => $securityDocumentListJson,
-        'arrAppSecurityDoc' => $arrAppSecurityDoc
+        'arrAppSecurityDoc' => $arrAppSecurityDoc,
+        'securityListingData' => $securityListingData,
+        'userId' => $userId
       ]);
     } catch (Exception $ex) {
       return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -2889,7 +2896,7 @@ class CamController extends Controller
         //process only security deposit
         if($request->has("security_deposit")){
           \DB::commit();
-          Session::flash('message', trans('Security document information saved successfully'));
+          Session::flash('message', trans('Pre/Post disbursment information saved successfully'));
           return redirect()->route('security_deposit', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id')]);
         }
       } catch (Exception $ex) {

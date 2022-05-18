@@ -165,7 +165,7 @@
                 <div class="col-md-2 mt-1">
                     <label for="txtPassword"><b>Pre/Post Disbursement</b></label>
                     <div class="relative">
-                        <select class="form-control" name="doc_type[]" id="doc_type_1">
+                        <select class="form-control{{ ($route_name=="security_deposit") ? ' doc_type': '' }}" name="doc_type[]" id="doc_type_1">
                             <option value="">Select</option>
                             <option value="1">Pre</option>
                             <option value="2">Post</option>
@@ -174,21 +174,21 @@
                 </div>
                 <div class="col-md-2 mt-1">
                      <label for="txtPassword"><b>Type of Document</b></label>
-                     <select class="form-control" name="security_doc_id[]" id="security_doc_id_1">
+                     <select class="form-control{{ ($route_name=="security_deposit") ? ' security_doc_id': '' }}" name="security_doc_id[]" id="security_doc_id_1">
                         <option value="">Select</option>
                     </select>
                 </div>
                 <div class="col-{{ $mdCls }} mt-1">
                         <label for="txtPassword"><b>Description</b></label>
                         <div class="relative">
-                            <textarea type="text" name="description[]" class="form-control" value="" placeholder="Description" autocomplete="off"></textarea>
+                            <textarea type="text" name="description[]" class="form-control{{ ($route_name=="security_deposit") ? ' description': '' }}" value="" placeholder="Description" autocomplete="off"></textarea>
                         </div>
                 </div>      
                 @if($route_name=="security_deposit")  
                 <div class="col-md-2 mt-1">
                      <label for="txtPassword"><b>Document Number</b></label>
                      <div class="relative">
-                        <input type="text" name="document_number[]" class="form-control" value="" placeholder="Document Number" autocomplete="off" alphanumeric="true" checkDocumentNumber="true" data-msg-alphanumeric="Please enter letters and numbers only."/>
+                        <input type="text" name="document_number[]" class="form-control document_number" value="" placeholder="Document Number" autocomplete="off" alphanumeric="true" checkDocumentNumber="true" data-msg-alphanumeric="Please enter letters and numbers only."/>
                      </div>
                 </div>
                 @endif
@@ -202,7 +202,7 @@
                 <div class="col-md-2 mt-1">
                     <label for="txtPassword"><b>Completed</b></label>
                     <div class="relative">
-                        <select class="form-control" name="completed[]">
+                        <select class="form-control completed" name="completed[]">
                             <option value="">Select</option>
                             <option value="yes">Yes</option>
                             <option value="no">No</option>
@@ -212,7 +212,7 @@
                <div class="col-md-2 mt-1">
                         <label for="txtPassword"><b>Exception Received</b></label>
                         <div class="relative">
-                            <select class="form-control" name="exception_received[]" onchange="displayExceptionFields(this.value,1);" data-previous="1">
+                            <select class="form-control exception_received" name="exception_received[]" onchange="displayExceptionFields(this.value,1);" data-previous="1">
                                 <option value="">Select</option>
                                 <option value="yes">Yes</option>
                                 <option value="no">No</option>
@@ -222,19 +222,19 @@
                 <div class="col-md-2 mt-1 exceptionFields_1" style="display: none;">
                         <label for="txtPassword"><b>Exception Received From</b></label>
                         <div class="relative">
-                        <input type="text" name="exception_received_from[]" class="form-control" value="" placeholder="Exception Received From" autocomplete="off"/>
+                        <input type="text" name="exception_received_from[]" class="form-control exception_received_from required" value="" placeholder="Exception Received From" autocomplete="off"/>
                         </div>
                 </div>
                 <div class="col-md-2 mt-1 exceptionFields_1" style="display: none;">
                         <label for="txtPassword"><b>Exception Received Date</b></label>
                         <div class="relative">
-                        <input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r" value="" placeholder="Exception Received Date" autocomplete="off" readonly="readonly"/>
+                        <input type="text" name="exception_received_date[]" class="form-control sc-doc-date-r exception_received_date required" value="" placeholder="Exception Received Date" autocomplete="off" readonly="readonly"/>
                         </div>
                 </div>
                 <div class="col-md-2 mt-1 exceptionFields_1" style="display: none;">
                     <label for="txtPassword"><b>Exception Remark</b></label>
                     <div class="relative">
-                    <input type="text" name="exception_remark[]" class="form-control" value="" placeholder="Exception Remark" autocomplete="off"/>
+                    <input type="text" name="exception_remark[]" class="form-control exception_remark required" value="" placeholder="Exception Remark" autocomplete="off"/>
                     </div>
                 </div>
                 <div class="col-md-2 mt-1 exceptionFields_1" style="display: none;">
@@ -246,27 +246,27 @@
                 <div class="col-md-2 mt-1">
                     <label for="txtPassword"><b>Maturity Date</b></label>
                     <div class="relative">
-                    <input type="text" name="maturity_date[]" class="form-control sc-doc-date" value="" placeholder="Maturity Date" autocomplete="off" readonly="readonly"/>
+                    <input type="text" name="maturity_date[]" id="maturity_date_1" class="form-control sc-doc-date maturity_date" value="" placeholder="Maturity Date" autocomplete="off" readonly="readonly"/>
                     </div>
                 </div>
                 <div class="col-md-2 mt-1">
                     <label for="txtPassword"><b>Renewal Reminder Days</b></label>
                     <div class="relative">
-                    <input type="text" name="renewal_reminder_days[]" class="form-control digits renewal_reminder_days" value="" placeholder="Renewal Reminder Days" autocomplete="off"  min="0" max="365"/>
+                    <input type="text" name="renewal_reminder_days[]" class="form-control digits renewal_reminder_days" id="renewal_reminder_days_1" value="" placeholder="Renewal Reminder Days" autocomplete="off"  min="0" max="365"/>
                     </div>
                 </div>
                 <div class="col-md-2 mt-1 INR">
                     <label for="txtPassword"><b>Amount Expected</b></label>
                     <div class="relative">
                     <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
-                    <input type="text" name="amount_expected[]" class="form-control number float_format" value="" placeholder="Amount Expected" autocomplete="off"/>
+                    <input type="text" name="amount_expected[]" class="form-control number float_format amount_expected" value="" placeholder="Amount Expected" autocomplete="off"/>
                     </div>
                 </div>
                 <div class="col-md-2 mt-1 INR">
                     <label for="txtPassword"><b>Document Amount</b></label>
                     <div class="relative">
                     <a href="javascript:void(0);" class="verify-owner-no" ><i class="fa fa-inr" aria-hidden="true"></i></a>
-                    <input type="text" name="document_amount[]" class="form-control number float_format" value="" placeholder="Document Amount" autocomplete="off"/>
+                    <input type="text" name="document_amount[]" class="form-control number float_format document_amount" value="" placeholder="Document Amount" autocomplete="off"/>
                     </div>
                 </div>
                 <div class="col-md-3 mt-1">
@@ -274,11 +274,9 @@
                     <div class="relative">
                         <div class="d-flex">
                         <div class="custom-file upload-btn-cls mb-3">
-                            <input type="file" class="custom-file-input getFileName doc_file_sec" name="doc_file_sec[]" extension="jpg,png,pdf,doc,docx"
-                            filesize = "200000000" data-msg-extension="Only support jpg,png,pdf,doc,docx type format." data-msg-filesize="maximum size for upload 20 MB.">
+                            <input type="file" class="custom-file-input getFileName doc_file_sec required" name="doc_file_sec[]">
                             <label class="custom-file-label" for="customFile">Choose file</label>
                         </div>
-                        
                         </div>
                     </div>
                 </div>

@@ -24,14 +24,20 @@
                 @endif
               </form>
             </div>
+            <div class="card mt-4">
+                @include('backend.cam.security_view',['securityListingData' => $securityListingData,'userId' => $userId])
+              </div>
         </div>
     </div>
 </div>
+
 @endsection
 @section('jscript')
 <script src="{{ asset('common/js/additional-methods.min.js') }}"></script>
 <script type="text/javascript">
-   getAllSecurityDocumentName(1);
+    $('#camForm').validate({ignore: ".desexception_received_from"});
+    makeRequiredFields(1,'add');
+   getAllSecurityDocumentName(1);   
     $(document).on('keypress','.float_format', function(event) {
     let num = $(this).val();
     num.split('.')[1]
@@ -58,17 +64,17 @@ $(document).ready(function () {
     //     return this.optional(element) || parseInt(value) == 0;
     // });
 
-    // $.validator.addMethod('checkRenewalDate', function (value, element, param) {
-    //     let cur_date_val = $((element.id.split('_')[0]=='update'?'#update_':'#')+'maturity_date_'+element.id.split('_')[element.id.split('_').length-1]).val().split("/");
+    $.validator.addMethod('checkRenewalDate', function (value, element, param) {
+        let cur_date_val = $((element.id.split('_')[0]=='update'?'#update_':'#')+'maturity_date_'+element.id.split('_')[element.id.split('_').length-1]).val().split("/");
 
-    //     let cur_date = new Date(+cur_date_val[2], cur_date_val[1] - 1, +cur_date_val[0]);
-    //     cur_date.setDate(cur_date.getDate()-value+1);
+        let cur_date = new Date(+cur_date_val[2], cur_date_val[1] - 1, +cur_date_val[0]);
+        cur_date.setDate(cur_date.getDate()-value+1);
         
-    //     if(cur_date.toISOString().slice(0, 10)>=(new Date().toISOString().slice(0, 10)))
-    //         return true;
-    //     else
-    //         return false;
-    // }, 'Renewal Reminder Days must be lower');
+        if(cur_date.toISOString().slice(0, 10)>=(new Date().toISOString().slice(0, 10)))
+            return true;
+        else
+            return false;
+    }, 'Renewal Reminder Days must be lower');
 
     jQuery.validator.addMethod("alphanumeric", function(value, element) {
         if(value != ''){
@@ -103,7 +109,7 @@ $(document).ready(function () {
             return result;                
         },'Document Number is already exists'
     );
-$('#camForm').validate();// initialize the plugin
+// $('#camForm').validate();// initialize the plugin
 });
 $(document).on('submit', '#camForm', function(e) {
     var valid = true;
@@ -203,7 +209,7 @@ $(document).on('submit', '#camForm', function(e) {
                 min: 0,
                 max: 365,
                 digits:true,
-                // checkRenewalDate : $(this).attr('id'),
+                checkRenewalDate : $(this).attr('id'),
                 messages: {
                     required: "This field is required.",
                 }
@@ -234,6 +240,7 @@ $(document).on('submit', '#camForm', function(e) {
     $('#security-doc-block input.doc_file_sec').each(function () {
         $(this).rules("add",
             {
+                // required: true,
                 extension: "jpg,png,pdf,doc,docx",
                 filesize : 200000000,
                 messages: {
@@ -337,7 +344,7 @@ $(document).on('click', '.add-security-doc-block', function(){
     '<div class="col-md-2 mt-1 exceptionFields_'+counter+'" style="display: none;">'+
         '<label for="txtPassword"><b>Extended Due Date</b></label>'+
         '<div class="relative">'+
-        '<input type="text" name="extended_due_date[]" class="form-control extended_due_date required" value="" placeholder="Extended Due Date" autocomplete="off" id="exception_remark_'+counter+'" style="visibility: hidden;height: 0;" readonly="readonly"/>'+
+        '<input type="text" name="extended_due_date[]" class="form-control extended_due_date sc-doc-date required" value="" placeholder="Extended Due Date" autocomplete="off" id="exception_remark_'+counter+'" style="visibility: hidden;height: 0;" readonly="readonly"/>'+
         '</div>'+
     '</div>'+
     '<div class="col-md-2 mt-1">'+
@@ -504,7 +511,7 @@ function resetIndexes() {
   });
 }
 function makeRequiredFields(counters, reqType){
-    $('#camForm').validate();
+    $('#camForm').validate({ignore: ".desexception_received_from"});
     $('#security-doc-block select.doc_type').each(function () {
         $(this).rules("add",
             {
@@ -590,8 +597,7 @@ function makeRequiredFields(counters, reqType){
                 min: 0,
                 max: 365,
                 digits:true,
-                // checkRenewalDate : reqType=='update'?'#update_maturity_date_1':'#maturity_date_'+counter,
-                // checkRenewalDate : $(this).attr('id'),
+                checkRenewalDate : $(this).attr('id'),
                 messages: {
                     required: "This field is required.",
                 }
@@ -622,6 +628,7 @@ function makeRequiredFields(counters, reqType){
     $('#security-doc-block input.doc_file_sec').each(function () {
         $(this).rules("add",
             {
+                // required: true,
                 extension: "jpg,png,pdf,doc,docx",
                 filesize : 200000000,
                 messages: {
