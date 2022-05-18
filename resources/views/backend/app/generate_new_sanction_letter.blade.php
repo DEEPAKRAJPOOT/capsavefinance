@@ -606,16 +606,16 @@
                                     <td>
                                         Self-Attested KYC of borrower (True Copy)
                                         <table width="100%" border="0">
-                                            @php
-                                               $bizConstitution = '';
-                                                if(isset($supplyChaindata['BizConstitution']) && ($supplyChaindata['BizConstitution'] == 'Private Limited Company' || $supplyChaindata['BizConstitution'] == 'Public Limited Company')  ){
-                                                    $bizConstitution = 'Certificate of incorporation, MOA, AOA';
-                                                }else if(isset($supplyChaindata['BizConstitution']) && ($supplyChaindata['BizConstitution'] == 'Partnership Firm')  ){
-                                                    $bizConstitution = 'Partnership Deed';
-                                                }else if(isset($supplyChaindata['BizConstitution']) && ($supplyChaindata['BizConstitution'] == 'Proprietorship firm' || $supplyChaindata['BizConstitution'] == 'Sole Proprietor')  ){
-                                                    $bizConstitution = 'Shop and Establishment registration certificate / Udyog Adhar';
-                                                }
-                                            @endphp
+                                          @php
+                                             $bizConstitution = '';
+                                             if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'private limited company' || strtolower($supplyChaindata['BizConstitution']) == 'public limited company')  ){
+                                                $bizConstitution = 'Certificate of incorporation, MOA, AOA';
+                                             }else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'partnership firm')  ){
+                                                $bizConstitution = 'Partnership Deed';
+                                             }else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'proprietorship firm' || strtolower($supplyChaindata['BizConstitution']) == 'sole proprietor')  ){
+                                                $bizConstitution = 'Shop and Establishment registration certificate / Udyog Adhar';
+                                             }
+                                          @endphp
                                            @if ($bizConstitution)
                                            <tr>
                                             <td valign="top" width="1%">&bull;</td>
@@ -643,13 +643,21 @@
                                 <tr>
                                  <td valign="top" width="1%"><b>4.</b></td>
                                  <td>
-                                     @php
-                                        $generalCon = $supplyChainFormData->general_pre_disbursement_conditions_second??'';
-                                         if($generalCon == 'Board Resolution'){
-                                             $generalCon ='Board Resolution signed by 2 directors or Company Secretary in favour of company officials to execute such agreements or documents.';
-                                         }
-                                     @endphp
-                                     {{ $generalCon??'' }}.
+                                    @php
+                                    $bizConstitutionDes = '';
+                                     if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'private limited company')  ){
+                                         $bizConstitutionDes = 'Board Resolution signed by 2 directors or Company Secretary in favour of company officials to execute such agreements or documents';
+                                     } else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'huf letter')  ){
+                                         $bizConstitutionDes = 'HUF';
+                                     }else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'partnership firm')  ){
+                                         $bizConstitutionDes = 'Partnership Authority Letter';
+                                     }else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'proprietorship firm' || strtolower($supplyChaindata['BizConstitution']) == 'sole proprietor')  ){
+                                         $bizConstitutionDes = 'Proprietorship Declaration';
+                                     }
+                                    @endphp
+                                    @if ($bizConstitutionDes)
+                                        {{ $bizConstitutionDes }}. 
+                                    @endif 
                                  </td>
                              </tr>
                                 <tr>
