@@ -242,7 +242,7 @@ class DataRenderer implements DataProviderInterface
                     function ($user) {
                     //$link = '000'.$user->user_id;
                     $link = \Helpers::formatIdWithPrefix($user->user_id, 'LEADID');
-                        return "<a id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                        return "<a target='_blank' id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
                         
                     }
                 )
@@ -684,18 +684,18 @@ class DataRenderer implements DataProviderInterface
                                 $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
                            else
                                 $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
-                           $ret = "<a id='app-id-$app_id' href='$link' rel='tooltip'>" . $app_code . "</a>";
+                           $ret = "<a target='_blank' id='app-id-$app_id' href='$link' rel='tooltip'>" . $app_code . "</a>";
                                                      
                         } else {
-                            $ret = "<a id='app-id-$app_id' rel='tooltip'>" . $app_code . "</a>";
+                            $ret = "<a target='_blank' id='app-id-$app_id' rel='tooltip'>" . $app_code . "</a>";
                         }
                         
                         if (!empty($parent_app_id)) {
                             $aData = Application::getAppData((int)$parent_app_id);
                             if ($permission) {
-                                $ret .= "<br><small>Parent:</small><br><a href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                                $ret .= "<br><small>Parent:</small><br><a target='_blank' href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
                             } else {
-                                $ret .= "<br><small>Parent:</small><br><a rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                                $ret .= "<br><small>Parent:</small><br><a target='_blank' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
                             }
                         } 
                            

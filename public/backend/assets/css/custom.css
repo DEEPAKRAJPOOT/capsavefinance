@@ -1518,3 +1518,12 @@ ul.custom-check-label #frequency-error {
 .dataTables_processing{
 	z-index: 1000 !important;
 }
+#leadsearchbtn{
+	border-radius: 10px;
+	margin: 25px;
+	padding: 11px;
+	position: relative;
+	bottom: 5px;
+	width: 102px;
+	display: inline-block;
+}

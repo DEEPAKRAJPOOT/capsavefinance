@@ -2,17 +2,7 @@
 @extends('layouts.backend.admin-layout')
 
 @section('content')
-<style>
-    #leadsearchbtn{
-        border-radius: 10px;
-        margin: 25px;
-        padding: 11px;
-        position: relative;
-        bottom: 5px;
-        width: 102px;
-        display: inline-block;
-    } 
-</style>
+
 
 <div class="content-wrapper">
     <section class="content-header">
@@ -32,7 +22,7 @@
     <div class="card">
         <div class="card-body">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-sm-3">
                     <div class="form-group">
                     <label for="" class="">Select Role<span class="error_message_label">*</span></label>	
                     <select class="form-control" name="selectedrole" id="selectedrole" >
@@ -44,7 +34,7 @@
                     <span class="text-danger error" id="role_error"></span>
                 </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-sm-3">
                     <div class="form-group">
                         <label for="" class="">Select User<span class="error_message_label">*</span></label>	
                         <select class="form-control" name="selecteduser" id="selecteduser" >
@@ -59,7 +49,16 @@
                     <button type="button" id="leadsearchbtn" class="btn btn-success btn-sm float-right">Search Leads</button>
                 </div>    
                 
-                
+                <div class="col-sm-5">
+                    <a data-toggle="modal" data-target="#assignUserLeads" data-url="{{route('assign_user_leads')}}" data-height="400px" data-width="100%" data-placement="top">
+                        <button type="button" id="assignedhbtn" class="btn btn-success btn-sm float-right" disabled style="padding: 10px;margin: 21px;line-height: 25px;">
+                            <span class="btn-label">
+                                <i class="fa fa-exchange"></i>
+                            </span>
+                            Assign Leads
+                        </button>
+                    </a> 
+                </div>
                  </div>
                     <div class="row">
                         <div class="col-sm-12">
@@ -84,22 +83,12 @@
                             </table>
                             
                             <div id="supplier-listing_processing" class="dataTables_processing card" style="display: none;">Processing...</div>
-                            <div class="col-md-1">
-                              <a data-toggle="modal" data-target="#assignUserLeads" data-url="{{route('assign_user_leads')}}" data-height="400px" data-width="100%" data-placement="top">
-                                 <button type="button" id="assignedhbtn" class="btn btn-success btn-sm float-right" disabled style="padding: 10px;margin: 21px;line-height: 25px;margin-top: 41px;margin-right: -5px;">
-                                        <span class="btn-label">
-                                            <i class="fa fa-exchange"></i>
-                                        </span>
-                                        Assigned Leads
-                                  </button>
-                                </a> 
-                            </div>
                         </div>
                     </div>
         </div>
       </div>
     </div>
-{!!Helpers::makeIframePopup('assignUserLeads','Assign Laeds', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('assignUserLeads','Assign Leads', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('editAnchorFrm','Edit Anchor Detail', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('add_bank_account','Add Bank Detail', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('edit_bank_account','Edit Bank Detail', 'modal-lg')!!}
@@ -185,16 +174,28 @@
         $('#role_error').text('');
         $('#user_error').text('');
     });
-    var oTables3;
+    var oTables3;var role_id =0;var user_id =0;
 jQuery(document).ready(function ($) {
+    
+    if(oTables3 != undefined){
+            oTables3.destroy();
+    }
+    fillTable(role_id,user_id);
     $('#leadsearchbtn').on('click', function() {
-        var role_id = $('#hiddenRoleid').val();
-        var user_id = $('#hiddenUserid').val();
+         role_id = $('#hiddenRoleid').val();
+         user_id = $('#hiddenUserid').val();
         console.log(oTables3);
         if(oTables3 != undefined){
             oTables3.destroy();
         }
         
+        fillTable(role_id,user_id);
+    });
+
+    
+});
+    function fillTable(role_id,user_id){
+
         $.ajax({
                 url  : messages.get_users_leads,
                 type :'POST',
@@ -270,11 +271,7 @@ jQuery(document).ready(function ($) {
                     //$(".isloader").hide();
                 },
         })
-    });
-
-    
-});
-    
+    }
     function selectLeadToassign(element){
         var leaduser_id = $(element).val();
         var prevassigneduser_id = $('#hiddenUserid').val();
@@ -317,6 +314,6 @@ jQuery(document).ready(function ($) {
         })    
     }
 </script>
-<script src="{{ asset('common/js/jquery.validate.js') }}"></script>
-<script src="{{ asset('backend/js/ajax-js/lead.js') }}" type="text/javascript"></script>
+<script src="{{ asset('common/js/jquery.validate.js') }}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}""></script>
+<script src="{{ asset('backend/js/ajax-js/lead.js') }}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" type="text/javascript"></script>
 @endsection
