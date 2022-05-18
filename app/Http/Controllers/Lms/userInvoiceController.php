@@ -1287,6 +1287,7 @@ class userInvoiceController extends Controller
             $path ='public/capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
             $result['path'] = $path;
             Storage::disk('local')->put($path,$pdf->output());
+
             $uploadFilePath = storage_path('app/public/capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf');
             $status = 1;             
             $success[] = 'Invoice PDF generated Successfully';
@@ -1296,7 +1297,6 @@ class userInvoiceController extends Controller
     }
 
     public function sendCapsaveInvoiceMail($pdfResult,$newInvoiceNo,$getEmail){
-        
         $emailData = array(
             'invoice_no' => $newInvoiceNo,
             'email' => $getEmail,
@@ -1305,6 +1305,4 @@ class userInvoiceController extends Controller
           );
         \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
     }
-
-    
 }
