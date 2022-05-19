@@ -801,26 +801,33 @@ class ApplicationController extends Controller
 			$assignedData['created_by'] = $prevFromUser;
 			$approverData['app_id'] = $allApps[$i];
 			$approverData['approver_user_id'] = $prevFromUser;
-			
+			$prevUserRole = $this->userRepo->getRole($user_role);
+			$nextUserRole = $this->userRepo->getRole($role_id);
 			$this->appRepo->updateAppAssignById($allApps[$i], ['is_deleted'=>1]);
 			$applicationCreated = $this->appRepo->saveShaircase($assignedData);
-			$checkApproverStatus = $this->appRepo->checkAppApprovers($approverData);
-			if($checkApproverStatus){
+			if(($prevUserRole->name === 'Approver' && $nextUserRole === 'Approver') ||
+			 ($prevUserRole->name === 'Approver' && $nextUserRole === 'Approver')){
 
-				
-				$flagUpdated  = $this->appRepo->updateAppApprInActiveFlag($approverData);
-				$curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
-				$ApproverSavedata = [
-					'app_id' => $allApps[$i],
-					'approver_user_id' => $nextToUser,
-					'is_active' => 1,
-					'created_by' => Auth::user()->user_id,
-					'created_at' => $curData,
-					'updated_by' => Auth::user()->user_id,
-					'updated_at' => $curData,
-				];
-				AppApprover::insert($ApproverSavedata);
-			}
+				$checkApproverStatus = $this->appRepo->checkAppApprovers($approverData);
+				if($checkApproverStatus){
+
+					
+					$flagUpdated  = $this->appRepo->updateAppApprInActiveFlag($approverData);
+					$curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+					$ApproverSavedata = [
+						'app_id' => $allApps[$i],
+						'approver_user_id' => $nextToUser,
+						'is_active' => 1,
+						'created_by' => Auth::user()->user_id,
+						'created_at' => $curData,
+						'updated_by' => Auth::user()->user_id,
+						'updated_at' => $curData,
+					];
+					AppApprover::insert($ApproverSavedata);
+				}
+			 }
+			
+			
 			
 			if($i == count($allApps)-1)
 			   $assigned = true;
