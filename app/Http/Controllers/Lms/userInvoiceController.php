@@ -1122,7 +1122,7 @@ class userInvoiceController extends Controller
                     
                     if($pdfResult['status']){
                         $success = array_merge($success,$pdfResult['success']);
-                        $getEmail = $this->userRepo->find($requestedData['user_id']);
+                        $getEmail = $this->userRepo->find($userInvoiceData['user_id']);
                         if($getEmail){
                             $this->sendCapsaveInvoiceMail($pdfResult['pdf_attachment'],$newInvoiceNo,$getEmail->email);
                         }
