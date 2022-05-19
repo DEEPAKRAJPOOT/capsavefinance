@@ -498,9 +498,7 @@ class userInvoiceController extends Controller
                 'registered_comp_id' => $registeredCompany['comp_addr_id'],
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $bank_id,
-                'is_active' => 1,
-                'created_at' => $requestedData['created_at'],
-                'created_by' => $requestedData['created_by'],
+                'is_active' => 1
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
             if(!empty($invoiceResp->user_invoice_id)){
@@ -1081,9 +1079,7 @@ class userInvoiceController extends Controller
                 'registered_comp_id' => $registeredCompany['comp_addr_id'],
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $bank_id,
-                'is_active' => 1,
-                'created_at' => $created_at,
-                'created_by' => $created_by,
+                'is_active' => 1
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
 
