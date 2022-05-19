@@ -99,6 +99,7 @@ class AppApprover extends BaseModel
      */
     public static function updateAppApprInActiveFlag($data)
     {
+       
         $apprUsers = self::where('app_id', '=', $data['app_id'])
                         ->where('approver_user_id', '=', $data['approver_user_id'])          
                         ->update(['is_active' => 0]);

@@ -783,7 +783,7 @@ class ApplicationController extends Controller
 		$allApps = $data['selected_application'];
 		$assigned = false;
 		for($i=0;$i<count($allApps);$i++){
-
+			
 			$userInfo = Helpers::getAppCurrentAssigneedata($allApps[$i]);
 			$app_Assigned_id = $userInfo['app_assign_id'];
 			$assignedData['from_id'] = $prevFromUser;
@@ -799,9 +799,10 @@ class ApplicationController extends Controller
 			}
 			$assignedData['is_owner'] = $userInfo['is_owner'];
 			$assignedData['created_by'] = $prevFromUser;
-			$this->appRepo->updateAppAssignById($allApps[$i], ['is_deleted'=>1]);
 			$approverData['app_id'] = $allApps[$i];
 			$approverData['approver_user_id'] = $prevFromUser;
+			
+			$this->appRepo->updateAppAssignById($allApps[$i], ['is_deleted'=>1]);
 			$applicationCreated = $this->appRepo->saveShaircase($assignedData);
 			$checkApproverStatus = $this->appRepo->checkAppApprovers($approverData);
 			if($checkApproverStatus){
@@ -818,7 +819,7 @@ class ApplicationController extends Controller
 					'updated_by' => Auth::user()->user_id,
 					'updated_at' => $curData,
 				];
-				AppApprover::insert($data);
+				AppApprover::insert($ApproverSavedata);
 			}
 			
 			if($i == count($allApps)-1)
