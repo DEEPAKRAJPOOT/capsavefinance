@@ -25,7 +25,7 @@
             <div class="col-md-3">
                   <div class="form-group">
                    <label for="" class="">Search<span class="error_message_label">*</span></label>
-                   <input class="form-control" placeholder="Search by Lead.ID, Name" id="by_name" name="search_keyword" type="text" >
+                   <input class="form-control" placeholder="Search by name, email and pan" id="by_name" name="search_keyword" type="text" >
                   </div>
                 </div>
                 <div class="col-md-3">

@@ -805,9 +805,10 @@ class ApplicationController extends Controller
 			$nextUserRole = $this->userRepo->getRole($role_id);
 			$this->appRepo->updateAppAssignById($allApps[$i], ['is_deleted'=>1]);
 			$applicationCreated = $this->appRepo->saveShaircase($assignedData);
-			if(($prevUserRole->name === 'Approver' && $nextUserRole === 'Approver') ||
-			 ($prevUserRole->name === 'Approver' && $nextUserRole === 'Approver')){
-
+			
+			if(($prevUserRole->name === 'Approver' && $nextUserRole->name === 'Approver') ||
+			 ($prevUserRole->name === 'Reviewer' && $nextUserRole->name === 'Reviewer')){
+				
 				$checkApproverStatus = $this->appRepo->checkAppApprovers($approverData);
 				if($checkApproverStatus){
 
