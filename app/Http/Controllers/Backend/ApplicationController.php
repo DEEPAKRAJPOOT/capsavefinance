@@ -800,7 +800,27 @@ class ApplicationController extends Controller
 			$assignedData['is_owner'] = $userInfo['is_owner'];
 			$assignedData['created_by'] = $prevFromUser;
 			$this->appRepo->updateAppAssignById($allApps[$i], ['is_deleted'=>1]);
+			$approverData['app_id'] = $allApps[$i];
+			$approverData['approver_user_id'] = $prevFromUser;
 			$applicationCreated = $this->appRepo->saveShaircase($assignedData);
+			$checkApproverStatus = $this->appRepo->checkAppApprovers($approverData);
+			if($checkApproverStatus){
+
+				
+				$flagUpdated  = $this->appRepo->updateAppApprInActiveFlag($approverData);
+				$curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+				$ApproverSavedata = [
+					'app_id' => $allApps[$i],
+					'approver_user_id' => $nextToUser,
+					'is_active' => 1,
+					'created_by' => Auth::user()->user_id,
+					'created_at' => $curData,
+					'updated_by' => Auth::user()->user_id,
+					'updated_at' => $curData,
+				];
+				AppApprover::insert($data);
+			}
+			
 			if($i == count($allApps)-1)
 			   $assigned = true;
 			  

@@ -651,6 +651,7 @@ class DataRenderer implements DataProviderInterface
      */
     public function getAssignedAppList(Request $request, $app)
     {
+        
         return DataTables::of($app)
                 ->rawColumns(['app_id','biz_entity_name','checkbox','assignee', 'status', 'assigned_by', 'action','assoc_anchor', 'contact','name', 'app_code'])
                 ->addColumn(

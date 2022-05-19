@@ -832,6 +832,29 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     /**
+     * Update Authority Users against application
+     * 
+     * @param integer $app_id $user_id
+     * @return mixed
+     */    
+    public function updateAppApprInActiveFlag($attributes)
+    {
+        return AppApprover::updateAppApprInActiveFlag(($attributes));
+    }
+
+
+    /**
+     * check Approval Authority Users against application
+     * 
+     * @param integer $app_id $user_id
+     * @return mixed
+     */    
+    public function checkAppApprovers($attributes)
+    {
+        return AppApprover::checkAppApprovers(($attributes));
+    }
+
+    /**
      * Save Approval Authority Users against application
      * 
      * @param integer $app_id

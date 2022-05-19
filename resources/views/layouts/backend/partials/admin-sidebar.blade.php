@@ -551,7 +551,7 @@
         <div class="collapse" id="layoutsSubmenu12">
             <ul class="nav flex-column sub-menu">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('assign_lead') }}">Assign Lead</a>
+                    <a class="nav-link" href="{{ route('assign_lead') }}">Assign Leads</a>
                 </li>
                     <!--<li class="nav-item">
                         <a class="nav-link" href="#">Manage Permissions</a>

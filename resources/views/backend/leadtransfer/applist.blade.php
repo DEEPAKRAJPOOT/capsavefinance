@@ -20,7 +20,13 @@
     <div class="card">
         <div class="card-body">
             <div class="row">
-                <div class="col-sm-3">
+                <div class="col-md-3">
+                  <div class="form-group">
+                   <label for="" class="">Search<span class="error_message_label">*</span></label>
+                   <input class="form-control" placeholder="Search by App Id, Entity Name" id="by_name" name="search_keyword" type="text" >
+                  </div>
+                </div>
+                <div class="col-md-3">
                     <div class="form-group">
                     <label for="" class="">Select Role<span class="error_message_label">*</span></label>	
                     <select class="form-control" name="selectedrole" id="selectedrole" >
@@ -32,7 +38,7 @@
                     <span class="text-danger error" id="role_error"></span>
                 </div>
                 </div>
-                <div class="col-sm-3">
+                <div class="col-md-2">
                     <div class="form-group">
                         <label for="" class="">Select User<span class="error_message_label">*</span></label>	
                         <select class="form-control" name="selecteduser" id="selecteduser" >
@@ -46,7 +52,7 @@
                 <div class="col-md-1">
                     <button type="button" id="leadsearchbtn" class="btn btn-success btn-sm float-right">Search Cases</button>
                 </div>
-                <div class="col-sm-5">
+                <div class="col-md-3">
                         <a data-toggle="modal" data-target="#assignUserApplication" data-url="{{route('assign_user_application')}}" data-height="400px" data-width="100%" data-placement="top">
                             <button type="button" id="assignedhbtn" class="btn btn-success btn-sm float-right" disabled style="padding: 10px;margin: 21px;line-height: 25px;">
                                 <span class="btn-label">
@@ -95,6 +101,9 @@
     {!!Helpers::makeIframePopup('editAnchorFrm','Edit Anchor Detail', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('add_bank_account','Add Bank Detail', 'modal-lg')!!}
     {!!Helpers::makeIframePopup('edit_bank_account','Edit Bank Detail', 'modal-lg')!!}
+    {!!Helpers::makeIframePopup('viewApprovers','View Approver List', 'modal-lg')!!}
+    {!!Helpers::makeIframePopup('viewSharedDetails','View Shared Details', 'modal-lg')!!}
+    {!!Helpers::makeIframePopup('viewApplicationStatus','View Application Status', 'modal-lg')!!}
     @endsection
 
 @section('jscript')
@@ -175,27 +184,28 @@
         $('#role_error').text('');
         $('#user_error').text('');
     });
-var oTables3;var role_id =0;var user_id =0;   
+var oTables3;var role_id =0;var user_id =0;var search='';   
 jQuery(document).ready(function ($) {
     if(oTables3 != undefined){
             oTables3.destroy();
     }
-    fillTable(role_id,user_id);
+    fillTable(role_id,user_id,search);
     $('#leadsearchbtn').on('click', function() {
         var role_id = $('#hiddenRoleid').val();
         var user_id = $('#hiddenUserid').val();
+        var search = $('input[name=search_keyword]').val();
         
         if(oTables3 != undefined){
             oTables3.destroy();
         }
 
-       fillTable(role_id,user_id); 
+       fillTable(role_id,user_id,search); 
     });
 
     
 });
-    function fillTable(role_id,user_id){
-
+    function fillTable(role_id,user_id,search){
+        
         $.ajax({
                 url  : messages.get_users_leads,
                 type :'POST',
@@ -205,9 +215,21 @@ jQuery(document).ready(function ($) {
                 },
                 dataType : 'json',
                 success:function(result) {
-                    console.log(result);
+                    console.log(result.status);
                     console.log(user_id);
-                    if(result.status === '1'){
+                    if(result.status === '2'){
+                        $('#user_error').text('');
+                        $('#role_error').text('');
+                        if(result.data.hasOwnProperty('role_id')){
+                            $('#role_error').text(result.data.role_id[0]);
+                        }
+                        if(result.data.hasOwnProperty('user_id')){
+                            $('#user_error').text(result.data.user_id[0]);
+                        }
+                        $('#searchbtn').attr('disabled',true);
+
+                    }
+
                         //User Listing code
                         oTables3 = $('#appList').DataTable({
                             "dom": '<"top">rt<"bottom"flpi><"clear">',
@@ -226,6 +248,7 @@ jQuery(document).ready(function ($) {
                                 data: function (d) {
                                     d.role_id = $('#hiddenRoleid').val();
                                     d.user_id = $('#hiddenUserid').val();
+                                    d.search_keyword =$('input[name=search_keyword]').val();
                                     d._token = messages.token;
                                 },
                                 "error": function () {  // error handling
@@ -254,22 +277,7 @@ jQuery(document).ready(function ($) {
                         });
                         console.log(oTables3);
                         oTables3.draw();
-
-                    }else if(result.status === '2'){
-                        $('#user_error').text('');
-                        $('#role_error').text('');
-                        if(result.data.hasOwnProperty('role_id')){
-                            $('#role_error').text(result.data.role_id[0]);
-                        }
-                        if(result.data.hasOwnProperty('user_id')){
-                            $('#user_error').text(result.data.user_id[0]);
-                        }
-                        $('#searchbtn').attr('disabled',true);
-
-                    }else{
-
-                        console.log('Not founds !');
-                    }
+                    
 
 
 

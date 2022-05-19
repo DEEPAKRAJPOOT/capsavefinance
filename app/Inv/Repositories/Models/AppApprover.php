@@ -91,7 +91,34 @@ class AppApprover extends BaseModel
         return ($apprUsers ? $apprUsers : []);
     }    
     
-    
+    /**
+     * Update Application Approvers flag
+     * 
+     * @param array $data
+     * @return array
+     */
+    public static function updateAppApprInActiveFlag($data)
+    {
+        $apprUsers = self::where('app_id', '=', $data['app_id'])
+                        ->where('approver_user_id', '=', $data['approver_user_id'])          
+                        ->update(['is_active' => 0]);
+        return $apprUsers;
+    }
+
+    /**
+     * check Application Approvers
+     * 
+     * @param integer $app_id
+     * @return array
+     */
+    public static function checkAppApprovers($data){
+        $apprUsers = self::select('*')
+            ->where('app_id', '=', $data['app_id'])
+            ->where('approver_user_id', '=', $data['approver_user_id'])
+            ->get();
+        return ($apprUsers ? true : false);
+    }
+
     /**
      * Get all Application Approvers
      * 
