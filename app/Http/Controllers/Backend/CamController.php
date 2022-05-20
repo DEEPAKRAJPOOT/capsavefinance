@@ -54,6 +54,7 @@ use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\DocumentMaster;
+use App\Inv\Repositories\Models\Application;
 
 class CamController extends Controller
 {
@@ -1848,6 +1849,16 @@ class CamController extends Controller
       //update approve status in offer table after all approver approve the offer.
       $this->appRepo->changeOfferApprove((int)$appId);
       Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+      $current_status = ($appData) ? $appData->curr_status_id : '';
+      if($current_status == config('common.mst_status_id.OFFER_LIMIT_APPROVED'));{
+        $appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$appId, 'biz_id' => $bizId, 'is_active'=>1, 'is_non_editable'=>0])->get();
+        foreach ($appSecurtiyDocs as $clone) {
+          $cloneAppSecData = $clone->replicate();
+          $cloneAppSecData->is_non_editable = 1;
+          $cloneAppSecData->status = 2;
+          $cloneAppSecData->save();
+        }
+      }
       \DB::commit();
       Session::flash('message', trans('backend_messages.offer_approved'));
       return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
@@ -2787,7 +2798,15 @@ class CamController extends Controller
       $reviewerSummaryData = CamReviewerSummary::where('biz_id', '=', $arrRequest['biz_id'])->where('app_id', '=', $arrRequest['app_id'])->first();
       $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
       $securityDocumentListJson = json_encode($securityDocumentList);
-      $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $arrRequest['app_id'], 'is_active' => 1])->get()->toArray();
+      $appData = Application::where(['status'=>1, 'app_id'=>$request->get('app_id')])->first();
+      // dd($appData['curr_status_id']);
+      if($appData['curr_status_id'] < 21){
+        $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $arrRequest['app_id'], 'is_active' => 1,'is_non_editable'=>0])->get()->toArray();
+      }
+      elseif($appData['curr_status_id'] = 21){
+        $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $arrRequest['app_id'], 'is_active' => 1,'is_non_editable'=>1])->get()->toArray();
+      }
+      // dd($appData);
       $securityListingData = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where('is_active',1)->get();
       return view('backend.cam.security_deposit')->with([
         'reviewerSummaryData' => $reviewerSummaryData,
@@ -2795,7 +2814,8 @@ class CamController extends Controller
         'securityDocumentListJson' => $securityDocumentListJson,
         'arrAppSecurityDoc' => $arrAppSecurityDoc,
         'securityListingData' => $securityListingData,
-        'userId' => $userId
+        'userId' => $userId,
+        'appData' => $appData
       ]);
     } catch (Exception $ex) {
       return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

@@ -117,6 +117,11 @@ class AppSecurityDoc extends BaseModel
         return $this->belongsTo('App\Inv\Repositories\Models\User','created_by','user_id')->where('is_active',1);
     }
 
+    public function currentStatusId()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id')->where('is_active',1);
+    }
+
 }
 
 

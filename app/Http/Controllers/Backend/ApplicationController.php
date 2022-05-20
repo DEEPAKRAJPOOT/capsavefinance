@@ -1317,6 +1317,7 @@ class ApplicationController extends Controller
 		}else{
 		  $isSalesManager = 0;
 		}
+		$isSalesManager = 1;
 		/*code for getting the sales manager*/
 
 		foreach($supplyOfferData as $key=>$data) {
