@@ -290,6 +290,7 @@
                          </th>
                         </tr>
 
+                  @if(!empty($gstResponsShow['current']['quarterly_summary']['quarter2']))
                   @foreach($gstResponsShow['current']['quarterly_summary']['quarter2']['months'] as $key =>$monthSaleVal)
                   @php
                   $fileMonth=substr($monthSaleVal['ret_period'],0,2);
@@ -316,7 +317,11 @@
                         <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter2']['total_gstr1'] ['ttl_tax'])  !!}</th>
                         <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter2']['total_gstr3b'] ['ttl_val'])  !!}</th>
                         <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter2']['total_gstr3b'] ['ttl_tax'] )  !!}  </th>
-                        </tr> 
+                        </tr>
+
+                   @endif
+
+                 @if(!empty($gstResponsShow['current']['quarterly_summary']['quarter3']))
           @foreach($gstResponsShow['current']['quarterly_summary']['quarter3']['months'] as $key =>$monthSaleVal)
                   @php
                   $fileMonth=substr($monthSaleVal['ret_period'],0,2);
@@ -345,7 +350,7 @@
                         <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter2']['total_gstr3b'] ['ttl_tax'] )  !!}  
                          </th>
                         </tr> 
-
+                    @endif
                   </tbody>
                   <tbody>
                   </tbody>
