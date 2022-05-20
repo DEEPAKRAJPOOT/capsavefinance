@@ -1487,6 +1487,78 @@ class UserEventsListener extends BaseEvent
         }); 
     }
 
+    public function approverMailForPendingCases($attributes){
+        $data = unserialize($attributes);
+        $this->func_name = __FUNCTION__;
+        $email_content = EmailTemplate::getEmailTemplate("APPROVER_MAIL_FOR_PENDING_CASES");
+        if ($email_content) {
+            $userData['approver_name'] = $data['approver_name'];
+            $userData['email'] = $data['email'];
+            $rowData = '';
+            foreach($data['data'] as $key=>$val){
+               $int = $val['interest_rate'] ?? 0.0;
+               $requestPara = $val['app_id'].'%'.$val['biz_id'];
+            $rowData .='<tr>
+              <td
+                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                '.$val['app_code'].'
+              </td>
+              <td
+                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                '. $val['customer_name'].'
+              </td>
+              <td
+                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                '. $val['biz_entity_name'].'
+              </td>
+              <td
+                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                '.\Helpers::formatCurreny($val['prgm_limit_amt']).'
+              </td>
+              <td
+                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                '. $int .'
+              </td>
+            </tr>';
+            }
+            $mail_subject = str_replace(['%name'], [$data['approver_name']],$email_content->subject);
+            $mail_body = str_replace(
+                ['%name', '%allData'],
+                [$userData['approver_name'], $rowData],
+                $email_content->message
+            );
+            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $mail_body],
+                function ($message) use ($data, $mail_subject, $mail_body, $email_content) {
+                    $cc = array_filter(explode(',', $email_content->cc));
+                    $bcc = array_filter(explode(',', $email_content->bcc));
+                    if (!empty($bcc)) {
+                        $message->bcc($bcc);
+                    }
+                    if (!empty($cc)) {
+                        $message->cc($cc);
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($data["email"], $data["approver_name"]);
+                $message->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $data["email"],
+                    'email_cc' => $cc ?? NULL,
+                    'email_bcc' => $bcc ?? NULL,
+                    'email_type' => $this->func_name,
+                    'user_name' => $data['approver_name'],
+                    'name' => $email_content->name,
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                    // 'att_name' => $att_name ?? NULL,
+                    // 'attachment' => $data['attachment'] ?? NULL,
+                ];
+                FinanceModel::logEmail($mailContent);
+            }); 
+        }
+    }
+
+
 
     /**
      * Event subscribers
@@ -1686,6 +1758,10 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'USER_INVOICE_MAIL',
             'App\Inv\Repositories\Events\UserEventsListener@userInvoiceMail'
+        );
+        $events->listen(
+            'APPROVER_MAIL_FOR_PENDING_CASES',
+            'App\Inv\Repositories\Events\UserEventsListener@approverMailForPendingCases'
         );
     }
 

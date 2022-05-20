@@ -2293,7 +2293,8 @@ class ApplicationController extends Controller
 
 	public function pendingCasesMail(){
         $pendingData = $this->lmsRepo->mailsForPendingCases();
-		$approverData = array();
+		if(!empty($pendingData)){
+			$approverData = array();
 		foreach ($pendingData as $key=>$value) {
 			$approverData[$value->email][] = $value;
 		}
@@ -2314,8 +2315,6 @@ class ApplicationController extends Controller
 				
 			}
 		}
-		
-		
+		}
     }
-    
 }
