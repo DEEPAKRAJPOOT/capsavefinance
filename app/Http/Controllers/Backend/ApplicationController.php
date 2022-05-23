@@ -803,7 +803,7 @@ class ApplicationController extends Controller
 			$approverData['approver_user_id'] = $prevFromUser;
 			$prevUserRole = $this->userRepo->getRole($user_role);
 			$nextUserRole = $this->userRepo->getRole($role_id);
-			$this->appRepo->updateAppAssignById($allApps[$i], ['is_deleted'=>1]);
+			$this->appRepo->updateAssignedAppById(array('app_id'=>$allApps[$i],'to_id'=>$prevFromUser), ['is_deleted'=>1]);
 			$applicationCreated = $this->appRepo->saveShaircase($assignedData);
 			if(($prevUserRole->name === 'Sales' && $nextUserRole->name === 'Sales')){
 
@@ -1445,11 +1445,12 @@ class ApplicationController extends Controller
 		$appData = $this->appRepo->getAppDataByAppId($appId);               
 		$userId = $appData ? $appData->user_id : null;     
 		$userData = $this->userRepo->getfullUserDetail($userId);
-		if ($userData && !empty($userData->anchor_id)) {
+		
+		/*if ($userData && !empty($userData->anchor_id)) {
 			$toUserId = $this->userRepo->getLeadSalesManager($userId);
-		} else {
+		} else {*/ 
 			$toUserId = $this->userRepo->getAssignedSalesManager($userId);
-		}
+		/*}*/
 		$authUser = Auth::user();
 		if($authUser->user_id == $toUserId){
 		  $isSalesManager = 1;

@@ -141,6 +141,28 @@ class AppAssignment extends BaseModel
 
         return ($rowUpdate ? $rowUpdate : false);
     }
+
+    public static function updateAssignedAppById($appData, $arr = [])
+    {
+
+        /**
+         * Check Data is Array
+         */
+        if (!is_array($appData)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.send_array'));
+        }
+
+        /**
+         * Check Data is not blank
+         */
+        if (empty($appData)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+
+        $rowUpdate = self::where('app_id',(int)$appData['app_id'])->where('to_id',(int)$appData['to_id'])->update($arr);
+
+        return ($rowUpdate ? $rowUpdate : false);
+    }
     
     /**
      * Get Application assign data
