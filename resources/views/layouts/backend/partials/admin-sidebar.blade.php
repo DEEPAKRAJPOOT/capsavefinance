@@ -545,7 +545,7 @@
         <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false"
             aria-controls="collapseExample">
             <i class="fa fa-exchange" aria-hidden="true"></i>
-            <span class="menu-title">Transfer Lead</span>
+            <span class="menu-title">Transfer Leads/Cases</span>
             <i class="fa fa-angle-right" aria-hidden="true"></i>
         </a>
         <div class="collapse" id="layoutsSubmenu12">
