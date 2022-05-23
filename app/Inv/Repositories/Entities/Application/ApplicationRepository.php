@@ -358,7 +358,15 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 				->with('appLimit')
 				->where(['user_id' => $user_id, 'status' => 2])
 				->get();
-	}    
+	} 
+    
+    /**
+     * update Applications for Application list data tables
+     */
+    public function updateAppAssignById($app_id, $arrUserData = []) 
+    {
+        return AppAssignment::updateAppAssignById((int)$app_id, $arrUserData);
+    }
     
      /**
      * update Applications for Application list data tables
