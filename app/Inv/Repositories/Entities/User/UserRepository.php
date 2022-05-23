@@ -1814,6 +1814,11 @@ class UserRepository extends BaseRepositories implements UserInterface
         return LeadAssign::getAssigneLeadByUserId($role_id,$fromUser,$selectedLeads);
     }
 
+    public function getLeadByUserId($selectedLeads){
+
+        return LeadAssign::getLeadByUserId($selectedLeads);
+    }
+
 
     public function updateDeleteStatus($lead_id){
 

@@ -106,6 +106,18 @@ class LeadAssign extends BaseModel {
         return $result ? $result : null;
     }
 
+    public static function getLeadByUserId($selectedLeads){
+
+        $result = self::select('lead_assign.*')
+        ->join('role_user', 'role_user.user_id', '=', 'lead_assign.to_id')
+        ->where('lead_assign.assigned_user_id', $selectedLeads)
+        ->where('lead_assign.is_owner', 1)
+        ->where('lead_assign.is_deleted', 0)
+        ->first();
+
+        return $result ? $result : null;
+    }
+
     public static function updateDeleteStatus($lead_id){
 
         $updated = self::where('lead_assign_id',$lead_id)->update(['is_deleted'=>1]);

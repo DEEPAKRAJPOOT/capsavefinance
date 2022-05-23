@@ -805,9 +805,35 @@ class ApplicationController extends Controller
 			$nextUserRole = $this->userRepo->getRole($role_id);
 			$this->appRepo->updateAppAssignById($allApps[$i], ['is_deleted'=>1]);
 			$applicationCreated = $this->appRepo->saveShaircase($assignedData);
+			if(($prevUserRole->name === 'Sales' && $nextUserRole->name === 'Sales')){
+
+				
+            	$appData = $getAppDetails = $this->appRepo->getAppData($allApps[$i]);
+				$lead_assignedUser_id = $appData['user_id'];
+				$getUserLeadData = $this->userRepo->getLeadByUserId($lead_assignedUser_id);
+				if($getUserLeadData){
+
+					
+					$lead_assign_id = $getUserLeadData['lead_assign_id'];
+
+                    $toAssignedData['from_id']          = $getUserLeadData['from_id'];
+                    $toAssignedData['to_id']            = $nextToUser;
+                    $toAssignedData['assigned_user_id'] = $getUserLeadData['assigned_user_id'];
+                    $toAssignedData['is_owner']         = $getUserLeadData['is_owner'];
+                    $toAssignedData['created_by']       = auth()->user()->user_id;
+                    $toAssignedData['created_at']       = \Carbon\Carbon::now();
+
+                    $lead_id = $this->userRepo->createLeadAssign($toAssignedData);
+                    $is_deletePrevLead = $this->userRepo->updateDeleteStatus($lead_assign_id);
+				}else{
+
+					Session::flash('error', trans('error_messages.limit_assessment_fail'));
+			        return redirect()->route('assign_cases');
+
+				}
+			}
 			
-			if(($prevUserRole->name === 'Approver' && $nextUserRole->name === 'Approver') ||
-			 ($prevUserRole->name === 'Reviewer' && $nextUserRole->name === 'Reviewer')){
+			if(($prevUserRole->name === 'Approver' && $nextUserRole->name === 'Approver')){
 				
 				$checkApproverStatus = $this->appRepo->checkAppApprovers($approverData);
 				if($checkApproverStatus){

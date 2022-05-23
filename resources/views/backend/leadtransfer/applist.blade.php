@@ -8,11 +8,11 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Transfer Lead</h3>
+            <h3>Transfer Cases</h3>
             <small>Assign Cases</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li style="color:#374767;">Transfer Lead</li>
+                <li style="color:#374767;">Transfer Cases</li>
                 <li class="active">Assign Cases</li>
             </ol>
         </div>
