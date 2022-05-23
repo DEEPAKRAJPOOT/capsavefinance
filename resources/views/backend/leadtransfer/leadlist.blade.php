@@ -10,12 +10,12 @@
             <i class="fa  fa-list"></i>
         </div>
         <div class="header-title">
-            <h3>Transfer Lead</h3>
-            <small>Assign Lead</small>
+            <h3>Transfer Leads</h3>
+            <small>Assign Leads</small>
             <ol class="breadcrumb">
                 <li style="color:#374767;"> Home </li>
-                <li style="color:#374767;">Transfer Lead</li>
-                <li class="active">Assign Lead</li>
+                <li style="color:#374767;">Transfer Leads</li>
+                <li class="active">Assign Leads</li>
             </ol>
         </div>
     </section>
