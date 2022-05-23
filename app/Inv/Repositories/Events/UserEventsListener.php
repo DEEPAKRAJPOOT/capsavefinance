@@ -1527,6 +1527,54 @@ class UserEventsListener extends BaseEvent
         }
     }      
 
+    public function userInvoiceMail($attributes) {
+        $data = unserialize($attributes); 
+        $this->func_name = __FUNCTION__;
+        $email_content = EmailTemplate::getEmailTemplate("USER_INVOICE_MAIL");
+        if($email_content) {
+            $mail_subject = str_replace(['%invoice_no'], [ucwords($data['invoice_no'])], $email_content->subject);
+
+            Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $email_content->message],
+            function ($message) use ($data,$email_content,$mail_subject) {
+                // if( env('SEND_MAIL_ACTIVE') == 1){
+                //     $email = explode(',', env('SEND_MAIL'));
+                //     $emailCc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+                //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
+                // }else{
+                    $emailTo = $data["email"];
+                    $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                    $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                // }
+
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($emailTo);
+                $message->cc($emailCc);    
+                $message->bcc($emailBcc);
+                $message->subject($mail_subject);
+
+                if(!empty($data['attachment'])){
+                    $att_name = $data['invoice_no'].'.pdf';
+                    $message->attach($data['attachment'],['as' => $att_name]);
+                }
+
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $emailTo,
+                    'email_cc' => $emailCc,
+                    'email_bcc' => $emailBcc,
+                    'subject' => $mail_subject,
+                    'body' => $email_content,
+                    'attachment' => $data['attachment'] ?? NULL,
+                    'name' => null,
+                    'att_name' => $att_name ?? NULL,
+                    'email_type' => $this->func_name,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }
+
+
     /**
      * Event subscribers
      *
@@ -1726,6 +1774,10 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'NON_ANCHOR_CSV_LEAD_UPLOAD',
             'App\Inv\Repositories\Events\UserEventsListener@onNonAnchorLeadUpload'
+        );
+        $events->listen(
+            'USER_INVOICE_MAIL',
+            'App\Inv\Repositories\Events\UserEventsListener@userInvoiceMail'
         );
     }
 }
