@@ -444,12 +444,15 @@ class CamController extends Controller
     $is_editable = ($roleData->id == config('common.user_role.APPROVER')) ? 0 : 1;
     $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
     $securityDocumentListJson = json_encode($securityDocumentList);
-    $appData = Application::where(['status'=>1, 'app_id'=>$request->get('app_id')])->first();
-      // dd($appData['curr_status_id']);
+    // dd($request->get('app_id'));
+    $appData = Application::where(['app_id'=>$request->get('app_id')])->first();
+      // dd($appData);
       if($appData['curr_status_id'] < 21){
         $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $appId, 'is_active' => 1,'is_non_editable'=>0])->get()->toArray();
       }
-      elseif($appData['curr_status_id'] = 21){
+      elseif($appData['curr_status_id'] == 21){
+        $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $appId, 'is_active' => 1,'is_non_editable'=>1])->get()->toArray();
+      }elseif($appData['curr_status_id'] != 21){
         $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $appId, 'is_active' => 1,'is_non_editable'=>1])->get()->toArray();
       }
       // dd($appData);
@@ -1859,8 +1862,8 @@ class CamController extends Controller
       $this->appRepo->changeOfferApprove((int)$appId);
       Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
       $current_status = ($appData) ? $appData->curr_status_id : '';
-      if($current_status == config('common.mst_status_id.OFFER_LIMIT_APPROVED'));{
-        $appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$appId, 'biz_id' => $bizId, 'is_active'=>1, 'is_non_editable'=>0])->get();
+      if($current_status == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
+        $appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$appId, 'biz_id' => $bizId, 'is_active'=>1])->get();
         foreach ($appSecurtiyDocs as $clone) {
           $cloneAppSecData = $clone->replicate();
           $cloneAppSecData->is_non_editable = 1;
@@ -2807,7 +2810,7 @@ class CamController extends Controller
       $reviewerSummaryData = CamReviewerSummary::where('biz_id', '=', $arrRequest['biz_id'])->where('app_id', '=', $arrRequest['app_id'])->first();
       $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
       $securityDocumentListJson = json_encode($securityDocumentList);
-      $appData = Application::where(['status'=>1, 'app_id'=>$request->get('app_id')])->first();
+      $appData = Application::where(['app_id'=>$request->get('app_id')])->first();
       // dd($appData['curr_status_id']);
       if($appData['curr_status_id'] < 21){
         $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $arrRequest['app_id'], 'is_active' => 1,'is_non_editable'=>0])->get()->toArray();

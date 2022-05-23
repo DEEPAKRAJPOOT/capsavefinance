@@ -60,7 +60,6 @@
                    @if (Session::has('error_code') && Session::get('error_code') == 'validate_fi_status')
                    <label class='error'>You cannot move this application to the next stage as the fi verification is pending for this customer.</label><br>                   
                    @endif
-                   
                    @if ($assign_case)
                         <label for="txtCreditPeriod">Please select Assignee <span class="mandatory">*</span> </label>
                         <br>

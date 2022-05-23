@@ -314,17 +314,16 @@ class DataRenderer implements DataProviderInterface
                 //     }else{
                 //         $anchorUserType='';
                 //     }
-                //        return $anchorUserType;
                 // })                
                 ->addColumn(
                     'assignee',
                     function ($app) {  
                         $data = '';                  
-                    //if ($app->to_id){
-                    //    $userInfo = Helpers::getUserInfo($app->to_id);                    
-                    //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
+                        //        return $anchorUserType;
+                        //    $userInfo = Helpers::getUserInfo($app->to_id);                    
+                        //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
                     //} else {
-                    //    $assignName=''; 
+                        //    $assignName=''; 
                     //} 
                     //return $assignName;
                     $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
@@ -346,118 +345,119 @@ class DataRenderer implements DataProviderInterface
                         } else {
                             $data .= $app->assigned_by ? $app->assigned_by : '';
                         }
-                       // $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
+                        // $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
                         if(Helpers::checkPermission('view_shared_details') ){
                             $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Shared Details">View Shared Details</a>';
                         }
                         return $data;
                         //$fromData = AppAssignment::getOrgFromUser($app->app_id);
                         //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
-                })                
-                ->addColumn(
-                    'shared_detail',
-                    function ($app) {
-                    return $app->sharing_comment ? $app->sharing_comment : '';
-
-                })
-                ->addColumn(
-                    'status',
-                    function ($app) {
-                    //$app_status = config('common.app_status');                    
-                    //$status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
-                    $status = isset($app->status_name) ? $app->status_name : ''; 
-
-                    $link = '<a title="View Application Status" href="#" data-toggle="modal" data-target="#viewApplicationStatus" data-url="' . route('view_app_status_list', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn">View Status</a>';
-
-                    if(Helpers::checkPermission('view_app_status_list') ){
-                        $status .= $link;                        
-                    }
-                    return $status;
-                })
-                ->addColumn(
-                    'action',
-                    function ($app) use ($request) {
-                        $act = '';
-                        $lmsStatus = config('lms.LMS_STATUS');
-                        $view_only = Helpers::isAccessViewOnly($app->app_id);
-                        if ($view_only && in_array($app->status, [0,1,2])) {
-                           if(Helpers::checkPermission('add_app_note')){
-                                $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
-                            }                            
-                        }
-                        if ($view_only && $app->status == 1) {
-                          //// $act = $act . '<a title="Copy application" href="#" data-toggle="modal" data-target="#addAppCopy" data-url="' . route('add_app_copy', ['user_id' =>$app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Copy Application</a>';
-
-                            if(Helpers::checkPermission('send_case_confirmBox')){
-                                $currentStage = Helpers::getCurrentWfStage($app->app_id);
-                                $roleData = Helpers::getUserRole();     
-                                $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
-                                if ($currentStage && ( (!$lmsStatus && $currentStage->order_no < 16) || ($lmsStatus && $currentStage->order_no <= 16) ) ) {                                                                                                           
-                                    $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-reply" aria-hidden="true"></i></a> ';
-                                    if ($currentStage->order_no == 16 && !$hasSupplyChainOffer ) {
-                                        if ($app->curr_status_id != config('common.mst_status_id')['DISBURSED']) {
-                                            $act = $act . $moveToBackStageUrl;
+                    })                
+                    ->addColumn(
+                        'shared_detail',
+                        function ($app) {
+                            return $app->sharing_comment ? $app->sharing_comment : '';
+                            
+                        })
+                        ->addColumn(
+                            'status',
+                            function ($app) {
+                                //$app_status = config('common.app_status');                    
+                                //$status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
+                                $status = isset($app->status_name) ? $app->status_name : ''; 
+                                
+                                $link = '<a title="View Application Status" href="#" data-toggle="modal" data-target="#viewApplicationStatus" data-url="' . route('view_app_status_list', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn">View Status</a>';
+                                
+                                if(Helpers::checkPermission('view_app_status_list') ){
+                                    $status .= $link;                        
+                                }
+                                return $status;
+                            })
+                            ->addColumn(
+                                'action',
+                                function ($app) use ($request) {
+                                    $act = '';
+                                    $lmsStatus = config('lms.LMS_STATUS');
+                                    $view_only = Helpers::isAccessViewOnly($app->app_id);
+                                    if ($view_only && in_array($app->status, [0,1,2])) {
+                                        if(Helpers::checkPermission('add_app_note')){
+                                            $act = $act . '<a title="Add App Note" href="#" data-toggle="modal" data-target="#addCaseNote" data-url="' . route('add_app_note', ['app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-sticky-note" aria-hidden="true"></i></a>';
+                                        }                            
+                                    }
+                                    if ($view_only && $app->status == 1) {
+                                        //// $act = $act . '<a title="Copy application" href="#" data-toggle="modal" data-target="#addAppCopy" data-url="' . route('add_app_copy', ['user_id' =>$app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id]) . '" data-height="190px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm">Copy Application</a>';
+                                        
+                                        if(Helpers::checkPermission('send_case_confirmBox')){
+                                            $currentStage = Helpers::getCurrentWfStage($app->app_id);
+                                            $roleData = Helpers::getUserRole();     
+                                            $hasSupplyChainOffer = Helpers::hasSupplyChainOffer($app->app_id);
+                                            if ($currentStage && ( (!$lmsStatus && $currentStage->order_no < 16) || ($lmsStatus && $currentStage->order_no <= 16) ) ) {                                                                                                           
+                                                $moveToBackStageUrl = '&nbsp;<a href="#" title="Move to Back Stage" data-toggle="modal" data-target="#assignCaseFrame" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id'), 'assign_case' => 1]) . '" data-height="320px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-reply" aria-hidden="true"></i></a> ';
+                                                if ($currentStage->order_no == 16 && !$hasSupplyChainOffer ) {
+                                                    if ($app->curr_status_id != config('common.mst_status_id')['DISBURSED']) {
+                                                        $act = $act . $moveToBackStageUrl;
+                                                    }
+                                                } else {
+                                                    $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';    
+                                                    
+                                                    if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
+                                                        $act = $act . $moveToBackStageUrl;
+                                                    }
+                                                }
+                                            }
+                                        }                                                        
+                                    }
+                                    
+                                    
+                                    if ($lmsStatus && $app->renewal_status == 1 && Helpers::checkPermission('copy_app_confirmbox')) {                            
+                                        $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 1]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></a> ';
+                                    }
+                                    
+                                    //$where=[];
+                                    //$where['user_id'] = $app->user_id;
+                                    //$where['status'] = [0,1];
+                                    //$appData = Application::getApplicationsData($where);
+                                    $appData = Application::checkAppByPan($app->user_id);
+                                    if ($lmsStatus && $app->status == 2 && !$appData) { //Limit Enhancement
+                                        
+                                        if (Helpers::checkPermission('enhance_limit_confirmbox')) {
+                                            $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('enhance_limit_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-plus" aria-hidden="true"></i></a> ';
                                         }
-                                    } else {
-                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';    
-
-                                        if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
-                                            $act = $act . $moveToBackStageUrl;
+                                        if (Helpers::checkPermission('reduce_limit_confirmBox')) {
+                                            $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('reduce_limit_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-times" aria-hidden="true"></i></a> ';
                                         }
                                     }
-                                }
-                            }                                                        
-                        }
-                        
-                        
-                        if ($lmsStatus && $app->renewal_status == 1 && Helpers::checkPermission('copy_app_confirmbox')) {                            
-                            $act = $act . '&nbsp;<a href="#" title="Copy/Renew Application" data-toggle="modal" data-target="#confirmCopyApp" data-url="' . route('copy_app_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 1]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-files-o" aria-hidden="true"></i></a> ';
-                        }
-
-                        //$where=[];
-                        //$where['user_id'] = $app->user_id;
-                        //$where['status'] = [0,1];
-                        //$appData = Application::getApplicationsData($where);
-                        $appData = Application::checkAppByPan($app->user_id);
-                        if ($lmsStatus && $app->status == 2 && !$appData) { //Limit Enhancement
-
-                            if (Helpers::checkPermission('enhance_limit_confirmbox')) {
-                                $act = $act . '&nbsp;<a href="#" title="Limit Enhancement" data-toggle="modal" data-target="#confirmEnhanceLimit" data-url="' . route('enhance_limit_confirmbox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 2]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-plus" aria-hidden="true"></i></a> ';
-                            }
-                            if (Helpers::checkPermission('reduce_limit_confirmBox')) {
-                                $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('reduce_limit_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-times" aria-hidden="true"></i></a> ';
-                            }
-                        }
-                        
-                        //Route for Application Rejection
-                        // if (Helpers ::checkPermission('reject_app') && ($app->curr_status_id === null && $app->curr_status_id !== config('common.mst_status_id')['APP_REJECTED'])) {
-                        if (Helpers::isChangeAppStatusAllowed($app->curr_status_id) && Helpers ::checkPermission('reject_app')) {
-                           $act = $act . '<a title="Modify Status" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></a>';
-                        }
-                        
-                        return $act;
-                                      
-                    }
-                )
-                ->filter(function ($query) use ($request) {
-                    
-                    if ($request->get('search_keyword') != '') {                        
-                        $query->where(function ($query) use ($request) {
-                            $search_keyword = trim($request->get('search_keyword'));
-                            $query->where('app.app_code', 'like',"%$search_keyword%")
-                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
-                            ->orWhere('anchor_user.pan_no', 'like', "%$search_keyword%");
-                        });                        
-                    }
-                    if ($request->get('is_assign') != '') {
-                        $query->where(function ($query) use ($request) {
-                            $is_assigned = $request->get('is_assign');
-                            $query->where('app.is_assigned', $is_assigned);
-                        });
-                    }
-                    if ($request->get('status') != '') {
-                        $query->where(function ($query) use ($request) {
-                            $status = $request->get('status');
+                                    
+                                    //Route for Application Rejection
+                                    // if (Helpers ::checkPermission('reject_app') && ($app->curr_status_id === null && $app->curr_status_id !== config('common.mst_status_id')['APP_REJECTED'])) {
+                                        if (Helpers::isChangeAppStatusAllowed($app->curr_status_id) && Helpers ::checkPermission('reject_app')) {
+                                            $act = $act . '<a title="Modify Status" href="#" data-toggle="modal" data-target="#rejectApplication" data-url="' . route('reject_app', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="250px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-cog" aria-hidden="true"></i></a>';
+                                        }
+                                        
+                                        return $act;
+                                        
+                                    }
+                                    )
+                                    ->filter(function ($query) use ($request) {
+                                        
+                                        if ($request->get('search_keyword') != '') {                        
+                                            $query->where(function ($query) use ($request) {
+                                                $search_keyword = trim($request->get('search_keyword'));
+                                                $query->where('app.app_code', 'like',"%$search_keyword%")
+                                                ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
+                                                ->orWhere('anchor_user.pan_no', 'like', "%$search_keyword%");
+                                            });                        
+                                        }
+                                        if ($request->get('is_assign') != '') {
+                                            $query->where(function ($query) use ($request) {
+                                                $is_assigned = $request->get('is_assign');
+                                                $query->where('app.is_assigned', $is_assigned);
+                                            });
+                                        }
+                                        if ($request->get('status') != '') {
+                                            $query->where(function ($query) use ($request) {
+                                                $status = $request->get('status');
+                                                //if ($app->to_id){
                             if ($status == 1 || $status == 2) {
                                 $query->where('app.renewal_status', $status);  
                             } else if ($status == 3) {
