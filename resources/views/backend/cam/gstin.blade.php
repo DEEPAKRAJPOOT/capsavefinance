@@ -346,10 +346,10 @@
                         @endphp
                      <tr>
                         <th>  Q1 Total ( {{ date("M Y",strtotime($firstmonthSaleValDate))  }}  -  {{ date("M Y",strtotime($monthSaleValDate))  }} )</td>    <!--  (Apr 2019 - Jun 2019) -->
-                        <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter2']['total_gstr1'] ['ttl_val'])  !!}</th>
-                        <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter2']['total_gstr1'] ['ttl_tax'])  !!}</th>
-                        <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter2']['total_gstr3b'] ['ttl_val'])  !!}</th>
-                        <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter2']['total_gstr3b'] ['ttl_tax'] )  !!}  
+                        <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter3']['total_gstr1'] ['ttl_val'])  !!}</th>
+                        <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter3']['total_gstr1'] ['ttl_tax'])  !!}</th>
+                        <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter3']['total_gstr3b'] ['ttl_val'])  !!}</th>
+                        <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter3']['total_gstr3b'] ['ttl_tax'] )  !!}
                          </th>
                      </tr> 
                     @endif
@@ -473,6 +473,9 @@
                          </th>
                         </tr>
 
+
+                        
+                  @if(isset($gstResponsShow['current']['quarterly_summary']) && !empty($gstResponsShow['current']['quarterly_summary']['quarter2']))
                   @foreach($gstResponsShow['current']['quarterly_summary']['quarter2']['months'] as $key =>$monthSaleVal)
                   @php
                   $fileMonth=substr($monthSaleVal['ret_period'],0,2);
@@ -499,7 +502,12 @@
                         <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter2']['total_gstr2a'] ['ttl_tax'])  !!}</th>
                         <th></th>
                         <th></th>
-                        </tr> 
+                        </tr>
+
+                  @endif
+
+                  @if(isset($gstResponsShow['current']['quarterly_summary']) && !empty($gstResponsShow['current']['quarterly_summary']['quarter3']))
+
           @foreach($gstResponsShow['current']['quarterly_summary']['quarter3']['months'] as $key =>$monthSaleVal)
                   @php
                   $fileMonth=substr($monthSaleVal['ret_period'],0,2);
@@ -516,17 +524,18 @@
                   @endforeach 
 
                   @php
-                  $fileMonth=substr($gstResponsShow['current']['quarterly_summary']['quarter2']['months'] [0]['ret_period'],0,2);
+                  $fileMonth=substr($gstResponsShow['current']['quarterly_summary']['quarter3']['months'] [0]['ret_period'],0,2);
                   $fileYear=substr($monthSaleVal['ret_period'],-4); 
                   $firstmonthSaleValDate=$fileYear."-".$fileMonth."-".'01';
                   @endphp
                      <tr>
                      <th>  Q1 Total ( {{ date("M Y",strtotime($firstmonthSaleValDate))  }}  -  {{ date("M Y",strtotime($monthSaleValDate))  }} )</td>    <!--  (Apr 2019 - Jun 2019) -->
-                        <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter2']['total_gstr2a'] ['ttl_val'])  !!}</th>
-                        <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter2']['total_gstr2a'] ['ttl_tax'])  !!}</th>
+                        <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter1']['total_gstr2a'] ['ttl_val'])  !!}</th>
+                        <th>{!! \Helpers::roundFormatCurreny($gstResponsShow['current']['quarterly_summary']['quarter1']['total_gstr2a'] ['ttl_tax'])  !!}</th>
                         <th></th>
                         <th></th>
-                        </tr> 
+                        </tr>
+                 @endif
 
                   </tbody>
                   <tbody>
