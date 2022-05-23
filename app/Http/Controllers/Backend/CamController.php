@@ -2840,7 +2840,6 @@ class CamController extends Controller
     \DB::beginTransaction();
     try {
         $arrCamData = $request->all();
-        // dd($arrCamData['security_doc_id']);
         $userId = Auth::user()->user_id;
 
         if (isset($arrCamData['security_doc_id']) && !empty($arrCamData['security_doc_id']) && isset($arrCamData['doc_type']) && !empty($arrCamData['doc_type'])) {
@@ -2858,10 +2857,10 @@ class CamController extends Controller
           if (!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2) && !empty($dataCheck3) && !empty($dataCheck4) && !empty($dataCheck5) && !empty($dataCheck6) && $dataCheck7>0 && !empty($dataCheck8) && !empty($dataCheck9) && !empty($dataCheck10)) {
             foreach ($arrCamData['security_doc_id'] as $key => $securityDocId) {
               if(!empty($securityDocId) && isset($securityDocId) && $securityDocId!= '' && $securityDocId != null){
+                $app_security_doc_id = isset($arrCamData['app_security_doc_id'][$key]) ? $arrCamData['app_security_doc_id'][$key] : null;
                 $is_upload = $file_id = '';
               if (isset($arrCamData['doc_file_sec'][$key])) {
                 $attributes['doc_file'] = $arrCamData['doc_file_sec'][$key];
-                $app_security_doc_id = isset($arrCamData['app_security_doc_id'][$key]) ? $arrCamData['app_security_doc_id'][$key] : null;
                 $uploadData = Helpers::uploadSecurityDocFile($attributes, $arrCamData['app_id'], $app_security_doc_id);
                 $secDocFile = $this->docRepo->saveFile($uploadData);
                 if (!empty($secDocFile->file_id)) {
@@ -2877,38 +2876,47 @@ class CamController extends Controller
                 $rmd = date('Y-m-d', $rmd);
                 $renewal_reminder_date = $rmd;
               }
-              $inputArr = array(
-                'biz_id' => $arrCamData['biz_id'],
-                'app_id' => $arrCamData['app_id'],
-                'security_doc_id' => $securityDocId,
-                'description' => isset($arrCamData['description'][$key]) ? $arrCamData['description'][$key] : null,
-                'document_number' => isset($arrCamData['document_number'][$key]) ? $arrCamData['document_number'][$key] : null,
-                'due_date' => isset($arrCamData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['due_date'][$key])->format('Y-m-d') : null,
-                'completed' => isset($arrCamData['completed'][$key]) ? $arrCamData['completed'][$key] : null,
-                'exception_received' => isset($arrCamData['exception_received'][$key]) ? $arrCamData['exception_received'][$key] : null,
-                'exception_received_from' => isset($arrCamData['exception_received_from'][$key]) ? $arrCamData['exception_received_from'][$key] : null,
-                'exception_received_date' => isset($arrCamData['exception_received_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['exception_received_date'][$key])->format('Y-m-d') : null,
-                'exception_remark' => isset($arrCamData['exception_remark'][$key]) ? $arrCamData['exception_remark'][$key] : null,
-                'extended_due_date' => isset($arrCamData['extended_due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['extended_due_date'][$key])->format('Y-m-d') : null,
-                'maturity_date' => isset($arrCamData['maturity_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d') : null,
-                'renewal_reminder_days' => isset($arrCamData['renewal_reminder_days'][$key]) ? $arrCamData['renewal_reminder_days'][$key] : null,
-                'amount_expected' => isset($arrCamData['amount_expected'][$key]) ? $arrCamData['amount_expected'][$key] : null,
-                'document_amount' => isset($arrCamData['document_amount'][$key]) ? $arrCamData['document_amount'][$key] : null,
-                'doc_type' => isset($arrCamData['doc_type'][$key]) ? $arrCamData['doc_type'][$key] : null,
-                'created_by' => $userId,
-                'renewal_reminder_date' => $renewal_reminder_date,
-              );
-              if ($is_upload && $file_id) {
-                $inputArr['is_upload'] = isset($is_upload) ? $is_upload : null;
-                $inputArr['file_id'] =  isset($file_id) ? $file_id : null;
+              $arrAppSecurityDoc = false;
+              if(!empty($app_security_doc_id)){
+                $arrAppSecurityDoc = AppSecurityDoc::where(['app_security_doc_id' => $app_security_doc_id, 'is_active' => 1,'status'=>2])->first();
               }
-              if (isset($arrCamData['app_security_doc_id'][$key])) {
-                $app_security_doc_id = $arrCamData['app_security_doc_id'][$key];
-                $inputArr['updated_by'] = $userId;
-              } else {
-                $app_security_doc_id = null;
+              if(!$arrAppSecurityDoc){
+                $inputArr = array(
+                  'biz_id' => $arrCamData['biz_id'],
+                  'app_id' => $arrCamData['app_id'],
+                  'security_doc_id' => $securityDocId,
+                  'description' => isset($arrCamData['description'][$key]) ? $arrCamData['description'][$key] : null,
+                  'document_number' => isset($arrCamData['document_number'][$key]) ? $arrCamData['document_number'][$key] : null,
+                  'due_date' => isset($arrCamData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['due_date'][$key])->format('Y-m-d') : null,
+                  'completed' => isset($arrCamData['completed'][$key]) ? $arrCamData['completed'][$key] : null,
+                  'exception_received' => isset($arrCamData['exception_received'][$key]) ? $arrCamData['exception_received'][$key] : null,
+                  'exception_received_from' => isset($arrCamData['exception_received_from'][$key]) ? $arrCamData['exception_received_from'][$key] : null,
+                  'exception_received_date' => isset($arrCamData['exception_received_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['exception_received_date'][$key])->format('Y-m-d') : null,
+                  'exception_remark' => isset($arrCamData['exception_remark'][$key]) ? $arrCamData['exception_remark'][$key] : null,
+                  'extended_due_date' => isset($arrCamData['extended_due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['extended_due_date'][$key])->format('Y-m-d') : null,
+                  'maturity_date' => isset($arrCamData['maturity_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d') : null,
+                  'renewal_reminder_days' => isset($arrCamData['renewal_reminder_days'][$key]) ? $arrCamData['renewal_reminder_days'][$key] : null,
+                  'amount_expected' => isset($arrCamData['amount_expected'][$key]) ? $arrCamData['amount_expected'][$key] : null,
+                  'document_amount' => isset($arrCamData['document_amount'][$key]) ? $arrCamData['document_amount'][$key] : null,
+                  'doc_type' => isset($arrCamData['doc_type'][$key]) ? $arrCamData['doc_type'][$key] : null,
+                  'created_by' => $userId,
+                  'renewal_reminder_date' => $renewal_reminder_date,
+                  'is_non_editable' => 0,
+                  'status' => 3,
+                );
+                if ($is_upload && $file_id) {
+                  $inputArr['is_upload'] = isset($is_upload) ? $is_upload : null;
+                  $inputArr['file_id'] =  isset($file_id) ? $file_id : null;
+                }
+                if (isset($arrCamData['app_security_doc_id'][$key])) {
+                  $app_security_doc_id = $arrCamData['app_security_doc_id'][$key];
+                  $inputArr['updated_by'] = $userId;
+                } else {
+                  $app_security_doc_id = null;
+                }
+                AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
               }
-              AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
+              
               }
               
             }

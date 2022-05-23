@@ -1038,6 +1038,16 @@ class ApplicationController extends Controller
                                 UserDetail::where('user_id',$user_id)->update(['is_active' =>1]);
                                 $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction  
                                 \Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_SANCTIONED'));
+								$current_status = ($appData) ? $appData->curr_status_id : '';
+								if($current_status == config('common.mst_status_id.APP_SANCTIONED')){
+									$appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$appId, 'biz_id' => $bizId, 'is_active'=>1])->get();
+									foreach ($appSecurtiyDocs as $clone) {
+									  $cloneAppSecData = $clone->replicate();
+									  $cloneAppSecData->is_non_editable = 1;
+									  $cloneAppSecData->status = 4;
+									  $cloneAppSecData->save();
+									}
+								  }
                                 
                                 $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
                                 if($prcsAmt && isset($prcsAmt->offer)) {
