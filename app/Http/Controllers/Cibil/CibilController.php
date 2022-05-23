@@ -193,7 +193,8 @@ class CibilController extends Controller
                return response()->json(['message' => $respXmlData['message'], 'status' => 0]); 
             }
             $responseData = $respXmlData['result'];
-            $xmlArray = xmlToArray($responseData);
+            //$xmlArray = xmlToArray($responseData); commented because getting CDATA value in response current function skip CDATA value
+            $xmlArray = xmlToArrayWithCDATA($responseData);
             $commercial = $xmlArray['COMMERCIAL-ACE-REPORTS']['COMMERCIAL-REPORT'] ?? [];
             $individual = $xmlArray['COMMERCIAL-ACE-REPORTS']['BASE-PLUS-REPORT'] ?? [];
             if(isset($commercial['HEADER']['STATUS']) && $commercial['HEADER']['STATUS'] == 'SUCCESS'){
@@ -229,8 +230,13 @@ class CibilController extends Controller
                     BizOwner::where('biz_owner_id', $biz_owner_id)->update(['cibil_score'=> $scores[$biz_owner_id], 'is_cibil_pulled' =>1]);
                 }else{
                     foreach ($bizOwnerIds as $key => $biz_owner_id) {
-                       $scores[$biz_owner_id] = $individual[$key]['SCORES']['SCORE']['SCORE-VALUE'] ?? 0;
-                       BizOwner::where('biz_owner_id', $biz_owner_id)->update(['cibil_score'=> $scores[$biz_owner_id], 'is_cibil_pulled' =>1]);  
+                        $panData = (isset($individual[$key]['PERSONAL-INFO-VARIATION']['PAN-VARIATIONS']) && !empty($individual[$key]['PERSONAL-INFO-VARIATION']['PAN-VARIATIONS']['VARIATION']['VALUE']))?$individual[$key]['PERSONAL-INFO-VARIATION']['PAN-VARIATIONS']['VARIATION']['VALUE']:'';
+                        $scores[$biz_owner_id] = $individual[$key]['SCORES']['SCORE']['SCORE-VALUE'] ?? 0;
+                        if(!empty($panData) && $panData != ''){
+                            $queryUpdate =BizOwner::where('biz_owner_id', $biz_owner_id);
+                            $queryUpdate->where('pan_number', $panData)->orWhere('pan_card',$panData);
+                            $queryUpdate->update(['cibil_score'=> $scores[$biz_owner_id], 'is_cibil_pulled' =>1]);
+                        }  
                     }
                 }
                  return response()->json(['message' =>'Bureau score pulled successfully.','status' => 1, 'value' => $biz_crif_id, 'commercialScore' => $commercialScore, 'individualScore' => $scores[$biz_owner_id]]);

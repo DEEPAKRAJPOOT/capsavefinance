@@ -100,7 +100,7 @@
                                  <td class="sorting_1" width="15%">{{$i}}</td>
                                  <td width="20%">{{$arr->first_name." ".$arr->last_name}}</td>
                                  <td width="20%">{{$arr->pan_number}}</td>
-                                 <td width="20%" id="cibilScore{{$arr->biz_owner_id}}">{{$arr->cibil_score}}</td>
+                                 <td width="20%" id="cibilScore{{$arr->biz_owner_id}}">{{$arr->cibil_score??0}}</td>
                               </tr>
                               @endforeach  
                            </tbody>
