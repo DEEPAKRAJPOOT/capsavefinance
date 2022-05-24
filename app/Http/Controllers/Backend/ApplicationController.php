@@ -897,12 +897,12 @@ class ApplicationController extends Controller
 	public function AcceptNextStage(Request $request) {
                           
 		try{    
-                   
-                       $approver_list = $request->get('approver_list');
-                        $user_id = $request->get('user_id');
+              
+			$approver_list = $request->get('approver_list');
+			$user_id = $request->get('user_id');
 			$app_id = $request->get('app_id');
-                        $approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
-                        $sel_assign_role = $request->get('sel_assign_role');
+			$approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
+			$sel_assign_role = $request->get('sel_assign_role');
 			$assign_case = $request->get('assign_case');
 			$sharing_comment = $request->get('sharing_comment');
 			$curr_role_id = $request->get('curr_role_id');
@@ -931,11 +931,12 @@ class ApplicationController extends Controller
 						return redirect()->back();
 					}
                                         
-                                        $appData = $this->appRepo->getAppData($app_id);
-                                        if ($appData && in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_LIMIT_REJECTED')]) ) {
-                                            Session::flash('error_code', 'limit_rejected');
-                                            return redirect()->back();
-                                        }                                        
+					$appData = $this->appRepo->getAppData($app_id);
+					$bizId = $appData->biz_id;
+					if ($appData && in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_LIMIT_REJECTED')]) ) {
+						Session::flash('error_code', 'limit_rejected');
+						return redirect()->back();
+					}                                        
 				} else if ($currStage->stage_code == 'approver') {
 					$whereCondition = ['app_id' => $app_id, 'status' => null];
 					$offerData = $this->appRepo->getOfferData($whereCondition);
@@ -1040,7 +1041,7 @@ class ApplicationController extends Controller
                                 \Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_SANCTIONED'));
 								$current_status = ($appData) ? $appData->curr_status_id : '';
 								if($current_status == config('common.mst_status_id.APP_SANCTIONED')){
-									$appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$appId, 'biz_id' => $bizId, 'is_active'=>1])->get();
+									$appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$app_id, 'biz_id' => $bizId, 'is_active'=>1,'status'=>3,'is_non_editable'=>0])->get();
 									foreach ($appSecurtiyDocs as $clone) {
 									  $cloneAppSecData = $clone->replicate();
 									  $cloneAppSecData->is_non_editable = 1;

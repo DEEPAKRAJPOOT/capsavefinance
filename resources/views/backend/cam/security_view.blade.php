@@ -6,16 +6,13 @@
                         <div class="col-sm-12">
                             <div id="listing" class="listing">
                                 <!-- Start View Supply Chain Offer Block -->
-                                {{-- @php
-                                    print_r($securityListingData); die;
-                                @endphp --}}
                                 @foreach($securityListingData as $key=>$listingData)
                                 <div class="card card-color mb-0">
                                         <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
                                                 <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
                                                    <th width="7%">Security Doc No.</th>
-                                                   <th width="93%" colspan="4">Pre/Post Disbursement Details</th>
+                                                   <th width="93%" colspan="4">{{ $title }} Pre/Post Disbursement Details</th>
                                                    {{-- <th width="15%">Status</th> --}}
                                                 </tr>
                                             </thead>

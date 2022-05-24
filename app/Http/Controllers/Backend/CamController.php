@@ -444,19 +444,12 @@ class CamController extends Controller
     $is_editable = ($roleData->id == config('common.user_role.APPROVER')) ? 0 : 1;
     $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
     $securityDocumentListJson = json_encode($securityDocumentList);
-    // dd($request->get('app_id'));
     $appData = Application::where(['app_id'=>$request->get('app_id')])->first();
-      // dd($appData);
-      if($appData['curr_status_id'] < 21){
-        $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $appId, 'is_active' => 1,'is_non_editable'=>0])->get()->toArray();
+      $arrAppSecurityQuerry = AppSecurityDoc::where(['app_id' => $appId,'biz_id'=>$bizId, 'is_active' => 1]);
+      if($appData['curr_status_id'] >= config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
+         $arrAppSecurityQuerry->whereIn('status',[2])->whereIn('is_non_editable',[1]);
       }
-      elseif($appData['curr_status_id'] == 21){
-        $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $appId, 'is_active' => 1,'is_non_editable'=>1])->get()->toArray();
-      }elseif($appData['curr_status_id'] != 21){
-        $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $appId, 'is_active' => 1,'is_non_editable'=>1])->get()->toArray();
-      }
-      // dd($appData);
-    // $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $appId, 'is_active' => 1])->get()->toArray();
+      $arrAppSecurityDoc = $arrAppSecurityQuerry->get()->toArray();
     return view('backend.cam.reviewer_summary', [
       'bizId' => $bizId,
       'appId' => $appId,
@@ -1863,7 +1856,7 @@ class CamController extends Controller
       Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
       $current_status = ($appData) ? $appData->curr_status_id : '';
       if($current_status == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
-        $appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$appId, 'biz_id' => $bizId, 'is_active'=>1])->get();
+        $appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$appId, 'biz_id' => $bizId, 'is_active'=>1,'is_non_editable'=>0,'status'=>1])->get();
         foreach ($appSecurtiyDocs as $clone) {
           $cloneAppSecData = $clone->replicate();
           $cloneAppSecData->is_non_editable = 1;
@@ -2811,23 +2804,28 @@ class CamController extends Controller
       $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
       $securityDocumentListJson = json_encode($securityDocumentList);
       $appData = Application::where(['app_id'=>$request->get('app_id')])->first();
-      // dd($appData['curr_status_id']);
-      if($appData['curr_status_id'] < 21){
-        $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $arrRequest['app_id'], 'is_active' => 1,'is_non_editable'=>0])->get()->toArray();
+      $arrAppSecurityQuerry = AppSecurityDoc::where(['app_id' => $arrRequest['app_id'],'biz_id'=>$arrRequest['biz_id'], 'is_active' => 1]);
+      if($appData['curr_status_id'] == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
+        $arrAppSecurityQuerry->whereIn('status',[2,3])->whereIn('is_non_editable',[0,1]);
       }
-      elseif($appData['curr_status_id'] = 21){
-        $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $arrRequest['app_id'], 'is_active' => 1,'is_non_editable'=>1])->get()->toArray();
+      elseif($appData['curr_status_id'] < config('common.mst_status_id.APP_SANCTIONED')){
+        $arrAppSecurityQuerry->where(['is_non_editable'=>0,'status'=>3]);
+      }elseif($appData['curr_status_id'] == config('common.mst_status_id.APP_SANCTIONED')){
+        $arrAppSecurityQuerry->whereIn('is_non_editable',[0,1])->whereIn('status',[4,5]);
       }
-      // dd($appData);
-      $securityListingData = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where('is_active',1)->get();
+      $arrAppSecurityDoc = $arrAppSecurityQuerry->get()->toArray();
+      $securityListingDataApproved = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where(['is_active'=>1,'status'=>2,'is_non_editable'=>1])->get();
+      $securityListingDataSanctioned = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where(['is_active'=>1,'status'=>4,'is_non_editable'=>1])->get();
+      
       return view('backend.cam.security_deposit')->with([
         'reviewerSummaryData' => $reviewerSummaryData,
         'arrRequest' => $arrRequest,
         'securityDocumentListJson' => $securityDocumentListJson,
         'arrAppSecurityDoc' => $arrAppSecurityDoc,
-        'securityListingData' => $securityListingData,
         'userId' => $userId,
-        'appData' => $appData
+        'appData' => $appData,
+        'securityListingDataApproved' => $securityListingDataApproved,
+        'securityListingDataSanctioned' => $securityListingDataSanctioned
       ]);
     } catch (Exception $ex) {
       return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -2841,7 +2839,6 @@ class CamController extends Controller
     try {
         $arrCamData = $request->all();
         $userId = Auth::user()->user_id;
-
         if (isset($arrCamData['security_doc_id']) && !empty($arrCamData['security_doc_id']) && isset($arrCamData['doc_type']) && !empty($arrCamData['doc_type'])) {
           $dataCheck = array_filter($arrCamData['security_doc_id']);
           $dataCheck1 = array_filter($arrCamData['doc_type']);
@@ -2855,70 +2852,78 @@ class CamController extends Controller
           $dataCheck9 = array_filter($arrCamData['document_amount']);
           $dataCheck10 = array_filter($arrCamData['exception_received']);
           if (!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2) && !empty($dataCheck3) && !empty($dataCheck4) && !empty($dataCheck5) && !empty($dataCheck6) && $dataCheck7>0 && !empty($dataCheck8) && !empty($dataCheck9) && !empty($dataCheck10)) {
+            $arrAppSecurityDoc = false;
             foreach ($arrCamData['security_doc_id'] as $key => $securityDocId) {
               if(!empty($securityDocId) && isset($securityDocId) && $securityDocId!= '' && $securityDocId != null){
                 $app_security_doc_id = isset($arrCamData['app_security_doc_id'][$key]) ? $arrCamData['app_security_doc_id'][$key] : null;
+                // dd($app_security_doc_id);
                 $is_upload = $file_id = '';
-              if (isset($arrCamData['doc_file_sec'][$key])) {
-                $attributes['doc_file'] = $arrCamData['doc_file_sec'][$key];
-                $uploadData = Helpers::uploadSecurityDocFile($attributes, $arrCamData['app_id'], $app_security_doc_id);
-                $secDocFile = $this->docRepo->saveFile($uploadData);
-                if (!empty($secDocFile->file_id)) {
-                  $is_upload = 1;
-                  $file_id = $secDocFile->file_id;
+                if (isset($arrCamData['doc_file_sec'][$key])) {
+                  $attributes['doc_file'] = $arrCamData['doc_file_sec'][$key];
+                  $uploadData = Helpers::uploadSecurityDocFile($attributes, $arrCamData['app_id'], $app_security_doc_id);
+                  $secDocFile = $this->docRepo->saveFile($uploadData);
+                  if (!empty($secDocFile->file_id)) {
+                    $is_upload = 1;
+                    $file_id = $secDocFile->file_id;
+                  }
+                }
+                $renewal_reminder_date = '';
+                if (isset($arrCamData['maturity_date'][$key]) && !empty($arrCamData['maturity_date'][$key]) && isset($arrCamData['renewal_reminder_days'][$key])) {
+                  $maturity_date = Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d');
+                  $renewal_reminder_days = $arrCamData['renewal_reminder_days'][$key];
+                  $rmd = strtotime('-' . $renewal_reminder_days . ' days', strtotime($maturity_date));
+                  $rmd = date('Y-m-d', $rmd);
+                  $renewal_reminder_date = $rmd;
+                }
+                $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $arrCamData['app_id'],'biz_id' => $arrCamData['biz_id'], 'is_active' => 1, 'is_non_editable'=>1, 'status'=>2])->first();
+                if($arrAppSecurityDoc){
+                  $inputArr = array(
+                    'biz_id' => $arrCamData['biz_id'],
+                    'app_id' => $arrCamData['app_id'],
+                    'security_doc_id' => $securityDocId,
+                    'description' => isset($arrCamData['description'][$key]) ? $arrCamData['description'][$key] : null,
+                    'document_number' => isset($arrCamData['document_number'][$key]) ? $arrCamData['document_number'][$key] : null,
+                    'due_date' => isset($arrCamData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['due_date'][$key])->format('Y-m-d') : null,
+                    'completed' => isset($arrCamData['completed'][$key]) ? $arrCamData['completed'][$key] : null,
+                    'exception_received' => isset($arrCamData['exception_received'][$key]) ? $arrCamData['exception_received'][$key] : null,
+                    'exception_received_from' => isset($arrCamData['exception_received_from'][$key]) ? $arrCamData['exception_received_from'][$key] : null,
+                    'exception_received_date' => isset($arrCamData['exception_received_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['exception_received_date'][$key])->format('Y-m-d') : null,
+                    'exception_remark' => isset($arrCamData['exception_remark'][$key]) ? $arrCamData['exception_remark'][$key] : null,
+                    'extended_due_date' => isset($arrCamData['extended_due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['extended_due_date'][$key])->format('Y-m-d') : null,
+                    'maturity_date' => isset($arrCamData['maturity_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d') : null,
+                    'renewal_reminder_days' => isset($arrCamData['renewal_reminder_days'][$key]) ? $arrCamData['renewal_reminder_days'][$key] : null,
+                    'amount_expected' => isset($arrCamData['amount_expected'][$key]) ? $arrCamData['amount_expected'][$key] : null,
+                    'document_amount' => isset($arrCamData['document_amount'][$key]) ? $arrCamData['document_amount'][$key] : null,
+                    'doc_type' => isset($arrCamData['doc_type'][$key]) ? $arrCamData['doc_type'][$key] : null,
+                    'created_by' => $userId,
+                    'renewal_reminder_date' => $renewal_reminder_date,
+                    'is_non_editable' => 0,
+                    'status' => 3,
+                  );
+                  $arrAppSecurityDocData = AppSecurityDoc::where(['app_id' => $arrCamData['app_id'],'biz_id' => $arrCamData['biz_id'], 'is_active' => 1, 'is_non_editable'=>1])->whereIn('status',[4])->first();
+                  if(!empty($arrAppSecurityDocData)){
+                    $inputArr['status'] = 5;
+                  }
+                  if ($is_upload && $file_id) {
+                    $inputArr['is_upload'] = isset($is_upload) ? $is_upload : null;
+                    $inputArr['file_id'] =  isset($file_id) ? $file_id : null;
+                  }
+                  if (isset($arrCamData['app_security_doc_id'][$key])) {
+                    $app_security_doc_id = $arrCamData['app_security_doc_id'][$key];
+                    $inputArr['updated_by'] = $userId;
+                    $arrAppSecurityDocData = AppSecurityDoc::where(['app_id' => $arrCamData['app_id'],'biz_id' => $arrCamData['biz_id'], 'is_active' => 1, 'is_non_editable'=>1,'app_security_doc_id'=>$app_security_doc_id])->whereIn('status',[2,4])->first();
+                    if(!empty($arrAppSecurityDocData)){
+                      $inputArr['is_non_editable'] = $arrAppSecurityDocData->is_non_editable;
+                      $inputArr['status'] = $arrAppSecurityDocData->status;
+                    }
+
+                  } else {
+                    $app_security_doc_id = null;
+                  }
+                  // dd($inputArr);
+                  AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
                 }
               }
-              $renewal_reminder_date = '';
-              if (isset($arrCamData['maturity_date'][$key]) && !empty($arrCamData['maturity_date'][$key]) && isset($arrCamData['renewal_reminder_days'][$key])) {
-                $maturity_date = Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d');
-                $renewal_reminder_days = $arrCamData['renewal_reminder_days'][$key];
-                $rmd = strtotime('-' . $renewal_reminder_days . ' days', strtotime($maturity_date));
-                $rmd = date('Y-m-d', $rmd);
-                $renewal_reminder_date = $rmd;
-              }
-              $arrAppSecurityDoc = false;
-              if(!empty($app_security_doc_id)){
-                $arrAppSecurityDoc = AppSecurityDoc::where(['app_security_doc_id' => $app_security_doc_id, 'is_active' => 1,'status'=>2])->first();
-              }
-              if(!$arrAppSecurityDoc){
-                $inputArr = array(
-                  'biz_id' => $arrCamData['biz_id'],
-                  'app_id' => $arrCamData['app_id'],
-                  'security_doc_id' => $securityDocId,
-                  'description' => isset($arrCamData['description'][$key]) ? $arrCamData['description'][$key] : null,
-                  'document_number' => isset($arrCamData['document_number'][$key]) ? $arrCamData['document_number'][$key] : null,
-                  'due_date' => isset($arrCamData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['due_date'][$key])->format('Y-m-d') : null,
-                  'completed' => isset($arrCamData['completed'][$key]) ? $arrCamData['completed'][$key] : null,
-                  'exception_received' => isset($arrCamData['exception_received'][$key]) ? $arrCamData['exception_received'][$key] : null,
-                  'exception_received_from' => isset($arrCamData['exception_received_from'][$key]) ? $arrCamData['exception_received_from'][$key] : null,
-                  'exception_received_date' => isset($arrCamData['exception_received_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['exception_received_date'][$key])->format('Y-m-d') : null,
-                  'exception_remark' => isset($arrCamData['exception_remark'][$key]) ? $arrCamData['exception_remark'][$key] : null,
-                  'extended_due_date' => isset($arrCamData['extended_due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['extended_due_date'][$key])->format('Y-m-d') : null,
-                  'maturity_date' => isset($arrCamData['maturity_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d') : null,
-                  'renewal_reminder_days' => isset($arrCamData['renewal_reminder_days'][$key]) ? $arrCamData['renewal_reminder_days'][$key] : null,
-                  'amount_expected' => isset($arrCamData['amount_expected'][$key]) ? $arrCamData['amount_expected'][$key] : null,
-                  'document_amount' => isset($arrCamData['document_amount'][$key]) ? $arrCamData['document_amount'][$key] : null,
-                  'doc_type' => isset($arrCamData['doc_type'][$key]) ? $arrCamData['doc_type'][$key] : null,
-                  'created_by' => $userId,
-                  'renewal_reminder_date' => $renewal_reminder_date,
-                  'is_non_editable' => 0,
-                  'status' => 3,
-                );
-                if ($is_upload && $file_id) {
-                  $inputArr['is_upload'] = isset($is_upload) ? $is_upload : null;
-                  $inputArr['file_id'] =  isset($file_id) ? $file_id : null;
-                }
-                if (isset($arrCamData['app_security_doc_id'][$key])) {
-                  $app_security_doc_id = $arrCamData['app_security_doc_id'][$key];
-                  $inputArr['updated_by'] = $userId;
-                } else {
-                  $app_security_doc_id = null;
-                }
-                AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
-              }
-              
-              }
-              
             }
           }
         }

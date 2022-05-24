@@ -11,6 +11,7 @@
         @endphp
         <div class="card mt-4">
             <div class="card-body ">
+            @if(count($securityListingDataApproved) > 0)
              <form method="POST" id="camForm" enctype="multipart/form-data" action="{{route('save_security_deposit')}}"> 
              @csrf
                 <input type="hidden" name="app_id" value="{{isset($arrRequest['app_id']) ? $arrRequest['app_id'] : ''}}" />             
@@ -23,10 +24,26 @@
                 @endcan
                 @endif
               </form>
+              
+              @else
+              <div class="card card-color mb-0">
+                <div class="card-header">
+                   <a class="card-title ">Application is not approved yet.</a>
+                </div>
+             </div>
+              @endif
+              
             </div>
+            @if (count($securityListingDataApproved) > 0)
             <div class="card mt-4">
-                @include('backend.cam.security_view',['securityListingData' => $securityListingData,'userId' => $userId])
+                @include('backend.cam.security_view',['securityListingData' => $securityListingDataApproved,'userId' => $userId, 'title'=>'Approved'])
               </div>
+              @endif
+              @if (count($securityListingDataSanctioned) > 0)
+              <div class="card mt-4">
+                @include('backend.cam.security_view',['securityListingData' => $securityListingDataSanctioned,'userId' => $userId,'title'=>'Sanctioned'])
+              </div>
+              @endif
         </div>
     </div>
 </div>
