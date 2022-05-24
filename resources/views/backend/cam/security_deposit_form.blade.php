@@ -34,7 +34,7 @@
                             if($sectDoc2['security_doc_id'] == $arr['security_doc_id']){
                                 $disabled4 ='';
                             }else{
-                                $disabled4 = 'disabled'; 
+                                $disabled4 = ''; 
                             }
                         }
                            
