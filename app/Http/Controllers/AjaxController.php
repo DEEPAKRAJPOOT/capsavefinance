@@ -5852,6 +5852,7 @@ if ($err) {
             $addl_data = [];
             $currStage = Helpers::getCurrentWfStage($app_id);
             $isFinalSubmit = 0;
+            $appData = $this->application->getAppData($app_id);
             if ($currStage->stage_code == 'approver') {
                 $whereCondition = ['app_id' => $app_id, 'status' => null];
                 $offerData = $this->application->getOfferData($whereCondition);
@@ -5860,7 +5861,6 @@ if ($err) {
                 }
             if ($request->approval_doc_file) {
                 $date = Carbon::now();
-                $appData = $this->application->getAppData($app_id);
                 $supplier_id = $appData->user_id;
                 $uploadApprovalDocData = Helpers::uploadUserApprovalFile($attributes, $supplier_id, $app_id);
                 $userFile = $this->docRepo->saveFile($uploadApprovalDocData);
@@ -5894,6 +5894,16 @@ if ($err) {
                                 //update approve status in offer table after all approver approve the offer.
                                 $this->application->changeOfferApprove((int)$app_id);
                                 Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+                                $current_status = ($appData) ? $appData->curr_status_id : '';
+                                if($current_status == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
+                                $appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$app_id, 'biz_id' => $appData->biz_id, 'is_active'=>1,'is_non_editable'=>0,'status'=>1])->get();
+                                foreach ($appSecurtiyDocs as $clone) {
+                                    $cloneAppSecData = $clone->replicate();
+                                    $cloneAppSecData->is_non_editable = 1;
+                                    $cloneAppSecData->status = 2;
+                                    $cloneAppSecData->save();
+                                }
+                                }
                                 $msg = 'Approval mail copy has been successfully uploaded and moved the next stage (Sales).';
                                 $isFinalSubmit = 1;
                             }
