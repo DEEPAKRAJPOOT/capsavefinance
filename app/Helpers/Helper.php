@@ -207,11 +207,11 @@ class Helper extends PaypalHelper
                     if ($data->role_id == 4) {
                         //$toUserId = User::getLeadSalesManager($user_id);
                         $userData = User::getfullUserDetail($user_id);
-                        if ($userData && !empty($userData->anchor_id)) {
+                        /*if ($userData && !empty($userData->anchor_id)) {
                             $toUserId = User::getLeadSalesManager($user_id);
-                        } else {
+                        } else {*/
                             $toUserId = LeadAssign::getAssignedSalesManager($user_id);
-                        }
+                        /*}*/
                         $dataArr['to_id'] = $toUserId;
                         $dataArr['role_id'] = null;
                     } else if (isset($addl_data['to_id']) && !empty($addl_data['to_id'])) {
