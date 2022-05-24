@@ -293,7 +293,7 @@
                                                     </td>
                                                 </tr>
                                                 @endif
-                                                @if($offerD->margin)
+                                                @if($offerD->margin && $offerD->margin > 0)
                                                 <tr>
                                                     <td valign="top"><b>Margin</b></td>
                                                     <td>
@@ -370,7 +370,7 @@
                                                             @endif
                                                         @endforeach
                                                         @endif
-                                               @if($processingCharges)
+                                               @if($processingCharges && $processingCharges > 0)
                                                 <tr>
                                                     <td valign="top"><b>One time Processing Charges at the time of
                                                             Sanction

@@ -267,7 +267,7 @@
                                                         from date of invoice.
                                                     </td>
                                                 </tr>
-                                                @if($offerD->margin)
+                                                @if($offerD->margin && $offerD->margin > 0)
                                                 <tr>
                                                     <td valign="top"><b>Margin</b></td>
                                                     @php
@@ -356,15 +356,19 @@
                                                             Sanction
                                                             of credit facility</b></td>
                                                     <td>
-                                                        @if(isset($offerD->offerCharges))
-                                                            @foreach($offerD->offerCharges as $key=>$offerCharge)
-                                                            @if($offerCharge->chargeName->chrg_name == 'Processing Fee')
-                                                             @if($offerCharge->chrg_type == '2')
-                                                                {{$offerCharge->chrg_value}}%
-                                                                @endif
-                                                              @endif
-                                                            @endforeach
-                                                            @endif of the sanctioned limit + applicable taxes payable by the
+                                                        @php
+                                                        $processingCharges = '0.00';
+                                                          if(isset($offerD->offerCharges)){
+                                                            foreach($offerD->offerCharges as $key=>$offerCharge){
+                                                            if($offerCharge->chargeName->chrg_name == 'Processing Fee'){
+                                                             if($offerCharge->chrg_type == '2'){
+                                                                $processingCharges = $offerCharge->chrg_value;
+                                                             }
+                                                            }
+                                                          }
+                                                        }
+                                                        @endphp
+                                                        {{ $processingCharges }}% of the sanctioned limit + applicable taxes payable by the
                                                          @php
                                                             $selected1 = $selected2 = '';
                                                             if(isset($arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges) &&  $arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges == 'Anchor'){

@@ -269,7 +269,7 @@
                                                     <td>Borrower can submit invoices not older than {{$offerD->tenor_old_invoice}} days. Door to door tenor shall not exceed {{ $arrayOfferData[$offerD->prgm_offer_id ]->deviation_first_disbursement??($offerD->tenor + $offerD->grace_period + $offerD->tenor_old_invoice) }} days from date of invoice.
                                                     </td>
                                                 </tr>
-                                                @if($offerD->margin)
+                                                @if($offerD->margin && $offerD->margin > 0)
                                                 <tr>
                                                     <td valign="top"><b>Margin</b></td>
                                                     <td>
@@ -337,16 +337,20 @@
                                                             Sanction
                                                             of credit facility</b></td>
                                                     <td>
-                                                        @if(isset($offerD->offerCharges))
-                                                            @foreach($offerD->offerCharges as $key=>$offerCharge)
-                                                            @if($offerCharge->chargeName->chrg_name == 'Processing Fee')
-                                                             @if($offerCharge->chrg_type == '2')
-                                                                {{$offerCharge->chrg_value}}
-                                                                @endif
-                                                              @endif
-                                                            @endforeach
-                                                            @endif% of the sanctioned limit + applicable taxes payable by the
-                                                        {{$arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges??'' }}
+                                                        @php
+                                                        $processingCharges = '0.00';
+                                                          if(isset($offerD->offerCharges)){
+                                                            foreach($offerD->offerCharges as $key=>$offerCharge){
+                                                            if($offerCharge->chargeName->chrg_name == 'Processing Fee'){
+                                                             if($offerCharge->chrg_type == '2'){
+                                                                $processingCharges = $offerCharge->chrg_value;
+                                                             }
+                                                            }
+                                                          }
+                                                        }
+                                                        @endphp
+                                                        {{ $processingCharges }}% of the sanctioned limit + applicable taxes payable by the
+                                                        {{$arrayOfferData[$offerD->prgm_offer_id]->one_time_processing_charges??'' }}
                                                         (non-refundable). *(If Nil is selected in offer– not to capture in final SL).
                                                     </td>
                                                 </tr>
