@@ -191,6 +191,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 		return Application::getApplications();
 	}
 
+    /**
+	 * Get Applications for Application list data tables
+	 */
+	public function getAssignedApplications($request) 
+	{
+		return Application::getAssignedApplications($request['role_id'],$request['user_id']);
+	}
+
 	/**
 	 * Get business information according to app id
 	 */
@@ -350,14 +358,22 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 				->with('appLimit')
 				->where(['user_id' => $user_id, 'status' => 2])
 				->get();
-	}    
+	} 
     
-     /**
+    /**
      * update Applications for Application list data tables
      */
     public function updateAppAssignById($app_id, $arrUserData = []) 
     {
         return AppAssignment::updateAppAssignById((int)$app_id, $arrUserData);
+    }
+    
+     /**
+     * update Applications for Application list data tables
+     */
+    public function updateAssignedAppById($appData, $arrUserData = []) 
+    {
+        return AppAssignment::updateAssignedAppById($appData, $arrUserData);
     }
 
     /**
@@ -821,6 +837,29 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $anchor =  AnchorRelation::where('anchor_relation_id',$anchor_relation_id)->first();
         $updateAnchorData = $anchor->update($attributes);
         return $updateAnchorData ? true : false;
+    }
+
+    /**
+     * Update Authority Users against application
+     * 
+     * @param integer $app_id $user_id
+     * @return mixed
+     */    
+    public function updateAppApprInActiveFlag($attributes)
+    {
+        return AppApprover::updateAppApprInActiveFlag(($attributes));
+    }
+
+
+    /**
+     * check Approval Authority Users against application
+     * 
+     * @param integer $app_id $user_id
+     * @return mixed
+     */    
+    public function checkAppApprovers($attributes)
+    {
+        return AppApprover::checkAppApprovers(($attributes));
     }
 
     /**

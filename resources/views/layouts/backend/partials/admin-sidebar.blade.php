@@ -548,6 +548,27 @@
             </ul>
         </div>
     </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false"
+            aria-controls="collapseExample">
+            <i class="fa fa-exchange" aria-hidden="true"></i>
+            <span class="menu-title">Transfer Leads/Cases</span>
+            <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </a>
+        <div class="collapse" id="layoutsSubmenu12">
+            <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('assign_lead') }}">Assign Leads</a>
+                </li>
+                    <!--<li class="nav-item">
+                        <a class="nav-link" href="#">Manage Permissions</a>
+                    </li> -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('assign_cases') }}">Assign Cases</a>
+                </li>
+            </ul>
+        </div>
+    </li>
     @endif
     
     </ul>
