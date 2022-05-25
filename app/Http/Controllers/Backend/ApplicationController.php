@@ -1038,6 +1038,7 @@ class ApplicationController extends Controller
                                 UserDetail::where('user_id',$user_id)->update(['is_active' =>1]);
                                 $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction  
                                 \Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_SANCTIONED'));
+								$appData = $this->appRepo->getAppData($app_id);
 								$current_status = ($appData) ? $appData->curr_status_id : '';
 								if($current_status == config('common.mst_status_id.APP_SANCTIONED')){
 									$appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$app_id, 'biz_id' => $appData->biz_id, 'is_active'=>1,'status'=>3,'is_non_editable'=>0])->get();
