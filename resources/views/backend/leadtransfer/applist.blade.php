@@ -113,8 +113,8 @@
         get_applications: "{{ URL::route('ajax_assigned_app_list') }}",
         get_lead: "{{ URL::route('get_lead') }}",
         set_user_application : "{{URL::route('set_user_application')}}",
-        get_backend_users: "{{ URL::route('get_backend_users') }}",
-        get_users_leads:"{{URL::route('get_users_leads')}}",
+        get_backendapp_users: "{{ URL::route('get_backendapp_users') }}",
+        get_usersapp_leads:"{{URL::route('get_usersapp_leads')}}",
         data_not_found: "{{ trans('error_messages.data_not_found') }}",
         token: "{{ csrf_token() }}",
 
@@ -127,7 +127,7 @@
     var lenderSelect = $('#selecteduser');
     $('#hiddenRoleid').val($(this).val());
     $.ajax({
-                url  : messages.get_backend_users,
+                url  : messages.get_backendapp_users,
                 type :'POST',
                 data : {role_id : selectedroleId, _token : messages.token},
                 beforeSend: function() {
@@ -207,7 +207,7 @@ jQuery(document).ready(function ($) {
     function fillTable(role_id,user_id,search){
         
         $.ajax({
-                url  : messages.get_users_leads,
+                url  : messages.get_usersapp_leads,
                 type :'POST',
                 data : {role_id : role_id,user_id:user_id, _token : messages.token},
                 beforeSend: function() {
