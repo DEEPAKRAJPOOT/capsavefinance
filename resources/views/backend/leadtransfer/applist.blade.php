@@ -52,6 +52,8 @@
                 <div class="col-md-1">
                     <button type="button" id="leadsearchbtn" class="btn btn-success btn-sm float-right">Search Cases</button>
                 </div>
+                
+                @can('assign_user_application')
                 <div class="col-md-3">
                         <a data-toggle="modal" data-target="#assignUserApplication" data-url="{{route('assign_user_application')}}" data-height="400px" data-width="100%" data-placement="top">
                             <button type="button" id="assignedhbtn" class="btn btn-success btn-sm float-right" disabled style="padding: 10px;margin: 21px;line-height: 25px;">
@@ -62,6 +64,7 @@
                             </button>
                         </a> 
                     </div>
+                @endcan
                  </div>
                     <div class="row">
                         <div class="col-sm-12">
