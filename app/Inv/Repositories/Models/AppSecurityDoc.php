@@ -105,7 +105,7 @@ class AppSecurityDoc extends BaseModel
         ->where('a.is_assigned', 1) 
         ->where('u.is_active', 1)       
         ->where('app_security_doc.completed', 'no')       
-        ->where('app_security_doc.status', 4)       
+        ->where('app_security_doc.status', 5)       
         ->get();
         return $appSecData;
     }
