@@ -91,6 +91,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_approve_adhoc_limit',
                 'uses' => 'Lms\CustomerController@approveAdhocLimit',
             ]);
+
+            Route::get('view-adhoc-file', [
+                'as' => 'view_adhoc_file',
+                'uses' => 'Lms\CustomerController@viewAdhocUploadedFile',
+            ]);
+
             // User Invoice
             Route::get('/view-user-invoice', [
                 'as' => 'view_user_invoice',
