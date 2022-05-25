@@ -20,7 +20,7 @@
                     $disabled1 = '';
                     $disabled2 = '';
                     $disabled4 = ''; 
-                    $disableorigDate = 'disabled';
+                    $disableorigDate = '';
                     $disabled = '';
                     if($arr['is_non_editable'] == 1){
                         
@@ -32,8 +32,10 @@
                             
                         $disabled = 'readonly';
                         if($arr['due_date'] == null && $arr['due_date'] == ''){
-                            $disableorigDate = '';
+                            $disableorigDate = 'sc-doc-date';
                         }
+                    }elseif($arr['is_non_editable'] == 0){
+                        $disableorigDate = 'sc-doc-date';
                     }            
               @endphp
             <div class="row p-2 mt-1 toRemoveDiv1 {{($loop->first)? '': 'mt10'}}" style="background-color: #e9e7e7;">
@@ -81,7 +83,7 @@
                <div class="col-md-2 mt-1">
                     <label for="txtPassword"><b>Original Due Date</b></label>
                     <div class="relative">
-                            <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value ="{{(isset($arr['due_date']) && $arr['due_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['due_date'])->format('d/m/Y'): '' }}" placeholder="Original Due Date" autocomplete="off" id="update_due_date_{{ $key }}" readonly="readonly" {{ $disableorigDate }}/>
+                            <input type="text" name="due_date[]" maxlength="20" class="form-control  {{ $disableorigDate }} due_date" value ="{{(isset($arr['due_date']) && $arr['due_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['due_date'])->format('d/m/Y'): '' }}" placeholder="Original Due Date" autocomplete="off" id="update_due_date_{{ $key }}" readonly="readonly"/>
                     </div>
                </div>
                @if($route_name=="security_deposit")  
