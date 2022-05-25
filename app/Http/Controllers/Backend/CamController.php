@@ -1791,6 +1791,7 @@ class CamController extends Controller
                         //update approve status in offer table after all approver approve the offer.
                         $this->appRepo->changeOfferApprove((int)$app_id);
                         Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+                        $appData = $this->appRepo->getAppData($appId);
                         $current_status = ($appData) ? $appData->curr_status_id : '';
                         if($current_status == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
                           $appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$appId, 'biz_id' => $bizId, 'is_active'=>1,'is_non_editable'=>0,'status'=>1])->get();
