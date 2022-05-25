@@ -6,7 +6,6 @@
                         <div class="col-sm-12">
                             <div id="listing" class="listing">
                                 <!-- Start View Supply Chain Offer Block -->
-                                @foreach($securityListingData as $key=>$listingData)
                                 <div class="card card-color mb-0">
                                         <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
@@ -17,6 +16,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                            @foreach($securityListingData as $key=>$listingData)
                                                 <tr>
                                                     <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
                                                     <td><b>Type Of Document: </b> </td>
@@ -68,9 +68,6 @@
                                                     <td><b>Document Amount: </b></td>
                                                     <td>{{$listingData->document_amount ? : 'N/A'}}</td>
                                                 </tr>
-                                                {{-- @php
-                                                    print_r($userId); die;
-                                                @endphp --}}
                                                 <tr>
                                                     <td></td>
                                                         <td><b>Created By: </b></td>
@@ -78,10 +75,10 @@
                                                         <td><b>Created At: </b></td>
                                                         <td>{{$listingData->created_at ? : 'N/A'}}</td>
                                                     </tr>
+                                                @endforeach
                                             </tbody>
                                         </table>
                                 </div>
-                                @endforeach
                                 <!-- End View Term loan Offer Block -->
                                 <!-- Start View Leasing Offer Block -->
                                 

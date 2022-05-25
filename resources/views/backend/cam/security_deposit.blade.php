@@ -438,6 +438,7 @@ $(document).on('click', '.add-security-doc-block', function(){
              };
 
              var dataStore = {'app_security_doc_id': app_security_doc_id,'_token': messages.token };
+             var element = this;
              jQuery.ajax({
                  url: messages.update_app_security_doc,
                  method: 'post',
@@ -446,11 +447,18 @@ $(document).on('click', '.add-security-doc-block', function(){
                  error: function (xhr, status, errorThrown) {
                                    // alert(errorThrown);
                  },
-                 success: function (data) {  
+                 success: function (data) { 
+                     if(!data){
+                         alert('Approved or Sanctioned data can not delete');
+                     }else{
+                        $(element).closest('.toRemoveDiv1').remove();
+
+                     }
                  }
              });   
-    }
+        }else{
         $(this).closest('.toRemoveDiv1').remove();
+    }
         resetIndexes();
   });
   $(document).on('change','.getFileName',function(){

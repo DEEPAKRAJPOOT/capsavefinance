@@ -2846,7 +2846,6 @@ class CamController extends Controller
             foreach ($arrCamData['security_doc_id'] as $key => $securityDocId) {
               if(!empty($securityDocId) && isset($securityDocId) && $securityDocId!= '' && $securityDocId != null){
                 $app_security_doc_id = isset($arrCamData['app_security_doc_id'][$key]) ? $arrCamData['app_security_doc_id'][$key] : null;
-                // dd($app_security_doc_id);
                 $is_upload = $file_id = '';
                 if (isset($arrCamData['doc_file_sec'][$key])) {
                   $attributes['doc_file'] = $arrCamData['doc_file_sec'][$key];
@@ -2910,7 +2909,6 @@ class CamController extends Controller
                   } else {
                     $app_security_doc_id = null;
                   }
-                  // dd($inputArr);
                   AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
                 }
               }

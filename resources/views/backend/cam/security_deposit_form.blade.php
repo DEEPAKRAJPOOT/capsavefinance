@@ -29,15 +29,7 @@
                         }elseif($arr['doc_type'] ==2){
                             $disabled1 = 'disabled';
                         }
-                        
-                        foreach ($jsonDecode as $key2 => $sectDoc2){
-                            if($sectDoc2['security_doc_id'] == $arr['security_doc_id']){
-                                $disabled4 ='';
-                            }else{
-                                $disabled4 = ''; 
-                            }
-                        }
-                           
+                            
                         $disabled = 'readonly';
                         if($arr['due_date'] == null && $arr['due_date'] == ''){
                             $disableorigDate = '';
@@ -62,7 +54,13 @@
                     <select class="form-control security_doc_id" name="security_doc_id[]" id="update_security_doc_id_{{ $key }}" {{$disabled}}>
                        <option value="">Select</option>
                        @foreach ($jsonDecode as $key1 => $sectDoc)
-                           <option value="{{ $sectDoc['security_doc_id'] }}" {{(isset($arr['security_doc_id']) && $sectDoc['security_doc_id'] == $arr['security_doc_id']) ? 'selected': '' }} {{ $disabled4}}>{{ $sectDoc['name'] }}</option>
+                       @php
+                            $disabled4 = '';
+                           if(isset($arr['security_doc_id']) && $sectDoc['security_doc_id'] != $arr['security_doc_id'] && $arr['is_non_editable'] == 1){
+                               $disabled4 = 'disabled';
+                           }
+                       @endphp
+                           <option value="{{ $sectDoc['security_doc_id'] }}" {{(isset($arr['security_doc_id']) && $sectDoc['security_doc_id'] == $arr['security_doc_id']) ? 'selected': '' }} {{ $disabled4 }}>{{ $sectDoc['name'] }}</option>
                        @endforeach
                    </select>
                </div>
@@ -186,9 +184,7 @@
                  <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
                  @endif
                  @else
-                 @if($route_name=="security_deposit" && $arr['status'] != 4)
-                 <i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;margin-top: 15%;"></i>
-                 @elseif($route_name=="reviewer_summary" && $arr['status'] != 2)
+                 @if($arr['is_non_editable'] != 1 )
                  <i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;margin-top: 15%;"></i>
                  @endif
                  @endif

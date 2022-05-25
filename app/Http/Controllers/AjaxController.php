@@ -5741,16 +5741,21 @@ if ($err) {
 
     public function updateAppSecurityDoc(Request $request ){
         $app_security_doc_id = $request->get('app_security_doc_id');
-        $arrData = AppSecurityDoc::where("app_security_doc_id", $app_security_doc_id)->update(['is_active' => 0]);
-        if($arrData){
-            $appSecDocData = AppSecurityDoc::where('app_security_doc_id', $app_security_doc_id)->first();
-            if($appSecDocData){
-                $oldFileId = UserFile::deletes($appSecDocData->file_id);
+        $appSecDocData = AppSecurityDoc::where(['app_security_doc_id'=> $app_security_doc_id,'is_non_editable'=>0])->first();
+        if($appSecDocData){
+            $arrData = AppSecurityDoc::where('app_security_doc_id', $app_security_doc_id)->update(['is_active' => 0]);
+            if($arrData){
+                if($appSecDocData){
+                    $oldFileId = UserFile::deletes($appSecDocData->file_id);
+                }
+                $status = true; 
+            }else{
+            $status = false;
             }
-            $status = true; 
         }else{
-          $status = false;
+            $status = false;
         }
+        
         return response()->json($status);
     }
 
