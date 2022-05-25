@@ -446,10 +446,21 @@ class CamController extends Controller
     $securityDocumentListJson = json_encode($securityDocumentList);
     $appData = Application::where(['app_id'=>$request->get('app_id')])->first();
       $arrAppSecurityQuerry = AppSecurityDoc::where(['app_id' => $appId,'biz_id'=>$bizId, 'is_active' => 1]);
-      if($appData['curr_status_id'] >= config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
-         $arrAppSecurityQuerry->whereIn('status',[2])->whereIn('is_non_editable',[1]);
+      if($arrAppSecurityQuerry->whereIn('status',[2])->whereIn('is_non_editable',[1])->first()){
+        $arrAppSecurityQuerry1 = AppSecurityDoc::where(['app_id' => $appId,'biz_id'=>$bizId, 'is_active' => 1]);
+        $arrAppSecurityQuerry1->whereIn('status',[2])->whereIn('is_non_editable',[1]);
+      }else{
+        $arrAppSecurityQuerry1 = AppSecurityDoc::where(['app_id' => $appId,'biz_id'=>$bizId, 'is_active' => 1]);
+        $arrAppSecurityQuerry1->whereIn('status',[1])->whereIn('is_non_editable',[0]);
       }
-      $arrAppSecurityDoc = $arrAppSecurityQuerry->get()->toArray();
+      // if($appData['curr_status_id'] == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
+      //    $arrAppSecurityQuerry->whereIn('status',[2])->whereIn('is_non_editable',[1]);
+      // }elseif($appData['curr_status_id'] == config('common.mst_status_id.OFFER_GENERATED')){
+      //   $arrAppSecurityQuerry->whereIn('status',[1])->whereIn('is_non_editable',[0]);
+      // }elseif($appData['curr_status_id'] <= config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
+      //   $arrAppSecurityQuerry->whereIn('status',[1])->whereIn('is_non_editable',[0]);
+      // }
+      $arrAppSecurityDoc = $arrAppSecurityQuerry1->get()->toArray();
     return view('backend.cam.reviewer_summary', [
       'bizId' => $bizId,
       'appId' => $appId,
