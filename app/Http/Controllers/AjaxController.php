@@ -5894,6 +5894,7 @@ if ($err) {
                                 //update approve status in offer table after all approver approve the offer.
                                 $this->application->changeOfferApprove((int)$app_id);
                                 Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+                                $appData = $this->application->getAppData($app_id);
                                 $current_status = ($appData) ? $appData->curr_status_id : '';
                                 if($current_status == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
                                 $appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$app_id, 'biz_id' => $appData->biz_id, 'is_active'=>1,'is_non_editable'=>0,'status'=>1])->get();
