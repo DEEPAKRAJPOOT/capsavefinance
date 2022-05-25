@@ -309,6 +309,7 @@ Route::group(
             'uses'=>'AjaxController@getUsersLeads'
         ]
     );
+    
     Route::post(
         'get-usersapp-leads',
         [
