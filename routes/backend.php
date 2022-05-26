@@ -865,6 +865,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
         });
         Route::group(['prefix' => 'transfer-lead'], function(){
 
+            Route::get('/', [
+                'as' => 'transfer_lead',
+                'uses' => 'Backend\DashboardController@assignedLead'
+            ]);
+
             Route::get('lead-assign', [
                 'as' => 'assign_lead',
                 'uses' => 'Backend\LeadController@assignedLead'

@@ -296,9 +296,24 @@ Route::group(
         ]
     );
     Route::post(
+        'get-backendappusers',
+        [
+        'as' => 'get_backendapp_users',
+        'uses' => 'AjaxController@getBackendUsers'
+        ]
+    );
+    Route::post(
         'get-users-leads',
         [
             'as'=>'get_users_leads',
+            'uses'=>'AjaxController@getUsersLeads'
+        ]
+    );
+    
+    Route::post(
+        'get-usersapp-leads',
+        [
+            'as'=>'get_usersapp_leads',
             'uses'=>'AjaxController@getUsersLeads'
         ]
     );
