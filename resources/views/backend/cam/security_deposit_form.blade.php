@@ -46,8 +46,8 @@
                         
                         <select class="form-control doc_type" name="doc_type[]" id="update_doc_type_{{ $key }}" {{$disabled}}>
                             <option value="">Select</option>
-                            <option value="1" {{(isset($arr['doc_type']) && $arr['doc_type'] == '1') ? 'selected': '' }} {{ $disabled1 }}>Pre</option>
-                            <option value="2" {{(isset($arr['doc_type']) && $arr['doc_type'] == '2') ? 'selected': '' }} {{ $disabled2 }}>Post</option>
+                            <option value="1" {{(isset($arr['doc_type']) && $arr['doc_type'] == '1') ? 'selected': '' }} {{ $disabled1 }}>Pre Disbursement</option>
+                            <option value="2" {{(isset($arr['doc_type']) && $arr['doc_type'] == '2') ? 'selected': '' }} {{ $disabled2 }}>Post Disbursement</option>
                         </select>
                     </div>
                 </div>
@@ -201,8 +201,8 @@
                     <div class="relative">
                         <select class="form-control{{ ($route_name=="security_deposit") ? ' doc_type': '' }}" name="doc_type[]" id="doc_type_1">
                             <option value="">Select</option>
-                            <option value="1">Pre</option>
-                            <option value="2">Post</option>
+                            <option value="1">Pre Disbursement</option>
+                            <option value="2">Post Disbursement</option>
                         </select>
                     </div>
                 </div>
