@@ -32,6 +32,7 @@ use App\Helpers\Helper;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\Master\LocationType;
+use App\Inv\Repositories\Models\AppSecurityDoc;
 
 class ApplicationController extends Controller
 {
@@ -1053,12 +1054,12 @@ class ApplicationController extends Controller
                                 $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
                                 if($prcsAmt && isset($prcsAmt->offer)) {
 				  if($createCustomer != null) {   
-                                      $whereCond=[];
-                                      $whereCond['user_id'] = $user_id;
-                                      $lmsData = $this->appRepo->getLmsUsers($whereCond);
-                                      if (isset($lmsData[0]) && !empty($lmsData[0]->virtual_acc_id)) {
-                                        $virtualId =  $lmsData[0]->virtual_acc_id;
-                                      } else {
+					$whereCond=[];
+					$whereCond['user_id'] = $user_id;
+					$lmsData = $this->appRepo->getLmsUsers($whereCond);
+					if (isset($lmsData[0]) && !empty($lmsData[0]->virtual_acc_id)) {
+					$virtualId =  $lmsData[0]->virtual_acc_id;
+					} else {
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;					
                                       }
