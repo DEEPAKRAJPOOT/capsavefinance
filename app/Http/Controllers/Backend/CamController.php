@@ -2815,8 +2815,8 @@ class CamController extends Controller
         $arrAppSecurityQuerry->whereIn('is_non_editable',[0,1])->whereIn('status',[4,5]);
       }
       $arrAppSecurityDoc = $arrAppSecurityQuerry->get()->toArray();
-      $securityListingDataApproved = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where(['is_active'=>1,'status'=>2,'is_non_editable'=>1])->get();
-      $securityListingDataSanctioned = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where(['is_active'=>1,'status'=>4,'is_non_editable'=>1])->get();
+      $securityListingDataApproved = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where(['app_id' => $arrRequest['app_id'],'biz_id'=>$arrRequest['biz_id'],'is_active'=>1,'status'=>2,'is_non_editable'=>1])->get();
+      $securityListingDataSanctioned = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where(['app_id' => $arrRequest['app_id'],'biz_id'=>$arrRequest['biz_id'],'is_active'=>1,'status'=>4,'is_non_editable'=>1])->get();
       
       return view('backend.cam.security_deposit')->with([
         'reviewerSummaryData' => $reviewerSummaryData,
