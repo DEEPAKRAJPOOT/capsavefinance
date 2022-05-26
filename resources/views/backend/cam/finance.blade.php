@@ -128,7 +128,7 @@
                                                     <td rowspan="2" valign="middle" bgcolor="#efefef" width="39%">Financial Spread Sheet for the period ended</td>
                                                     @foreach($audited_years as $aud_year)
                                                     <td width="20%" bgcolor="#efefef" align="left">31-March-{{$aud_year}} <br /><br />
-                                                      <select class="form-control form-control-sm">
+                                                      <select id="audit" name="audit" class="form-control form-control-sm">
                                                             <option>Audited</option>
                                                             <option>Unaudited</option>
                                                       </select>
