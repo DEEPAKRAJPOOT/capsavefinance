@@ -501,8 +501,8 @@ $(document).on('click', '.add-security-doc-block', function(){
         '<div class="relative">'+
             '<select class="form-control doc_type" name="doc_type[]" id="doc_type_'+counter+'">'+
                 '<option value="">Select</option>'+
-                '<option value="1">Pre</option>'+
-                '<option value="2">Post</option>'+
+                '<option value="1">Pre Disbursement</option>'+
+                '<option value="2">Post Disbursement</option>'+
             '</select>'+
        '</div>'+
     '</div>'+

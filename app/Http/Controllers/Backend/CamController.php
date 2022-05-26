@@ -453,13 +453,6 @@ class CamController extends Controller
         $arrAppSecurityQuerry1 = AppSecurityDoc::where(['app_id' => $appId,'biz_id'=>$bizId, 'is_active' => 1]);
         $arrAppSecurityQuerry1->whereIn('status',[1])->whereIn('is_non_editable',[0]);
       }
-      // if($appData['curr_status_id'] == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
-      //    $arrAppSecurityQuerry->whereIn('status',[2])->whereIn('is_non_editable',[1]);
-      // }elseif($appData['curr_status_id'] == config('common.mst_status_id.OFFER_GENERATED')){
-      //   $arrAppSecurityQuerry->whereIn('status',[1])->whereIn('is_non_editable',[0]);
-      // }elseif($appData['curr_status_id'] <= config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
-      //   $arrAppSecurityQuerry->whereIn('status',[1])->whereIn('is_non_editable',[0]);
-      // }
       $arrAppSecurityDoc = $arrAppSecurityQuerry1->get()->toArray();
     return view('backend.cam.reviewer_summary', [
       'bizId' => $bizId,
@@ -505,37 +498,41 @@ class CamController extends Controller
           Session::flash('message', trans('Reviewer Summary not saved'));
         }
       }
-      if (isset($arrData['security_doc_id']) && !empty($arrData['security_doc_id']) && isset($arrData['doc_type']) && !empty($arrData['doc_type'])) {
-        $dataCheck = array_filter($arrData['security_doc_id']);
-        $dataCheck1 = array_filter($arrData['doc_type']);
-        $dataCheck2 = array_filter($arrData['description']);
-        $dataCheck4 = array_filter($arrData['due_date']);
-
-        if (!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2)) {
-          foreach ($arrData['security_doc_id'] as $key => $securityDocId) {
-
-            if(!empty($securityDocId) && isset($securityDocId) && $securityDocId !='' && $securityDocId !=null){
-              $inputArr = array(
-                'cam_reviewer_summary_id'=>isset($arrData['cam_reviewer_summary_id']) ? $arrData['cam_reviewer_summary_id'] : $result->cam_reviewer_summary_id??NULL,
-                'biz_id' => $arrData['biz_id'],
-                'app_id' => $arrData['app_id'],
-                'security_doc_id' => $securityDocId,
-                'description' => isset($arrData['description'][$key]) ? $arrData['description'][$key] : null,
-                'due_date' => isset($arrData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrData['due_date'][$key])->format('Y-m-d') : null,
-                'doc_type' => isset($arrData['doc_type'][$key]) ? $arrData['doc_type'][$key] : null,
-                'created_by' => $userId,
-              );
-              if (isset($arrData['app_security_doc_id'][$key])) {
-                $app_security_doc_id = $arrData['app_security_doc_id'][$key];
-                $inputArr['updated_by'] = $userId;
-              } else {
-                $app_security_doc_id = null;
+      $arrAppSecurityQuerry = AppSecurityDoc::where(['app_id' => $arrData['app_id'],'biz_id'=>$arrData['biz_id'], 'is_active' => 1,'is_non_editable'=>1,'status'=>2])->first();
+      if(empty($arrAppSecurityQuerry)){
+        if (isset($arrData['security_doc_id']) && !empty($arrData['security_doc_id']) && isset($arrData['doc_type']) && !empty($arrData['doc_type'])) {
+          $dataCheck = array_filter($arrData['security_doc_id']);
+          $dataCheck1 = array_filter($arrData['doc_type']);
+          $dataCheck2 = array_filter($arrData['description']);
+          $dataCheck4 = array_filter($arrData['due_date']);
+  
+          if (!empty($dataCheck) && !empty($dataCheck1) && !empty($dataCheck2)) {
+            foreach ($arrData['security_doc_id'] as $key => $securityDocId) {
+              
+              if(!empty($securityDocId) && isset($securityDocId) && $securityDocId !='' && $securityDocId !=null){
+                $inputArr = array(
+                  'cam_reviewer_summary_id'=>isset($arrData['cam_reviewer_summary_id']) ? $arrData['cam_reviewer_summary_id'] : $result->cam_reviewer_summary_id??NULL,
+                  'biz_id' => $arrData['biz_id'],
+                  'app_id' => $arrData['app_id'],
+                  'security_doc_id' => $securityDocId,
+                  'description' => isset($arrData['description'][$key]) ? $arrData['description'][$key] : null,
+                  'due_date' => isset($arrData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrData['due_date'][$key])->format('Y-m-d') : null,
+                  'doc_type' => isset($arrData['doc_type'][$key]) ? $arrData['doc_type'][$key] : null,
+                  'created_by' => $userId,
+                );
+                if (isset($arrData['app_security_doc_id'][$key])) {
+                  $app_security_doc_id = $arrData['app_security_doc_id'][$key];
+                  $inputArr['updated_by'] = $userId;
+                } else {
+                  $app_security_doc_id = null;
+                }
+                AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
               }
-              AppSecurityDoc::updateOrcreate(['app_security_doc_id' => $app_security_doc_id], $inputArr);
             }
           }
         }
       }
+      
       $whereActivi['activity_code'] = 'save_reviewer_summary';
       $activity = $this->mstRepo->getActivity($whereActivi);
       if (!empty($activity)) {
