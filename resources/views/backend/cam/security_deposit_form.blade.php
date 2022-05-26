@@ -178,12 +178,12 @@
                <div class="col-md-1 mt-1 center" style="display: flex;flex-direction: column;justify-content: center;align-items: center;padding-top: 0px;">
                 @if($loop->first)
             
-                 @if($route_name=="security_deposit" && $arr['status'] == 2)
+                 @if($arr['is_non_editable'] != 1)
                  <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
-                 @elseif($route_name=="security_deposit" && $arr['status'] == 4)
+                 @elseif($route_name=="security_deposit" && $arr['status'] == 2)
                  <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
-                 @elseif($route_name=="reviewer_summary" && $arr['status'] != 2)
-                 <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i>
+                 {{-- @elseif($route_name=="reviewer_summary" && $arr['status'] != 2)
+                 <i class="fa fa-2x fa-plus-circle add-security-doc-block ml-2"  style="color: green;"></i> --}}
                  @endif
                  @else
                  @if($arr['is_non_editable'] != 1 )
