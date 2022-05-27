@@ -130,17 +130,17 @@ $(document).ready(function () {
 });
 $(document).on('submit', '#camForm', function(e) {
     var valid = true;
-    $.each($('input[name="document_number[]"]'), function (index1, item1) {
+    // $.each($('input[name="document_number[]"]'), function (index1, item1) {
 
-        $.each($('input[name="document_number[]"]').not(this), function (index2, item2) {
-            $(item1).removeAttr("style");
-            if ($(item1).val() == $(item2).val()) {
-                $(item1).css("border-color", "red");
-                valid = true;
-            }
+    //     $.each($('input[name="document_number[]"]').not(this), function (index2, item2) {
+    //         $(item1).removeAttr("style");
+    //         if ($(item1).val() == $(item2).val()) {
+    //             $(item1).css("border-color", "red");
+    //             valid = true;
+    //         }
 
-        });
-    });
+    //     });
+    // });
     $('#security-doc-block select.doc_type').each(function () {
         $(this).rules("add",
             {
@@ -174,7 +174,7 @@ $(document).on('submit', '#camForm', function(e) {
                 required: true,
                 //notOnlyZero: '0',
                 alphanumeric: true,
-                checkDocumentNumber: true,
+                // checkDocumentNumber: true,
                 messages: {
                     required: "This field is required.",
                     //notOnlyZero:"Document Number can not be zero.",
@@ -582,7 +582,7 @@ function makeRequiredFields(counters, reqType){
                 required: true,
                 //notOnlyZero: '0',
                 alphanumeric: true,
-                checkDocumentNumber: true,
+                // checkDocumentNumber: true,
                 messages: {
                     required: "This field is required.",
                     //notOnlyZero:"Document Number can not be zero.",

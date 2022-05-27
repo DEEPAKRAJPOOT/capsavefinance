@@ -2809,7 +2809,7 @@ class CamController extends Controller
       elseif($appData['curr_status_id'] < config('common.mst_status_id.APP_SANCTIONED')){
         $arrAppSecurityQuerry->where(['is_non_editable'=>0,'status'=>3]);
       }elseif($appData['curr_status_id'] >= config('common.mst_status_id.APP_SANCTIONED')){
-        $arrAppSecurityQuerry->whereIn('is_non_editable',[0,1])->whereIn('status',[4,5]);
+        $arrAppSecurityQuerry->whereIn('is_non_editable',[0])->whereIn('status',[5]);
       }
       $arrAppSecurityDoc = $arrAppSecurityQuerry->get()->toArray();
       // dd($arrAppSecurityDoc[0]['mst_security_docs']);
