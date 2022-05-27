@@ -1801,7 +1801,7 @@ class CamController extends Controller
                         $cloneAppSecData->status = 3;
                         $cloneAppSecData->save();
                       }
-                      $updateStatus = AppSecurityDoc::where(['app_id'=>$appId,'biz_id' => $bizId,'status'=>1,'is_non_editable'=>0,'is_active'=>1])->update(['is_non_editable' => 1, 'status'=>2]);
+                      $updateStatus = AppSecurityDoc::where(['app_id'=>$appId,'biz_id' => $appData->biz_id,'status'=>1,'is_non_editable'=>0,'is_active'=>1])->update(['is_non_editable' => 1, 'status'=>2]);
                         }
                     }
                 }
