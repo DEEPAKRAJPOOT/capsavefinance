@@ -5897,13 +5897,14 @@ if ($err) {
                                 $appData = $this->application->getAppData($app_id);
                                 $current_status = ($appData) ? $appData->curr_status_id : '';
                                 if($current_status == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
-                                $appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$app_id, 'biz_id' => $appData->biz_id, 'is_active'=>1,'is_non_editable'=>0,'status'=>1])->get();
-                                foreach ($appSecurtiyDocs as $clone) {
-                                    $cloneAppSecData = $clone->replicate();
-                                    $cloneAppSecData->is_non_editable = 1;
-                                    $cloneAppSecData->status = 2;
-                                    $cloneAppSecData->save();
-                                }
+                                    $appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$app_id, 'biz_id' => $appData->biz_id, 'is_active'=>1,'is_non_editable'=>0,'status'=>1])->get();
+                                    foreach ($appSecurtiyDocs as $clone) {
+                                      $cloneAppSecData = $clone->replicate();
+                                      $cloneAppSecData->is_non_editable = 0;
+                                      $cloneAppSecData->status = 3;
+                                      $cloneAppSecData->save();
+                                    }
+                                    $updateStatus = AppSecurityDoc::where(['app_id'=>$app_id,'biz_id' => $appData->biz_id,'status'=>1,'is_non_editable'=>0,'is_active'=>1])->update(['is_non_editable' => 1, 'status'=>2]);
                                 }
                                 $msg = 'Approval mail copy has been successfully uploaded and moved the next stage (Sales).';
                                 $isFinalSubmit = 1;

@@ -1795,12 +1795,13 @@ class CamController extends Controller
                         $current_status = ($appData) ? $appData->curr_status_id : '';
                         if($current_status == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
                           $appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$appId, 'biz_id' => $bizId, 'is_active'=>1,'is_non_editable'=>0,'status'=>1])->get();
-                          foreach ($appSecurtiyDocs as $clone) {
-                            $cloneAppSecData = $clone->replicate();
-                            $cloneAppSecData->is_non_editable = 1;
-                            $cloneAppSecData->status = 2;
-                            $cloneAppSecData->save();
-                          }
+                        foreach ($appSecurtiyDocs as $clone) {
+                        $cloneAppSecData = $clone->replicate();
+                        $cloneAppSecData->is_non_editable = 0;
+                        $cloneAppSecData->status = 3;
+                        $cloneAppSecData->save();
+                      }
+                      $updateStatus = AppSecurityDoc::where(['app_id'=>$appId,'biz_id' => $bizId,'status'=>1,'is_non_editable'=>0,'is_active'=>1])->update(['is_non_editable' => 1, 'status'=>2]);
                         }
                     }
                 }
