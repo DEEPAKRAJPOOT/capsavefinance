@@ -1045,10 +1045,11 @@ class ApplicationController extends Controller
 									$appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$app_id, 'biz_id' => $appData->biz_id, 'is_active'=>1])->whereIn('status',[3])->whereIn('is_non_editable',[0])->get();
 									foreach ($appSecurtiyDocs as $clone) {
 									  $cloneAppSecData = $clone->replicate();
-									  $cloneAppSecData->is_non_editable = 1;
-									  $cloneAppSecData->status = 4;
+									  $cloneAppSecData->is_non_editable = 0;
+									  $cloneAppSecData->status = 5;
 									  $cloneAppSecData->save();
 									}
+                 				 $updateStatus = AppSecurityDoc::where(['app_id'=>$app_id,'biz_id' => $appData->biz_id,'status'=>3,'is_non_editable'=>0,'is_active'=>1])->update(['is_non_editable' => 1, 'status'=>4]);
 								  }
                                 
                                 $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
