@@ -512,16 +512,16 @@ $(document).on('click', '.add-security-doc-block', function(){
             '<option value="">Select</option>'+
             '</select>'+
     '</div>'+
-    '<div class="col-md-5 mt-1">'+
-            '<label for="txtPassword"><b>Description</b></label>'+
-            '<div class="relative">'+
-                '<textarea name="description[]" class="form-control description" placeholder="Description" autocomplete="off" id="description_'+counter+'"></textarea>'+
-            '</div>'+
-    '</div>'+
     '<div class="col-md-2 mt-1">'+
             '<label for="txtPassword"><b>Original Due Date</b></label>'+
             '<div class="relative">'+
                     '<input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="" placeholder="Original Due Date" autocomplete="off" id="due_date_'+counter+'" readonly="readonly"/>'+
+            '</div>'+
+    '</div>'+
+    '<div class="col-md-5 mt-1">'+
+            '<label for="txtPassword"><b>Description</b></label>'+
+            '<div class="relative">'+
+                '<textarea name="description[]" class="form-control description" placeholder="Description" autocomplete="off" id="description_'+counter+'"></textarea>'+
             '</div>'+
     '</div>'+
     '<div class="col-md-1 mt-1" style="display: flex;flex-direction: column;justify-content: center;align-items: center;padding-top: 2px;">'+

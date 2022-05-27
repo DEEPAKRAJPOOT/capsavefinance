@@ -217,12 +217,12 @@
                         <option value="">Select</option>
                     </select>
                 </div>
-                <div class="col-{{ $mdCls }} mt-1">
-                        <label for="txtPassword"><b>Description</b></label>
-                        <div class="relative">
-                            <textarea type="text" name="description[]" class="form-control{{ ($route_name=="security_deposit") ? ' description': '' }}" value="" placeholder="Description" autocomplete="off"></textarea>
-                        </div>
-                </div>      
+                <div class="col-md-2 mt-1">
+                    <label for="txtPassword"><b>Original Due Date</b></label>
+                    <div class="relative">
+                            <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date" value="" placeholder="Original Due Date" autocomplete="off" readonly="readonly"/>
+                    </div>
+               </div>     
                 @if($route_name=="security_deposit")  
                 <div class="col-md-2 mt-1">
                      <label for="txtPassword"><b>Document Number</b></label>
@@ -231,12 +231,12 @@
                      </div>
                 </div>
                 @endif
-                <div class="col-md-2 mt-1">
-                     <label for="txtPassword"><b>Original Due Date</b></label>
-                     <div class="relative">
-                             <input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date" value="" placeholder="Original Due Date" autocomplete="off" readonly="readonly"/>
-                     </div>
-                </div>
+                <div class="col-{{ $mdCls }} mt-1">
+                    <label for="txtPassword"><b>Description</b></label>
+                    <div class="relative">
+                        <textarea type="text" name="description[]" class="form-control{{ ($route_name=="security_deposit") ? ' description': '' }}" value="" placeholder="Description" autocomplete="off"></textarea>
+                    </div>
+                </div>      
                 @if($route_name=="security_deposit")
                 <div class="col-md-2 mt-1">
                     <label for="txtPassword"><b>Completed</b></label>

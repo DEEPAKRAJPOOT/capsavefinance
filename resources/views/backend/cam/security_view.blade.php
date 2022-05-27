@@ -51,6 +51,27 @@
                                                 </tr>
                                                 @else
                                                 <tr>
+                                                    <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
+                                                    <td><b>Pre/Post Disbursement: </b> </td>
+                                                    <td>{{$doctype ? : 'N/A'}}</td>
+                                                    <td><b>Type Of Document:  </b> </td>
+                                                    <td>{{$listingData->mstSecurityDocs->name ? : 'N/A'}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td><b>Description: </b></td>
+                                                    <td>{{$listingData->description}}</td>
+                                                    <td><b>Origional Due Date : </b></td>
+                                                    <td>{{$listingData->due_date ? : 'N/A'}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td><b>Created By: </b></td>
+                                                        <td>{{$listingData->createdByUser ? $listingData->createdByUser->f_name.' '.$listingData->createdByUser->l_name : 'N/A'}}</td>
+                                                    <td><b>Created At: </b></td>
+                                                    <td>{{$listingData->created_at ? : 'N/A'}}</td>
+                                                </tr>
+                                                <tr>
                                                     <td></td>
                                                     <td><b>Document Number: </b> </td>
                                                     <td>{{$listingData->document_number ? : 'N/A'}}</td>

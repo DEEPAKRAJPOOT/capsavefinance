@@ -2804,7 +2804,7 @@ class CamController extends Controller
       $appData = Application::where(['app_id'=>$request->get('app_id')])->first();
       $arrAppSecurityQuerry = AppSecurityDoc::with('mstSecurityDocs')->where(['app_id' => $arrRequest['app_id'],'biz_id'=>$arrRequest['biz_id'], 'is_active' => 1]);
       if($appData['curr_status_id'] == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
-        $arrAppSecurityQuerry->whereIn('status',[2,3])->whereIn('is_non_editable',[0,1]);
+        $arrAppSecurityQuerry->whereIn('status',[3])->whereIn('is_non_editable',[0]);
       }
       elseif($appData['curr_status_id'] < config('common.mst_status_id.APP_SANCTIONED')){
         $arrAppSecurityQuerry->where(['is_non_editable'=>0,'status'=>3]);
