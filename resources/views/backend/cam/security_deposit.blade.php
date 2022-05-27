@@ -113,7 +113,7 @@ $(document).ready(function () {
             if(app_security_doc_id > 0 && app_security_doc_id != 'undefined'){
                 data['id'] = app_security_doc_id;
             }
-            data['app_id'] = $("input[name='app_id']").val();
+                data['app_id'] = $("input[name='app_id']").val();
             $.ajax({
                 type:"POST",
                 async: false,
@@ -122,7 +122,7 @@ $(document).ready(function () {
                 success: function(data) {                        
                     result = (data.status == 1) ? false : true;
                 }
-            });                
+            }); 
             return result;                
         },'Document Number is already exists'
     );
@@ -361,7 +361,7 @@ $(document).on('click', '.add-security-doc-block', function(){
     '<div class="col-md-2 mt-1 exceptionFields_'+counter+'" style="display: none;">'+
         '<label for="txtPassword"><b>Extended Due Date</b></label>'+
         '<div class="relative">'+
-        '<input type="text" name="extended_due_date[]" class="form-control extended_due_date sc-doc-date required" value="" placeholder="Extended Due Date" autocomplete="off" id="exception_remark_'+counter+'" style="visibility: hidden;height: 0;" readonly="readonly"/>'+
+        '<input type="text" name="extended_due_date[]" class="form-control extended_due_date sc-doc-date required" value="" placeholder="Extended Due Date" autocomplete="off" id="extended_due_date_'+counter+'" style="visibility: hidden;height: 0;" readonly="readonly"/>'+
         '</div>'+
     '</div>'+
     '<div class="col-md-2 mt-1">'+
@@ -417,6 +417,9 @@ $(document).on('click', '.add-security-doc-block', function(){
      pickerPosition: 'bottom-right', 
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
+       if($(this).valid()){
+          $(this).removeClass('invalid').addClass('success');   
+        }
    });
    $('.sc-doc-date-r').datetimepicker({
      format: 'dd/mm/yyyy',
@@ -425,6 +428,9 @@ $(document).on('click', '.add-security-doc-block', function(){
      pickerPosition: 'bottom-right', 
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
+       if($(this).valid()){
+          $(this).removeClass('invalid').addClass('success');   
+        }
    });
   });
 
@@ -477,6 +483,9 @@ $(document).on('click', '.add-security-doc-block', function(){
      pickerPosition: 'bottom-right', 
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
+       if($(this).valid()){
+          $(this).removeClass('invalid').addClass('success');   
+        }
    });
    $('.sc-doc-date-r').datetimepicker({
      format: 'dd/mm/yyyy',
@@ -485,6 +494,9 @@ $(document).on('click', '.add-security-doc-block', function(){
      pickerPosition: 'bottom-right', 
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
+       if($(this).valid()){
+          $(this).removeClass('invalid').addClass('success');   
+        }
    });
 function getAllSecurityDocumentName(selectId){
   var securityDoc= {!! $securityDocumentListJson !!};

@@ -129,7 +129,7 @@
                <div class="col-md-2 mt-1 exceptionFields_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no' || $arr['exception_received'] == null) ? 'style="display: none;"': '' !!}>
                     <label for="txtPassword"><b>Extended Due Date</b></label>
                     <div class="relative">
-                    <input type="text" name="extended_due_date[]" class="form-control sc-doc-date-r extended_due_date {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'required': '' !!}" value ="{{(isset($arr['extended_due_date']) && $arr['extended_due_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['extended_due_date'])->format('d/m/Y'): '' }}" placeholder="Extended Due Date" autocomplete="off" id="update_exception_received_date_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="visibility: hidden;height: 0;"': '' !!} readonly="readonly" />
+                    <input type="text" name="extended_due_date[]" class="form-control sc-doc-date-r extended_due_date {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'yes') ? 'required': '' !!}" value ="{{(isset($arr['extended_due_date']) && $arr['extended_due_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['extended_due_date'])->format('d/m/Y'): '' }}" placeholder="Extended Due Date" autocomplete="off" id="update_extended_due_date_{{ $key }}" {!!(isset($arr['exception_received']) && $arr['exception_received'] == 'no') ? 'style="visibility: hidden;height: 0;"': '' !!} readonly="readonly" />
                     </div>
                 </div>
                <div class="col-md-2 mt-1">

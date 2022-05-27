@@ -5766,9 +5766,9 @@ if ($err) {
          $appSecurityId = $request->has('id') ? $request->get('id'): null ;
          $appId = $request->has('app_id') ? $request->get('app_id'): null ;
          if($appSecurityId){
-            $result = AppSecurityDoc::where('document_number', $docNumber)->where('app_id', $appId)->where('is_active', 1)->where('app_security_doc_id','!=', $appSecurityId)->first();
+            $result = AppSecurityDoc::where('document_number', $docNumber)->where('app_id', $appId)->where(['is_active'=>1])->where('app_security_doc_id','!=', $appSecurityId)->where('is_non_editable',1)->first();
          }else{
-            $result = AppSecurityDoc::where('document_number', $docNumber)->where('app_id', $appId)->where('is_active', 1)->first(); 
+            $result = AppSecurityDoc::where('document_number', $docNumber)->where('app_id', $appId)->where(['is_active'=> 1,'is_non_editable'=>1])->first(); 
          }
          if (isset($result)) {
              $result = ['status' => 1];
