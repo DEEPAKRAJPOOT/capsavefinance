@@ -760,7 +760,8 @@ class ManualApportionmentHelper{
             $query->where('chrg_master_id','>','0')
             ->orWhere('id',config('lms.TRANS_TYPE.INTEREST'));
         })
-        ->whereDate('created_at',$cDate)
+        ->whereDate('created_at','<=',$cDate)
+        ->whereDate('created_at','>=','2022-04-01')
         ->where('entry_type','0')
         ->where('is_invoice_generated','0')
         ->get();
