@@ -20,9 +20,9 @@
                                             @php
                                                 $doctype = $listingData->doc_type;
                                                 if($doctype == 1){
-                                                    $doctype = 'Pre';
+                                                    $doctype = 'Pre Disbursement';
                                                 }else{
-                                                    $doctype = 'Post';
+                                                    $doctype = 'Post Disbursement';
                                                 }
                                                 @endphp
                                                 <tr>
