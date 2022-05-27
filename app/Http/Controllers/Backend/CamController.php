@@ -402,17 +402,6 @@ class CamController extends Controller
     $negativeRiskCmntArr = [];
     $appId = $request->get('app_id');
     $bizId = $request->get('biz_id');
-
-    $appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$appId, 'biz_id' => $bizId, 'is_active'=>1,'is_non_editable'=>0,'status'=>1])->get();
-                        foreach ($appSecurtiyDocs as $clone) {
-                        $cloneAppSecData = $clone->replicate();
-                        $cloneAppSecData->is_non_editable = 0;
-                        $cloneAppSecData->status = 3;
-                        $cloneAppSecData->save();
-                      }
-                      $updateStatus = AppSecurityDoc::where(['app_id'=>$appId,'biz_id' => $bizId,'status'=>1,'is_non_editable'=>0,'is_active'=>1])->update(['is_non_editable' => 1, 'status'=>2]);
-
-
     $leaseOfferData = $facilityTypeList = array();
     $leaseOfferData = AppProgramOffer::getAllOffers($appId, '3');
     $facilityTypeList = $this->mstRepo->getFacilityTypeList()->toarray();
