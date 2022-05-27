@@ -15,15 +15,15 @@
              @endphp
             @foreach($arrAppSecurityDoc as $key=>$arr)
             @php
-                  
                     $key =  $key+1;
                     $disabled1 = '';
                     $disabled2 = '';
                     $disabled4 = ''; 
                     $disableorigDate = '';
                     $disabled = '';
+                    $isDataExist = false;
                     if($arr['is_non_editable'] == 1){
-                        
+                        $isDataExist = true;
                         if($arr['doc_type'] ==1){
                             $disabled2 = 'disabled';
                         }elseif($arr['doc_type'] ==2){
@@ -55,6 +55,7 @@
                     <label for="txtPassword"><b>Type of Document</b></label>
                     <select class="form-control security_doc_id" name="security_doc_id[]" id="update_security_doc_id_{{ $key }}" {{$disabled}}>
                        <option value="">Select</option>
+                       @if($isDataExist == false)
                        @foreach ($jsonDecode as $key1 => $sectDoc)
                        @php
                             $disabled4 = '';
@@ -64,14 +65,17 @@
                        @endphp
                            <option value="{{ $sectDoc['security_doc_id'] }}" {{(isset($arr['security_doc_id']) && $sectDoc['security_doc_id'] == $arr['security_doc_id']) ? 'selected': '' }} {{ $disabled4 }}>{{ $sectDoc['name'] }}</option>
                        @endforeach
+                        @else
+                        <option value="{{ $arr['mst_security_docs']['security_doc_id'] }}" selected>{{ $arr['mst_security_docs']['name'] }}</option>
+                        @endif
                    </select>
                </div>
-               <div class="col-{{ $mdCls }} mt-1">
-                       <label for="txtPassword"><b>Description</b></label>
-                       <div class="relative">
-                           <textarea name="description[]" class="form-control description" placeholder="Description" autocomplete="off" id="update_description_{{ $key }}" {{$disabled}} >{{$arr['description'] ?? ''}} </textarea>
-                       </div>
-               </div>
+               <div class="col-md-2 mt-1">
+                <label for="txtPassword"><b>Original Due Date</b></label>
+                <div class="relative">
+                        <input type="text" name="due_date[]" maxlength="20" class="form-control  {{ $disableorigDate }} due_date" value ="{{(isset($arr['due_date']) && $arr['due_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['due_date'])->format('d/m/Y'): '' }}" placeholder="Original Due Date" autocomplete="off" id="update_due_date_{{ $key }}" readonly="readonly"/>
+                </div>
+           </div>
                @if($route_name=="security_deposit")    
                <div class="col-md-2 mt-1">
                     <label for="txtPassword"><b>Document Number</b></label>
@@ -80,12 +84,13 @@
                     </div>
                </div>
                @endif
-               <div class="col-md-2 mt-1">
-                    <label for="txtPassword"><b>Original Due Date</b></label>
-                    <div class="relative">
-                            <input type="text" name="due_date[]" maxlength="20" class="form-control  {{ $disableorigDate }} due_date" value ="{{(isset($arr['due_date']) && $arr['due_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['due_date'])->format('d/m/Y'): '' }}" placeholder="Original Due Date" autocomplete="off" id="update_due_date_{{ $key }}" readonly="readonly"/>
-                    </div>
-               </div>
+               <div class="col-{{ $mdCls }} mt-1">
+                <label for="txtPassword"><b>Description</b></label>
+                <div class="relative">
+                    <textarea name="description[]" class="form-control description" placeholder="Description" autocomplete="off" id="update_description_{{ $key }}" {{$disabled}} >{{$arr['description'] ?? ''}} </textarea>
+                </div>
+                 </div>
+               
                @if($route_name=="security_deposit")  
                <div class="col-md-2 mt-1">
                    <label for="txtPassword"><b>Completed</b></label>

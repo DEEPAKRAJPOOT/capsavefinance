@@ -447,10 +447,10 @@ class CamController extends Controller
     $appData = Application::where(['app_id'=>$request->get('app_id')])->first();
       $arrAppSecurityQuerry = AppSecurityDoc::where(['app_id' => $appId,'biz_id'=>$bizId, 'is_active' => 1]);
       if($arrAppSecurityQuerry->whereIn('status',[2])->whereIn('is_non_editable',[1])->first()){
-        $arrAppSecurityQuerry1 = AppSecurityDoc::where(['app_id' => $appId,'biz_id'=>$bizId, 'is_active' => 1]);
+        $arrAppSecurityQuerry1 = AppSecurityDoc::with('mstSecurityDocs')->where(['app_id' => $appId,'biz_id'=>$bizId, 'is_active' => 1]);
         $arrAppSecurityQuerry1->whereIn('status',[2])->whereIn('is_non_editable',[1]);
       }else{
-        $arrAppSecurityQuerry1 = AppSecurityDoc::where(['app_id' => $appId,'biz_id'=>$bizId, 'is_active' => 1]);
+        $arrAppSecurityQuerry1 = AppSecurityDoc::with('mstSecurityDocs')->where(['app_id' => $appId,'biz_id'=>$bizId, 'is_active' => 1]);
         $arrAppSecurityQuerry1->whereIn('status',[1])->whereIn('is_non_editable',[0]);
       }
       $arrAppSecurityDoc = $arrAppSecurityQuerry1->get()->toArray();
@@ -2802,7 +2802,7 @@ class CamController extends Controller
       $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
       $securityDocumentListJson = json_encode($securityDocumentList);
       $appData = Application::where(['app_id'=>$request->get('app_id')])->first();
-      $arrAppSecurityQuerry = AppSecurityDoc::where(['app_id' => $arrRequest['app_id'],'biz_id'=>$arrRequest['biz_id'], 'is_active' => 1]);
+      $arrAppSecurityQuerry = AppSecurityDoc::with('mstSecurityDocs')->where(['app_id' => $arrRequest['app_id'],'biz_id'=>$arrRequest['biz_id'], 'is_active' => 1]);
       if($appData['curr_status_id'] == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
         $arrAppSecurityQuerry->whereIn('status',[2,3])->whereIn('is_non_editable',[0,1]);
       }
@@ -2812,6 +2812,7 @@ class CamController extends Controller
         $arrAppSecurityQuerry->whereIn('is_non_editable',[0,1])->whereIn('status',[4,5]);
       }
       $arrAppSecurityDoc = $arrAppSecurityQuerry->get()->toArray();
+      // dd($arrAppSecurityDoc[0]['mst_security_docs']);
       $securityListingDataApproved = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where(['app_id' => $arrRequest['app_id'],'biz_id'=>$arrRequest['biz_id'],'is_active'=>1,'status'=>2,'is_non_editable'=>1])->get();
       $securityListingDataSanctioned = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where(['app_id' => $arrRequest['app_id'],'biz_id'=>$arrRequest['biz_id'],'is_active'=>1,'status'=>4,'is_non_editable'=>1])->get();
       
