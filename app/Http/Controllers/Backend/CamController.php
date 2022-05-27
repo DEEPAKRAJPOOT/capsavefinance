@@ -1729,7 +1729,7 @@ class CamController extends Controller
             $appId = $request->get('app_id');
             $bizId = $request->get('biz_id');
             $userId = $request->has('user_id') ? $request->get('user_id') : null;
-            // \DB::beginTransaction();
+            \DB::beginTransaction();
             $appData = $this->appRepo->getAppData($appId);
             if ($appData && in_array($appData->app_type, [3]) ) {
 								$parentAppId = $appData->parent_app_id;
@@ -1809,11 +1809,11 @@ class CamController extends Controller
             // //update approve status in offer table after all approver approve the offer.
             // $this->appRepo->changeOfferApprove((int)$appId);  //previous code
             // Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
-            // \DB::commit();
+            \DB::commit();
             Session::flash('message',trans('backend_messages.offer_approved'));
             return redirect()->route('cam_report', ['app_id' => $appId, 'biz_id' => $bizId]);
         }catch (Exception $ex) {
-            // \DB::rollback();
+            \DB::rollback();
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
