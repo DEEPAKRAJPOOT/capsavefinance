@@ -202,15 +202,14 @@
                                     @if(isset($adc->status) && $adc->status == 0 && !$isLimitExpired)
                                     <a data-toggle="modal" data-target="#approveAdhocLimit" data-url ="{{ route('approve_adhoc_limit', ['user_id' => request()->get('user_id'), 'app_offer_adhoc_limit_id' => $adc->app_offer_adhoc_limit_id ]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn btn-success btn-sm ml-2">Approve</a>
                                     @endif
-                                @endcan                                
-                            </div>
-                            @can('view_adhoc_file')
+                                @endcan
+
+                                @can('view_adhoc_file')
                                 @if($adc->file_id)
-                                <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
-                                    <a href="{{ route('view_adhoc_file', ['file_id' => $adc->file_id ])}}" title="View Document" target="_blank" class="btn btn-action-btn btn-sm"> <i class="fa fa-eye" aria-hidden="true"></i></a>
-                                </div>
+                                <a href="{{ route('view_adhoc_file', ['file_id' => $adc->file_id ])}}" title="View Document" target="_blank" class="btn btn-action-btn btn-sm"> <i class="fa fa-eye" aria-hidden="true"></i></a>
                                 @endif
-                            @endcan
+                                @endcan
+                            </div>
                         </div>
                         @endforeach 
 
