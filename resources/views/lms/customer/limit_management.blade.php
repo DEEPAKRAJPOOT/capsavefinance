@@ -156,7 +156,7 @@
                        
                                 @can('add_adhoc_limit')
                                 @if($val->program->is_adhoc_facility == 1 && !$isLimitExpired && !Helpers::checkActiveAdhocLimit($getAdhoc))
-                                <a data-toggle="modal" style='color:white' data-target="#addAdhocLimit" data-url ="{{ route('add_adhoc_limit', ['user_id' => request()->get('user_id'),'prgm_offer_id' => $val->prgm_offer_id ]) }}" data-height="350px" data-width="100%" data-placement="top" class="btn-sm btn btn-success btn-sm ml-2" >Add Adhoc Limit</a>
+                                <a data-toggle="modal" style='color:white' data-target="#addAdhocLimit" data-url ="{{ route('add_adhoc_limit', ['user_id' => request()->get('user_id'),'prgm_offer_id' => $val->prgm_offer_id ]) }}" data-height="350px" data-width="100%" data-placement="top" class="btn-sm btn btn-success btn-sm ml-2">Add Adhoc Limit</a>
                                 @endif
                                 @endcan
                                @endif
@@ -228,7 +228,7 @@
 </div>
 
 {!!Helpers::makeIframePopup('addAdhocLimit','Add Adhoc Limit', 'modal-lg')!!}
-{!!Helpers::makeIframePopup('approveAdhocLimit','Confrim Approve Adhoc Limit', 'modal-xs')!!}
+{!!Helpers::makeIframePopup('approveAdhocLimit','Approve Adhoc Limit', 'modal-xs')!!}
 
 @endsection
 
