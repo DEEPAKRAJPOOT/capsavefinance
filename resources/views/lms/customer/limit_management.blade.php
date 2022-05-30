@@ -191,11 +191,11 @@
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 @if($adc->status==0) 
-                                <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
+                                <button type="button" class="badge badge-warning btn-sm">Pending </button>
                                 @elseif($adc->status==1) 
-                                <button type="button" class="badge {{ $isLimitExpired || $isAdhocLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired || $isAdhocLimitExpired ? 'Limit Expired' : 'Active' }} </button>
+                                <button type="button" class="badge {{ $isLimitExpired || $isAdhocLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm">{{ $isLimitExpired || $isAdhocLimitExpired ? 'Limit Expired' : 'Active' }} </button>
                                 @else
-                                <button type="button" class="badge badge-danger btn-sm float-right">Closed </button>
+                                <button type="button" class="badge badge-danger btn-sm">Closed </button>
                                 @endif
 
                                 @can('approve_adhoc_limit')
@@ -206,7 +206,7 @@
 
                                 @can('view_adhoc_file')
                                 @if($adc->file_id)
-                                <a href="{{ route('view_adhoc_file', ['file_id' => $adc->file_id ])}}" title="View Document" target="_blank" class="btn btn-action-btn btn-sm"> <i class="fa fa-eye" aria-hidden="true"></i></a>
+                                <a href="{{ route('view_adhoc_file', ['file_id' => $adc->file_id ])}}" title="View Document" target="_blank" class="btn btn-action-btn btn-sm float-right"> <i class="fa fa-eye" aria-hidden="true"></i></a>
                                 @endif
                                 @endcan
                             </div>
