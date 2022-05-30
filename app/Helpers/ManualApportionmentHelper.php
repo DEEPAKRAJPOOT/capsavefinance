@@ -741,7 +741,7 @@ class ManualApportionmentHelper{
         //$transRunningTrans = $this->lmsRepo->getUnsettledRunningTrans();
         //sort($transRunningTrans);
         //$invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true]);
-        $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt')->whereNotNull('payment_due_date')->pluck('invoice_disbursed_id','invoice_disbursed_id');
+        $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt')->whereNotNull('payment_due_date')->whereHas('invoice',function($query){ $query->where('is_repayment','0'); })->pluck('invoice_disbursed_id','invoice_disbursed_id');
         foreach ($invoiceList as $invId => $trans) {
             echo $invId."\n";
             //$pos = array_search($invId, $transRunningTrans);
