@@ -92,6 +92,12 @@ class AppProgramOffer extends BaseModel {
         'invoice_processingfee_type',
         'invoice_processingfee_value',
         'comment',
+        'asset_type_id',
+        'asset_insurance',
+        'asset_name',
+        'timelines_for_insurance',
+        'asset_comment',
+        'irr',
         'is_approve',
         'payment_frequency',
         'status',
@@ -337,7 +343,7 @@ class AppProgramOffer extends BaseModel {
                 $prgmOffer = $rejectPrgmOffer;
             }
             if($prgmOffer){
-                $prgmOffer->update(['is_active'=>0]);
+                $prgmOffer->update(['is_active' => 0]);
             }
             //AppProgramLimit::where('app_prgm_limit_id', $app_prgm_limit_id)->update(['limit_amt'=> $data['prgm_limit_amt']]);
             return AppProgramOffer::create($data);
@@ -365,6 +371,15 @@ class AppProgramOffer extends BaseModel {
                         })->sum('prgm_limit_amt');
         
         return $tot_offered_limit;
+    }
+
+
+    public static function checkduplicateOffer($data){
+        if(!is_array($data)){
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }else{
+            return AppProgramOffer::where($data)->get();
+        }
     }
 
     public static function getOfferStatus($where_condition){
@@ -669,5 +684,45 @@ class AppProgramOffer extends BaseModel {
                 break;
         }
         return $frequencyType;
+    }
+
+    public static function getAnchorPrgmUserIdsInArray($anchorId, $prgmId)
+    {
+        $appStatusList = [
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            config('common.mst_status_id.APP_CLOSED'),
+            config('common.mst_status_id.OFFER_LIMIT_REJECTED')
+        ];
+        return  AppProgramOffer::join('prgm', 'app_prgm_offer.prgm_id', '=', 'prgm.prgm_id')
+                ->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+                ->join('app_product', 'app.app_id', '=', 'app_product.app_id')
+                ->where('app_product.product_id', 1)
+                ->where('prgm.prgm_id', $prgmId)
+                ->where('app_prgm_offer.anchor_id', $anchorId)
+                ->where('app_prgm_offer.is_active', 1)
+                ->whereNotIn('app.curr_status_id', $appStatusList)
+                ->where(function ($query) {
+                    $query->whereIn('app_prgm_offer.status', [1])->orWhereNull('app_prgm_offer.status');
+                })
+                ->groupBy('app.user_id')
+                ->pluck('app.user_id')
+                ->toArray();
+    }
+
+    public static function getActiveProgramOfferByAppId($anchorId, $appId, $prgmId = null)
+    {
+        $data = self::where('anchor_id', $anchorId)
+                ->where('app_id', $appId)
+                ->where('is_active', '1')
+                ->where('status',1);
+        if($prgmId){
+            $data->where('prgm_id',$prgmId); 
+        }
+        return $data->first();
+    }
+    public function asset()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\Master\Asset', 'asset_type_id', 'id');
     }
 }

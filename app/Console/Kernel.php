@@ -52,7 +52,7 @@ class Kernel extends ConsoleKernel
         }
 
         if (config('lms.LMS_STATUS')) {
-            $schedule->command('finance:tallyposting')->timezone(config('common.timezone'))->weeklyOn(4, '20:00');
+            $schedule->command('finance:tallyposting')->timezone(config('common.timezone'))->dailyAt('00:01');
         }
         
         if(config('lms.LMS_STATUS') && !empty('lms.DAILY_REPORT_MAIL')){

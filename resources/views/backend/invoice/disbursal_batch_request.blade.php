@@ -77,7 +77,7 @@
         </div>
     </div>
 </div>
-{!!Helpers::makeIframePopup('viewOnlineDisbursalRollback','Online Disbursal Rollback', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('viewOnlineDisbursalRollback','View/Rollback Disbursal Request', 'modal-lg')!!}
 @endsection
 @section('jscript')
 <style>

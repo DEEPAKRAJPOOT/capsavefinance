@@ -87,6 +87,7 @@ return [
     'user_role' => [
         'SALES'=>4,
         'CPA'=>5,
+        'REVIEWER'=>7,
         'APPROVER'=>8,
         'OPPS_CHECKER'=>10,
         'ANCHOR'=>11,
@@ -115,7 +116,8 @@ return [
     'facility_type' => [
         '1' => 'Rental Facility',
         '2' => 'Sale and Lease Back',
-        '3' => 'Rental Discounting'
+        '3' => 'Rental Discounting',
+        '4' => 'Term Loan'
     ],
     'deposit_type' => [
         '1' => 'Loan Amount',
@@ -223,13 +225,13 @@ return [
         '7'=>'with in 360 days from date of first disbsurement'
     ],
     'pg_time_for_perfecting_security_id'=>[
-        '1'=>'Before Disbusrement',
-        '2'=>'With in 30 days from date of first disbusrement',
-        '3'=>'With in 60 days from date of first disbsurement',
-        '4'=>'With in 90 days from date of first disbursement ',
+        '1'=>'Before Disbursement',
+        '2'=>'With in 30 days from date of first disbursement',
+        '3'=>'With in 60 days from date of first disbursement',
+        '4'=>'With in 90 days from date of first disbursement',
         '5'=>'With in 120 days from date of first disbursement',
         '6'=>'with in 180 days from date of first disbursement',
-        '7'=>'with in 360 days from date of first disbsurement'
+        '7'=>'with in 360 days from date of first disbursement'
     ],
     'cg_type_id'=>[
         '1'=>'Corporate Guarante with BR',
@@ -288,7 +290,8 @@ return [
         'VA' => 'CAPVA',
         'CUSTID' => 'CAPCI',
         'REFUND' => 'REF',
-        'LEADID' => 'CAP'
+        'LEADID' => 'CAP',
+        'PAYMENTID' => 'CAPPI',
     ],
     'chrg_trigger_list' => [
         '3' => 'None',

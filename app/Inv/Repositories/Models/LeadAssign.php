@@ -84,9 +84,44 @@ class LeadAssign extends BaseModel {
                 ->join('role_user', 'role_user.user_id', '=', 'lead_assign.to_id')
                 ->where('lead_assign.assigned_user_id', $userId)
                 ->where('lead_assign.is_owner', 1)
+                ->where('lead_assign.is_deleted',0)
                 ->where('role_user.role_id', 4)   //4=>Sales Manager Role
                 ->first();
         
         return $result ? $result->to_id : null;
     }
+
+
+    public static function getAssigneLeadByUserId($role_id,$fromUser,$selectedLeads){
+
+        $result = self::select('lead_assign.*')
+        ->join('role_user', 'role_user.user_id', '=', 'lead_assign.to_id')
+        ->whereIn('lead_assign.assigned_user_id', $selectedLeads)
+        ->where('lead_assign.to_id', $fromUser)
+        ->where('lead_assign.is_owner', 1)
+        ->where('lead_assign.is_deleted', 0)
+        ->where('role_user.role_id', $role_id)   //4=>Sales Manager Role
+        ->get();
+
+        return $result ? $result : null;
+    }
+
+    public static function getLeadByUserId($selectedLeads){
+
+        $result = self::select('lead_assign.*')
+        ->join('role_user', 'role_user.user_id', '=', 'lead_assign.to_id')
+        ->where('lead_assign.assigned_user_id', $selectedLeads)
+        ->where('lead_assign.is_owner', 1)
+        ->where('lead_assign.is_deleted', 0)
+        ->first();
+
+        return $result ? $result : null;
+    }
+
+    public static function updateDeleteStatus($lead_id){
+
+        $updated = self::where('lead_assign_id',$lead_id)->update(['is_deleted'=>1]);
+        return $updated ? true : false;
+    }
+
 }

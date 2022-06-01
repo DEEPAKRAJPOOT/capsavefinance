@@ -124,38 +124,38 @@
                         @foreach($limit->offer as $val) 
                         @php
                         $val['user_id']  = $uLimit->app->user_id;
-                        $inv_limit =  $obj->invoiceAnchorLimitApprove($val);
+                        $inv_limit =  $obj->anchorSupplierPrgmUtilizedLimitByInvoice($val);
                         $getAdhoc   = $obj->getAdhoc($val);
                         @endphp  
                         @if ($val->status !=2 )
                         <div class="row" style="margin-top:20px;">
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Anchor </label>
-                                <div class="label-bottom">{{ $val->anchor->comp_name}}</div>
+                                <div class="label-bottom">{{ $val->anchor->comp_name ?? ''}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Anchor sub program </label>
-                                <div class="label-bottom">{{ $val->program->prgm_name}}</div>
+                                <div class="label-bottom">{{ $val->program->prgm_name ?? ''}}</div>
                             </div>
 
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Program Limit </label>
-                                <div class="label-bottom">{{number_format($val->prgm_limit_amt)}}</div>
+                                <div class="label-bottom">{{number_format($val->prgm_limit_amt, 2)}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Utilize Limit	 </label>
-                                <div class="label-bottom">{{number_format($inv_limit)}}</div>
+                                <div class="label-bottom">{{number_format($inv_limit, 2)}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                                 <label>Available Limit </label>
-                                <div class="label-bottom">{{number_format($val->prgm_limit_amt-$inv_limit)}}</div>
+                                <div class="label-bottom">{{number_format(($val->prgm_limit_amt-$inv_limit), 2)}}</div>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
                               
                                 @if($limit->status==1 && $getAccountClosure > 0)  
                        
                                 @can('add_adhoc_limit')
-                                @if($val->program->is_adhoc_facility == 1 && !$isLimitExpired)
+                                @if($val->program->is_adhoc_facility == 1 && !$isLimitExpired && !Helpers::checkActiveAdhocLimit($getAdhoc))
                                 <a data-toggle="modal" style='color:white' data-target="#addAdhocLimit" data-url ="{{ route('add_adhoc_limit', ['user_id' => request()->get('user_id'),'prgm_offer_id' => $val->prgm_offer_id ]) }}" data-height="350px" data-width="100%" data-placement="top" class="btn-sm btn btn-success btn-sm ml-2" >Add Adhoc Limit</a>
                                 @endif
                                 @endcan
@@ -167,7 +167,7 @@
                         @php 
                         $mytime = \Carbon\Carbon::now();
                         $adhocLimitCurDt =  $mytime->format('Y-m-d');                                  
-                        $adhocLimitEndDt   =  $limit->end_date;
+                        $adhocLimitEndDt   =  $adc->end_date;
                         $isAdhocLimitExpired = strtotime($adhocLimitCurDt) > strtotime($adhocLimitEndDt);
                         @endphp 
                         
@@ -193,7 +193,7 @@
                                 @if($adc->status==0) 
                                 <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
                                 @elseif($adc->status==1) 
-                                <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
+                                <button type="button" class="badge {{ $isLimitExpired || $isAdhocLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired || $isAdhocLimitExpired ? 'Limit Expired' : 'Active' }} </button>
                                 @else
                                 <button type="button" class="badge badge-danger btn-sm float-right">Closed </button>
                                 @endif

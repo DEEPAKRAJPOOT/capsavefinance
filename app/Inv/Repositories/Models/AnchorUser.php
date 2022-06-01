@@ -8,6 +8,7 @@ use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Models\User;
+use DB;
 
 class AnchorUser extends BaseModel {
 
@@ -65,6 +66,7 @@ class AnchorUser extends BaseModel {
         'token',
         'is_registered',
         'registered_type',
+        'is_term_accept',
         'created_by',
         'created_at',
         'updated_at',
@@ -105,7 +107,7 @@ class AnchorUser extends BaseModel {
      */
     public static function getAllAnchorUsers($datatable=false) {
         $roleData = User::getBackendUser(\Auth::user()->user_id);
-        
+        DB::enableQueryLog();
         $result = self::select('anchor_user.*', 'anchor.comp_name')
              ->join('anchor', 'anchor_user.anchor_id', '=', 'anchor.anchor_id');
         
@@ -116,6 +118,8 @@ class AnchorUser extends BaseModel {
         if (!$datatable) {
             $result =  $result->orderByRaw('anchor_user_id DESC');
         }
+        //$result->get();
+        //dd(DB::getQueryLog());
                 //->where('user_type', 1);
         return ($result ? $result : '');
     }
@@ -128,6 +132,18 @@ class AnchorUser extends BaseModel {
     public static function getAnchorUsersByToken($token){
         $arrUser = self::select('anchor_user.*')
              ->where('token', '=', $token)
+            ->first();
+           return ($arrUser ? $arrUser : FALSE);
+    }
+
+    /**
+     * function for get particular user detail
+     * @param type $email
+     * @return type
+     */
+    public static function getAnchorUsersByanchorId($anchor_user_id){
+        $arrUser = self::select('anchor_user.*')
+             ->where('anchor_user_id', '=', $anchor_user_id)
             ->first();
            return ($arrUser ? $arrUser : FALSE);
     }
@@ -169,7 +185,7 @@ class AnchorUser extends BaseModel {
         if (empty($arrUserData)) {
             throw new BlankDataExceptions(trans('error_messages.no_data_found'));
         }
-
+        
         $rowUpdate = self::find((int) $anchUId)->update($arrUserData);
         return ($rowUpdate ? true : false);
     }
@@ -185,6 +201,43 @@ class AnchorUser extends BaseModel {
             ->first();
            return ($arrEmailUser ? $arrEmailUser : FALSE);
     }
+
+    /**
+     * function for get particular user detail using user_id.
+     * @param type $user_id
+     * @return type
+     */
+    public static function getAnchorUsersByUserId($user_id){
+        $arrEmailUser = self::select('anchor_user.*')
+             ->where('anchor_user_id', '=', $user_id)
+             ->orWhere('user_id',$user_id)
+            ->first();
+           return ($arrEmailUser ? $arrEmailUser : FALSE);
+    }
+
+    /**
+     * function for check anchor email
+     * @param type $email
+     * @return type
+     */
+    public static function checkallanchorUserEmail($email,$anchId,$is_registerd,$userType){
+
+        if($is_registerd){
+
+           $isanchorEmailexist =  self::where('email','=',$email)
+              ->where('user_type','=',$userType)
+              ->where('user_id','!=',$anchId)->count();
+
+           }else{
+
+            $isanchorEmailexist =  self::where('email','=',$email)
+            ->where('user_type','=',$userType)
+            ->where('anchor_user_id','!=',$anchId)->count();
+
+          }
+ 
+         return ($isanchorEmailexist ? $isanchorEmailexist : false);
+     }
     
 
     public function anchors(){

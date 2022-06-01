@@ -13,9 +13,12 @@ use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Factory\Models\BaseModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BizOwner extends BaseModel
 {
+
+    use SoftDeletes;
     /**
      * The database table used by the model.
      *
@@ -49,7 +52,7 @@ class BizOwner extends BaseModel
      *
      * @var array
      */
-    //protected $dates = ['deleted_at'];
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that are mass assignable.
@@ -83,7 +86,8 @@ class BizOwner extends BaseModel
         'created_at',
         'updated_by',
         'updated_at',
-    
+        'deleted_at',
+        'deleted_by',
     ];
     /* get owner api details */
     /* created by gajendra chauhan   */
@@ -215,7 +219,7 @@ class BizOwner extends BaseModel
             'comment' => $attributes['comment'][$i],
             'is_pan_verified' => 1, 
             'applicant_type' => $attributes['applicant_type'][$i],
-            'ckyc_ref_no' => $attributes['ckyc_ref_no'][$i],
+           // 'ckyc_ref_no' => $attributes['ckyc_ref_no'][$i],
             'share_per' => $attributes['share_per'][$i],
                'designation' => $attributes['designation'][$i],    
            /// 'edu_qualification' => $attributes['edu_qualification'][$i],
@@ -245,7 +249,7 @@ class BizOwner extends BaseModel
             'comment' => $attributes['comment'][$i],
             'is_pan_verified' => 1,
             'applicant_type' => $attributes['applicant_type'][$i],
-            'ckyc_ref_no' => $attributes['ckyc_ref_no'][$i],
+            //'ckyc_ref_no' => $attributes['ckyc_ref_no'][$i],
             'share_per' => $attributes['share_per'][$i],
                'designation' => $attributes['designation'][$i],    
            /// 'edu_qualification' => $attributes['edu_qualification'][$i],
@@ -300,7 +304,7 @@ class BizOwner extends BaseModel
             'comment' => $attributes['comment'][$i],
             'is_pan_verified' => 1,
             'applicant_type' => $attributes['applicant_type'][$i],
-            'ckyc_ref_no' => $attributes['ckyc_ref_no'][$i],
+           // 'ckyc_ref_no' => $attributes['ckyc_ref_no'][$i],
             'share_per' => $attributes['share_per'][$i],
             'designation' => $attributes['designation'][$i],    
            /// 'edu_qualification' => $attributes['edu_qualification'][$i],

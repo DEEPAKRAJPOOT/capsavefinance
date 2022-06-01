@@ -1,10 +1,15 @@
   $(document).ready(function(){
     setInterval(function(){  localStorage.setItem('storageMsg',''); }, 1000);
-     var  msg = localStorage.getItem('storageMsg');
-    if(msg)
-     {
-       $("#storeSuccessMsg").html("<div class='alert-success alert' role='alert'><span><i class='fa fa-bell fa-lg' aria-hidden='true'></i></span>"+msg+"</div>");
-     }
+    // var  msg = localStorage.getItem('storageMsg');
+    var  msg = JSON.parse(localStorage.getItem("storageMsg") || "[]");
+    if(typeof msg.text != 'undefined')
+    {
+        if (typeof msg.type != 'undefined' && msg.type == 'error') {
+            $("#storeSuccessMsg").html("<div class='alert-danger alert' role='alert'><span><i class='fa fa-bell fa-lg' aria-hidden='true'></i></span>"+msg.text+"</div>");
+        }else {
+            $("#storeSuccessMsg").html("<div class='alert-success alert' role='alert'><span><i class='fa fa-bell fa-lg' aria-hidden='true'></i></span>"+msg.text+"</div>");
+        }
+    }
    })
  $(document).ready(function () {
        
@@ -461,13 +466,14 @@ function uploadFile(app_id,id)
                     }
                    if(data.msg=="")
                     {
-                       localStorage.setItem('storageMsg', 'Invoice successfully moved');
+                    //    localStorage.setItem('storageMsg', 'Invoice successfully moved');
+                        localStorage.setItem('storageMsg', JSON.stringify({text: 'Invoice successfully moved', type: 'success'}));
                        location.reload();
                     }
                     else
                     {
                       
-                       localStorage.setItem('storageMsg', 'You cannot mark the invoice ('+data.msg+') as Approved as the limit has been exceeded for the customer Or (Exception Cases)');
+                       localStorage.setItem('storageMsg', 'You cannot move this invoice ('+data.msg+') to Approved tab, as customer/anchor/program limit has been exceeded  or invoice has been moved to exception cases.');
                        location.reload();
                     }
                }
@@ -517,7 +523,8 @@ function uploadFile(app_id,id)
                     }
                     if(data.msg=="")
                     {
-                       localStorage.setItem('storageMsg', 'Invoice successfully moved');
+                    //    localStorage.setItem('storageMsg', 'Invoice successfully moved');
+                        localStorage.setItem('storageMsg', JSON.stringify({text: 'Invoice successfully moved', type: 'success'}));
                        location.reload();
                     }
 

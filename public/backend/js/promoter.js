@@ -6,6 +6,7 @@ function uploadFile(uploadId, ownerId, docId)
     $('.isloader').show();
     var biz_id  = $('#biz_id').val();
     var app_id  = $('#app_id').val();
+    var id_number = '';
     if(docId == 2) { 
         var file  = $("#panfile"+uploadId)[0].files[0];
     }
@@ -30,8 +31,19 @@ function uploadFile(uploadId, ownerId, docId)
     else if(docId == 38) { 
         var file  = $("#telephonefile"+uploadId)[0].files[0];
     }
+    else if(docId == 77) { 
+        var file  = $("#ckycfile"+uploadId)[0].files[0];
+        var id_number  = $("#ckycNumber"+uploadId).val();
+        if(id_number!='') {
+            var letterNumber = /^[0-9a-zA-Z]+$/;
+            if((!id_number.match(letterNumber))) {
+              alert('CKYC allow only Alphanumeric'); 
+               $(".isloader").hide();
+              return false;
+            }
+        }
+    }
 
-   
     var extension = file.name.split('.').pop().toLowerCase();
     var datafile = new FormData();
     
@@ -41,9 +53,11 @@ function uploadFile(uploadId, ownerId, docId)
     datafile.append('app_id', app_id);
     datafile.append('doc_id', docId);
     datafile.append('doc_file', file);
+    datafile.append('doc_id_no', id_number);
     
     
     console.log(messages.promoter_document_save);
+    console.log(app_id);
     $.ajax({
         headers: {'X-CSRF-TOKEN':  messages.token  },
         url : messages.promoter_document_save,

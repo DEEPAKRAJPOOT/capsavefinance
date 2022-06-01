@@ -101,5 +101,14 @@ class ColenderShare extends BaseModel {
         }
         $res = self::where($conditions)->update($attributes);
         return ($res ?: false);
-    }   
+    }
+
+    public static function getSharedColenderData($where){
+        if (!is_array($where)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }else{
+            return self::where($where)->get();
+
+        }
+    }
 }

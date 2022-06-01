@@ -42,7 +42,7 @@ class CibilReportController extends Controller
        if(!empty($request->get('from_date')) && !empty($request->get('to_date'))){
             $from_date = $request->get('from_date');
             $to_date = $request->get('to_date');
-            $cond[] = " pull_date between '$from_date' AND '$to_date' ";
+            $cond[] = " created_at between '$from_date' AND '$to_date' ";
        }
        if(!empty($request->get('search_keyword'))){
             $search_keyword = $request->get('search_keyword');

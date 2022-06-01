@@ -7,11 +7,21 @@
       <div class="row">
          <div class="col-6">
             <div class="form-group">
-               <label for="full_name">Full Name<span class="mandatory">*</span></label>
-               <input type="text" name="full_name" id="full_name" value="{{ old('full_name') }}" class="form-control full_name" tabindex="1" placeholder="Full Name" />
-               {!! $errors->first('full_name', '<span class="error">:message</span>') !!}
+               <label for="f_name">First Name<span class="mandatory">*</span></label>
+               <input type="text" name="f_name" id="f_name" value="{{ old('f_name') }}" class="form-control f_name" tabindex="1" placeholder="First Name" />
+               {!! $errors->first('f_name', '<span class="error">:message</span>') !!}
             </div>
          </div>
+         <div class="col-6">
+            <div class="form-group">
+               <label for="l_name">Last Name<span class="mandatory">*</span></label>
+               <input type="text" name="l_name" id="l_name" value="{{ old('l_name') }}" class="form-control l_name" tabindex="1" placeholder="Last Name" />
+               {!! $errors->first('l_name', '<span class="error">:message</span>') !!}
+            </div>
+         </div>         
+      </div>
+
+      <div class="row">
          <div class="col-6">
             <div class="form-group">
                <label for="comp_name">Business Name
@@ -19,6 +29,19 @@
                </label>
                <input type="text" name="comp_name" id="comp_name" value="{{ old('comp_name') }}" class="form-control comp_name" tabindex="2" placeholder="Business Name" >
                {!! $errors->first('comp_name', '<span class="error">:message</span>') !!}
+            </div>
+         </div>
+         <div class="col-6">
+            <div class="form-group">
+               <label for="product_type">Product Type
+                  <span class="mandatory">*</span>
+               </label>
+               <select name="product_type" id="product_type" class="form-control">
+                  <option value="">Select Product Type</option>
+                  <option value="{{ config('common.PRODUCT.TERM_LOAN') }}" {{ old('product_type') == config('common.PRODUCT.TERM_LOAN') ? 'selected' : '' }}>Term Loan</option>
+                  <option value="{{ config('common.PRODUCT.LEASE_LOAN') }}"  {{ old('product_type') == config('common.PRODUCT.LEASE_LOAN') ? 'selected' : '' }}>Leasing</option>
+               </select>
+               {!! $errors->first('product_type', '<span class="error">:message</span>') !!}
             </div>
          </div>
       </div>
@@ -42,7 +65,7 @@
                <span class="mandatory">*</span>
                </label>
 
-               <input class="form-control numbercls phone number_format" name="phone" id="phone" value="{{ old('phone') }}" tabindex="4" type="text" maxlength="10" placeholder="Mobile" required="">
+               <input class="form-control numbercls phone number_format" name="phone" id="phone" value="{{ old('phone') }}" tabindex="4" type="text" maxlength="10" placeholder="Mobile">
                {!! $errors->first('phone', '<span class="error">:message</span>') !!}
             </div>
          </div>
@@ -95,7 +118,7 @@ $messages = session()->get('message', false);
     var p = window.parent;
     p.jQuery('#iframeMessage').html('{!! Helpers::createAlertHTML($messages, 'success') !!}');
     p.jQuery("#createLeadForm").modal('hide');
-    p.oTables.draw();
+    p.oTables3.draw();
 } catch (e) {
     if (typeof console !== 'undefined') {
         console.log(e);
@@ -132,15 +155,25 @@ $(document).ready(function () {
         return this.optional(element) || /^[a-zA-Z ]*$/.test(value);
     });
     
-    $.validator.addMethod("alphabetsnspacendot", function(value, element) {
-        return this.optional(element) || /^[a-zA-Z. }]*$/.test(value);
+    $.validator.addMethod("alphabetsnspacendotandnumbers", function(value, element) {
+        return this.optional(element) || /^[a-zA-Z0-9. }]*$/.test(value);
     });
 
    $('#saveLead').on('click', function (event) {
-         $('input.full_name').each(function () {
+         $('input.f_name').each(function () {
             $(this).rules("add",
                      {
                         required: true,
+                        maxlength: 50,
+                        alphabetsnspace: true,
+                        messages: { alphabetsnspace: "Only letters and space allowed." }
+                     })
+         });
+         $('input.l_name').each(function () {
+            $(this).rules("add",
+                     {
+                        required: true,
+                        maxlength: 50,
                         alphabetsnspace: true,
                         messages: { alphabetsnspace: "Only letters and space allowed." }
                      })
@@ -149,15 +182,17 @@ $(document).ready(function () {
             $(this).rules("add",
                      {
                         required: true,
-                        alphabetsnspacendot: true,
-                        messages: {'alphabetsnspacendot' : "Only letters, space and dot allowed" }
+                        maxlength: 50,
+                        alphabetsnspacendotandnumbers: true,
+                        messages: {'alphabetsnspacendotandnumbers' : "Only letters, numbers, space and dot allowed" }
                      })
          });
          $('input.email').each(function () {
             $(this).rules("add",
                      {
                         required: true,
-                        email: true                            
+                        email: true,
+                        maxlength: 50,                            
                      })
          });
          $('input.phone').each(function () {
@@ -176,6 +211,12 @@ $(document).ready(function () {
                      })
          });
          $('#is_buyer').each(function () {
+            $(this).rules("add",
+                     {
+                        required: true
+                     })
+         });
+         $('#product_type').each(function () {
             $(this).rules("add",
                      {
                         required: true

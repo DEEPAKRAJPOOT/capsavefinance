@@ -981,4 +981,14 @@ function numberTowords($num = false)
     }
     return implode(' ', $words);
 }
+function xmlToArrayWithCDATA($xml, $format = 'ARRAY') {
+	$fileContents = str_replace(array("\n", "\r", "\t"), '', $xml);
+	//$xml = preg_replace('/(<\/?)(\w+):([^>]*>)/', '$1$2$3', $fileContents);
+	$fileContents = trim(str_replace('"', "'", $xml));
+	if (!_is_valid_xml($xml)) {
+		return $xml;
+	}
+	$array = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA),true), true);
+	return (strtoupper($format) == 'ARRAY' ? $array : json_encode($array));
+}
 ?>

@@ -66,6 +66,9 @@ class Anchor extends BaseModel
         'logo_file_id',
         'logo_align',
         'is_phy_inv_req',
+        'pan_no',
+        'gst_no',        
+        'is_fungible',
         'created_by',
         'created_at',
         'updated_at',
@@ -156,6 +159,19 @@ public static function saveAnchor($arrAnchor = [])
             ->first();
            return ($arrUser ? $arrUser : FALSE);
     }
+
+    /**
+     * function for check anchor email
+     * @param type $email
+     * @return type
+     */
+    public static function checkAnchorEmail($email,$anchId){
+
+        $isanchorEmailexist =  self::where('comp_email','=',$email)
+              ->where('anchor_id','!=',$anchId)->count();
+ 
+         return ($isanchorEmailexist ? $isanchorEmailexist : false);
+     }
     
     
     /**
@@ -251,6 +267,14 @@ public static function saveAnchor($arrAnchor = [])
             ->first();
            return ($arrEmailUser ? $arrEmailUser : FALSE);
     }
+
+    public static function getExistUserEmailStatusAnchor($anchor_id,$comp_email){
+        $arrEmailUser = self::select('anchor.*')
+             ->where('comp_email', '=', $comp_email)
+             ->where('anchor_id', '!=', $anchor_id)
+            ->first();
+           return ($arrEmailUser ? $arrEmailUser : FALSE);
+    }
     
     function anchorAccount()
     {
@@ -258,6 +282,22 @@ public static function saveAnchor($arrAnchor = [])
       
     }
 
+    /**
+     * Get Anchor 
+     * 
+     * @param array $where
+     * @return mixed mixed
+     */
+    public static function getAnchorData($where=[])
+    {
+        if (count($where) > 0) {
+            $res = self::select('*')->where($where)->get();
+        } else {
+            $res = self::select('*')->get();
+        }
+        return $res ?: [];
+    }     
+    
     public function scopeActive($query)
     {
         return $query->where('is_active', 1);

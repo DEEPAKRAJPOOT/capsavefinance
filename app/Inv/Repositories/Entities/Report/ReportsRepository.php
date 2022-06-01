@@ -194,12 +194,14 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				$toDate = $invDisb->interests->max('interest_date');
 			}
 			
+			$tds_proce_fee = $invDisb->transactions->first()?$invDisb->transactions->first()->tdsProcessingFee():0;
 			$result[] = [
 			'cust_name'=>$invDisb->invoice->business->biz_entity_name,
 			'rm_sales'=>isset($salesDetails) ? $salesDetails->f_name . ' ' . $salesDetails->l_name : '',
 			'anchor_name'=>isset($invDisb->invoice->anchor) ? $invDisb->invoice->anchor->comp_name : '',
 			'anchor_prgm_name'=>isset($invDisb->invoice->program) ? $invDisb->invoice->program->prgm_name : '',
-			'vendor_ben_name'=>$invDisb->invoice->supplier_bank_detail->acc_name ?? '', // Amit sir
+			// 'vendor_ben_name'=>$invDisb->invoice->supplier_bank_detail->acc_name ?? '', // Amit sir
+			'vendor_ben_name'=>$invDisb->disbursal->account_holder_name ?? '', // Amit sir
 			'region'=>$invDisb->invoice->supplier_bank_detail->branch_name ?? '', // Amit sir
 			'sanction_number'=>$invDisb->invoice->app_id,
 			'sanction_date'=> $invDisb->invoice->appStatusLog->first()->created_at,
@@ -224,8 +226,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'proce_fee'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('base_amt'),
 			'proce_amt'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('base_amt'),
 			'proce_fee_gst'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('amount'),
-			'tds_proce_fee'=>$invDisb->transactions[0]->tdsProcessingFee(),
-			'net_proc_fee_rec'=>($invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('amount')) - ($invDisb->transactions[0]->tdsProcessingFee()),
+			'tds_proce_fee'=>$tds_proce_fee,
+			'net_proc_fee_rec'=>($invDisb->transactions->where('trans_type',62)->where('entry_type',0)->sum('amount')) - $tds_proce_fee,
 			'proce_fee_rec'=>$invDisb->transactions->where('trans_type',62)->where('entry_type',1)->sum('amount'),
 			'proce_fee_amt_date'=>'', // blank
 			'balance'=> $invDisb->invoice->program_offer->programLimit->limit_amt - (($invDisb->transactions->where('trans_type',16)->where('entry_type',0)->sum('amount')) - ($invDisb->invoice->principal_repayment_amt)),
@@ -330,7 +332,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['user_id'] = $invDetails->lms_user->customer_id;
 			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['virtual_ac'] = $invDetails->lms_user->virtual_acc_id;
 			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['client_sanction_limit'] = $offerDetails['prgm_limit_amt'];
-			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['limit_utilize'] = Helper::invoiceAnchorLimitApprove($offerDetails);
+			// $result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['limit_utilize'] = Helper::invoiceAnchorLimitApprove($offerDetails);
+			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['limit_utilize'] = Helper::anchorSupplierPrgmUtilizedLimitByInvoice($offerDetails);
 			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['end_date'] = $invDetails->app->appLimit->end_date??'';
 			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['sub_prgm_name']= $prgmDetails->prgm_name;
 			$result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['limit_available'] = $result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['client_sanction_limit'] - $result[$invDetails->program_id]['disbursement'][$invDetails->supplier_id.'-'.$invDetails->app_id]['limit_utilize'];
@@ -435,7 +438,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		})
 		->whereDate('int_accrual_start_dt','<=',$curdate)
 		->get();
-
+		
 		$outstandingData = self::getOutstandingData($curdate);
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
@@ -457,20 +460,35 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 
 			$diff=date_diff(date_create($invDisb->payment_due_date),date_create($curdate));
 			$maturityDays = $diff->format("%a");
-			$offerDetails = $invDisb->invoice->program_offer->toArray();
-			$offerDetails['user_id'] = $invDisb->supplier_id;
-			$prgmDetails = $invDisb->program;
-
-			$limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::invoiceAnchorLimitApprove($offerDetails),2);
+			$invDetails = $invDisb->invoice;
+			$anchor_name = $invDetails->anchor->comp_name;
+			$offerDetails = $invDetails->program_offer->toArray();
+			$offerDetails['user_id'] = $invDetails->supplier_id;
+			$prgmDetails = $invDetails->program;
+			$payment_frequency='none';
+			if($invDisb->invoice->program_offer->payment_frequency == '1'){
+				$payment_frequency = 'Up Front';
+			}else if($invDisb->invoice->program_offer->payment_frequency == '2'){
+				$payment_frequency = 'Monthly';
+			}else if($invDisb->invoice->program_offer->payment_frequency == '3'){
+				$payment_frequency = 'Rear Ended';
+			}
+			// $limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::invoiceAnchorLimitApprove($offerDetails),2);
+			$limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::anchorSupplierPrgmUtilizedLimitByInvoice($offerDetails),2);
 			$limitAvl[$offerDetails['prgm_offer_id']] = $limitAvl[$offerDetails['prgm_offer_id']] ?? $offerDetails['prgm_limit_amt'] - $limitUsed[$offerDetails['prgm_offer_id']];
 			$limitAvl[$offerDetails['prgm_offer_id']] = ($limitAvl[$offerDetails['prgm_offer_id']] > 0) ? $limitAvl[$offerDetails['prgm_offer_id']] : 0; 
 			$result[$invDisb->invoice_disbursed_id] = [
 				'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
 				'cust_name' => $invDisb->invoice->business->biz_entity_name,
 				'customer_id' => $invDisb->invoice->lms_user->customer_id??null,
+				'anchor_name'=> $anchor_name,
 				'invoice_no' => $invDisb->invoice->invoice_no,
+				'disbursement_date'=>Carbon::parse($invDisb->disbursal->funded_date)->format('Y-m-d'),
 				'payment_due_date' => $invDisb->payment_due_date,
 				'virtual_ac' => $invDisb->invoice->lms_user->virtual_acc_id,
+				'payment_frequency'=>$payment_frequency,
+				'disburse_amount'=>$invDisb->disburse_amt,
+				'interest_amount'=>number_format($invDisb->total_interest,2),
 				'client_sanction_limit' => $offerDetails['prgm_limit_amt'],
 				'limit_available' => $limitAvl[$offerDetails['prgm_offer_id']],
 				'principalOut' => $principalOut,
@@ -487,7 +505,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			if($principalOut > 100 && ($result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] ?? 0) < $odDaysWithoutGrace){
 				$result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] = $odDaysWithoutGrace;
 			}
+			
 		}
+		
 		return $result;
 	}
 
@@ -551,7 +571,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$offerDetails['user_id'] = $invDetails->supplier_id;
 			$prgmDetails = $invDetails->program;
 			
-			$limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::invoiceAnchorLimitApprove($offerDetails),2);
+			// $limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::invoiceAnchorLimitApprove($offerDetails),2);
+			$limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::anchorSupplierPrgmUtilizedLimitByInvoice($offerDetails),2);
 			$limitAvl[$offerDetails['prgm_offer_id']] = $limitAvl[$offerDetails['prgm_offer_id']] ?? $offerDetails['prgm_limit_amt'] - $limitUsed[$offerDetails['prgm_offer_id']];
 			$limitAvl[$offerDetails['prgm_offer_id']] = ($limitAvl[$offerDetails['prgm_offer_id']] > 0) ? $limitAvl[$offerDetails['prgm_offer_id']] : 0; 
 			if($overdueAmt > 0 || $outstandingAmt > 0){

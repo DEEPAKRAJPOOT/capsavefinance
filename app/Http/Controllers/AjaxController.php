@@ -49,7 +49,13 @@ use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Contracts\Traits\LmsTrait;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
 use App\Inv\Repositories\Models\AppSanctionLetter;
-
+use App\Inv\Repositories\Models\Lms\ChargesTransactions;
+use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
+use App\Inv\Repositories\Models\Master\Permission;
+use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
+use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\AppApprover;
 class AjaxController extends Controller {
 
     /**
@@ -63,6 +69,7 @@ class AjaxController extends Controller {
     protected $invRepo;
     protected $docRepo;
     protected $lms_repo;
+    use ApplicationTrait;
     use LmsTrait;
     use ActivityLogTrait;
 
@@ -95,6 +102,80 @@ class AjaxController extends Controller {
         $usersList = $this->userRepo->getAllUsers();
         $users = $dataProvider->getUsersList($this->request, $usersList);
         return $users;
+    }
+
+    /**
+     * Get all User assigned lead list
+     *
+     * @return json user leads data
+     */
+    public function getUserLead(DataProviderInterface $dataProvider) {
+        $data = $this->request->all();
+        
+        $usersList = $this->userRepo->getAssignedUsers($data['role_id'],$data['user_id']);
+        $users = $dataProvider->getUsersLeadList($this->request, $usersList);
+        return $users;
+    }
+
+    /**
+     * set all selected lead to session
+     *
+     * @return json set leads data
+     */
+    public function setUsersLeads() {
+        try{
+
+            $data = $this->request->all();
+            if(!Session::has('toAssignedData'))
+            {
+                Session::put('toAssignedData',json_encode($data));
+            }else{
+
+                Session::forget('toAssignedData');
+                Session::put('toAssignedData',json_encode($data));
+            }
+            
+            $toAssignedData = Session::get('toAssignedData');
+            if($toAssignedData != null)
+                return response()->json(['status' => 1,'message' => 'User\'s lead set successfully.']);
+            else
+                return response()->json(['status' => 0,'message' => 'Something went wrong!']);   
+            
+        } catch (Exception $ex) {
+            return response()->json(['status' => 0,'message' => $ex]);
+            
+        }    
+    }
+
+
+    /**
+     * set all selected lead to session
+     *
+     * @return json set leads data
+     */
+    public function setUsersApplication() {
+        try{
+
+            $data = $this->request->all();
+            if(!Session::has('toAssignedData'))
+            {
+                Session::put('toAssignedData',json_encode($data));
+            }else{
+
+                Session::forget('toAssignedData');
+                Session::put('toAssignedData',json_encode($data));
+            }
+            
+            $toAssignedData = Session::get('toAssignedData');
+            if($toAssignedData != null)
+                return response()->json(['status' => 1,'message' => 'User\'s application set successfully.']);
+            else
+                return response()->json(['status' => 0,'message' => 'Something went wrong!']);   
+            
+        } catch (Exception $ex) {
+            return response()->json(['status' => 0,'message' => $ex]);
+            
+        }    
     }
 
     /**
@@ -2688,6 +2769,17 @@ if ($err) {
         $applications = $dataProvider->getAppList($this->request, $appList);
         return $applications;
     }
+
+    /**
+     * Get all Application list
+     *
+     * @return json user data
+     */
+    public function getAssignedApplications(DataProviderInterface $dataProvider) {
+        $appList = $this->application->getAssignedApplications($this->request);
+        $applications = $dataProvider->getAssignedAppList($this->request, $appList);
+        return $applications;
+    }
     
     /**
      * Get all Application list
@@ -2709,7 +2801,8 @@ if ($err) {
     
     public function getAnchorLeadLists(DataProviderInterface $dataProvider){
       $anchLeadList = $this->userRepo->getAllAnchorUsers(true);
-        $users = $dataProvider->getAnchorLeadList($this->request, $anchLeadList);
+      $users = $dataProvider->getAnchorLeadList($this->request, $anchLeadList);
+        
         return $users; 
     }
 
@@ -3647,16 +3740,48 @@ if ($err) {
      * @param program_id
      * @return program limit
      */
-    public function getProgramBalanceLimit(Request $request)
+    public function getProgramBalanceLimit_11_feb(Request $request)
     {
+        $appId = (int)$request->app_id;
         $program_id = (int)$request->program_id;
         $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);                
         $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
+        $anchorData = Anchor::getAnchorById($anchor_id);
         $utilizedLimit = 0;
         if ($prgm_data && $prgm_data->copied_prgm_id) {            
             $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
         }
-        return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
+        if($anchorData->is_fungible == 0) {
+            return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
+        } else {
+            return json_encode(['prgm_limit' => $prgm_limit , 'prgm_data' => $prgm_data]);
+        }
+    }
+
+    public function getProgramBalanceLimit(Request $request)
+    {
+        $appId = (int)$request->app_id;
+        $program_id = (int)$request->program_id;
+        $offer_id = (int)$request->offer_id;
+        $anchorId = (int)$request->anchor_id;
+
+        $data = $this->getAnchorProgramLimit($appId, $program_id, $offer_id);
+        
+        $appData = $this->application->getAppData($appId);
+        if ($appData && in_array($appData->app_type, [2])) {
+            $data['previousProgramLimit'] = $this->invRepo->getAmountOfferLimit(['anchor_id' => $anchorId, 'prgm_id' => $program_id, 'app_id' => $appData->parent_app_id]);
+        }
+
+        return json_encode($data);
+        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);
+        $prgm_data =  $this->application->getProgramData(['prgm_id' => $program_id]);
+        $anchor_id = $prgm_data->anchor_id;
+        $anchorData = Anchor::getAnchorById($anchor_id);
+        $utilizedLimit = 0;
+        if ($prgm_data && $prgm_data->copied_prgm_id) {
+            $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
+        }
+            return json_encode(['prgm_limit' => $prgm_limit + $utilizedLimit , 'prgm_data' => $prgm_data]);
     }
     
      public function getProgramSingleList(Request $request)
@@ -3746,8 +3871,7 @@ if ($err) {
       
 
     public function getTenor(Request $request)
-    {
-       
+    {       
         $result  =  explode(",",$request['program_id']);
         $supplier_id  =  explode(",",$request['supplier_id']);
         $res['prgm_id']  = $result[0];
@@ -3759,10 +3883,15 @@ if ($err) {
         $res['program_id']  = $res['prgm_id'];
         $getTenor   =  $this->invRepo->getTenor($res);
         $limit =   InvoiceTrait::ProgramLimit($res);
-        $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        // $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
+        $sum   =   Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($res);
         $is_adhoc   =  $this->invRepo->checkUserAdhoc($res);
-        $remainAmount = $limit-$sum;
-        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc]);
+        $remainAmount = round(($limit - $sum), 2);
+        $offer = AppProgramOffer::getAppPrgmOfferById($res['prgm_offer_id']);
+        $margin = $offer && $offer->margin ? $offer->margin : 0;
+
+        return response()->json(['status' => 1,'tenor' => $getTenor['tenor'],'tenor_old_invoice' =>$getTenor['tenor_old_invoice'],'limit' => $limit,'remain_limit' =>$remainAmount,'is_adhoc' => $is_adhoc,'margin' => $margin]);
     }
     
     public function getAdhoc(Request $request)
@@ -3789,7 +3918,9 @@ if ($err) {
        else
        {
         $limit =   InvoiceTrait::ProgramLimit($res);
-        $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        // $sum   =   InvoiceTrait::invoiceApproveLimit($res);
+        // $sum   =   Helpers::anchorSupplierUtilizedLimitByInvoice($res['user_id'], $res['anchor_id']);
+        $sum   =   Helpers::anchorSupplierPrgmUtilizedLimitByInvoice($res);
         $remainAmount = $limit-$sum;
         $is_adhoc = 0;
        }
@@ -3835,10 +3966,18 @@ if ($err) {
                 $attr =   $this->invRepo->getSingleBulkInvoice($val);
                 if($attr)
                 {
-                   $invoice_id = NULL;  
-                   if($attr->status==0)
-                   {
+                    $invoice_id = NULL;  
+                    if($attr->status==0)
+                    {
                         $userLimit = InvoiceTrait::ProgramLimit($attr);
+                        $attr['user_id'] = $attr['supplier_id'];
+                        $attr['prgm_id'] = $attr['program_id'];
+                        $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($attr['prgm_offer_id'], $attr['invoice_approve_amount']);
+                        $sum   =   InvoiceTrait::invoiceApproveLimit($attr);
+                        $remainAmount = $userLimit - $sum;
+                        if ($marginAmt > $remainAmount) {
+                            return response()->json(['status' => 0,'message' => 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount for invoice no. '.$attr['invoice_no']]); 
+                        }
                         $updateInvoice=  InvoiceTrait::updateBulkLimit($userLimit,$attr->invoice_approve_amount,$attr);  
                         $attr['comm_txt'] = $updateInvoice['comm_txt'];
                         $attr['status_id'] = $updateInvoice['status_id'];
@@ -3850,8 +3989,7 @@ if ($err) {
                             $inv_apprv_margin_amount = InvoiceTrait::invoiceMargin($res);
                             $is_margin_deduct =  1;  
                             $this->invRepo->updateFileId(['invoice_margin_amount'=>$inv_apprv_margin_amount,'is_margin_deduct' =>1],$res['invoice_id']);
-                        } 
-
+                        }
                    }
                   
                   $attribute['invoice_id'] = $invoice_id;
@@ -3870,7 +4008,7 @@ if ($err) {
                         $activity_desc = 'Upload Bulk Invoice, Final Submit (Manage Invoice)';
                         $arrActivity['app_id'] = null;
                         $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($res), $arrActivity);
-                    } 
+                    }
 
                      return response()->json(['status' => 1,'message' => 'Invoice successfully saved']); 
 
@@ -3981,7 +4119,6 @@ if ($err) {
             $arrActivity['app_id'] = null;
             $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
         } 
-       
       return \response()->json(['status' => 1,'msg' => substr($result,0,-1)]); 
        
    }  
@@ -4149,7 +4286,7 @@ if ($err) {
    * @return json transaction data
    */
     public function lmsGetSoaList(DataProviderInterface $dataProvider) {
-
+        ini_set("memory_limit", "-1");
         $request = $this->request;
         $transactionList = $this->lmsRepo->getSoaList();
 
@@ -4561,6 +4698,30 @@ if ($err) {
         return $response;
     }
 
+    // check email status of anchor
+    public function getExistUserEmailStatusAnchor(Request $req){
+        $response = [
+            'status' => false,
+            'message' => 'Some error occured. Please try again'
+        ];
+        $comp_email = $req->get('email');
+        $anchor_id = $req->get('anchor_id');
+        if (!filter_var($comp_email, FILTER_VALIDATE_EMAIL)) {
+           $response['message'] =  'Email Id is not valid';
+           return $response;
+        }
+        
+        $status = $this->userRepo->getExistUserEmailStatusAnchor($anchor_id,$comp_email);
+        if($status != false){
+           $response['status'] = false;
+           $response['message'] =  'Sorry! Email is already in use.';
+        }else{
+            $response['status'] = true;
+            $response['message'] =  '';
+        }
+        return $response;
+    }
+
     public function getSoaClientDetails(DataProviderInterface $dataProvider){
         $user_id = $this->request->get('user_id');
         $biz_id = $this->request->get('biz_id');
@@ -4942,9 +5103,9 @@ if ($err) {
     }
     public function checkExistAnchorLead(Request $request)
     {
-        $email = $request->get('email');        
+        $email = $request->get('email'); 
+        $data = $request->all();       
         $assocAnchId = $request->get('anchor_id');
-      
         $result = [];
         $result['message'] = '';
         $result['status'] = true;        
@@ -4963,13 +5124,41 @@ if ($err) {
             $whereCond[] = ['anchor_id', '=', $anchorId];
             //$whereCond[] = ['is_registered', '!=', '1'];
             $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
-
-            if (isset($anchUserData[0])) {
+            $Anchorstatus = $this->userRepo->getExistEmailStatusAnchor(trim($email));
+            if (!empty($anchUserData->toArray())) {
                 $result['status'] = false;
                 $result['message'] = trans('success_messages.existing_email');
+            }else{
+
+                if($Anchorstatus != false){
+                    $result['status'] = false;
+                    $result['message'] = trans('success_messages.existing_email');
+                }
+            }
+
+        }else{
+            $whereCond=[];
+            $whereCond[] = ['email', '=', trim($email)];
+            if(isset($data['anchor_user_id'])){
+                $whereCond[] = ['anchor_user_id', '!=', $data['anchor_user_id']];
+            }
+            
+            $anchUserData = $this->userRepo->getAnchorUserData($whereCond);
+            $Anchorstatus = $this->userRepo->getExistEmailStatusAnchor(trim($email));
+            if(!empty($anchUserData->toArray())){
+                $result['status'] = false;
+                $result['message'] = trans('success_messages.existing_email');
+            }elseif($Anchorstatus != false){
+                $result['status'] = false;
+                $result['message'] = trans('success_messages.existing_email');
+            }else {
+                $userData = $this->userRepo->getBackendUserByEmail(trim($email));
+                if ($userData) {
+                    $result['status'] = false;
+                    $result['message'] = trans('success_messages.existing_email');
+                }
             }
         }
-        
         return response()->json($result);
     }    
 
@@ -5208,6 +5397,35 @@ if ($err) {
             return $respose = ['status'=>'0'];
         }
     }
+
+    // Check frontend PAN validation
+    public function checkAnchorPanAjax(Request $request) {
+        $data = $request->all();
+
+        $anchrUserDataByPan = $this->userRepo->getAnchorByPan($data['pan_no']);
+        $anchorDataByPan = $this->userRepo->getAnchorData(['pan_no' => $data['pan_no']]);
+        
+        // if($anchrUserDataByPan) {
+        //     return 'false';
+        // } 
+        if(count($anchorDataByPan) > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }
+    }    
+
+    // Check frontend GST validation
+    public function checkAnchorGstAjax(Request $request) {
+        $data = $request->all();
+        
+        $anchorDataByPan = $this->userRepo->getAnchorData(['gst_no' => $data['gst_no']]);
+        if(count($anchorDataByPan) > 0) {
+            return 'false';
+        } else {
+            return 'true';
+        }
+    }    
 
     public function backendGetInvoiceProcessingGstAmount(Request $request) {
         $invoiceId = $request->get('invoice_id');
@@ -5601,5 +5819,261 @@ if ($err) {
        {
            return response()->json(['status' => 0]); 
        }
+    }
+
+    public function reqForChargeDeletion(Request $request)
+    {
+        try {
+            $request->validate([
+                'chrg_id' => 'required'
+            ],['chrg_id.required' => 'Please select atleast one checked']);
+    
+            $attr = is_array($request->chrg_id) && count($request->chrg_id) ? $request->chrg_id : [$request->chrg_id];
+            $chrgTrans = ChargesTransactions::whereIn('chrg_trans_id', $attr)->get();
+
+            \DB::beginTransaction();
+            foreach($chrgTrans as $chrgTran) {
+                $query  = ChargeTransactionDeleteLog::where('chrg_trans_id', $chrgTran->chrg_trans_id);
+                $newQuery = clone $query;
+                $isExistChrgTranReqLog     = $query->reqForDeletion()->first();
+                $isExistChrgTranApproveLog = $newQuery->approveForDeletion()->first();
+                
+                if (!$isExistChrgTranReqLog && !$isExistChrgTranApproveLog) {
+                    $attr = [
+                        'chrg_trans_id' => $chrgTran->chrg_trans_id,
+                        'status'        => 1,
+                        'created_at'    => now(),
+                        'created_by'    => auth()->user()->user_id
+                    ];
+    
+                    $this->lmsRepo->saveChargeTransDeleteLog($attr);
+                }
+            }
+            $roles = $this->userRepo->getActiveChrgDeleteEmailAllowedRoles();
+            $sendEmailRoleIds = [];
+            foreach($roles as $role) {
+                $isPermission = Permission::checkRolePermission('lms_approve_chrg_deletion', $role->id);
+                if ($isPermission && !in_array($role->id, $sendEmailRoleIds)) {
+                    array_push($sendEmailRoleIds, $role->id);
+                }
+            }
+            $users = $this->lmsRepo->getRoleActiveUsers($sendEmailRoleIds);
+            $allEmailData = [];
+            $user_id = $request->get('user_id');
+            $userInfo = $this->userRepo->getCustomerDetail($user_id);
+            foreach($users as $user) {
+                $emailData['receiver_user_name'] = $user->f_name .' '. $user->m_name .' '. $user->l_name;
+                $emailData['receiver_email']     = isset($user->email) ? $user->email : '';
+                array_push($allEmailData, $emailData);
+            }
+            $allEmailData['business_name']      = $userInfo->biz->biz_entity_name;
+            if (count($sendEmailRoleIds)) {
+                \Event::dispatch("CHARGE_DELETION_REQUEST_MAIL", serialize($allEmailData));
+            }
+            \DB::commit();
+            return response()->json(['status' => 1,'msg' => "Charge deletion request sent for approval successfully."]);
+        } catch (Exception $ex) {
+            \DB::rollback();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+
+    public function approveChargeDeletion(Request $request)
+    {
+        try {
+            $request->validate([
+                'chrg_id' => 'required'
+            ],['chrg_id.required' => 'Please select atleast one checked']);
+    
+            $chrgIds = is_array($request->chrg_id) && count($request->chrg_id) ? $request->chrg_id : [$request->chrg_id];
+            $chrgTrans = ChargesTransactions::whereIn('chrg_trans_id', $chrgIds)->get();
+            $chrgTranReqDltLogs = ChargeTransactionDeleteLog::whereIn('chrg_trans_id', $chrgIds)
+                                            ->reqForDeletion()
+                                            ->get();
+
+            if (count($chrgTrans) != count($chrgTranReqDltLogs)) {
+                return response()->json(['status' => 0,'msg' => "Please request for deletion before approve the charge."]);
+            }
+            \DB::beginTransaction();
+            foreach($chrgTrans as $chrgTran) {
+                $attr = [
+                    'chrg_trans_id' => $chrgTran->chrg_trans_id,
+                    'status'        => 2,
+                    'created_at'    => now(),
+                    'created_by'    => auth()->user()->user_id
+                ];
+                if ($chrgTran->transaction->childTransactions) {
+                    $childTrans = $chrgTran->transaction->childTransactions;
+                    foreach($childTrans as $childTran) {
+                        $childTran->delete();
+                    }
+                }
+                $chrgTran->transaction->delete();
+                $this->lmsRepo->saveChargeTransDeleteLog($attr);
+            }            
+            
+            \DB::commit();
+            return response()->json(['status' => 1,'msg' => "Charge deletion approved successfully."]);
+        } catch (Exception $ex) {
+            \DB::rollback();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+    }
+    public function deleteManagementInfo(Request $request)
+    {        
+        try {
+            if ($request->has('biz_owner_id') && $request->biz_owner_id) {
+                \DB::beginTransaction();
+                $bizOwner = $this->application->getBizOwnerDataByOwnerId($request->biz_owner_id);
+                if ($bizOwner) {
+                    $bizOwner->deleted_by = auth::user()->user_id;
+                    $bizOwner->save();
+                    $bizOwner->delete();
+                    \DB::commit();
+                    return response()->json(['status' => 1,'message' => "Management info deleted successfully."]);
+                } else {
+                    return response()->json(['status' => 0,'message' => 'Something went wrong.']); 
+                }
+            } else {
+                return response()->json(['status' => 0,'message' => 'Something went wrong.']);
+            }
+        } catch (Exception $ex) {
+            \DB::rollback();
+            return response()->json(['status' => 0,'message' => Helpers::getExceptionMessage($ex)]);
+        }
+    }    
+
+    public function getNonAnchorLeads(DataProviderInterface $dataProvider) {
+        $leadsList = $this->userRepo->getAllNonAnchorLeads();
+        $leads = $dataProvider->getAllNonAnchorLeadsList($this->request, $leadsList);
+        return $leads;
+    }
+    
+    public function uploadApprovalMailCopy(Request $request)
+    {
+        \DB::beginTransaction();
+        try {
+            //dd($request->all());
+            $attributes = $request->all();
+            $request->validate([
+                'approval_doc_file' => 'required',
+                'app_appr_status_id' => 'required',
+                'app_id' => 'required'
+            ],['approval_doc_file.required' => 'Please select atleast one document']);
+            $app_id = $request->app_id;
+            $file_id = false;
+            $addl_data = [];
+            $currStage = Helpers::getCurrentWfStage($app_id);
+            $isFinalSubmit = 0;
+            if ($currStage->stage_code == 'approver') {
+                $whereCondition = ['app_id' => $app_id, 'status' => null];
+                $offerData = $this->application->getOfferData($whereCondition);
+                if (!$offerData) {
+                    return response()->json(['status' => 0,'msg' =>'You cannot move this application to next stage as offer still not created.']);
+                }
+            if ($request->approval_doc_file) {
+                $date = Carbon::now();
+                $appData = $this->application->getAppData($app_id);
+                $supplier_id = $appData->user_id;
+                $uploadApprovalDocData = Helpers::uploadUserApprovalFile($attributes, $supplier_id, $app_id);
+                $userFile = $this->docRepo->saveFile($uploadApprovalDocData);
+                $file_id = $userFile->file_id;
+            }
+            if($file_id){
+                $update = AppApprover::where('app_appr_status_id', '=', $attributes['app_appr_status_id'])
+                ->where('app_id', '=', $attributes['app_id'])
+                ->where('is_active', '=', 1)
+                ->update(['approval_file_id'=>$file_id,'status' => 1]);
+                $msg = 'Approval mail copy has been successfully uploaded.';
+                if($update){
+                    $appApprData = AppApprover::getAppApprovers($app_id);
+                    if (isset($appApprData[0])) {
+                        $isFinalUpload = Helpers::isAppApprByAuthority($app_id);
+                        if($isFinalUpload){
+                            if ($currStage->stage_code == 'approver') {
+                                $this->application->updateActiveOfferByAppId($app_id, ['is_approve' => 1]);
+                            }
+                            $wf_order_no = $currStage->order_no;
+                            $nextStage = Helpers::getNextWfStage($wf_order_no);
+                            $roleArr = [$nextStage->role_id];
+                            $roles = $this->application->getBackStageUsers($app_id, $roleArr);
+                            $addl_data['to_id'] = isset($roles[0]) ? $roles[0]->user_id : null;
+                            $addl_data['sharing_comment'] = 'Automatically Assigned to Sales Manager from Approver List';
+                            $assign = true;
+                            $wf_status = 1;
+                            if ($nextStage->stage_code == 'sales_queue') {
+                                Helpers::updateWfStage($currStage->stage_code, $app_id, $wf_status, $assign, $addl_data);
+                                $application = $this->application->updateAppDetails($app_id, ['is_assigned'=>1]);
+                                //update approve status in offer table after all approver approve the offer.
+                                $this->application->changeOfferApprove((int)$app_id);
+                                Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.OFFER_LIMIT_APPROVED'));
+                                $msg = 'Approval mail copy has been successfully uploaded and moved the next stage (Sales).';
+                                $isFinalSubmit = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            return response()->json(['status' => 0,'msg' => 'No Authority']); 
+        }
+        \DB::commit();
+        return response()->json(['status' => 1,'msg' => $msg, 'isFinalSubmit' =>$isFinalSubmit]);
+        } catch (Exception $ex) {
+            \DB::rollback();
+            return response()->json(['status' => 0,'msg' => Helpers::getExceptionMessage($ex)]);
+        }
+    }
+
+    public function getBackendUsers(Request $request){
+
+        try{
+
+            $data = $request->all();
+            $validator =Validator::make($request->all(),[
+                'role_id' => 'required'
+            ],['role_id.required' => 'Please select role.']);
+            
+            if ($validator->fails()) {
+                $getErrorVar = $validator->messages()->get('*');
+                return response()->json(['status' => '2','message' => 'Please select role.','data'=>$getErrorVar]);
+            }
+
+            $role_id = (int)$data['role_id'];
+            $userData = Helpers::getAllUsersByRoleId($role_id);
+            if(!empty($userData))
+                return response()->json(['status' => '1','message' => 'User data according to role.','data'=>$userData]);
+            else
+                return response()->json(['status' => '0','message' => 'Users not found','data'=>array()]);
+            
+
+        } catch (Exception $ex) {
+            
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }
+
+    }
+
+    public function getUsersLeads(Request $request){
+
+        try{ 
+
+            $validator =Validator::make($request->all(),[
+                'role_id' => 'required',
+                'user_id' => 'required'
+            ],['role_id.required' => 'Please select role.','user_id.required'=>'Please select user.']);
+            $data = $request->all();
+            if ($validator->fails()) {
+
+                $getErrorVar = $validator->messages()->get('*');
+                return response()->json(['status' => '2','message' => 'validation error','data'=>$getErrorVar]);
+            }
+            
+            return response()->json(['status' => '1','message' => 'validation done','data'=>array()]);
+            
+        } catch (Exception $ex) {
+            
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+        }    
     }
 }

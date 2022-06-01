@@ -54,6 +54,7 @@ class Disbursal extends BaseModel {
 		'bank_name',
 		'ifsc_code',
 		'acc_no',
+		'account_holder_name',
 		'virtual_acc_id',
 		'status_id',
 		'disburse_type',

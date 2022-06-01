@@ -192,6 +192,38 @@ $messages = session()->get('message', false);
 <script type="text/javascript">
         $(document).ready(function () {
 
+            $(document).on('blur', '#email', function(){
+              var email = $(this).val();
+              if (!email.length) {
+                  return false;
+              }
+              $.ajax({
+                    url: messages.check_exist_email,
+                    type: 'POST',
+                    datatype: 'json',
+                    async: false,
+                    cache: false,
+                    data: {
+                        'email' : email,
+                        anchor_id : $("#assigned_anchor").val(),
+                        '_token' : messages.token
+                    },
+                  success: function(response){
+                      console.log(response);
+                     var nameclass = response.status ? 'success' : 'error';
+                     $('#email-error').remove();
+                      $('#email-error').removeClass('error success');
+                     if(response.status == false){
+                        $('#saveAnch').prop('disabled', true);
+                         $('#email').after('<label id="email-error" class="'+ nameclass +'" for="email">'+response.message+'</label>');
+                     }else{
+                        $('#saveAnch').prop('disabled', false);
+                        $('#email-error').remove();
+                     }
+                  }
+              });
+          });
+
             $('#anchor_user_type').on('change', function() {
                 if ( this.value == 1)
                 {
@@ -309,6 +341,7 @@ $messages = session()->get('message', false);
                         required: true,
                         email: true,
                         isexistemail: true,
+                        emailExt:true,
                         messages:{'isexistemail' : "This email is already exist."}
                     });
                 //});
@@ -375,6 +408,14 @@ $messages = session()->get('message', false);
 </script>
 
 <script>
+
+     // this function is to accept only email
+
+     jQuery.validator.addMethod("emailExt", function(value, element, param) {
+            return value.match(/^[a-zA-Z0-9_\.%\+\-]+@[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,}$/);
+         },'please enter a valid email');
+
+
          function checkFname(e) {
             let f_name = document.getElementById('f_name').value;
 

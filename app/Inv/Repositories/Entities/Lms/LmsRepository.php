@@ -70,21 +70,22 @@ use App\Inv\Repositories\Models\Lms\NachRepaymentReq;
 use App\Inv\Repositories\Models\Lms\NachRepaymentReqBatch;
 use App\Inv\Repositories\Models\Lms\NachTransReq;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
-use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
+use App\Inv\Repositories\Models\InvoiceStatusLog;
+use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
 
 /**
  * Lms Repository class
  */
 class LmsRepository extends BaseRepositories implements LmsInterface {
-	
+
 	use CommonRepositoryTraits;
-	
+
 	/**
 	 * Class constructor
 	 *
 	 * @return void
-	 */    
+	 */
 	public function __construct() {
 	}
 
@@ -93,7 +94,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	 *
 	 * @param array $attributes
 	 */
-	protected function create(array $attributes) {        
+	protected function create(array $attributes) {
 	}
 
 	/**
@@ -101,7 +102,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	 *
 	 * @param array $attributes
 	 */
-	protected function update(array $attributes, $id) {        
+	protected function update(array $attributes, $id) {
 	}
 
 	/**
@@ -109,21 +110,21 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	 *
 	 * @param array $columns
 	 */
-	public function all($columns = array('*')) {        
+	public function all($columns = array('*')) {
 	}
 
 	/**
 	 * Find method
 	 *
 	 * @param mixed $id
-	 * @param array $columns     
+	 * @param array $columns
 	 */
-	public function find($id, $columns = array('*')) {        
+	public function find($id, $columns = array('*')) {
 	}
 
 	/**
 	 * Save or Update Disbursal Request
-	 * 
+	 *
 	 * @param array $data
 	 * @param array $whereCondition | optional
 	 * @return mixed
@@ -136,7 +137,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	/**
 	 * Save or Update Disbursal Request
-	 * 
+	 *
 	 * @param array $data
 	 * @param array $whereCondition | optional
 	 * @return mixed
@@ -146,10 +147,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return InvoiceDisbursed::saveUpdateInvoiceDisbursed($data, $whereCondition);
 	}
-	
+
 	/**
 	 * Save Transactions
-	 * 
+	 *
 	 * @param array $transactions
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -157,11 +158,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function saveTransaction($transactions,$whereCondition=[])
 	{
 		return Transactions::saveTransaction($transactions,$whereCondition);
-	}	
+	}
 
 	/**
 	 * Save Running Transactions
-	 * 
+	 *
 	 * @param array $transactions
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -173,7 +174,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	/**
 	 * Save TransactionsComments
-	 * 
+	 *
 	 * @param array $transactions
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -185,7 +186,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	/**
 	 * Save or Update Invoice Repayment
-	 * 
+	 *
 	 * @param array $data
 	 * @param array $whereCondition | optional
 	 * @return mixed
@@ -198,7 +199,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	/**
 	 * Save or Update Interest Accrual
-	 * 
+	 *
 	 * @param array $data
 	 * @param array $whereCondition | optional
 	 * @return mixed
@@ -211,7 +212,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	/**
 	 * Save or Update Interest Accrual Temp
-	 * 
+	 *
 	 * @param array $data
 	 * @param array $whereCondition | optional
 	 * @return mixed
@@ -221,10 +222,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return InterestAccrualTemp::saveInterestAccrualTemp($data, $whereCondition);
 	}
-	
+
 	/**
 	 * Get Disbursal Requests
-	 *      
+	 *
 	 * @param array $whereCondition | optional
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -233,10 +234,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return InvoiceDisbursed::getInvoiceDisbursalRequests($whereCondition);
 	}
-	
+
 	/**
 	 * Get Transactions
-	 *      
+	 *
 	 * @param array $whereCondition | optional
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -245,10 +246,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return Transactions::getTransactions($whereCondition);
 	}
-	
+
 	/**
 	 * Get Repayments
-	 *      
+	 *
 	 * @param array $whereCondition | optional
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -256,14 +257,14 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function getRepayments($whereCondition=[])
 	{
 		return InvoiceRepaymentTrail::getRepayments($whereCondition);
-	}   
-	
+	}
+
 
 	public function getAllUserInvoice($userId)
 	{
 		return BizInvoice::getAllUserInvoice($userId);
 	}
-	
+
 	public static function getAllUserInvoiceIds($userId)
 	{
 		return BizInvoice::getAllUserInvoiceIds($userId);
@@ -271,19 +272,19 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	/**
 	 * Get Accrued Interest Data
-	 *      
+	 *
 	 * @param array $whereCondition | optional
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
-	 */    
+	 */
 	public function getAccruedInterestData($whereCondition=[])
 	{
 		return InterestAccrual::getAccruedInterestData($whereCondition);
 	}
-	
+
 	/**
 	 * Get Program Offer Data
-	 * 
+	 *
 	 * @param array $whereCondition
 	 * @return mixed
 	 */
@@ -292,13 +293,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return Disbursal::getProgramOffer($whereCondition);
 	}
 
-	
+
 	public function getInvoices($invoiceIds)
 	{
 		return BizInvoice::whereIn('invoice_id', $invoiceIds)
 			   ->with(['program_offer','lms_user' , 'supplier.anchor_bank_details.bank', 'supplier_bank_detail.bank', 'program', 'processing_fee'])
 			   ->get();
-	}  
+	}
 
 	public function getUserBankDetail($userId)
 	{
@@ -308,7 +309,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 	/**
 	 * Get Repayments
-	 *      
+	 *
 	 * @param array $whereCondition | optional
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -318,20 +319,20 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return BizInvoice::groupBy('supplier_id')
 				->whereIn('invoice_id', $invoiceIds)
 				->pluck('supplier_id');
-	} 
+	}
 	/**
 	 * Get Repayments
-	 *      
+	 *
 	 * @param array $whereCondition | optional
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
 	 */
 	public function lmsGetInvoiceClubCustomer($userIds, $invoiceIds)
 	{
-	  
+
 		return $data =  LmsUser::with(['bank_details.bank', 'app.invoices.program_offer', 'user.anchor_bank_details.bank', 'app.invoices.program', 'app.invoices.processing_fee'])
 				->with(['app.invoices' => function ($query) use($invoiceIds) {
-					  if (!empty($invoiceIds)) { 
+					  if (!empty($invoiceIds)) {
 						  $query->whereIn('invoice_id', $invoiceIds);
 					  }
 				  }])
@@ -342,11 +343,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				})
 				->groupBy('user_id')
 				->get();
-	}    
+	}
 
 	/**
 	 * Get Repayments
-	 *      
+	 *
 	 * @param array $whereCondition | optional
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -355,31 +356,31 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return BizInvoice::where('invoice_id', $invoiceId)
 				->update(['status_id' => $status]);
-	}    
+	}
 
 	/**
 	 * Get Sum of Accrued Interest
-	 *      
+	 *
 	 * @param array $whereCond
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
 	 */
-	public function sumAccruedInterest($whereCond) 
-	{        
+	public function sumAccruedInterest($whereCond)
+	{
 		return InterestAccrual::sumAccruedInterest($whereCond);
-	}    
+	}
 
 	 /**
 	 * Get Count of Accrued Interest
-	 *      
+	 *
 	 * @param array $whereCond
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
 	 */
-	public function countAccruedInterest($whereCond) 
-	{        
+	public function countAccruedInterest($whereCond)
+	{
 		return InterestAccrual::countAccruedInterest($whereCond);
-	}  
+	}
 
 
 	/**
@@ -392,7 +393,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	 /**
 	 * Get Repayments
-	 *      
+	 *
 	 * @param array $whereCondition | optional
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -409,7 +410,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 	 /**
 	 * update disbursaal
-	 *      
+	 *
 	 * @param array $whereCondition | required
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -421,10 +422,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				->update($data);
 		}
 		return ($response) ?? $response;
-	}          
+	}
 	/**
 	 * Create disbursaal status log
-	 *      
+	 *
 	 * @param array $whereCondition | optional
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -432,7 +433,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function createDisbursalStatusLog($disbursalId, $statusId = null, $remarks = '', $createdBy)
 	{
 		$curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
-                        
+
 		return DisbursalStatusLog::create([
                     'disbursal_id' => $disbursalId,
                     'status_id' => $statusId,
@@ -443,7 +444,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 	 /**
 	 * Get Repayments
-	 *      
+	 *
 	 * @param array $whereCondition | optional
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -460,7 +461,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 
 	 /**
-	 *      
+	 *
 	 * @param array $whereCondition | optional
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -469,8 +470,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return LmsUser::where('user_id', $userId)
 				->pluck('virtual_acc_id')->first();
-	} 
-	
+	}
+
 	/****
 	 * get trans  type
 	 */
@@ -481,9 +482,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		} catch (Exception $ex) {
 		   return $ex;
 		}
-		
-			   
-	}  
+
+
+	}
 	/****
 	 * get trans  type
 	 */
@@ -491,13 +492,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 	   try
 	   {
-		  return User::getProgramUser($userId); 
+		  return User::getProgramUser($userId);
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-	   
-			   
-	}  
+
+
+	}
 	  /****
 	 * get address
 	 */
@@ -505,14 +506,14 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 	   try
 	   {
-		  return Application::getUserAddress($app_id); 
+		  return Application::getUserAddress($app_id);
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-	   
-			   
+
+
 	}
-	
+
 	 /****
 	 * get address
 	 */
@@ -520,13 +521,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 	   try
 	   {
-		  return Application::companyAdress(); 
+		  return Application::companyAdress();
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-	   
-			   
-	} 
+
+
+	}
 	public static function getUserDetails($uid)
 	{
 	   try
@@ -535,92 +536,92 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-	   
-			   
-	}  
+
+
+	}
 	  public static function getSingleChargeAmount($attr)
 	{
 	   try
-	   {	
+	   {
 	   		if (!empty($attr['prog_id'])) {
-		  		return ProgramCharges::getSingleChargeAmount($attr); 
+		  		return ProgramCharges::getSingleChargeAmount($attr);
 	   		} else {
    				return Charges::getSingleChargeAmount($attr);
 	   		}
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-	   
-			   
-	}   
-	
+
+
+	}
+
 	  public static function saveCharge($attr)
 	{
 	   try
 	   {
-		  return Transactions::saveCharge($attr); 
+		  return Transactions::saveCharge($attr);
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-	   
-			   
-	}   
-	
+
+
+	}
+
 	public static function getAllTransCharges()
 	{
 		try
 	   {
-		  return ChargesTransactions::getAllTransCharges(); 
+		  return ChargesTransactions::getAllTransCharges();
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-		
+
 	}
 	  public static function saveChargeTrans($attr)
 	{
 	   try
 	   {
-		  return ChargesTransactions::saveChargeTrans($attr); 
+		  return ChargesTransactions::saveChargeTrans($attr);
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-	   
-			   
-	}    
-	 
+
+
+	}
+
 	  public static function getAllUserChargeTransaction()
 	{
 	   try
 	   {
-		  return Transactions::getAllUserChargeTransaction(); 
+		  return Transactions::getAllUserChargeTransaction();
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-	   
-			   
-	}    
+
+
+	}
 	  public static function getTransName($attr)
 	{
 	   try
 	   {
 	   		if (isset($attr->prog_id)) {
-		  		return ProgramCharges::getTransName($attr); 
+		  		return ProgramCharges::getTransName($attr);
 		  	} else {
-		  		return Charges::getTransName($attr); 
+		  		return Charges::getTransName($attr);
 
 		  	}
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-	   
-			   
-	}    
+
+
+	}
 	/**
 	 * Get program offer limit amount  //
-	 *      
+	 *
 	 * @param array $whereCondition
 	 * @param array $data
-	 * 
+	 *
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
 	 */
@@ -628,13 +629,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 	   try
 	   {
-		  return AppProgramOffer::getLimitAmount($attr); 
+		  return AppProgramOffer::getLimitAmount($attr);
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-	   
-			   
-	}    
+
+
+	}
 	  public static function getOutstandingAmount($attr)
 	{
 	   try
@@ -643,17 +644,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-	   
-			   
-	}     
-	
-	
+
+
+	}
+
+
 	/**
 	 * Update Transactions
-	 *      
+	 *
 	 * @param array $whereCondition
 	 * @param array $data
-	 * 
+	 *
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
 	 */
@@ -661,31 +662,31 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return Transactions::updateTransaction($whereCondition, $data);
 	}
-	
-	/** 
+
+	/**
 	 * @Author: Rent Aplha
-	 * @Date: 2020-02-17 14:53:10 
-	 * @Desc:  
-	 */    
-	public static function getManualTranType(){        
+	 * @Date: 2020-02-17 14:53:10
+	 * @Desc:
+	 */
+	public static function getManualTranType(){
 	 $result=TransType::getManualTranType();
 	 return  $result? $result:false;
 	}
-	  /** 
+	  /**
 	 * @Author: Rent Aplha
-	 * @Date: 2020-02-17 14:53:10 
-	 * @Desc:  
-	 */    
-	public static function getActiveGST(){        
+	 * @Date: 2020-02-17 14:53:10
+	 * @Desc:
+	 */
+	public static function getActiveGST(){
 		$result=GstTax::getActiveGST();
 		return  $result? $result:false;
 	   }
 
-	   /** 
+	   /**
 		* @Author: Rent Alpha
-		* @Date: 2020-02-18 13:04:19 
-		* @Desc:  
-		*/       
+		* @Date: 2020-02-18 13:04:19
+		* @Desc:
+		*/
 	   public function getAllLmsUser(){
 		$result=LmsUser::getLmsUser();
 		return  $result? $result:false;
@@ -721,7 +722,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	  })->whereHas('transactions', function ($query) use($request){
 		 $query->where('trans_type','=',$request->trans_type);
 	  })->whereIn('status',[1,4])->get();
-	 
+
    }
 
    public function getRequestList($request)
@@ -738,26 +739,32 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return BizInvoice::getUserInvoiceIds($userId);
     }
-    
+
     public function getSoaList()
     {
         // return Transactions::getSoaList();
 		return CustomerTransactionSOA::getSoaList();
     }
-    
+
+    public function getColenderList() {
+        return Transactions::getColenderList();
+	}
     public function getColenderSoaList() {
         return Transactions::getColenderSoaList();
 	}
-	
+    public function getColenderSoaListByLender($lenderId) {
+        return Transactions::getColenderSoaListByLender($lenderId);
+    }
+
 	public function getConsolidatedSoaList() {
         return CustomerTransactionSOA::getConsolidatedSoaList();
     }
-    
+
     public function getRepaymentAmount($userId, $transType)
     {
         return Transactions::getUserBalance($userId);
     }
-    
+
       public function searchBusiness($search)
     {
         try
@@ -766,7 +773,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
        } catch (Exception $ex) {
             return $ex;
        }
-       
+
     }
 
     /**
@@ -781,7 +788,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
      * create Disburse Api Log
      */
     public static function createDisbursalBatch($file, $batchId = null, $disbursalApiLogId = null)
-    {   
+    {
         if (!empty($batchId)) {
             $disburseBatch['batch_id'] = $batchId ?? null;
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
@@ -790,25 +797,25 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         }
         return DisbursalBatch::create($disburseBatch);
     }
-    
+
     public function getRefundData($transId, $variableName=null)
     {
         return Refund::getRefundData($transId, $variableName);
     }
-    
+
     /**
-     * Get Wf stage Details 
+     * Get Wf stage Details
      *
     */
     public function getWfStages($reqType)
     {
         return WfStage::getWfStages($reqType);
     }
-    
+
     /**
      * Get workflow detail by wf stage code
-     * 
-     * @param string $req_type 
+     *
+     * @param string $req_type
      * @param string $wf_stage_code
      * @return mixed
      * @throws BlankDataExceptions
@@ -817,25 +824,25 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return WfStage::getWfDetailById($wf_stage_code);
     }
-  
+
     /**
      * Get next workflow by $wf_order_no
      *
-     * @param string $req_type 
+     * @param string $req_type
      * @param string $wf_order_no
-     * 
+     *
      * @return mixed
      * @throws BlankDataExceptions
      */
     public function getNextWfStage($req_type, $wf_order_no)
     {
         return WfStage::getNextWfStage($req_type, $wf_order_no);
-    }        
-        
+    }
+
     /**
      * Get Workflow Detail By Order No
      *
-     * @param string $req_type 
+     * @param string $req_type
      * @param integer $wf_order_no
      *
      * @return mixed
@@ -844,20 +851,20 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return WfStage::getWfDetailByOrderNo($req_type, $wf_order_no);
     }
-    
+
     /**
-     * Get Wf stage Details 
+     * Get Wf stage Details
      *
     */
     public function updateWfStage($wf_stage_id, $req_id, $arrData = [])
     {
         return RequestWfStage::updateWfStage($wf_stage_id, $req_id, $arrData);
     }
-    
-            
+
+
     /**
      * Save application workflow stage
-     * 
+     *
      * @param array $arrData
      * @return mixed
      * @throws BlankDataExceptions
@@ -866,44 +873,44 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return RequestWfStage::saveWfDetail($arrData);
     }
-    
+
     /**
      * Get Current WfStage by req id
-     * 
+     *
      * @param integer $req_id
      * @return mixed
-     */    
-    public function getCurrentWfStage($req_id) 
+     */
+    public function getCurrentWfStage($req_id)
     {
         return RequestWfStage::getCurrentWfStage($req_id);
     }
 
     /**
      * Get request workflow stage by $wf_stage_code and $req_id
-     * 
+     *
      * @param string $wf_stage_code
      * @param integer $req_id
-     * 
+     *
      * @return mixed
      */
-    public function getRequestWfStage($wf_stage_code, $req_id) 
+    public function getRequestWfStage($wf_stage_code, $req_id)
     {
         return RequestWfStage::getRequestWfStage($wf_stage_code, $req_id);
     }
-    
+
     public function updateRequestAssignById($req_id, $data)
     {
         return RequestAssign::updateRequestAssignById((int) $req_id, $data);
     }
-    
+
     public function assignRequest($data)
     {
         return RequestAssign::assignRequest($data);
     }
-    
+
     /**
      * Get Backend Users By Role Id
-     * 
+     *
      * @param integer $role_id
      * @return array
      */
@@ -911,7 +918,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return RoleUser::getBackendUsersByRoleId($role_id, $usersNotIn);
     }
-    
+
     public function saveApprRequestData($reqData=[], $reqId=null)
     {
         return ApprovalRequest::saveApprRequestData($reqData, $reqId);
@@ -919,9 +926,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     /**
      * Save Approval Request Log Data
-     * 
+     *
      * @param array $reqLogData
-     * 
+     *
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
@@ -929,18 +936,18 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return ApprovalRequestLog::saveApprRequestLogData($reqLogData);
     }
-    
+
     public function getApprRequestData($reqId)
     {
         return ApprovalRequest::getApprRequestData($reqId);
     }
-    
+
     /**
      * Update Approval Request Log Data
-     * 
+     *
      * @param array $whereCond
      * @param array $reqLogData
-     * 
+     *
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
@@ -948,26 +955,26 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return ApprovalRequestLog::updateApprRequestLogData($whereCond, $reqLogData);
     }
-    
+
     /**
      * Get Approval Request Log Data
-     * 
+     *
      * @param array $whereCond
-     * 
+     *
      * @return mixed
      * @throws InvalidDataTypeExceptions
      */
     public function getApprRequestLogData($whereCond)
     {
         return ApprovalRequestLog::getApprRequestLogData($whereCond);
-    } 
-    
+    }
+
     /**
      * Get previous workflow by $wf_order_no
      *
-     * @param string $req_type 
+     * @param string $req_type
      * @param string $wf_order_no
-     * 
+     *
      * @return mixed
      * @throws BlankDataExceptions
      */
@@ -975,12 +982,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return WfStage::getPrevWfStage($req_type, $wf_order_no);
     }
-    
+
     public function getAssignedReqData($reqId)
     {
         return RequestAssign::getAssignedReqData($reqId);
-    }    
-    
+    }
+
     public function isRequestOwner($reqId, $assignedUserId)
     {
         return RequestAssign::isRequestOwner($reqId, $assignedUserId);
@@ -990,15 +997,15 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return Refund::saveRefundData($refundData);
     }
-    
+
     public function getVariables()
     {
         return Variables::getVariables();
     }
-    
+
     /**
      * Get Request current assignee
-     * 
+     *
      * @param integer $reqId
      * @return mixed
      */
@@ -1031,15 +1038,15 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function getAllUserBatchInvoice($data)
 	{
 		return BizInvoice::getAllUserBatchInvoice($data);
-	} 
-        
+	}
+
     /**
      * Check Charge Name
-     * 
+     *
      * @param type $where array
      * @return type mixed
      * @throws BlankDataExceptions
-     * @throws InvalidDataTypeExceptions 
+     * @throws InvalidDataTypeExceptions
      */
     public function checkChargeName($chargeName, $excludeChargeId=null)
     {
@@ -1049,21 +1056,21 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getallBatch()
 	{
 		return DisbursalBatch::get();
-	}        
+	}
 
 	public function findInvoiceDisbursedByInvoiceId($invoiceId)
 	{
 		return InvoiceDisbursed::where('invoice_id', $invoiceId)
 				->get();
 	}
-        
+
     /**
      * Get charge Data
-     * 
-     * @param array $where 
+     *
+     * @param array $where
      * @return mixed
      * @throws BlankDataExceptions
-     * @throws InvalidDataTypeExceptions 
+     * @throws InvalidDataTypeExceptions
      */
     public function getChargeData($where)
     {
@@ -1074,17 +1081,17 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return RefundReq::whereIn('refund_req_id', $ids)
 			   ->get();
-    } 
+    }
 
     public function getAprvlRqDataByIds($ids = [])
-    {	
+    {
     	if (empty($ids)) {
-	        return RefundReq::with(['payment.user.anchor_bank_details.bank', 'payment.lmsUser.bank_details.bank'])
-	        	->where('status', 7)
+	        return RefundReq::with(['payment.user.anchor_bank_details.bank', 'payment.lmsUser.bank_details.bank', 'batch.disbursal_api_log'])
+	        	->where('status', 8)
 			   	->get();
     	} else {
     		return RefundReq::whereIn('refund_req_id', $ids)
-			   	->with(['payment.user.anchor_bank_details.bank', 'payment.lmsUser.bank_details.bank'])
+			   	->with(['payment.user.anchor_bank_details.bank', 'payment.lmsUser.bank_details.bank', 'batch.disbursal_api_log'])
 			   	->get();
     	}
     }
@@ -1101,7 +1108,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 
 	public static function createRefundBatch($file, $data = [])
-    {   
+    {
     	$disburseBatch = [];
         if ($data) {
             $disburseBatch['batch_no'] = ($data['batch_no']) ?? null;
@@ -1112,10 +1119,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         }
         return RefundReqBatch::create($disburseBatch);
     }
-    
+
     /**
      * Save Eod Process Data
-     * 
+     *
      * @param array $data
      * @param integer $eodProcessId
      * @return mixed
@@ -1124,10 +1131,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return EodProcess::saveEodProcess($data, $eodProcessId);
     }
-    
+
     /**
      * Get Eod Process Data
-     * 
+     *
      * @param array $whereCond
      * @return mixed
      */
@@ -1135,12 +1142,12 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return EodProcess::getEodProcess($whereCond);
     }
-    
+
     public function saveEodProcessLog($data, $eodProcessId=null)
     {
         return EodProcessLog::saveEodProcessLog($data, $eodProcessId);
     }
-    
+
     public function getEodProcessLog($whereCond=[])
     {
         return EodProcessLog::getEodProcessLog($whereCond);
@@ -1154,7 +1161,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function getRunningTrans($userId){
 		return TransactionsRunning::getRunningTrans($userId);
 	}
-	
+
 	public static function getUnsettledTrans($userId, $where = []){
 		return Transactions::getUnsettledTrans($userId, $where);
 	}
@@ -1176,7 +1183,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function getUnsettledInvoices($data){
 		return Transactions::getUnsettledInvoices($data);
 	}
-	
+
 	public static function getTransDetail($data){
 		return Transactions::getTransDetail($data);
 	}
@@ -1188,7 +1195,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function getUnsettledChargeTransactions($data){
 		return Transactions::getUnsettledChargeTransactions($data);
 	}
-	
+
 	public static  function calInvoiceRefund($invoiceDisbursalId, $paymentDate)
 	{
 		return Transactions::calInvoiceRefund($invoiceDisbursalId, $paymentDate);
@@ -1211,7 +1218,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 
 	public static function getInvoiceSettleStatus(int $invoiceId, $statusOnly = false){
-		
+
 		if (empty($invoiceId)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
@@ -1232,7 +1239,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		];
 
 		$invDisbursed = InvoiceDisbursed::where('invoice_id','=',$invoiceId)->first();
-		
+
 		if($invDisbursed){
 			$response['invoice_id'] = $invDisbursed->invoice_id;
 			$response['payment'] = 0;
@@ -1326,7 +1333,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
 				$response['principal_repayment_amt'] += (float) $val['amount'] - (float) $val['outstanding'];
 			}
-			
+
 			foreach($response['interest'] as $val){
 				$response['payment'] += (float) $val['amount'];
 				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
@@ -1340,7 +1347,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				$response['payment'] += (float) $val['amount'];
 				$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
 			}
-			
+
 			foreach($response['margin'] as $val){
 				//$response['receipt'] +=	(float) $val['amount'] - (float) $val['outstanding'];
 			}
@@ -1351,7 +1358,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		}
 		if($statusOnly){
 			return $response['is_settled'];
-		}else{	
+		}else{
 			return $response;
 		}
 	}
@@ -1359,28 +1366,28 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static function getMaxDpdTransaction($userId, $transType){
 		return Transactions::getMaxDpdTransaction($userId, $transType);
 	}
-	
+
 	public static function getBatchDisbursalList(){
 		return DisbursalBatch::with('disbursal')
 				->orderBy('created_at', 'DESC');
 	}
-        
+
     /**
      * Get System Start Date
-     * 
+     *
      * @return timestamp
      */
     public function getSysStartDate()
     {
         return EodProcess::getSysStartDate();
-    } 
-    
+    }
+
     /**
      * Get Disbursal transactions
-     * 
+     *
      * @param string $transStartDate
      * @param string $transEndDate
-     * 
+     *
      * @return mixed
      */
     public function checkDisbursalTrans($transStartDate, $transEndDate)
@@ -1390,10 +1397,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	/**
      * Get Running transactions
-     * 
+     *
      * @param string $transStartDate
      * @param string $transEndDate
-     * 
+     *
      * @return mixed
      */
     public function checkRunningTrans($transStartDate, $transEndDate)
@@ -1403,7 +1410,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     /**
      * Get Total Disbursed Amount
-     * 
+     *
      * @param array $disbursalIds
      * @return mixed
      */
@@ -1411,21 +1418,21 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return Disbursal::getTotalDisbursedAmt($disbursalIds);
     }
-    
+
     /**
      * Get Latest Eod Process
-     * 
+     *
      * @return mixed
      */
     public function getLatestEodProcess($whereCond=[])
     {
         return EodProcess::getLatestEodProcess($whereCond);
 
-    }  
-    
+    }
+
     /**
      * Save write off
-     * 
+     *
      * @param array $dataArr
      * @return type
      */
@@ -1433,10 +1440,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return WriteOffRequest::saveWriteOffReq($dataArr);
     }
-    
+
     /**
      * Get write off
-     * 
+     *
      * @param integer $userId
      * @return array
      */
@@ -1444,10 +1451,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return WriteOffRequest::getWriteOff((int) $userId);
     }
-    
+
     /**
      * Save write off log
-     * 
+     *
      * @param array $dataArr
      * @return type
      */
@@ -1455,10 +1462,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return WriteOffStatusLog::saveWriteOffReqLog($dataArr);
     }
-    
+
     /**
      * Update write off
-     * 
+     *
      * @param array $dataArr
      * @return type
      */
@@ -1466,7 +1473,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return WriteOffRequest::updateWriteOffReqById((int) $woReqId, $dataArr);
     }
-	
+
 	/**
 	 * Mark User write Off
 	 * @param int $uid
@@ -1479,14 +1486,14 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
         $getLogId = LmsUsersLog::create(['user_id' => $uid,'status_id' => 41,'created_by' => $create_uid,'created_at' => $cDate]);
         UserDetail::where(['user_id' => $uid])->update(['is_active' => 0,'lms_users_log_id' => $getLogId->lms_users_log_id]);
 	}
-    
 
-	public function getColenderShareWithUserId($userId) 
+
+	public function getColenderShareWithUserId($userId)
         {
 		return ColenderShare::getColenderShareWithUserId((int)$userId);
 	}
 
-	public function getColenderApplications() 
+	public function getColenderApplications()
        {
             $roleData = User::getBackendUser(\Auth::user()->user_id);
 
@@ -1497,10 +1504,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 				$getAppId  = ColenderShare::where(['is_active' => 1])->pluck('app_id');
 				$result = LmsUser::whereIn('app_id',$getAppId)->with(['user', 'getBusinessId'])->orderBy('lms_user_id','DESC');
 			}
-			
+
             return $result ?: false;
 	}
-        
+
          public static function getChrgLog($id)
 	{
 	   try
@@ -1509,9 +1516,9 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	   } catch (Exception $ex) {
 		  return $ex;
 	   }
-			   
-	}     
-    
+
+	}
+
     public function getEodDataCount() {
         return EodProcess::getEodDataCount();
     }
@@ -1527,11 +1534,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     public function getCibilReports(array $whereCondition = [], $whereRawCondition = NULL) {
        return CibilReports::getCibilReports($whereCondition, $whereRawCondition);
-    } 
+    }
 
     public function getCibilUserData(array $whereCondition = [], $whereRawCondition = NULL) {
        return CibilUserData::getCibilUserDataList($whereCondition, $whereRawCondition);
-    }  
+    }
 
     public function insertCibilUserData(array $userData = []) {
        return CibilUserData::insertBulkData($userData);
@@ -1545,13 +1552,13 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     public function getAllBusinessAddrData(array $whereCond = []) {
         return BusinessAddress::getBizAddresses($whereCond);
-    }    
+    }
 
     public function getDisbursalByUserAndBatchId($data)
 	{
 		return Disbursal::where($data)
 				->first();
-	}    
+	}
 
 
 	public function getEodList(){
@@ -1565,7 +1572,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function updateCronLog($data,$cronLogId){
 		return CronLog::updateCronLog($data,$cronLogId);
 	}
-	
+
 	public function getUnsettledPayments($userId){
 		return Payment::where('user_id','=',$userId)
 		->where('is_settled','=','0')
@@ -1588,7 +1595,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     }
 
     public function getAprvlRqUserByIds($ids = [])
-    {	
+    {
     	if (empty($ids)) {
 	        return "No record found.";
     	} else {
@@ -1598,7 +1605,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
     /**
 	 * Save or Update Disbursal Api Log
-	 * 
+	 *
 	 * @param array $data
 	 * @param array $whereCondition | optional
 	 * @return mixed
@@ -1611,7 +1618,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	/**
      * Get disbursal batch
-     * 
+     *
      * @param integer $batchId
      * @return array
      */
@@ -1622,7 +1629,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	/**
      * Get disbursal batch
-     * 
+     *
      * @param integer $batchId
      * @return array
      */
@@ -1637,7 +1644,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	/**
 	 * update disbursal batch
-	 *      
+	 *
 	 * @param array $whereCondition | required
 	 * @return mixed
 	 * @throws InvalidDataTypeExceptions
@@ -1663,7 +1670,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
 	/**
      * Get refund batch
-     * 
+     *
      * @param integer $batchId
      * @return array
      */
@@ -1708,7 +1715,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		$response =  RefundReq::updateOrCreate(['tran_no' => $updatingId],$data);
 		return ($response) ?? $response;
 	}
-    
+
     public function getAllNach($whereCond = []){
         return UserNach::getNach($whereCond);
     }
@@ -1720,7 +1727,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 
 	public static function createNachReqBatch($file, $batchNo = null)
-    {   
+    {
         if (!empty($batchNo)) {
             $disburseBatch['batch_no'] = $batchNo ?? null;
             $disburseBatch['file_id'] = ($file) ? $file->file_id : '';
@@ -1732,10 +1739,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return NachRepaymentReq::create($data);
     }
-    
+
     /**
      * Update Nach repayment Data By Condition
-     * 
+     *
      * @param arr $attr
      * @param arr $whereCond
      * @return type
@@ -1747,7 +1754,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     public function getNachRepaymentReq($whereCondition){
         return NachRepaymentReq::where($whereCondition)->orderBy('created_at', 'DESC');
     }
-    
+
 	public static function getNACHUnsettledTrans($userId, $where = []){
 		return Transactions::getNACHUnsettledTrans($userId, $where);
 	}
@@ -1772,7 +1779,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function saveInvoiceDisbursedDetails($attr, $whereCond){
 		return InvoiceDisbursedDetail::saveInvoiceDisbursedDetails($attr, $whereCond);
 	}
-	
+
 	public function findInvoiceDisburseByDisbursalId($data)
 	{
 		return InvoiceDisbursed::where($data)
@@ -1860,4 +1867,20 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		->get();
 
     }
+
+	public function saveChargeTransDeleteLog($attr)
+	{
+		return  ChargeTransactionDeleteLog::saveChargeTransDeleteLog($attr);
+	}
+
+	public function getRoleActiveUsers($roleIds = [])
+    {
+        return RoleUser::getRoleActiveUsers($roleIds);
+    }
+    public function getInvoice($invoiceId = false)
+	{
+		return BizInvoice::where('invoice_id', $invoiceId)
+			   ->with(['program_offer','lms_user' , 'supplier.anchor_bank_details.bank', 'supplier_bank_detail.bank', 'program','supplier.apps.disbursed_invoices.invoice_disbursed'])
+			   ->first();
+	}
 }

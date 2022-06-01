@@ -144,7 +144,7 @@ class User extends Authenticatable
      */
     public static function getUserDetail($user_id)
     {
-        //dd($user_id);
+        
         //Check id is not blank
 
         if (empty($user_id)) {
@@ -161,7 +161,7 @@ class User extends Authenticatable
             ->where('u.user_id', (int) $user_id)
             ->first();
          
-
+            
         return ($arrUser ?: false);
     }
 
@@ -258,12 +258,14 @@ class User extends Authenticatable
         $roleData = User::getBackendUser(\Auth::user()->user_id);
         $result = self::select('users.user_id','users.f_name','users.l_name','users.email',
                 'users.mobile_no','users.created_at', 'users.anchor_id as UserAnchorId',
-                'users.is_buyer as AnchUserType','lead_assign.to_id','anchor_user.pan_no')                
+                'users.is_buyer as AnchUserType','lead_assign.to_id','anchor_user.pan_no','users.is_active','non_anchor_leads.pan_no as nonAnchorPanNo')                
                 ->join('lead_assign', function ($join) {
                     $join->on('lead_assign.assigned_user_id', '=', 'users.user_id');
-                    $join->on('lead_assign.is_owner', '=', DB::raw("1"));                    
+                    $join->on('lead_assign.is_owner', '=', DB::raw("1"));
+                    $join->on('lead_assign.is_deleted', '=', DB::raw("0"));                    
                 })
                 ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'users.user_id')
+                ->leftJoin('non_anchor_leads', 'non_anchor_leads.user_id', '=', 'users.user_id')
                  ->where('users.user_type', 1);
         if ($roleData[0]->id == 11) {
             //$result->where('users.anchor_id', \Auth::user()->anchor_id);                        
@@ -277,7 +279,36 @@ class User extends Authenticatable
               
         return ($result ? $result : '');
     }
-    
+
+    /**
+     * Get all users by role's user id
+     *
+     * @return array
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     * Since 0.1
+     */
+    public static function getAssignedUsers($role_id,$to_id)
+    {
+        $userArr = array($to_id);
+        $result = self::select('users.user_id','users.f_name','users.l_name','users.email',
+                'users.mobile_no','users.created_at', 'users.anchor_id as UserAnchorId',
+                'users.is_buyer as AnchUserType','lead_assign.to_id','anchor_user.pan_no')                
+                ->join('lead_assign', function ($join) {
+                    $join->on('lead_assign.assigned_user_id', '=', 'users.user_id');
+                    $join->on('lead_assign.is_owner', '=', DB::raw("1"));
+                    $join->on('lead_assign.is_deleted', '=', DB::raw("0"));                    
+                })
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'users.user_id')
+                 ->where('users.user_type', 1);
+       
+            $result->whereIn('lead_assign.to_id', $userArr);            
+        
+        $result->groupBy('users.user_id');
+        $result = $result->orderBy('users.user_id', 'desc');
+              
+        return ($result ? $result : '');
+    }
     
     /**
      * Get all users
@@ -540,6 +571,52 @@ class User extends Authenticatable
          $users = self::getUserRoles($user_id);
          return $users;
     }
+
+    /**
+     * Get  user email exist
+     *
+     * @param integer $user_id
+     *
+     * @return array User List
+     */
+    public static function checkUserEmailExist($email,$anchId,$userType)
+    {
+        $userEmailExist = self::where('email','=',$email)
+                   ->where('user_type','=',$userType)
+                   ->where('user_id','!=',$anchId)->count();
+         
+        return $userEmailExist;
+    }
+
+    /**
+     * Get Anchor Details using anchor id
+     *
+     * @param  integer $anchId
+     * @return array
+     * @throws BlankDataExceptions
+     * @throws InvalidDataTypeExceptions
+     * Since 0.1
+     */
+    public static function getAnchorByAnchorId($anchId)
+    {
+        
+        //Check anchId is not blank
+        if (empty($anchId)) {
+            throw new BlankDataExceptions(trans('error_message.no_data_found'));
+        }
+        //Check anchId is not an integer
+
+        if (!is_int($anchId)) {
+            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        }
+
+        $arrAnchUser = self::select('users.*')
+            ->where('users.anchor_id', (int) $anchId)
+            ->first();
+
+        return ($arrAnchUser ?: false);
+    }
+
     
     /**
      * Get User Details using anchor id
@@ -844,5 +921,12 @@ class User extends Authenticatable
     }   
     public function getFullNameAttribute(){ 
         return $this->f_name.' '.$this->m_name.' '.$this->l_name;
+    }
+
+    public static function getBackendUserByEmail($email)
+    {
+        return self::backendUser()
+                    ->where('email', $email)
+                    ->first();
     }
 }

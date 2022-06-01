@@ -242,7 +242,28 @@ Route::group(
         'as' => 'get_lead',
         'uses' => 'AjaxController@getLeads'
         ]
+    );
+    Route::post(
+        'get-assigned-user-lead',
+        [
+        'as' => 'get_assigned_user_lead',
+        'uses' => 'AjaxController@getUserLead'
+        ]
+    );
+    Route::post(
+        'set-users-leads',
+        [
+          'as' => 'set_users_leads',
+          'uses' => 'AjaxController@setUsersLeads'  
+        ]
     ); 
+
+    Route::post('set-user-application',
+    [
+        'as'=>'set_user_application',
+        'uses'=> 'AjaxController@setUsersApplication'
+    ]
+   );
    Route::post(
         'get-case-pool',
         [
@@ -256,6 +277,44 @@ Route::group(
         [
         'as' => 'ajax_app_list',
         'uses' => 'AjaxController@getApplications'
+        ]
+    );
+
+    Route::post(
+        'get-assigned-application',
+        [
+        'as' => 'ajax_assigned_app_list',
+        'uses' => 'AjaxController@getAssignedApplications'
+        ]
+    );
+
+    Route::post(
+        'get-backendusers',
+        [
+        'as' => 'get_backend_users',
+        'uses' => 'AjaxController@getBackendUsers'
+        ]
+    );
+    Route::post(
+        'get-backendappusers',
+        [
+        'as' => 'get_backendapp_users',
+        'uses' => 'AjaxController@getBackendUsers'
+        ]
+    );
+    Route::post(
+        'get-users-leads',
+        [
+            'as'=>'get_users_leads',
+            'uses'=>'AjaxController@getUsersLeads'
+        ]
+    );
+    
+    Route::post(
+        'get-usersapp-leads',
+        [
+            'as'=>'get_usersapp_leads',
+            'uses'=>'AjaxController@getUsersLeads'
         ]
     );
 
@@ -1072,12 +1131,17 @@ Route::group(
     Route::post('check-exist-email', [
         'as' => 'check_exist_email',
         'uses' => 'AjaxController@getExistEmailStatus'
-    ]);
+    ]);        
 
     //ajax route for check the email is exist or not
     Route::post('check-exist-emails-anchor', [
         'as' => 'check_exist_email_anchor',
         'uses' => 'AjaxController@getExistEmailStatusAnchor'
+    ]);
+
+    Route::post('check_exist_user_email_anchor',[
+        'as' => 'check_exist_user_email_anchor',
+        'uses' => 'AjaxController@getExistUserEmailStatusAnchor'
     ]);
 
     Route::post('get-soa-client-details',[
@@ -1294,6 +1358,11 @@ Route::group(
         'uses' => 'AjaxController@getAllBankList'
     ]);
 
+
+    // Check frontend PAN and GST validation
+    Route::match(['get', 'post'], '/check_anchor_pan_ajax', 'AjaxController@checkAnchorPanAjax');
+    Route::match(['get', 'post'], '/check_anchor_gst_ajax', 'AjaxController@checkAnchorGstAjax');    
+    
     Route::post('chk_anchor_phy_inv_req',[
         'as' => 'chk_anchor_phy_inv_req',
         'uses' => 'AjaxController@chkAnchorPhyInvReq'
@@ -1384,6 +1453,7 @@ Route::group(
         'as' => 'lms_send_invoice_over_due',
         'uses' => 'AjaxController@sendInvoiceOverdueReportByMail'
     ]);
+
     //new sanction letter
     Route::post('get-new-sanction-letter-list', [
         'as' => 'get_new_sanction_letter_list',
@@ -1394,4 +1464,28 @@ Route::group(
         'as' => 'update_regenerate_sanction_letter',
         'uses' => 'AjaxController@updateRegenerateSanctionLetter'
     ]); 
+
+    Route::post('lms_req_for_chrg_deletion', [
+        'as' => 'lms_req_for_chrg_deletion',
+        'uses' => 'AjaxController@reqForChargeDeletion'
+    ]);
+    
+    Route::post('lms_approve_chrg_deletion', [
+        'as' => 'lms_approve_chrg_deletion',
+        'uses' => 'AjaxController@approveChargeDeletion'
+     ]);
+    Route::post('delete_management_info', [
+        'as' => 'delete_management_info',
+        'uses' => 'AjaxController@deleteManagementInfo'
+    ]);
+
+    Route::post('get-non-anchor-leads', [
+        'as' => 'get_non_anchor_leads',
+        'uses' => 'AjaxController@getNonAnchorLeads'
+    ]);
+
+    Route::post('upload-approval-mail-copy', [
+        'as' => 'upload_approval_mail_copy',
+        'uses' => 'AjaxController@uploadApprovalMailCopy'
+    ]);
 });

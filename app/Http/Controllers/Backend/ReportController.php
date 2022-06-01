@@ -19,10 +19,11 @@ use App\Http\Controllers\Controller;
 use App\Inv\Repositories\Models\Anchor;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\LmsUser;
-use App\Inv\Repositories\Contracts\ReportInterface;
-use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 use App\Inv\Repositories\Models\FinanceModel;
+use App\Inv\Repositories\Models\Lms\Transactions;
+use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\Lms\OverdueReportLog;
+use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
 
 class ReportController extends Controller
 {
@@ -249,25 +250,24 @@ class ReportController extends Controller
 	
 	public function downloadLeaseReport(Request $request) {
 		ini_set("memory_limit", "-1");
-	   $whereRaw = '';
-	   $userInfo = '';
-	   if(!empty($request->get('from_date')) && !empty($request->get('to_date'))){
+		$whereRaw = '';
+		$userInfo = '';
+		if(!empty($request->get('from_date')) && !empty($request->get('to_date'))){
 			$from_date = $request->get('from_date');
 			$to_date = $request->get('to_date');
 			$cond[] = " rta_user_invoice.invoice_date between '$from_date' AND '$to_date' ";
-			// dd($cond);
-	   }
-	   if(!empty($request->get('user_id'))){
-			$user_id = $request->get('user_id');
-			$cond[] = " rta_user_invoice.user_id='$user_id' ";
-			$userInfo = $this->reportsRepo->getCustomerDetail($user_id);
-	   }
-	   if (!empty($cond)) {
-		   $whereRaw = implode(' AND ', $cond);
-	   }
-	   $leaseRegistersList = $this->reportsRepo->leaseRegisters([], $whereRaw);
+		}
+		if(!empty($request->get('user_id'))){
+				$user_id = $request->get('user_id');
+				$cond[] = " rta_user_invoice.user_id='$user_id' ";
+				$userInfo = $this->reportsRepo->getCustomerDetail($user_id);
+		}
+		if (!empty($cond)) {
+			$whereRaw = implode(' AND ', $cond);
+		}
+		$leaseRegistersList = $this->reportsRepo->leaseRegisters([], $whereRaw);
 
-	   $condArr = [
+		$condArr = [
 			'from_date' => $from_date ?? NULL,
 			'to_date' => $to_date ?? NULL,
 			'user_id' => $request->get('user_id'),
@@ -278,62 +278,66 @@ class ReportController extends Controller
 			'To Date' => $to_date ?? NULL,
 		];
 		if (!empty($userInfo)) {
-		  $moreDetails['Business Name'] = $userInfo->biz->biz_entity_name;
-		  $moreDetails['Full Name'] = $userInfo->f_name . ' ' . $userInfo->m_name . ' ' . $userInfo->l_name;
-		  $moreDetails['Email'] = $userInfo->email;
-		  $moreDetails['Mobile No'] = $userInfo->mobile_no;
+			$moreDetails['Business Name'] = $userInfo->biz->biz_entity_name;
+			$moreDetails['Full Name'] = $userInfo->f_name . ' ' . $userInfo->m_name . ' ' . $userInfo->l_name;
+			$moreDetails['Email'] = $userInfo->email;
+			$moreDetails['Mobile No'] = $userInfo->mobile_no;
 		}
-	   $leaseRecords = $leaseRegistersList->get();
-	   $leaseArr = [];
-	   foreach ($leaseRecords as $lease) {
-		 $inv_comp_data = json_decode($lease->inv_comp_data, TRUE);
-		 $sac_code = ($lease->sac_code != 0 ? $lease->sac_code : '000');   
-		 $contract_no = 'HEL/'.($lease->sac_code != 0 ? $lease->sac_code : '000');  
-		 $total_rate =  ($lease->sgst_rate + $lease->cgst_rate + $lease->igst_rate);
-		 $total_tax =  ($lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
-		 $total_amount =  ($lease->base_amount + $lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
-		if(isset($lease->invoice_date) && isset($lease->due_date)) {
-			$dueDate = strtotime($lease->invoice_date); // or your date as well
-			$now = strtotime($lease->due_date);
-			$datediff = abs($dueDate - $now);
-			$days = (round($datediff / (60 * 60 * 24)) + 1) . ' days -From:' . date('d-M-Y', strtotime($lease->invoice_date)) . " to " . date('d-M-Y', strtotime($lease->due_date)) /* . ' @ ' . $OdandInterestRate . '%' */;                
-		} else {
-			$days = '---';
-		}		 
-		 $leaseArr[] = [
-			'State' => $lease->name, 
-			'GSTN' => ($inv_comp_data['gst_no'] ?? $lease->biz_gst_no), 
-			'Cust. Id' =>  \Helpers::formatIdWithPrefix($lease->user_id, 'LEADID'), 
-			'Business Name' => $lease->biz_entity_name, 
-			'Cust. Addr' => $lease->gst_addr, 
-			'Cust. GSTN' => $lease->biz_gst_no, 
-			'SAC Code' => $sac_code, 
-			// 'Contract No' => $contract_no, 
-			'Interest Period' => $days, 
-			'Capsave Invoice No' => $lease->capinvoice, 
-			'Invoice No' => $lease->invoice, 
-			'Invoice Date' => $lease->invoice_date, 
-			'Base Amount' => number_format($lease->base_amount, 2), 
-			'SGST Rate' => ($lease->sgst_rate != 0 ? $lease->sgst_rate .'%' : '-'), 
-			'SGST Amount' => ($lease->sgst_amount != 0 ? number_format($lease->sgst_amount, 2) : '-'), 
-			'CGST Rate' => ($lease->cgst_rate != 0 ? $lease->cgst_rate .'%' : '-'), 
-			'CGST Amount' => ($lease->cgst_amount != 0 ? number_format($lease->cgst_amount, 2) : '-'), 
-			'IGST Rate' => ($lease->igst_rate != 0 ? $lease->igst_rate .'%' : '-'), 
-			'IGST Amount' => ($lease->igst_amount != 0 ? number_format($lease->igst_amount, 2) : '-'), 
-			'Total Amount' => number_format($total_amount, 2), 
-			'Total Rate' => ($total_rate != 0 ? $total_rate.'%' : '-'), 
-			'Total Tax' => ($total_tax != 0 ? number_format($total_tax, 2) : '-'), 
-			'CashFlow Type' => (!empty($lease->invoice_type) && $lease->invoice_type == 'C' ? 'Charge' : 'Interest'), 
-			'Considered In' => date('M-Y', strtotime($lease->invoice_date)), 
-		 ];
-	   }
-	   if (strtolower($request->type) == 'excel') {
-		   $toExportData['Lease Register'] = $leaseArr;
-		   return $this->fileHelper->array_to_excel($toExportData, 'CFPL_InvRegister.xlsx', $moreDetails);
-	   }
-	   $pdfArr = ['pdfArr' => $leaseArr, 'filter' => $condArr];
-	   $pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.leaseRegisterReport');
-	   return $pdf->download('CFPL_InvRegister.pdf');        
+		$leaseRecords = $leaseRegistersList->get();
+		$leaseArr = [];
+		foreach ($leaseRecords as $lease) {
+			$inv_comp_data = json_decode($lease->inv_comp_data, TRUE);
+			$sac_code = ($lease->sac_code != 0 ? $lease->sac_code : '000');   
+			$contract_no = 'HEL/'.($lease->sac_code != 0 ? $lease->sac_code : '000');  
+			$total_rate =  ($lease->sgst_rate + $lease->cgst_rate + $lease->igst_rate);
+			$total_tax =  ($lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
+			$total_amount =  ($lease->base_amount + $lease->sgst_amount + $lease->cgst_amount + $lease->igst_amount);
+			$txn = Transactions::find($lease->transId);
+			$desc = $txn->transType->trans_name ?? NULL;
+			if ($lease->transTypeId == config('lms.TRANS_TYPE.INTEREST')) {
+				$desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
+			} 
+
+			if ($lease->transTypeId == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+				$dueDate = strtotime($txn->toIntDate); // or your date as well
+				$now = strtotime($txn->fromIntDate);
+				$datediff = ($dueDate - $now);
+				$OdandInterestRate = $lease->odi;
+				$desc = $desc." ".round($datediff / (60 * 60 * 24)) . ' days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';
+			}		 
+			$leaseArr[] = [
+				'State' => $lease->name, 
+				'GSTN' => ($inv_comp_data['gst_no'] ?? $lease->biz_gst_no), 
+				'Cust. Id' =>  \Helpers::formatIdWithPrefix($lease->user_id, 'LEADID'), 
+				'Business Name' => $lease->biz_entity_name, 
+				'Cust. Addr' => $lease->gst_addr, 
+				'Cust. GSTN' => $lease->biz_gst_no, 
+				'SAC Code' => $sac_code, 
+				'Interest Period' => $desc, 
+				'Capsave Invoice No' => $lease->capinvoice, 
+				'Invoice No' => $lease->invoice, 
+				'Invoice Date' => $lease->invoice_date, 
+				'Base Amount' => number_format($lease->base_amount, 2), 
+				'SGST Rate' => ($lease->sgst_rate != 0 ? $lease->sgst_rate .'%' : '-'), 
+				'SGST Amount' => ($lease->sgst_amount != 0 ? number_format($lease->sgst_amount, 2) : '-'), 
+				'CGST Rate' => ($lease->cgst_rate != 0 ? $lease->cgst_rate .'%' : '-'), 
+				'CGST Amount' => ($lease->cgst_amount != 0 ? number_format($lease->cgst_amount, 2) : '-'), 
+				'IGST Rate' => ($lease->igst_rate != 0 ? $lease->igst_rate .'%' : '-'), 
+				'IGST Amount' => ($lease->igst_amount != 0 ? number_format($lease->igst_amount, 2) : '-'), 
+				'Total Amount' => number_format($total_amount, 2), 
+				'Total Rate' => ($total_rate != 0 ? $total_rate.'%' : '-'), 
+				'Total Tax' => ($total_tax != 0 ? number_format($total_tax, 2) : '-'), 
+				'CashFlow Type' => (!empty($lease->invoice_type) && $lease->invoice_type == 'C' ? 'Charge' : 'Interest'), 
+				'Considered In' => date('M-Y', strtotime($lease->invoice_date)), 
+			];
+		}
+		if (strtolower($request->type) == 'excel') {
+			$toExportData['Lease Register'] = $leaseArr;
+			return $this->fileHelper->array_to_excel($toExportData, 'CFPL_InvRegister.xlsx', $moreDetails);
+		}
+		$pdfArr = ['pdfArr' => $leaseArr, 'filter' => $condArr];
+		$pdf = $this->fileHelper->array_to_pdf($pdfArr, 'reports.leaseRegisterReport');
+		return $pdf->download('CFPL_InvRegister.pdf');        
 	}
 	
 	 public function duereport(Request $request) {

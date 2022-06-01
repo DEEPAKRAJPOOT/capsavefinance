@@ -111,7 +111,6 @@ public function limitManagement(Request $request) {
 		$AvaliablecustomerLimit = $this->appRepo->getAvaliableUserLimit($customerLimit);
 		$getUserProgramLimit = $this->appRepo->getUserProgramLimit($user_id);
         $getAccountClosure =  $this->appRepo->getAccountActiveClosure($user_id);
-		// dd($getUserProgramLimit);
 		return view('lms.customer.limit_management')
 			->with(['userAppLimit' => $getUserProgramLimit,
 					'avaliablecustomerLimit' => $AvaliablecustomerLimit,

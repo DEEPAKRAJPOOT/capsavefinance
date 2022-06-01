@@ -29,6 +29,8 @@ use App\Helpers\ManualApportionmentHelper;
 use Event;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use Illuminate\Support\Facades\App;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 class InvoiceController extends Controller {
 
@@ -382,8 +384,9 @@ class InvoiceController extends Controller {
         $selectDate = (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $Obj = new ManualApportionmentHelper($this->lmsRepo);
-       
+        $invDisb = [];
         foreach ($invoiceDisbursed as $key => $value) {            
+            $invDisb[$value['disbursal']['user_id']][$value['invoice_disbursed_id']] = $value['invoice_disbursed_id'];           
             $tenor = $value['tenor_days'];
             $banchMarkDateFlag = $value['invoice']['program_offer']['benchmark_date'];
 
@@ -504,6 +507,35 @@ class InvoiceController extends Controller {
             $Obj->intAccrual($value['invoice_disbursed_id']);
 
         }
+        foreach($invDisb as $userId => $invDisb){
+            $invDisbIds = array_keys($invDisb);
+
+            $intList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+            ->where('trans_type','9')
+            ->where('user_id',$userId)
+            ->where('entry_type','0')
+            ->where('is_invoice_generated','0')
+            ->pluck('trans_id')
+            ->toArray();
+            
+            $chrgList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+            ->whereHas('transType', function($query){ $query->where('chrg_master_id','!=','0'); })
+            ->where('user_id',$userId)
+            ->where('entry_type',0)
+            ->where('is_invoice_generated',0)
+            ->pluck('trans_id')
+            ->toArray();
+            
+            if(!empty($intList)){
+                $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+                $controller->generateCapsaveInvoice($intList, $userId, 'I');
+            }
+            
+            if(!empty($chrgList)){
+                $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+                $controller->generateCapsaveInvoice($chrgList, $userId, 'C');
+            }
+        }
 
         $disbursals = $this->lmsRepo->getDisbursals($disbursalIds)->toArray();
         foreach ($disbursals as $key => $value) {
@@ -583,8 +615,7 @@ class InvoiceController extends Controller {
 
     /*   save invoice */
 
-    public function saveInvoice(Request $request) {   
-       
+    public function saveInvoice(Request $request) {
         if ($request->get('eod_process')) {
             Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
             return back();
@@ -592,10 +623,11 @@ class InvoiceController extends Controller {
 
         $attributes = $request->all();
         $explode = explode(',', $attributes['supplier_id']);
-        $attributes['supplier_id'] = $explode[0];
+        $attributes['supplier_id'] = $attributes['user_id'] = $explode[0];
         $explode1 = explode(',', $attributes['program_id']);
-        $attributes['program_id'] = $explode1[0];
-        $appId = $explode[1];
+        $attributes['program_id'] = $attributes['prgm_id'] = $explode1[0];
+        $appId = $attributes['app_id'] = $explode[1];
+        $prgmOfferId = $explode[2];
         $date = Carbon::now();
         $id = Auth::user()->user_id;
         $res = $this->invRepo->getSingleAnchorDataByAppId($appId);
@@ -604,10 +636,29 @@ class InvoiceController extends Controller {
         $chkUser  = $this->application->chkUser();
         $customer  = 4;
         $expl  =  explode(",",$getPrgm->invoice_approval); 
+        
+        $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
+        $invoice_approve_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
+        // $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($attributes['supplier_id'], $request->anchor_id);
+        // $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
+        $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($prgmOfferId, $invoice_amount);
+
+        // $limit =   InvoiceTrait::ProgramLimit($attributes);
+        // $sum   =   InvoiceTrait::invoiceApproveLimit($attributes);
+        // $remainAmount = $limit - $sum;
+
+        // if ($marginAmt > $remainAmount) {
+        //     Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount.');
+        //     return back();
+        // }
+
+        // if ($totalProductLimit > 0 && $invoice_amount > 0 && $marginAmt > ($totalProductLimit - $invUtilizedAmt)) {
+        //     Session::flash('error', 'Invoice amount should not be greater than the balance limit amount.');
+        //     return back();
+        // }
         if (!empty($attributes['exception'])) {
             $statusId = 28;
-            $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';
-           
+            $attributes['remark'] = 'Invoice date & current date difference should not be more than old tenor days';           
         } else {
           if(in_array($customer, $expl))  
           {
@@ -635,10 +686,10 @@ class InvoiceController extends Controller {
         {
             $is_adhoc=0;
         }
+
         $uploadData = Helpers::uploadAppFile($attributes, $appId);
         $userFile = $this->docRepo->saveFile($uploadData);
-        $invoice_approve_amount = str_replace(",", "", $attributes['invoice_approve_amount']);
-        $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
+
         $arr = array('anchor_id' => $attributes['anchor_id'],
             'supplier_id' => $attributes['supplier_id'],
             'program_id' => $attributes['program_id'],
@@ -657,7 +708,9 @@ class InvoiceController extends Controller {
             'file_id' => $userFile->file_id,
             'created_by' => $id,
             'updated_by' => $id,
-            'created_at' => $date);
+            'created_at' => $date,
+            'invoice_margin_amount' => $marginAmt
+        );
         $result = $this->invRepo->save($arr);
        
         if ($result) {
@@ -703,6 +756,7 @@ class InvoiceController extends Controller {
     {
         $disburseType = $request->get('disburse_type');
         $invoiceIds = $request->get('invoice_ids');
+        $bankType = $request->get('bank_type');
         if(empty($invoiceIds)) {
             Session::flash('message', trans('backend_messages.noSelectedInvoice'));
             Session::flash('operation_status', 1);
@@ -721,7 +775,8 @@ class InvoiceController extends Controller {
                 ->with([
                     'customersDisbursalList' => $customersDisbursalList,
                     'invoiceIds' => $invoiceIds, 
-                    'disburseType' => $disburseType 
+                    'disburseType' => $disburseType,
+                    'bankType' => $bankType
                 ]);;              
     }
 
@@ -988,7 +1043,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $disburseAmount = 0;
             $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
             $userData['disbursal_batch_id'] =$disbursalBatchId;
-            $userData['ref_no'] =$exportData[$userid]['RefNo'];;
+            $userData['ref_no'] =$exportData[$userid]['RefNo'];
 
             $disbursalRequest = $this->createDisbursalData($userData, $disburseAmount, $disburseType);
             $createDisbursal = $this->lmsRepo->saveDisbursalRequest($disbursalRequest);
@@ -1486,7 +1541,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 ->setCellValue('X1', 'Beneficiary ID')
                 ->setCellValue('Y1', 'Remote Printing')
                 ->setCellValue('Z1', 'Print Branch Location')
-                ->setCellValue('AA1', 'Nature Of Payment');
+                ->setCellValue('AA1', 'Nature Of Payment')
+                ->setCellValue('AB1', 'Bank Type');
         $rows = 2;
 
         foreach($data as $rowData){
@@ -1513,6 +1569,15 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $benAcc = (isset($rowData['lms_user']['user']['anchor_bank_details']['acc_no'])) ? $rowData['lms_user']['user']['anchor_bank_details']['acc_no'] : '';
             } else {
                 $benAcc = (isset($rowData['lms_user']['bank_details']['acc_no'])) ? $rowData['lms_user']['bank_details']['acc_no'] : '';
+            }
+
+            if (isset($rowData['disbursal_batch']) && isset($rowData['disbursal_batch']['disbursal_api_log'])) {
+                if ($rowData['disbursal_batch']['disbursal_api_log']['bank_type'] == 1) {
+                    $bank_type = "IDFC";
+                }
+                if ($rowData['disbursal_batch']['disbursal_api_log']['bank_type'] == 2) {
+                    $bank_type = "Kotak";
+                }
             }
 
             $sheet->setActiveSheetIndex(0)
@@ -1542,7 +1607,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 ->setCellValue('X' . $rows, $rowData['column'] ?? '')
                 ->setCellValue('Y' . $rows, $rowData['column'] ?? '')
                 ->setCellValue('Z' . $rows, $rowData['column'] ?? '')
-                ->setCellValue('AA' . $rows, $rowData['Nature_of_Pay'] ?? 'MPYMT');
+                ->setCellValue('AA' . $rows, $rowData['Nature_of_Pay'] ?? 'MPYMT')
+                ->setCellValue('AB' . $rows,  isset($bank_type) ? $bank_type : "");
 
             $rows++;
         }
@@ -1646,7 +1712,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $dataAttr['amount']  =   $data[3]; 
                         $dataAttr['file_name']  =   $data[4];
                         $dataAttr['anchor_id']  =   $attributes['anchor_name'];
-                        $dataAttr['prgm_id']  =   $prgm_id;
+                        $dataAttr['prgm_id']  = $dataAttr['program_id'] =  $prgm_id;
                         $chlLmsCusto  = InvoiceTrait::getLimitProgram($dataAttr);
                         $getPrgm  = $this->application->getProgram($prgm_id);
                         if($chlLmsCusto['status']==0)
@@ -1662,7 +1728,23 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $dataAttr['old_tenor']  =   $chlLmsCusto['tenor_old_invoice'];
                         $dataAttr['prgm_offer_id']  =   $chlLmsCusto['prgm_offer_id'];
                         $dataAttr['approval']  =   $getPrgm;
+
+                        $invoice_amount = str_replace(',', '', $dataAttr['amount']);
+                        // $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($dataAttr['user_id'], $dataAttr['anchor_id']);
+                        // $totalProductLimit = Helpers::getTotalProductLimit($dataAttr['app_id'], $productId = 1);
+                        
+                        $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($dataAttr['prgm_offer_id'], $dataAttr['amount']);
+                        // $limit =   InvoiceTrait::ProgramLimit($dataAttr);
+                        // $sum   =   InvoiceTrait::invoiceApproveLimit($dataAttr);
+                        // $remainAmount = $limit - $sum;
+                        
+                        // if ($marginAmt > $remainAmount) {
+                        //     Session::flash('error', 'Invoice amount should not be greater than the remaining limit amount after excluding the margin amount for customer '.$dataAttr['cusomer_id']);
+                        //     return back();
+                        // }
+                        
                         $getInvDueDate =  InvoiceTrait::getInvoiceDueDate($dataAttr); /* get invoice due date*/
+
                         if($getInvDueDate['status']==0)
                         {
                            Session::flash('error', $getInvDueDate['message']);
@@ -1717,10 +1799,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $ins['file_id'] =  $FileId;
                         $ins['created_by'] =  $id;
                         $ins['created_at'] =  $date;
+                        $ins['invoice_margin_amount'] = $marginAmt;
                         $key++;
-                      
-                        $res =  $this->invRepo->saveInvoice($ins);
-                       
+                        $res =  $this->invRepo->saveInvoice($ins);                       
                     } 
 
                         $whereActivi['activity_code'] = 'upload_bulk_csv_Invoice';
@@ -2030,7 +2111,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
                     }                     
                     
-                    Session::flash('message', 'Online disbursal successfully rollbacked');
+                    Session::flash('message', 'Disbursal request has been successfully rollbacked.');
                     return redirect()->route('backend_get_disbursal_batch_request');
                 }
                 
@@ -2057,12 +2138,13 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $appId = '';
             $userId = '';
             $invNo = [];
-            $idfc_res_text = '';
+            $idfc_res_text = $bankType = '';
             $disbursalBatchId = $req->get('disbursal_batch_id');
             $disbursalBatchData = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
             if(isset($disbursalBatchData->disbursal_api_log) && !empty($disbursalBatchData->disbursal_api_log)){
                 $latestData = $disbursalBatchData->disbursal_api_log;
                 $idfc_res_text = $latestData->res_text;
+                $bankType = $latestData->bank_type;
             }
             $disbursal = $disbursalBatchData->disbursal ?? [];
             $tCust = $disbursal->count();
@@ -2083,7 +2165,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $custName = HelperS::getUserInfo($userId);
             $fullCustName = $custName->f_name." ".$custName->l_name;
 
-            return view('backend.invoice.online_disbursal_rollback')->with(['disbursal_batch_id' => $disbursalBatchId, 'fullCustName' => $fullCustName, 'invNoString' => $invNoString, 'tInv' => $tInv, 'tAmt' => $tAmt, 'tCust' => $tCust, 'appId' => $appData->app_code ?? '', 'res_text' => $idfc_res_text]);
+            return view('backend.invoice.online_disbursal_rollback')->with(['disbursal_batch_id' => $disbursalBatchId, 'fullCustName' => $fullCustName, 'invNoString' => $invNoString, 'tInv' => $tInv, 'tAmt' => $tAmt, 'tCust' => $tCust, 'appId' => $appData->app_code ?? '', 'res_text' => $idfc_res_text, 'bankType' => $bankType]);
             } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -2228,6 +2310,457 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         } else {
             Session::flash('message', 'Something wrong, Tenor is not Updated');
             return back();
+        }
+    }
+
+    /**
+     * Display a pop up iframe for KotakbankAPiOnline
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function kotakDisburseOnline(Request $request)
+    {
+        //\DB::beginTransaction();
+        try {
+            date_default_timezone_set("Asia/Kolkata");
+            $currentTimeHour = \Carbon\Carbon::now()->format('H');
+            $validateTimeHour = config('lms.DISBURSAL_TIME_VALIDATE');
+            $invoiceIds = $request->get('invoice_ids');
+            $disburseDateCal = $request->get('value_date');
+            // $disburseDate =  \Helpers::getSysStartDate();
+            $disburseDate = \Carbon\Carbon::createFromFormat('d/m/Y', $disburseDateCal)->setTimezone(config('common.timezone'))->format('Y-m-d');
+            $disburseType = config('lms.DISBURSE_TYPE')['ONLINE'];
+            $creatorId = Auth::user()->user_id;
+
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+            // if (date('H') >= $validateTimeHour) {
+            //     Session::flash('error', 'Disbursment can not be done after '. Carbon::createFromFormat('H', $validateTimeHour)->format('g:i A'));
+            //     return redirect()->route('backend_get_disbursed_invoice');
+            // }
+            if (empty($invoiceIds)) {
+                return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
+            }
+
+            $record = array_filter(explode(",", $invoiceIds));
+            $allrecords = array_unique($record);
+            $allrecords = array_map('intval', $allrecords);
+            $countInvoiceId = count($allrecords);
+            if ($countInvoiceId > 1) {
+                return redirect()->route('backend_get_disbursed_invoice')->withErrors('Please select only one invoice');
+            }
+            $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+
+
+            foreach ($allinvoices as $inv) {
+                $disbursedInvoiceId = $this->lmsRepo->findInvoiceDisbursedInvoiceIdByInvoiceId($inv['invoice_id']);
+
+                if ($disbursedInvoiceId->count() > 0) {
+                    return redirect()->route('backend_get_disbursed_invoice')->withErrors('Invoice ' . $inv['invoice_no'] . ' already under process of disbursment');
+                } else if ($inv['supplier']['is_buyer'] == 2 && empty($inv['supplier']['anchor_bank_details'])) {
+                    return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
+                } elseif ($inv['supplier']['is_buyer'] == 1 && empty($inv['supplier_bank_detail'])) {
+                    return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noBankAccount'));
+                }
+            }
+
+            $supplierIds = $this->lmsRepo->getInvoiceSupplier($allrecords)->toArray();
+            $fundedAmount = 0;
+            $interest = 0;
+            $disburseAmount = 0;
+            $totalInterest = 0;
+            $totalProcessingFee = 0;
+            $totalFunded = 0;
+            $totalMargin = 0;
+            $exportData = [];
+            $invoiceDisbursedIds = [];
+            $disbursalIds = [];
+            $disbursalData = [];
+            $otherData = [];
+            $transId = _getRand(20);
+            $requestData = [];
+            foreach ($supplierIds as $userid) {
+                //$refNo = _getRand(20);
+                $disburseAmount = 0;
+                foreach ($allinvoices as $invoice) {
+                    if ($invoice['supplier_id'] == $userid) {
+
+                        $interest = 0;
+                        $processingFee = 0;
+                        $margin = 0;
+
+                        $tenor = $this->calculateTenorDays($invoice);
+                        $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
+                        $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
+                        if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $disburseDate)) {
+                            $str_to_time_date = strtotime($disburseDate);
+                        } else {
+                            $str_to_time_date = strtotime(\Carbon\Carbon::createFromFormat('d/m/Y', $disburseDate)->setTimezone(config('common.timezone'))->format('Y-m-d'));
+                        }
+                        $bankId = $invoice['program_offer']['bank_id'];
+                        $oldIntRate = $invoice['program_offer']['interest_rate'] - $invoice['program_offer']['base_rate'];
+                        $interestRate = ($invoice['is_adhoc'] == 1) ? (float)$invoice['program_offer']['adhoc_interest_rate'] : (float)$invoice['program_offer']['interest_rate'];
+                        $Obj = new ManualApportionmentHelper($this->lmsRepo);
+                        $bankRatesArr = $Obj->getBankBaseRates($bankId);
+                        if ($bankRatesArr && $invoice['is_adhoc'] != 1) {
+                            $actIntRate = $Obj->getIntRate($oldIntRate, $bankRatesArr, $str_to_time_date);
+                        } else {
+                            $actIntRate = $interestRate;
+                        }
+                        if ($invoice['program_offer']['benchmark_date'] == 1) {
+                            $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
+                        }
+
+                        $tInterest = $this->calInterest($fundedAmount, $actIntRate, $tenor);
+                        // if (isset($invoice['processing_fee']['chrg_type']) && $invoice['processing_fee']['chrg_type'] == 2) {
+                        //     $processingFee = $this->calPercentage($fundedAmount, $invoice['processing_fee']['chrg_value']);
+                        // } else {
+                        //     $processingFee = $invoice['processing_fee']['chrg_value'];
+
+                        // }
+                        $processingFee = ($invoice['processing_fee']) ? $invoice['processing_fee']['gst_chrg_value'] : 0;
+
+                        $prgmWhere = [];
+                        $prgmWhere['prgm_id'] = $invoice['program_id'];
+                        $prgmData = $this->appRepo->getSelectedProgramData($prgmWhere, ['interest_borne_by']);
+
+                        if (isset($prgmData[0]) && $prgmData[0]->interest_borne_by == 2 && $invoice['program_offer']['payment_frequency'] == 1) {
+                            $interest = $tInterest;
+                        }
+
+                        $totalInterest += $interest;
+                        $totalMargin += $margin;
+                        $amount = round($fundedAmount - $interest - $processingFee, config('lms.DECIMAL_TYPE')['AMOUNT_TWO_DECIMAL']);
+                        $disburseAmount += $amount;
+
+
+                        $disbursalData['invoice'] = $invoice;
+                    }
+                }
+                if ($disburseType == 1) {
+                    $modePay = ($disburseAmount < 200000) ? 'NEFT' : 'RTGS';
+                    $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
+                    $bank_account_id = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank_account_id'] : $userData['supplier_bank_detail']['bank_account_id'];
+                    $bank_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank']['bank_name'] : $userData['supplier_bank_detail']['bank']['bank_name'];
+                    $ifsc_code = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['ifsc_code'] : $userData['supplier_bank_detail']['ifsc_code'];
+                    $acc_no = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_no'] : $userData['supplier_bank_detail']['acc_no'];
+                    $acc_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_name'] : $userData['supplier_bank_detail']['acc_name'];
+                    $exportData[$userid]['RefNo'] = $requestData[$userid]['MessageId'] = $transId; //Message Id
+                    $requestData[$userid]['MsgSource'] = config('lms.KOTAK_MSG_SOURCE'); //'ABCCOMPANY'; //Message Source Code
+                    $exportData[$userid]['Client_Code'] = $requestData[$userid]['ClientCode'] = config('lms.KOTAK_CLIENT_CODE'); //Client Code
+                    $requestData[$userid]['BatchRefNmbr'] = $transId;
+                    $requestData[$userid]['InstRefNo'] =  $transId; //Inst Ref No.
+                    $requestData[$userid]['TransId'] =  $transId; //Inst transId No.
+                    $exportData[$userid]['Nature_of_Pay'] = $requestData[$userid]['MyProdCode'] =  config('lms.KOTAK_MYPRODCODE'); //'WPAY'; //My product code
+                    $exportData[$userid]['Amount'] = $requestData[$userid]['TxnAmnt'] = "$disburseAmount"; //Transaction Amount
+                    $exportData[$userid]['Debit_Acct_No'] = $requestData[$userid]['AccountNo'] =  config('lms.KOTAK_DEBIT_BANK')['DEBIT_ACC_NO'];  //Client Debit account Number;
+                    $requestData[$userid]['DrRefNmbr'] = '123';    //Debit reference Number
+                    $exportData[$userid]['Remarks'] = $requestData[$userid]['DrDesc'] = 'Testing';  //Debit Description
+                    $exportData[$userid]['Value_Date'] = $requestData[$userid]['PaymentDt'] = $disburseDate; //Payment Date
+                    if (config('lms.KOTAK_UAT_ACTIVE') == 1) {
+                        $exportData[$userid]['Ben_IFSC'] = $requestData[$userid]['RecBrCd'] = config('lms.KOTAK_CREDIT_BANK')['BEN_IFSC'];  //IFSC Code for beneficiary branch
+                        $exportData[$userid]['Ben_Acct_No'] = $requestData[$userid]['BeneAcctNo'] = config('lms.KOTAK_CREDIT_BANK')['BEN_ACC_NO']; //Beneficiary Account Number
+                        $exportData[$userid]['Ben_Name'] = $requestData[$userid]['BeneName'] = config('lms.KOTAK_CREDIT_BANK')['BEN_ACC_NAME']; //Beneficiary Name
+                        $exportData[$userid]['Ben_Email'] = $requestData[$userid]['BeneEmail'] = config('lms.KOTAK_CREDIT_BANK')['BEN_EMAIL']; //Beneficiary Email ID
+                    } else {
+                        $exportData[$userid]['Ben_IFSC'] = $requestData[$userid]['RecBrCd'] = (strtolower($bank_name) == 'kotak mahindra bank') ? null : $ifsc_code;  //IFSC Code for beneficiary branch
+                        $exportData[$userid]['Ben_Acct_No'] = $requestData[$userid]['BeneAcctNo'] = $acc_no; //Beneficiary Account Number
+                        $exportData[$userid]['Ben_Name'] = $requestData[$userid]['BeneName'] = $acc_name; //Beneficiary Name
+                        $exportData[$userid]['Ben_Email'] = $requestData[$userid]['BeneEmail'] = $disbursalData['invoice']['supplier']['email']; //Beneficiary Email ID
+                    }
+                    $exportData[$userid]['Ben_Mobile'] = $requestData[$userid]['BeneMb'] = $disbursalData['invoice']['supplier']['mobile_no']; //Beneficiary Mobile No.
+                    $modePay = (strtolower($bank_name) == 'kotak mahindra bank') ? 'IFT' : $modePay;
+                    $exportData[$userid]['Mode_of_Pay'] = $requestData[$userid]['PayMode']  = $modePay;
+
+                    $requestData[$userid]['Enrichment'] = 'invoice disbursal via kotak bank online'; //Enrichment details which needs to be shared with vendor in the invoices
+                }
+            }
+            //dd($requestData,$exportData);
+            if ($disburseType == 1 && !empty($allrecords)) {
+                $header = [
+                    'Maker_ID : CAPSAVE.M',
+                    'Checker_ID : CAPSAVE.C1',
+                    'Approver_ID : CAPSAVE.C2'
+                ];
+                $KotakObj = \App::make('App\Libraries\Kotak_lib');
+                $getResponse = false;
+                $result = $KotakObj->callPaymentApi($requestData, $header, $getResponse);
+                if ($getResponse) {
+                    dd($result);
+                }
+                //dd($result);
+                if (isset($result['code'])) {
+                    if (isset($result['http_code']) && $result['http_code'] == 200) {
+                    } else {
+                        $http_code = $result['code'] ? $result['code'] . ', '  : $result['http_code'] . ', ';
+                        $message = $result['message'] ?? $result['message'];
+                        $message .= isset($result['SOAP-ENV_Body']["ns0_Payment"]) ? "Status Code :" . $result['SOAP-ENV_Body']["ns0_Payment"]['ns0_AckHeader']['ns0_StatusCd'] . ',' : '';
+                        $message .= isset($result['SOAP-ENV_Body']["ns0_Payment"]) ? "Message Id :" . $result['SOAP-ENV_Body']["ns0_Payment"]['ns0_AckHeader']['ns0_MessageId'] . ', ' : '';
+                        $message .= isset($result['SOAP-ENV_Body']["ns0_Payment"]) ? "Status Remarks :" . $result['SOAP-ENV_Body']["ns0_Payment"]['ns0_AckHeader']['ns0_StatusRem'] . ', ' : '';
+                        Session::flash('message', 'Error : ' . $http_code  .  $message);
+                        return redirect()->route('backend_get_disbursed_invoice');
+                    }
+                }
+                //     $transIds = _getRand(20);
+                $fileDirPath = getPathByTxnId($transId);
+                $time = date('y-m-d H:i:s');
+
+                $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']) : $result['result']['http_header'];
+                $fileContents = PHP_EOL . ' Log  ' . $time . PHP_EOL . "URL = " . $result['result']['url'] .  PHP_EOL
+                    . PHP_EOL . ' Log  ' . $time . PHP_EOL . "Request Data = " . $result['result']['payload']  . PHP_EOL
+                    . PHP_EOL . ' Log  ' . $time . PHP_EOL . "Request Header = " . $result['result']['http_header']  . PHP_EOL
+                    . PHP_EOL . ' Log  ' . $time . PHP_EOL . "Response =" . $result['result']['response'] . PHP_EOL;
+                $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
+                if (is_array($createOrUpdatefile)) {
+                    $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
+                } else {
+                    $userFileSaved = $createOrUpdatefile;
+                }
+                //$userFileSaved['file_id'] = '101';
+                $result['result']['header']['Tran_ID'] =  isset($result['SOAP-ENV_Body']["ns0_Payment"]) ? $result['SOAP-ENV_Body']["ns0_Payment"]['ns0_AckHeader']['ns0_MessageId'] : '';
+                $result['status'] = 'failed';
+                if (isset($result['SOAP-ENV_Body']["ns0_Payment"]) && $result['SOAP-ENV_Body']["ns0_Payment"]['ns0_AckHeader']['ns0_StatusCd'] == '000') {
+                    $result['status'] = 'success';
+                    $result['result']['header']['Tran_ID'] =  isset($result['SOAP-ENV_Body']["ns0_Payment"]) ? $result['SOAP-ENV_Body']["ns0_Payment"]['ns0_AckHeader']['ns0_MessageId'] : '';
+                    if (empty($result['result']['header']['Tran_ID'])  && $result['result']['header']['Tran_ID'] == '') {
+                        $result['result']['header']['Tran_ID'] =  isset($result['SOAP-ENV_Body']["ns0_Payment"]) ? $result['SOAP-ENV_Body']["ns0_Payment"]['ns0_AckHeader']['ns0_ResRF1'] : '';
+                    }
+                }
+                $otherData['bank_type'] = config('lms.BANK_TYPE')['KOTAK'];
+                $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result, $otherData);
+                $createDisbusalApiLog = $this->lmsRepo->saveUpdateDisbursalApiLog($disbusalApiLogData);
+                if ($createDisbusalApiLog) {
+                    $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
+                }
+
+                if (isset($result['SOAP-ENV_Body']["ns0_Payment"]) && $result['SOAP-ENV_Body']["ns0_Payment"]['ns0_AckHeader']['ns0_StatusCd'] == '000') {
+                    $this->disburseTableInsert($exportData, $supplierIds, $allinvoices, $disburseType, $disburseDate, $disbursalApiLogId);
+                } else {
+                    $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
+                    $message = $result['message'] ?? '';
+                    $message .= isset($result['SOAP-ENV_Body']["ns0_Payment"]) ? "Status Code :" . $result['SOAP-ENV_Body']["ns0_Payment"]['ns0_AckHeader']['ns0_StatusCd'] . ',' : '';
+                    $message .= isset($result['SOAP-ENV_Body']["ns0_Payment"]) ? "Message Id :" . $result['SOAP-ENV_Body']["ns0_Payment"]['ns0_AckHeader']['ns0_MessageId'] . ', ' : '';
+                    $message .= isset($result['SOAP-ENV_Body']["ns0_Payment"]) ? "Status Remarks :" . $result['SOAP-ENV_Body']["ns0_Payment"]['ns0_AckHeader']['ns0_StatusRem'] . ', ' : '';
+                    Session::flash('message', 'Error : ' . 'HTTP Code ' . $http_code  .  $message);
+                    return redirect()->route('backend_get_disbursed_invoice');
+                }
+            }
+            $whereActivi['activity_code'] = 'disburse_online';
+            $activity = $this->master->getActivity($whereActivi);
+            if (!empty($activity)) {
+                $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+                $activity_desc = 'Disburse Online (Kotak Bank), Disbursement Queue (Manage Invoice)';
+                $arrActivity['app_id'] = null;
+                $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json(['supplierIds' => $supplierIds, 'request' => $request->all()]), $arrActivity);
+            }
+            //\DB::commit();
+            Session::flash('message', trans('backend_messages.sentTobank'));
+            return redirect()->route('backend_get_disbursed_invoice')->withErrors('message', trans('backend_messages.disbursed'));
+        } catch (Exception $ex) {
+            //\DB::rollback();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
+
+    public function kotakDisbursalPaymentEnquiry(Request $request)
+    {
+        //\DB::beginTransaction();
+        try {
+
+            if ($request->get('eod_process')) {
+                Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
+                return back();
+            }
+
+            date_default_timezone_set("Asia/Kolkata");
+            $disbursalBatchId = $request->get('disbursal_batch_id');
+            $disburseDate = null;
+            $transId = null;
+            $createdBy = Auth::user()->user_id;
+            $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
+            $transDisbursalIds = [];
+            $tranNewIds = [];
+
+            $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
+            if (!isset($data) || empty($data)) {
+                return redirect()->route('backend_get_disbursal_batch_request')->withErrors('Something went wrong please try again.');
+            } else {
+                $disburseDate = date("Y-m-d", strtotime($data->disbursalOne->disburse_date));
+                $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
+                $transId = $reqData['txn_id'];
+            }
+
+
+            if ($fundedDate != $disburseDate) {
+                $dates = date('d-m-Y',strtotime($fundedDate));
+                return redirect()->route('backend_get_disbursal_batch_request')->withErrors('Unable to process request as funded date cannot be less than current date ' . $dates);
+            } else {
+                $data = $data->toArray();
+            }
+            //die;
+            $message = [];
+
+            if (!empty($reqData)) {
+                $header = [
+                    'Maker_ID : CAPSAVE.M',
+                    'Checker_ID : CAPSAVE.C1',
+                    'Approver_ID : CAPSAVE.C2'
+                ];
+                $requestData['Req_Id'] = $reqData['txn_id'];
+                $requestData['Msg_Src'] = config('lms.KOTAK_MSG_SOURCE');
+                $requestData['Client_Code'] = config('lms.KOTAK_CLIENT_CODE');
+                $requestData['Date_Post'] = $disburseDate;
+                $requestData['Msg_Id'] = $reqData['txn_id'];
+                $KotakObj = \App::make('App\Libraries\Kotak_lib');
+                $getResponse = false;
+                $result = $KotakObj->callReversalApi($requestData, $header, $getResponse);
+                if ($getResponse) {
+                    dd($result);
+                }
+                if (isset($result['code'])) {
+                    if (isset($result['http_code']) && $result['http_code'] == 200) {
+                    } else {
+                        $http_code = $result['code'] ? $result['code'] . ', '  : $result['http_code'] . ', ';
+                        $message = $result['message'] ?? $result['message'];
+                        $message .= isset($result['SOAP-ENV_Body']["ns0_Reversal"]) ? "Status Code :" . $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_Status_Code'] . ',' : '';
+                        $message .= isset($result['SOAP-ENV_Body']["ns0_Reversal"]) ? "Message Id :" . $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Header']['ns0_Req_Id'] . ', ' : '';
+                        $message .= isset($result['SOAP-ENV_Body']["ns0_Reversal"]) ? "Status Remarks :" . $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_Status_Desc'] . ', ' : '';
+                        Session::flash('message', 'Error : ' . $http_code  .  $message);
+                        return redirect()->back();
+                    }
+                }
+                $fileDirPath = getPathByTxnId($transId);
+                $time = date('y-m-d H:i:s');
+
+                $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']) : $result['result']['http_header'];
+                $fileContents = PHP_EOL . ' Log  ' . $time . PHP_EOL . "URL = " . $result['result']['url'] .  PHP_EOL
+                    . PHP_EOL . ' Log  ' . $time . PHP_EOL . "Request Data = " . $result['result']['payload']  . PHP_EOL
+                    . PHP_EOL . ' Log  ' . $time . PHP_EOL . "Request Header = " . $result['result']['http_header']  . PHP_EOL
+                    . PHP_EOL . ' Log  ' . $time . PHP_EOL . "Response =" . $result['result']['response'] . PHP_EOL;
+                $createOrUpdatefile = Helpers::uploadOrUpdateFileWithContent($fileDirPath, $fileContents, true);
+                if (is_array($createOrUpdatefile)) {
+                    $userFileSaved = $this->docRepo->saveFile($createOrUpdatefile)->toArray();
+                } else {
+                    $userFileSaved = $createOrUpdatefile;
+                }
+
+                $otherData['disbursal_batch_id'] = $disbursalBatchId;
+                $otherData['txn_id'] = $transId;
+                $otherData['bank_type'] = config('lms.BANK_TYPE')['KOTAK'];
+                $otherData['enq_txn_id'] = $transId;
+                $otherData['disbursal_batch_id'] = $disbursalBatchId;
+                $result['result']['header']['Tran_ID'] = $reqData['txn_id'];
+                $result['status'] = 'failed';
+                if (isset($result['http_code']) && $result['http_code'] == 200 && isset($result['SOAP-ENV_Body']) && !empty($result['SOAP-ENV_Body'])) {
+                    if (isset($result['SOAP-ENV_Body']["ns0_Reversal"]) && !empty($result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_Status_Code'])) {
+                        $result['status'] = 'success';
+                        $result['result']['header']['Tran_ID'] =  isset($result['SOAP-ENV_Body']) ? $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_Msg_Id'] : '';
+                        if (empty($result['result']['header']['Tran_ID'])  && $result['result']['header']['Tran_ID'] == '') {
+                            $result['result']['header']['Tran_ID'] =  isset($result['SOAP-ENV_Body']) ? $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Header']['ns0_Req_Id'] : '';
+                        }
+                    }
+                }
+                $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result, $otherData);
+                $createDisbusalApiLog = $this->lmsRepo->saveUpdateDisbursalApiLog($disbusalApiLogData);
+                if ($createDisbusalApiLog) {
+                    $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
+                }
+                if (isset($result['http_code']) && $result['http_code'] == 200 && isset($result['SOAP-ENV_Body']) && !empty($result['SOAP-ENV_Body'])) {
+
+                    // $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
+                    $disbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
+                    if ($disbursalIds) {
+
+                        if (isset($result['SOAP-ENV_Body']["ns0_Reversal"]) && !empty($result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_Status_Code'])) {
+
+                            $updateDisbursal = $this->lmsRepo->updateDisburseByUserAndBatch([
+                                // 'status_id' => config('lms.DISBURSAL_STATUS')['DISBURSED'],
+                                'funded_date' => (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/', '-', $fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s')
+                            ], $disbursalIds);
+                            $STATUS_CODE = $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_Status_Code'];
+                            $MSG_ID = $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_Msg_Id'];
+                            $STATUS_DESC = $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_Status_Desc'];
+                            $UTR_NO = (isset($result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_UTR']) && !empty($result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_UTR'])) ? $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_UTR'] : '';
+                            /****RE = Rejected
+                                AR = Auth Rejected
+                                DF = FUNDS INSUFFICIENT
+                                Error-101 = Data Not Found
+                                Error-99 = Transaction is in Progress
+                                CR = INVALID IFS Code
+                                C = Received
+                                UP = TRANSACTION TIMEOUT 91
+                                U = PAID and UTR NO GET IN RESPONSE
+                                CF = ACCOUNT DOES NOT EXIST
+                                R = Rejected****/
+                            if ($STATUS_CODE == 'U') {
+                                $disburseStatus = config('lms.DISBURSAL_STATUS')['DISBURSED'];
+                            } else if ($STATUS_CODE == 'Error-101' || $STATUS_CODE == 'Error-99' || $STATUS_CODE == 'C') {
+                                $disburseStatus = config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'];
+                            } else if ($STATUS_CODE == 'RE' || $STATUS_CODE == 'R' || $STATUS_CODE == 'AR') {
+                                $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
+                            } else if ($STATUS_CODE == 'DF' || $STATUS_CODE == 'CR' || $STATUS_CODE == 'UP' ||  $STATUS_CODE == 'CF') {
+                                $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED'];
+                            } else {
+                                $disburseStatus = config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'];
+                            }
+
+                            $transDisbursalIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['ref_no' => $MSG_ID])->toArray();
+                            $updateDisbursalByTranId = $this->lmsRepo->updateDisbursalByTranId([
+                                'status_id' => $disburseStatus,
+                                'tran_id' => $UTR_NO
+                            ], ['ref_no' => $MSG_ID]);
+                            foreach ($transDisbursalIds as $key => $value1) {
+                                $this->lmsRepo->createDisbursalStatusLog($value1, $disburseStatus, '', $createdBy);
+
+                                $invoiceDisburseIds = $this->lmsRepo->findInvoiceDisburseByDisbursalId(['disbursal_id' => $value1])->toArray();
+                                $updateInvoiceDisburseStatus = $this->lmsRepo->updateInvoiceDisburseStatus($invoiceDisburseIds, $disburseStatus);
+
+                                $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_id' => $value1])->toArray();
+
+                                $updateInvoiceStatus = $this->lmsRepo->updateInvoicesStatus($invoiceIds, $disburseStatus);
+                                foreach ($invoiceIds as $key => $value2) {
+                                    $this->invRepo->saveInvoiceStatusLog($value2, $disburseStatus);
+                                }
+                            }
+
+                            if ($STATUS_CODE == 'U') {
+                                $tranNewIds = array_merge($tranNewIds, $transDisbursalIds);
+                            }
+                            $message[] = $MSG_ID . ' is ' . $STATUS_CODE . " (" . $STATUS_DESC . ")";
+                        } else {
+                            $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
+                            $message = $result['message'] ?? 'some error occurred';
+                            $message .= isset($result['SOAP-ENV_Body']["ns0_Reversal"]) ? "Status Code :" . $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_Status_Code'] . ',' : '';
+                            $message .= isset($result['SOAP-ENV_Body']["ns0_Reversal"]) ? "Message Id :" . $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Header']['ns0_Req_Id'] . ', ' : '';
+                            $message .= isset($result['SOAP-ENV_Body']["ns0_Reversal"]) ? "Status Remarks :" . $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_Status_Desc'] . ', ' : '';
+                            Session::flash('message', 'Error : ' . 'HTTP Code ' . $http_code  .  $message);
+                            return redirect()->route('backend_get_disbursal_batch_request');
+                        }
+                    }
+                    $updateTransaction = $this->updateTransactionInvoiceDisbursed($tranNewIds, $fundedDate);
+                } else {
+                    $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
+                    $message = $result['message'] ?? $result['message'];
+                    $message .= isset($result['SOAP-ENV_Body']["ns0_Reversal"]) ? "Status Code :" . $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_Status_Code'] . ',' : '';
+                    $message .= isset($result['SOAP-ENV_Body']["ns0_Reversal"]) ? "Message Id :" . $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Header']['ns0_Req_Id'] . ', ' : '';
+                    $message .= isset($result['SOAP-ENV_Body']["ns0_Reversal"]) ? "Status Remarks :" . $result['SOAP-ENV_Body']["ns0_Reversal"]['ns0_Details']['ns0_Rev_Detail']['ns0_Status_Desc'] . ', ' : '';
+                    Session::flash('message', 'Error : ' . 'HTTP Code ' . $http_code  .  $message);
+                    return redirect()->route('backend_get_disbursal_batch_request');
+                }
+            }
+
+            $disbureIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['status_id' => config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'], 'disbursal_batch_id' => $disbursalBatchId])->toArray();
+            if (empty($disbureIds)) {
+                $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById(['batch_status' => 2], $disbursalBatchId);
+            }
+            //\DB::commit();
+            Session::flash('message', implode(', ', $message));
+            return redirect()->back()->withErrors('message', trans('backend_messages.batch_disbursed'));
+        } catch (Exception $ex) {
+            //\DB::rollback();
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
 }

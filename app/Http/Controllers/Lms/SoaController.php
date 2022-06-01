@@ -213,7 +213,7 @@ class SoaController extends Controller
                 $preparedData[$key][$k]['narration'] = $data->narration;
                 $preparedData[$key][$k]['currency'] = trim($data->transaction->payment_id && in_array($data->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')]) ? '' : 'INR');
                 $preparedData[$key][$k]['debit'] = $dr;
-                $preparedData[$key][$k]['credit'] = '('.$cr.')';
+                $preparedData[$key][$k]['credit'] = $cr;
                 $preparedData[$key][$k]['balance'] = ($balance>0)?$balance:'('.abs($balance).')';
                 $preparedData[$key][$k]['soabackgroundcolor'] = $data->soabackgroundcolor;
             }
@@ -424,7 +424,7 @@ class SoaController extends Controller
         }
         foreach(range('A','L') as $columnID) {
             $sheet->getActiveSheet()->getColumnDimension($columnID)
-                ->setAutoSize(true);
+                  ->setWidth('13');
         }
        
         

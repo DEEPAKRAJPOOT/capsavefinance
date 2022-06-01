@@ -90,6 +90,7 @@ trait CamTrait
                 $leaseOfferData = array();
                 $leaseOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '3');
                 $facilityTypeList= $this->mstRepo->getFacilityTypeList()->toarray();
+                $termLoanOfferData = AppProgramOffer::getAllOffers($arrRequest['app_id'], '2');
 
                 $arrOwnerData = BizOwner::getCompanyOwnerByBizId($arrRequest['biz_id']);
                 $arrEntityData = Business::getEntityByBizId($arrRequest['biz_id']);
@@ -114,7 +115,7 @@ trait CamTrait
                 }
                 $arrGroupCompany = array();
                 if(isset($arrCamData['group_company']) && is_numeric($arrCamData['group_company'])){
-                  $arrGroupCompany = GroupCompanyExposure::where(['group_Id'=>$arrCamData['group_company'], 'is_active'=>1])->get()->toArray();
+                  $arrGroupCompany = GroupCompanyExposure::where(['group_Id'=>$arrCamData['group_company'], 'app_id' => $arrRequest['app_id'], 'is_active'=>1])->get()->toArray();
                   $arrMstGroup =  Group::where('id', $arrCamData['group_company'])->first()->toArray();
                   if(!empty($arrMstGroup)){
                     $arrCamData['group_company'] = $arrMstGroup['name'];
@@ -136,8 +137,6 @@ trait CamTrait
                     $arrCamData['total_exposure_amount'] = round($total,2);
                 }
 
-
-
                  //dd($arrGroupCompany);
                 /*start code for approve button */
                 $approveStatus = $this->appRepo->getApproverStatus(['app_id'=>$appId, 'approver_user_id'=>Auth::user()->user_id, 'is_active'=>1]);
@@ -145,7 +144,6 @@ trait CamTrait
                 $currStageCode = isset($currStage->stage_code)? $currStage->stage_code: ''; 
                 /*end code for approve button */
                  
-
                 if(isset($reviewerSummaryData['cam_reviewer_summary_id'])) {
                     $dataPrePostCond = CamReviewSummPrePost::where('cam_reviewer_summary_id', $reviewerSummaryData['cam_reviewer_summary_id'])
                                     ->where('is_active', 1)->get();
@@ -212,6 +210,7 @@ trait CamTrait
                     'FinanceColumns' => $FinanceColumns,
                     'audited_years' => $audited_years,
                     'leaseOfferData' => $leaseOfferData,
+                    'termLoanOfferData' => $termLoanOfferData,
                     'arrBankDetails' => $arrBankDetails,
                     'arrApproverData' => $arrApproverData,
                     'arrReviewer' => $arrReviewer,

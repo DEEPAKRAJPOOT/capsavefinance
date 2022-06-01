@@ -140,6 +140,10 @@ var iframe_ids = [
     'addLocationTypeFrame',
     'editLocationTypeFrame',
     'frontViewInterestAccrualFrame',
+    'termsConditionspop',
+    'pullBackAssignCaseFrame',
+    'assignUserLeads',
+    'assignUserApplication',
 ];
 
 iframe_ids.forEach(function (id) {

@@ -34,6 +34,7 @@ use App\Inv\Repositories\Models\CoLenderUsers;
 use App\Inv\Repositories\Models\Lms\Disbursal;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Program;
+use App\Inv\Repositories\Models\NonAnchorLead;
 
 class UserRepository extends BaseRepositories implements UserInterface
 {
@@ -436,6 +437,22 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return $result ?: false;
     }
+
+    /**
+     * Get a user model by role's user
+     *
+     * @param integer $userId
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getAssignedUsers($role_id,$user_id)
+    {
+        $result = UserModel::getAssignedUsers($role_id,$user_id);
+        return $result ?: false;
+    }
+    
     
     
     /**
@@ -921,7 +938,6 @@ class UserRepository extends BaseRepositories implements UserInterface
         public function getAllAnchorUsers($datatable=false)
         {
           $result = AnchorUser::getAllAnchorUsers($datatable);
-        
           return $result ?: false;
         }
     
@@ -976,6 +992,19 @@ class UserRepository extends BaseRepositories implements UserInterface
         return BizOwner::getOwnerByBizId($attributes['biz_id']); 
     }
     
+    
+    /**
+      * function for get all anchor unregistered user detail
+      * @return type
+      */
+     
+      public function getAnchorUsersByanchorId($anchor_user_id)
+      {
+        $result = AnchorUser::getAnchorUsersByanchorId($anchor_user_id);
+      
+        return $result ?: false;
+      }
+
     /**
       * function for get all anchor register user detail
       * @return type
@@ -1026,7 +1055,28 @@ class UserRepository extends BaseRepositories implements UserInterface
      public function updateAnchor($anchoId, $attributes = []){
         $result = Anchor::updateAnchor((int) $anchoId, $attributes);
         return $result ?: false;
-    }    
+    }
+    /**
+     * function for get Anchor details using anchor id
+     * @param type $userName
+     * @return type
+     */
+    public function getAnchorByAnchorId($anchId){
+        
+         
+         $result = UserModel::getAnchorByAnchorId((int)$anchId);
+         if($result == false){
+
+            $AnchorResult = Anchor::getAnchorById((int)$anchId);
+            return $AnchorResult ?: false;
+
+         }else{
+
+            return $result;
+         }
+         
+
+    }   
     /**
      * function for get user details using anchor id
      * @param type $userName
@@ -1034,9 +1084,30 @@ class UserRepository extends BaseRepositories implements UserInterface
      */
     public function getUserByAnchorId($anchId)
     {
-        $result = UserModel::getUserByAnchorId((int)$anchId);
+         $result = UserModel::getUserByAnchorId((int)$anchId);
          return $result ?: false;
     } 
+    /**
+     * function for check all anchor email using email and anchor id
+     * @param type $userName
+     * @return type
+     */
+    public function checkallanchorEmail($email,$anchId)
+    {
+        $result = Anchor::checkAnchorEmail($email,(int)$anchId);
+         return $result ?: false;
+    }
+     
+    /**
+     * function for get user details using anchor id
+     * @param type $userName
+     * @return type
+     */
+    public function checkallUserEmail($email,$anchId,$userType)
+    {
+        $result = UserModel::checkUserEmailExist($email,(int)$anchId,$userType);
+        return $result ?: false;
+    }
     /**
      * function for get user details using app id
      * @param type $userName
@@ -1062,6 +1133,17 @@ class UserRepository extends BaseRepositories implements UserInterface
         return $user;
     }
 
+    /**
+     * function for check all anchor user email using email and anchor id
+     * @param type $userName
+     * @return type
+     */
+    public function checkallanchorUserEmail($email,$anchId,$is_registerd,$userType)
+    {
+         $result = AnchorUser::checkallanchorUserEmail($email,(int)$anchId,$is_registerd,$userType);
+         return $result ?: false;
+    }
+
    /**
      * 
      * @param type $anchoId
@@ -1079,17 +1161,31 @@ class UserRepository extends BaseRepositories implements UserInterface
      * @return type
      */
      public function getAnchorUsersByEmail($email)
-        {
+     {
           $result = AnchorUser::getAnchorUsersByEmail($email);
         
           return $result ?: false;
-        } 
+     } 
         
-        /**
-         * function for get state list
-         * @return type
-         */
-        public function getStateList() {
+    /**
+     * 
+     * @param type $user_id
+     * @return type
+     */  
+    public function getAnchorUsersByUserId($user_id)
+    {
+        $result = AnchorUser::getAnchorUsersByUserId($user_id);
+        if($result == false){
+            $result = UserModel::getUserDetail((int)$user_id);
+        }
+        return $result ?: false;
+    }  
+
+    /**
+     * function for get state list
+     * @return type
+     */
+    public function getStateList() {
         $all_state = State::getStateList();        
         return $all_state ?: false;
     }
@@ -1641,7 +1737,7 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function lmsGetSentToBankInvToExcel($custId = null, $selectDate=null, $batchId = null)
     {
         $result = Disbursal::select('*', DB::raw('sum(disburse_amount) as total_disburse_amount'))
-                ->with(['lms_user.bank_details.bank', 'invoice_disbursed.invoice.program_offer',  'user.anchor_bank_details.bank', 'disbursal_batch', 'lms_user.user'])
+                ->with(['lms_user.bank_details.bank', 'invoice_disbursed.invoice.program_offer',  'user.anchor_bank_details.bank', 'disbursal_batch', 'lms_user.user','disbursal_batch.disbursal_api_log'])
                 ->whereHas('invoice_disbursed.invoice', function($query) {
                     $query->where('status_id', 10);
                 })
@@ -1670,6 +1766,10 @@ class UserRepository extends BaseRepositories implements UserInterface
     
     public function getExistEmailStatusAnchor($comp_email){
         return Anchor::getExistEmailStatusAnchor($comp_email);
+    }
+
+    public function getExistUserEmailStatusAnchor($anchor_id,$comp_email){
+        return Anchor::getExistUserEmailStatusAnchor($anchor_id,$comp_email);
     }
 
     public function getBusinessDetails($biz_id){
@@ -1709,6 +1809,22 @@ class UserRepository extends BaseRepositories implements UserInterface
         return AnchorUser::getAnchorUserData($whereCond);
     }    
 
+    
+    public function getUserLeadData($role_id,$fromUser,$selectedLeads){
+
+        return LeadAssign::getAssigneLeadByUserId($role_id,$fromUser,$selectedLeads);
+    }
+
+    public function getLeadByUserId($selectedLeads){
+
+        return LeadAssign::getLeadByUserId($selectedLeads);
+    }
+
+
+    public function updateDeleteStatus($lead_id){
+
+        return LeadAssign::updateDeleteStatus($lead_id);
+    }
     /**
      * Get a sales user model by id
      *
@@ -1804,6 +1920,67 @@ class UserRepository extends BaseRepositories implements UserInterface
     public function getAnchorUserDataByDate($whereCond, $date)
     {
         return AnchorUser::getAnchorUserDataByDate($whereCond, $date);
+    }
+
+    public function getActiveChrgDeleteEmailAllowedRoles()
+    {
+        return  Role::getActiveChrgDeleteEmailAllowedRoles();
+    }
+    
+    /**
+     * Get Anchor 
+     * 
+     * @param array $where
+     * @return mixed mixed
+     */
+    public function getAnchorData($where=[])
+    {
+        return Anchor::getAnchorData($where);
+    }
+
+
+    public function getNonAnchorLeadByRegToken($token)
+    {
+        $result = NonAnchorLead::getNonAnchorLeadByRegToken($token);
+    
+        return $result ?: false;
+    }
+    
+    public function getNonAnchorLeadByPan($pan)
+    {
+        $result = NonAnchorLead::getNonAnchorLeadByPan($pan);
+    
+        return $result ?: false;
+    }
+
+    public function saveNonAnchorLead($data)
+    {
+        $result = NonAnchorLead::saveLead($data);
+    
+        return $result ?: false;
+    }
+
+    public function updateNonAnchorLead($whereCond, $attributes = []) {
+        $result = NonAnchorLead::updateNonAnchorLeadData($whereCond, $attributes);
+        return $result ?: false;
+    }
+
+    public function getNonAnchorLeadById($id)
+    {
+        $result = NonAnchorLead::getNonAnchorLeadById((int) $id);
+        return $result ?: false;
+    }
+
+    public function getAllNonAnchorLeads()
+    {
+        $result = NonAnchorLead::getAllNonAnchorLeads();
+        return $result ?: false;
+    }
+
+    public function getBackendUserByEmail($email)
+    {
+        $result = UserModel::getBackendUserByEmail($email);
+        return $result ?: false;
     }
 }
 

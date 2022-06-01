@@ -138,6 +138,7 @@
 {!!Helpers::makeIframePopup('confirmReduceLimit','Reduce Limit', 'modal-md')!!}
 {!!Helpers::makeIframePopup('rejectApplication','Modify Application Status', 'modal-md')!!}
 {!!Helpers::makeIframePopup('viewApplicationStatus','View Application Status', 'modal-lg')!!}
+{!!Helpers::makeIframePopup('pullBackAssignCaseFrame','App Pull Back', 'modal-md')!!}
 @endsection
 @section('additional_css')
 <style>

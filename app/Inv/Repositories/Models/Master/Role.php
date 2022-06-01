@@ -125,7 +125,7 @@ class Role extends BaseModel
      */
     public static function getRoleLists()
     {
-        $arrRoles = Role::where('is_editable', 1);
+        $arrRoles = Role::where('is_editable', 1)->where('role_type',2)->where('name','!=','Accounts')->where('name','!=','Approver');
         return ($arrRoles ? : false);
     }
     
@@ -222,5 +222,13 @@ class Role extends BaseModel
     {
         $arrRoles = self::where('role_type', $role_type)->get();
         return $arrRoles ? $arrRoles : [];
+    }
+
+    public static function getActiveChrgDeleteEmailAllowedRoles()
+    {
+        $arrRoles = Role::where('is_chrg_delete_email_allowed', 1)
+                        ->where('is_active', 1)
+                        ->get('id');
+        return $arrRoles;               
     }
 }

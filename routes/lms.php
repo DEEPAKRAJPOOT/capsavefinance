@@ -193,6 +193,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                         'as' => 'copy_app',
                         'uses' => 'Lms\CopyController@duplicateApp',
                     ]);
+
+                    Route::get('/chng-fi-status',[
+                        'as' => 'chng_fi_status',
+                        'uses' => 'Lms\AddressController@changeFIStatus'
+                    ]);
                 }
             });
 
@@ -494,6 +499,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::POST('update_invoice_tenor', [
                         'as' => 'update_invoice_tenor',
                         'uses' => 'Backend\InvoiceController@saveInvoiceTenor',
+                    ]);
+                    Route::post('/kotak-disburse-online', [
+                        'as' => 'kotak_disburse_online',
+                        'uses' => 'Backend\InvoiceController@kotakDisburseOnline',
+                    ]);
+                    Route::get('kotak-disbursal-payment-enquiry', [
+                        'as' => 'kotak_disbursal_payment_enquiry',
+                        'uses' => 'Backend\InvoiceController@kotakDisbursalPaymentEnquiry',
                     ]);
                 }
             });

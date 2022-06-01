@@ -41,6 +41,7 @@ use App\Inv\Repositories\Models\Program;
 use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\LmsUsersLog;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
+use App\Inv\Repositories\Models\AppProgramOffer;
 
 class Helper extends PaypalHelper
 {
@@ -207,11 +208,11 @@ class Helper extends PaypalHelper
                     if ($data->role_id == 4) {
                         //$toUserId = User::getLeadSalesManager($user_id);
                         $userData = User::getfullUserDetail($user_id);
-                        if ($userData && !empty($userData->anchor_id)) {
+                        /*if ($userData && !empty($userData->anchor_id)) {
                             $toUserId = User::getLeadSalesManager($user_id);
-                        } else {
+                        } else {*/
                             $toUserId = LeadAssign::getAssignedSalesManager($user_id);
-                        }
+                        /*}*/
                         $dataArr['to_id'] = $toUserId;
                         $dataArr['role_id'] = null;
                     } else if (isset($addl_data['to_id']) && !empty($addl_data['to_id'])) {
@@ -1018,6 +1019,18 @@ class Helper extends PaypalHelper
     }
 
     /**
+     * Get Application current assignee all data
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function getAppCurrentAssigneedata($app_id)
+    {
+        $assigneeData = AppAssignment::getAppCurrentAssigneedata($app_id);
+        return $assigneeData;
+    }
+
+    /**
      * Check access of application is view only or not
      * 
      * @param integer $app_id
@@ -1077,7 +1090,7 @@ class Helper extends PaypalHelper
             } else {
                 $userArr = self::getChildUsersWithParent($to_id);
                 $curStage = WfAppStage::getCurrentWfStage($app_id);
-                if ($curStage && $curStage->stage_code == 'approver') {
+                if ($curStage && $curStage->stage_code == 'approver') {                    
                     //$whereCond=[];
                     //$whereCond['to_id'] = $to_id;
                     //$whereCond['app_id'] = $app_id;
@@ -1092,13 +1105,21 @@ class Helper extends PaypalHelper
                           }
                       }
                       $isViewOnly = count($apprUsers) > 0 && in_array($to_id, $apprUsers) ? 1 : 0;
+                      if (isset($roleData[0]) && $roleData[0]->id == config('common.user_role.REVIEWER') && request()->has('is_app_pull_back')) {
+                        $isViewOnly = 1;
+                      }
+                      if(request()->has('uploadApprovalMailCopyViaApproverList') && request()->get('uploadApprovalMailCopyViaApproverList') === '1'){
+                          $isViewOnly = 1;
+                      }
                     
                 } else {
                     if (isset($roleData[0]) && $roleData[0]->id == 6 && in_array(request()->route()->getName(), ['share_to_colender', 'save_share_to_colender'])) {
                         $isViewOnly = 1;
                     } else if (isset($roleData[0]) && $roleData[0]->id == 11 && in_array(request()->route()->getName(), ['reject_app', 'save_app_rejection'])) {
                         $isViewOnly = 1;
-                    } else if (in_array(request()->route()->getName(), ['renew_application', 'create_enhanced_limit_app', 'create_reduced_limit_app'])) {
+                    } 
+                    // get_trans_name added by Sudesh but needs to be discussed with Gaurav
+                    else if (in_array(request()->route()->getName(), ['list_lms_charges','get_chrg_amount','renew_application', 'create_enhanced_limit_app', 'create_reduced_limit_app','get_trans_name', 'ajax_get_program_balance_limit'])) {
                         $isViewOnly = 1;
                     } else {
                         $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
@@ -1401,6 +1422,9 @@ class Helper extends PaypalHelper
         } else if ($type == 'LEADID') {
             $prefix = config('common.idprefix.'.$type);
             $formatedId = $prefix . sprintf('%09d', $idValue);            
+        } else if ($type == 'PAYMENTID') {
+            $prefix = config('common.idprefix.'.$type);
+            $formatedId = $prefix . sprintf('%09d', $idValue);            
         }
         return $formatedId;
     }    
@@ -1614,44 +1638,46 @@ class Helper extends PaypalHelper
         }else{
             $prgm_ids = [$attr['prgm_id']];
         }
-        $is_enhance =Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();
+        $is_enhance = Application::whereIn('app_type',[1,2,3])->where(['app_id' => $attr['app_id']])->whereIn('status',[2,3])->count();
 
-
-        if($is_enhance==1)
-        { 
+        if($is_enhance == 1)
+        {
             $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplier($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'],$attr['app_id']);
-            $marginApprAmt = $marginApprAmt??0;
-            $marginApprAmt   +=   BizInvoice::whereIn('program_id', $prgm_ids)
+            $marginApprAmt = $marginApprAmt ?? 0;
+            $marginApprAmt += BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
             ->whereIn('status_id',[8,9,10])
-            ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+            ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
             ->where('app_id' , '<=', $attr['app_id'])
-            ->sum('invoice_approve_amount');
-            $marginReypayAmt =   BizInvoice::whereIn('program_id', $prgm_ids)
+            ->sum('invoice_margin_amount');
+            // ->sum('invoice_approve_amount');
+
+            $marginReypayAmt =  BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
             ->whereIn('status_id',[8,9,10,12,13,15])
-            ->where(['is_adhoc' =>0,'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+            ->where(['is_adhoc' => 0,'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
             ->where('app_id' , '<=', $attr['app_id'])
             ->sum('principal_repayment_amt');
-
-            return $marginApprAmt-$marginReypayAmt;
+            
+            return $marginApprAmt - $marginReypayAmt;
         }
         else
-        {
+        {            
             $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplierIsEnhance($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'], $attr['app_id']);
-            $marginApprAmt = $marginApprAmt??0;
+            $marginApprAmt = $marginApprAmt ?? 0;
             $marginApprAmt   +=  BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
             ->whereIn('status_id',[8,9,10])                    
             ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
-            ->sum('invoice_approve_amount');
+            ->sum('invoice_margin_amount');
+            // ->sum('invoice_approve_amount');
                 
             $marginReypayAmt =  BizInvoice::whereIn('program_id', $prgm_ids)
             ->where('prgm_offer_id',$attr['prgm_offer_id'])
             ->whereIn('status_id',[8,9,10,12,13,15])
-            ->where(['is_adhoc' =>0,'app_id' =>$attr['app_id'],'supplier_id' =>$attr['user_id'],'anchor_id' =>$attr['anchor_id']])
+            ->where(['is_adhoc' => 0,'app_id' => $attr['app_id'],'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
             ->sum('principal_repayment_amt');
-            return $marginApprAmt-$marginReypayAmt;
+            return $marginApprAmt - $marginReypayAmt;
         }
     }      
         
@@ -1680,13 +1706,15 @@ class Helper extends PaypalHelper
             $parentAppId = $appData->parent_app_id;
             $parentUserId = $appData->user_id;
             
-            $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 2]);
+            // $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 2]);
+            $appLimitData = $appRepo->getAppLimitData(['app_id' => $parentAppId, 'status' => 1]);
             $result['tot_limit_amt'] = isset($appLimitData[0]) ? $appLimitData[0]->tot_limit_amt : 0;            
             $result['parent_inv_utilized_amt'] = 0;
             
             if ($productId == 1) {
                 $pTotalCunsumeLimit = 0;
-                $invUtilizedAmt = 0;        
+                $invUtilizedAmt = 0;
+                $invSettledAmt  = 0;
                 $pAppPrgmLimit = $appRepo->getUtilizeLimit($parentAppId, $productId);
                 foreach ($pAppPrgmLimit as $value) {
                     $pTotalCunsumeLimit += $value->utilize_limit;
@@ -1695,10 +1723,11 @@ class Helper extends PaypalHelper
                     $attr['user_id'] = $parentUserId;
                     $attr['app_id'] = $parentAppId;
                     $attr['anchor_id'] = $value->anchor_id;
-                    $attr['prgm_id'] = $value->prgm_id;                     
-                    $invUtilizedAmt += $appRepo->getInvoiceUtilizedAmount($attr);                
+                    $attr['prgm_id'] = $value->prgm_id;              
+                    $attr['prgm_offer_id'] = $value->prgm_offer_id;
+                    $invUtilizedAmt += self::anchorSupplierPrgmUtilizedLimitByInvoice($attr);
+                    // $invUtilizedAmt += $appRepo->getInvoiceUtilizedAmount($attr);      
                 }
-
                 $result['parent_inv_utilized_amt'] = $invUtilizedAmt;
 
                 $totalCunsumeLimit = $inputLimitAmt > 0 ? str_replace(',', '', $inputLimitAmt) : 0;
@@ -1722,7 +1751,7 @@ class Helper extends PaypalHelper
                     $result['message'] = trans('backend_messages.validate_limit_enhance_amt');
                     $result['parent_consumed_limit'] = $pTotalCunsumeLimit; 
                 } else if ($appData->app_type == 3) {
-                    $result['status'] = $invUtilizedAmt > $totalCunsumeLimit;    
+                    $result['status'] = $invUtilizedAmt >= $totalCunsumeLimit;    
                     $result['message'] = trans('backend_messages.validate_reduce_limit_amt');
                     $result['parent_consumed_limit'] = $pTotalCunsumeLimit; 
                 }
@@ -2410,4 +2439,225 @@ class Helper extends PaypalHelper
         return $arrFileData;
     }
 
+    public static function getPrgmBalLimitAmt($userId, $prgmId, $app_id = null, $offer_id = null)
+    {
+        $appStatusList = [
+            config('common.mst_status_id.APP_REJECTED'),
+            config('common.mst_status_id.APP_CANCEL'),
+            config('common.mst_status_id.APP_CLOSED'),
+            config('common.mst_status_id.OFFER_LIMIT_REJECTED')
+        ];
+        $results = AppProgramOffer::select('app_prgm_offer.anchor_id', 'app.user_id', 'app_prgm_offer.prgm_id', 'app_prgm_offer.app_id', 'app.parent_app_id', 'app_prgm_offer.prgm_offer_id', 'app_prgm_offer.prgm_limit_amt', 'app_prgm_offer.status', 'app.curr_status_id')
+                ->join('prgm', 'app_prgm_offer.prgm_id', '=', 'prgm.prgm_id')
+                ->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
+                ->join('app_product', 'app.app_id', '=', 'app_product.app_id')
+                ->where('app_product.product_id', 1)
+                // ->where('prgm.prgm_id', $prgmId)
+                ->where('app.user_id', $userId)
+                ->where('app_prgm_offer.is_active', 1)
+                ->whereNotIn('app.curr_status_id', $appStatusList)
+                ->where(function ($query) {
+                    $query->whereIn('app_prgm_offer.status', [1])->orWhereNull('app_prgm_offer.status');
+                })
+                ->orderBy('user_id', 'asc')
+                ->orderBy('prgm_id', 'asc')
+                ->orderBy('app_id', 'asc')
+                ->orderBy('prgm_offer_id', 'asc');
+        if($app_id){
+            $results->where('app.app_id', $app_id);
+        }
+        if($offer_id){
+            $results->where('app_prgm_offer.prgm_offer_id',$offer_id);
+        }
+        $results = $results->get();
+
+        $arr = [];
+        foreach($results as $result)
+        {
+            if ($result->parent_app_id && isset($arr[$result->parent_app_id]) && $arr[$result->parent_app_id]['curr_status_id'] == 50 && $result->curr_status_id != 50) {
+                $arr[$result->app_id] = [
+                    'parent_app_id'  => $result->parent_app_id,
+                    'prgm_limit_amt' => $result->prgm_limit_amt,
+                    'status'         => $result->status,
+                    'curr_status_id' => $result->curr_status_id
+                ];
+                unset($arr[$result->parent_app_id]);
+            } else {
+                $arr[$result->app_id] = [
+                    'parent_app_id'  => $result->parent_app_id ?? 0,
+                    'prgm_limit_amt' => $result->prgm_limit_amt,
+                    'status'         => $result->status,
+                    'curr_status_id' => $result->curr_status_id
+                ];
+            }
+        }
+        return array_sum(array_column($arr, 'prgm_limit_amt'));
+    }
+
+    public static function checkAnchorPrgmOfferDuplicate($anchorId, $prgmId, $appId)
+    {
+        return AppProgramOffer::where('anchor_id', $anchorId)
+                                    ->where('prgm_id', $prgmId)
+                                    ->where('app_id', $appId)
+                                    ->where('is_active', 1)
+                                    ->whereNotIn('status', [2])
+                                    ->first();
+    }
+
+    public static function getAppTypeName($appType)
+    {
+        $name = '';
+        switch ($appType) {
+            case 1:
+                $name = 'Renewal';
+                break;
+            case 2:
+                $name = 'Limit Enhancement';
+                break;
+            case 3:
+                $name = 'Limit Reduction';
+                break;
+        }
+        return $name;
+    }
+
+    public static function anchorSupplierUtilizedLimitByInvoice($userId, $anchorId)
+    {
+        $marginApprAmt = InvoiceDisbursed::getInvoiceDisbursedAmountForSupplier($userId, $anchorId);    
+
+        $query             = BizInvoice::where(['is_adhoc' => 0,'supplier_id' => $userId,'anchor_id' => $anchorId]);
+        $marginReypayQuery = clone $query;
+
+        $marginApprAmt  += $query->whereIn('status_id', [8,9,10])->sum('invoice_margin_amount');
+        $marginReypayAmt = $marginReypayQuery->whereIn('status_id', [8,9,10,12,13,15])->sum('principal_repayment_amt');
+        return $marginApprAmt - $marginReypayAmt;
+    }
+    
+    public static function anchorSupplierPrgmUtilizedLimitByInvoice($attr){
+
+        $prgmData = Program::where('prgm_id', $attr['prgm_id'])->first();
+        if (isset($prgmData->parent_prgm_id)) {
+            $prgm_ids = Program::where('parent_prgm_id', $prgmData->parent_prgm_id)->pluck('prgm_id')->toArray();
+        }else{
+            $prgm_ids = [$attr['prgm_id']];
+        }
+        $is_enhance =  Application::whereIn('app_type', [1,2,3])->where('app_id', $attr['app_id'])->whereIn('status', [2,3])->count();
+        $sum = 0;
+        if ($is_enhance) {
+            $appData = Application::getAppData((int) $attr['app_id']);
+            if (in_array($appData->app_type, [1,2,3]) && $appData->parent_app_id) {
+                $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($attr['anchor_id'], $appData->parent_app_id);
+                if ($parentAppOffer && $parentAppOffer->prgm_offer_id && $parentAppOffer->prgm_id && $parentAppOffer->prgm_id == $attr['prgm_id']) {
+                    $newAttr['prgm_id'] = $parentAppOffer->prgm_id;
+                    $newAttr['app_id'] = $appData->parent_app_id;
+                    $newAttr['user_id'] = $attr['user_id'];
+                    $newAttr['anchor_id'] = $attr['anchor_id'];
+                    $newAttr['prgm_offer_id'] = $parentAppOffer->prgm_offer_id;
+                    $sum += self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
+                }
+                else {
+                    if ($prgmData && $prgmData->copied_prgm_id) {
+                        $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($attr['anchor_id'], $appData->parent_app_id, $prgmData->copied_prgm_id);
+                        if ($parentAppOffer && $parentAppOffer->prgm_offer_id && $parentAppOffer->prgm_id ) {
+                            $newAttr['prgm_id'] = $prgmData->copied_prgm_id;
+                            $newAttr['app_id'] = $appData->parent_app_id;
+                            $newAttr['user_id'] = $attr['user_id'];
+                            $newAttr['anchor_id'] = $attr['anchor_id'];
+                            $newAttr['prgm_offer_id'] = $parentAppOffer->prgm_offer_id;
+                            $sum += self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
+                        }
+                    }
+                }
+            }
+        }
+
+        $marginApprAmt = InvoiceDisbursed::getDisbursedAmountForSupplierIsEnhance($attr['user_id'], $attr['prgm_offer_id'],$attr['anchor_id'], $attr['app_id']);
+        $marginApprAmt += BizInvoice::whereIn('program_id', $prgm_ids)
+                                ->where('prgm_offer_id',$attr['prgm_offer_id'])
+                                ->whereIn('status_id', [8,9,10])                    
+                                ->where(['is_adhoc' => 0,'app_id' => $attr['app_id'],'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
+                                ->sum('invoice_margin_amount');
+            
+        $marginReypayAmt =  BizInvoice::whereIn('program_id', $prgm_ids)
+                                ->where('prgm_offer_id',$attr['prgm_offer_id'])
+                                ->whereIn('status_id',[8,9,10,12,13,15])
+                                ->where(['is_adhoc' => 0,'app_id' => $attr['app_id'],'supplier_id' => $attr['user_id'],'anchor_id' => $attr['anchor_id']])
+                                ->sum('principal_repayment_amt');
+        $sum += $marginApprAmt - $marginReypayAmt;
+        return $sum;
+    }
+
+    public static function getTotalProductLimit($appId, $productId)
+    {
+        $totalProductLimit = 0;
+        if (isset($appId) && isset($productId)) {
+            $appPrgmLimit = AppProgramLimit::getProductLimit($appId, $productId);
+            foreach ($appPrgmLimit as $value) {
+                $totalProductLimit += $value->product_limit;
+            }
+        }
+        return $totalProductLimit;
+    }
+    
+    public static function getOfferMarginAmtOfInvoiceAmt($prgmOfferId, $invoiceAmount)
+    {
+        $offer = AppProgramOffer::getAppPrgmOfferById($prgmOfferId);
+        $sum   = $invoiceAmount;
+        if ($offer && $offer->margin) {
+            $sum -= ($invoiceAmount * $offer->margin) / 100;
+        }
+        return $sum;
+    }
+
+    /**
+     * Separated cc or bcc emails and return array
+     *
+     * @var array
+     */
+    public static function ccOrBccEmailsArray($cc_bcc_email)
+    {
+        $emails = [];
+        $separator = ',';
+
+        if ($cc_bcc_email) {
+            $emails = array_filter(explode($separator, $cc_bcc_email));
+        }
+        return $emails;
+    }
+    
+    public static function checkActiveAdhocLimit($adhocLimits)
+    {
+        $activeArray = [];
+        if ($adhocLimits && count($adhocLimits)) {
+            foreach($adhocLimits as $adhocLimit) {
+                $curDate = strtotime(now()->format('Y-m-d'));
+                $adhocExpirDate = strtotime($adhocLimit->end_date);
+                if ($curDate > $adhocExpirDate) {
+                    $activeArray[] = false;
+                }
+            }
+        }        
+        return count($activeArray) == count($adhocLimits) ? false : true;
+    }
+
+     public static function uploadUserApprovalFile($attributes, $userId, $appId)
+    {
+        $inputArr = [];
+        if (isset($attributes['approval_doc_file'])) {
+            if (!Storage::exists('/public/user/' . $userId . '/'. $appId)) {
+                Storage::makeDirectory('/public/user/' . $userId . '/'. $appId , 0777, true);
+            }
+            $path = Storage::disk('public')->put('/user/' . $userId . '/'. $appId . '/', $attributes['approval_doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+
+        $inputArr['file_type'] = $attributes['approval_doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['approval_doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['approval_doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = \Auth::user()->user_id;
+        $inputArr['updated_by'] = \Auth::user()->user_id;
+
+        return $inputArr;
+    }
 }

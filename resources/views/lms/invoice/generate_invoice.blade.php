@@ -1,3 +1,4 @@
+
    <h2 style="font-size: 15px;font-family: Calibri;margin: 0;" align="center"><strong>{{$registeredCompany['cmp_name']}}</strong></h2>
    <h2 style="font-size: 8.5px;font-family: Calibri;margin: 0;" align="center"><strong>Registered office: {{$registeredCompany['cmp_add']}}</strong></h2>
    <h2 style="font-size: 8.5px;font-family: Calibri;margin: 0;" align="center">
@@ -8,7 +9,7 @@
       <span><strong>Email:</strong></span><span style="font-size: small;"> <a href="mailto:{{$registeredCompany['cmp_email']}}">{{$registeredCompany['cmp_email']}}</a></span>
    </h2>
    <hr />
-   <h2  style="font-size: 12px;text-align: center; margin: 5px 0 5px;"><strong><u>Bill of Supply</u></strong></h2>
+   <h2  style="font-size: 12px;text-align: center; margin: 5px 0 5px;"><strong><u>{{($invoice_type === 'C')?'Tax Invoice':'Bill of Supply'}}</u></strong></h2>
    <span style="font-family:Book Antiqua;padding-left: 6px;margin-bottom: 10px;border-left: 6px; float: left;width: 50%; font-size: 9px;">
       <strong>
       <span>BILLING ADDRESS:</span><br />

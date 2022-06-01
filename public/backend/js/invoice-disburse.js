@@ -1,9 +1,17 @@
 
     $(document).on('click', '.disburseClickBtn', function(){
         var invoiceIds = $('#invoice_ids').val().trim();
+        var databankType = $(this).attr('data-bankType');
         if (invoiceIds.length == 0) {
             replaceAlert('Please select atleast one invoice', 'error');
             return false;
+        }
+        if (databankType === '2') {
+            let allInvIds = invoiceIds.split(',');
+            if (allInvIds.length > 1) {
+                replaceAlert('Please select only one invoice', 'error');
+                return false;
+            }
         }
         var dataUrl = $(this).attr('data-url');
         var newUrl = dataUrl+'&invoice_ids='+invoiceIds;

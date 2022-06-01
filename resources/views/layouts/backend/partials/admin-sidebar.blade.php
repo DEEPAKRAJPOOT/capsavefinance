@@ -66,7 +66,7 @@
         </li>
     @endcan
 
-    @can('lead_list')
+    @canany(['lead_list', 'non_anchor_lead_list'])
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu1" aria-expanded="false"
                 aria-controls="collapseExample">
@@ -76,13 +76,20 @@
             </a>
             <div class="collapse" id="layoutsSubmenu1">
                 <ul class="nav flex-column sub-menu">
+                    @can('lead_list')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('lead_list') }}">My Leads</a>
                     </li>
+                    @endcan
+                    @can('non_anchor_lead_list')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('non_anchor_lead_list') }}">Non Anchor Leads List</a>
+                    </li>
+                    @endcan
                 </ul>
             </div>
         </li>
-    @endcan
+    @endcan    
 
     @canany(['application_pool','application_list', 'colender_application_list', 'applicaiton_list'])
         <li class="nav-item">
@@ -541,7 +548,31 @@
             </ul>
         </div>
     </li>
-    @endif
     
+    @endif
+   @canany(['assign_lead','assign_cases'])
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="collapse" href="#layoutsSubmenu12" aria-expanded="false"
+            aria-controls="collapseExample">
+            <i class="fa fa-exchange" aria-hidden="true"></i>
+            <span class="menu-title">Transfer Leads/Cases</span>
+            <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </a>
+        <div class="collapse" id="layoutsSubmenu12">
+            <ul class="nav flex-column sub-menu">
+              @can('assign_lead')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('assign_lead') }}">Assign Leads</a>
+                </li>
+              @endcan
+              @can('assign_cases')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('assign_cases') }}">Assign Cases</a>
+                </li>
+             @endcan
+            </ul>
+        </div>
+    </li>
+    @endcan
     </ul>
 </nav>

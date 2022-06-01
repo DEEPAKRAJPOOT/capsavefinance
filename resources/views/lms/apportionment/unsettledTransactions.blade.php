@@ -136,10 +136,11 @@
 @section('jscript')
 <script>
     var messages = {
-        url: "{{ URL::route('apport_unsettled_list') }}",
-        confirm_writeoff: "{{ URL::route('apport_mark_writeOff_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}",
-        confirm_settle: "{{ URL::route('apport_mark_settle_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView ]) }}",
-        trans_waiveoff_url: "{{ URL::route('apport_trans_waiveoff',['sanctionPageView' => $sanctionPageView]) }}",
+        paySug: "{{ $paySug }}",
+        url: "{{ URL::route('apport_unsettled_list',['paySug' => $paySug]) }}",
+        confirm_writeoff: "{{ URL::route('apport_mark_writeOff_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView, 'paySug' => $paySug ]) }}",
+        confirm_settle: "{{ URL::route('apport_mark_settle_confirmation',[ 'user_id' => $userId , 'payment_id' => $paymentId, 'sanctionPageView' => $sanctionPageView, 'paySug' => $paySug ]) }}",
+        trans_waiveoff_url: "{{ URL::route('apport_trans_waiveoff',['sanctionPageView' => $sanctionPageView, 'paySug' => $paySug]) }}",
         user_id: "{{$userId}}",
         payment_id: "{{$paymentId}}",
         payment_amt: "{{ $payment_amt }}",

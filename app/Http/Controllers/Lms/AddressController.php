@@ -171,4 +171,35 @@ class AddressController extends Controller
 
         return view('lms.address.edit_address', ['biz_addr_id' => $request->get('biz_addr_id'),  'userAddress_data' => $userAddress_data, 'user_id' => $user_id, 'state_list' => $state_list, 'gsts'=> $gsts, 'app_gsts'=> $app_gsts, 'is_show_default'=>$is_show_default]);
     }
+
+    public function changeFIStatus(Request $request)
+    {
+        try {
+            $status = false;
+            $arrActivity = [];
+            if (!empty($request->get('biz_addr_id'))) {
+                $userAddress_id = preg_replace('#[^0-9]#', '', $request->get('biz_addr_id'));
+                $address_data = $this->appRepo->findUserAddressyById($userAddress_id);
+                if (!empty($address_data) && is_numeric($userAddress_id) && is_numeric($request->get('status'))) {
+                    $arrAddressData['updated_at'] = \carbon\Carbon::now();
+                    $arrAddressData['rcu_status'] = $request->get('status') == 1 ? 0 : 1;
+                    $status = $this->appRepo->updateUserAddress($arrAddressData, $userAddress_id);
+                }
+            }
+            if ($status) {
+                $arrActivity['activity_code'] = 'chng_fi_status';
+                // $arrActivity['activity_desc'] = 'Manually Done By Hirdesh Dixit';
+                $arrActivity['activity_desc'] = 'Manually change fi status';                
+                $arrActivity['user_id'] = $request->get('user_id');
+                $arrActivity['app_id'] = $address_data->business->app->app_id;
+                \Event::dispatch("ADD_ACTIVITY_LOG", serialize($arrActivity));
+                Session::flash('message', $userAddress_id ? trans('success_messages.fi_status_success') : trans('success_messages.fi_status_success'));
+            } else {
+                Session::flash('error', trans('master_messages.something_went_wrong'));
+            }
+            return redirect()->route('addr_get_customer_list', ['user_id' => $request->get('user_id')]);
+        } catch (Exception $ex) {
+            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+        }
+    }
 }

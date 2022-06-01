@@ -37,6 +37,7 @@ class CustomerTransactionSOA extends BaseModel
         'user_id',
         'trans_id',
         'trans_date',
+        'trans_name',
         'value_date',
         'trans_type',
         'batch_no',
@@ -108,7 +109,7 @@ class CustomerTransactionSOA extends BaseModel
         $currency = '';
         $debitAmount = 0;
         $creditAmount = 0;
-        $transDate = $transaction->sys_created_at ?? $transaction->created_at;
+        $transDate = $transaction->created_at ?? $transaction->sys_created_at;
         if($transaction->payment_id && in_array($transaction->trans_type,[config('lms.TRANS_TYPE.REPAYMENT'),config('lms.TRANS_TYPE.FAILED')])){
             //
         }else{
@@ -123,6 +124,7 @@ class CustomerTransactionSOA extends BaseModel
         return [
             'value_date'      =>  $transaction->trans_date,
             'trans_type'      =>  $transaction->trans_type,
+            'trans_name'      =>  $transaction->transName,
             'invoice_no'      =>  $transaction->invoiceno,
             'batch_no'        =>  $transaction->batchNo,
             'narration'       =>  $transaction->narration,

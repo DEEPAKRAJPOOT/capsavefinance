@@ -6,6 +6,7 @@ use App\Inv\Repositories\Models\Cam;
 use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\BizOwner;
+use App\Inv\Repositories\Models\Anchor;
 
 trait ApplicationTrait
 {
@@ -512,10 +513,11 @@ trait ApplicationTrait
             $whereCond['app_id'] = $appId;
             $camReportData = $this->appRepo->getCamReportData($whereCond);
             foreach($camReportData as $camReport) {
-                $camReportArrData = $camReport ? $this->arrayExcept($camReport->toArray(), array_merge($excludeKeys, ['cam_report_id'])) : [];
+                $camReportArrData = $camReport ? $this->arrayExcept($camReport->toArray(), array_merge($excludeKeys, ['cam_report_id','contact_person','operational_person','program','rating_no','rating_comment','existing_exposure','proposed_exposure','sanction_limit_cam','outstanding_exposure_cam','group_company','total_exposure','t_o_f_limit','t_o_f_purpose','t_o_f_takeout','t_o_f_recourse','t_o_f_security_check','t_o_f_security','t_o_f_adhoc_limit','t_o_f_covenants','risk_comments','cm_comment','promoter_cmnt'])) : [];
                 $camReportArrData['app_id'] = $newAppId; 
                 $camReportArrData['biz_id'] = $newBizId;
-                $this->appRepo->saveAppBizFinDetail($camReportArrData);
+                //$this->appRepo->saveAppBizFinDetail($camReportArrData); //Previous call
+                $this->appRepo->saveCamReportData($camReportArrData);
             }    
             
             //rta_cam_hygiene
@@ -773,5 +775,64 @@ trait ApplicationTrait
         $data['anchorData'] = $anchorArr;
         $data['amountInwords'] = numberTowords($data['limit_amt']);
         return $data;
+    }
+
+    public function getAnchorProgramLimit(int $appId, int $program_id, int $offer_id = null){
+        $utilizedLimit = 0;
+
+        $prgm_limit =  $this->application->getProgramBalanceLimit($program_id);
+        $prgm_data =  $this->application->getProgram(['prgm_id' => $program_id]);
+        $anchor_id = $prgm_data->anchor_id;
+        $anchorData = Anchor::getAnchorById($anchor_id);
+        # product Type 1=> Supply Chain
+        if ($prgm_data->product_id == 1) {
+            $totalConsumtionAmt = 0;
+            $appData = $this->application->getAppData($appId);
+            $anchorUsers = $this->application->getAnchorPrgmUserIdsInArray($prgm_data->anchor_id,$program_id);
+            foreach($anchorUsers as $user_id)
+            {
+                $totalConsumtionAmt += \Helpers::getPrgmBalLimitAmt($user_id, $program_id);
+            }
+
+            if($anchorData->is_fungible == 0) {
+                $totalBalanceAmt = $prgm_data->anchor_sub_limit - $totalConsumtionAmt;
+            } else {
+                $totalBalanceAmt = $prgm_data->anchor_sub_limit;
+            }
+
+            $appUserConsumtionLimit = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id);
+            $appPrgmLimit = $this->application->getProgramLimitData($appId,1);
+            $appUserBalLimit = $appPrgmLimit[0]->limit_amt - $appUserConsumtionLimit;
+            
+            /** Enhancement || Reduction */
+            if ($appData->app_type == 2 || $appData->app_type == 3) {
+
+                /**  Current Offer Consumed Limit */
+                if($offer_id){
+                    if($appData->app_id){
+                        $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id);
+                        $totalBalanceAmt += $parentAppConsumAmt;
+                    }
+
+                    $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id, $offer_id);
+                    $appUserBalLimit += $currOfferConsumAmt;
+                } else{
+                    if(!$appData->prgmOffer()->count()){
+                        $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->parent_app_id, null);
+                        $totalBalanceAmt += $parentAppConsumAmt;
+                    }
+                }
+            }else {
+                if (in_array($appData->app_type, [0]) && $offer_id) {
+                    $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id, $offer_id);
+                    $appUserBalLimit += $currOfferConsumAmt;
+                }
+            }
+        }
+
+        if ($prgm_data && $prgm_data->copied_prgm_id) {
+            $utilizedLimit = \Helpers::getPrgmBalLimit($prgm_data->copied_prgm_id);
+        }
+        return ['prgm_limit' => $prgm_limit + $utilizedLimit, 'prgm_data' => $prgm_data, 'prgmBalLimitAmt' => $appUserBalLimit ?? 0, 'anchorBalLimitAmt' => $totalBalanceAmt ?? 0];
     }
 }
