@@ -5,6 +5,10 @@
 <div class="content-wrapper">
    @include('layouts.backend.partials.cam_nav')
    <div class="inner-container mt-4">
+      @php
+            $route_name = \Request::route()->getName();
+            // echo $route_name;
+        @endphp
       <!-- 
       <div class="row">
          <div class="col-md-12">
@@ -16,7 +20,7 @@
       -->
       <!--Start-->
       @if($is_editable)
-      <form method="post" action="{{ route('save_reviewer_summary') }}">
+      <form method="post" action="{{ route('save_reviewer_summary') }}" id="camReviewerForm">
       @endif
       @csrf
       <input type="hidden" name="app_id" value="{{ request()->get('app_id') }}"> 
@@ -29,113 +33,9 @@
                      <h4><small>Cover Note</small></h4>
                      <textarea id="cover_note" name="cover_note" class="form-control" cols="10" rows="10">{!! isset($reviewerSummaryData->cover_note) ? $reviewerSummaryData->cover_note : '' !!}</textarea>
                </div>
-@include('backend.cam.deal_structure_offers')
-
+               @include('backend.cam.deal_structure_offers')
                <div class="col-md-12 mt-4">
-                     <h4><small>Pre Disbursement Conditions:</small></h4>
-                     <table id="invoice_history" class="table table-striped no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
-                        <thead>
-                           <tr role="row">
-                                 <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="50%">Condition</th>
-                                 <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Timeline</th>
-                           </tr>
-                        </thead>                   
-                     </table>
-                     @if(isset($preCondArr) && count($preCondArr)>0)
-                        @foreach($preCondArr as $prekey =>$preval)
-                        <div class="input-group control-group row">
-                           <div class="input-group-btn col-md-6"> 
-                              <textarea name="pre_cond[]" value="" class="form-control form-control-sm">{{$preval['cond']}}</textarea>
-                           </div>
-                           <div class="input-group-btn col-md-6"> 
-                              <textarea name="pre_timeline[]" value="" class="form-control form-control-sm">{{$preval['timeline']}}</textarea>
-                           </div>
-                           <div class="input-group-btn "> 
-                            <i class="fa  fa-times-circle remove-ptpq-block remove"></i>
-                           </div>
-                        </div>
-                        @endforeach
-                     @endif
-                     <div class="after-add-more">
-                        <div class="input-group control-group row">
-                           <div class="input-group-btn col-md-6"> 
-                              <textarea name="pre_cond[]" value="" class="form-control form-control-sm"></textarea>
-                           </div>
-                           <div class="input-group-btn col-md-6"> 
-                              <textarea name="pre_timeline[]" value="" class="form-control form-control-sm"></textarea>
-                           </div>
-                           <div class="input-group-btn "> 
-                           <i class="fa  fa-plus-circle add-ptpq-block add-more"></i>
-                           </div>
-                        </div>
-                     </div>
-                     <!-- Copy Fields -->
-                     <div class="copy hide">
-                        <div class="control-group input-group row">
-                           <div class="input-group-btn col-md-6"> 
-                              <textarea name="pre_cond[]" value="" class="form-control form-control-sm"></textarea>
-                           </div>
-                           <div class="input-group-btn col-md-6"> 
-                              <textarea name="pre_timeline[]" value="" class="form-control form-control-sm"></textarea>
-                           </div>
-                           <div class="input-group-btn "> 
-                              <i class="fa  fa-times-circle remove-ptpq-block remove"></i>
-                           </div>
-                        </div>
-                     </div>
-               </div>
-               <div class="col-md-12 mt-4">
-                     <h4><small>Post Disbursement Conditions:</small></h4>
-                     <table id="invoice_history" class="table table-striped no-footer overview-table " role="grid" aria-describedby="invoice_history_info" cellpadding="0" cellspacing="0">
-                        <thead>
-                           <tr role="row">
-                                 <th class="sorting_asc" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Sr.No: activate to sort column descending" width="50%">Condition</th>
-                                 <th class="sorting" tabindex="0" aria-controls="invoice_history" rowspan="1" colspan="1" aria-label="Docs : activate to sort column ascending">Timeline</th>
-                           </tr>
-                        </thead>
-                     </table>
-                     @if(isset($postCondArr) && count($postCondArr)>0)
-                        @foreach($postCondArr as $postkey =>$postval)
-                        <div class="input-group control-group row">
-                           <div class="input-group-btn col-md-6"> 
-                              <textarea name="post_cond[]" value="" class="form-control form-control-sm">{{$postval['cond']}}</textarea>
-                           </div>
-                           <div class="input-group-btn col-md-6"> 
-                              <textarea name="post_timeline[]" value="" class="form-control form-control-sm">{{$postval['timeline']}}</textarea>
-                           </div>
-                           <div class="input-group-btn "> 
-                           <i class="fa fa-times-circle remove-ptpq-block  remove-post"></i>
-                           </div>
-                        </div>
-                        @endforeach
-                     @endif
-                     <div class="after-add-more-post">
-                        <div class="input-group control-group  row">
-                           <div class="input-group-btn col-md-6"> 
-                              <textarea name="post_cond[]" value="" class="form-control form-control-sm"></textarea>
-                           </div>
-                           <div class="input-group-btn col-md-6"> 
-                              <textarea name="post_timeline[]" value="" class="form-control form-control-sm"></textarea>
-                           </div>
-                           <div class="input-group-btn "> 
-                           <i class="fa  fa-plus-circle add-ptpq-block add-more-post"></i>
-                           </div>
-                        </div>
-                     </div>
-                     <!-- Copy Fields -->
-                     <div class="copy-post hide">
-                        <div class="control-group input-group row">
-                           <div class="input-group-btn col-md-6"> 
-                              <textarea name="post_cond[]" value="" class="form-control form-control-sm"></textarea>
-                           </div>
-                           <div class="input-group-btn col-md-6"> 
-                              <textarea name="post_timeline[]" value="" class="form-control form-control-sm"></textarea>
-                           </div>
-                           <div class="input-group-btn "> 
-                             <i class="fa  fa-times-circle remove-ptpq-block remove-post"></i>
-                           </div>
-                        </div>
-                     </div>
+               @include('backend.cam.security_deposit_form',['route_name'=>$route_name,'arrAppSecurityDoc'=>$arrAppSecurityDoc,'securityDocumentListJson'=>$securityDocumentListJson])
                </div>
                <div class="col-md-12 mt-4">
                      <h4><small>Approval criteria for IC</small></h4>
@@ -389,6 +289,7 @@
 </div>   
 @endsection
 @section('jscript')
+<script src="{{ asset('common/js/additional-methods.min.js') }}"></script>
 <script type="text/javascript">
    appId = '{{$appId}}';
    appurl = '{{URL::route("financeAnalysis") }}';
@@ -405,6 +306,7 @@
       };
     
    $(document).ready(function(){
+      getAllSecurityDocumentName(1);
       $("#cover_note").focus();
    });
 
@@ -512,6 +414,290 @@ $(document).ready(function() {
    $("body").on("click",".remove-negative",function(){ 
       $(this).parents(".control-group").remove();
    });
+   //Start code security document
+   $(document).on('keypress','.float_format', function(event) {
+      let num = $(this).val();
+      num.split('.')[1]
+         if(event.which == 8 || event.which == 0){
+            return true;
+         }
+         if(event.which < 46 || event.which > 59) {
+            return false;
+         }
+         
+         if(event.which == 46 && $(this).val().indexOf('.') != -1) {
+            return false;
+         }
+      if(typeof num.split('.')[1] !== 'undefined' && num.split('.')[1].length > 1){
+      return false;
+      }
+      });
+
+      $.validator.addMethod('filesize', function (value, element, param) {
+        return this.optional(element) || (element.files[0].size <= param)
+    }, 'File size must be less than {0}');
+    $.validator.addMethod('checkRenewalDate', function (value, element, param) {
+        let cur_date_val = $((element.id.split('_')[0]=='update'?'#update_':'#')+'maturity_date_'+element.id.split('_')[element.id.split('_').length-1]).val().split("/");
+
+        let cur_date = new Date(+cur_date_val[2], cur_date_val[1] - 1, +cur_date_val[0]);
+        cur_date.setDate(cur_date.getDate()-value+1);
+        
+        if(cur_date.toISOString().slice(0, 10)>=(new Date().toISOString().slice(0, 10)))
+            return true;
+        else
+            return false;
+    }, 'Renewal Reminder Days must be lower');
+
+    jQuery.validator.addMethod("alphanumeric", function(value, element) {
+        if(value != ''){
+          if(value == 0){
+            return false; 
+          }
+        }
+        return this.optional(element) || /^[a-zA-Z0-9]+$/.test(value);
+   }); 
+    var messages = {
+        unique_security_doc_number: "{{ URL::route('check_unique_security_doc_number') }}",
+        token: "{{ csrf_token() }}",
+    };
+    $.validator.addMethod("checkDocumentNumber",
+        function(value, element, params) {
+            var result = true;
+            var data = {doc_number : value, _token: messages.token};
+            var app_security_doc_id = $(element).closest('.toRemoveDiv1').find('.app_security_doc_id').val();
+            if(app_security_doc_id > 0 && app_security_doc_id != 'undefined'){
+                data['id'] = app_security_doc_id;
+            }
+            data['app_id'] = $("input[name='app_id']").val();
+            $.ajax({
+                type:"POST",
+                async: false,
+                url: messages.unique_security_doc_number, // script to validate in server side
+                data: data,
+                success: function(data) {                        
+                    result = (data.status == 1) ? false : true;
+                }
+            });                
+            return result;                
+        },'Document Number is already exists'
+    );
+
+   $('#camReviewerForm').validate(); // initialize the plugin
+   //End code security document
 });
+//Start code security document
+var counter;
+$(document).on('click', '.add-security-doc-block', function(){
+    counter = $('#security-doc-block .toRemoveDiv1').length + 1;
+    @if(empty($arrAppSecurityDoc)) 
+        counter = $('#security-doc-block .toRemoveDiv1').length + 1;
+    @endif
+    $('.toRemoveDiv1').each(function() {
+        $(this).find('div').removeClass('exceptionFields_'+counter);
+    });
+    let scdocc_block = '<div class="row p-2 mt-1 toRemoveDiv1" style="background-color: #e9e7e7;">'+
+        '<div class="col-md-2 mt-1">'+
+        '<label for="txtPassword"><b>Pre/Post Disbursement</b></label>'+
+        '<div class="relative">'+
+            '<select class="form-control doc_type" name="doc_type[]" id="doc_type_'+counter+'">'+
+                '<option value="">Select</option>'+
+                '<option value="1">Pre Disbursement</option>'+
+                '<option value="2">Post Disbursement</option>'+
+            '</select>'+
+       '</div>'+
+    '</div>'+
+    '<div class="col-md-2 mt-1">'+
+            '<label for="txtPassword"><b>Type of Document</b></label>'+
+            '<select class="form-control security_doc_id" name="security_doc_id[]" id="security_doc_id_'+counter+'">'+
+            '<option value="">Select</option>'+
+            '</select>'+
+    '</div>'+
+    '<div class="col-md-2 mt-1">'+
+            '<label for="txtPassword"><b>Original Due Date</b></label>'+
+            '<div class="relative">'+
+                    '<input type="text" name="due_date[]" maxlength="20" class="form-control sc-doc-date due_date" value="" placeholder="Original Due Date" autocomplete="off" id="due_date_'+counter+'" readonly="readonly"/>'+
+            '</div>'+
+    '</div>'+
+    '<div class="col-md-5 mt-1">'+
+            '<label for="txtPassword"><b>Description</b></label>'+
+            '<div class="relative">'+
+                '<textarea name="description[]" class="form-control description" placeholder="Description" autocomplete="off" id="description_'+counter+'"></textarea>'+
+            '</div>'+
+    '</div>'+
+    '<div class="col-md-1 mt-1" style="display: flex;flex-direction: column;justify-content: center;align-items: center;padding-top: 2px;">'+
+        '<i class="fa fa-2x fa-times-circle remove-security-doc-block ml-2" style="color: red;margin-top: 15%;"></i>'+
+    '</div>'+
+        '</div>';
+    $('#security-doc-block').append(scdocc_block);
+    
+    makeRequiredFields(counter,'add');
+    getAllSecurityDocumentName(counter);
+    counter++;
+    $('.sc-doc-date').datetimepicker({
+     format: 'dd/mm/yyyy',
+     pickTime: false,
+     minView: 2, 
+     startDate: new Date(),
+     pickerPosition: 'bottom-right', 
+   }).on('changeDate', function(e){
+       $(this).datetimepicker('hide');
+   });
+   $('.sc-doc-date-r').datetimepicker({
+     format: 'dd/mm/yyyy',
+     pickTime: false,
+     minView: 2, 
+     pickerPosition: 'bottom-right', 
+   }).on('changeDate', function(e){
+       $(this).datetimepicker('hide');
+   });
+  });
+
+  $(document).on('click', '.remove-security-doc-block', function(){
+    var app_security_doc_id = $(this).closest('.toRemoveDiv1').find('.app_security_doc_id').val();
+
+    if(app_security_doc_id > 0 && app_security_doc_id != 'undefined'){
+            var messages = {
+                update_app_security_doc: "{{ URL::route('update_app_security_doc') }}",
+                  token: "{{ csrf_token() }}",
+             };
+
+             var dataStore = {'app_security_doc_id': app_security_doc_id,'_token': messages.token };
+             jQuery.ajax({
+                 url: messages.update_app_security_doc,
+                 method: 'post',
+                 dataType: 'json',
+                 data: dataStore,
+                 error: function (xhr, status, errorThrown) {
+                                   // alert(errorThrown);
+                 },
+                 success: function (data) {  
+                 }
+             });   
+    }
+        $(this).closest('.toRemoveDiv1').remove();
+        resetIndexes();
+  });
+  $(document).on('change','.getFileName',function(){
+        $(this).parent('div').children('.custom-file-label').html('Choose file');
+    });
+    
+    $(document).on('change','.getFileName',function(e) {
+        var fileName = e.target.files[0].name;
+        $(this).parent('div').children('.custom-file-label').html(fileName);
+    });
+    $('.sc-doc-date').datetimepicker({
+     format: 'dd/mm/yyyy',
+     pickTime: false,
+     minView: 2, 
+     startDate: new Date(),
+     pickerPosition: 'bottom-right', 
+   }).on('changeDate', function(e){
+       $(this).datetimepicker('hide');
+   });
+   $('.sc-doc-date-r').datetimepicker({
+     format: 'dd/mm/yyyy',
+     pickTime: false,
+     minView: 2, 
+     pickerPosition: 'bottom-right', 
+   }).on('changeDate', function(e){
+       $(this).datetimepicker('hide');
+   });
+function getAllSecurityDocumentName(selectId){
+  var securityDoc= {!! $securityDocumentListJson !!};
+  if(securityDoc){
+    $.each(securityDoc, function(i, item) {
+        $('#security_doc_id_'+selectId)
+          .append($('<option>', { value : item.security_doc_id })
+          .text(item.name));
+    });
+  }
+}
+function displayExceptionFields(exceptionVal,divId){
+    $(".exceptionFields_"+divId).css("display", "none");
+    $(".exceptionFields_"+divId).find('input').css("visibility", "hidden").removeClass('required');
+    if(exceptionVal == 'yes'){
+      $(".exceptionFields_"+divId).removeAttr("style");
+      $(".exceptionFields_"+divId).find('input').removeAttr("style").addClass('required');
+    }
+    if(exceptionVal == 'no'){
+        $(".exceptionFields_"+divId).find('input').val('');
+    }
+    makeRequiredFields(divId,'update');
+}
+
+function resetIndexes() {
+  var j = 1, id,name, $this;
+  // for each element on the page with the class .input-wrap
+  var previousId = [];  
+  $('#security-doc-block .toRemoveDiv1').each(function() {
+    if (j > 1) {
+      // within each matched .input-wrap element, find each <input> element
+      $(this).find('input, select').each(function() {
+        $this = $(this);
+        id = $this.attr("id");
+        name = $this.attr("name");
+        if(name == 'exception_received[]'){
+            $this.removeAttr("onchange");
+            $this.attr("onchange",'displayExceptionFields(this.value,'+j+');');
+        }
+        ids=id.replace(/\d/g, '');
+        $(this).attr('id', ids+''+j);
+            if(name == 'exception_received_from[]' || name == 'exception_received_date[]' || name == 'exception_remark[]'){
+                previousIds = $this.attr("data-previous");
+                $(this).parent().parent().removeClass('exceptionFields_'+previousIds).addClass('exceptionFields_'+j);
+        }
+      })
+    }
+    j++;
+  });
+}
+function makeRequiredFields(counters, reqType){
+    $('#camReviewerForm').validate({ignore: ".desexception_received_from"});
+    $('#security-doc-block select.doc_type').each(function () {
+        $(this).rules("add",
+            {
+                required: true,
+                messages: {
+                    required: "This field is required.",
+                }
+            });
+    });
+    $('#security-doc-block select.security_doc_id').each(function () {
+        $(this).rules("add",
+            {
+                required: true,
+                messages: {
+                    required: "This field is required.",
+                }
+            });
+    });
+    $('#security-doc-block textarea.description').each(function () {
+        $(this).rules("add",
+            {
+                required: true,
+                messages: {
+                    required: "This field is required.",
+                }
+            });
+    });
+   //  $('#security-doc-block input.due_date').each(function () {
+   //      $(this).rules("add",
+   //          {
+   //              required: true,
+   //              messages: {
+   //                  required: "This field is required.",
+   //              }
+   //          });
+   //  });
+}
+@if(!empty($arrAppSecurityDoc))
+        @foreach($arrAppSecurityDoc as $key=>$arr)
+        @php 
+            $key =  $key+1;    
+        @endphp
+        makeRequiredFields({{ $key }},'update');
+    @endforeach
+    @endif
+//End code security document
 </script>
 @endsection

@@ -461,6 +461,11 @@
                     <a class="nav-link" href="{{ route('list_location_type') }}">Manage Location Type</a>
                 </li>
                 @endcan
+                @can('list_security_document')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('list_security_document') }}">Manage Security Document Type</a>
+                </li>
+                @endcan
             </ul>
         </div>
     </li>

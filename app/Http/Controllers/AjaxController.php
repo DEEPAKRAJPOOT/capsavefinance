@@ -54,6 +54,8 @@ use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
 use App\Inv\Repositories\Models\Master\Permission;
 use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\AppSecurityDoc;
+use App\Inv\Repositories\Models\UserFile;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\AppApprover;
 class AjaxController extends Controller {
@@ -6076,4 +6078,64 @@ if ($err) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }    
     }
+
+    public function getSecurityDocumentLists(DataProviderInterface $dataProvider) { 
+        $securityDocList = $this->masterRepo->getAllSecurityDocument();
+        $securityDoc = $dataProvider->getSecurityDocumentLists($this->request, $securityDocList);
+        return $securityDoc;
+    } 
+       
+    // Check Security Document Name
+    public function checkUniqueSecurityDocumentName(Request $request) 
+    {        
+        $securityDocumentName = $request->get('name');
+        $securityDocId = $request->has('security_doc_id') ? $request->get('security_doc_id'): null ;
+        $result = $this->masterRepo->checkSecurityDocument(['name' => $securityDocumentName], $securityDocId);
+        if (isset($result[0])) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }
+
+    public function updateAppSecurityDoc(Request $request ){
+        $app_security_doc_id = $request->get('app_security_doc_id');
+        $appSecDocData = AppSecurityDoc::where(['app_security_doc_id'=> $app_security_doc_id,'is_non_editable'=>0])->first();
+        if($appSecDocData){
+            $arrData = AppSecurityDoc::where('app_security_doc_id', $app_security_doc_id)->update(['is_active' => 0]);
+            if($arrData){
+                if($appSecDocData){
+                    $oldFileId = UserFile::deletes($appSecDocData->file_id);
+                }
+                $status = true; 
+            }else{
+            $status = false;
+            }
+        }else{
+            $status = false;
+        }
+        
+        return response()->json($status);
+    }
+
+     // Check Unique Security Document Number
+     public function checkUniqueSecurityDocNumber(Request $request) 
+     {        
+         $docNumber = $request->get('doc_number');
+         $appSecurityId = $request->has('id') ? $request->get('id'): null ;
+         $appId = $request->has('app_id') ? $request->get('app_id'): null ;
+         if($appSecurityId){
+            $result = AppSecurityDoc::where('document_number', $docNumber)->where('app_id', $appId)->where(['is_active'=>1])->where('app_security_doc_id','!=', $appSecurityId)->where('is_non_editable',1)->first();
+         }else{
+            $result = AppSecurityDoc::where('document_number', $docNumber)->where('app_id', $appId)->where(['is_active'=> 1,'is_non_editable'=>1])->first(); 
+         }
+         if (isset($result)) {
+             $result = ['status' => 1];
+         } else {
+             $result = ['status' => 0];
+         }
+         return response()->json($result); 
+     }
+
 }

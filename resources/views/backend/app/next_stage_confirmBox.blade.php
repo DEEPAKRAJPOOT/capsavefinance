@@ -61,6 +61,27 @@
                    @if (Session::has('error_code') && Session::get('error_code') == 'validate_fi_status')
                    <label class='error'>You cannot move this application to the next stage as the fi verification is pending for this customer.</label><br>                   
                    @endif
+                   @if ($assign_case)
+                        <label for="txtCreditPeriod">Please select Assignee <span class="mandatory">*</span> </label>
+                        <br>
+                        @if ($roles)
+                            {!! Form::select('sel_assign_role', [ ''=>'Assignee']+$roles, null, array('id' => 'is_active', 'class'=>'form-control')) !!}
+                        @endif 
+                    @php 
+                    $confirmBtn = 'Assign';
+                    $closeBtn = 'Cancel';
+                    @endphp
+                   @else
+                    @if ($nextStage && $nextStage->stage_code == 'disbursed_or_in_lms')
+                    Are you sure want to Activate the limit..?<br>
+                    @else
+                    Are you sure to move the next stage <strong>({{ isset($roles[$next_role_id]) ? $roles[$next_role_id] : '' }})</strong>?<br>
+                    @endif
+                    @php 
+                    $confirmBtn = 'Yes';
+                    $closeBtn = 'No';
+                    @endphp                    
+                   @endif
 
                    @if (Session::has('error_code') && Session::get('error_code') == 'validate_offer_approved')
                    <label class='error'>You cannot pull back this application as the offer has been approved by all the approvers.</label><br>                   

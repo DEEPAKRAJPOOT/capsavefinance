@@ -42,6 +42,7 @@ use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\LmsUsersLog;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\AppSecurityDoc;
 
 class Helper extends PaypalHelper
 {
@@ -2609,6 +2610,33 @@ class Helper extends PaypalHelper
         return $sum;
     }
 
+    public static function uploadSecurityDocFile($attributes, $appId, $app_security_doc_id=null)
+    {
+        $inputArr = [];
+        if ($attributes['doc_file']) {
+            if($app_security_doc_id){
+                $appSecDocData = AppSecurityDoc::where('app_security_doc_id', $app_security_doc_id)->first();
+                if($appSecDocData){
+                    $oldFileId = UserFile::deletes($appSecDocData->file_id);
+                }
+            }
+
+            if (!Storage::exists('/public/app_security_doc/' . $appId)) {
+                Storage::makeDirectory('/public/app_security_doc/' . $appId, 0777, true);
+            }
+            $path = Storage::disk('public')->put('/app_security_doc/' . $appId, $attributes['doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+
+        $inputArr['file_type'] = $attributes['doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = 1;
+        $inputArr['updated_by'] = 1;
+        return $inputArr;
+    }
+    
     /**
      * Separated cc or bcc emails and return array
      *

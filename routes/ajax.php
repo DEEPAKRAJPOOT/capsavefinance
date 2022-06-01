@@ -1478,6 +1478,28 @@ Route::group(
         'as' => 'delete_management_info',
         'uses' => 'AjaxController@deleteManagementInfo'
     ]);
+    
+    //Start Security Document
+    Route::post('get-master-securitydocument-list', [
+        'as' => 'get_ajax_master_securitydocument_list',
+        'uses' => 'AjaxController@getSecurityDocumentLists'
+    ]); 
+    
+    Route::post('unique-securitydocument-name', [
+        'as' => 'check_unique_securitydocument_name',
+        'uses' => 'AjaxController@checkUniqueSecurityDocumentName'
+    ]);
+
+    Route::post('update-app-security-doc', [
+        'as' => 'update_app_security_doc',
+        'uses' => 'AjaxController@updateAppSecurityDoc'
+    ]);
+
+    Route::post('unique-security-doc-number', [
+        'as' => 'check_unique_security_doc_number',
+        'uses' => 'AjaxController@checkUniqueSecurityDocNumber'
+    ]);
+    //END Security Document
 
     Route::post('get-non-anchor-leads', [
         'as' => 'get_non_anchor_leads',

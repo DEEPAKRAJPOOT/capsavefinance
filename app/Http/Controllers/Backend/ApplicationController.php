@@ -35,6 +35,7 @@ use App\Inv\Repositories\Models\Master\LocationType;
 use App\Inv\Repositories\Models\AppSanctionLetter;
 use PDF as NewPDF;
 use App\Inv\Repositories\Contracts\Traits\CamTrait;
+use App\Inv\Repositories\Models\AppSecurityDoc;
 use App\Inv\Repositories\Models\AppProgramLimit;
 
 class ApplicationController extends Controller
@@ -1053,13 +1054,11 @@ class ApplicationController extends Controller
 	public function AcceptNextStage(Request $request) {
 
 		try{
-
-
-                        $approver_list = $request->get('approver_list');
-                        $user_id = $request->get('user_id');
+			$approver_list = $request->get('approver_list');
+			$user_id = $request->get('user_id');
 			$app_id = $request->get('app_id');
-                        $approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
-                        $sel_assign_role = $request->get('sel_assign_role');
+			$approvers = Helpers::getProductWiseDoAUsersByAppId($app_id);
+			$sel_assign_role = $request->get('sel_assign_role');
 			$assign_case = $request->get('assign_case');
 			$sharing_comment = $request->get('sharing_comment');
 			$curr_role_id = $request->get('curr_role_id');
@@ -1088,12 +1087,12 @@ class ApplicationController extends Controller
 						Session::flash('error_code', 'no_offer_found');
 						return redirect()->back();
 					}
-
-                                        $appData = $this->appRepo->getAppData($app_id);
-                                        if ($appData && in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_LIMIT_REJECTED')]) ) {
-                                            Session::flash('error_code', 'limit_rejected');
-                                            return redirect()->back();
-                                        }
+                                        
+					$appData = $this->appRepo->getAppData($app_id);
+					if ($appData && in_array($appData->curr_status_id, [config('common.mst_status_id.OFFER_LIMIT_REJECTED')]) ) {
+						Session::flash('error_code', 'limit_rejected');
+						return redirect()->back();
+					}                                        
 				} else if ($currStage->stage_code == 'approver') {
 
 					if ($request->has('is_app_pull_back') && $request->is_app_pull_back) {
@@ -1213,16 +1212,28 @@ class ApplicationController extends Controller
                                 UserDetail::where('user_id',$user_id)->update(['is_active' =>1]);
                                 $this->appRepo->updateAppDetails($app_id, ['status' => 2]); //Mark Sanction
                                 \Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_SANCTIONED'));
-
+								$appData = $this->appRepo->getAppData($app_id);
+								$current_status = ($appData) ? $appData->curr_status_id : '';
+								if($current_status == config('common.mst_status_id.APP_SANCTIONED')){
+									$appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$app_id, 'biz_id' => $appData->biz_id, 'is_active'=>1])->whereIn('status',[3])->whereIn('is_non_editable',[0])->get();
+									foreach ($appSecurtiyDocs as $clone) {
+									  $cloneAppSecData = $clone->replicate();
+									  $cloneAppSecData->is_non_editable = 0;
+									  $cloneAppSecData->status = 5;
+									  $cloneAppSecData->save();
+									}
+                 				 	$updateStatus = AppSecurityDoc::where(['app_id'=>$app_id,'biz_id' => $appData->biz_id,'status'=>3,'is_non_editable'=>0,'is_active'=>1])->update(['is_non_editable' => 1, 'status'=>4]);
+								}
+                                
                                 $prcsAmt = $this->appRepo->getPrgmLimitByAppId($app_id);
                                 if($prcsAmt && isset($prcsAmt->offer)) {
-				  if($createCustomer != null) {
-                                      $whereCond=[];
-                                      $whereCond['user_id'] = $user_id;
-                                      $lmsData = $this->appRepo->getLmsUsers($whereCond);
-                                      if (isset($lmsData[0]) && !empty($lmsData[0]->virtual_acc_id)) {
-                                        $virtualId =  $lmsData[0]->virtual_acc_id;
-                                      } else {
+				  if($createCustomer != null) {   
+					$whereCond=[];
+					$whereCond['user_id'] = $user_id;
+					$lmsData = $this->appRepo->getLmsUsers($whereCond);
+					if (isset($lmsData[0]) && !empty($lmsData[0]->virtual_acc_id)) {
+					$virtualId =  $lmsData[0]->virtual_acc_id;
+					} else {
 					$capId = sprintf('%07d', $createCustomer->lms_user_id);
 					$virtualId = 'CAPVA'.$capId;
                                       }
@@ -1512,6 +1523,7 @@ class ApplicationController extends Controller
 		}else{
 		  $isSalesManager = 0;
 		}
+		$isSalesManager = 1;
 		/*code for getting the sales manager*/
 
 		foreach($supplyOfferData as $key=>$data) {

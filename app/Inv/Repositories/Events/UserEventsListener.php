@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\FinanceModel;
 use Storage;
 use App\Inv\Repositories\Contracts\MasterInterface as InvMasterRepoInterface;
 use App\Mail\ReviewerSummary;
+use Carbon\Carbon;
 
 class UserEventsListener extends BaseEvent
 {
@@ -1576,6 +1577,78 @@ class UserEventsListener extends BaseEvent
 
 
     /**
+     * App Security Document Renewal Alert
+     * 
+     * @param Array $attributes
+     */
+    public function appSecurityDocRenewalAlert($attributes) {
+        $data = unserialize($attributes);
+        $this->func_name = __FUNCTION__;
+        $email_content = EmailTemplate::getEmailTemplate("APP_SECURITY_DOCUMENT_RENEWAL_ALERT");
+        if ($email_content) {
+            $userData['user_name'] = $data['user_name'];
+            $userData['email'] = $data['email'];
+            $rowData = '';
+            foreach($data['data'] as $key=>$val){
+                $d = date('d/m/Y',strtotime($val['due_date']));
+                $m = date('d/m/Y',strtotime($val['maturity_date']));
+            $rowData .='<tr>
+              <td
+                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                '.$val['doc_type_name'].'
+              </td>
+              <td
+                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                '. $val['document_number'].'
+              </td>
+              <td
+                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                '. $d .'
+              </td>
+              <td
+                style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
+                '. $m .'
+              </td>
+            </tr>';
+            }
+            $mail_subject = str_replace(['%user_name'], [$data['user_name']],$email_content->subject);
+            $mail_body = str_replace(
+                ['%user_name','%email', '%allData'],
+                [$userData['user_name'],$userData['email'], $rowData],
+                $email_content->message
+            );
+            Mail::send('email', ['baseUrl'=> env('HTTP_APPURL',''), 'varContent' => $mail_body],
+                function ($message) use ($data, $mail_subject, $mail_body, $email_content) {
+                    $cc = array_filter(explode(',', $email_content->cc));
+                    $bcc = array_filter(explode(',', $email_content->bcc));
+                    if (!empty($bcc)) {
+                        $message->bcc($bcc);
+                    }
+                    if (!empty($cc)) {
+                        $message->cc($cc);
+                    }
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($data["email"], $data["user_name"]);
+                $message->subject($mail_subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $data["email"],
+                    'email_cc' => $cc ?? NULL,
+                    'email_bcc' => $bcc ?? NULL,
+                    'email_type' => $this->func_name,
+                    'user_name' => $data['user_name'],
+                    'name' => $email_content->name,
+                    'subject' => $mail_subject,
+                    'body' => $mail_body,
+                    // 'att_name' => $att_name ?? NULL,
+                    // 'attachment' => $data['attachment'] ?? NULL,
+                ];
+                FinanceModel::logEmail($mailContent);
+            }); 
+        }
+    }
+
+    /**
      * Event subscribers
      *
      * @param mixed $events
@@ -1772,9 +1845,15 @@ class UserEventsListener extends BaseEvent
         );
 
         $events->listen(
+            'APP_SECURITY_DOCUMENT_RENEWAL_ALERT',
+            'App\Inv\Repositories\Events\UserEventsListener@appSecurityDocRenewalAlert'
+        );
+
+        $events->listen(
             'NON_ANCHOR_CSV_LEAD_UPLOAD',
             'App\Inv\Repositories\Events\UserEventsListener@onNonAnchorLeadUpload'
         );
+        
         $events->listen(
             'USER_INVOICE_MAIL',
             'App\Inv\Repositories\Events\UserEventsListener@userInvoiceMail'

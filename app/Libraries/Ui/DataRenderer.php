@@ -479,17 +479,16 @@ class DataRenderer implements DataProviderInterface
                 //     }else{
                 //         $anchorUserType='';
                 //     }
-                //        return $anchorUserType;
                 // })                
                 ->addColumn(
                     'assignee',
                     function ($app) {  
                         $data = '';                  
-                    //if ($app->to_id){
-                    //    $userInfo = Helpers::getUserInfo($app->to_id);                    
-                    //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
+                        //        return $anchorUserType;
+                        //    $userInfo = Helpers::getUserInfo($app->to_id);                    
+                        //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
                     //} else {
-                    //    $assignName=''; 
+                        //    $assignName=''; 
                     //} 
                     //return $assignName;
                     $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
@@ -511,7 +510,7 @@ class DataRenderer implements DataProviderInterface
                         } else {
                             $data .= $app->assigned_by ? $app->assigned_by : '';
                         }
-                       // $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
+                        // $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
                         if(Helpers::checkPermission('view_shared_details') ){
                             $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Shared Details">View Shared Details</a>';
                         }
@@ -563,6 +562,9 @@ class DataRenderer implements DataProviderInterface
                                     if ($currentStage->order_no == 16 && !$hasSupplyChainOffer ) {
                                         if ($app->curr_status_id != config('common.mst_status_id')['DISBURSED']) {
                                             $act = $act . $moveToBackStageUrl;
+                                        }
+                                        if (Helpers::checkPermission('reduce_limit_confirmBox')) {
+                                            $act = $act . '&nbsp;<a href="#" title="Reduce Limit" data-toggle="modal" data-target="#confirmReduceLimit" data-url="' . route('reduce_limit_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $app->biz_id, 'app_type' => 3]) . '" data-height="200px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-user-times" aria-hidden="true"></i></a> ';
                                         }
                                     } else {
                                         $status = DB::table('app_sanction_letter')->where(['app_id' => $app->app_id])->orderBy('sanction_letter_id', 'desc')->pluck('status')->first();
@@ -8937,6 +8939,50 @@ class DataRenderer implements DataProviderInterface
                 })
             ->make(true);
     }
+    public function getSecurityDocumentLists(Request $request, $securityDoc){
+
+        return DataTables::of($securityDoc)
+                ->rawColumns(['is_active'])
+                ->addColumn(
+                    'name',
+                    function ($securityDoc) {
+                    return $securityDoc->name;
+                }) 
+                ->addColumn(
+                    'location_code',
+                    function ($securityDoc) {
+                    return $securityDoc->location_code;
+                }) 
+                ->addColumn(
+                    'created_at',
+                    function ($securityDoc) {
+                    return ($securityDoc->created_at) ? date('d-M-Y',strtotime($securityDoc->created_at)) : '---';
+                })
+                ->addColumn(
+                    'created_by',
+                    function ($securityDoc) {
+                    return $securityDoc->userDetail->f_name.' '.$securityDoc->userDetail->l_name;
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($securityDoc) {
+                       $act = $securityDoc->is_active;
+                       $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editSecurityDocumentFrame" title="Edit Security Document Detail" data-url ="'.route('edit_security_document',['security_doc_id' => $securityDoc->security_doc_id]).'" data-height="320px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                       $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success' : 'danger').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                     return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('name', 'like',"%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+    
     public function getAllNonAnchorLeadsList(Request $request, $lead)
     {        
         return DataTables::of($lead)
