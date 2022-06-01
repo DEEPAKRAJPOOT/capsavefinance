@@ -37,7 +37,6 @@
                                                     <td><b>Type Of Document:  </b> </td>
                                                     <td>{{$listingData->mstSecurityDocs->name ? : 'N/A'}}</td>
                                                 </tr>
-                                                
                                                 <tr>
                                                     <td></td>
                                                     <td><b>Description: </b></td>
@@ -52,7 +51,6 @@
                                                     <td><b>Created At: </b></td>
                                                     <td>{{ !empty($listingData->created_at) ? Carbon::parse($listingData->created_at)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
-                                                <td></td>
                                                 @else
                                                 <tr>
                                                     <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
@@ -118,7 +116,6 @@
                                                     <td><b>Created At: </b></td>
                                                     <td>{{ !empty($listingData->created_at) ? Carbon::parse($listingData->created_at)->format('d-m-Y') : 'N/A' }}}</td>
                                                 </tr>
-                                                <td></td>
                                                 @endif
                                                 @endforeach
                                             </tbody>
