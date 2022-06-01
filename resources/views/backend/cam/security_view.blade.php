@@ -41,7 +41,7 @@
                                                     <td></td>
                                                     <td><b>Description: </b></td>
                                                     <td>{{$listingData->description}}</td>
-                                                    <td><b>Origional Due Date : </b></td>
+                                                    <td><b>Original Due Date : </b></td>
                                                     <td>{{!empty($listingData->due_date) ? Carbon::parse($listingData->due_date)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
                                                 <tr>
@@ -68,7 +68,7 @@
                                                     <td></td>
                                                     <td><b>Description: </b></td>
                                                     <td>{{$listingData->description}}</td>
-                                                    <td><b>Origional Due Date : </b></td>
+                                                    <td><b>Original Due Date : </b></td>
                                                     <td>{{!empty($listingData->due_date) ? Carbon::parse($listingData->due_date)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
                                                 <tr>
@@ -103,7 +103,7 @@
                                                 </tr>
                                                 <tr>
                                                 <td></td>
-                                                    <td><b>Renewal Reminder (Days): </b></td>
+                                                    <td><b>Renewal Reminder Days: </b></td>
                                                     <td>{{$listingData->renewal_reminder_days ? : 'N/A'}}</td>
                                                     <td><b>Amount Expected: </b></td>
                                                     <td>{{$listingData->amount_expected ? : 'N/A'}}</td>
