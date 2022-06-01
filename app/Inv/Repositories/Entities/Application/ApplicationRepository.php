@@ -77,6 +77,7 @@ use App\Inv\Repositories\Models\BizEntityCin;
 use App\Inv\Repositories\Models\BizInvoice;
 use App\Inv\Repositories\Models\UserNach;
 use App\Inv\Repositories\Models\Lms\NachBatch;
+use App\Inv\Repositories\Models\Master\Asset;
 use App\Inv\Repositories\Models\NachStatusLog;
 
 /**
@@ -188,6 +189,14 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 	public function getApplications() 
 	{
 		return Application::getApplications();
+	}
+
+    /**
+	 * Get Applications for Application list data tables
+	 */
+	public function getAssignedApplications($request) 
+	{
+		return Application::getAssignedApplications($request['role_id'],$request['user_id']);
 	}
 
 	/**
@@ -349,14 +358,22 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 				->with('appLimit')
 				->where(['user_id' => $user_id, 'status' => 2])
 				->get();
-	}    
+	} 
     
-     /**
+    /**
      * update Applications for Application list data tables
      */
     public function updateAppAssignById($app_id, $arrUserData = []) 
     {
         return AppAssignment::updateAppAssignById((int)$app_id, $arrUserData);
+    }
+    
+     /**
+     * update Applications for Application list data tables
+     */
+    public function updateAssignedAppById($appData, $arrUserData = []) 
+    {
+        return AppAssignment::updateAssignedAppById($appData, $arrUserData);
     }
 
     /**
@@ -823,6 +840,29 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     }
 
     /**
+     * Update Authority Users against application
+     * 
+     * @param integer $app_id $user_id
+     * @return mixed
+     */    
+    public function updateAppApprInActiveFlag($attributes)
+    {
+        return AppApprover::updateAppApprInActiveFlag(($attributes));
+    }
+
+
+    /**
+     * check Approval Authority Users against application
+     * 
+     * @param integer $app_id $user_id
+     * @return mixed
+     */    
+    public function checkAppApprovers($attributes)
+    {
+        return AppApprover::checkAppApprovers(($attributes));
+    }
+
+    /**
      * Save Approval Authority Users against application
      * 
      * @param integer $app_id
@@ -1035,6 +1075,11 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function checkduplicateProgram($data){
         return AppProgramLimit::checkduplicateProgram($data);
     }
+    
+    public function checkduplicateOffer($data){
+        return AppProgramOffer::checkduplicateOffer($data);
+    }
+
   
     /**
      * update program data
@@ -1586,6 +1631,10 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
 
     public function getSharedColender($where, $notColenderId = null){
         return ColenderShare::getSharedColender($where, $notColenderId);
+    }
+    
+    public function getSharedColenderData($where){
+        return ColenderShare::getSharedColenderData($where);
     }
 
     public function updateColenderData($attributes, $conditions){
@@ -2574,13 +2623,21 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
     public function getInvoiceProcessingFeeCharge(){
         return Charges::find(12);
     }
+    
+    public function getAnchorPrgmUserIdsInArray($anchorId, $prgmId){
+        return AppProgramOffer::getAnchorPrgmUserIdsInArray($anchorId, $prgmId);
+    }
+
+    public function getAppOfferLimitApproved($userId, $appId){
+        return AppStatusLog::getAppOfferLimitApproved($userId, $appId);
+    }
+
+    public function getAssetList(){
+        return Asset::getAssetList();
+    }
 
     public function getBizOwnerDataByOwnerId($bizOwnerId)
     {
         return BizOwner::getBizOwnerDataByOwnerId($bizOwnerId);
-    }
-
-    public function getAnchorPrgmUserIdsInArray($anchorId, $prgmId){
-        return AppProgramOffer::getAnchorPrgmUserIdsInArray($anchorId, $prgmId);
     }
 }

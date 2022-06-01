@@ -585,6 +585,15 @@ Route::domain(config('proin.backend_uri'))->group(function () {
 
             ]);
 
+            Route::get('app-pull-back-confirmBox', [
+                'as' => 'app_pull_back_confirmBox',
+                'uses' => 'Backend\ApplicationController@sendCaseConfirmbox'
+            ]); 
+            Route::get('download-approval-file-copy', [
+                'as' => 'download_approval_file_copy',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            ]);
+
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 
@@ -832,6 +841,14 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@downloadSample'
             ]);
         });
+
+
+        Route::group(['prefix' => 'non-anchor-leads'], function () {
+            Route::get('/', [
+                'as' => 'non_anchor_lead_list',
+                'uses' => 'Backend\LeadController@getNonAnchorLeads'
+            ]);
+        });
         
         Route::group(['prefix' => 'fircu'], function () {
             Route::get('/applications', [
@@ -854,7 +871,24 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\FiRcuController@listRCU'
             ]);   
         });
-        
+        Route::group(['prefix' => 'transfer-lead'], function(){
+
+            Route::get('/', [
+                'as' => 'transfer_lead',
+                'uses' => 'Backend\DashboardController@assignedLead'
+            ]);
+
+            Route::get('lead-assign', [
+                'as' => 'assign_lead',
+                'uses' => 'Backend\LeadController@assignedLead'
+            ]);
+
+            Route::get('case-assign', [
+                'as' => 'assign_cases',
+                'uses' => 'Backend\LeadController@assignedCases'
+            ]);
+        });
+
         Route::group(['prefix' => 'anchor'], function(){
             Route::get('/', [
                 'as' => 'get_anchor_list',
@@ -918,6 +952,25 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\LeadController@getCityList'
             ]);
             
+            Route::get('assign-user-lead', [
+                'as' => 'assign_user_leads',
+                'uses' => 'Backend\LeadController@assignUserLeads'
+            ]);
+
+            Route::post('assign-user-lead', [
+                'as' => 'assign_user_leads',
+                'uses' => 'Backend\LeadController@saveassignUserLeads'
+            ]);
+
+            Route::get('assign-user-application',[
+                'as' => 'assign_user_application',
+                'uses' => 'Backend\ApplicationController@assignUserApplication'
+                ]);
+
+            Route::post('assign-user-application',[
+                'as' => 'assign_user_application',
+                'uses' => 'Backend\ApplicationController@saveassignUserApplication'
+                ]);
             //add anchor bank details
             
             Route::get('add-anchor-bank', [

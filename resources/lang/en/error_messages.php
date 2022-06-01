@@ -23,6 +23,7 @@ return [
     'invalid_email' => 'Please enter a valid email address.',
     'email_max_length' => 'More than 50 characters are not allowed.',
     'email_already_exists' => 'The email is already registered.',
+    'anchor_duplicate_email_error'=>'Email already exist.',
     'buis_business' => 'Please enter a valid business name',
     'req_pan' => 'Pan number is required',
     'pan_max_length' => 'More than 10 characters are not allowed.',
@@ -111,7 +112,8 @@ return [
      'required'=>':field is required.',
     'first_name_regex' => 'Please enter only alpha characters with/without space.',
     'last_name_regex' => 'Please enter only alpha characters.',
-
+    'buis_business_regex' => 'Please enter only characters, numbers with/without space and dot.',
+    'req_is_term_accept' => 'This field is required.',
 
     'apport_invalid_user_id' => "Invalid User",
     'apport_invalid_repayment_id' => 'Invalid Re-Payment',
@@ -119,4 +121,5 @@ return [
     'active_app_check' => 'You cannot create a new application until the filled application got sanctioned, cancel or rejected by the lender.',
     'program_anchor_limit' => 'You can\'t enter limit amount less than utilized amount.',
     'documentNotFound' => 'Document not found!',
+    'pan_already_exists' => 'The pan no is already exists.',
     ];

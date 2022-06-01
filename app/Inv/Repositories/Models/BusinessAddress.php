@@ -176,8 +176,8 @@ class BusinessAddress extends BaseModel
     }
 
     public static function unsetDefaultAddress($user_id){
-        $biz_ids = Application::where('user_id', $user_id)->pluck('biz_id');
-        $status = self::whereIn('biz_id', $biz_ids)->where(['address_type'=> 6, 'is_default'=> 1])->update(['is_default'=> 0]);
+        $biz_ids = Application::where('user_id', $user_id)->pluck('biz_id')->toArray();
+        $status = self::whereIn('biz_id', $biz_ids)->where(['is_default' => 1])->update(['is_default' => 0]);
         return $status;
     }
 

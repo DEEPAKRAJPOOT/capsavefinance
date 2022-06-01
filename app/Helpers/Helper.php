@@ -208,11 +208,11 @@ class Helper extends PaypalHelper
                     if ($data->role_id == 4) {
                         //$toUserId = User::getLeadSalesManager($user_id);
                         $userData = User::getfullUserDetail($user_id);
-                        if ($userData && !empty($userData->anchor_id)) {
+                        /*if ($userData && !empty($userData->anchor_id)) {
                             $toUserId = User::getLeadSalesManager($user_id);
-                        } else {
+                        } else {*/
                             $toUserId = LeadAssign::getAssignedSalesManager($user_id);
-                        }
+                        /*}*/
                         $dataArr['to_id'] = $toUserId;
                         $dataArr['role_id'] = null;
                     } else if (isset($addl_data['to_id']) && !empty($addl_data['to_id'])) {
@@ -1019,6 +1019,18 @@ class Helper extends PaypalHelper
     }
 
     /**
+     * Get Application current assignee all data
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function getAppCurrentAssigneedata($app_id)
+    {
+        $assigneeData = AppAssignment::getAppCurrentAssigneedata($app_id);
+        return $assigneeData;
+    }
+
+    /**
      * Check access of application is view only or not
      * 
      * @param integer $app_id
@@ -1078,7 +1090,7 @@ class Helper extends PaypalHelper
             } else {
                 $userArr = self::getChildUsersWithParent($to_id);
                 $curStage = WfAppStage::getCurrentWfStage($app_id);
-                if ($curStage && $curStage->stage_code == 'approver') {
+                if ($curStage && $curStage->stage_code == 'approver') {                    
                     //$whereCond=[];
                     //$whereCond['to_id'] = $to_id;
                     //$whereCond['app_id'] = $app_id;
@@ -1093,6 +1105,12 @@ class Helper extends PaypalHelper
                           }
                       }
                       $isViewOnly = count($apprUsers) > 0 && in_array($to_id, $apprUsers) ? 1 : 0;
+                      if (isset($roleData[0]) && $roleData[0]->id == config('common.user_role.REVIEWER') && request()->has('is_app_pull_back')) {
+                        $isViewOnly = 1;
+                      }
+                      if(request()->has('uploadApprovalMailCopyViaApproverList') && request()->get('uploadApprovalMailCopyViaApproverList') === '1'){
+                          $isViewOnly = 1;
+                      }
                     
                 } else {
                     if (isset($roleData[0]) && $roleData[0]->id == 6 && in_array(request()->route()->getName(), ['share_to_colender', 'save_share_to_colender'])) {
@@ -1101,7 +1119,7 @@ class Helper extends PaypalHelper
                         $isViewOnly = 1;
                     } 
                     // get_trans_name added by Sudesh but needs to be discussed with Gaurav
-                    else if (in_array(request()->route()->getName(), ['renew_application', 'create_enhanced_limit_app', 'create_reduced_limit_app','get_trans_name'])) {
+                    else if (in_array(request()->route()->getName(), ['list_lms_charges','get_chrg_amount','renew_application', 'create_enhanced_limit_app', 'create_reduced_limit_app','get_trans_name', 'ajax_get_program_balance_limit'])) {
                         $isViewOnly = 1;
                     } else {
                         $isViewOnly = AppAssignment::isAppCurrentAssignee($app_id, $userArr, isset($roleData[0]) ? $roleData[0]->id : null);
@@ -2398,7 +2416,7 @@ class Helper extends PaypalHelper
                 ->join('app', 'app.app_id', '=', 'app_prgm_offer.app_id')
                 ->join('app_product', 'app.app_id', '=', 'app_product.app_id')
                 ->where('app_product.product_id', 1)
-                ->where('prgm.prgm_id', $prgmId)
+                // ->where('prgm.prgm_id', $prgmId)
                 ->where('app.user_id', $userId)
                 ->where('app_prgm_offer.is_active', 1)
                 ->whereNotIn('app.curr_status_id', $appStatusList)
@@ -2411,7 +2429,7 @@ class Helper extends PaypalHelper
                 ->orderBy('prgm_offer_id', 'asc');
         if($app_id){
             $results->where('app.app_id', $app_id);
-        }                
+        }
         if($offer_id){
             $results->where('app_prgm_offer.prgm_offer_id',$offer_id);
         }
@@ -2446,6 +2464,7 @@ class Helper extends PaypalHelper
                                     ->where('prgm_id', $prgmId)
                                     ->where('app_id', $appId)
                                     ->where('is_active', 1)
+                                    ->whereNotIn('status', [2])
                                     ->first();
     }
 
@@ -2492,13 +2511,26 @@ class Helper extends PaypalHelper
             $appData = Application::getAppData((int) $attr['app_id']);
             if (in_array($appData->app_type, [1,2,3]) && $appData->parent_app_id) {
                 $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($attr['anchor_id'], $appData->parent_app_id);
-                if ($parentAppOffer && $parentAppOffer->prgm_offer_id && $parentAppOffer->prgm_id) {
+                if ($parentAppOffer && $parentAppOffer->prgm_offer_id && $parentAppOffer->prgm_id && $parentAppOffer->prgm_id == $attr['prgm_id']) {
                     $newAttr['prgm_id'] = $parentAppOffer->prgm_id;
                     $newAttr['app_id'] = $appData->parent_app_id;
                     $newAttr['user_id'] = $attr['user_id'];
                     $newAttr['anchor_id'] = $attr['anchor_id'];
                     $newAttr['prgm_offer_id'] = $parentAppOffer->prgm_offer_id;
                     $sum += self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
+                }
+                else {
+                    if ($prgmData && $prgmData->copied_prgm_id) {
+                        $parentAppOffer = AppProgramOffer::getActiveProgramOfferByAppId($attr['anchor_id'], $appData->parent_app_id, $prgmData->copied_prgm_id);
+                        if ($parentAppOffer && $parentAppOffer->prgm_offer_id && $parentAppOffer->prgm_id ) {
+                            $newAttr['prgm_id'] = $prgmData->copied_prgm_id;
+                            $newAttr['app_id'] = $appData->parent_app_id;
+                            $newAttr['user_id'] = $attr['user_id'];
+                            $newAttr['anchor_id'] = $attr['anchor_id'];
+                            $newAttr['prgm_offer_id'] = $parentAppOffer->prgm_offer_id;
+                            $sum += self::anchorSupplierPrgmUtilizedLimitByInvoice($newAttr);
+                        }
+                    }
                 }
             }
         }
@@ -2565,6 +2597,57 @@ class Helper extends PaypalHelper
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = 1;
         $inputArr['updated_by'] = 1;
+        return $inputArr;
+    }
+    
+    /**
+     * Separated cc or bcc emails and return array
+     *
+     * @var array
+     */
+    public static function ccOrBccEmailsArray($cc_bcc_email)
+    {
+        $emails = [];
+        $separator = ',';
+
+        if ($cc_bcc_email) {
+            $emails = array_filter(explode($separator, $cc_bcc_email));
+        }
+        return $emails;
+    }
+    
+    public static function checkActiveAdhocLimit($adhocLimits)
+    {
+        $activeArray = [];
+        if ($adhocLimits && count($adhocLimits)) {
+            foreach($adhocLimits as $adhocLimit) {
+                $curDate = strtotime(now()->format('Y-m-d'));
+                $adhocExpirDate = strtotime($adhocLimit->end_date);
+                if ($curDate > $adhocExpirDate) {
+                    $activeArray[] = false;
+                }
+            }
+        }        
+        return count($activeArray) == count($adhocLimits) ? false : true;
+    }
+
+     public static function uploadUserApprovalFile($attributes, $userId, $appId)
+    {
+        $inputArr = [];
+        if (isset($attributes['approval_doc_file'])) {
+            if (!Storage::exists('/public/user/' . $userId . '/'. $appId)) {
+                Storage::makeDirectory('/public/user/' . $userId . '/'. $appId , 0777, true);
+            }
+            $path = Storage::disk('public')->put('/user/' . $userId . '/'. $appId . '/', $attributes['approval_doc_file'], null);
+            $inputArr['file_path'] = $path;
+        }
+
+        $inputArr['file_type'] = $attributes['approval_doc_file']->getClientMimeType();
+        $inputArr['file_name'] = $attributes['approval_doc_file']->getClientOriginalName();
+        $inputArr['file_size'] = $attributes['approval_doc_file']->getClientSize();
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = \Auth::user()->user_id;
+        $inputArr['updated_by'] = \Auth::user()->user_id;
 
         return $inputArr;
     }

@@ -204,13 +204,17 @@ class UserEventsListener extends BaseEvent
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
                 function ($message) use ($user, $email_content, $mail_body) {
-                    if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
-                    }else{
+                    // if( env('SEND_MAIL_ACTIVE') == 1){
+                    //     $email = explode(',', env('SEND_MAIL'));
+                    //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
+                    //     $emailCc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+                    // }else{
                         $email = $user["email"];
-                    }
+                        $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                        $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                    // }
+                $message->bcc($emailBcc);
+                $message->cc($emailCc);
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
@@ -220,6 +224,8 @@ class UserEventsListener extends BaseEvent
                     'name' => $user['name'],
                     'subject' => $email_content->subject,
                     'body' => $mail_body,
+                    'email_bcc' => $emailBcc,
+                    'email_cc' => $emailCc,
                 ];
                 FinanceModel::logEmail($mailContent);
             });
@@ -248,14 +254,18 @@ class UserEventsListener extends BaseEvent
 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content, $mail_body) {
-                if( env('SEND_MAIL_ACTIVE') == 1){
-                    $email = explode(',', env('SEND_MAIL'));
-                    $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                    $message->cc(explode(',', env('SEND_MAIL_CC')));
-                }else{
-                    $email = $user["email"];
-                }
+                function ($message) use ($user, $email_content, $mail_body) {                
+                // if( env('SEND_MAIL_ACTIVE') == 1){
+                    //     $email = explode(',', env('SEND_MAIL'));
+                    //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
+                    //     $emailCc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+                    // }else{
+                        $email = $user["email"];
+                        $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                        $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                    // }
+                $message->bcc($emailBcc);
+                $message->cc($emailCc);    
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
@@ -265,6 +275,8 @@ class UserEventsListener extends BaseEvent
                     'name' => $user['name'],
                     'subject' => $email_content->subject,
                     'body' => $mail_body,
+                    'email_bcc' => $emailBcc,
+                    'email_cc' => $emailCc,
                 ];
                 FinanceModel::logEmail($mailContent);
             });
@@ -318,14 +330,18 @@ class UserEventsListener extends BaseEvent
             );
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content, $mail_body) {
-                    if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
-                    }else{
+                function ($message) use ($user, $email_content, $mail_body) {                    
+                    // if( env('SEND_MAIL_ACTIVE') == 1){
+                    //     $email = explode(',', env('SEND_MAIL'));
+                    //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
+                    //     $emailCc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+                    // }else{
                         $email = $user["email"];
-                    }
+                        $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                        $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                    // }
+                $message->bcc($emailBcc);
+                $message->cc($emailCc);
                 $message->from(config('common.FRONTEND_FROM_EMAIL'),config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $message->to($email, $user["name"])->subject($email_content->subject);
                 $mailContent = [
@@ -335,6 +351,8 @@ class UserEventsListener extends BaseEvent
                     'name' => $user['name'],
                     'subject' => $email_content->subject,
                     'body' => $mail_body,
+                    'email_bcc' => $emailBcc,
+                    'email_cc' => $emailCc,
                 ];
                 FinanceModel::logEmail($mailContent);
             });
@@ -392,14 +410,18 @@ class UserEventsListener extends BaseEvent
 
             Mail::send('email', ['baseUrl'=>env('REDIRECT_URL',''),'varContent' => $mail_body,
                 ],
-                function ($message) use ($user, $email_content, $mail_body) {
-                    if( env('SEND_MAIL_ACTIVE') == 1){
-                        $email = explode(',', env('SEND_MAIL'));
-                        $message->bcc(explode(',', env('SEND_MAIL_BCC')));
-                        $message->cc(explode(',', env('SEND_MAIL_CC')));
-                    }else{
+                function ($message) use ($user, $email_content, $mail_body) {                    
+                    // if( env('SEND_MAIL_ACTIVE') == 1){
+                    //     $email = explode(',', env('SEND_MAIL'));
+                    //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
+                    //     $emailCc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+                    // }else{
                         $email = $user["email"];
-                    }
+                        $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                        $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                    // }
+                $message->bcc($emailBcc);
+                $message->cc($emailCc);    
                 $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
                 $subject = $email_content->subject."//".$user['businessName']."//".$user['anchorName'];
                 $message->to( $email, $user["name"])->subject($subject);
@@ -410,6 +432,8 @@ class UserEventsListener extends BaseEvent
                     'name' => $user['name'],
                     'subject' => $email_content->subject."//".$user['businessName']."//".$user['anchorName'],
                     'body' => $mail_body,
+                    'email_bcc' => $emailBcc,
+                    'email_cc' => $emailCc,
                 ];
                 FinanceModel::logEmail($mailContent);
             });
@@ -1453,7 +1477,104 @@ class UserEventsListener extends BaseEvent
                 FinanceModel::logEmail($mailContent);
             });
         }
+    } 
+
+    public function onNonAnchorLeadUpload($userData) {
+        $this->func_name = __FUNCTION__;
+        $user = unserialize($userData);
+        $email_content = EmailTemplate::getEmailTemplate("NON_ANCHOR_CSV_LEAD_UPLOAD");
+        if ($email_content) {
+            $mail_body = str_replace(
+                ['%name', '%url'],
+                [ucwords($user['name']),$user['url']],
+                $email_content->message
+            );
+
+            $mail_subject = str_replace(
+                ['%productType'],
+                [$user['productType']],
+                $email_content->subject
+            );
+
+            Mail::send('email', ['baseUrl' => env('REDIRECT_URL', ''),'varContent' => $mail_body,
+                ],
+                function ($message) use ($user, $email_content, $mail_body, $mail_subject) {
+                    // if( env('SEND_MAIL_ACTIVE') == 1){
+                    //     $email = explode(',', env('SEND_MAIL'));
+                    //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
+                    //     $emailCc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+                    // }else{
+                        $email = $user["email"];
+                        $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                        $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                    // }
+                $message->bcc($emailBcc);
+                $message->cc($emailCc);    
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $subject = $mail_subject." - ".$user['businessName'];
+                $message->to( $email, $user["name"])->subject($subject);
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $email,
+                    'email_type' => $this->func_name,
+                    'name' => $user['name'],
+                    'subject' => $subject,
+                    'body' => $mail_body,
+                    'email_bcc' => $emailBcc,
+                    'email_cc' => $emailCc,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
+    }      
+
+    public function userInvoiceMail($attributes) {
+        $data = unserialize($attributes); 
+        $this->func_name = __FUNCTION__;
+        $email_content = EmailTemplate::getEmailTemplate("USER_INVOICE_MAIL");
+        if($email_content) {
+            $mail_subject = str_replace(['%invoice_no'], [ucwords($data['invoice_no'])], $email_content->subject);
+
+            Mail::send('email', ['baseUrl'=> env('REDIRECT_URL',''), 'varContent' => $email_content->message],
+            function ($message) use ($data,$email_content,$mail_subject) {
+                // if( env('SEND_MAIL_ACTIVE') == 1){
+                //     $email = explode(',', env('SEND_MAIL'));
+                //     $emailCc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_CC'));
+                //     $emailBcc = \Helpers::ccOrBccEmailsArray(env('SEND_MAIL_BCC'));
+                // }else{
+                    $emailTo = $data["email"];
+                    $emailCc = \Helpers::ccOrBccEmailsArray($email_content->cc);
+                    $emailBcc = \Helpers::ccOrBccEmailsArray($email_content->bcc);
+                // }
+
+                $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
+                $message->to($emailTo);
+                $message->cc($emailCc);    
+                $message->bcc($emailBcc);
+                $message->subject($mail_subject);
+
+                if(!empty($data['attachment'])){
+                    $att_name = $data['invoice_no'].'.pdf';
+                    $message->attach($data['attachment'],['as' => $att_name]);
+                }
+
+                $mailContent = [
+                    'email_from' => config('common.FRONTEND_FROM_EMAIL'),
+                    'email_to' => $emailTo,
+                    'email_cc' => $emailCc,
+                    'email_bcc' => $emailBcc,
+                    'subject' => $mail_subject,
+                    'body' => $email_content,
+                    'attachment' => $data['attachment'] ?? NULL,
+                    'name' => null,
+                    'att_name' => $att_name ?? NULL,
+                    'email_type' => $this->func_name,
+                ];
+                FinanceModel::logEmail($mailContent);
+            });
+        }
     }
+
 
     /**
      * App Security Document Renewal Alert
@@ -1726,6 +1847,16 @@ class UserEventsListener extends BaseEvent
         $events->listen(
             'APP_SECURITY_DOCUMENT_RENEWAL_ALERT',
             'App\Inv\Repositories\Events\UserEventsListener@appSecurityDocRenewalAlert'
+        );
+
+        $events->listen(
+            'NON_ANCHOR_CSV_LEAD_UPLOAD',
+            'App\Inv\Repositories\Events\UserEventsListener@onNonAnchorLeadUpload'
+        );
+        
+        $events->listen(
+            'USER_INVOICE_MAIL',
+            'App\Inv\Repositories\Events\UserEventsListener@userInvoiceMail'
         );
     }
 }

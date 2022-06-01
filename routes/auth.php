@@ -64,6 +64,18 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'as' => 'term_condition',
         'uses' => 'Auth\RegisterController@showtermCondition'
     ]);
+
+    Route::get('lead-sign-up',
+        [
+        'as' => 'non_lead_user_register_open',
+        'uses' => 'Auth\RegisterController@showRegistrationFormForNonAnchorLead'
+    ]);
+
+    Route::post('lead-sign-up',
+        [
+        'as' => 'non_lead_user_register_save',
+        'uses' => 'Auth\RegisterController@registerNonAnchorLead'
+    ]);
     
     // for password
    Route::group(['prefix' => 'password'],
@@ -153,8 +165,17 @@ Route::domain(config('proin.frontend_uri'))->group(function () {
         'as' => 'check_exist_user_pan',
         'uses' => 'Auth\RegisterController@checkExistUserPan'
         ]
-    );   
+    );  
     
+    Route::post('check-non-anchor-lead-exist-email', [
+        'as' => 'check_non_anchor_lead_exist_email',
+        'uses' => 'Auth\RegisterController@getExistEmailStatusForNonAnchorLead'
+    ]);  
+    
+    Route::post('check-non-anchor-lead-exist-user-pan', [
+        'as' => 'check_non_anchor_lead_exist_user_pan',
+        'uses' => 'Auth\RegisterController@getExistPanUserStatusForNonAnchorLead'
+    ]);
 });
 
 

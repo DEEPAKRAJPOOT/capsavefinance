@@ -70,7 +70,7 @@
             @if($is_show_default && $userAddress_data->rcu_status)
             <div class="form-group col-6">
                 <label for="address_type">Set as Default</label><br />
-                <input type="checkbox" name="is_default" value="1" {{($userAddress_data->is_default)? 'checked': ''}} style="width: 25px; height: 25px;">
+                <input type="checkbox" name="is_default" value="1" {{ ($userAddress_data->is_default) ? 'checked' : '' }} style="width: 25px; height: 25px;">
             </div>
             @endif
         </div>

@@ -155,7 +155,7 @@
                                 @if($limit->status==1 && $getAccountClosure > 0)  
                        
                                 @can('add_adhoc_limit')
-                                @if($val->program->is_adhoc_facility == 1 && !$isLimitExpired)
+                                @if($val->program->is_adhoc_facility == 1 && !$isLimitExpired && !Helpers::checkActiveAdhocLimit($getAdhoc))
                                 <a data-toggle="modal" style='color:white' data-target="#addAdhocLimit" data-url ="{{ route('add_adhoc_limit', ['user_id' => request()->get('user_id'),'prgm_offer_id' => $val->prgm_offer_id ]) }}" data-height="350px" data-width="100%" data-placement="top" class="btn-sm btn btn-success btn-sm ml-2" >Add Adhoc Limit</a>
                                 @endif
                                 @endcan
@@ -167,7 +167,7 @@
                         @php 
                         $mytime = \Carbon\Carbon::now();
                         $adhocLimitCurDt =  $mytime->format('Y-m-d');                                  
-                        $adhocLimitEndDt   =  $limit->end_date;
+                        $adhocLimitEndDt   =  $adc->end_date;
                         $isAdhocLimitExpired = strtotime($adhocLimitCurDt) > strtotime($adhocLimitEndDt);
                         @endphp 
                         
@@ -193,7 +193,7 @@
                                 @if($adc->status==0) 
                                 <button type="button" class="badge badge-warning btn-sm float-right">Pending </button>
                                 @elseif($adc->status==1) 
-                                <button type="button" class="badge {{ $isLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired ? 'Limit Expired' : 'Active' }} </button>
+                                <button type="button" class="badge {{ $isLimitExpired || $isAdhocLimitExpired ? 'badge-danger' : 'badge-success' }} btn-sm float-right">{{ $isLimitExpired || $isAdhocLimitExpired ? 'Limit Expired' : 'Active' }} </button>
                                 @else
                                 <button type="button" class="badge badge-danger btn-sm float-right">Closed </button>
                                 @endif

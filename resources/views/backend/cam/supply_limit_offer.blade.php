@@ -1,6 +1,11 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-
+  <style>
+   .processinFeeAmount {
+    font-size: 10px;
+    font-weight: bold;
+   }
+  </style>
   <form method="POST" style="width:100%;" action="{{route('update_limit_offer')}}" target="_top" onsubmit="return checkSupplyValidations(this)">
     @csrf
     <input type="hidden" value="{{request()->get('app_id')}}" name="app_id">
@@ -38,7 +43,7 @@
             <select name="anchor_id" id="anchor_id" class="form-control">
                 <option value="">Select Anchor</option>
                 @foreach($anchors as $key=>$anchor)
-                <option value="{{$anchor->anchor_id}}" {{(isset($offerData->anchor_id) && $anchor->anchor_id == $offerData->anchor_id)? 'selected': ''}}>{{$anchor->comp_name}}</option>
+                <option value="{{$anchor->anchor_id}}" is_fungible="{{$anchor->is_fungible}}" {{(isset($offerData->anchor_id) && $anchor->anchor_id == $offerData->anchor_id)? 'selected': ''}}>{{$anchor->comp_name}}</option>
                 @endforeach
             </select>
         </div>
@@ -141,6 +146,9 @@
         <div class="col-md-6">
           <div class="form-group">
               <label for="txtPassword">{!!$offerCharge->chargeName->chrg_name.(($offerCharge->chrg_type == 2)? ' (%)': ' (&#8377;)')!!} @Sanction level</label>
+                @if ($offerCharge->chargeName->chrg_name == 'Processing Fee' && $offerCharge->chrg_type == 2)
+                <small><span class="float-right text-success processinFeeAmount"><i class="fa fa-inr"></i></span></small>
+                @endif
                 <input type="text" name="charge_names[{{$offerCharge->charge_id.'#'.$offerCharge->chrg_type}}]" class="form-control" data-type="{{$offerCharge->chrg_type}}" data-name="{{$offerCharge->chargeName->chrg_name}}" value="{{$offerCharge->chrg_value}}" maxlength="6">
           </div>
         </div>
@@ -924,7 +932,7 @@
     var anchors = {!! json_encode($anchors) !!};
     var appType = {{ config('common.app_type')[$appType] }};
     var offerData = '{{ isset($offerData->prgm_offer_id) ? $offerData->prgm_offer_id : "" }}';
-    var currentAppType = '{{ $appType }}';
+    var currentAppType = '{{  isset($appType) ? $appType : "" }}';
     var invUtilizedAmt = '{{ $invUtilizedAmt }}';
     var previousProgramLimit = 0;
     
@@ -987,15 +995,15 @@
     }
 
     $('#program_id').on('change',function(){
-        if ($("#offer_id").val() == "") {            
+        if ($("#offer_id").val() == "") {
             $('input[name=margin]').val("");
-            $('input[name=overdue_interest_rate]').val("");                    
-            $('input[name=adhoc_interest_rate]').val("");                                        
-            $('input[name=grace_period]').val("");                                        
-            $('input[name="processing_fee"]').val("");                                        
-            $('input[name="document_fee"]').val(""); 
+            $('input[name=overdue_interest_rate]').val("");
+            $('input[name=adhoc_interest_rate]').val("");
+            $('input[name=grace_period]').val("");
+            $('input[name="processing_fee"]').val("");
+            $('input[name="document_fee"]').val("");
         }
-                        
+
         let base_rate = $('#program_id option:selected').data('base_rate');
         let bank_id = $('#program_id option:selected').data('bank_id');
         $('input[name="bank_id"]').val(bank_id);
@@ -1023,7 +1031,7 @@
             setLimit('input[name=prgm_limit_amt]', '(<i class="fa fa-inr" aria-hidden="true"></i> '+program_min_limit+'-<i class="fa fa-inr" aria-hidden="true"></i> '+program_max_limit+')');
             setLimit('input[name=interest_rate]', '('+program_min_rate+'%-'+program_max_rate+'%)');
         }
-        let token = "{{ csrf_token() }}";            
+        let token = "{{ csrf_token() }}";
         var appId = $("input[name='app_id']").val();
         var anchorId = $("#anchor_id").val();
         $('.isloader').show();
@@ -1058,11 +1066,11 @@
                         $('input[name="document_fee"]').val(prgm_data.document_fee_amt);
                     }
                 }*/
-                
+
                 $("#anchorBalLimitAmt").text(res.anchorBalLimitAmt);
                 $("#prgmBalLimitAmt").text(res.prgmBalLimitAmt);
-                limit_balance = res.prgmBalLimitAmt; 
-                
+                limit_balance = res.prgmBalLimitAmt;
+
                 $("#anchorBalLimitAmt").parent().parent().removeClass('d-none');
                 $("#prgmBalLimitAmt").parent().parent().removeClass('d-none');
                 prgm_consumed_limit = parseInt(res.prgm_limit) - current_offer_amt;
@@ -1106,6 +1114,7 @@
 
     let flag = true;
     let anchor_id = $('select[name=anchor_id]').val();
+    let is_anchor_fungible = $('select[name=anchor_id] option:selected').attr('is_fungible');
     let prgm_id = $('select[name=prgm_id]').val();
     let prgm_limit_amt = $('input[name=prgm_limit_amt]').val();
     let interest_rate = $('input[name=interest_rate]').val();
@@ -1164,7 +1173,7 @@
     if(interest_rate == '' || isNaN(interest_rate)){
         setError('input[name=interest_rate]', 'Please fill intereset rate');
         flag = false;
-    }else if(anchor_id !='' && prgm_id != ''){
+    }else if(anchor_id !='' && prgm_id != '' && is_anchor_fungible == 1){
         if(parseFloat(interest_rate) > 100){
             setError('input[name=interest_rate]', 'Please fill correct intereset rate');
             flag = false;
@@ -1591,10 +1600,19 @@
         var mst_chrg_tiger_id = program_charge.charge_name.chrg_tiger_id;
         //charges triggered on limit assignment will always popoulated
         if(mst_chrg_tiger_id == appType || mst_chrg_tiger_id == 1){
+            calProcesingFee = '';
+            readonly = '';
+            if(program_charge.chrg_calculation_type == 2){
+                calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount"></span></small>';
+                if (currentAppType == 3){
+                    calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount">PF Amount: <i class="fa fa-inr"></i>0</span></small>';
+                    readonly = 'readonly';
+                }
+            }
             html += '<div class="col-md-6">'+
                 '<div class="form-group">'+
-                    '<label for="txtPassword">'+program_charge.charge_name.chrg_name+((program_charge.chrg_calculation_type == 2)? ' (%)':' (&#8377;)')+'</label>'+
-                    '<input type="text" name="charge_names['+program_charge.charge_id+'#'+program_charge.chrg_calculation_type+']" value="'+program_charge.chrg_calculation_amt+'" data-type="'+program_charge.chrg_calculation_type+'" class="form-control" data-name="'+program_charge.charge_name.chrg_name+'" placeholder="'+program_charge.charge_name.chrg_name+'" maxlength="6">'+
+                    '<label for="txtPassword">'+program_charge.charge_name.chrg_name+((program_charge.chrg_calculation_type == 2)? ' (%)':' (&#8377;)')+'</label>'+calProcesingFee+
+                    '<input type="text" name="charge_names['+program_charge.charge_id+'#'+program_charge.chrg_calculation_type+']" value="'+program_charge.chrg_calculation_amt+'" data-type="'+program_charge.chrg_calculation_type+'" class="form-control" data-name="'+program_charge.charge_name.chrg_name+'" placeholder="'+program_charge.charge_name.chrg_name+'" maxlength="6" '+readonly+'>'+
                 '</div>'+
             '</div>';
             //value="'+program_charge.chrg_calculation_amt+'"
@@ -1623,5 +1641,82 @@
   $(document).on('change', '#invoice_processingfee_type', function(){
     $('#invoice_processingfee_value').val('');
   })
+
+  $(document).on('change', 'input[name=\'prgm_limit_amt\']', function() {
+    if (currentAppType != 3){
+        calProcesingFee = '';
+        if(currentAppType == 2){
+                new_limit_amt_total =  $(this).val();
+                new_limit_amt_total = new_limit_amt_total.replace(/,/g,'');
+                parent_limit_amt_total =  '{{ $parent_pf_amt }}';
+                limit_amt_total = new_limit_amt_total - parent_limit_amt_total;
+                var processingFee = $("input[data-name=\"Processing Fee\"]")
+                        .map(function(){return $(this).val();}).get();
+                //Convert our percentage value into a decimal.
+                percentInDecimal = parseFloat(processingFee) / 100;
+                //Get the result.
+                processingFeeAmount = percentInDecimal *  limit_amt_total;
+                calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount">PF Amount: <i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,')+'</span></small>'; 
+            }else{
+                if($(this).val()){
+                    limit_amt_total =  $(this).val();
+                    var processingFee = $("input[data-name=\"Processing Fee\"]")
+                        .map(function(){return $(this).val();}).get();
+                    limit_amt_total = limit_amt_total.replace(/,/g,'');
+                    //Convert our percentage value into a decimal.
+                    percentInDecimal = parseFloat(processingFee) / 100;
+                    //Get the result.
+                    processingFeeAmount = percentInDecimal *  limit_amt_total;
+                    calProcesingFee  = 'PF Amount: <i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,'); 
+                }
+            }
+    }else{
+        calProcesingFee  = 'PF Amount: <i class="fa fa-inr"></i>0';   
+    }
+    $('.processinFeeAmount').html(calProcesingFee);
+});
+
+$(document).on('change', 'input[data-name=\"Processing Fee\"]', function() {
+    if (currentAppType != 3){
+            calProcesingFee = '';
+            if(currentAppType == 2){
+                new_limit_amt_total =  $('input[name=\'prgm_limit_amt\']').val();;
+                new_limit_amt_total = new_limit_amt_total.replace(/,/g,'');
+                parent_limit_amt_total =  '{{ $parent_pf_amt }}';
+                limit_amt_total = new_limit_amt_total - parent_limit_amt_total;
+                //Convert our percentage value into a decimal.
+                var processingFee = $(this)
+                    .map(function(){return $(this).val();}).get();
+                //Convert our percentage value into a decimal.
+                percentInDecimal = parseFloat(processingFee) / 100;
+                //Get the result.
+                processingFeeAmount = percentInDecimal *  limit_amt_total;
+                calProcesingFee  = '<small><span class="float-right text-success processinFeeAmount">PF Amount: <i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,')+'</span></small>'; 
+            }else{
+            if($(this).val()){
+                limit_amt_total =  $('input[name=\'prgm_limit_amt\']').val();
+                var processingFee = $(this)
+                    .map(function(){return $(this).val();}).get();
+                limit_amt_total = limit_amt_total.replace(/,/g,'');
+                //Convert our percentage value into a decimal.
+                percentInDecimal = parseFloat(processingFee) / 100;
+                //Get the result.
+                processingFeeAmount = percentInDecimal *  limit_amt_total;
+                calProcesingFee  = 'PF Amount: <i class="fa fa-inr"></i>'+processingFeeAmount.toFixed(2).replace(/(\d)(?=(\d{2})+\d\.)/g, '$1,'); 
+            }
+         }
+        }else{
+            calProcesingFee  = 'PF Amount: <i class="fa fa-inr"></i>0';   
+        }
+    $('.processinFeeAmount').html(calProcesingFee);
+});
+
+if(offerData != "") { 
+    $('input[data-name=\'Processing Fee\']').prop("readonly", false);
+    if(currentAppType == 3){
+        $('input[data-name=\'Processing Fee\']').prop("readonly", true);
+    }
+    $('input[name=\'prgm_limit_amt\']').trigger("change");
+}
 </script>
 @endsection

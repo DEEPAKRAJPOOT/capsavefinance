@@ -32,14 +32,14 @@ class UserInvoice extends BaseModel {
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Maintain created_by and updated_by automatically
      *
      * @var boolean
      */
-    public $userstamps = false;
+    public $userstamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -89,14 +89,14 @@ class UserInvoice extends BaseModel {
         if (!is_array($invoices)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
-        
+        /*
         if (!isset($invoices['created_at'])) {
             $invoices['created_at'] = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         }
         if (!isset($invoices['created_by'])) {
-            $invoices['created_at'] = \Auth::user()->user_id;
+            $invoices['created_by'] = \Auth::user()->user_id;
         }        
-        
+        */
         if (!empty($whereCondition)) {
             return self::where($whereCondition)->update($invoices);
         } else if (!isset($invoices[0])) {
@@ -150,12 +150,12 @@ class UserInvoice extends BaseModel {
     }
 
     public static function getUserLastInvoiceNo(){
-        $result =  self::latest()->first();
+        $result =  self::orderBy('user_invoice_id','desc')->first();
         return $result ?? false;
     }
 
     public static function getLastInvoiceSerialNo($inv_type){
-        return self::where('invoice_type',$inv_type)->latest()->first();
+        return self::where('invoice_type', $inv_type)->latest()->first();
     }
 
     public function lmsUser(){

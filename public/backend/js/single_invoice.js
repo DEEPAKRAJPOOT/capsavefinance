@@ -394,7 +394,9 @@
                       $(".isloader").hide(); 
                       if(data.is_adhoc!=0)
                       {
-                           $("#adhoc_msg").show();
+                        $("#adhoc_msg").show();
+                      }else {
+                        $("#adhoc_msg").hide();
                       }
                         var tenor   =  data.tenor;
                         var tenor_old_invoice  = data.tenor_old_invoice;

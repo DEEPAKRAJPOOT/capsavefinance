@@ -15,6 +15,7 @@ use App\Inv\Repositories\Models\Master\State;
 use App\Inv\Repositories\Models\Master\GstTax;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\Lms\PaymentApportionment;
+use App\Inv\Repositories\Events\UserEventsListener;
 use DB;
 use Carbon\Carbon;
 use PDF;
@@ -22,6 +23,8 @@ use Session;
 use Helpers;
 // use App\Inv\Repositories\Contracts\Traits\ApplicationTrait;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use DateTime;
+use Illuminate\Support\Facades\Storage;
 
 class userInvoiceController extends Controller
 {
@@ -394,6 +397,7 @@ class userInvoiceController extends Controller
             'intrest_charges' => $intrest_charges,
             'total_sum_of_rental' => $total_sum_of_rental,
             'registeredCompany' => $registeredCompany,
+            'invoice_type'=>$invoice_type,
         ];
         $view = $this->viewInvoiceAsPDF($data);
         return response()->json(['status' => 1,'view' => base64_encode($view)]); 
@@ -404,7 +408,7 @@ class userInvoiceController extends Controller
      * Save invoice as per User.
      *
      */
-    public function saveUserInvoice(Request $request) {
+    public function saveUserInvoice(Request $request ) {
         try {
             $url_user_id = $request->get('user_id');
             $invoice_type = $request->get('invoice_type');
@@ -495,9 +499,7 @@ class userInvoiceController extends Controller
                 'registered_comp_id' => $registeredCompany['comp_addr_id'],
                 'comp_addr_register' => json_encode($registeredCompany),
                 'bank_id' => $bank_id,
-                'is_active' => 1,
-                'created_at' => $requestedData['created_at'],
-                'created_by' => $requestedData['created_by'],
+                'is_active' => 1
             ];
             $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
             if(!empty($invoiceResp->user_invoice_id)){
@@ -525,6 +527,12 @@ class userInvoiceController extends Controller
                    $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions, $data);
                 }
                 $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
+                $pdfResult = $this->generateCapsaveInvoicePdf($userInvoice_id);
+                $getEmail = $this->userRepo->find($requestedData['user_id']);
+                if($getEmail){
+                    $this->sendCapsaveInvoiceMail($pdfResult['pdf_attachment'],$newInvoiceNo,$getEmail->email);
+                }
+
                 // $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated($update_transactions);
                 if ($UserInvoiceTxns == true) {
 
@@ -563,6 +571,13 @@ class userInvoiceController extends Controller
         }
         $reference_no = $invData->reference_no;
         $invoice_no = $invData->invoice_no;
+
+        $file = 'public/capsaveInvoice/'.str_replace("/","_",strtoupper($invoice_no)).'.pdf';
+
+        if (Storage::disk('local')->exists($file)) {
+            return Storage::download($file);
+        }
+
         $state_name = $invData->place_of_supply;
         $invoice_type = $invData->invoice_type;
         $invoice_date = $invData->invoice_date;
@@ -693,6 +708,7 @@ class userInvoiceController extends Controller
             $registeredCompany = $registeredCompany[0];
           //return redirect()->route('view_user_invoice', ['user_id' => $user_id])->with('error', 'No bank detail found for the Registered Company.'); 
         }
+        
         $data = [
             'company_data' => $company_data,
             'billingDetails' => $billingDetails,
@@ -700,6 +716,7 @@ class userInvoiceController extends Controller
             'intrest_charges' => $intrest_charges,
             'total_sum_of_rental' => $total_sum_of_rental,
             'registeredCompany' => $registeredCompany,
+            'invoice_type'=>$invoice_type,
         ];
         return $this->viewInvoiceAsPDF($data, true);
     }
@@ -956,5 +973,336 @@ class userInvoiceController extends Controller
         }
     }
    
+    public function generateCapsaveInvoice($transId = [], $userId, $invoiceType, $appId  = null, $invoiceDate = null, $dueDate  = null){
+        DB::beginTransaction();
+        $status = 0;
+        $result = ['status' => &$status, 'error' => &$error, 'success' => &$success];
+        try {
+            $success = [];
+            $error = [];
+            $reference_no = \Helpers::formatIdWithPrefix($appId);
+            $invoice_date = $invoiceDate ?? Carbon::now()->format('Y-m-d H:i:s');
+            $due_date = $dueDate ?? Carbon::now()->addDays(7)->format('Y-m-d H:i:s');
+            $registeredCompany  = $this->UserInvRepo->getCompanyRegAddr();
+            if (empty($registeredCompany) || $registeredCompany->isEmpty()) {
+                $error[] = 'Company Registered address not found..';
+                DB::rollback();
+                return $result;
+            }
 
+            if ($registeredCompany->count() != 1) {
+                $error[] = 'Multiple Company Registered addresses found..';
+                DB::rollback();
+                return $result;
+            }
+
+            $registeredCompany = $registeredCompany->first()->toArray();
+            if (empty($registeredCompany['bank_account_id'])) {
+                $error[] = 'No bank detail found for the Registered Company.'; 
+                DB::rollback();
+                return $result;
+            }
+            
+            $userCompanyRelation  = $this->UserInvRepo->getUserCompanyRelation($userId);
+            if (empty($userCompanyRelation)) {
+                $error[] = 'No Relation found between Company and User.'; 
+                DB::rollback();
+                return $result;
+            }
+
+            $company_id = $userCompanyRelation->company_id ?? NULL;
+            $biz_addr_id = $userCompanyRelation->biz_addr_id ?? NULL;
+            $user_invoice_rel_id = $userCompanyRelation->user_invoice_rel_id ?? NULL;
+
+            $companyDetail = $this->_getCompanyDetail($company_id);
+            
+            if ($companyDetail['status'] != 'success') {
+                $error[] = $companyDetail['message'];
+                DB::rollback();
+                return $result;
+            }
+
+            $company_data = $companyDetail['data'];
+            $billingDetail = $this->_getBillingDetail($biz_addr_id);
+            
+            if ($billingDetail['status'] != 'success') {
+                $error[] = $billingDetail['message'];
+                DB::rollback();
+                return $result;
+            }
+
+            $billing_data = $billingDetail['data'];
+            $companyStateId = $company_data['state_id'];
+            $userStateId = $billing_data['state_id'];
+
+            $txnsData = $this->UserInvRepo->getUserInvoiceTxns($userId, $invoiceType, $transId, true);
+            if(empty($txnsData) ||  $txnsData->isEmpty()){
+                $error[] = 'No remaining txns found for the invoice.';
+                DB::rollback();
+                return $result;
+            }
+            $origin_of_recipient = $this->_getOriginRecipent($company_id, $userId);
+            $origin_of_recipient = $origin_of_recipient['data'];
+            $invCat = null;
+            if(strtoupper($invoiceType) == 'I'){
+                $invCat = 'ZR';
+            }
+            elseif(strtoupper($invoiceType) == 'C'){
+                $invCat = 'NZ';
+            }
+            
+            $lastInvData = $this->UserInvRepo->getLastInvoiceSerialNo($invoiceType);
+            $invSerialNo = sprintf('%04d', (($lastInvData->inv_serial_no ?? 0) + 1) ?? rand(0, 9999));
+            $newInvoiceNo = $origin_of_recipient['state_code'] . '/' . $origin_of_recipient['financial_year'] . '/' . $invCat . '/' . $invSerialNo;
+            
+            $is_state_diffrent = ($userStateId != $companyStateId);
+            $inv_data = $this->_calculateInvoiceTxns($txnsData, $is_state_diffrent);
+            $intrest_charges = $inv_data[0];
+            $total_sum_of_rental = $inv_data[1];
+            $bank_id = bankDetailIsOfRegisteredCompanyInInvoice() ? $registeredCompany['bank_account_id'] : $company_data['bank_id'];
+            $created_at = Carbon::now();
+            $created_by = Auth::user()->user_id ?? null;
+            $userInvoiceData = [
+                'user_id' => $userId,
+                'user_invoice_rel_id' => $user_invoice_rel_id,
+                'user_gst_state_id' => $userStateId,
+                'comp_gst_state_id' => $companyStateId,
+                'pan_no' => $billing_data['pan_no'],
+                'biz_gst_no' => $billing_data['gstin_no'],
+                'gst_addr' => $billing_data['address'],
+                'biz_entity_name' => $billing_data['name'],
+                'reference_no' => $reference_no,
+                'invoice_type' => $invoiceType,
+                'invoice_no' => $newInvoiceNo,
+                'inv_serial_no' => $invSerialNo,
+                'invoice_date' => $invoice_date,
+                'due_date' => $due_date,
+                'invoice_state_code' => $company_data['state_code'],
+                'place_of_supply' => $billing_data['state_name'],
+                'tot_no_of_trans' => count($transId),
+                'tot_paid_amt' => $total_sum_of_rental ?? 0,
+                'comp_addr_id' => $company_data['comp_id'],
+                'inv_comp_data' => json_encode($company_data),
+                'registered_comp_id' => $registeredCompany['comp_addr_id'],
+                'comp_addr_register' => json_encode($registeredCompany),
+                'bank_id' => $bank_id,
+                'is_active' => 1
+            ];
+            $invoiceResp = $this->UserInvRepo->saveUserInvoice($userInvoiceData);
+
+            if(!empty($invoiceResp->user_invoice_id)){
+                $userInvoice_id = $invoiceResp->user_invoice_id;
+                foreach ($intrest_charges as $key => $txnsRec) {
+                    $user_invoice_trans_data[] = [
+                        'user_invoice_id' => $userInvoice_id,
+                        'trans_id' => $txnsRec['trans_id'],
+                        'sac_code' => $txnsRec['sac'],
+                        'base_amount' => $txnsRec['base_amt'],
+                        'sgst_rate' => $txnsRec['sgst_rate'],
+                        'sgst_amount' => $txnsRec['sgst_amt'],
+                        'cgst_rate' => $txnsRec['cgst_rate'],
+                        'cgst_amount' => $txnsRec['cgst_amt'],
+                        'igst_rate' => $txnsRec['igst_rate'],
+                        'igst_amount' => $txnsRec['igst_amt'],
+                ]; 
+                $totalGst = ($txnsRec['sgst_amt'] + $txnsRec['cgst_amt'] + $txnsRec['igst_amt']);
+                $totalGstRate = ($txnsRec['sgst_rate'] + $txnsRec['cgst_rate'] + $txnsRec['igst_rate']);
+                $data = ['is_invoice_generated' => 1, 'gst_per' => $totalGstRate, 'soa_flag' => 1, 'base_amt' => $txnsRec['base_amt'], 'gst_amt' => $totalGst];
+                if ($invoiceType == 'C')
+                        $this->checkIsTransactionUpdatable($txnsRec['trans_id']);
+                $isInvoiceGenerated = $this->UserInvRepo->updateIsInvoiceGenerated([$txnsRec['trans_id']], $data);
+                }
+                $UserInvoiceTxns = $this->UserInvRepo->saveUserInvoiceTxns($user_invoice_trans_data);
+                if ($UserInvoiceTxns == true) {      
+                    $status = 1;             
+                    $success[] = 'Invoice generated Successfully';
+                    DB::commit();
+                    $pdfResult = $this->generateCapsaveInvoicePdf($userInvoice_id);
+                    
+                    if($pdfResult['status']){
+                        $success = array_merge($success,$pdfResult['success']);
+                        $getEmail = $this->userRepo->find($userInvoiceData['user_id']);
+                        if($getEmail){
+                            $this->sendCapsaveInvoiceMail($pdfResult['pdf_attachment'],$newInvoiceNo,$getEmail->email);
+                        }
+                    }
+                    return $result;
+                }
+            }else{
+                $error[] = 'Some error occured while inserting UserInvoice Data';
+                DB::rollback();
+                return $result;
+            }
+        } catch (Exception $ex) {
+            DB::rollback();
+            return $result;
+        }
+    }
+    
+    public function generateCapsaveInvoicePdf($userInvoiceId = null){
+        $error = [];
+        $status = 0;
+        $result = ['status' => &$status, 'error' => &$error, 'success' => &$success];
+        if($userInvoiceId){
+            $user_invoice_id = $userInvoiceId;
+            $invData = $this->UserInvRepo->getInvoiceById($user_invoice_id);
+            $user_id = $invData->user_id;
+            if (empty($invData)) {
+                $error[] = 'No Detail found for the Invoice.';
+                return $result;
+            }
+
+            $reference_no = $invData->reference_no;
+            $invoice_no = $invData->invoice_no;
+            $state_name = $invData->place_of_supply;
+            $invoice_type = $invData->invoice_type;
+            $invoice_date = $invData->invoice_date;
+            $due_date = $invData->due_date;
+            $company_id = $invData->comp_addr_id;
+            $registered_comp_id = $invData->registered_comp_id;
+            $bank_account_id = $invData->bank_id;
+            $totalTxnsInInvoice = $invData->userInvoiceTxns;
+            $userStateId = $invData->user_gst_state_id;
+            $companyStateId = $invData->comp_gst_state_id;
+            $trans_ids = [];
+            foreach ($totalTxnsInInvoice as $key => $value) {
+                $trans_ids[] =  $value->trans_id;
+            }
+            if (!in_array($invoice_type, ['I', 'C'])) {
+                $error[] = 'Invalid Invoice Type found.'; 
+                return $result;
+            }
+            if (empty(preg_replace('#[^0-9]+#', '', $user_id))) {
+                $error[] = 'Invalid UserId Found.';
+                return $result;
+            }
+            
+            $stateDetail = $this->UserInvRepo->getStateById($userStateId);
+            if (empty($stateDetail)) {
+                $error[] = 'State detail not found for the user address.';
+                return $result;
+            }
+            
+            $lmsDetails = LmsUser::getLmsDetailByUserId($user_id);
+            if (empty($lmsDetails) ||  $lmsDetails->isEmpty()) {
+                $error[] = 'Lms Detail not found for the user.';
+                return $result;
+            }
+            
+            $virtual_acc_id = $lmsDetails[0]->virtual_acc_id;
+            $billingDetails = [
+                'name' => $invData->biz_entity_name,
+                'address' => $invData->gst_addr,
+                'pan_no' => $invData->pan_no,
+                'state_id' => $stateDetail->id,
+                'state_name' => $stateDetail->name,
+                'state_no' => $stateDetail->state_no,
+                'state_code' => $stateDetail->state_code,
+                'gstin_no' => $invData->biz_gst_no,
+            ];
+            $origin_of_recipient = [
+                'reference_no' => $reference_no,
+                'invoice_no' => $invoice_no,
+                'place_of_supply' => $state_name,
+                'invoice_date' => $invoice_date,
+                'due_date' => $due_date,
+                'virtual_acc_id' => $virtual_acc_id,
+            ];
+            if (empty($invData->inv_comp_data)) {
+                $companyDetail = $this->_getCompanyDetail($company_id, $bank_account_id);
+                if ($companyDetail['status'] != 'success') {
+                    $error[] = $companyDetail['message'];
+                    return $result;
+                }
+                $company_data = $companyDetail['data'];
+            }else{
+                $company_data = json_decode($invData->inv_comp_data, true);
+            }
+            $is_state_diffrent = ($userStateId != $companyStateId);
+            $intrest_charges = [];
+            $total_sum_of_rental = 0;
+            foreach ($totalTxnsInInvoice as  $key => $invTrans) {
+                $igst_amt = $invTrans->igst_amount;
+                $igst_rate = $invTrans->igst_rate;
+                $cgst_amt = $invTrans->cgst_amount;
+                $cgst_rate = $invTrans->cgst_rate;
+                $sgst_amt = $invTrans->sgst_amount;
+                $sgst_rate = $invTrans->sgst_rate;
+                $base_amt = $invTrans->base_amount;
+                $sac_code = $invTrans->sac_code;
+
+                $txn = $invTrans->trans;
+                $invoice_no = NULL;
+                $invoiceNoFound = $txn->invoiceDisbursed->invoice->invoice_no ?? NULL;
+
+                if (isset($invoiceNoFound)) {
+                $invoice_no = "($invoiceNoFound)";
+                }
+                $desc = $txn->transType->trans_name ?? 'N/A';
+                if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST')) {
+                    $desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
+                } 
+
+                if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+                    $dueDate = strtotime($txn->toIntDate); // or your date as well
+                    $now = strtotime($txn->fromIntDate);
+                    $datediff = ($dueDate - $now);
+                    $OdandInterestRate = $txn->InvoiceDisbursed->invoice->program_offer->overdue_interest_rate + $txn->InvoiceDisbursed->invoice->program_offer->interest_rate;
+                    $days = round($datediff / (60 * 60 * 24)) . 'days-From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';
+                } else {
+                    $days = '---';
+                }
+
+                $intrest_charges[$key] = array(
+                    'trans_id' => $invTrans->trans_id,
+                    'desc' => $desc. " $invoice_no",
+                    'sac' => $sac_code,
+                    'base_amt' => round($base_amt,2),
+                    'sgst_rate' => ($sgst_rate != 0 ? $sgst_rate : 0),
+                    'sgst_amt' => ($sgst_amt != 0 ? $sgst_amt : 0),
+                    'cgst_rate' => ($cgst_rate != 0 ? $cgst_rate : 0),
+                    'cgst_amt' =>  ($cgst_amt != 0 ? $cgst_amt : 0),
+                    'igst_rate' => ($igst_rate != 0 ? $igst_rate : 0),
+                    'igst_amt' =>  ($igst_amt != 0 ? $igst_amt : 0),
+                    'trans_date' =>  $days,
+                );
+                $total_rental = round($base_amt + $sgst_amt + $cgst_amt + $igst_amt, 2);
+                $total_sum_of_rental += $total_rental; 
+                $intrest_charges[$key]['total_rental'] =  $total_rental; 
+            }
+            $registeredCompany = json_decode($invData->comp_addr_register, true);
+            
+            $data = [
+                'company_data' => $company_data,
+                'billingDetails' => $billingDetails,
+                'origin_of_recipient' => $origin_of_recipient, 
+                'intrest_charges' => $intrest_charges,
+                'total_sum_of_rental' => $total_sum_of_rental,
+                'registeredCompany' => $registeredCompany,
+                'invoice_type'=>$invoice_type,
+            ];
+            view()->share($data);
+            ini_set("memory_limit", "-1");
+            $pdf = PDF::loadView('lms.invoice.generate_invoice');
+            $path ='public/capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf';
+            $result['path'] = $path;
+            Storage::disk('local')->put($path,$pdf->output());
+
+            $uploadFilePath = storage_path('app/public/capsaveInvoice/'.str_replace("/","_",strtoupper($data['origin_of_recipient']['invoice_no'])).'.pdf');
+            $status = 1;             
+            $success[] = 'Invoice PDF generated Successfully';
+            $result['pdf_attachment'] = $uploadFilePath;
+        }
+        return $result;
+    }
+
+    public function sendCapsaveInvoiceMail($pdfResult,$newInvoiceNo,$getEmail){
+        $emailData = array(
+            'invoice_no' => $newInvoiceNo,
+            'email' => $getEmail,
+            'body' => 'body',
+            'attachment' => $pdfResult,
+          );
+        \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
+    }
 }

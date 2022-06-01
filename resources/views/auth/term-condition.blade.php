@@ -32,10 +32,10 @@
 
 	<p style="font-family: Calibri !important; box-sizing: border-box; color: #74787E; font-size: 0.917rem; line-height: 1.5em; margin-top: 0; text-align: left; padding-top: 15px;">Also, Sharing Aadhaar Number is purely a discretion of the Applicant and Capsave does not insist on providing the same.</p>
 
-<p style="font-family: Calibri !important; box-sizing: border-box; color: #74787E; font-size: 0.917rem; line-height: 1em; margin-top: 0; text-align: left; padding-top: 15px;">Warm Regards,
+{{--<p style="font-family: Calibri !important; box-sizing: border-box; color: #74787E; font-size: 0.917rem; line-height: 1em; margin-top: 0; text-align: left; padding-top: 15px;">Warm Regards,
  </p>
 
-<p style="font-family: Calibri !important; box-sizing: border-box; color: #74787E; font-size: 0.917rem; line-height: 1em; margin-top: 0; text-align: left;">Team CAPSAVE</p>
+<p style="font-family: Calibri !important; box-sizing: border-box; color: #74787E; font-size: 0.917rem; line-height: 1em; margin-top: 0; text-align: left;">Team CAPSAVE</p>--}}
 
 </td>
 </tr>

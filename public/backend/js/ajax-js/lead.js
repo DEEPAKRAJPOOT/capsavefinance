@@ -3,7 +3,7 @@
 
 try {
 
-    var oTable,oTables1,oTables2;
+    var oTable,oTables1,oTables2,oTables3;
     jQuery(document).ready(function ($) {
         
         //User Listing code
@@ -127,7 +127,8 @@ try {
                     {data: 'phone'},
                     {data: 'assoc_anchor'},
                     {data: 'created_at'},
-                    {data: 'status'}
+                    {data: 'status'},
+                    {data:'action'}
                 ],
             aoColumnDefs: [{'bSortable': false, 'aTargets': [1,3,4,5,6,8]}]
 
@@ -138,7 +139,62 @@ try {
             oTables2.draw();
 
         });
+
+        //User Listing code
         
+
+        //Search
+        // $('#leadsearchbtn').on('click', function (e) {
+            
+        //     var role_id = $('#selectedrole').find(":selected").val();
+        //     var user_id = $('#selecteduser').find(":selected").val();
+        //     console.log(role_id);console.log(user_id);
+        //     if(role_id != '' && user_id != ''){
+
+                
+        //     }
+        // });
+
+        
+         //Non Anchor Leads Listing code
+         oTables3 = $('#nonAnchleadList').DataTable({
+            processing: true,
+            serverSide: true,
+            pageLength: 25,
+            searching: false,
+            bSort: true,
+            order: [[8, "desc"]],
+            ajax: {
+                "url": messages.get_non_anchor_leads, // json datasource
+                "method": 'POST',
+                data: function (d) {
+                    d.by_email = $('input[name=by_email]').val();
+                    d._token = messages.token;
+                },
+                "error": function () {  // error handling            
+                    $("#nonAnchleadList").append('<tbody class="nonAnchleadList-error"><tr><th colspan="6">' + messages.data_not_found + '</th></tr></tbody>');
+                    $("#nonAnchleadList_processing").css("display", "none");
+                }
+            },
+            columns: [
+                {data: 'non_anchor_lead_id'},
+                {data: 'name'},
+                {data: 'biz_name'},
+                {data: 'pan_no'},
+                {data: 'email'},
+                {data: 'phone'},
+                {data: 'user_type'},
+                {data: 'product_type'},
+                {data: 'created_at'},
+                {data: 'status'}
+            ],
+            aoColumnDefs: [{'bSortable': false, 'aTargets': [1,3,4,5,6,7,9]}]
+        });
+
+        //Search
+        $('#nonAnchleadListSearch').on('click', function (e) {
+            oTables3.draw();
+        });
     });
 } catch (e) {
     if (typeof console !== 'undefined') {

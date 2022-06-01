@@ -126,11 +126,11 @@
                                             <tbody>
                                                  <tr>
                                                     <td rowspan="2" valign="middle" bgcolor="#efefef" width="39%">Financial Spread Sheet for the period ended</td>
-                                                    @foreach($audited_years as $aud_year)
-                                                    <td width="20%" bgcolor="#efefef" align="left">31-March-{{$aud_year}} <br /><br />
-                                                      <select id="audit" name="audit" class="form-control form-control-sm">
-                                                            <option>Audited</option>
-                                                            <option>Unaudited</option>
+                                                    @foreach($finance_data as $year => $fin_data)
+                                                    <td width="20%" bgcolor="#efefef" align="left">31-March-{{$year}} <br /><br />
+                                                      <select class="form-control form-control-sm"  name="year[{{$year}}][FinancialYearAudited]">
+                                                            <option value = "0" {{ ($fin_data['FinancialYearAudited'] ?? NULL) == '0'? 'Selected' :''}}>Unaudited</option>
+                                                            <option value = "1" {{ ($fin_data['FinancialYearAudited'] ?? NULL) == '1'? 'Selected':''}}>Audited</option>
                                                       </select>
                                                     </td>
                                                     @endforeach

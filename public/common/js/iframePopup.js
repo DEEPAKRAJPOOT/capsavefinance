@@ -143,6 +143,9 @@ var iframe_ids = [
     'termsConditionspop',
     'addSecurityDocumentFrame',
     'editSecurityDocumentFrame',
+    'pullBackAssignCaseFrame',
+    'assignUserLeads',
+    'assignUserApplication',
 ];
 
 iframe_ids.forEach(function (id) {

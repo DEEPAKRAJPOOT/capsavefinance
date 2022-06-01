@@ -56,5 +56,7 @@ return [
     'sentTobank' => 'Selected invoices has been successfully moved to sent to bank.',
     'reduction_utilized_amt_appoval_validation' => 'You can\'t approve this application because previous utilized limit is greater than your current limit.',
     'reduction_utilized_amt_validation_for_approver' => 'You can\'t sent application to next stage because previous utilized limit is greater than your current limit.',
+    'lead_assigned' => 'Leads assigned successfully.',
+    'app_assigned' => 'Application assigned successfully.',
 ];
 

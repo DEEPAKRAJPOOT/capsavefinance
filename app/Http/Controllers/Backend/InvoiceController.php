@@ -29,6 +29,8 @@ use App\Helpers\ManualApportionmentHelper;
 use Event;
 use App\Inv\Repositories\Contracts\MasterInterface;
 use App\Inv\Repositories\Contracts\Traits\ActivityLogTrait;
+use Illuminate\Support\Facades\App;
+use App\Inv\Repositories\Models\Lms\Transactions;
 
 class InvoiceController extends Controller {
 
@@ -382,8 +384,9 @@ class InvoiceController extends Controller {
         $selectDate = (!empty($fundedDate)) ? date("Y-m-d h:i:s", strtotime(str_replace('/','-',$fundedDate))) : \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
         $Obj = new ManualApportionmentHelper($this->lmsRepo);
-       
+        $invDisb = [];
         foreach ($invoiceDisbursed as $key => $value) {            
+            $invDisb[$value['disbursal']['user_id']][$value['invoice_disbursed_id']] = $value['invoice_disbursed_id'];           
             $tenor = $value['tenor_days'];
             $banchMarkDateFlag = $value['invoice']['program_offer']['benchmark_date'];
 
@@ -504,6 +507,35 @@ class InvoiceController extends Controller {
             $Obj->intAccrual($value['invoice_disbursed_id']);
 
         }
+        foreach($invDisb as $userId => $invDisb){
+            $invDisbIds = array_keys($invDisb);
+
+            $intList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+            ->where('trans_type','9')
+            ->where('user_id',$userId)
+            ->where('entry_type','0')
+            ->where('is_invoice_generated','0')
+            ->pluck('trans_id')
+            ->toArray();
+            
+            $chrgList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
+            ->whereHas('transType', function($query){ $query->where('chrg_master_id','!=','0'); })
+            ->where('user_id',$userId)
+            ->where('entry_type',0)
+            ->where('is_invoice_generated',0)
+            ->pluck('trans_id')
+            ->toArray();
+            
+            if(!empty($intList)){
+                $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+                $controller->generateCapsaveInvoice($intList, $userId, 'I');
+            }
+            
+            if(!empty($chrgList)){
+                $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+                $controller->generateCapsaveInvoice($chrgList, $userId, 'C');
+            }
+        }
 
         $disbursals = $this->lmsRepo->getDisbursals($disbursalIds)->toArray();
         foreach ($disbursals as $key => $value) {
@@ -607,8 +639,8 @@ class InvoiceController extends Controller {
         
         $invoice_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
         $invoice_approve_amount = str_replace(',', '', $attributes['invoice_approve_amount']);
-        $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($attributes['supplier_id'], $request->anchor_id);
-        $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
+        // $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($attributes['supplier_id'], $request->anchor_id);
+        // $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
         $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($prgmOfferId, $invoice_amount);
 
         // $limit =   InvoiceTrait::ProgramLimit($attributes);
@@ -1698,8 +1730,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $dataAttr['approval']  =   $getPrgm;
 
                         $invoice_amount = str_replace(',', '', $dataAttr['amount']);
-                        $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($dataAttr['user_id'], $dataAttr['anchor_id']);
-                        $totalProductLimit = Helpers::getTotalProductLimit($appId, $productId = 1);
+                        // $invUtilizedAmt = Helpers::anchorSupplierUtilizedLimitByInvoice($dataAttr['user_id'], $dataAttr['anchor_id']);
+                        // $totalProductLimit = Helpers::getTotalProductLimit($dataAttr['app_id'], $productId = 1);
                         
                         $marginAmt = Helpers::getOfferMarginAmtOfInvoiceAmt($dataAttr['prgm_offer_id'], $dataAttr['amount']);
                         // $limit =   InvoiceTrait::ProgramLimit($dataAttr);

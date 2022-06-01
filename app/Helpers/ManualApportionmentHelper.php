@@ -308,7 +308,7 @@ class ManualApportionmentHelper{
         // Interest Posting
         if($payFreq == 2){
 
-            if( (strtotime($endOfMonthDate) == strtotime($intAccrualDate) || strtotime($invdueDate) == strtotime($intAccrualDate) ||  $check1 )){
+            if((strtotime($endOfMonthDate) == strtotime($intAccrualDate) ||  $check1 )){
 
                 $intTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
                 ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST'))
@@ -317,7 +317,6 @@ class ManualApportionmentHelper{
                 ->where(function($query)use($invdueDate,$intAccrualDt){
                     $firtOfMonth = Carbon::parse($intAccrualDt)->firstOfMonth()->format('Y-m-d');
                     $query->whereDate('trans_date','<',$firtOfMonth);
-                    $query->OrwhereDate('trans_date','=',$invdueDate);
                 })
                 ->get()
                 ->filter(function($item){
@@ -346,7 +345,7 @@ class ManualApportionmentHelper{
         if( ((strtotime($endOfMonthDate) == strtotime($intAccrualDate)) && strtotime($intAccrualDate) >= strtotime($odStartDate)) || $checkByPass){
 
             $odTransactions = TransactionsRunning::where('invoice_disbursed_id','=',$invDisbId)
-            ->where('trans_type','=',config('lms.TRANS_TYPE.INTEREST_OVERDUE'))
+            ->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
             ->where('entry_type','=',0)
             ->whereDate('trans_date','<=',$lastDayofPreviousMonth)
             ->get()
@@ -742,7 +741,7 @@ class ManualApportionmentHelper{
         //$transRunningTrans = $this->lmsRepo->getUnsettledRunningTrans();
         //sort($transRunningTrans);
         //$invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true]);
-        $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt')->whereNotNull('payment_due_date')->pluck('invoice_disbursed_id','invoice_disbursed_id');
+        $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt')->whereNotNull('payment_due_date')->whereHas('invoice',function($query){ $query->where('is_repayment','0'); })->pluck('invoice_disbursed_id','invoice_disbursed_id');
         foreach ($invoiceList as $invId => $trans) {
             echo $invId."\n";
             //$pos = array_search($invId, $transRunningTrans);
@@ -754,6 +753,42 @@ class ManualApportionmentHelper{
         }
         // Update Invoice Disbursed Accrual Detail
         InvoiceDisbursedDetail::updateDailyInterestAccruedDetails();
+
+        $cDate = Carbon::parse($curdate)->format('Y-m-d');
+        $transList = Transactions::whereNull('parent_trans_id')
+        ->whereHas('transType', function($query){
+            $query->where('chrg_master_id','>','0')
+            ->orWhere('id',config('lms.TRANS_TYPE.INTEREST'));
+        })
+        ->whereDate('created_at','<=',$cDate)
+        ->whereDate('created_at','>=','2022-04-01')
+        ->where('entry_type','0')
+        ->where('is_invoice_generated','0')
+        ->get();
+        
+        $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
+        $billData = [];
+        foreach($transList as $trans){
+            $billData[$trans->user_id][$trans->trans_type][$trans->trans_id] = $trans->trans_id;
+        }
+
+        foreach($billData as $userId => $transTypes){
+            foreach($transTypes as $transType => $trans){
+                $transIds = array_keys($trans);
+                if(!empty($transIds)){
+                    $billType = null;
+                    if($transType == config('lms.TRANS_TYPE.INTEREST')){
+                        $billType = 'I';
+                    }elseif($transType == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                        $billType = 'C';
+                    }
+                    if($billType){
+                        $controller->generateCapsaveInvoice($transIds, $userId, $billType);
+                    }
+                }
+            }
+        }
+        
         /*foreach($transRunningTrans as $invId){
             $invDisbDetail = InvoiceDisbursed::find($invId);
             $offerDetails = $invDisbDetail->invoice->program_offer;
