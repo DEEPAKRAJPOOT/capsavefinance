@@ -213,6 +213,170 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
+
+    public function getUsersLeadList(Request $request, $user)
+    {
+        
+        return DataTables::of($user)
+                ->rawColumns(['id','name', 'checkbox', 'anchor', 'action', 'email','assigned', 'active'])
+                ->addColumn(
+                    'checkbox',
+                    function ($user) {
+                    //$link = '000'.$user->user_id;
+                    $toAssignedData =[];
+                    if (Session::has('toAssignedData')){
+                        $toAssignedData = json_decode(Session::get('toAssignedData'));
+                        if(in_array((string)$user->user_id, $toAssignedData->selected_leads))
+                          return '<input  type="checkbox" data-id="lead_'.$user->user_id.'" name="selectUser[]" value="'.(($user->user_id) ? $user->user_id : '' ).'" class="chkstatus" onclick="selectLeadToassign(this)" checked>';
+                        else
+                        return '<input  type="checkbox" data-id="lead_'.$user->user_id.'" name="selectUser[]" value="'.(($user->user_id) ? $user->user_id : '' ).'" class="chkstatus" onclick="selectLeadToassign(this)" >';
+
+                    }else{
+                        return '<input  type="checkbox" data-id="lead_'.$user->user_id.'" name="selectUser[]" value="'.(($user->user_id) ? $user->user_id : '' ).'" class="chkstatus" onclick="selectLeadToassign(this)" >';
+                    }
+                    
+                    }
+                 )
+                ->addColumn(
+                    'id',
+                    function ($user) {
+                    //$link = '000'.$user->user_id;
+                    $link = \Helpers::formatIdWithPrefix($user->user_id, 'LEADID');
+                        return "<a target='_blank' id=\"" . $user->user_id . "\" href=\"".route('lead_detail', ['user_id' => $user->user_id])."\" rel=\"tooltip\"   >$link</a> ";
+                        
+                    }
+                )
+                ->editColumn(
+                        'name',
+                        function ($user) {
+                    $panInfo = $user->pan_no && !empty($user->pan_no) ? '<br><strong>PAN:</strong> ' . $user->pan_no : ''; 
+                    $full_name = $user->f_name.' '.$user->l_name . $panInfo;
+                    return $full_name;
+                    
+                })
+                ->editColumn(
+                    'email',
+                    function ($user) {
+                    return "<a  data-original-title=\"Edit User\"  data-placement=\"top\" class=\"CreateUser\" >".$user->email."</a> ";
+
+                })
+                ->editColumn(
+                    'anchor',
+                    function ($user) {                    
+                    if($user->UserAnchorId){
+                       //$userInfo=User::getUserByAnchorId((int) $user->UserAnchorId);
+                       //$achorId= $userInfo->f_name.' '.$userInfo->l_name;
+                        $achorId = Helpers::getAnchorsByUserId($user->user_id);
+                    }else{
+                      $achorId='N/A';  
+                    }
+                    //$achorId = $user->UserAnchorId; 
+                    return $achorId;
+                })
+                ->editColumn(
+                    'userType',
+                    function ($user) {
+                    if($user->AnchUserType==1){
+                        $achorUserTpe='Supplier';
+                    }else if($user->AnchUserType==2){
+                         $achorUserTpe='Buyer';
+                    }else{
+                        $achorUserTpe='';
+                    }
+                    //$achorUserTpe = $user->AnchUserType; 
+                    return $achorUserTpe;
+                })
+                ->editColumn(
+                    'salesper',
+                    function ($user) {
+                    if($user->to_id){
+                    $userInfo=Helpers::getUserInfo($user->to_id);                    
+                       $saleName=$userInfo->f_name. ' '.$userInfo->l_name;  
+                    }else{
+                       $saleName=''; 
+                    } 
+                    return $saleName;
+                })
+                ->editColumn(
+                    '',
+                    function ($user) {
+                    $full_name = $user->mobile_no; 
+                    return $full_name;
+                })
+                // ->editColumn(
+                //         'assigned',
+                //         function ($user) {
+                //     if ($user->is_assign == 0) {
+                //         return "<label class=\"badge badge-warning current-status\">Pending</label>";
+                //     } else {
+                //         return "<span style='color:green'>Assigned</span>";
+                //     }
+                // })
+                ->editColumn(
+                    'active',
+                    function ($role) {
+                    return ($role->is_active == '0')?'<div class="btn-group ">
+                                             <label class="badge badge-danger current-status">In Active</label>
+                                             
+                                          </div></b>':'<div class="btn-group ">
+                                             <label class="badge badge-success current-status">Active</label>
+                                             
+                                          </div></b>';
+
+                })
+                ->editColumn(
+                    'biz_name',
+                    function ($user) {
+                    return ($user->biz_name)? $user->biz_name: '---';
+
+                })
+                ->editColumn(
+                    'created_at',
+                    function ($user) {
+                    return ($user->created_at)? date('d-M-Y',strtotime($user->created_at)) : '---';
+
+                })
+                ->addColumn(
+                    'action',
+                    function ($users) {
+                    $link = '';
+                        if(Helpers::checkPermission('edit_backend_lead') ){
+                            $link = "<a title=\"edit Lead\"  data-toggle=\"modal\" data-target=\"#editLead\" data-url =\"" . route('edit_backend_lead', ['user_id' => $users->user_id]) . "\" data-height=\"230px\" data-width=\"100%\" data-placement=\"top\" class=\"btn btn-action-btn btn-sm\" title=\"Edit Lead Detail\"><i class=\"fa fa-edit\"></a>";
+                        }
+                    return $link;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('by_email') != '') {
+                        if ($request->has('by_email')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_nameOrEmail = trim($request->get('by_email'));   
+                                $query->where('users.f_name', 'like',"%$by_nameOrEmail%")
+                                ->orWhere('users.l_name', 'like', "%$by_nameOrEmail%")
+                                ->orWhere(\DB::raw("CONCAT(rta_users.f_name,' ',rta_users.l_name)"), 'like', "%$by_nameOrEmail%")
+                                ->orWhere('users.email', 'like', "%$by_nameOrEmail%")
+                                ->orWhere('anchor_user.pan_no', 'like', "%$by_nameOrEmail%");
+                            });
+                        }
+                    }
+                    if ($request->get('is_assign') != '') {
+                        if ($request->has('is_assign')) {
+                            $query->where(function ($query) use ($request) {
+                                $by_status = (int) trim($request->get('is_assign'));
+                                $query->where('users.is_assigned', 'like',
+                                        "%$by_status%");
+                            });
+                        }
+                    }
+                    if ($request->get('pan') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $pan = $request->get('pan');
+                            $query->where('anchor_user.pan_no', $pan);
+                        });
+                    }                    
+                })
+                ->make(true);
+    }
     
     /*      
      * Get application list
@@ -487,6 +651,226 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
     
+
+    /*      
+     * Get assigned application list
+     */
+    public function getAssignedAppList(Request $request, $app)
+    {
+        
+        return DataTables::of($app)
+                ->rawColumns(['app_id','biz_entity_name','checkbox','assignee', 'status', 'assigned_by', 'action','assoc_anchor', 'contact','name', 'app_code'])
+                ->addColumn(
+                    'checkbox',
+                    function ($app) {
+                    //$link = '000'.$user->user_id;
+                        $toAssignedData =[];
+                        if (Session::has('toAssignedData')){
+                            $toAssignedData = json_decode(Session::get('toAssignedData'));
+                            if(in_array((string)$app->app_id, $toAssignedData->selected_application))
+                            return '<input type="checkbox" data-id="app_'.$app->app_id.'" name="selectapp[]" value="'.(($app->app_id) ? $app->app_id : '' ).'" class="chkstatus" onclick="selectLeadToassign(this)" checked>';
+                            else
+                            return '<input type="checkbox" data-id="app_'.$app->app_id.'" name="selectapp[]" value="'.(($app->app_id) ? $app->app_id : '' ).'" class="chkstatus" onclick="selectLeadToassign(this)">';
+
+                        }else{
+                            return '<input type="checkbox" data-id="app_'.$app->app_id.'" name="selectapp[]" value="'.(($app->app_id) ? $app->app_id : '' ).'" class="chkstatus" onclick="selectLeadToassign(this)">';
+                        }
+                    }
+                )
+                ->addColumn(
+                    'app_code',
+                    function ($app) {
+                        $user_role = Helpers::getUserRole(\Auth::user()->user_id)[0]->pivot->role_id;
+                        $app_id = $app->app_id;
+                        $app_code = $app->app_code;
+                        $parent_app_id = $app->parent_app_id;
+                        $ret = '';
+                        $permission = Helpers::checkPermission('company_details');
+                        if($permission){
+                           if($user_role == config('common.user_role.APPROVER'))
+                                $link = route('cam_report', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
+                           else
+                                $link = route('company_details', ['biz_id' => $app->biz_id, 'app_id' => $app_id]);
+                           $ret = "<a target='_blank' id='app-id-$app_id' href='$link' rel='tooltip'>" . $app_code . "</a>";
+                                                     
+                        } else {
+                            $ret = "<a target='_blank' id='app-id-$app_id' rel='tooltip'>" . $app_code . "</a>";
+                        }
+                        
+                        if (!empty($parent_app_id)) {
+                            $aData = Application::getAppData((int)$parent_app_id);
+                            if ($permission) {
+                                $ret .= "<br><small>Parent:</small><br><a target='_blank' href='" . route('company_details', ['biz_id' => $aData->biz_id, 'app_id' => $parent_app_id]) . "' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                            } else {
+                                $ret .= "<br><small>Parent:</small><br><a target='_blank' rel='tooltip'>" . \Helpers::formatIdWithPrefix($parent_app_id, 'APP') . "</a>";
+                            }
+                        } 
+                           
+                        return $ret;
+                    }
+                )
+                ->addColumn(
+                    'biz_entity_name',
+                    function ($app) {                        
+                        $panInfo = $app->pan_no && !empty($app->pan_no) ? '<br><strong>PAN:</strong> ' . $app->pan_no : '';
+                        if ($app->app_type != 0) {
+                            $panInfo .= '</br><small class="aprveAppListBtn">('. \Helpers::getAppTypeName($app->app_type) .')</small>';
+                        }
+                        return $app->biz_entity_name ? $app->biz_entity_name . $panInfo : '';
+                })
+                ->addColumn(
+                    'name',
+                    function ($app) {                        
+                        if($app->user_type && $app->user_type==1){
+                            $anchorUserType='<small class="aprveAppListBtn">( Supplier )</small>'; 
+                        }else if($app->user_type && $app->user_type==2){
+                            $anchorUserType='<small class="aprveAppListBtn">( Buyer )</small>';
+                        }else{
+                            $anchorUserType='';
+                        }
+                        return $app->name ? $app->name .'<br>'. $anchorUserType : $anchorUserType;
+                })
+                ->addColumn(
+                    'contact',
+                    function ($app) {
+                        $contact = '';
+                        $contact .= $app->email ? '<span><b>Email:&nbsp;</b>'.$app->email.'</span>' : '';
+                        $contact .= $app->mobile_no ? '<br><span><b>Mob:&nbsp;</b>'.$app->mobile_no.'</span>' : '';
+                        return $contact;
+                    }
+                )
+                // ->addColumn(
+                //     'email',
+                //     function ($app) {                        
+                //         return $app->email ? $app->email : '';
+                // })
+                // ->addColumn(
+                //     'mobile_no',
+                //     function ($app) {                        
+                //         return $app->mobile_no ? $app->mobile_no : '';
+                // })                
+                // ->addColumn(
+                //     'assoc_anchor',
+                //     function ($app) {
+                    
+                //     if($app->anchor_id){
+                //         $achorName = Helpers::getAnchorsByUserId($app->user_id);
+                //     } else {
+                //        $achorName='';  
+                //     }                    
+                //     return $achorName;
+                    
+                // })
+                // ->addColumn(
+                //     'user_type',
+                //     function ($app) {
+                //     if($app->user_type && $app->user_type==1){
+                //        $anchorUserType='Supplier'; 
+                //     }else if($app->user_type && $app->user_type==2){
+                //         $anchorUserType='Buyer';
+                //     }else{
+                //         $anchorUserType='';
+                //     }
+                //        return $anchorUserType;
+                // })                
+                ->addColumn(
+                    'assignee',
+                    function ($app) {  
+                        $data = '';                  
+                    //if ($app->to_id){
+                    //    $userInfo = Helpers::getUserInfo($app->to_id);                    
+                    //    $assignName = $userInfo->f_name. ' ' . $userInfo->l_name;  
+                    //} else {
+                    //    $assignName=''; 
+                    //} 
+                    //return $assignName;
+                    $userInfo = Helpers::getAppCurrentAssignee($app->app_id);
+                    if($userInfo){
+                        $data .= $userInfo->assignee ? $userInfo->assignee . '<br><small>(' . $userInfo->assignee_role . ')</small>' : '';
+                    }
+                   // $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Approver List"><i class="fa fa-eye"></i></a>';
+                    if(Helpers::checkPermission('view_approvers') ){
+                        $data .= '<a  data-toggle="modal" data-target="#viewApprovers" data-url ="' . route('view_approvers', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Approver List">View Approver List</a>';
+                    }
+                    return $data;
+                })
+                ->addColumn(
+                    'assigned_by',
+                    function ($app) {
+                        $data = '';
+                        if ($app->from_role && !empty($app->from_role)) {
+                            $data .= $app->assigned_by ? $app->assigned_by .  '<br><small>(' . $app->from_role . ')</small>' : '';
+                        } else {
+                            $data .= $app->assigned_by ? $app->assigned_by : '';
+                        }
+                       // $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm" title="View Shared Details"><i class="fa fa-eye"></i></a>';
+                        if(Helpers::checkPermission('view_shared_details') ){
+                            $data .= '<a  data-toggle="modal" data-target="#viewSharedDetails" data-url ="' . route('view_shared_details', ['app_id' => $app->app_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn" title="View Shared Details">View Shared Details</a>';
+                        }
+                        return $data;
+                        //$fromData = AppAssignment::getOrgFromUser($app->app_id);
+                        //return isset($fromData->assigned_by) ? $fromData->assigned_by . '<br><small>(' . $fromData->from_role . ')</small>' : '';
+                })                
+                ->addColumn(
+                    'shared_detail',
+                    function ($app) {
+                    return $app->sharing_comment ? $app->sharing_comment : '';
+
+                })
+                ->addColumn(
+                    'status',
+                    function ($app) {
+                    //$app_status = config('common.app_status');                    
+                    //$status = isset($app_status[$app->status]) ? $app_status[$app->status] : '';    // $app->status== 1 ? 'Completed' : 'Incomplete';
+                    $status = isset($app->status_name) ? $app->status_name : ''; 
+
+                    $link = '<a title="View Application Status" href="#" data-toggle="modal" data-target="#viewApplicationStatus" data-url="' . route('view_app_status_list', ['app_id' => $app->app_id, 'note_id' => $app->note_id, 'user_id' => $app->user_id, 'curr_status_id' => $app->curr_status_id]) . '" data-height="350px" data-width="100%" data-placement="top" class="aprveAppListBtn">View Status</a>';
+
+                    if(Helpers::checkPermission('view_app_status_list') ){
+                        $status .= $link;                        
+                    }
+                    return $status;
+                })
+                ->filter(function ($query) use ($request) {
+                    
+                    if ($request->get('search_keyword') != '') {                        
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('app.app_code', 'like',"%$search_keyword%")
+                            ->orWhere('biz.biz_entity_name', 'like', "%$search_keyword%")
+                            ->orWhere('anchor_user.pan_no', 'like', "%$search_keyword%");
+                        });                        
+                    }
+                    if ($request->get('is_assign') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $is_assigned = $request->get('is_assign');
+                            $query->where('app.is_assigned', $is_assigned);
+                        });
+                    }
+                    if ($request->get('status') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $status = $request->get('status');
+                            if ($status == 1 || $status == 2) {
+                                $query->where('app.renewal_status', $status);  
+                            } else if ($status == 3) {
+                                $query->where('app.app_type', 2);
+                            } else if ($status == 4) {
+                                $query->where('app.app_type', 3);
+                            } else {
+                                $query->where('app.curr_status_id', $status);
+                            }
+                        });
+                    }  
+                    
+                    if ($request->get('pan') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $pan = $request->get('pan');
+                            $query->where('anchor_user.pan_no', $pan);
+                        });
+                    }                    
+                })
+                ->make(true);
+    }
     /*      
      * Get application list
      */

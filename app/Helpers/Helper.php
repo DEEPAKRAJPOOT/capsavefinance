@@ -207,11 +207,11 @@ class Helper extends PaypalHelper
                     if ($data->role_id == 4) {
                         //$toUserId = User::getLeadSalesManager($user_id);
                         $userData = User::getfullUserDetail($user_id);
-                        if ($userData && !empty($userData->anchor_id)) {
+                        /*if ($userData && !empty($userData->anchor_id)) {
                             $toUserId = User::getLeadSalesManager($user_id);
-                        } else {
+                        } else {*/
                             $toUserId = LeadAssign::getAssignedSalesManager($user_id);
-                        }
+                        /*}*/
                         $dataArr['to_id'] = $toUserId;
                         $dataArr['role_id'] = null;
                     } else if (isset($addl_data['to_id']) && !empty($addl_data['to_id'])) {
@@ -1014,6 +1014,18 @@ class Helper extends PaypalHelper
     public static function getAppCurrentAssignee($app_id)
     {
         $assigneeData = AppAssignment::getAppCurrentAssignee($app_id);
+        return $assigneeData;
+    }
+
+    /**
+     * Get Application current assignee all data
+     * 
+     * @param integer $app_id
+     * @return mixed
+     */
+    public static function getAppCurrentAssigneedata($app_id)
+    {
+        $assigneeData = AppAssignment::getAppCurrentAssigneedata($app_id);
         return $assigneeData;
     }
 

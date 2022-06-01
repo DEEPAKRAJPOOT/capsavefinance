@@ -142,6 +142,8 @@ var iframe_ids = [
     'frontViewInterestAccrualFrame',
     'termsConditionspop',
     'pullBackAssignCaseFrame',
+    'assignUserLeads',
+    'assignUserApplication',
 ];
 
 iframe_ids.forEach(function (id) {

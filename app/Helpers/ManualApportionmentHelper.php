@@ -741,7 +741,7 @@ class ManualApportionmentHelper{
         //$transRunningTrans = $this->lmsRepo->getUnsettledRunningTrans();
         //sort($transRunningTrans);
         //$invoiceList = $this->lmsRepo->getUnsettledInvoices(['noNPAUser'=>true, 'intAccrualStartDateLteSysDate'=>true]);
-        $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt')->whereNotNull('payment_due_date')->pluck('invoice_disbursed_id','invoice_disbursed_id');
+        $invoiceList = InvoiceDisbursed::whereNotNull('int_accrual_start_dt')->whereNotNull('payment_due_date')->whereHas('invoice',function($query){ $query->where('is_repayment','0'); })->pluck('invoice_disbursed_id','invoice_disbursed_id');
         foreach ($invoiceList as $invId => $trans) {
             echo $invId."\n";
             //$pos = array_search($invId, $transRunningTrans);
@@ -760,7 +760,8 @@ class ManualApportionmentHelper{
             $query->where('chrg_master_id','>','0')
             ->orWhere('id',config('lms.TRANS_TYPE.INTEREST'));
         })
-        ->whereDate('created_at',$cDate)
+        ->whereDate('created_at','<=',$cDate)
+        ->whereDate('created_at','>=','2022-04-01')
         ->where('entry_type','0')
         ->where('is_invoice_generated','0')
         ->get();

@@ -739,8 +739,147 @@ class ApplicationController extends Controller
 				  ->with('app_id', $app_id)
 				  ->with('biz_id', $biz_id)
 				  ->with('assignee', $assignee);
+	}  
+	
+
+	/**
+	 * Render for assign application view
+	 * 
+	 * @param Request $request
+	 * @return view
+	 */  
+	public function assignUserApplication(){
+
+		
+            $toAssignedData = json_decode(Session::get('toAssignedData'));
+            // Session::forget('toAssignedData');
+            $role_id = $toAssignedData->role_id;
+            $assigneduser_id = $toAssignedData->assigneduser_id;
+
+            $anchRoleList = $this->userRepo->getRoleList();
+            $roleList = [];
+            if($anchRoleList != false)
+            $roleList = $anchRoleList->get()->toArray();
+
+            $roleUsers = Helpers::getAllUsersByRoleId($role_id);
+            unset($roleUsers[(int)$assigneduser_id]);
+            $allCollectedData['roleList'] = $roleList;
+            $allCollectedData['roleUsers'] = $roleUsers;
+            $toAssignedData->role_id = (int)$toAssignedData->role_id;
+            $allCollectedData['toAssignedData'] = $toAssignedData;
+            return view('backend.leadtransfer.assign_user_application')->with('allCollectedData',$allCollectedData);
+
+        
 	}
 
+	public function saveassignUserApplication(Request $request){
+
+	  try{
+
+		$data = $request->all();
+		$user_role = $data['user_role'];
+		$prevFromUser = $data['assigneduser_id'];
+		$nextToUser = $data['role_user'];
+		$role_id = $data['role_id'];
+		$allApps = $data['selected_application'];
+		$assigned = false;
+		for($i=0;$i<count($allApps);$i++){
+			
+			$userInfo = Helpers::getAppCurrentAssigneedata($allApps[$i]);
+			$app_Assigned_id = $userInfo['app_assign_id'];
+			$assignedData['from_id'] = $prevFromUser;
+			$assignedData['to_id'] = $nextToUser;
+			$assignedData['role_id'] = $role_id;
+			$assignedData['assigned_user_id'] = $userInfo['assigned_user_id'];
+			$assignedData['app_id'] = $allApps[$i];
+			$assignedData['assign_status'] = $userInfo['assign_status'];
+			if($userInfo['assign_type'] == 0){
+				$assignedData['assign_type'] = 0;
+			}else{
+				$assignedData['assign_type'] = 2;
+			}
+			$assignedData['is_owner'] = $userInfo['is_owner'];
+			$assignedData['created_by'] = $prevFromUser;
+			$approverData['app_id'] = $allApps[$i];
+			$approverData['approver_user_id'] = $prevFromUser;
+			$prevUserRole = $this->userRepo->getRole($user_role);
+			$nextUserRole = $this->userRepo->getRole($role_id);
+			$this->appRepo->updateAssignedAppById(array('app_id'=>$allApps[$i],'to_id'=>$prevFromUser), ['is_deleted'=>1]);
+			$applicationCreated = $this->appRepo->saveShaircase($assignedData);
+			if(($prevUserRole->name === 'Sales' && $nextUserRole->name === 'Sales')){
+
+				
+            	$appData = $getAppDetails = $this->appRepo->getAppData($allApps[$i]);
+				$lead_assignedUser_id = $appData['user_id'];
+				$getUserLeadData = $this->userRepo->getLeadByUserId($lead_assignedUser_id);
+				if($getUserLeadData){
+
+					
+					$lead_assign_id = $getUserLeadData['lead_assign_id'];
+
+                    $toAssignedData['from_id']          = $getUserLeadData['from_id'];
+                    $toAssignedData['to_id']            = $nextToUser;
+                    $toAssignedData['assigned_user_id'] = $getUserLeadData['assigned_user_id'];
+                    $toAssignedData['is_owner']         = $getUserLeadData['is_owner'];
+                    $toAssignedData['created_by']       = auth()->user()->user_id;
+                    $toAssignedData['created_at']       = \Carbon\Carbon::now();
+
+                    $lead_id = $this->userRepo->createLeadAssign($toAssignedData);
+                    $is_deletePrevLead = $this->userRepo->updateDeleteStatus($lead_assign_id);
+				}else{
+
+					Session::flash('error', trans('error_messages.limit_assessment_fail'));
+			        return redirect()->route('assign_cases');
+
+				}
+			}
+			
+			if(($prevUserRole->name === 'Approver' && $nextUserRole->name === 'Approver')){
+				
+				$checkApproverStatus = $this->appRepo->checkAppApprovers($approverData);
+				if($checkApproverStatus){
+
+					
+					$flagUpdated  = $this->appRepo->updateAppApprInActiveFlag($approverData);
+					$curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
+					$ApproverSavedata = [
+						'app_id' => $allApps[$i],
+						'approver_user_id' => $nextToUser,
+						'is_active' => 1,
+						'created_by' => Auth::user()->user_id,
+						'created_at' => $curData,
+						'updated_by' => Auth::user()->user_id,
+						'updated_at' => $curData,
+					];
+					AppApprover::insert($ApproverSavedata);
+				}
+			 }
+			
+			
+			
+			if($i == count($allApps)-1)
+			   $assigned = true;
+			  
+		}
+
+		if($assigned){
+			Session::forget('toAssignedData');
+			Session::flash('message', trans('backend_messages.app_assigned'));
+			return redirect()->route('assign_cases');
+			
+		}else{
+
+			Session::flash('error', trans('error_messages.limit_assessment_fail'));
+			return redirect()->route('assign_cases');
+		}
+
+		} catch (Exception $ex) {
+
+			Session::flash('error', trans('error_messages.limit_assessment_fail'));
+			return redirect()->route('assign_cases');
+		}
+		
+	}
 	/**
 	 * Update application status
 	 *
@@ -1357,11 +1496,12 @@ class ApplicationController extends Controller
 		$appData = $this->appRepo->getAppDataByAppId($appId);
 		$userId = $appData ? $appData->user_id : null;
 		$userData = $this->userRepo->getfullUserDetail($userId);
-		if ($userData && !empty($userData->anchor_id)) {
+		
+		/*if ($userData && !empty($userData->anchor_id)) {
 			$toUserId = $this->userRepo->getLeadSalesManager($userId);
-		} else {
+		} else {*/ 
 			$toUserId = $this->userRepo->getAssignedSalesManager($userId);
-		}
+		/*}*/
 		$authUser = Auth::user();
 		if($authUser->user_id == $toUserId){
 		  $isSalesManager = 1;

@@ -181,10 +181,12 @@ class Application extends BaseModel
                     if ($roleData[0]->is_superadmin != 1) {
                         //$join->on('app_assign.to_id', '=', DB::raw($curUserId));
                         $join->whereIn('app_assign.to_id', $userArr);
+                        $join->where('app_assign.is_deleted', DB::raw("0"));
                         
                     } else {
                         $join->on('app_assign.is_owner', '=', DB::raw("1"));
                         $join->whereNotNull('app_assign.to_id');
+                        $join->where('app_assign.is_deleted', DB::raw("0"));
                     }
                 })
                 ->join('users as assignee_u', 'app_assign.to_id', '=', 'assignee_u.user_id')           
@@ -200,6 +202,50 @@ class Application extends BaseModel
         $query->groupBy('app.app_id');
         $appData = $query->orderBy('app.app_id', 'DESC');
         return $appData;
+    }
+
+
+    public static function getAssignedApplications($role_id,$user_id){
+
+        DB::enableQueryLog();
+        $userArr[] = (int)$user_id;
+        $query = self::select('app.user_id','app.app_id', 'app.app_code' ,'app.curr_status_id', 'biz.biz_entity_name', 'biz.biz_id', 
+                'app.status','app_assign.to_id', 'users.anchor_id', 'users.is_buyer as user_type', 'app.renewal_status', 'app.app_type',
+                DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS assoc_anchor"),
+                DB::raw("CONCAT_WS(' ', rta_assignee_u.f_name, rta_assignee_u.l_name) AS assignee"), 
+                DB::raw("CONCAT_WS(' ', rta_from_u.f_name, rta_from_u.l_name) AS assigned_by"),                
+                DB::raw("CONCAT_WS(' ', rta_users.f_name, rta_users.l_name) AS name"),
+                'users.email',
+                'users.mobile_no',                
+                'app_assign.sharing_comment', 'assignee_r.name as assignee_role', 'from_r.name as from_role',
+                'app_assign.app_assign_id', 'app.parent_app_id', 'note.note_data as reason', 'note.note_id','anchor_user.pan_no','mst_status.status_name')
+                ->join('users', 'users.user_id', '=', 'app.user_id')  
+                ->join('biz', 'app.biz_id', '=', 'biz.biz_id')
+                ->leftjoin('note','app.app_id', '=', 'note.app_id')
+                ->leftjoin('mst_status','app.curr_status_id', '=', 'mst_status.id');
+       
+        $query  = $query->join('app_assign', function ($join) use($userArr) {
+                    $join->on('app.app_id', '=', 'app_assign.app_id');
+                    $join->whereIn('app_assign.to_id', $userArr);
+                    $join->where('app_assign.is_owner', 1);
+                    $join->where('app_assign.is_deleted', 0);
+                    
+                })
+                ->join('users as assignee_u', 'app_assign.to_id', '=', 'assignee_u.user_id')           
+                ->join('users as from_u', 'app_assign.from_id', '=', 'from_u.user_id')
+                ->join('role_user as assignee_ru', 'app_assign.to_id', '=', 'assignee_ru.user_id')
+                ->join('roles as assignee_r', 'assignee_ru.role_id', '=', 'assignee_r.id')
+                ->leftJoin('role_user as from_ru', 'app_assign.from_id', '=', 'from_ru.user_id')
+                ->leftJoin('roles as from_r', 'from_ru.role_id', '=', 'from_r.id')    
+                ->leftJoin('anchor_user', 'anchor_user.user_id', '=', 'app.user_id');
+       
+                //$query->where('users.anchor_user_id', \Auth::user()->user_id);            
+                //$query->where('users.anchor_id', \Auth::user()->anchor_id); ->get();  dd(DB::getQueryLog());           
+        $query->groupBy('app.app_id');
+        $appData = $query->orderBy('app.app_id', 'DESC');
+        
+        return $appData;
+
     }
    
     
@@ -261,6 +307,7 @@ class Application extends BaseModel
         if ($roleData[0]->is_superadmin != 1) {
             $appData->where('app_assign.role_id', $roleData[0]->id);
         }
+        $appData->where('app_assign.is_deleted', DB::raw("0"));
         $appData->whereNull('app_assign.to_id');
         //$appData->groupBy('app.app_id');
         $appData = $appData->orderBy('app.app_id', 'DESC');
@@ -851,10 +898,12 @@ class Application extends BaseModel
                     $join->on('app.app_id', '=', 'app_assign.app_id');
                     if ($roleData[0]->is_superadmin != 1) {
                         //$join->on('app_assign.to_id', '=', DB::raw($curUserId));
+                        $join->on('app_assign.is_deleted', '=', DB::raw("0"));
                         $join->whereIn('app_assign.to_id', $userArr);
                         
                     } else {
                         $join->on('app_assign.is_owner', '=', DB::raw("1"));
+                        $join->on('app_assign.is_deleted', '=', DB::raw("0"));
                         $join->whereNotNull('app_assign.to_id');
                     }
                 })

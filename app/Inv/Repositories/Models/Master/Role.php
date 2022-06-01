@@ -125,7 +125,7 @@ class Role extends BaseModel
      */
     public static function getRoleLists()
     {
-        $arrRoles = Role::where('is_editable', 1);
+        $arrRoles = Role::where('is_editable', 1)->where('role_type',2)->where('name','!=','Accounts')->where('name','!=','Approver');
         return ($arrRoles ? : false);
     }
     

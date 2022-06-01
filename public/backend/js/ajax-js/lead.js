@@ -139,6 +139,22 @@ try {
             oTables2.draw();
 
         });
+
+        //User Listing code
+        
+
+        //Search
+        // $('#leadsearchbtn').on('click', function (e) {
+            
+        //     var role_id = $('#selectedrole').find(":selected").val();
+        //     var user_id = $('#selecteduser').find(":selected").val();
+        //     console.log(role_id);console.log(user_id);
+        //     if(role_id != '' && user_id != ''){
+
+                
+        //     }
+        // });
+
         
          //Non Anchor Leads Listing code
          oTables3 = $('#nonAnchleadList').DataTable({

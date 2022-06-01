@@ -437,6 +437,22 @@ class UserRepository extends BaseRepositories implements UserInterface
 
         return $result ?: false;
     }
+
+    /**
+     * Get a user model by role's user
+     *
+     * @param integer $userId
+     *
+     * @return boolean
+     *
+     * @since 0.1
+     */
+    public function getAssignedUsers($role_id,$user_id)
+    {
+        $result = UserModel::getAssignedUsers($role_id,$user_id);
+        return $result ?: false;
+    }
+    
     
     
     /**
@@ -1793,6 +1809,22 @@ class UserRepository extends BaseRepositories implements UserInterface
         return AnchorUser::getAnchorUserData($whereCond);
     }    
 
+    
+    public function getUserLeadData($role_id,$fromUser,$selectedLeads){
+
+        return LeadAssign::getAssigneLeadByUserId($role_id,$fromUser,$selectedLeads);
+    }
+
+    public function getLeadByUserId($selectedLeads){
+
+        return LeadAssign::getLeadByUserId($selectedLeads);
+    }
+
+
+    public function updateDeleteStatus($lead_id){
+
+        return LeadAssign::updateDeleteStatus($lead_id);
+    }
     /**
      * Get a sales user model by id
      *
