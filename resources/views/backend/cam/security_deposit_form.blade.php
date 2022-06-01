@@ -76,7 +76,13 @@
                         <input type="text" name="due_date[]" maxlength="20" class="form-control  {{ $disableorigDate }} due_date" value ="{{(isset($arr['due_date']) && $arr['due_date']) ? \Carbon\Carbon::createFromFormat('Y-m-d', $arr['due_date'])->format('d/m/Y'): '' }}" placeholder="Original Due Date" autocomplete="off" id="update_due_date_{{ $key }}" readonly="readonly"/>
                 </div>
            </div>
-               @if($route_name=="security_deposit")    
+               <div class="col-{{ $mdCls }} mt-1">
+                <label for="txtPassword"><b>Description</b></label>
+                <div class="relative">
+                    <textarea name="description[]" class="form-control description" placeholder="Description" autocomplete="off" id="update_description_{{ $key }}" {{$disabled}} >{{$arr['description'] ?? ''}} </textarea>
+                </div>
+                 </div>
+                @if($route_name=="security_deposit")    
                <div class="col-md-2 mt-1">
                     <label for="txtPassword"><b>Document Number</b></label>
                     <div class="relative">
@@ -84,13 +90,6 @@
                     </div>
                </div>
                @endif
-               <div class="col-{{ $mdCls }} mt-1">
-                <label for="txtPassword"><b>Description</b></label>
-                <div class="relative">
-                    <textarea name="description[]" class="form-control description" placeholder="Description" autocomplete="off" id="update_description_{{ $key }}" {{$disabled}} >{{$arr['description'] ?? ''}} </textarea>
-                </div>
-                 </div>
-               
                @if($route_name=="security_deposit")  
                <div class="col-md-2 mt-1">
                    <label for="txtPassword"><b>Completed</b></label>

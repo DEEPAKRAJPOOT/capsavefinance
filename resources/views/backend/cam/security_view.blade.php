@@ -1,4 +1,7 @@
-    <div class="row grid-margin mt-3 mb-2">
+   @php
+       use Carbon\Carbon;
+   @endphp
+   <div class="row grid-margin mt-3 mb-2">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
             <div class="card">
                 <div class="card-body">
@@ -9,8 +12,8 @@
                                 <div class="card card-color mb-0">
                                         <table cellspacing="0" cellpadding="0" width="100%" class="table table-striped table-bordered">
                                             <thead>
-                                                <tr role="row" style="background: #62b59b;color: #fff; text-align: center;">
-                                                   <th width="7%">Security Doc No.</th>
+                                                <tr role="row" style="background: #62b59b;color: #fff; text-align: left;">
+                                                   <th width="7%">Doc No.</th>
                                                    <th width="93%" colspan="4">{{ $title }} Pre/Post Disbursement Details</th>
                                                    {{-- <th width="15%">Status</th> --}}
                                                 </tr>
@@ -40,15 +43,16 @@
                                                     <td><b>Description: </b></td>
                                                     <td>{{$listingData->description}}</td>
                                                     <td><b>Origional Due Date : </b></td>
-                                                    <td>{{$listingData->due_date ? : 'N/A'}}</td>
+                                                    <td>{{!empty($listingData->due_date) ? Carbon::parse($listingData->due_date)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td></td>
                                                     <td><b>Created By: </b></td>
                                                         <td>{{$listingData->createdByUser ? $listingData->createdByUser->f_name.' '.$listingData->createdByUser->l_name : 'N/A'}}</td>
                                                     <td><b>Created At: </b></td>
-                                                    <td>{{$listingData->created_at ? : 'N/A'}}</td>
+                                                    <td>{{ !empty($listingData->created_at) ? Carbon::parse($listingData->created_at)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
+                                                <td></td>
                                                 @else
                                                 <tr>
                                                     <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
@@ -62,14 +66,7 @@
                                                     <td><b>Description: </b></td>
                                                     <td>{{$listingData->description}}</td>
                                                     <td><b>Origional Due Date : </b></td>
-                                                    <td>{{$listingData->due_date ? : 'N/A'}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td><b>Created By: </b></td>
-                                                        <td>{{$listingData->createdByUser ? $listingData->createdByUser->f_name.' '.$listingData->createdByUser->l_name : 'N/A'}}</td>
-                                                    <td><b>Created At: </b></td>
-                                                    <td>{{$listingData->created_at ? : 'N/A'}}</td>
+                                                    <td>{{!empty($listingData->due_date) ? Carbon::parse($listingData->due_date)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td></td>
@@ -90,16 +87,16 @@
                                                 <tr>
                                                 <td></td>
                                                     <td><b>Exception Received Date: </b></td>
-                                                    <td>{{$listingData->exception_received_date ? : 'N/A'}}</td>
+                                                    <td>{{!empty($listingData->exception_received_date) ? Carbon::parse($listingData->exception_received_date)->format('d-m-Y') :'N/A' }}</td>
                                                     <td><b>Exception Remark: </b></td>
                                                     <td>{{$listingData->exception_remark ? : 'N/A'}}</td>
                                                 </tr>
                                                 <tr>
                                                 <td></td>
                                                     <td><b>Extended Due Date: </b></td>
-                                                    <td>{{$listingData->extended_due_date ? : 'N/A'}}</td>
+                                                    <td>{{!empty($listingData->extended_due_date) ? Carbon::parse($listingData->extended_due_date)->format('d-m-Y') : 'N/A' }}</td>
                                                     <td><b>Maturity Date: </b></td>
-                                                    <td>{{$listingData->maturity_date ? : 'N/A'}}</td>
+                                                    <td>{{ !empty($listingData->maturity_date) ?Carbon::parse($listingData->maturity_date)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
                                                 <tr>
                                                 <td></td>
@@ -116,11 +113,13 @@
                                                 </tr>
                                                     <tr>
                                                     <td></td>
+                                                    <td><b>Doc Upload</b></td>
+                                                    <td><a href="{{ route('download_storage_file', ['file_id' => $listingData['file_id'] ]) }}" title="Download Document"><i class="fa fa-lg fa-download ml-3" aria-hidden="true"></i></a></td>
                                                     <td><b>Created At: </b></td>
-                                                    <td>{{$listingData->created_at ? : 'N/A'}}</td>
+                                                    <td>{{ !empty($listingData->created_at) ? Carbon::parse($listingData->created_at)->format('d-m-Y') : 'N/A' }}}</td>
                                                 </tr>
+                                                <td></td>
                                                 @endif
-                                                
                                                 @endforeach
                                             </tbody>
                                         </table>
