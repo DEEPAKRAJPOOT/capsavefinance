@@ -53,7 +53,7 @@
                                                 </tr>
                                                 @if(!$loop->last)
                                                 <tr>
-                                                <td style="background-color:#62b59b" colspan="5"></td>
+                                                <td style="background-color:#808080" colspan="5"></td>
                                                 </tr>
                                                 @endif
                                                 @else
@@ -123,7 +123,7 @@
                                                 </tr>
                                                 @if(!$loop->last)
                                                 <tr>
-                                                <td style="background-color:#62b59b" colspan="5"></td>
+                                                <td style="background-color:#808080" colspan="5"></td>
                                                 </tr>
                                                 @endif
                                                 @endif
