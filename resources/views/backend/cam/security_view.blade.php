@@ -121,6 +121,7 @@
                                                     <td><b>Created At: </b></td>
                                                     <td>{{ !empty($listingData->created_at) ? Carbon::parse($listingData->created_at)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
+                                                
                                                 @if(!$loop->last)
                                                 <tr>
                                                 <td style="background-color:#808080" colspan="5"></td>
