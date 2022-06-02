@@ -1424,7 +1424,19 @@ class ApplicationController extends Controller
 				$userId = $appData ? $appData->user_id : null;
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
 
-                                Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_ACCEPTED'));
+				Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_ACCEPTED'));
+				$appData = $this->appRepo->getAppData($appId);
+				$current_status = ($appData) ? $appData->curr_status_id : '';
+				if($current_status == config('common.mst_status_id.OFFER_ACCEPTED')){
+				$appSecurtiyDocs = AppSecurityDoc::where(['app_id'=>$appId, 'biz_id' => $appData->biz_id, 'is_active'=>1,'is_non_editable'=>0,'status'=>1])->get();
+				foreach ($appSecurtiyDocs as $clone) {
+				$cloneAppSecData = $clone->replicate();
+				$cloneAppSecData->is_non_editable = 0;
+				$cloneAppSecData->status = 3;
+				$cloneAppSecData->save();
+				}
+				$updateStatus = AppSecurityDoc::where(['app_id'=>$appId,'biz_id' => $appData->biz_id,'status'=>1,'is_non_editable'=>0,'is_active'=>1])->update(['is_non_editable' => 1, 'status'=>2]);
+				}
 			} else if($request->has('btn_reject_offer')) {
 				$offerData['status'] = 2;
 				$message = trans('backend_messages.offer_rejected');
