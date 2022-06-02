@@ -515,7 +515,7 @@ class CamController extends Controller
                   'biz_id' => $arrData['biz_id'],
                   'app_id' => $arrData['app_id'],
                   'security_doc_id' => $securityDocId,
-                  'description' => isset($arrData['description'][$key]) ? $arrData['description'][$key] : null,
+                  'description' => isset($arrData['description'][$key]) ? strip_tags($arrData['description'][$key]) : null,
                   'due_date' => isset($arrData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrData['due_date'][$key])->format('Y-m-d') : null,
                   'doc_type' => isset($arrData['doc_type'][$key]) ? $arrData['doc_type'][$key] : null,
                   'created_by' => $userId,
@@ -2879,14 +2879,14 @@ class CamController extends Controller
                     'biz_id' => $arrCamData['biz_id'],
                     'app_id' => $arrCamData['app_id'],
                     'security_doc_id' => $securityDocId,
-                    'description' => isset($arrCamData['description'][$key]) ? $arrCamData['description'][$key] : null,
+                    'description' => isset(($arrCamData['description'][$key])) ? strip_tags($arrCamData['description'][$key]) : null,
                     'document_number' => isset($arrCamData['document_number'][$key]) ? $arrCamData['document_number'][$key] : null,
                     'due_date' => isset($arrCamData['due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['due_date'][$key])->format('Y-m-d') : null,
                     'completed' => isset($arrCamData['completed'][$key]) ? $arrCamData['completed'][$key] : null,
                     'exception_received' => isset($arrCamData['exception_received'][$key]) ? $arrCamData['exception_received'][$key] : null,
-                    'exception_received_from' => isset($arrCamData['exception_received_from'][$key]) ? $arrCamData['exception_received_from'][$key] : null,
+                    'exception_received_from' => isset($arrCamData['exception_received_from'][$key]) ? strip_tags($arrCamData['exception_received_from'][$key]) : null,
                     'exception_received_date' => isset($arrCamData['exception_received_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['exception_received_date'][$key])->format('Y-m-d') : null,
-                    'exception_remark' => isset($arrCamData['exception_remark'][$key]) ? $arrCamData['exception_remark'][$key] : null,
+                    'exception_remark' => isset($arrCamData['exception_remark'][$key]) ? strip_tags($arrCamData['exception_remark'][$key]) : null,
                     'extended_due_date' => isset($arrCamData['extended_due_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['extended_due_date'][$key])->format('Y-m-d') : null,
                     'maturity_date' => isset($arrCamData['maturity_date'][$key]) ? Carbon::createFromFormat('d/m/Y', $arrCamData['maturity_date'][$key])->format('Y-m-d') : null,
                     'renewal_reminder_days' => isset($arrCamData['renewal_reminder_days'][$key]) ? $arrCamData['renewal_reminder_days'][$key] : null,
@@ -2927,7 +2927,7 @@ class CamController extends Controller
         $activity = $this->mstRepo->getActivity($whereActivi);
         if (!empty($activity)) {
           $activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
-          $activity_desc = 'Security document Save (Security document). AppID ' . $arrCamData['app_id'];
+          $activity_desc = 'Security document Save (Pre/Post Disbursment Tab). AppID ' . $arrCamData['app_id'];
           $arrActivity['app_id'] = $arrCamData['app_id'];
           $this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($arrCamData), $arrActivity);
         }
