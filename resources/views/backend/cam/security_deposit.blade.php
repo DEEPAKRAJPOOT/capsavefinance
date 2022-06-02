@@ -28,7 +28,7 @@
               @else
               <div class="card card-color mb-0">
                 <div class="card-header">
-                   <a class="card-title ">Application is not approved yet.</a>
+                   <a class="card-title ">Offer is not accepted yet.</a>
                 </div>
              </div>
               @endif
