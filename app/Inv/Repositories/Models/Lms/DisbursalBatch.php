@@ -91,4 +91,19 @@ class DisbursalBatch extends BaseModel {
         		->orderBy('disbursal_batch_id', 'DESC');
     }
 
+	public static function lmsGetDisbursalBatchRequestCron()
+	{
+		$today = \Carbon\Carbon::now();
+		$to_date = $today->toDateString();
+		$query = self::with('disbursal')
+					->where('batch_status', 1)
+					->whereHas('disbursal', function($query) {
+						$query->where('disburse_type', 1);
+					})
+					->orderBy('disbursal_batch_id', 'DESC')
+					->whereDate('created_at', '=', $to_date)
+					->get();
+		return $query;
+	}
+
 }

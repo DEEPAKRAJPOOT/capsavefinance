@@ -301,7 +301,7 @@ trait LmsTrait
 
         $curData = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
                         
-        $transactionData['created_by'] = Auth::user()->user_id;
+        $transactionData['created_by'] = Auth::user()->user_id ?? 0;
         $transactionData['created_at'] = $curData;
         return $transactionData;
     }
@@ -1055,7 +1055,7 @@ trait LmsTrait
 
         $curData = \Carbon\Carbon::now()->format('Y-m-d h:i:s');
                         
-        $disbursalData['created_by'] = Auth::user()->user_id;
+        $disbursalData['created_by'] = Auth::user()->user_id ?? 0;
         $disbursalData['created_at'] = $curData;
         return $disbursalData;
     }
