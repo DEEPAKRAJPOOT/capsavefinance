@@ -1567,8 +1567,6 @@ class ApplicationController extends Controller
 
 				  $applimitData['borrower_limit_id'] = $limitData['limit_id'];
 				  $applimitData['app_id'] = $appId;
-				  $applimitData['created_by'] = Auth::user()->user_id;
-				  $applimitData['created_at'] = \carbon\Carbon::now();
 				  $createdLimited = $this->appRepo->createBorrowerLimit($applimitData);
 					
 				}

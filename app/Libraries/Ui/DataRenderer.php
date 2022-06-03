@@ -4675,7 +4675,6 @@ class DataRenderer implements DataProviderInterface
     {
         return DataTables::of($data)
                 ->rawColumns(['is_active', 'action'])
-                
                 ->addColumn(
                     'limit_id',
                     function ($data) {
@@ -4694,12 +4693,12 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                 'start_date', 
                 function ($data) {
-                    return ($data->start_date) ? date('d-M-Y', strtotime($data->start_date)) : '---';
+                    return ($data->start_date)?date('d-M-Y',strtotime($data->start_date)):'---';
                 })
                 ->addColumn(
                 'end_date', 
                 function ($data) {
-                    return ($data->end_date) ? date('d-M-Y', strtotime($data->end_date)) : '---';
+                    return ($data->end_date)?date('d-M-Y',strtotime($data->end_date)):'---';
                 })
                 ->addColumn(
                     'is_active',

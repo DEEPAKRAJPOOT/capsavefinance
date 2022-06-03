@@ -55,8 +55,6 @@ class LimitController extends Controller
             }else{
                 $e_date = Carbon::createFromFormat('d/m/Y', $request['start_date'])->addDays(-1)->format('Y-m-d');
                 $arrSaveData['start_date'] = ($request['start_date']) ? Carbon::createFromFormat('d/m/Y', $request['start_date'])->format('Y-m-d') : '';
-                $arrSaveData['created_by'] = Auth::user()->user_id;
-                $arrSaveData['created_at'] = \carbon\Carbon::now();
                 $status = $this->masterRepo->saveLimit($arrSaveData); 
                 $this->masterRepo->updateLimitEndDate($status->limit_id, $e_date);
             }
