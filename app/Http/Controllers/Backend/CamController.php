@@ -2803,7 +2803,7 @@ class CamController extends Controller
       $securityDocumentListJson = json_encode($securityDocumentList);
       $appData = Application::where(['app_id'=>$request->get('app_id')])->first();
       $arrAppSecurityQuerry = AppSecurityDoc::with('mstSecurityDocs')->where(['app_id' => $arrRequest['app_id'],'biz_id'=>$arrRequest['biz_id'], 'is_active' => 1]);
-      if($appData['curr_status_id'] == config('common.mst_status_id.OFFER_LIMIT_APPROVED')){
+      if($appData['curr_status_id'] == config('common.mst_status_id.OFFER_ACCEPTED')){
         $arrAppSecurityQuerry->whereIn('status',[3])->whereIn('is_non_editable',[0]);
       }
       elseif($appData['curr_status_id'] < config('common.mst_status_id.APP_SANCTIONED')){
