@@ -2551,15 +2551,15 @@ class Helper extends PaypalHelper
                     $oldFileId = UserFile::deletes($appSecDocData->file_id);
                 }
             }
-
+            $file_dir_path = '/app_security_doc/'.$appId;
             if (!Storage::disk('s3')->exists($file_dir_path)) {
-                Storage::disk('s3')->makeDirectory($file_dir_path, 0775, true);
+                Storage::disk('s3')->makeDirectory($file_dir_path, 0777, true);
             }
             // $path = Storage::disk('s3')->put($active_filename_fullpath, $content);
             // if (!Storage::exists('/public/app_security_doc/' . $appId)) {
             //     Storage::makeDirectory('/public/app_security_doc/' . $appId, 0777, true);
             // }
-            $path = Storage::disk('public')->put('/app_security_doc/' . $appId, $attributes['doc_file'], null);
+            $path = Storage::disk('s3')->put('/app_security_doc/' . $appId, $attributes['doc_file'], null);
             $inputArr['file_path'] = $path;
         }
 
