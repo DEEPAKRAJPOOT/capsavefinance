@@ -1,6 +1,6 @@
 @extends('layouts.email')
 @section('email_content')
-<table width="700" align="center" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;margin-top:10px; font-family:Arial; ">
+<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;margin-top:10px; font-family:Arial; ">
     <tr>
         <td>
         <table width="100%" class="mail-table" border="0" cellpadding="0" cellspacing="0" style="border:#ccc solid 1px;">
@@ -23,7 +23,7 @@
         </table>
     </tr>
 </table>
-<table width="700" align="center" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;margin-top:10px; font-family:Arial; ">
+<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0" style="font-size:14px;margin-top:10px; font-family:Arial; ">
     
 
     <tr>
