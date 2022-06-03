@@ -179,7 +179,7 @@ class CamController extends Controller
                 'checkDisburseBtn'=>$checkDisburseBtn,
                 'arrGroupCompany'=>$arrGroupCompany,
                 'securityDocumentListJson' => $securityDocumentListJson,
-                'arrAppSecurityDoc' => $arrAppSecurityDoc
+                'arrAppSecurityDoc' => $arrAppSecurityDoc,
                 'activeGroup' => $activeGroup,
                 'productType' => $productType
                 ]);
