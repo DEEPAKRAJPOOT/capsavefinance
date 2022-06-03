@@ -93,7 +93,7 @@ class DisbursalBatch extends BaseModel {
 
 	public static function lmsGetDisbursalBatchRequestCron()
 	{
-		$today = \Carbon\Carbon::now();
+		$today = Carbon::now()->timezone(config('common.timezone'));
 		$to_date = $today->toDateString();
 		$query = self::with('disbursal')
 					->where('batch_status', 1)
