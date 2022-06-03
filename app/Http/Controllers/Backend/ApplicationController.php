@@ -1545,7 +1545,6 @@ class ApplicationController extends Controller
 			if ($request->has('btn_accept_offer')) {
 				$offerData['status'] = 1;
 				$message = trans('backend_messages.accept_offer_success');
-
 				$addl_data = [];
 				$addl_data['sharing_comment'] = $cmntText;
 				$currStage = Helpers::getCurrentWfStage($appId);
@@ -1563,6 +1562,17 @@ class ApplicationController extends Controller
 				$appData = $this->appRepo->getAppDataByAppId($appId);
 				$userId = $appData ? $appData->user_id : null;
 				$reqdDocs = $this->createAppRequiredDocs($prgmDocsWhere, $userId, $appId);
+				$limitData = $this->masterRepo->getCurrentBorrowerLimitData();
+				if($limitData){
+
+				  $applimitData['borrower_limit_id'] = $limitData['limit_id'];
+				  $applimitData['app_id'] = $appId;
+				  $applimitData['created_by'] = Auth::user()->user_id;
+				  $applimitData['created_at'] = \carbon\Carbon::now();
+				  $createdLimited = $this->appRepo->createBorrowerLimit($applimitData);
+					
+				}
+				
 
                                 Helpers::updateAppCurrentStatus($appId, config('common.mst_status_id.OFFER_ACCEPTED'));
 			} else if($request->has('btn_reject_offer')) {
@@ -1606,7 +1616,6 @@ class ApplicationController extends Controller
                                 $this->appRepo->updateProgramData($updatePrgmData, $whereUpdatePrgmData);
                             }
                         }
-
 			if ($savedOfferData) {
 				Session::flash('message', $message);
 				//return redirect()->route('gen_sanction_letter', ['app_id' => $appId, 'biz_id' => $bizId, 'offer_id' => $offerId ]);

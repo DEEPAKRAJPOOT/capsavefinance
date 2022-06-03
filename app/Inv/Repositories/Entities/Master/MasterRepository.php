@@ -34,6 +34,7 @@ use App\Inv\Repositories\Models\Master\BaseRate;
 use App\Inv\Repositories\Models\Master\Activity;
 use App\Inv\Repositories\Models\Master\ChargeGST;
 use App\Inv\Repositories\Models\Master\Tds;
+use App\Inv\Repositories\Models\Master\BorrowerLimit;
 use App\Inv\Repositories\Models\Master\Voucher;
 use App\Inv\Repositories\Models\Master\LocationType;
 use App\Inv\Repositories\Models\Master\Group;
@@ -530,6 +531,63 @@ class MasterRepository extends BaseRepositories implements MasterInterface
     {
         return GstTax::updateGstEndDate($id, $date);
     } 
+
+    /**
+     * master Borrower limit list
+     * 
+     * @param array $attributes
+     * @return mixed
+     */
+
+    public function getCurrentBorrowerLimitData(){
+
+        $result = BorrowerLimit::getCurrentBorrowerLimitData();
+        return $result ? $result: false;
+    }
+
+    public function findLimitById($limit_id)
+    {
+        if (empty($limit_id) || !ctype_digit($limit_id)) {
+        throw new BlankDataExceptions('No Data Found');
+        }
+        $result = BorrowerLimit::find($limit_id);
+        return $result ? $result : false;
+    }
+
+    public function findLastLimit(){
+
+        $result = BorrowerLimit::findLastLimit();
+        return $result ? $result : false;        
+    }
+
+    public function getavailFutureDate(){
+
+        $result = BorrowerLimit::getavailFutureDate();
+        return $result ? true: false;
+    }
+
+    public function getAllLimit()
+    {
+        $result = BorrowerLimit::getAllLimit();
+        return $result;
+    }
+
+    public function updateLimitEndDate($id, $date)
+    {
+        return BorrowerLimit::updateLimitEndDate($id, $date);
+    }
+
+    public function saveLimit($attributes, $limit_id=null){
+        
+        return BorrowerLimit::saveLimit($attributes,$limit_id);
+    }
+
+    public function updateLimit($attributes, $limit_id)
+    {
+        $status = BorrowerLimit::updateLimit($attributes, $limit_id);
+        return $status ?: false;
+    }
+    
 
     /**
      * master Segments list

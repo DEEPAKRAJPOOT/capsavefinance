@@ -5259,6 +5259,14 @@ if ($err) {
         return $data;
     }
 
+    // borrower limit List in master
+    public function getLimitList(DataProviderInterface $dataProvider) 
+    {
+        $limitList = $this->masterRepo->getAllLimit();
+        $data = $dataProvider->getAllLimit($this->request, $limitList);
+        return $data;
+    }
+
     public function getBackendDisbursalBatchRequest(DataProviderInterface $dataProvider) {
         $disbursalBatchRequest = $this->lmsRepo->lmsGetDisbursalBatchRequest();
         $data = $dataProvider->lmsGetDisbursalBatchRequest($this->request, $disbursalBatchRequest);

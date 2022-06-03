@@ -12,6 +12,7 @@ use App\Inv\Repositories\Models\DocumentMaster;
 use App\Inv\Repositories\Models\Business;
 use App\Inv\Repositories\Models\BusinessAddress;
 use App\Inv\Repositories\Models\LiftingDetail;
+use App\Inv\Repositories\Models\AppBorrowerLimit;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\AppAssignment;
 use App\Inv\Repositories\Models\FiAddress;
@@ -548,6 +549,24 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         return $result ?: false;
     }
 
+    /**
+     * Create app borrower limit
+     * 
+     * @param integer $applimitData
+     * @return all created result
+     */
+
+     public function createBorrowerLimit($applimitData){
+
+        $result =  AppBorrowerLimit::creates($applimitData);
+        return $result ?: false;
+     }
+
+     public function getAppBorrowerLimit($appId){
+
+        $result =  AppBorrowerLimit::getAppBorrowerLimit($appId);
+        return $result ?: false;
+     }
 
     /**
      * get address for FI

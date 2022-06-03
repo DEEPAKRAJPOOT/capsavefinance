@@ -1376,6 +1376,27 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'save_tds',
                 'uses' => 'Master\TdsController@saveTds'
             ]);
+
+            // Manage Borrower Limit 
+            Route::get('/get-borrower-limit', [
+                'as' => 'get_borrower_limit',
+                'uses' => 'Master\LimitController@list'
+            ]);
+
+            Route::get('/add-borrowe-limit',[
+                'as'=>'add_borrower_limit',
+                'uses' => 'Master\LimitController@addLimit'
+            ]);
+
+            Route::get('/edit_borrower_limit',[
+                'as'=>'edit_borrower_limit',
+                'uses' => 'Master\LimitController@editLimit'
+            ]);
+
+            Route::post('/save-borrowe-limit', [
+                'as' => 'save_borrowe_limit',
+                'uses' => 'Master\LimitController@saveLimit'
+            ]);
             // END Manage TDS
 
             //Manage Bank Name

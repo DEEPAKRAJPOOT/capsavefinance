@@ -33,6 +33,7 @@ return [
     'tds_add_success' => 'TDS added successfully.',
     'tds_edit_success' => 'TDS updated successfully.',
     'location_add_success' => 'Location added successfully',
-    'location_edit_success' => 'Location updated successfully',    
+    'location_edit_success' => 'Location updated successfully',
+    'borrower_limit_success' => 'Borrower Limit updated successfully',  
 ];
 

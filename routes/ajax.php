@@ -1290,6 +1290,11 @@ Route::group(
         'uses' => 'AjaxController@getTDSList',
     ]);
 
+    Route::post('/get_ajax_limit_list', [
+        'as' => 'get_ajax_limit_list',
+        'uses' => 'AjaxController@getLimitList',
+    ]);
+
     Route::post('backend_ajax_get_refund_batch_request',[
         'as' => 'backend_ajax_get_refund_batch_request',
         'uses' => 'AjaxController@getBackendRefundBatchRequest'

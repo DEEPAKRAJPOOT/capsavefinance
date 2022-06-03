@@ -4669,6 +4669,59 @@ class DataRenderer implements DataProviderInterface
                 ->make(true);
     }
 
+
+    // Borrower Limit
+    public function getAllLimit(Request $request, $data)
+    {
+        return DataTables::of($data)
+                ->rawColumns(['is_active', 'action'])
+                
+                ->addColumn(
+                    'limit_id',
+                    function ($data) {
+                        return $data->limit_id;
+                })
+                ->addColumn(
+                    'single_limit',
+                    function ($data) {
+                    return $data->single_limit;
+                })
+                ->addColumn(
+                    'multiple_limit', 
+                    function ($data) {
+                        return $data->multiple_limit;
+                })
+                ->addColumn(
+                'start_date', 
+                function ($data) {
+                    return ($data->start_date) ? date('d-M-Y', strtotime($data->start_date)) : '---';
+                })
+                ->addColumn(
+                'end_date', 
+                function ($data) {
+                    return ($data->end_date) ? date('d-M-Y', strtotime($data->end_date)) : '---';
+                })
+                ->addColumn(
+                    'is_active',
+                    function ($data) {
+                    $act = $data->is_active;
+                    $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editBorrowerLimitFrame" title="Edit States Detail" data-url ="'.route('edit_borrower_limit', ['limit_id' => $data->limit_id]).'" data-height="310px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                    return $status;
+                    }
+                )
+                ->filter(function ($query) use ($request) {
+                    if ($request->get('search_keyword') != '') {
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('search_keyword'));
+                            $query->where('single_limit', 'like',"%$search_keyword%")
+                            ->orWhere('multiple_limit', 'like', "%$search_keyword%");
+                        });
+                    }
+                })
+                ->make(true);
+    }
+
     // Segment
     public function getSegmentLists(Request $request, $data)
     {
