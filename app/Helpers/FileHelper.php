@@ -531,4 +531,19 @@ public function exportCsv($data=[],$columns=[],$fileName='',$extraDataArray=[])
       ];
       return $errorMessage[$errorMessageID];
     }
+
+    public function downloadAWSS3File($fileName,$userFile){
+      $client = Storage::disk('s3')->getDriver()->getAdapter()->getClient();
+      $bucket = config('filesystems.disks.s3.bucket');
+        $path = $userFile->file_path;
+        $name = $userFile->file_name;
+        $command = $client->getCommand('GetObject', [
+            'Bucket' => $bucket,
+            'Key' => $path
+        ]);
+        $request = $client->createPresignedRequest($command, '+360 minutes');
+        $presignedUrl = (string)$request->getUri();
+        return true;
+  
+    }
 }
