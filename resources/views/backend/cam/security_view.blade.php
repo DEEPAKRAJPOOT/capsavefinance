@@ -37,12 +37,11 @@
                                                     <td><b>Type Of Document:  </b> </td>
                                                     <td>{{$listingData->mstSecurityDocs->name ? : 'N/A'}}</td>
                                                 </tr>
-                                                
                                                 <tr>
                                                     <td></td>
                                                     <td><b>Description: </b></td>
                                                     <td>{{$listingData->description}}</td>
-                                                    <td><b>Origional Due Date : </b></td>
+                                                    <td><b>Original Due Date : </b></td>
                                                     <td>{{!empty($listingData->due_date) ? Carbon::parse($listingData->due_date)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
                                                 <tr>
@@ -52,7 +51,11 @@
                                                     <td><b>Created At: </b></td>
                                                     <td>{{ !empty($listingData->created_at) ? Carbon::parse($listingData->created_at)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
-                                                <td></td>
+                                                @if(!$loop->last)
+                                                <tr>
+                                                <td style="background-color:#808080" colspan="5"></td>
+                                                </tr>
+                                                @endif
                                                 @else
                                                 <tr>
                                                     <td style="text-align: center;font-weight: 600;">{{$key+1}}</td>
@@ -65,7 +68,7 @@
                                                     <td></td>
                                                     <td><b>Description: </b></td>
                                                     <td>{{$listingData->description}}</td>
-                                                    <td><b>Origional Due Date : </b></td>
+                                                    <td><b>Original Due Date : </b></td>
                                                     <td>{{!empty($listingData->due_date) ? Carbon::parse($listingData->due_date)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
                                                 <tr>
@@ -100,7 +103,7 @@
                                                 </tr>
                                                 <tr>
                                                 <td></td>
-                                                    <td><b>Renewal Reminder (Days): </b></td>
+                                                    <td><b>Renewal Reminder Days: </b></td>
                                                     <td>{{$listingData->renewal_reminder_days ? : 'N/A'}}</td>
                                                     <td><b>Amount Expected: </b></td>
                                                     <td>{{$listingData->amount_expected ? : 'N/A'}}</td>
@@ -113,12 +116,17 @@
                                                 </tr>
                                                     <tr>
                                                     <td></td>
-                                                    <td><b>Doc Upload</b></td>
+                                                    <td><b>Doc Upload:</b></td>
                                                     <td><a href="{{ route('download_storage_file', ['file_id' => $listingData['file_id'] ]) }}" title="Download Document"><i class="fa fa-lg fa-download ml-3" aria-hidden="true"></i></a></td>
                                                     <td><b>Created At: </b></td>
-                                                    <td>{{ !empty($listingData->created_at) ? Carbon::parse($listingData->created_at)->format('d-m-Y') : 'N/A' }}}</td>
+                                                    <td>{{ !empty($listingData->created_at) ? Carbon::parse($listingData->created_at)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
-                                                <td></td>
+                                                
+                                                @if(!$loop->last)
+                                                <tr>
+                                                <td style="background-color:#808080" colspan="5"></td>
+                                                </tr>
+                                                @endif
                                                 @endif
                                                 @endforeach
                                             </tbody>
