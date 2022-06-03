@@ -59,6 +59,7 @@ class AppSecurityDoc extends BaseModel
         'cam_reviewer_summary_id',
         'biz_id',
         'app_id',
+        'prgm_offer_id',
         'security_doc_id',
         'description',
         'document_number',
@@ -125,10 +126,10 @@ class AppSecurityDoc extends BaseModel
         return $this->belongsTo('App\Inv\Repositories\Models\Application','app_id','app_id')->where('is_active',1);
     }
 
-    // public static function creatAppSecDoc($inputArr)
-    // {
-    //     return self::create($inputArr);
-    // }
+    public function program_offer()
+    {
+        return $this->belongsTo('App\Inv\Repositories\Models\AppProgramOffer', 'prgm_offer_id','prgm_offer_id');
+    }
 
 }
 

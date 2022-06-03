@@ -54,7 +54,8 @@
 <script type="text/javascript">
     $('#camForm').validate({ignore: ".desexception_received_from"});
     makeRequiredFields(1,'add');
-   getAllSecurityDocumentName(1);   
+    getAllSecurityDocumentName(1);
+    getAllOfferList(1);   
     $(document).on('keypress','.float_format', function(event) {
     let num = $(this).val();
     num.split('.')[1]
@@ -267,6 +268,17 @@ $(document).on('submit', '#camForm', function(e) {
                 }
             });
     });
+    $('#security-doc-block select.prgm_offer_id').each(function () {
+        $(this).rules("add",
+            {
+                required: true,
+                min: 1,
+                number: true,
+                messages: {
+                    required: "This field is required.",
+                }
+            });
+    });
     if (!$('#camForm').valid()) {
         var valid = false;
     }
@@ -390,6 +402,12 @@ $(document).on('click', '.add-security-doc-block', function(){
         '<input type="text" name="document_amount[]" class="form-control number float_format document_amount" value="" placeholder="Document Amount" autocomplete="off" id="document_amount_'+counter+'"/>'+
         '</div>'+
     '</div>'+
+    '<div class="col-md-2 mt-1">'+
+    '<label for="txtPassword"><b>Offer ID</b></label>'+
+    '<select class="form-control prgm_offer_id" name="prgm_offer_id[]" id="prgm_offer_id_'+counter+'">'+
+       '<option value="">Select</option>'+
+        '</select>'+
+    '</div>'+
     '<div class="col-md-3 mt-1">'+
         '<label for="txtPassword"><b>Doc Upload</b></label>'+
         '<div class="relative">'+
@@ -408,6 +426,7 @@ $(document).on('click', '.add-security-doc-block', function(){
     
     makeRequiredFields(counter,'add');
     getAllSecurityDocumentName(counter);
+    getAllOfferList(counter);
     counter++;
     $('.sc-doc-date').datetimepicker({
      format: 'dd/mm/yyyy',
@@ -675,7 +694,30 @@ function makeRequiredFields(counters, reqType){
                 }
             });
     });
+    $('#security-doc-block select.prgm_offer_id').each(function () {
+        $(this).rules("add",
+            {
+                required: true,
+                min: 1,
+                number: true,
+                messages: {
+                    required: "This field is required.",
+                }
+            });
+    });
     
+}
+function getAllOfferList(selectId){
+  var offerList= {!! $offerListJson !!};
+  if(offerList){
+    $.each(offerList, function(i, item) {
+        prgmAmtLimit = item.prgm_limit_amt;
+        prgmAmtLimit = new Intl.NumberFormat('hi-IN', {currency: 'INR' }).format(prgmAmtLimit);
+        $('#prgm_offer_id_'+selectId)
+          .append($('<option>', { value : item.prgm_offer_id })
+          .html(item.prgm_offer_id+' (Amount: &#8377;'+prgmAmtLimit+')'));
+    });
+  }
 }
 @if(!empty($arrAppSecurityDoc))
         @foreach($arrAppSecurityDoc as $key=>$arr)

@@ -3,6 +3,7 @@
     $mdCls = 'md-5';
     if($route_name=="security_deposit"){
         $mdCls = 'md-4';
+        $offerListJsonDecode = json_decode($offerListJson,true);
     }
 @endphp
 <div class="data mt-4">
@@ -162,6 +163,15 @@
                    <input type="text" name="document_amount[]" class="form-control number float_format document_amount" value="{{$arr['document_amount'] ?? ''}}" placeholder="Document Amount" autocomplete="off" id="update_document_amount_{{ $key }}" />
                    </div>
                </div>
+               <div class="col-md-2 mt-1">
+                <label for="txtPassword"><b>Offer ID</b></label>
+                <select class="form-control prgm_offer_id" name="prgm_offer_id[]" id="update_prgm_offer_id_{{ $key }}">
+                   <option value="">Select</option>
+                   @foreach ($offerListJsonDecode as $key2 => $offerD)
+                       <option value="{{ $offerD['prgm_offer_id'] }}" {{(isset($arr['prgm_offer_id']) && $offerD['prgm_offer_id'] == $arr['prgm_offer_id']) ? 'selected': '' }}>{{$offerD['prgm_offer_id']}} (Amount: &#8377;{{ number_format($offerD['prgm_limit_amt']) }})</option>
+                   @endforeach
+                    </select>
+                </div>
                <div class="col-md-3 mt-1">
                    <label for="txtPassword"><b>Doc Upload</b>
                     @if ($arr['is_upload'] && $arr['is_upload'] == 1)
@@ -307,6 +317,12 @@
                     <input type="text" name="document_amount[]" class="form-control number float_format document_amount" value="" placeholder="Document Amount" autocomplete="off"/>
                     </div>
                 </div>
+                <div class="col-md-2 mt-1">
+                    <label for="txtPassword"><b>Offer ID</b></label>
+                    <select class="form-control prgm_offer_id" name="prgm_offer_id[]" id="prgm_offer_id_1">
+                       <option value="">Select</option>
+                        </select>
+                    </div>
                 <div class="col-md-3 mt-1">
                     <label for="txtPassword"><b>Doc Upload</b></label>
                     <div class="relative">

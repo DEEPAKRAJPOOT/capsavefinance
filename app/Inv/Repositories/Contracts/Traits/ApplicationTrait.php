@@ -7,6 +7,7 @@ use App\Inv\Repositories\Models\Master\Equipment;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\Anchor;
+use App\Inv\Repositories\Models\AppSecurityDoc;
 
 trait ApplicationTrait
 {
@@ -755,6 +756,13 @@ trait ApplicationTrait
                 $tot_offer_amt += $offerDataV->prgm_limit_amt;
             }
         }
+        $nachPDCData = AppSecurityDoc::with(['mstSecurityDocs'])->where(['app_id'=>$appId,'biz_id'=>$bizId,'is_active'=>1])->whereIn('status',[2,3,4,5])->get();
+        $isNachPdc = false;
+        foreach($nachPDCData as $nachPdcV){
+           if(isset($nachPdcV->mstSecurityDocs) && (strtolower($nachPdcV->mstSecurityDocs->name) == 'nach' || strtolower($nachPdcV->mstSecurityDocs->name) == 'pdc')){
+               $isNachPdc = true;
+           } 
+        }
         $supplyChainOffer['limit_amt'] = $tot_offer_amt;
         $app_prgm_limit_id = $supplyChainOffer['app_prgm_limit_id'] ?? 0;
         $data['ConcernedPersonName'] = $CamData['operational_person'] ?? NULL ;
@@ -774,6 +782,7 @@ trait ApplicationTrait
         $data['bizOwnerData'] = $bizOwnerData;
         $data['anchorData'] = $anchorArr;
         $data['amountInwords'] = numberTowords($data['limit_amt']);
+        $data['isNachPdc'] = $isNachPdc;
         return $data;
     }
 

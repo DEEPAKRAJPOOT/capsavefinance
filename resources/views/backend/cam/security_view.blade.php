@@ -121,7 +121,17 @@
                                                     <td><b>Created At: </b></td>
                                                     <td>{{ !empty($listingData->created_at) ? Carbon::parse($listingData->created_at)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
-                                                
+                                                @php
+                                                $amount='';
+                                                if(isset($listingData->program_offer)){
+                                                    $amount = $listingData->program_offer->prgm_limit_amt;
+                                                }
+                                                @endphp
+                                                <tr>
+                                                    <td></td>
+                                                    <td><b>Offer ID:  </b> </td>
+                                                    <td>{!! ($listingData->prgm_offer_id && $amount) ? $listingData->prgm_offer_id.' (Amount: &#8377;'.\Helpers::formatCurrencyNoSymbol($amount).')' : 'N/A' !!}</td>
+                                                </tr>
                                                 @if(!$loop->last)
                                                 <tr>
                                                 <td style="background-color:#808080" colspan="5"></td>
