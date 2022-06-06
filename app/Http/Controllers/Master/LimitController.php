@@ -77,7 +77,7 @@ class LimitController extends Controller
         $limit_id = preg_replace('#[^0-9]#', '', $request->get('limit_id'));
         $limitData = $this->masterRepo->findLimitById($limit_id);
         $limitData['start_date'] = $this->getFormatedDate($limitData->start_date);
-        $limitData['end_date'] = $this->getFormatedDate(($limitData->end_date != null) ? $tds_data->end_date : '');
+        $limitData['end_date'] = $this->getFormatedDate(($limitData->end_date != null) ? $limitData->end_date : '');
     	return view('master.limit.edit_limit',['limitData' => $limitData]);
     }
 
