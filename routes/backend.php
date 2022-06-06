@@ -23,9 +23,9 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'download_storage_file',
                 'uses' => 'Backend\DocumentController@downloadStorageFile'
             ]);
-            Route::get('/download-file', [
-                'as' => 'download_storage_file',
-                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            Route::get('/download-s3-file', [
+                'as' => 'download_s3_file',
+                'uses' => 'Backend\DocumentController@downloadAWSS3File'
             ]);
 
         });

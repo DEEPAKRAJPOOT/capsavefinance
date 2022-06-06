@@ -165,7 +165,7 @@
                <div class="col-md-3 mt-1">
                    <label for="txtPassword"><b>Doc Upload</b>
                     @if ($arr['is_upload'] && $arr['is_upload'] == 1)
-                    <a href="{{ route('download_storage_file', ['file_id' => $arr['file_id'] ]) }}" title="Download Document"><i class="fa fa-lg fa-download ml-3" aria-hidden="true"></i></a>  
+                    <a href="{{ route('download_s3_file', ['file_id' => $arr['file_id'] ]) }}" title="Download Document"><i class="fa fa-lg fa-download ml-3" aria-hidden="true"></i></a>  
                     @endif
                   </label>
                    <div class="relative">
