@@ -29,6 +29,10 @@ return [
         2 => 'Sanctioned',
         3 => 'Closed',
     ],
+    'DEFAULT_BORROWER_LIMIT' => [
+        'Single_limit' => 150,
+        'multiple_limit' => 250,
+    ],
     //Roles Ids
     'anchor_role' => 11,
     'YES' => 1,
@@ -81,10 +85,6 @@ return [
         '2' => 'FD',
         '3' => 'MF',
         '4' => 'Others'
-    ],
-    'DEFAULT_BORROWER_LIMIT' => [
-        'Single_limit' => 150,
-        'multiple_limit' => 250,
     ],
     'review_summ_mails' => ['gaurav.agarwal@zuron.in','varun.dudani@zuron.in','updesh.sharma@prolitus.com'],
     'review_summ_mail_docs_id' => [3,9],

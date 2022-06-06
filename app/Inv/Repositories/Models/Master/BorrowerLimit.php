@@ -40,7 +40,7 @@ class BorrowerLimit extends BaseModel
      */
     public $userstamps = true;
 
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -90,11 +90,12 @@ class BorrowerLimit extends BaseModel
     }
 
     public static function getCurrentBorrowerLimitData(){
-
+        //dd(DB::enableQueryLog());
         $result = self::select('mst_borrower_limit.limit_id', 'mst_borrower_limit.single_limit', 'mst_borrower_limit.multiple_limit', 'mst_borrower_limit.start_date', 'mst_borrower_limit.end_date', 'mst_borrower_limit.is_active')->where('mst_borrower_limit.is_active', 1)->where(function($q) {
             $q->where('start_date','<=',Carbon::now())->where('end_date','>=',Carbon::now());
             $q->orWhere('start_date','<=',Carbon::now())->orWhereNull('end_date');
         })->first();
+        //dd(DB::getQueryLog());
         return $result?$result:false;
     }
     // update tax_to means end date in gst table
