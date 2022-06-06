@@ -160,15 +160,10 @@ class CamController extends Controller
                 }
                 $arrCamData['total_exposure_amount'] = round($total,2);
             }
-      $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
-      $current_status = ($getAppDetails) ? $getAppDetails['curr_status_id'] : '';
-      $activeGroup =  $this->mstRepo->getAllActiveGroup();
-      $productType = [1 => 'Supply Chain', 2 => 'Term Loan', 3=> 'Leasing'];
-      
-      $securityDocumentList = $this->mstRepo->getAllSecurityDocument()->where('is_active', 1)->get();
-      $securityDocumentListJson = json_encode($securityDocumentList);
-      $arrAppSecurityDoc = AppSecurityDoc::where(['app_id' => $arrRequest['app_id'], 'is_active' => 1])->get()->toArray();
-      
+            $getAppDetails = $this->appRepo->getAppData($arrRequest['app_id']);
+            $current_status = ($getAppDetails) ? $getAppDetails['curr_status_id'] : '';
+            $activeGroup =  $this->mstRepo->getAllActiveGroup();
+            $productType = [1 => 'Supply Chain', 2 => 'Term Loan', 3=> 'Leasing'];
             return view('backend.cam.overview')->with([
                 'arrCamData' =>$arrCamData ,
                 'arrRequest' =>$arrRequest,
@@ -178,8 +173,6 @@ class CamController extends Controller
                 'current_status_id'=>$current_status,
                 'checkDisburseBtn'=>$checkDisburseBtn,
                 'arrGroupCompany'=>$arrGroupCompany,
-                'securityDocumentListJson' => $securityDocumentListJson,
-                'arrAppSecurityDoc' => $arrAppSecurityDoc,
                 'activeGroup' => $activeGroup,
                 'productType' => $productType
                 ]);
@@ -2885,7 +2878,9 @@ class CamController extends Controller
       // dd($arrAppSecurityDoc[0]['mst_security_docs']);
       $securityListingDataApproved = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where(['app_id' => $arrRequest['app_id'],'biz_id'=>$arrRequest['biz_id'],'is_active'=>1,'status'=>2,'is_non_editable'=>1])->get();
       $securityListingDataSanctioned = AppSecurityDoc::with(['mstSecurityDocs','createdByUser'])->where(['app_id' => $arrRequest['app_id'],'biz_id'=>$arrRequest['biz_id'],'is_active'=>1,'status'=>4,'is_non_editable'=>1])->get();
-      
+      $whereCondition = ['app_id'=>$arrRequest['app_id'],'is_approve'=>1,'is_active'=>1,'status'=>1];
+      $offerList = AppProgramOffer::getPrgmOfferByAppId($whereCondition);
+      $offerListJson = json_encode($offerList);
       return view('backend.cam.security_deposit')->with([
         'reviewerSummaryData' => $reviewerSummaryData,
         'arrRequest' => $arrRequest,
@@ -2894,7 +2889,8 @@ class CamController extends Controller
         'userId' => $userId,
         'appData' => $appData,
         'securityListingDataApproved' => $securityListingDataApproved,
-        'securityListingDataSanctioned' => $securityListingDataSanctioned
+        'securityListingDataSanctioned' => $securityListingDataSanctioned,
+        'offerListJson' => $offerListJson
       ]);
     } catch (Exception $ex) {
       return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
@@ -2948,6 +2944,7 @@ class CamController extends Controller
                   $inputArr = array(
                     'biz_id' => $arrCamData['biz_id'],
                     'app_id' => $arrCamData['app_id'],
+                    'prgm_offer_id' => isset($arrCamData['prgm_offer_id'][$key]) ? $arrCamData['prgm_offer_id'][$key] : null,
                     'security_doc_id' => $securityDocId,
                     'description' => isset(($arrCamData['description'][$key])) ? strip_tags($arrCamData['description'][$key]) : null,
                     'document_number' => isset($arrCamData['document_number'][$key]) ? $arrCamData['document_number'][$key] : null,

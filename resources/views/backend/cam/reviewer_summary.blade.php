@@ -542,14 +542,6 @@ $(document).on('click', '.add-security-doc-block', function(){
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
    });
-   $('.sc-doc-date-r').datetimepicker({
-     format: 'dd/mm/yyyy',
-     pickTime: false,
-     minView: 2, 
-     pickerPosition: 'bottom-right', 
-   }).on('changeDate', function(e){
-       $(this).datetimepicker('hide');
-   });
   });
 
   $(document).on('click', '.remove-security-doc-block', function(){
@@ -594,14 +586,6 @@ $(document).on('click', '.add-security-doc-block', function(){
    }).on('changeDate', function(e){
        $(this).datetimepicker('hide');
    });
-   $('.sc-doc-date-r').datetimepicker({
-     format: 'dd/mm/yyyy',
-     pickTime: false,
-     minView: 2, 
-     pickerPosition: 'bottom-right', 
-   }).on('changeDate', function(e){
-       $(this).datetimepicker('hide');
-   });
 function getAllSecurityDocumentName(selectId){
   var securityDoc= {!! $securityDocumentListJson !!};
   if(securityDoc){
@@ -612,19 +596,6 @@ function getAllSecurityDocumentName(selectId){
     });
   }
 }
-function displayExceptionFields(exceptionVal,divId){
-    $(".exceptionFields_"+divId).css("display", "none");
-    $(".exceptionFields_"+divId).find('input').css("visibility", "hidden").removeClass('required');
-    if(exceptionVal == 'yes'){
-      $(".exceptionFields_"+divId).removeAttr("style");
-      $(".exceptionFields_"+divId).find('input').removeAttr("style").addClass('required');
-    }
-    if(exceptionVal == 'no'){
-        $(".exceptionFields_"+divId).find('input').val('');
-    }
-    makeRequiredFields(divId,'update');
-}
-
 function resetIndexes() {
   var j = 1, id,name, $this;
   // for each element on the page with the class .input-wrap
@@ -636,16 +607,8 @@ function resetIndexes() {
         $this = $(this);
         id = $this.attr("id");
         name = $this.attr("name");
-        if(name == 'exception_received[]'){
-            $this.removeAttr("onchange");
-            $this.attr("onchange",'displayExceptionFields(this.value,'+j+');');
-        }
         ids=id.replace(/\d/g, '');
         $(this).attr('id', ids+''+j);
-            if(name == 'exception_received_from[]' || name == 'exception_received_date[]' || name == 'exception_remark[]'){
-                previousIds = $this.attr("data-previous");
-                $(this).parent().parent().removeClass('exceptionFields_'+previousIds).addClass('exceptionFields_'+j);
-        }
       })
     }
     j++;

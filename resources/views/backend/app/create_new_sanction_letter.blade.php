@@ -215,7 +215,8 @@
                                     }else{
                                         $counter = ' -'.$i++;
                                     }
-                                        
+                                    $securityDataPre=Helpers::getSecurityDoc($offerD->prgm_offer_id,$offerD->app_id,1);
+                                    $securityDataPost=Helpers::getSecurityDoc($offerD->prgm_offer_id,$offerD->app_id,2);   
                                     @endphp
                                     <tr>
                                         <td><b><br />FACILITY{{ $counter }} </b></td>
@@ -530,67 +531,51 @@
                                                 <tr>
                                                     <td valign="top"><b>Specific pre-disbursement conditions</b></td>
                                                     <td>
+                                                        @if(!empty($securityDataPre) && count($securityDataPre) > 0 && $securityDataPre)
                                                         <table width="100%" border="1">
-                                                            @if(!empty($supplyChaindata['reviewerSummaryData']['preCond']))
-                                                            <input type="hidden" value="{{ $supplyChaindata['reviewerSummaryData']['reviewerSummaryData']['cam_reviewer_summary_id'] }}" name="cam_reviewer_summary_id"/>
                                                             <thead>
                                                                 <tr>
-                                                                   <th>Condition</th>
-                                                                   <th>Timeline</th>
+                                                                   <th style="text-align: left;">Type of Document</th>
+                                                                   <th style="text-align: left;">Description</th>
+                                                                   <th style="text-align: left;">Document Number</th>
+                                                                   <th style="text-align: left;">Original Due Date</th>
                                                                 </tr>
                                                              </thead>
-                                                            @foreach($supplyChaindata['reviewerSummaryData']['preCond'] as $k => $precond)
-                                                            <tr>
-                                                                @if(isset($arrayOfferData[$offerD->prgm_offer_id]->pre_cond[$k]) && !empty($arrayOfferData[$offerD->prgm_offer_id ]->pre_cond[$k]))
-                                                                <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][pre_cond][]" value="" class="form-control form-control-sm">{!! nl2br($arrayOfferData[$offerD->prgm_offer_id]->pre_cond[$k]) !!}</textarea></td>
-                                                                @else
-                                                                
-                                                                <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][pre_cond][]" value="" class="form-control form-control-sm">{!! nl2br($precond) !!}</textarea></td>
-                                                                @endif
-                                                                @if(isset($arrayOfferData[$offerD->prgm_offer_id]->pre_timeline[$k]) && !empty($arrayOfferData[$offerD->prgm_offer_id ]->pre_timeline[$k]))
-                                                                <td>  <textarea name="offerData[{{ $offerD->prgm_offer_id }}][pre_timeline][]" value="" class="form-control form-control-sm">{!! isset($arrayOfferData[$offerD->prgm_offer_id ]->pre_timeline[$k]) ? nl2br($arrayOfferData[$offerD->prgm_offer_id ]->pre_timeline[$k]) : '' !!} </textarea>                                                         
-                                                                </td>
-                                                                @else
-                                                                <td>  <textarea name="offerData[{{ $offerD->prgm_offer_id }}][pre_timeline][]" value="" class="form-control form-control-sm">{!! isset($supplyChaindata['reviewerSummaryData']['preCondTimeline'][$k]) ? nl2br($supplyChaindata['reviewerSummaryData']['preCondTimeline'][$k]) : '' !!} </textarea>                                                         
-                                                                </td>
-                                                                @endif
-                                                            </tr>
+                                                            @foreach($securityDataPre as $k => $precond)
+                                                              <tr>
+                                                                 <td>{{ $precond->mstSecurityDocs->name??'N/A' }}</td>
+                                                                 <td>{{ $precond->description??'N/A' }}</td>
+                                                                 <td>{{ $precond->document_number??'N/A' }}</td>
+                                                                 <td>{{ $precond->due_date?\Carbon\Carbon::parse($precond->due_date)->format('d-m-Y'):'N/A' }}</td>
+                                                              </tr>  
                                                             @endforeach
-                                                            @endif
                                                         </table>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                 <td valign="top"><b>Specific post-disbursement conditions</b></td>
                                                 <td>
+                                                    @if(!empty($securityDataPost) && count($securityDataPost) > 0 && $securityDataPost)
                                                     <table width="100%" border="1">
-                                                        @if(!empty($supplyChaindata['reviewerSummaryData']['postCond']))
-                                                        <input type="hidden" value="{{ $supplyChaindata['reviewerSummaryData']['reviewerSummaryData']['cam_reviewer_summary_id'] }}" name="cam_reviewer_summary_id"/>
-                                                        <thead>
-                                                            <tr>
-                                                               <th>Condition</th>
-                                                               <th>Timeline</th>
-                                                            </tr>
-                                                         </thead>
-                                                            @foreach($supplyChaindata['reviewerSummaryData']['postCond'] as $k => $postcond)                                          
-                                                            <tr>
-                                                                @if(isset($arrayOfferData[$offerD->prgm_offer_id]->post_cond[$k]) && !empty($arrayOfferData[$offerD->prgm_offer_id ]->post_cond[$k]))
-                                                                <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][post_cond][]" value="" class="form-control form-control-sm">{!! nl2br($arrayOfferData[$offerD->prgm_offer_id ]->post_cond[$k]) !!}</textarea></td> 
-                                                                @else
-                                                                <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][post_cond][]" value="" class="form-control form-control-sm">{!! nl2br($postcond) !!}</textarea></td>
-                                                                @endif
-                                                                @if(isset($arrayOfferData[$offerD->prgm_offer_id]->post_timeline[$k]) && !empty($arrayOfferData[$offerD->prgm_offer_id ]->post_timeline[$k]))
-                                                                <td>
-                                                                    <textarea name="offerData[{{ $offerD->prgm_offer_id }}][post_timeline][]"value="" class="form-control form-control-sm">{!! isset($arrayOfferData[$offerD->prgm_offer_id ]->post_timeline[$k]) ? nl2br($arrayOfferData[$offerD->prgm_offer_id ]->post_timeline[$k]) : '' !!}</textarea>                                                     
-                                                                </td>
-                                                                @else
-                                                                <td>
-                                                                <textarea name="offerData[{{ $offerD->prgm_offer_id }}][post_timeline][]"value="" class="form-control form-control-sm">{!! isset($supplyChaindata['reviewerSummaryData']['postCondTimeline'][$k]) ? nl2br($supplyChaindata['reviewerSummaryData']['postCondTimeline'][$k]) : '' !!}</textarea> </td>
-                                                                @endif
-                                                            </tr>
+                                                            <thead>
+                                                                <tr>
+                                                                   <th style="text-align: left;">Type of Document</th>
+                                                                   <th style="text-align: left;">Description</th>
+                                                                   <th style="text-align: left;">Document Number</th>
+                                                                   <th style="text-align: left;">Original Due Date</th>
+                                                                </tr>
+                                                             </thead>
+                                                            @foreach($securityDataPost as $k => $postcond)
+                                                              <tr>
+                                                                 <td>{{ $postcond->mstSecurityDocs->name??'N/A' }}</td>
+                                                                 <td>{{ $postcond->description??'N/A' }}</td>
+                                                                 <td>{{ $postcond->document_number??'N/A' }}</td>
+                                                                 <td>{{ $postcond->due_date?\Carbon\Carbon::parse($postcond->due_date)->format('d-m-Y'):'N/A' }}</td>
+                                                              </tr>
                                                             @endforeach
-                                                            @endif
                                                     </table>
+                                                    @endif
                                                 </td>
                                             </tr>
                                     </tr>
@@ -759,12 +744,14 @@
                                                                                 Self Attested ID proof and address proof
                                                                             </td>
                                                                         </tr>
+                                                                        @if ($supplyChaindata['isNachPdc'])
                                                                         <tr>
                                                                             <td valign="top" width="3%">&bull;</td>
                                                                             <td>Signature Verification of authorized
                                                                                 signatories from Borrower's banker?
                                                                             </td>
                                                                         </tr>
+                                                                        @endif
                                                                     </table>
                                                                 </td>
                                                             </tr>

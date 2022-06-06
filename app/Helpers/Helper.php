@@ -2692,4 +2692,16 @@ class Helper extends PaypalHelper
 
         return $inputArr;
     }
+
+    public static function getSecurityDoc($offerId, $appId,$docType){
+        $appData = self::appDataCurrent($appId);
+        $securityDataQuery = AppSecurityDoc::with(['mstSecurityDocs'])->where(['prgm_offer_id'=>$offerId,'is_active'=>1,'doc_type'=>$docType]);
+        if($appData && $appData->status == 1){
+            $securityDataQuery->where(['status'=>3,'is_non_editable'=>0]);
+        }else{
+            $securityDataQuery->where(['status'=>4,'is_non_editable'=>1]);
+        }
+        $securityData = $securityDataQuery->get();
+        return ($securityData) ?$securityData : [];
+    }
 }
