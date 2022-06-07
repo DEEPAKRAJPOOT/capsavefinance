@@ -68,23 +68,21 @@ class BorrowerLimit extends BaseModel
     
     public static function getAllLimit() 
     {
-        $result = self::select('mst_borrower_limit.limit_id', 'mst_borrower_limit.single_limit', 'mst_borrower_limit.multiple_limit', 'mst_borrower_limit.start_date', 'mst_borrower_limit.end_date', 'mst_borrower_limit.is_active')
-        ->orderBy('mst_borrower_limit.limit_id', 'DESC');
+        $result = self::select('mst_borrower_limit.limit_id', 'mst_borrower_limit.single_limit', 'mst_borrower_limit.multiple_limit', 'mst_borrower_limit.start_date', 'mst_borrower_limit.end_date', 'mst_borrower_limit.is_active')->orderBy('mst_borrower_limit.limit_id', 'DESC');
 
         return $result;
     }
 
     public static function findLastLimit(){
 
-        $result = self::select('mst_borrower_limit.limit_id', 'mst_borrower_limit.single_limit', 'mst_borrower_limit.multiple_limit', 'mst_borrower_limit.start_date', 'mst_borrower_limit.end_date', 'mst_borrower_limit.is_active')
-        ->orderBy('mst_borrower_limit.limit_id', 'DESC')->first();
+        $result = self::select('mst_borrower_limit.limit_id', 'mst_borrower_limit.single_limit', 'mst_borrower_limit.multiple_limit', 'mst_borrower_limit.start_date', 'mst_borrower_limit.end_date', 'mst_borrower_limit.is_active')->where('mst_borrower_limit.is_active', 1)->orderBy('mst_borrower_limit.limit_id', 'DESC')->first();
 
         return $result?$result:false;
     }
 
     public static function getavailFutureDate(){
 
-        $result = self::select('mst_borrower_limit.limit_id', 'mst_borrower_limit.single_limit', 'mst_borrower_limit.multiple_limit', 'mst_borrower_limit.start_date', 'mst_borrower_limit.end_date', 'mst_borrower_limit.is_active')->where('start_date','>=',Carbon::now())->first();
+        $result = self::select('mst_borrower_limit.limit_id', 'mst_borrower_limit.single_limit', 'mst_borrower_limit.multiple_limit', 'mst_borrower_limit.start_date', 'mst_borrower_limit.end_date', 'mst_borrower_limit.is_active')->where('mst_borrower_limit.is_active', 1)->where('start_date','>=',Carbon::now())->first();
 
         return $result?$result:false;
     }
@@ -98,6 +96,15 @@ class BorrowerLimit extends BaseModel
         //dd(DB::getQueryLog());
         return $result?$result:false;
     }
+
+    // update tax_to means end date in gst table
+    public static function updatePrevLimitStatus(){
+
+        return self::where('end_date','<',Carbon::now())->update(['is_active'=>0]);
+        
+    }
+
+
     // update tax_to means end date in gst table
     public static function updateLimitEndDate($id , $date){
 

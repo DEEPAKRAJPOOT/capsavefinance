@@ -44,7 +44,7 @@ class LimitController extends Controller
             $limit_id = false;
             $arrSaveData['single_limit'] =  $arrSaveData['single_limit'];
             $arrSaveData['multiple_limit'] = $arrSaveData['multiple_limit'];
-            
+            $updatedstatus = $this->masterRepo->updatePrevLimitStatus();
             if(!empty($request->get('id'))){
                 $limit_id = preg_replace('#[^0-9]#', '', $request->get('id'));
                 $limit_data = $this->masterRepo->findLimitById($limit_id);

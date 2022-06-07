@@ -545,6 +545,12 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return $result ? $result: false;
     }
 
+    public function updatePrevLimitStatus(){
+
+        $status = BorrowerLimit::updatePrevLimitStatus();
+        return $status ?: false;
+    }
+
     public function findLimitById($limit_id)
     {
         if (empty($limit_id) || !ctype_digit($limit_id)) {
