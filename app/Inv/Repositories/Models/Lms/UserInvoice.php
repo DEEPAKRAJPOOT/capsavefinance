@@ -155,7 +155,7 @@ class UserInvoice extends BaseModel {
     }
 
     public static function getLastInvoiceSerialNo($inv_type){
-        return self::where('invoice_type', $inv_type)->latest()->first();
+        return self::where('invoice_type', $inv_type)->orderBy('user_invoice_id','desc')->first();
     }
 
     public function lmsUser(){
