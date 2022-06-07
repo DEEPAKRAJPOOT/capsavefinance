@@ -743,8 +743,7 @@ class userInvoiceController extends Controller
             $sgst_amt = 0;
             $sgst_rate = 0;
             $base_amt = $totalamount;
-            //Removed GST From Overdue Type Transactions 
-            if ($txn->gst == 1 && !in_array($txn->trans_type, config('lms.TRANS_TYPE.INTEREST_OVERDUE'))) {
+            if ($txn->gst == 1) {
                 $base_amt = (!is_null($txn->base_amt) ? $txn->base_amt : $totalamount * 100/(100 + $totalGST));
                 if(!$is_state_diffrent) {
                     $cgst_rate = ($totalGST/2);
