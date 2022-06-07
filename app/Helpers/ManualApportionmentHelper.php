@@ -769,22 +769,23 @@ class ManualApportionmentHelper{
         $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
         $billData = [];
         foreach($transList as $trans){
-            $billData[$trans->user_id][$trans->trans_type][$trans->trans_id] = $trans->trans_id;
+            $billType = null;
+            if($trans->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+                $billType = 'I';
+            }elseif($trans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+                $billType = 'C';
+            }elseif($trans->trans_type >= 50){
+                $billType = 'C';
+            }
+
+            $billData[$trans->user_id][$billType][$trans->trans_id] = $trans->trans_id;
         }
 
         foreach($billData as $userId => $transTypes){
-            foreach($transTypes as $transType => $trans){
+            foreach($transTypes as $billType => $trans){
                 $transIds = array_keys($trans);
                 if(!empty($transIds)){
-                    $billType = null;
-                    if($transType == config('lms.TRANS_TYPE.INTEREST')){
-                        $billType = 'I';
-                    }elseif($transType == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                        $billType = 'C';
-                    }
-                    if($billType){
-                        $controller->generateCapsaveInvoice($transIds, $userId, $billType);
-                    }
+                    $controller->generateCapsaveInvoice($transIds, $userId, $billType);
                 }
             }
         }
