@@ -743,6 +743,7 @@ class userInvoiceController extends Controller
             $sgst_amt = 0;
             $sgst_rate = 0;
             $base_amt = $totalamount;
+            
             if ($txn->gst == 1) {
                 $base_amt = (!is_null($txn->base_amt) ? $txn->base_amt : $totalamount * 100/(100 + $totalGST));
                 if(!$is_state_diffrent) {
