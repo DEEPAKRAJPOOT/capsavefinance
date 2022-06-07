@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use App\Inv\Repositories\Entities\User\Exceptions\BlankDataExceptions;
 use App\Inv\Repositories\Entities\User\Exceptions\InvalidDataTypeExceptions;
+use DB;
 
 class BorrowerLimit extends BaseModel
 {
@@ -99,8 +100,10 @@ class BorrowerLimit extends BaseModel
 
     // update tax_to means end date in gst table
     public static function updatePrevLimitStatus(){
-
+        DB::enableQueryLog();
         return self::where('end_date','<',Carbon::now())->update(['is_active'=>0]);
+        //dd(DB::getQueryLog());
+
         
     }
 
