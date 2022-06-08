@@ -81,16 +81,21 @@
 </script>
 
 <script>
-       var lastLimitDate = "{{$limitData->start_date}}";
+        var lastLimitDate = "{{$limitData->start_date}}";
         if(lastLimitDate === ''){
             lastLimitDate = new Date();
+        }
+        var endLimitDate = "{{$limitData->end_date}}";
+        if(endLimitDate === ''){
+            endLimitDate = '';
         }
         $("#start_date").datetimepicker({
             format: 'dd/mm/yyyy',
             pickerPosition: 'bottom-right',
             autoclose: true,
             minView: 2,
-            startDate: lastLimitDate
+            startDate: lastLimitDate,
+            endDate:endLimitDate
         });
         
         $("#end_date").datetimepicker({

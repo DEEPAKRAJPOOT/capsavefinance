@@ -795,13 +795,13 @@
                <tr>
                   <td>3</td>
                   <td>Single Borrower Limit</td>
-                  <td>Max 15% of Net owned funds (Rs 150 Mn)</td>
+                  <td>Max 15% of Net owned funds (Rs {{$borrowerLimitData['single_limit']}} Mn)</td>
                   <td>{{isset($reviewerSummaryData->criteria_sing_borr_remark) ? $reviewerSummaryData->criteria_sing_borr_remark : ''}}</td>
                </tr>
                <tr>
                   <td>4</td>
                   <td>Borrower Group Limit</td>
-                  <td>Max 25% of Net owned funds (Rs 250 Mn)</td>
+                  <td>Max 25% of Net owned funds (Rs {{$borrowerLimitData['multiple_limit']}} Mn)</td>
                   <td>{{isset($reviewerSummaryData->criteria_borr_grp_remark) ? $reviewerSummaryData->criteria_borr_grp_remark : ''}}</td>
                </tr>
                <tr>

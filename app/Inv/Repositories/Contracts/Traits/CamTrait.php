@@ -197,6 +197,24 @@ trait CamTrait
                         $data[$year]['mt_amount'][] = $value['amount'];
                     }
                 }
+                $is_shown = $this->appRepo->getOfferStatus([['app_id', $appId], ['is_approve', 1], ['status', 1],['is_active', 1]]);
+                $borrowerLimitData['single_limit'] = config('common.DEFAULT_BORROWER_LIMIT.Single_limit');
+                $borrowerLimitData['multiple_limit'] = config('common.DEFAULT_BORROWER_LIMIT.multiple_limit');
+
+                if($is_shown){
+                $Limitdata =  $this->appRepo->getAppBorrowerLimit($appId);
+                if($Limitdata){
+                  $borrowerLimitData['single_limit'] = $Limitdata['single_limit'];
+                  $borrowerLimitData['multiple_limit'] = $Limitdata['multiple_limit'];
+                }
+                }else{
+                  $Limitdata = $this->mstRepo->getCurrentBorrowerLimitData();
+                  if($Limitdata){
+                  $borrowerLimitData['single_limit'] = $Limitdata['single_limit'];
+                  $borrowerLimitData['multiple_limit'] = $Limitdata['multiple_limit'];
+                  }
+                } 
+
                 return [
                     'arrCamData' =>$arrCamData,
                     'arrBizData' => $arrBizData, 
@@ -229,7 +247,8 @@ trait CamTrait
                     'dataTlbl' => $dataTlbl,
                     'dataBankAna' => $dataBankAna,
                     'data'=> $data,
-                    'anchorRelationData' => $anchorRelationData
+                    'anchorRelationData' => $anchorRelationData,
+                    'borrowerLimitData'=>$borrowerLimitData,
                 ];
       } catch (Exception $ex) {
           return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));

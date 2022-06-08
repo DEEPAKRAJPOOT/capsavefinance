@@ -466,7 +466,7 @@
                         Single Borrower Limit
                     </td>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        Max 15% of Net owned funds (Rs150 Mn)
+                        Max 15% of Net owned funds (Rs {{$borrowerLimitData['single_limit']}} Mn)
                     </td>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_sing_borr_limit) ? $reviewerSummaryData->criteria_sing_borr_limit : ''}}
@@ -480,7 +480,7 @@
                         Borrower Group Limit 
                     </td>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
-                        Max 25% of Net owned funds (Rs250 Mn)
+                        Max 25% of Net owned funds (Rs {{$borrowerLimitData['multiple_limit']}} Mn)
                     </td>
                     <td style="padding:8px 10px;font-size: 13px;border-right:#ccc solid 1px;border-bottom: #ccc solid 1px;">
                         {{isset($reviewerSummaryData->criteria_borr_grp_limit) ? $reviewerSummaryData->criteria_borr_grp_limit : ''}}

@@ -38,8 +38,8 @@
                             <thead>
                                 <tr role="row">
                                     <th>Sr No.</th>
-                                    <th>Single Borrower limit</th>
-                                    <th>Multiple Borrower Limit </th>
+                                    <th>Single Borrower limit (in mn)</th>
+                                    <th>Group Borrower Limit (in mn)</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
                                     <th>Status</th>

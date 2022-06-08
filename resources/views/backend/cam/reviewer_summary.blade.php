@@ -195,7 +195,7 @@
                                     Single Borrower Limit
                                  </td>
                                  <td class="">
-                                    Max 15% of Net owned funds (Rs{{$borrowerLimitData['single_limit']}} Mn)
+                                    Max 15% of Net owned funds (Rs {{$borrowerLimitData['single_limit']}} Mn)
                                  </td>
                                  <td class="">
                                     <label for="cibil_check_yes" class="form-check-label">
@@ -214,7 +214,7 @@
                                     Borrower Group Limit 
                                  </td>
                                  <td class="">
-                                    Max 25% of Net owned funds (Rs{{$borrowerLimitData['multiple_limit']}} Mn)
+                                    Max 25% of Net owned funds (Rs {{$borrowerLimitData['multiple_limit']}} Mn)
                                  </td>
                                  <td class="">
                                     <label for="cibil_check_yes" class="form-check-label">
