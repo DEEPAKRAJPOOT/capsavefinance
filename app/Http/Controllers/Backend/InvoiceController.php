@@ -2849,7 +2849,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     if ($createDisbusalApiLog) {
                         $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;
                     }
-                    $result['status'] = 'success';
+
                     if ($result['status'] == 'success') {
 
                         // $invoiceIds = $this->lmsRepo->findInvoicesByUserAndBatchId(['disbursal_batch_id' => $disbursalBatchId])->toArray();
