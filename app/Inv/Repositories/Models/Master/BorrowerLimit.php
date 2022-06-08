@@ -91,19 +91,18 @@ class BorrowerLimit extends BaseModel
     public static function getCurrentBorrowerLimitData(){
         DB::enableQueryLog();
         $result = self::select('mst_borrower_limit.limit_id', 'mst_borrower_limit.single_limit', 'mst_borrower_limit.multiple_limit', 'mst_borrower_limit.start_date', 'mst_borrower_limit.end_date', 'mst_borrower_limit.is_active')->where(function($q) {
-            $q->where(function($q) {
+            
                 $q->where('start_date','<=',Carbon::now())
                   ->where('end_date','>=',Carbon::now())
                   ->where('mst_borrower_limit.is_active', 1);
-            });
-            $q->orWhere(function($q) {
-                $q->where('start_date','<=',Carbon::now())
-                ->WhereNull('end_date')
-                ->where('mst_borrower_limit.is_active', 1);
-            });
+            
+                $q->orWhere('start_date','<=',Carbon::now())
+                ->whereNull('end_date')
+                ->orWhere('mst_borrower_limit.is_active', 1);
+            
             
         })->first();
-        // dd(DB::getQueryLog());
+        // dd($result);
         return $result?$result:false;
     }
 

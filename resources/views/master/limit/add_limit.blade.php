@@ -7,11 +7,11 @@
 
         <div class="row">
             <div class="form-group col-6">
-                <label for="single_limit">Single Borrower Limit</label>
+                <label for="single_limit">Single Borrower Limit (in mn)<span class="mandatory">*</span></label>
                 <input type="text" class="form-control" id="single_limit" name="single_limit" placeholder="Single Borrower Limit">
             </div>
             <div class="form-group col-6">
-                <label for="multiple_limit">Multiple Borrower Limit<span class="mandatory">*</span></label>
+                <label for="multiple_limit">Group Borrower Limit (in mn)<span class="mandatory">*</span></label>
                 <input type="text" name="multiple_limit" id="multiple_limit" class="form-control" placeholder="Multiple Borrower Limit">
             </div>
         </div>
@@ -21,7 +21,7 @@
                 <input type="text" name="start_date" id="start_date" readonly="readonly" class="form-control" value="{{$lastStartDate}}">
             </div>
             <div class="form-group col-6">
-                <label for="address_type">Status</label><br />
+                <label for="address_type">Status<span class="mandatory">*</span></label><br />
                 <select class="form-control" name="is_active" id="is_active">
                     <option disabled selected>Select</option>
                     <option value="1">Active</option>
