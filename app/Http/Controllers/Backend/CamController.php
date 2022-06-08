@@ -2029,8 +2029,8 @@ class CamController extends Controller
 
           if ($appData->app_type == 2) {
             $previousProgramLimit = AppProgramOffer::getAmountOfferLimit(['anchor_id' => $anchorId, 'prgm_id' => $program_id, 'app_id' => $appData->parent_app_id]);
-            if ($request->prgm_limit_amt <= $previousProgramLimit) {
-              Session::flash('error', 'Program Limit amount can\'t be less than or equal to the previous program limit.');
+            if ($request->prgm_limit_amt < $previousProgramLimit) {
+              Session::flash('error', 'Program Limit amount can\'t be less than the previous program limit.');
               return redirect()->route('limit_assessment',['app_id' =>  $appId, 'biz_id' => $bizId]);
             }
           }
