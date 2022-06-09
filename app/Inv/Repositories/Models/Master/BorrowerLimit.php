@@ -91,25 +91,21 @@ class BorrowerLimit extends BaseModel
     public static function getCurrentBorrowerLimitData(){
         DB::enableQueryLog();
         $result = self::select('mst_borrower_limit.limit_id', 'mst_borrower_limit.single_limit', 'mst_borrower_limit.multiple_limit', 'mst_borrower_limit.start_date', 'mst_borrower_limit.end_date', 'mst_borrower_limit.is_active')->where(function($q) {
-            
-                $q->where('start_date','<=',Carbon::now())
-                  ->where('end_date','>=',Carbon::now())
-                  ->where('mst_borrower_limit.is_active', 1);
-            
-                $q->orWhere('start_date','<=',Carbon::now())
+            $q->whereDate('start_date','<=',Carbon::now())
+                ->whereDate('end_date','>=',Carbon::now())
+                ->where('mst_borrower_limit.is_active', 1);   
+        })->orWhere(function($q) {
+            $q->whereDate('start_date','<=',Carbon::now())
                 ->whereNull('end_date')
-                ->orWhere('mst_borrower_limit.is_active', 1);
-            
-            
+                ->Where('mst_borrower_limit.is_active', 1);
         })->first();
-        // dd($result);
         return $result?$result:false;
     }
 
     // update tax_to means end date in gst table
     public static function updatePrevLimitStatus(){
         DB::enableQueryLog();
-        return self::where('end_date','<',Carbon::now())->update(['is_active'=>0]);
+        return self::whereDate('end_date','<',Carbon::now())->update(['is_active'=>0]);
         //dd(DB::getQueryLog());
 
         

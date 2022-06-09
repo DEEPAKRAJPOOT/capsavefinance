@@ -8,7 +8,7 @@
         <input type="hidden" class="form-control" id="id" name="id" maxlength="5" value="{{$limitData->limit_id}}">
         <div class="row">
         <div class="form-group col-6">
-                <label for="single_limit">Single Borrower Limit (in mn)</label>
+                <label for="single_limit">Single Borrower Limit (in mn)<span class="mandatory">*</span></label>
                 <input type="text" class="form-control" id="single_limit" name="single_limit" value="{{$limitData->single_limit}}" placeholder="Single Borrower Limit">
             </div>
             <div class="form-group col-6">
