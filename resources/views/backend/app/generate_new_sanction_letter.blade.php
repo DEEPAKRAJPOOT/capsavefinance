@@ -23,10 +23,10 @@
          /* thead { display:table-header-group } */
          tfoot { display:table-footer-group }
          thead {display: table-row-group;}
-         @page { margin-top: 110px; margin-bottom: 110px}
+         @page { margin-top: 120px; margin-bottom: 120px}
          header { position: fixed; left: 0px; top: -80px; right: 0px;}
          #footer { position: fixed; left: 0px; bottom: -145px; right: 0px; height: 150px; }
-         table tr td{position:relative; padding: .3rem !important;}
+         table tr td{position:relative; padding: .5rem !important;}
          /* Create two equal columns that floats next to each other */
          .column {
             float: left;
@@ -60,7 +60,7 @@
             $char_space = 0.0;  //  default
             $angle = 0.0;   //  default
             $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
-            $size1 = 14;
+            $size1 = 12;
             $text1 = date('d/m/Y');
             $font1 = $fontMetrics->getFont("Federo", "regular");
             $text_height1 = $fontMetrics->getFontHeight($font1, $size1);
@@ -97,6 +97,7 @@
          <tbody>
             <tr>
                <td>
+                  <br/><br/>
                   <span>Ref No: CFPL/{{ Carbon\Carbon::now()->format('My') }}/{{request()->get('app_id')?
                   request()->get('app_id') :''}}<br />
                   {{ $date_of_final_submission?\Carbon\Carbon::parse($date_of_final_submission)->format('F dS,
@@ -108,12 +109,12 @@
                   @endphp
                   {!! $cAddress !!}
                   @endif
-                  </span>
+                  </span><br/>
                </td>
             </tr>
             <tr>
                <td>
-                   <span><b>Kind Attention :</b> 
+                   <span><b>Kind Attention: </b> 
                    @if($contact_person)
                        {{ $contact_person }}   
                    @else
@@ -123,9 +124,9 @@
            </tr>
             <tr>
                <td>
-                  <span><b>Subject :</b> Sanction Letter for Working Capital Demand Loan
+                  <br/><span><b>Subject :</b> Sanction Letter for Working Capital Demand Loan
                   Facility
-                  to {{ $supplyChaindata['EntityName'] }}.</span>
+                  to {{ $supplyChaindata['EntityName'] }}.</span><br/><br/>
                </td>
             </tr>
             <tr>
@@ -145,7 +146,7 @@
                   and supporting documents submitted to us.
                   The credit facility is subject to acceptance of the terms and condition
                   as
-                  set out in the attached annexures.</span>
+                  set out in the attached annexures.</span><br/><br/>
                </td>
             </tr>
             <tr>
@@ -179,6 +180,7 @@
             </tr>
             <tr>
                <td>
+                  <br/><br/>
                   <span>I /We accept all the terms and conditions as per the attached
                   annexures
                   which have been read and understood by
@@ -195,7 +197,7 @@
                <td>
                   <table width="100%" border="0">
                      <tr>
-                        <td width="50%"  height="40"><b>Yours Sincerely,</b></td>
+                        <td width="60%"  height="40"><b>Yours Sincerely,</b></td>
                         <td  height="40" style="float: right;"><b>Accepted for and behalf of
                            Borrower</b>
                         </td>
@@ -218,7 +220,7 @@
                <td>
                   <table width="100%" border="0">
                      <tr>
-                        <td width="50%" valign="top" height="40"><b>Authorized Signatory</b></td>
+                        <td width="60%" valign="top" height="40"><b>Authorized Signatory</b></td>
                         <td valign="top" height="40" style="float: right;"><b>Authorized Signatory</b></td>
                      </tr>
                   </table>
@@ -226,7 +228,7 @@
             </tr>
          </tbody>
       </table>
-      <div style="page-break-before: always;"></div>
+      {{-- <div style="page-break-before: always;"></div> --}}
       <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify;">
          <thead>
             <tr>
@@ -259,7 +261,7 @@
             $securityDataPost=Helpers::getSecurityDoc($offerD->prgm_offer_id,$offerD->app_id,2);
             @endphp
             <tr>
-               <td><b>FACILITY{{ $counter }} </b></td>
+               <td><br/><b>FACILITY{{ $counter }} </b><br/></td>
             </tr>
             <tr>
                <td>
@@ -294,12 +296,12 @@
                         Presently Benchmark Lending Rate (BLR) as on date is {{ $offerD->lending_rate??0.00 }}%. Interest rate on repayment would change based on the changes in BLR as announced by Lender from time to time. This would lead to change in interest payable to Lender.
                         </td>
                         @else
-                        <td>{{$offerD->interest_rate}}% per annum reckoned from the date of disbursement until the
-                            date on which repayment becomes due.
+                        <td>{{$offerD->interest_rate}}% per annum i.e., ROI equal to CFPL Benchmark Lending Rate less 0.00% (to be reckoned from the date of disbursement until the date on which repayment becomes due).
+                           Presently Benchmark Lending Rate (BLR) as on date is 0.00%. Interest rate on repayment would change based on the changes in BLR as announced by Lender from time to time. This would lead to change in interest payable to Lender.
                         </td>
                         @endif
                     </tr>
-                     @if($offerD->grace_period && $offerD->tenor)
+                     @if($offerD->tenor)
                      <tr>
                         <td valign="top"><b>Tenor for each tranche</b></td>
                         <td>
@@ -882,7 +884,7 @@
                   <table width="100%" border="0">
                      <tbody>
                         <tr>
-                           <td width="50%" valign="top" height="40"><b>Yours Sincerely,</b></td>
+                           <td width="60%" valign="top" height="40"><b>Yours Sincerely,</b></td>
                            <td valign="top" height="40" style="float: right;"><b>Accepted for and behalf of Borrower</b></td>
                         </tr>
                         <tr>
@@ -901,7 +903,7 @@
                   <table width="100%" border="0">
                      <tbody>
                         <tr>
-                           <td width="50%" valign="top" height="40"><b>Authorized Signatory</b></td>
+                           <td width="60%" valign="top" height="40"><b>Authorized Signatory</b></td>
                            <td valign="top" height="40" style="float: right;"><b>Authorized Signatory</b></td>
                         </tr>
                      </tbody>

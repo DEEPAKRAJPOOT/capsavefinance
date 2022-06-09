@@ -250,8 +250,8 @@
                                                     Presently Benchmark Lending Rate (BLR) as on date is {{ $offerD->lending_rate??0.00 }}%. Interest rate on repayment would change based on the changes in BLR as announced by Lender from time to time. This would lead to change in interest payable to Lender.
                                                     </td>
                                                     @else
-                                                    <td>{{$offerD->interest_rate}}% per annum reckoned from the date of disbursement until the
-                                                        date on which repayment becomes due.
+                                                    <td>{{$offerD->interest_rate}}% per annum i.e., ROI equal to CFPL Benchmark Lending Rate less 0.00% (to be reckoned from the date of disbursement until the date on which repayment becomes due).
+                                                        Presently Benchmark Lending Rate (BLR) as on date is 0.00%. Interest rate on repayment would change based on the changes in BLR as announced by Lender from time to time. This would lead to change in interest payable to Lender.
                                                     </td>
                                                     @endif
                                                 </tr>

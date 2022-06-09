@@ -756,7 +756,7 @@ trait ApplicationTrait
                 $tot_offer_amt += $offerDataV->prgm_limit_amt;
             }
         }
-        $nachPDCData = AppSecurityDoc::with(['mstSecurityDocs'])->where(['app_id'=>$appId,'biz_id'=>$bizId,'is_active'=>1])->whereIn('status',[2,3,4,5])->get();
+        $nachPDCData = AppSecurityDoc::with(['mstSecurityDocs'])->where(['app_id'=>$appId,'biz_id'=>$bizId,'is_active'=>1])->whereIn('status',[3,4])->get();
         $isNachPdc = false;
         foreach($nachPDCData as $nachPdcV){
            if(isset($nachPdcV->mstSecurityDocs) && (strtolower($nachPdcV->mstSecurityDocs->name) == 'nach' || strtolower($nachPdcV->mstSecurityDocs->name) == 'pdc')){
