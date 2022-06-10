@@ -1304,6 +1304,6 @@ class userInvoiceController extends Controller
             'body' => 'body',
             'attachment' => $pdfResult,
           );
-        \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
+        // \Event::dispatch("USER_INVOICE_MAIL", serialize($emailData));
     }
 }
