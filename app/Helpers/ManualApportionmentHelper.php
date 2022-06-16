@@ -735,6 +735,7 @@ class ManualApportionmentHelper{
     }
     
     public function dailyIntAccrual(){
+        ini_set("memory_limit", "-1");
         $cLogDetails = Helper::cronLogBegin(1);
 
         $curdate = Helpers::getSysStartDate();
