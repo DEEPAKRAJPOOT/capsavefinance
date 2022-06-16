@@ -1588,6 +1588,8 @@ class ApportionmentController extends Controller
     }
 
     public function undoApportionment(Request $request){
+        ini_set("memory_limit", "-1");
+        set_time_limit(0);
         DB::beginTransaction();
         try {
 			$paymentId = $request->get('payment_id');
