@@ -327,10 +327,10 @@ public function viewAdhocUploadedFile(Request $request){
  *
  * @return \Illuminate\Http\Response
  */
-public function editReviewDate(Request $request) {
+public function editReviewDate(Request $request){
 	$userId = $request->get('user_id');
 	$appLimitId = $request->get('app_limit_id');
-	$whereCond = ['app_limit_id' => $appLimitId, 'user_id'=>$userId, 'status' => 1];
+	$whereCond = ['app_limit_id' => $appLimitId, 'user_id' => $userId, 'status' => 1];
 	$data = $this->appRepo->getAppLimitData($whereCond);
 	return view('lms.customer.edit_review_date')
 		->with([
@@ -343,14 +343,14 @@ public function editReviewDate(Request $request) {
  *
  * @return \Illuminate\Http\Response
  */
-public function updateReviewDate(Request $request) {
+public function updateReviewDate(Request $request){
 	try {
 		\DB::beginTransaction();
 		$arrData = $request->all();
-		$appLimitId = (int)$request->app_limit_id; 
-		$reviewDate = $request->review_date; 
+		$appLimitId = (int)$request->app_limit_id;
+		$reviewDate = $request->review_date;
 		$commentTxt = $request->comment_txt;
-		$whereCond = ['app_limit_id' => $appLimitId,'status' => 1];
+		$whereCond = ['app_limit_id' => $appLimitId, 'status' => 1];
 		$data = $this->appRepo->getAppLimitData($whereCond);
 		$userId = $data[0]->user_id;
 		$appId = $data[0]->app_id;
@@ -358,13 +358,13 @@ public function updateReviewDate(Request $request) {
 		$endDate = $data[0]->end_date;
 		$limitExpirationDate = $data[0]->limit_expiration_date;
 		if ($data[0]->limit_expiration_date == NULL && empty($data[0]->limit_expiration_date)) {
-			$limitExpirationDate = date('Y-m-d', strtotime('+1 years -1 day',strtotime($startDate)));
+			$limitExpirationDate = date('Y-m-d', strtotime('+1 years -1 day', strtotime($startDate)));
 		}
 
 		$validator = Validator::make($request->all(), [
-		   'review_date' => 'required|date_format:"d/m/Y"|after:'.date('d/m/Y',strtotime($endDate)).'|before:'.date('d/m/Y',strtotime($limitExpirationDate)),
+			'review_date' => 'required|date_format:"d/m/Y"|after:' . date('d/m/Y', strtotime($endDate)) . '|before:' . date('d/m/Y', strtotime($limitExpirationDate)),
 		]);
-		
+
 		if ($validator->fails()) {
 			Session::flash('error', $validator->messages()->first());
 			return redirect()->route('limit_management', ['user_id' => $userId])->withInput();
@@ -373,26 +373,26 @@ public function updateReviewDate(Request $request) {
 		if ($data) {
 			$limitReviewData = array(
 				'app_limit_id' => $appLimitId,
-				'review_date' => (!empty($reviewDate)) ? date("Y-m-d", strtotime(str_replace('/','-',$reviewDate))) : NULL,
+				'review_date' => (!empty($reviewDate)) ? date("Y-m-d", strtotime(str_replace('/', '-', $reviewDate))) : NULL,
 				'comment_txt' => $commentTxt,
-				'created_by' => \Auth::user()->user_id,
-              	'created_at' => \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s'),
+				'created_by' => Auth::user()->user_id,
+				'created_at' => \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s'),
 			);
 			$file_id = NULL;
 			if ($request->doc_file) {
-                $supplier_id = $userId;
-                $uploadApprovalDocData = Helpers::uploadAppLimitReviewApprovalFile($arrData, $supplier_id, $appId);
-                $userFile = $this->docRepo->saveFile($uploadApprovalDocData);
-                $file_id = $userFile->file_id;
-            }
+				$supplier_id = $userId;
+				$uploadApprovalDocData = Helpers::uploadAppLimitReviewApprovalFile($arrData, $supplier_id, $appId);
+				$userFile = $this->docRepo->saveFile($uploadApprovalDocData);
+				$file_id = $userFile->file_id;
+			}
 			$status = 1;
-            if ($file_id){
-			    $status = 2;
+			if ($file_id) {
+				$status = 2;
 				if ($data[0]->limit_expiration_date == NULL && empty($data[0]->limit_expiration_date)) {
-					$this->appRepo->updateAppLimit(['end_date' => (!empty($reviewDate)) ? date("Y-m-d", strtotime(str_replace('/','-',$reviewDate))) : NULL, 'limit_expiration_date'=>$limitExpirationDate], ['app_limit_id' => $appLimitId]);
+					$this->appRepo->updateAppLimit(['end_date' => (!empty($reviewDate)) ? date("Y-m-d", strtotime(str_replace('/', '-', $reviewDate))) : NULL, 'limit_expiration_date' => $limitExpirationDate], ['app_limit_id' => $appLimitId]);
 				} else {
-					$this->appRepo->updateAppLimit(['end_date' => (!empty($reviewDate)) ? date("Y-m-d", strtotime(str_replace('/','-',$reviewDate))) : NULL], ['app_limit_id' => $appLimitId]);
-				} 
+					$this->appRepo->updateAppLimit(['end_date' => (!empty($reviewDate)) ? date("Y-m-d", strtotime(str_replace('/', '-', $reviewDate))) : NULL], ['app_limit_id' => $appLimitId]);
+				}
 			}
 			$limitReviewData['file_id'] = $file_id;
 			$limitReviewData['status'] = $status;
@@ -405,16 +405,16 @@ public function updateReviewDate(Request $request) {
 			$activity_desc = 'Update Review Date in Limit Management (Manage Sanction Cases)';
 			$arrActivity['app_id'] = null;
 			$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($limitReviewData), $arrActivity);
-		} 
+		}
 		if ($createAppLimitReview) {
-		    if ($file_id){
-				Session::flash('message',trans('success_messages.AppLimitReviewUpdated'));
+			if ($file_id) {
+				Session::flash('message', trans('success_messages.AppLimitReviewUpdated'));
 			} else {
-				Session::flash('message',trans('success_messages.AppLimitReviewCreated'));
+				Session::flash('message', trans('success_messages.AppLimitReviewCreated'));
 			}
 			\DB::commit();
 			return redirect()->route('limit_management', ['user_id' => $userId]);
-		} 
+		}
 	} catch (Exception $ex) {
 		\DB::rollback();
 		return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
