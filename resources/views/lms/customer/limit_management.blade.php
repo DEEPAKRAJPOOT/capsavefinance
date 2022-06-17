@@ -152,9 +152,9 @@
                                     <td>{{ $vAppLimitReview->comment_txt??'N/A' }}</td>
                                     <td>
                                         @if ($vAppLimitReview->status == 1)
-                                        <button type="button" class="badge badge-warning btn-sm">Pending </button> 
+                                        <span class="badge badge-warning">Pending </span> 
                                         @else
-                                        <button type="button" class="badge badge-success btn-sm">Approved </button>  
+                                        <span class="badge badge-success">Approved </span>  
                                         @endif
                                     </td>
                                     <td>{{ \Helpers::getUserName($vAppLimitReview->created_by) }}</td>
