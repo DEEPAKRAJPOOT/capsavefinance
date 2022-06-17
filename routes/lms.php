@@ -152,6 +152,21 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'get_user_invoice_unpublished',
                 'uses' => 'Lms\userInvoiceController@unpublishUsereAddr',
             ]);
+
+            Route::get('edit-review-date', [
+                'as' => 'edit_review_date',
+                'uses' => 'Lms\CustomerController@editReviewDate',
+            ]);
+
+            Route::post('update-review-date', [
+                'as' => 'update_review_date',
+                'uses' => 'Lms\CustomerController@updateReviewDate',
+            ]);
+
+            Route::get('/download-review-approval-file', [
+                'as' => 'download_review_approval_file',
+                'uses' => 'Backend\DocumentController@downloadStorageFile'
+            ]);
             
 
             Route::group(['prefix' => 'charges'], function () {
