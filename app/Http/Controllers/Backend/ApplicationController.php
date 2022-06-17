@@ -2709,6 +2709,14 @@ class ApplicationController extends Controller
 					$curDate = now()->format('Y-m-d');
 					$this->appRepo->saveAppLimit(['start_date' => $curDate,'end_date' => $reviewDate], $appLimitId);
 					$this->appRepo->updatePrgmLimitByLimitId(['start_date' => $curDate,'end_date' => $reviewDate], $appLimitId);
+					$limitReviewData = array(
+						'app_limit_id' => $appLimitId,
+						'review_date' => (!empty($reviewDate)) ? $reviewDate : NULL,
+						'created_by' => Auth::user()->user_id,
+						'created_at' => Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s'),
+					);
+					$limitReviewData['status'] = ($status == 2)?2:1;
+					$this->appRepo->saveAppLimitReview($limitReviewData);
 				} 
 			}
 
