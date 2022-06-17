@@ -116,6 +116,7 @@
                                    @endcan
                                 @endif
                             </div>
+                            @can('edit_review_date')
                             @if($getAccountClosure > 0 && $uLimit->app->status==2)
                               @if(count($getAppLimitReview) > 0)
                                <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12">
@@ -123,6 +124,7 @@
                                 </div>
                                @endif
                               @endif
+                             @endcan
                             @endif
                         </div>
                         @if(count($getAppLimitReview) > 0)
@@ -131,7 +133,9 @@
                             <thead>
                             <tr role="row">
                                 <th width="10%" >Review Date</td>
-                                <th width="10%" >Download File</td>
+                                @can('download_review_approval_file')
+                                <th width="10%" >Download File</td>   
+                                @endcan
                                 <th width="10%" >Comment</td>
                                 <th width="10%" >Status</td>
                                 <th width="10%" >Created By</td>
@@ -142,13 +146,15 @@
                                 @foreach ($getAppLimitReview as $vAppLimitReview)
                                 <tr>
                                     <td>{{ \Carbon\Carbon::parse($vAppLimitReview->review_date)->format('d-m-Y') }}</td>
+                                    @can('download_review_approval_file')
                                     <td>
                                         @if($vAppLimitReview->file_id)
                                         <a href="{{ route('download_review_approval_file',['file_id'=>$vAppLimitReview->file_id]) }}" title="Download"><i class="fa fa-download" aria-hidden="true"></i></a>
                                         @else
                                          N/A
                                         @endif
-                                    </td>
+                                    </td>   
+                                    @endcan
                                     <td>{{ $vAppLimitReview->comment_txt??'N/A' }}</td>
                                     <td>
                                         @if ($vAppLimitReview->status == 1)
