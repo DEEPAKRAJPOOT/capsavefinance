@@ -102,8 +102,8 @@ class DisbursalBatch extends BaseModel {
 						$query->where('disburse_type', 1);
 					})
 					->orderBy('disbursal_batch_id', 'DESC')
-                                        ->where('disbursal_id', '=', $disbursal_id)
-					//->whereDate('created_at', '=', $to_date)
+                                        //->where('disbursal_id', '=', $disbursal_id)
+					->whereDate('created_at', '=', $to_date)
 					->get();
 		return $query;
 	}
