@@ -242,7 +242,7 @@ return [
        'BEN_IFSC' => env('BEN_IFSC', 'SIMB0002233'),
     ],
     'IDFC_API_URL' => env('IDFC_API_URL', ''),
-    'IDFC_BANK_ID' => env('IDFC_BANK_ID', ''),
+    'IDFC_BANK_ID' => env('IDFC_BANK_ID', '96'),
     'IDFC_CRYPTO_KEY' => env('IDFC_CRYPTO_KEY', ''),
     'IDFC_CORP_ID' => env('IDFC_CORP_ID', ''),
     'CURLOPT_SSLCERT_FILE' => env('CURLOPT_SSLCERT_FILE', ''),
