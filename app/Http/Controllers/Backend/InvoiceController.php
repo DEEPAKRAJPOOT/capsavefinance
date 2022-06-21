@@ -908,6 +908,7 @@ class InvoiceController extends Controller {
                     $userData = $this->lmsRepo->getUserBankDetail($userid)->toArray();
                     $bank_account_id = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank_account_id'] : $userData['supplier_bank_detail']['bank_account_id'];
                     $bank_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank']['bank_name'] : $userData['supplier_bank_detail']['bank']['bank_name'] ;
+                    $bank_id = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['bank']['id'] : $userData['supplier_bank_detail']['bank']['id'] ;
                     $ifsc_code = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['ifsc_code'] : $userData['supplier_bank_detail']['ifsc_code'];
                     $acc_no = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_no'] : $userData['supplier_bank_detail']['acc_no'];
                     $acc_name = ($userData['is_buyer'] == 2) ? $userData['anchor_bank_details']['acc_name'] : $userData['supplier_bank_detail']['acc_name'];
@@ -920,7 +921,7 @@ class InvoiceController extends Controller {
                         $exportData[$userid]['Ben_IFSC'] = config('lms.IDFC_CREDIT_BANK')['BEN_IFSC'];
                         $exportData[$userid]['Ben_Acct_No'] = config('lms.IDFC_CREDIT_BANK')['BEN_ACC_NO'];
                     } else {
-                        $exportData[$userid]['Ben_IFSC'] = ($bank_name == 'IDFC Bank') ? null : $ifsc_code;
+                        $exportData[$userid]['Ben_IFSC'] = ($bank_id == config('lms.IDFC_BANK_ID')) ? null : $ifsc_code;
                         $exportData[$userid]['Ben_Acct_No'] = $acc_no;
                     }
                     $exportData[$userid]['Ben_Name'] = $acc_name;
@@ -928,7 +929,7 @@ class InvoiceController extends Controller {
                     $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
                     $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
                     //$exportData[$userid]['Mode_of_Pay'] = $modePay;
-                    $exportData[$userid]['Mode_of_Pay'] = ($bank_name == 'IDFC Bank') ? 'IFT' : $modePay;
+                    $exportData[$userid]['Mode_of_Pay'] = ($bank_id == config('lms.IDFC_BANK_ID')) ? 'IFT' : $modePay;
                     $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
                     $exportData[$userid]['Remarks'] = 'invoice disbursal';
 
