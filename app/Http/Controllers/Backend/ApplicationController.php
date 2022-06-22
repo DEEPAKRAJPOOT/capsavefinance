@@ -2707,7 +2707,8 @@ class ApplicationController extends Controller
 				$appLimitId = $this->appRepo->getAppLimitIdByUserIdAppId($userId, $appId);
 				if (!is_null($appLimitId)) {
 					$curDate = now()->format('Y-m-d');
-					$this->appRepo->saveAppLimit(['start_date' => $curDate,'end_date' => $reviewDate], $appLimitId);
+					$limitExpirationDate = date('Y-m-d', strtotime('+1 years -1 day', strtotime($curDate)));
+					$this->appRepo->saveAppLimit(['start_date' => $curDate,'end_date' => $reviewDate, 'limit_expiration_date'=>$limitExpirationDate], $appLimitId);
 					$this->appRepo->updatePrgmLimitByLimitId(['start_date' => $curDate,'end_date' => $reviewDate], $appLimitId);
 					$limitReviewData = array(
 						'app_limit_id' => $appLimitId,
