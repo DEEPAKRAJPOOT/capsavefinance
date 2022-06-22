@@ -2768,7 +2768,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
     {
         try {
             $disbursalBatchRequests = $this->lmsRepo->lmsGetDisbursalBatchRequestCron();
-            dd($disbursalBatchRequests);
+            
 
             foreach($disbursalBatchRequests as $disbursalBatchRequest) {
                 // $disbursalBatchId = $disbursalBatchRequest->batch_id;
@@ -2779,7 +2779,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
                 $transId = $reqData['txn_id'];
                 // $transId = '2RGIK4436OUMXHZGXH';
-
                 $createdBy = 0;
                 $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
                 $transDisbursalIds = [];
