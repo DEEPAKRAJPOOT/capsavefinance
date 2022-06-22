@@ -65,7 +65,7 @@
                                 $readInDays = config('lms.SHOW_EDIT_REVIEW_DATE_BUTTON_IN_DAYS').' days';
                                 $endDate = $uLimit->end_date;
 				                $editReviewButtonShowDate = date('Y-m-d', strtotime('-'.$readInDays,strtotime($endDate)));
-                                $curDate = $limitCurDt;//'2022-06-23';//$limitCurDt;
+                                $curDate = $limitCurDt;//'2022-06-23';
                              @endphp
                             
                              <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12">
@@ -88,7 +88,7 @@
                                   $isShowReviewButton = false;
                                   if ($editReviewButtonShowDate == $curDate){
                                        $isShowReviewButton = true;
-                                  }elseif ($editReviewButtonShowDate >= $curDate && $curDate == $endDate) {
+                                  }elseif (($curDate > $editReviewButtonShowDate) && ($curDate < $endDate)) {
                                        $isShowReviewButton = true;
                                   }
                               @endphp
