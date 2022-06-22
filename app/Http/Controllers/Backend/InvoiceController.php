@@ -2768,6 +2768,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
     {
         try {
             $disbursalBatchRequests = $this->lmsRepo->lmsGetDisbursalBatchRequestCron();
+            dd($disbursalBatchRequests);
 
             foreach($disbursalBatchRequests as $disbursalBatchRequest) {
                 // $disbursalBatchId = $disbursalBatchRequest->batch_id;

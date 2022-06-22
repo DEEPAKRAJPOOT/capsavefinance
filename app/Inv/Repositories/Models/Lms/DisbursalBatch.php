@@ -95,17 +95,18 @@ class DisbursalBatch extends BaseModel {
 	{
 		$today = Carbon::now()->timezone(config('common.timezone'));
 		$to_date = $today->toDateString();
-                //$disbursal_id = 5376;
-		$query = self::with('disbursal')
+               // $disbursal_id = 5376;
+		$result = self::with('disbursal')
 					->where('batch_status', 1)
-					->whereHas('disbursal', function($query) {
-						$query->where('disburse_type', 1);
+					->whereHas('disbursal', function($newQuery) {
+						$newQuery->where('disburse_type', 1);
+                                                $newQuery->where('disbursal_id', 5379);
 					})
 					->orderBy('disbursal_batch_id', 'DESC')
                                         //->where('disbursal_id', '=', $disbursal_id)
 					->whereDate('created_at', '=', $to_date)
 					->get();
-		return $query;
+		return $result;
 	}
 
 }
