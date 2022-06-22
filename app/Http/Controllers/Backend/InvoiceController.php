@@ -2769,7 +2769,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         try {
             $disbursalBatchRequests = $this->lmsRepo->lmsGetDisbursalBatchRequestCron();
             
-
             foreach($disbursalBatchRequests as $disbursalBatchRequest) {
                 // $disbursalBatchId = $disbursalBatchRequest->batch_id;
                 $disbursalBatchId = $disbursalBatchRequest->disbursal_batch_id;
@@ -2812,7 +2811,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     ];
 
                     $idfcObj= new Idfc_lib();
-                    dd($params);
                     $result = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $params);
 
                     if (isset($result['code'])) {
