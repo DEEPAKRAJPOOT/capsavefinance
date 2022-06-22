@@ -14,7 +14,7 @@
 					</div>
 					<div class="col-6">
 						<label for="txtCreditPeriod"><b>Funded Date </b><span class="error_message_label">*</span> </label>
-						<input type="text" id="funded_date" name="funded_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" required="">
+						<input type="text" id="funded_date" name="funded_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" value="" required="">
 					</div>
 					<div class="col-6">
 						<label for="txtPassword"><b>Remarks</b><span class="error_message_label">*</span></label>
