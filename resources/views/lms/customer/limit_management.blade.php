@@ -65,7 +65,7 @@
                                 $readInDays = config('lms.SHOW_EDIT_REVIEW_DATE_BUTTON_IN_DAYS').' days';
                                 $endDate = $uLimit->end_date;
 				                $editReviewButtonShowDate = date('Y-m-d', strtotime('-'.$readInDays,strtotime($endDate)));
-                                $curDate = '2022-06-23';//$limitCurDt;
+                                $curDate = $limitCurDt;//'2022-06-23';//$limitCurDt;
                              @endphp
                             
                              <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12">
