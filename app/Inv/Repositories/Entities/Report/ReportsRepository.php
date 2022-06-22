@@ -710,9 +710,16 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		
 		$report_2_res = DB::statement(\DB::raw($report_2_data));
 				
+		$report_3_clear = 'TRUNCATE `etl_perfios_log`';
+		$report_3_data = 'INSERT INTO etl_perfios_log (`id`,`perfios_log_id`,`status`,`created_by`,`created_at`,`updated_at`) SELECT `id`,`perfios_log_id`,`status`,`created_by`,`created_at`,`updated_at` FROM rta_biz_perfios_log';
+		DB::statement(\DB::raw($report_3_clear));
+		
+		$report_3_res = DB::statement(\DB::raw($report_3_data));
+
 		return [
 			'report_1' => $report_1_res,
-			'report_2' => $report_2_res
+			'report_2' => $report_2_res,
+			'report_3' => $report_3_res,
 		];
 	}
 }
