@@ -127,50 +127,54 @@
                              @endcan
                             @endif
                         </div>
-                        @if(count($getAppLimitReview) > 0)
-                        <div id="scollapse1" class="card-body bdr collapse" style="padding: 0; border: 1px solid #e9ecef;">
-                            <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
-                            <thead>
-                            <tr role="row">
-                                <th width="10%" >Review Date</td>
-                                @can('download_review_approval_file')
-                                <th width="10%" >Download File</td>   
-                                @endcan
-                                <th width="10%" >Comment</td>
-                                <th width="10%" >Status</td>
-                                <th width="10%" >Created By</td>
-                                <th width="10%" >Created At</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($getAppLimitReview as $vAppLimitReview)
-                                <tr>
-                                    <td>{{ \Carbon\Carbon::parse($vAppLimitReview->review_date)->format('d-m-Y') }}</td>
-                                    @can('download_review_approval_file')
-                                    <td>
-                                        @if($vAppLimitReview->file_id)
-                                        <a href="{{ route('download_review_approval_file',['file_id'=>$vAppLimitReview->file_id]) }}" title="Download"><i class="fa fa-download" aria-hidden="true"></i></a>
-                                        @else
-                                         N/A
-                                        @endif
-                                    </td>   
-                                    @endcan
-                                    <td>{{ $vAppLimitReview->comment_txt??'N/A' }}</td>
-                                    <td>
-                                        @if ($vAppLimitReview->status == 1)
-                                        <span class="badge badge-warning">Pending </span> 
-                                        @else
-                                        <span class="badge badge-success">Approved </span>  
-                                        @endif
-                                    </td>
-                                    <td>{{ \Helpers::getUserName($vAppLimitReview->created_by) }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($vAppLimitReview->created_at)->format('d-m-Y h:i:s') }}</td>
-                                </tr>  
-                                @endforeach
-                            </tbody>
-                            </table>
-                        </div>
-                        @endif
+                        @can('edit_review_date')
+                            @if($getAccountClosure > 0 && $uLimit->app->status==2)
+                                @if(count($getAppLimitReview) > 0)
+                                <div id="scollapse1" class="card-body bdr collapse" style="padding: 0; border: 1px solid #e9ecef;">
+                                    <table class="table overview-table" cellpadding="0" cellspacing="0" border="1">
+                                    <thead>
+                                    <tr role="row">
+                                        <th width="10%" >Review Date</td>
+                                        @can('download_review_approval_file')
+                                        <th width="10%" >Download File</td>   
+                                        @endcan
+                                        <th width="10%" >Comment</td>
+                                        <th width="10%" >Status</td>
+                                        <th width="10%" >Created By</td>
+                                        <th width="10%" >Created At</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($getAppLimitReview as $vAppLimitReview)
+                                        <tr>
+                                            <td>{{ \Carbon\Carbon::parse($vAppLimitReview->review_date)->format('d-m-Y') }}</td>
+                                            @can('download_review_approval_file')
+                                            <td>
+                                                @if($vAppLimitReview->file_id)
+                                                <a href="{{ route('download_review_approval_file',['file_id'=>$vAppLimitReview->file_id]) }}" title="Download"><i class="fa fa-download" aria-hidden="true"></i></a>
+                                                @else
+                                                N/A
+                                                @endif
+                                            </td>   
+                                            @endcan
+                                            <td>{{ $vAppLimitReview->comment_txt??'N/A' }}</td>
+                                            <td>
+                                                @if ($vAppLimitReview->status == 1)
+                                                <span class="badge badge-warning">Pending </span> 
+                                                @else
+                                                <span class="badge badge-success">Approved </span>  
+                                                @endif
+                                            </td>
+                                            <td>{{ \Helpers::getUserName($vAppLimitReview->created_by) }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($vAppLimitReview->created_at)->format('d-m-Y h:i:s') }}</td>
+                                        </tr>  
+                                        @endforeach
+                                    </tbody>
+                                    </table>
+                                </div>
+                                @endif
+                            @endif
+                        @endcan
                     </div>
                     @foreach($uLimit->supplyProgramLimit as $limit)                      
                     <div class="limit-odd">  
