@@ -1877,10 +1877,22 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
     {
         return RoleUser::getRoleActiveUsers($roleIds);
     }
+
     public function getInvoice($invoiceId = false)
 	{
 		return BizInvoice::where('invoice_id', $invoiceId)
 			   ->with(['program_offer','lms_user' , 'supplier.anchor_bank_details.bank', 'supplier_bank_detail.bank', 'program','supplier.apps.disbursed_invoices.invoice_disbursed'])
 			   ->first();
+	}
+
+	/**
+     * Get disbursal batch cron
+     *
+     * @param integer $batchId
+     * @return array
+     */
+	public function lmsGetDisbursalBatchRequestCron()
+	{
+		return DisbursalBatch::lmsGetDisbursalBatchRequestCron();
 	}
 }
