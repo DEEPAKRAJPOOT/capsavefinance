@@ -14,7 +14,7 @@
 					</div>
 					<div class="col-6">
 						<label for="txtCreditPeriod"><b>Funded Date </b><span class="error_message_label">*</span> </label>
-						<input type="text" id="funded_date" name="funded_date" readonly="readonly" class="form-control date_of_birth datepicker-dis-fdate" value="" required="">
+						<input type="text" id="funded_date" name="funded_date" readonly="readonly" class="form-control" value="{{ !empty($disbursal['disburse_date']) ? \Carbon\Carbon::parse($disbursal['disburse_date'])->format('d/m/Y') : '' }}" required="">
 					</div>
 					<div class="col-6">
 						<label for="txtPassword"><b>Remarks</b><span class="error_message_label">*</span></label>
@@ -35,7 +35,7 @@
 $(document).ready(function () {
 	var date = new Date("{{ date('Y-m-d', strtotime($disbursal->disburse_date)) }}");
 	// date.setDate(date.getDate() - 60);
-    $('#funded_date').datetimepicker('setStartDate',  date);
+    // $('#funded_date').datetimepicker('setStartDate',  date);
 
 	$('#manualDisburse').validate({ // initialize the plugin
 		
