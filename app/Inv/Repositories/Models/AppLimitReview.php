@@ -58,7 +58,7 @@ class AppLimitReview extends BaseModel {
         return self::create($data);
     }
 
-    public static function updateAppLimit($data, $whereCond=[]){
+    public static function updateAppLimitReview($data, $whereCond=[]){
         if (!is_array($data)) {
             throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
         }
@@ -100,6 +100,14 @@ class AppLimitReview extends BaseModel {
                 ->where($whereCond)               
                 ->get();
         return $result ? $result : []; 
-    }   
+    }
+
+    public static function getAppReviewLimitLatestData($whereCond)
+    {
+        return  self::where($whereCond)
+                    ->latest()
+                    ->get()
+                    ->first();;
+    }
 
 }

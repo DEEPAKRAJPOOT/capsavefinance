@@ -65,7 +65,7 @@
                                 $readInDays = config('lms.SHOW_EDIT_REVIEW_DATE_BUTTON_IN_DAYS').' days';
                                 $endDate = $uLimit->end_date;
 				                $editReviewButtonShowDate = date('Y-m-d', strtotime('-'.$readInDays,strtotime($endDate)));
-                                $curDate = $limitCurDt;//'2022-06-23';
+                                $curDate = '2022-06-24';//'2022-06-23';
                              @endphp
                             
                              <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12">
@@ -73,7 +73,10 @@
                                 <div class="label-bottom">{{$sDate}} </div>
                             </div>
                              <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
-                                <label>End Date / Review Date	 </label>
+                                <label>End Date / Review Date
+                                    <a data-toggle="modal" class="btn btn-success btn-sm" data-target="#editReviewDate" data-url ="{{ route('edit_review_date', ['user_id' => request()->get('user_id'),'app_limit_id' => $uLimit->app_limit_id ]) }}" data-height="380px" data-width="100%" data-placement="top" title="Edit Review Date">
+                                    <i class="fa fa-pencil-square-o"></i></a>     
+                                </label>
                                 <div class="label-bottom">{{$eDate}} </div>
                             </div>
                               @if ($limitExpDate != '')
@@ -95,7 +98,7 @@
                                @if($isShowReviewButton)
                                     <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12">
                                         <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#editReviewDate" data-url ="{{ route('edit_review_date', ['user_id' => request()->get('user_id'),'app_limit_id' => $uLimit->app_limit_id ]) }}" data-height="380px" data-width="100%" data-placement="top">
-                                        <i class="fa fa-pencil-square-o"></i> Edit Review Date</a>     
+                                        <i class="fa fa-pencil-square-o"></i> Review Date</a>     
                                     </div>
                                   @endif
                                 @endif
@@ -142,6 +145,8 @@
                                         <th width="10%" >Status</td>
                                         <th width="10%" >Created By</td>
                                         <th width="10%" >Created At</td>
+                                        <th width="10%" >Updated By</td>
+                                        <th width="10%" >Updated At</td>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -167,6 +172,16 @@
                                             </td>
                                             <td>{{ \Helpers::getUserName($vAppLimitReview->created_by) }}</td>
                                             <td>{{ \Carbon\Carbon::parse($vAppLimitReview->created_at)->format('d-m-Y h:i:s') }}</td>
+                                            @if ($vAppLimitReview->updated_by)
+                                            <td>{{ \Helpers::getUserName($vAppLimitReview->updated_by) }}</td>
+                                            @else
+                                            <td>N/A</td>
+                                            @endif
+                                            @if ($vAppLimitReview->updated_at)
+                                            <td>{{ \Carbon\Carbon::parse($vAppLimitReview->updated_at)->format('d-m-Y h:i:s') }}</td>
+                                            @else
+                                            <td>N/A</td>
+                                            @endif
                                         </tr>  
                                         @endforeach
                                     </tbody>

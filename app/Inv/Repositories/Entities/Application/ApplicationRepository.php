@@ -2650,4 +2650,12 @@ class ApplicationRepository extends BaseRepositories implements ApplicationInter
         $appLimitReviewData = AppLimitReview::getAppReviewLimit($user_id);
         return $appLimitReviewData ? $appLimitReviewData : [];
     }
+
+    public function updateAppLimitReview($arr, $whereCond){
+        return AppLimitReview::updateAppLimitReview($arr, $whereCond);
+    }
+
+    public function getAppReviewLimitLatestData($whereCond){
+        return AppLimitReview::getAppReviewLimitLatestData($whereCond);
+    }
 }

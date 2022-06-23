@@ -332,9 +332,12 @@ public function editReviewDate(Request $request){
 	$appLimitId = $request->get('app_limit_id');
 	$whereCond = ['app_limit_id' => $appLimitId, 'user_id' => $userId, 'status' => 1];
 	$data = $this->appRepo->getAppLimitData($whereCond);
+	$whereCond = ['app_limit_id'=>$appLimitId];
+	$AppLimitReview = $this->appRepo->getAppReviewLimitLatestData($whereCond);
 	return view('lms.customer.edit_review_date')
 		->with([
 			'data' => $data,
+			'AppLimitReview' => $AppLimitReview
 		]);
 }
 
@@ -374,9 +377,7 @@ public function updateReviewDate(Request $request){
 			$limitReviewData = array(
 				'app_limit_id' => $appLimitId,
 				'review_date' => (!empty($reviewDate)) ? date("Y-m-d", strtotime(str_replace('/', '-', $reviewDate))) : NULL,
-				'comment_txt' => $commentTxt,
-				'created_by' => Auth::user()->user_id,
-				'created_at' => \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s'),
+				'comment_txt' => $commentTxt
 			);
 			$file_id = NULL;
 			if ($request->doc_file) {
@@ -396,7 +397,17 @@ public function updateReviewDate(Request $request){
 			}
 			$limitReviewData['file_id'] = $file_id;
 			$limitReviewData['status'] = $status;
-			$createAppLimitReview = $this->appRepo->saveAppLimitReview($limitReviewData);
+			$whereCond = ['app_limit_id'=>$appLimitId,'status'=>1];
+			$AppLimitReview = $this->appRepo->getAppReviewLimitLatestData($whereCond);
+			if (!$AppLimitReview){
+				$limitReviewData['created_by'] = Auth::user()->user_id;
+				$limitReviewData['created_at'] = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
+				$createAppLimitReview = $this->appRepo->saveAppLimitReview($limitReviewData);
+			} else {
+				$limitReviewData['updated_by'] = Auth::user()->user_id;
+				$limitReviewData['updated_at'] = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
+				$createAppLimitReview = $this->appRepo->updateAppLimitReview($limitReviewData,['app_limit_review_id'=>$AppLimitReview->app_limit_review_id]);
+			}
 		}
 		$whereActivi['activity_code'] = 'update_review_date';
 		$activity = $this->master->getActivity($whereActivi);
@@ -407,7 +418,7 @@ public function updateReviewDate(Request $request){
 			$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($limitReviewData), $arrActivity);
 		}
 		if ($createAppLimitReview) {
-			if ($file_id) {
+			if ($AppLimitReview) {
 				Session::flash('message', trans('success_messages.AppLimitReviewUpdated'));
 			} else {
 				Session::flash('message', trans('success_messages.AppLimitReviewCreated'));
