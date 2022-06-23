@@ -49,6 +49,8 @@ class AppLimitReview extends BaseModel {
         'status',
         'created_at',
         'created_by',
+        'updated_at',
+        'updated_by',
     ];
 
     public static function saveAppLimitReview($data){
