@@ -2713,11 +2713,19 @@ class ApplicationController extends Controller
 					$limitReviewData = array(
 						'app_limit_id' => $appLimitId,
 						'review_date' => (!empty($reviewDate)) ? $reviewDate : NULL,
-						'created_by' => Auth::user()->user_id,
-						'created_at' => Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s'),
 					);
 					$limitReviewData['status'] = ($status == 2)?2:1;
-					$this->appRepo->saveAppLimitReview($limitReviewData);
+					$whereCond = ['app_limit_id'=>$appLimitId,'status'=>1];
+					$AppLimitReview = $this->appRepo->getAppReviewLimitLatestData($whereCond);
+					if (!$AppLimitReview){
+						$limitReviewData['created_by'] = Auth::user()->user_id;
+						$limitReviewData['created_at'] = Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
+						$this->appRepo->saveAppLimitReview($limitReviewData);
+					} else {
+						$limitReviewData['updated_by'] = Auth::user()->user_id;
+						$limitReviewData['updated_at'] = Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
+						$this->appRepo->updateAppLimitReview($limitReviewData,['app_limit_review_id'=>$AppLimitReview->app_limit_review_id]);
+					}
 				} 
 			}
 
