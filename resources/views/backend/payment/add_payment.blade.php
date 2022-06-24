@@ -482,9 +482,7 @@ cursor: pointer;
                     success: function(res) { 
                     var response = false;
                         if(res['status']!=1){
-                            if(confirm('This UTR Number is already used by another Customer. Do You want to continue')) {
-                                
-                                console.log(2);
+                            if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
                                 return false;
                             }else{
                                 $('#utr_no').val('');
@@ -494,11 +492,9 @@ cursor: pointer;
                             return true;
                         }
                         return true;
-                        
                     }
                 });  
             }
-                
         });
         $('#savePayFrm').validate( {
                 rules: {
