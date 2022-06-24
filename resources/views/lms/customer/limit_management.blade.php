@@ -73,11 +73,26 @@
                                 <div class="label-bottom">{{$sDate}} </div>
                             </div>
                              <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
-                                <label>End Date / Review Date
-                                    <a data-toggle="modal" class="btn btn-success btn-sm" data-target="#editReviewDate" data-url ="{{ route('edit_review_date', ['user_id' => request()->get('user_id'),'app_limit_id' => $uLimit->app_limit_id ]) }}" data-height="380px" data-width="100%" data-placement="top" title="Edit Review Date">
-                                    <i class="fa fa-pencil-square-o"></i></a>     
-                                </label>
-                                <div class="label-bottom">{{$eDate}} </div>
+                                <label>End Date / Review Date </label>
+                                <div class="label-bottom">{{$eDate}}
+                                    @can('edit_review_date')
+                                        @if($getAccountClosure > 0 && $uLimit->app->status==2)
+                                        @php
+                                            $isShowReviewButton = false;
+                                            if ($editReviewButtonShowDate == $curDate){
+                                                $isShowReviewButton = true;
+                                            }elseif (($curDate > $editReviewButtonShowDate) && ($curDate < $endDate)) {
+                                                $isShowReviewButton = true;
+                                            }
+                                        @endphp
+                                        @if($isShowReviewButton) 
+                                        <a data-toggle="modal" class="badge btn-success btn-sm ml-1" style="color: #fff;
+                                        cursor: pointer;" data-target="#editReviewDate" data-url ="{{ route('edit_review_date', ['user_id' => request()->get('user_id'),'app_limit_id' => $uLimit->app_limit_id ]) }}" data-height="380px" data-width="100%" data-placement="top" title="Edit Review Date">
+                                    <i class="fa fa-pencil-square-o"></i> Review Date</a>
+                                        @endif
+                                    @endif
+                                @endcan
+                                </div>
                             </div>
                               @if ($limitExpDate != '')
                               <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
@@ -85,24 +100,6 @@
                                     <div class="label-bottom">{{$limitExpDate}} </div>
                                 </div>
                               @endif
-                              @can('edit_review_date')
-                              @if($getAccountClosure > 0 && $uLimit->app->status==2)
-                              @php
-                                  $isShowReviewButton = false;
-                                  if ($editReviewButtonShowDate == $curDate){
-                                       $isShowReviewButton = true;
-                                  }elseif (($curDate > $editReviewButtonShowDate) && ($curDate < $endDate)) {
-                                       $isShowReviewButton = true;
-                                  }
-                              @endphp
-                               @if($isShowReviewButton)
-                                    <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12">
-                                        <a data-toggle="modal" class="btn  btn-success btn-sm" data-target="#editReviewDate" data-url ="{{ route('edit_review_date', ['user_id' => request()->get('user_id'),'app_limit_id' => $uLimit->app_limit_id ]) }}" data-height="380px" data-width="100%" data-placement="top">
-                                        <i class="fa fa-pencil-square-o"></i> Review Date</a>     
-                                    </div>
-                                  @endif
-                                @endif
-                              @endcan
                                <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12">
                                 
                                 @if($getAccountClosure > 0 && $uLimit->app->status==2)
@@ -122,7 +119,7 @@
                             @can('edit_review_date')
                             @if($getAccountClosure > 0 && $uLimit->app->status==2)
                               @if(count($getAppLimitReview) > 0)
-                               <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12">
+                               <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12 ml-5">
                                 <a class="btn-sm badge badge-success btn-sm" data-toggle="collapse" href="#scollapse1" role="button" aria-expanded="false" aria-controls="scollapse1"><i class="fa fa-plus" aria-hidden="true"></i></a>
                                 </div>
                                @endif
