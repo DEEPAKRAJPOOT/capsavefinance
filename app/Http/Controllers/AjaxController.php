@@ -6066,8 +6066,9 @@ if ($err) {
     public function checkUniqueUtrAlert(Request $request) 
     {    
         $utrNumber = $request->get('utr_no');
-        $result = $this->lmsRepo->checkUtrNo(['utr_no' => $utrNumber]);
-        if (isset($result)) {
+        $userId = $request->has('user_id') ? $request->get('user_id'): null ;
+        $result = $this->lmsRepo->checkUtrNo(['utr_no' => $utrNumber,'user_id'=>$userId]);
+        if (!isset($result)) {
             $result = ['status' => 1];
         } else {
             $result = ['status' => 0];

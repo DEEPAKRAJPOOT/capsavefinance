@@ -227,6 +227,7 @@
         </div>
     </div>
 </div>
+<input type="text" id="checkAlertValue" value="0">
 @endsection
 @section('jscript')
 <style>
@@ -465,7 +466,7 @@ cursor: pointer;
                     }
                 });                
                 return result;                
-            },'This UTR number is already used by this customer..'
+            },'This UTR number is already used by this customer.'
         );
 
         // $(document).on('change')
@@ -473,6 +474,7 @@ cursor: pointer;
             var utrNo = $(this).val();
             // console.log(utrNo);
                 var data = {utr_no : utrNo, _token: messages.token};
+                data['user_id'] = $('#user_id').val();
                 $.ajax({
                     type:"POST",
                     async: false,
@@ -480,7 +482,7 @@ cursor: pointer;
                     data: data,
                     success: function(res) {  
                         if(res['status']==1){
-                            confirm('This number is already taken.Do you want to continue');
+                            confirm('This UTR number is already taken.Do you want to continue');
                             return false
                         }
                     }
