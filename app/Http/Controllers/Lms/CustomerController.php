@@ -394,6 +394,7 @@ public function updateReviewDate(Request $request){
 				} else {
 					$this->appRepo->updateAppLimit(['end_date' => (!empty($reviewDate)) ? date("Y-m-d", strtotime(str_replace('/', '-', $reviewDate))) : NULL], ['app_limit_id' => $appLimitId]);
 				}
+				$this->appRepo->updatePrgmLimitByLimitId(['end_date' => (!empty($reviewDate)) ? date("Y-m-d", strtotime(str_replace('/', '-', $reviewDate))) : NULL], $appLimitId);
 			}
 			$limitReviewData['file_id'] = $file_id;
 			$limitReviewData['status'] = $status;
