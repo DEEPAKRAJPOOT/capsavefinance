@@ -457,7 +457,7 @@ cursor: pointer;
                 $.ajax({
                     type:"POST",
                     async: false,
-                    
+
                     url: messages.unique_utr_no, // script to validate in server side
                     data: data,
                     success: function(data) {                        
@@ -465,7 +465,7 @@ cursor: pointer;
                     }
                 });                
                 return result;                
-            },'This number is already exist for this Customer.'
+            },'This UTR number is already taken by this Customer.'
         );
 
         // $(document).on('change')
