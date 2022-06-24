@@ -14,7 +14,7 @@
 					</div>
 					<div class="col-6">
 						<label for="txtCreditPeriod"><b>Funded Date </b><span class="error_message_label">*</span> </label>
-						<input type="text" id="funded_date" name="funded_date" readonly="readonly" class="form-control" value="{{ !empty($disbursal['disburse_date']) ? \Carbon\Carbon::parse($disbursal['disburse_date'])->format('d/m/Y') : '' }}" required="">
+						<span class="form-control">{{ !empty($disbursal['disburse_date']) ? \Carbon\Carbon::parse($disbursal['disburse_date'])->format('d/m/Y') : '' }}</span>
 					</div>
 					<div class="col-6">
 						<label for="txtPassword"><b>Remarks</b><span class="error_message_label">*</span></label>
