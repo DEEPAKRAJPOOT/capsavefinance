@@ -457,6 +457,7 @@ cursor: pointer;
                 $.ajax({
                     type:"POST",
                     async: false,
+                    
                     url: messages.unique_utr_no, // script to validate in server side
                     data: data,
                     success: function(data) {                        
