@@ -1899,4 +1899,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public function checkUtrNo($whereCond){
 		return Payment::where($whereCond)->first();
 	}
+
+	public function checkUtrAlert($utrNumber,$userId){
+		$data = Payment::where('utr_no',$utrNumber)
+						->whereNotIn('user_id',[$userId])->first();
+		return $data;
+	}
 }

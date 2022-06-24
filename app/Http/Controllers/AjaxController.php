@@ -6067,7 +6067,7 @@ if ($err) {
     {    
         $utrNumber = $request->get('utr_no');
         $userId = $request->has('user_id') ? $request->get('user_id'): null ;
-        $result = $this->lmsRepo->checkUtrNo(['utr_no' => $utrNumber,'user_id'=>$userId]);
+        $result = $this->lmsRepo->checkUtrAlert($utrNumber,$userId);
         if (!isset($result)) {
             $result = ['status' => 1];
         } else {

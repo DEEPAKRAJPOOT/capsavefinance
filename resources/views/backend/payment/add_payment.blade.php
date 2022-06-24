@@ -469,10 +469,9 @@ cursor: pointer;
             },'This UTR number is already used by this customer.'
         );
 
-        // $(document).on('change')
-        $(document).on('change',"#utr_no", function() {
+        $(document).on('change, blur',"#utr_no", function() {
             var utrNo = $(this).val();
-            // console.log(utrNo);
+            if(utrNo != ''){
                 var data = {utr_no : utrNo, _token: messages.token};
                 data['user_id'] = $('#user_id').val();
                 $.ajax({
@@ -480,13 +479,26 @@ cursor: pointer;
                     async: false,
                     url: messages.unique_utr_alert, // script to validate in server side
                     data: data,
-                    success: function(res) {  
-                        if(res['status']==1){
-                            confirm('This UTR number is already taken.Do you want to continue');
-                            return false
+                    success: function(res) { 
+                    var response = false;
+                        if(res['status']!=1){
+                            if(confirm('This UTR Number is already used by another Customer. Do You want to continue')) {
+                                
+                                console.log(2);
+                                return false;
+                            }else{
+                                $('#utr_no').val('');
+                                return true;
+                            }
+                        }else{
+                            return true;
                         }
+                        return true;
+                        
                     }
                 });  
+            }
+                
         });
         $('#savePayFrm').validate( {
                 rules: {
