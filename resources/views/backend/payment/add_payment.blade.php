@@ -465,7 +465,7 @@ cursor: pointer;
                     }
                 });                
                 return result;                
-            },'This UTR number is already taken by this Customer.'
+            },'This UTR number is already used by this customer..'
         );
 
         // $(document).on('change')
