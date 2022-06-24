@@ -256,7 +256,9 @@ cursor: pointer;
         get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}",
         get_interest_paid_amount:"{{ route('get_interest_paid_amount') }}",
         sysDate:"{{ Carbon\Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d') }}",
-        unique_tds_certificate_no:"{{URL::route('check_unique_tds_certificate_no')}}"
+        unique_tds_certificate_no:"{{URL::route('check_unique_tds_certificate_no')}}",
+        unique_utr_no:"{{ URL::route('check_unique_utr_no') }}",
+        unique_utr_alert:"{{ URL::route('check_unique_utr_alert') }}"
     };
 
     var userData = '';
@@ -447,7 +449,42 @@ cursor: pointer;
                 return result;                
             },'Please enter another TDS Certificate No.'
         );
+        $.validator.addMethod("uniqueUtrNoByCustomerId",
+            function(value, element, params) {
+                var result = true;
+                var data = {utr_no : value, _token: messages.token};
+                data['user_id'] = $('#user_id').val();
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.unique_utr_no, // script to validate in server side
+                    data: data,
+                    success: function(data) {                        
+                        result = (data.status == 1) ? false : true;
+                    }
+                });                
+                return result;                
+            },'This number is already exist for this Customer.'
+        );
 
+        // $(document).on('change')
+        $(document).on('change',"#utr_no", function() {
+            var utrNo = $(this).val();
+            // console.log(utrNo);
+                var data = {utr_no : utrNo, _token: messages.token};
+                $.ajax({
+                    type:"POST",
+                    async: false,
+                    url: messages.unique_utr_alert, // script to validate in server side
+                    data: data,
+                    success: function(res) {  
+                        if(res['status']==1){
+                            confirm('This number is already taken.Do you want to continue');
+                            return false
+                        }
+                    }
+                });  
+        });
         $('#savePayFrm').validate( {
                 rules: {
                 search_bus: {
@@ -476,6 +513,7 @@ cursor: pointer;
                     },
                     utr_no:{
                         required:true,
+                        uniqueUtrNoByCustomerId:true,
                     },
                     description:{
                         required:true,

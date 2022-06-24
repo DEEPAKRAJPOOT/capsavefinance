@@ -6048,4 +6048,30 @@ if ($err) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }    
     }
+
+    public function checkUniqueUtrNo(Request $request) 
+    {        
+        $utrNumber = $request->get('utr_no');
+        $userId = $request->has('user_id') ? $request->get('user_id'): null ;
+        $result = $this->lmsRepo->checkUtrNo(['utr_no' => $utrNumber,'user_id'=>$userId]);
+        // dd($result);
+        if (isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }  
+    
+    public function checkUniqueUtrAlert(Request $request) 
+    {    
+        $utrNumber = $request->get('utr_no');
+        $result = $this->lmsRepo->checkUtrNo(['utr_no' => $utrNumber]);
+        if (isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }  
 }

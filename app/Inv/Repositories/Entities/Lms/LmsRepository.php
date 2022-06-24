@@ -1895,4 +1895,8 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return DisbursalBatch::lmsGetDisbursalBatchRequestCron();
 	}
+
+	public function checkUtrNo($whereCond){
+		return Payment::where($whereCond)->first();
+	}
 }

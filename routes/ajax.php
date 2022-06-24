@@ -1477,4 +1477,12 @@ Route::group(
         'as' => 'upload_approval_mail_copy',
         'uses' => 'AjaxController@uploadApprovalMailCopy'
     ]);
+    Route::post('check-unique-utr-no', [
+        'as' => 'check_unique_utr_no',
+        'uses' => 'AjaxController@checkUniqueUtrNo'
+    ]);
+    Route::post('check-unique-utr-alert', [
+        'as' => 'check_unique_utr_alert',
+        'uses' => 'AjaxController@checkUniqueUtrAlert'
+    ]);
 });
