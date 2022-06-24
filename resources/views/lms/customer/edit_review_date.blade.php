@@ -6,10 +6,7 @@
     $endDate = $data[0]->end_date;
     $editReviewDate = date('Y-m-d', strtotime('+'.$readInDays,strtotime($endDate)));
     $reviewDate = (isset($AppLimitReview) && $AppLimitReview->review_date)?date('d/m/Y', strtotime($AppLimitReview->review_date)):date('d/m/Y', strtotime($endDate));
-    $commentTxt = (isset($AppLimitReview) && $AppLimitReview->comment_txt)?$AppLimitReview->comment_txt:'';
-    if (isset($AppLimitReview) && $AppLimitReview->status == 2) {
-        $commentTxt = '';
-    }
+    $commentTxt = '';
 @endphp
 <form id="reviewDateForm" method="POST" action="{{ Route('update_review_date') }}" enctype="multipart/form-data"
     target="_top">
