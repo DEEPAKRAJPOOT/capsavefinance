@@ -1905,4 +1905,16 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 						->whereNotIn('user_id',[$userId])->first();
 		return $data;
 	}
+	public function chequeAlert($chequeNumber,$userId){
+		$data = Payment::where('cheque_no',$chequeNumber)
+						->whereNotIn('user_id',[$userId])->first();
+		return $data;
+	}
+	public function checkUnrAlert($unrNumber,$userId){
+		$data = Payment::where('unr_no',$unrNumber)
+						->whereNotIn('user_id',[$userId])->first();
+		return $data;
+	}
+		
+	
 }

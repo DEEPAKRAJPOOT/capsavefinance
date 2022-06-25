@@ -6074,5 +6074,56 @@ if ($err) {
             $result = ['status' => 0];
         }
         return response()->json($result); 
-    }  
+    } 
+    
+    public function checkUniqueChequeNo(Request $request) 
+    {        
+        $chequeNumber = $request->get('cheque_no');
+        $userId = $request->has('user_id') ? $request->get('user_id'): null ;
+        $result = $this->lmsRepo->checkUtrNo(['cheque_no' => $chequeNumber,'user_id'=>$userId]);
+        // dd($result);
+        if (isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    } 
+    public function checkUniqueChequeAlert(Request $request) 
+    {        
+        $chequeNumber = $request->get('cheque_no');
+        $userId = $request->has('user_id') ? $request->get('user_id'): null ;
+        $result = $this->lmsRepo->chequeAlert( $chequeNumber,$userId);
+        if (!isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    } 
+    public function checkUniqueUnrNo(Request $request) 
+    {        
+        $unrNumber = $request->get('unr_no');
+        $userId = $request->has('user_id') ? $request->get('user_id'): null ;
+        $result = $this->lmsRepo->checkUtrNo(['unr_no' => $unrNumber,'user_id'=>$userId]);
+        // dd($result);
+        if (isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    } 
+    public function checkUniqueUnrAlert(Request $request) 
+    {        
+        $unrNumber = $request->get('unr_no');
+        $userId = $request->has('user_id') ? $request->get('user_id'): null ;
+        $result = $this->lmsRepo->checkUnrAlert( $unrNumber,$userId);
+        if (!isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    } 
 }
