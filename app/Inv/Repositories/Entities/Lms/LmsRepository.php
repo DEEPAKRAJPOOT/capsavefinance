@@ -73,6 +73,7 @@ use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
+use App\Inv\Repositories\Models\AppApprover;
 
 /**
  * Lms Repository class
@@ -1895,4 +1896,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	{
 		return DisbursalBatch::lmsGetDisbursalBatchRequestCron();
 	}
+	
+    public function mailsForPendingCases()
+	{
+		return AppApprover::mailsForPendingCases();
+	}
+
+	
 }
