@@ -516,7 +516,7 @@ cursor: pointer;
                     }
                 });                
                 return result;                
-            },'This Cheque number is already used by this customer.'
+            },'This UTR number is already used by this customer.'
         );
         $(document).on('change, blur',"#utr_no", function() {
             var chequeNo = $(this).val();
@@ -531,7 +531,7 @@ cursor: pointer;
                     success: function(res) { 
                     var response = false;
                         if(res['status']!=1){
-                            if(confirm('This cheque Number is already used by another Customer. Do You want to continue?')) {
+                            if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
                                 return false;
                             }else{
                                 $('#utr_no').val('');
@@ -561,7 +561,7 @@ cursor: pointer;
                     }
                 });                
                 return result;                
-            },'This UNR number is already used by this customer.'
+            },'This UTR number is already used by this customer.'
         );
         $(document).on('change, blur',"#utr_no", function() {
             var unrNo = $(this).val();
@@ -576,7 +576,7 @@ cursor: pointer;
                     success: function(res) { 
                     var response = false;
                         if(res['status']!=1){
-                            if(confirm('This UNR Number is already used by another Customer. Do You want to continue?')) {
+                            if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
                                 return false;
                             }else{
                                 $('#utr_no').val('');
