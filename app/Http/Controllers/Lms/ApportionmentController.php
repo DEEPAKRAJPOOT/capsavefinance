@@ -1822,6 +1822,11 @@ class ApportionmentController extends Controller
                 return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
             }
 
+            if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PENDING) {
+                DB::rollback();
+                return redirect()->route('unsettled_payments')->withErrors('Unable to perform Apportionment, Please retry!')->withInput();
+            }
+            
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSED) {
                 DB::rollback();
                 return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
