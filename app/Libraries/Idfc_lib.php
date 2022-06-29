@@ -158,6 +158,7 @@ class Idfc_lib{
 		$resp['error_no'] = curl_errno($curl);
 		$resp['curl_info'] = curl_getinfo($curl);
 		$resp['result'] = $output;
+                                dd($resp);
 		curl_close($curl);
 		return $resp;
 	}
