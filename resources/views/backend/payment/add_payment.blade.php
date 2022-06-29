@@ -468,38 +468,38 @@ cursor: pointer;
                     success: function(data) {                        
                         result = (data.status == 1) ? false : true;
                     }
-                });                
+                });
+                if(result){
+                    var utrNo = value;
+                    if(utrNo != ''){
+                        var data = {utr_no : utrNo, _token: messages.token};
+                        data['user_id'] = $('#user_id').val();
+                        $.ajax({
+                            type:"POST",
+                            async: false,
+                            url: messages.unique_utr_alert, // script to validate in server side
+                            data: data,
+                            success: function(res) { 
+                            var response = false;
+                                if(res['status']!=1){
+                                    if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
+                                        return false;
+                                    }else{
+                                        $('#utr_no').val('');
+                                        return true;
+                                    }
+                                }else{
+                                    return true;
+                                }
+                                return true;
+                            }
+                        });  
+                    }
+                }
                 return result;                
             },'This UTR number is already used by this customer.'
         );
 
-        $(document).on('change, blur',"#utr_no", function() {
-            var utrNo = $(this).val();
-            if(utrNo != ''){
-                var data = {utr_no : utrNo, _token: messages.token};
-                data['user_id'] = $('#user_id').val();
-                $.ajax({
-                    type:"POST",
-                    async: false,
-                    url: messages.unique_utr_alert, // script to validate in server side
-                    data: data,
-                    success: function(res) { 
-                    var response = false;
-                        if(res['status']!=1){
-                            if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
-                                return false;
-                            }else{
-                                $('#utr_no').val('');
-                                return true;
-                            }
-                        }else{
-                            return true;
-                        }
-                        return true;
-                    }
-                });  
-            }
-        });
         $.validator.addMethod("uniquechequeNoByCustomerId",
             function(value, element, params) {
                 var result = true;
@@ -514,37 +514,37 @@ cursor: pointer;
                     success: function(data) {                        
                         result = (data.status == 1) ? false : true;
                     }
-                });                
+                });  
+                if(result){
+                    var chequeNo = value;
+                    if(chequeNo != ''){
+                        var data = {cheque_no : chequeNo, _token: messages.token};
+                        data['user_id'] = $('#user_id').val();
+                        $.ajax({
+                            type:"POST",
+                            async: false,
+                            url: messages.unique_cheque_alert, // script to validate in server side
+                            data: data,
+                            success: function(res) { 
+                            var response = false;
+                                if(res['status']!=1){
+                                    if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
+                                        return false;
+                                    }else{
+                                        $('#utr_no').val('');
+                                        return true;
+                                    }
+                                }else{
+                                    return true;
+                                }
+                                return true;
+                            }
+                        });  
+                    }
+                }              
                 return result;                
             },'This UTR number is already used by this customer.'
         );
-        $(document).on('change, blur',"#utr_no", function() {
-            var chequeNo = $(this).val();
-            if(chequeNo != ''){
-                var data = {cheque_no : chequeNo, _token: messages.token};
-                data['user_id'] = $('#user_id').val();
-                $.ajax({
-                    type:"POST",
-                    async: false,
-                    url: messages.unique_cheque_alert, // script to validate in server side
-                    data: data,
-                    success: function(res) { 
-                    var response = false;
-                        if(res['status']!=1){
-                            if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
-                                return false;
-                            }else{
-                                $('#utr_no').val('');
-                                return true;
-                            }
-                        }else{
-                            return true;
-                        }
-                        return true;
-                    }
-                });  
-            }
-        });
         $.validator.addMethod("uniqueUnrNoByCustomerId",
             function(value, element, params) {
                 var result = true;
@@ -559,37 +559,37 @@ cursor: pointer;
                     success: function(data) {                        
                         result = (data.status == 1) ? false : true;
                     }
-                });                
+                });  
+                if(result){
+                    var unrNo = value;
+                    if(unrNo != ''){
+                        var data = {unr_no : unrNo, _token: messages.token};
+                        data['user_id'] = $('#user_id').val();
+                        $.ajax({
+                            type:"POST",
+                            async: false,
+                            url: messages.unique_cheque_alert, // script to validate in server side
+                            data: data,
+                            success: function(res) { 
+                            var response = false;
+                                if(res['status']!=1){
+                                    if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
+                                        return false;
+                                    }else{
+                                        $('#utr_no').val('');
+                                        return true;
+                                    }
+                                }else{
+                                    return true;
+                                }
+                                return true;
+                            }
+                        });  
+                    }
+                }              
                 return result;                
             },'This UTR number is already used by this customer.'
         );
-        $(document).on('change, blur',"#utr_no", function() {
-            var unrNo = $(this).val();
-            if(unrNo != ''){
-                var data = {unr_no : unrNo, _token: messages.token};
-                data['user_id'] = $('#user_id').val();
-                $.ajax({
-                    type:"POST",
-                    async: false,
-                    url: messages.unique_unr_alert, // script to validate in server side
-                    data: data,
-                    success: function(res) { 
-                    var response = false;
-                        if(res['status']!=1){
-                            if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
-                                return false;
-                            }else{
-                                $('#utr_no').val('');
-                                return true;
-                            }
-                        }else{
-                            return true;
-                        }
-                        return true;
-                    }
-                });  
-            }
-        });
         $('#savePayFrm').validate( {
                 rules: {
                 search_bus: {
