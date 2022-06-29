@@ -806,17 +806,17 @@ class ApportionmentController extends Controller
 
             if (!$this->verifyUnSettleTransInitiator($payment)) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions');
             }
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSED) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions');
             }
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Transactions already settled')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Transactions already settled');
             }
 
             $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSED]);
@@ -927,7 +927,7 @@ class ApportionmentController extends Controller
                 if((float) round($amtToSettle,2) > (float) round($repaymentAmt,2)){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
                     DB::rollback();
-                    return redirect()->route('unsettled_payments')->withInput();
+                    return redirect()->route('unsettled_payments');
                 }
 
                 if(!empty($transactionList)){
@@ -998,7 +998,7 @@ class ApportionmentController extends Controller
             $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PENDING]);
 
             DB::rollback();
-            return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
 
@@ -1813,17 +1813,17 @@ class ApportionmentController extends Controller
 
             if (!$this->verifyUnSettleTransInitiator($payment)) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions');
             }
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSED) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions');
             }
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Transactions already settled')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Transactions already settled');
             }
 
             $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSED]);
