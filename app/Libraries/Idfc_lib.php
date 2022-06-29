@@ -136,6 +136,8 @@ class Idfc_lib{
 
 	private function _curlCall($url, $postdata, $header ,$timeout= 600){
 		$idfc_cert_path = public_path();
+
+                dd($idfc_cert_path . CURLOPT_SSLCERT_FILE, file_exists($idfc_cert_path . CURLOPT_SSLCERT_FILE));
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
