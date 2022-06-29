@@ -815,7 +815,7 @@ class ApportionmentController extends Controller
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PENDING) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Unable to perform Apportionment, Please retry!')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Unable to perform Apportionment, Please retry!');
             }
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSED) {
