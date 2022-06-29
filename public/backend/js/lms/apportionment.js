@@ -102,9 +102,9 @@ class Apportionment {
                         $('#dltUnTransCsv').removeClass("disabled");
                     }else{
                         $('#mark_settle_btn').prop("disabled", true);
-                        $('#dwnldUnTransCsv').addCss("disabled");
-                        $('#uploadUnTransCsv').addCss("disabled");
-                        $('#dltUnTransCsv').addCss("disabled");
+                        $('#dwnldUnTransCsv').prop("disabled", true);
+                        $('#uploadUnTransCsv').prop("disabled", true);
+                        $('#dltUnTransCsv').prop("disabled", true);
                     }
                     parentRef.setTransactionAmt();
                 }
