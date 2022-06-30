@@ -53,7 +53,7 @@
         <table class="table table-striped cell-border no-footer"  cellspacing="0" width="100%">
             <tbody>
                 <tr>
-                    <td colspan="4"><b>Invoice Already Process</b></td>
+                    <td colspan="4"><b>Invoice Already Processed</b></td>
                 </tr>
             </tbody>
         </tbody>
