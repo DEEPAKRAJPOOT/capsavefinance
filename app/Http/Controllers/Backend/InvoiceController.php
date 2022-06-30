@@ -2151,6 +2151,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $disbursal = $disbursalBatchData->disbursal ?? [];
             //$tCust = $disbursal->count();
             $tCust = count($disbursal);
+            if($tCust > 0) {
             $tAmt = number_format($disbursal->sum('disburse_amount'),2);
             foreach($disbursal as $data){
                 foreach($data->invoice_disbursed as $invData) {
@@ -2167,8 +2168,22 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             }
             $custName = HelperS::getUserInfo($userId);
             $fullCustName = $custName->f_name." ".$custName->l_name;
-
             return view('backend.invoice.online_disbursal_rollback')->with(['disbursal_batch_id' => $disbursalBatchId, 'fullCustName' => $fullCustName, 'invNoString' => $invNoString, 'tInv' => $tInv, 'tAmt' => $tAmt, 'tCust' => $tCust, 'appId' => $appData->app_code ?? '', 'res_text' => $idfc_res_text, 'bankType' => $bankType]);
+
+            } else {
+
+            return view('backend.invoice.online_disbursal_rollback')
+                ->with(['disbursal_batch_id' => $disbursalBatchId,
+                    'fullCustName' => $fullCustName,
+                    'invNoString' => $invNoString,
+                    'tInv' => $tInv, 'tAmt' => $tAmt,
+                    'tCust' => $tCust,
+                    'appId' => $appData->app_code ?? '',
+                    'res_text' => $idfc_res_text,
+                    'bankType' => $bankType]);
+
+            }
+
             } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

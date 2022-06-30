@@ -8,7 +8,8 @@
 </style>
 <div class="modal-body table-responsive ps ps--theme_default">
     <table class="table table-striped cell-border no-footer"  cellspacing="0" width="100%">
-        <tbody> 
+       @if($tCust > 0)
+        <tbody>
             <tr>
                 <td><b>Customer name:</b></td>
                 <td>{{$fullCustName}}</td>
@@ -37,6 +38,13 @@
             </tr>
             @endif
         </tbody>
+        @else
+        <tbody>
+            <tr>
+                <td colspan="4"><b>Invoice Already Process</b></td>
+            </tr>
+        </tbody>
+        @endif
     </table>
     </br>
     <div class="row">
