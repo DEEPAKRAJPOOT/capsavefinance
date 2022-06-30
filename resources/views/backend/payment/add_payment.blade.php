@@ -456,6 +456,8 @@ cursor: pointer;
         );
         $.validator.addMethod("uniqueUtrNoByCustomerId",
             function(value, element, params) {
+                var check;
+                console.log(check);
                 var result = true;
                 var data = {utr_no : value, _token: messages.token};
                 data['user_id'] = $('#user_id').val();
@@ -465,13 +467,14 @@ cursor: pointer;
 
                     url: messages.unique_utr_no, // script to validate in server side
                     data: data,
-                    success: function(data) {                        
+                    success: function(data) { 
                         result = (data.status == 1) ? false : true;
                     }
                 });
                 if(result){
                     var utrNo = value;
                     if(utrNo != ''){
+                        console.log('aaaa');
                         var data = {utr_no : utrNo, _token: messages.token};
                         data['user_id'] = $('#user_id').val();
                         $.ajax({
@@ -480,18 +483,20 @@ cursor: pointer;
                             url: messages.unique_utr_alert, // script to validate in server side
                             data: data,
                             success: function(res) { 
-                            var response = false;
+                                console.log('res');
                                 if(res['status']!=1){
                                     if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
+                                        check = 1;
                                         return false;
                                     }else{
                                         $('#utr_no').val('');
+                                        check = 2;
                                         return true;
                                     }
-                                }else{
-                                    return true;
+                                    check = 3;
                                 }
-                                return true;
+                                    check = 4;
+                                // return true;
                             }
                         });  
                     }
@@ -537,7 +542,7 @@ cursor: pointer;
                                 }else{
                                     return true;
                                 }
-                                return true;
+                                // return true;
                             }
                         });  
                     }
@@ -591,6 +596,7 @@ cursor: pointer;
             },'This UTR number is already used by this customer.'
         );
         $('#savePayFrm').validate( {
+            onsubmit: false,
                 rules: {
                 search_bus: {
                     required: true,
