@@ -7,8 +7,8 @@
 }
 </style>
 <div class="modal-body table-responsive ps ps--theme_default">
-    <table class="table table-striped cell-border no-footer"  cellspacing="0" width="100%">
        @if($tCust > 0)
+       <table class="table table-striped cell-border no-footer"  cellspacing="0" width="100%">
         <tbody>
             <tr>
                 <td><b>Customer name:</b></td>
@@ -38,14 +38,7 @@
             </tr>
             @endif
         </tbody>
-        @else
-        <tbody>
-            <tr>
-                <td colspan="4"><b>Invoice Already Process</b></td>
-            </tr>
-        </tbody>
-        @endif
-    </table>
+        </table>
     </br>
     <div class="row">
         <div class="col-md-3 offset-sm-9">
@@ -56,6 +49,16 @@
             </form>
         </div>
     </div>
+        @else
+        <table class="table table-striped cell-border no-footer"  cellspacing="0" width="100%">
+            <tbody>
+                <tr>
+                    <td colspan="4"><b>Invoice Already Process</b></td>
+                </tr>
+            </tbody>
+        </tbody>
+        @endif
+    
 </div>
 @endsection
 @section('jscript')
