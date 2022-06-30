@@ -1946,6 +1946,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     }
                 }
                 $fileDirPath = getPathByTxnId($transId);
+                chmod($fileDirPath, 0777, true);
                 $time = date('y-m-d H:i:s');
                 
                 $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
