@@ -2149,7 +2149,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $bankType = $latestData->bank_type;
             }
             $disbursal = $disbursalBatchData->disbursal ?? [];
-            $tCust = $disbursal->count();
+            //$tCust = $disbursal->count();
+            $tCust = count($disbursal);
             $tAmt = number_format($disbursal->sum('disburse_amount'),2);
             foreach($disbursal as $data){
                 foreach($data->invoice_disbursed as $invData) {
