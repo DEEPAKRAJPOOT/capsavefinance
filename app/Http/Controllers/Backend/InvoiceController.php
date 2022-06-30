@@ -1946,7 +1946,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     }
                 }
                 $fileDirPath = getPathByTxnId($transId);
-                chmod($fileDirPath, 0777, true);
                 $time = date('y-m-d H:i:s');
                 
                 $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
@@ -2828,6 +2827,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         }
                     }
                     $fileDirPath = getPathByTxnId($transId);
+                    chmod($fileDirPath, 0777, true);
                     $time = date('y-m-d H:i:s');
                     $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
                     $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
@@ -2909,10 +2909,14 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                                 $message = $result['result']['body']['Transaction'] ?? $result['message'];
                             }
                         }
+                        echo $tranNewIds."==".$fundedDate;
                         $updateTransaction = $this->updateTransactionInvoiceDisbursed($tranNewIds, $fundedDate);
                     } else {
                         $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
                         $message = $result['message'] ?? $result['message'];
+                        echo $http_code."==".$message;
+                        echo "<pre>";
+                        print_r($result);
                     }
                 }
             }
