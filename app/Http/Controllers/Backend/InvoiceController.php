@@ -2139,6 +2139,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $tInv = 0;
             $appId = '';
             $userId = '';
+            $fullCustName = '';
+            $invNoString ='';
+            $tAmt = 0;
             $invNo = [];
             $idfc_res_text = $bankType = '';
             $disbursalBatchId = $req->get('disbursal_batch_id');
