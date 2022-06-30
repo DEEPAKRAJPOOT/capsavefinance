@@ -2827,7 +2827,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         }
                     }
                     $fileDirPath = getPathByTxnId($transId);
-                    chmod($fileDirPath, 0777, true);
+                    chmod($fileDirPath, 777);
                     $time = date('y-m-d H:i:s');
                     $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
                     $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
