@@ -596,7 +596,10 @@ cursor: pointer;
             },'This UTR number is already used by this customer.'
         );
         $('#savePayFrm').validate( {
-            onsubmit: false,
+            onkeyup: false,
+            onclick: false,
+            onfocusout: false,
+            // onsubmit: false,
                 rules: {
                 search_bus: {
                     required: true,
