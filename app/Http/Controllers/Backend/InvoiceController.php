@@ -2909,7 +2909,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                                 $message = $result['result']['body']['Transaction'] ?? $result['message'];
                             }
                         }
-                        echo $tranNewIds."==".$fundedDate;
+                        echo $fundedDate;
+                        echo "<pre>";
+                        print_r($tranNewIds);
                         $updateTransaction = $this->updateTransactionInvoiceDisbursed($tranNewIds, $fundedDate);
                     } else {
                         $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
