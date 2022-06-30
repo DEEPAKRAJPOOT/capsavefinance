@@ -2921,6 +2921,10 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         print_r($result);
                     }
                 }
+                $disbureIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['status_id' => config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'], 'disbursal_batch_id' => $disbursalBatchId])->toArray();
+                if(empty($disbureIds)) {
+                    $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById(['batch_status' => 2], $disbursalBatchId);
+                }
             }
           exit;
 
