@@ -2790,6 +2790,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
         try {
             $cLogDetails = \Helpers::cronLogBegin(4);
             $disbursalBatchRequests = $this->lmsRepo->lmsGetDisbursalBatchRequestCron();
+            $result['message'] = "No Batch Found";
+            $result['code']    = 501; // no batch found
             foreach($disbursalBatchRequests as $disbursalBatchRequest) {
                 // $disbursalBatchId = $disbursalBatchRequest->batch_id;
                 $disbursalBatchId = $disbursalBatchRequest->disbursal_batch_id;
@@ -2840,9 +2842,11 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                             // Session::flash('message', 'Error : '. $http_code  .  $message);
                             // return redirect()->back();
                         }
+                    } 
+                    $fileDirPath = getPathByDISId($data['disbursal_one']['disbursal_id']);
+                    if(is_null($fileDirPath)) {
+
                     }
-                    $fileDirPath = getPathByTxnId($transId);
-                    
                     $time = date('y-m-d H:i:s');
                     $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
                     $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
@@ -2935,12 +2939,17 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById(['batch_status' => 2], $disbursalBatchId);
                 }
             }
+                if($result['code'] == 501) {
+                   $statusCode = 3;
+                } else if($result['code'] == 200) {
+                    $statusCode = 1;
+                } else {
+                   $statusCode = 0;
+                }
             if($cLogDetails){
-                \Helpers::cronLogEnd('4',$cLogDetails->cron_log_id);
+                \Helpers::cronLogEnd($statusCode,$cLogDetails->cron_log_id);
             }
-          exit;
-            // Session::flash('message', implode(', ', $message));
-            // return redirect()->back()->withErrors('message',trans('backend_messages.batch_disbursed'));
+            exit;
         } catch (Exception $ex) {
             // return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

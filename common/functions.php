@@ -950,4 +950,13 @@ function xmlToArrayWithCDATA($xml, $format = 'ARRAY') {
 	$array = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA),true), true);
 	return (strtoupper($format) == 'ARRAY' ? $array : json_encode($array));
 }
+
+
+function getPathByDISId($disbursal_id, $common_path = '/user/logs/disbursal'){
+	if (!empty($disbursal_id)) {
+            $dateVar = time();
+            $main_dir = "$common_path/$disbursal_id/$dateVar.log";
+  	}
+	return $main_dir ?? null;
+}
 ?>
