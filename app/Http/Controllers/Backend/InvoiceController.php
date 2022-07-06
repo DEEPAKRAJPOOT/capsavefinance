@@ -2788,8 +2788,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
     public function disbursalPaymentEnquiryCron()
     {
         try {
+            $cLogDetails = \Helpers::cronLogBegin(4);
             $disbursalBatchRequests = $this->lmsRepo->lmsGetDisbursalBatchRequestCron();
-            
             foreach($disbursalBatchRequests as $disbursalBatchRequest) {
                 // $disbursalBatchId = $disbursalBatchRequest->batch_id;
                 $disbursalBatchId = $disbursalBatchRequest->disbursal_batch_id;
@@ -2803,17 +2803,13 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
                 $transDisbursalIds = [];
                 $tranNewIds = [];
-
                 if (!isset($data) || empty($data)) {
                     echo "Something went wrong please try again.";
                 } else {
                     $data = $data->toArray();
                 }
-
                 $message = [];
-
                 if(!empty($reqData)) {
-
                     $http_header = [
                         'timestamp' => date('Y-m-d H:i:s'),
                         'txn_id' => $reqData['txn_id']
@@ -2928,16 +2924,10 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                                 $message = $result['result']['body']['Transaction'] ?? $result['message'];
                             }
                         }
-                        echo $fundedDate;
-                        echo "<pre>";
-                        print_r($tranNewIds);
                         $updateTransaction = $this->updateTransactionInvoiceDisbursed($tranNewIds, $fundedDate);
                     } else {
                         $http_code = $result['http_code'] ? $result['http_code'] . ', ' : $result['code'];
                         $message = $result['message'] ?? $result['message'];
-                        echo $http_code."==".$message;
-                        echo "<pre>";
-                        print_r($result);
                     }
                 }
                 $disbureIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['status_id' => config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'], 'disbursal_batch_id' => $disbursalBatchId])->toArray();
@@ -2945,8 +2935,10 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById(['batch_status' => 2], $disbursalBatchId);
                 }
             }
+            if($cLogDetails){
+                \Helpers::cronLogEnd('4',$cLogDetails->cron_log_id);
+            }
           exit;
-
             // Session::flash('message', implode(', ', $message));
             // return redirect()->back()->withErrors('message',trans('backend_messages.batch_disbursed'));
         } catch (Exception $ex) {
