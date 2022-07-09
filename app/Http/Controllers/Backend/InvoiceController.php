@@ -2939,9 +2939,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById(['batch_status' => 2], $disbursalBatchId);
                 }
             }
-                if($result['code'] == 501) {
+                if(isset($result['code']) == 501) {
                    $statusCode = 3;
-                } else if($result['code'] == 200) {
+                } else if(isset($result['code']) == 200) {
                     $statusCode = 1;
                 } else {
                    $statusCode = 0;
