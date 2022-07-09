@@ -43,6 +43,8 @@ class OverdueReportManual extends Command
      */
     public function handle()
     {
+        ini_set("memory_limit", "-1");
+        ini_set('max_execution_time', 10000);
         if (empty($this->emailTo)) {
             dd('DAILY_REPORT_MAIL is missing');
         }
