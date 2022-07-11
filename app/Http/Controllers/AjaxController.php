@@ -5398,6 +5398,16 @@ if ($err) {
         }
     }
 
+    public function chkAnchorPhyBlkInvReq(Request $request) {
+        $anchorId = $request->get('anchorID');
+        $getAnchor = $this->userRepo->getAnchorById($anchorId);
+        if(isset($getAnchor->is_phy_blk_inv_req) && $getAnchor->is_phy_blk_inv_req === '1') {
+            return $respose = ['status'=>'1'];
+        } else {
+            return $respose = ['status'=>'0'];
+        }
+    }
+
     // Check frontend PAN validation
     public function checkAnchorPanAjax(Request $request) {
         $data = $request->all();
