@@ -56,6 +56,7 @@ use App\Inv\Repositories\Models\AppSanctionLetter;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\User;
 class AjaxController extends Controller {
 
     /**
@@ -3789,7 +3790,8 @@ if ($err) {
        
          $get_program = $this->invRepo->getLimitProgram($request['anchor_id']);
          $get_program_limit = $this->invRepo->geAnchortLimitProgram($request['anchor_id']);
-         return response()->json(['status' => 1,'limit' => $get_program_limit,'get_program' =>$get_program]);
+         $customers = User::getUserByAnchorId($request['anchor_id']);
+         return response()->json(['status' => 1,'limit' => $get_program_limit,'get_program' =>$get_program,'get_customers'=>$customers]);
      }
        public function getProgramLmsSingleList(Request $request)
      {

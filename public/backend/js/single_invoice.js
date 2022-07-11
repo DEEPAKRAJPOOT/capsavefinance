@@ -261,19 +261,29 @@
                 alert(errorThrown);
                 
                 },
+                
                 success: function (data) {
                     if(data.status==1)
                     {
                         var obj1  = data.get_program;
                         var obj2   =  data.limit;
+                        var obj3 = data.get_customers;
                         $("#anc_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
-                           $("#program_id").append("<option value=''>Please Select</option>");  
+                        $("#program_id").append("<option value=''>Please Select Customer</option>"); 
+                            $(obj3).each(function(i,v){
+                             if(v !=null)
+                             {           
+                                   $("#program_id").append("<option value='"+v.user_id+"'>"+v.f_name+"</option>");  
+                              }                   
+                             });
+                           $("#program_id").append("<option value=''>Please Select Program</option>");  
                             $(obj1).each(function(i,v){
                              if(v.program!=null)
                              {                                 
                                    $("#program_id").append("<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"</option>");  
                               }                   
                              });
+                          
                            
                         
                        
@@ -287,7 +297,9 @@
                     }
                   
                 }
-        }); }); 
+        });
+          
+      }); 
    
     //////// String value not allowed in  amount filed//////////////////////
  $(document).on('keypress','#invoice_approve_amount',function(event){       
@@ -296,73 +308,73 @@
   }
 });
   //////////////////// onchange anchor  id get data /////////////////
-  $(document).on('change','.changeSupplier',function(){
-      $("#limit_type").prop("checked", false);
-      $("#adhoc_msg").hide();
-      $("#invoice_date").val('');
-      var program_id =  $(this).val(); 
-      var anchor_id =  $("#anchor_id").val(); 
-      if(program_id=='')
-      {
-          return false; 
-      }
-      $("#supplier_id").empty();
-      $("#pro_limit").empty();
-      $("#pro_limit_hide").empty();
-      var postData =  ({'bulk':0,'program_id':program_id,'_token':messages.token});
-       jQuery.ajax({
-        url: messages.front_supplier_list,
-                method: 'post',
-                dataType: 'json',
-                data: postData,
-                error: function (xhr, status, errorThrown) {
-                alert(errorThrown);
+  // $(document).on('change','.changeSupplier',function(){
+  //     $("#limit_type").prop("checked", false);
+  //     $("#adhoc_msg").hide();
+  //     $("#invoice_date").val('');
+  //     var program_id =  $(this).val(); 
+  //     var anchor_id =  $("#anchor_id").val(); 
+  //     if(program_id=='')
+  //     {
+  //         return false; 
+  //     }
+  //     $("#supplier_id").empty();
+  //     $("#pro_limit").empty();
+  //     $("#pro_limit_hide").empty();
+  //     var postData =  ({'bulk':0,'program_id':program_id,'_token':messages.token});
+  //      jQuery.ajax({
+  //       url: messages.front_supplier_list,
+  //               method: 'post',
+  //               dataType: 'json',
+  //               data: postData,
+  //               error: function (xhr, status, errorThrown) {
+  //               alert(errorThrown);
                 
-                },
-                success: function (data) {
-                    if(data.status==1)
-                    {
-                         if(data.uploadAcess==0)
-                        {
-                            $("#tenorMsg").text("You don't have permission to upload invoice for this program.");           
-                            $("#ApprovePro").hide();
+  //               },
+  //               success: function (data) {
+  //                   if(data.status==1)
+  //                   {
+  //                        if(data.uploadAcess==0)
+  //                       {
+  //                           $("#tenorMsg").text("You don't have permission to upload invoice for this program.");           
+  //                           $("#ApprovePro").hide();
                             
-                        }
-                        else
-                        {
-                             $("#ApprovePro").show();
-                             $("#tenorMsg").text(" ");           
+  //                       }
+  //                       else
+  //                       {
+  //                            $("#ApprovePro").show();
+  //                            $("#tenorMsg").text(" ");           
                            
                             
-                        }
-                        var obj1  = data.get_supplier;
-                        var obj2   =  data.limit;
-                        var offer_id   =  data.offer_id;
-                        var tenor   =  data.tenor;
-                        var tenor_old_invoice  = data.tenor_old_invoice;
-                        $("#prgm_offer_id").val(offer_id);
-                     ///   $("#tenor_old_invoice").val(tenor_old_invoice);
-                     ///   $("#tenor").val(tenor);
-                     ///   $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
-                     ////   $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
-                        $("#supplier_id").empty();
-                        $("#supplier_id").append("<option value=''>Please Select Customer</option>");  
-                        $(obj1).each(function(i,v){
-                                 var dApp = v.appCode;
-                                 //$("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.f_name+"&nbsp;"+v.l_name+" ("+ dApp +")</option>");
-                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.biz_entity_name+"&nbsp;&nbsp;("+v.customer_id+")</option>");  
-                            });
+  //                       }
+  //                       var obj1  = data.get_supplier;
+  //                       var obj2   =  data.limit;
+  //                       var offer_id   =  data.offer_id;
+  //                       var tenor   =  data.tenor;
+  //                       var tenor_old_invoice  = data.tenor_old_invoice;
+  //                       $("#prgm_offer_id").val(offer_id);
+  //                    ///   $("#tenor_old_invoice").val(tenor_old_invoice);
+  //                    ///   $("#tenor").val(tenor);
+  //                    ///   $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
+  //                    ////   $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
+  //                       $("#supplier_id").empty();
+  //                       $("#supplier_id").append("<option value=''>Please Select Customer</option>");  
+  //                       $(obj1).each(function(i,v){
+  //                                var dApp = v.appCode;
+  //                                //$("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.f_name+"&nbsp;"+v.l_name+" ("+ dApp +")</option>");
+  //                                $("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.biz_entity_name+"&nbsp;&nbsp;("+v.customer_id+")</option>");  
+  //                           });
                        
-                    }
-                    else
-                    {
+  //                   }
+  //                   else
+  //                   {
                         
-                               $("#supplier_id").append("<option value=''>No data found</option>");  
+  //                              $("#supplier_id").append("<option value=''>No data found</option>");  
                       
-                    }
+  //                   }
                   
-                }
-        }); }); 
+  //               }
+  //       }); }); 
    
   //////////////////// onchange anchor  id get data /////////////////
   $(document).on('change','.getTenor',function(){

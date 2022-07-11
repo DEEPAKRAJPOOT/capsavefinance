@@ -75,6 +75,7 @@ class InvoiceController extends Controller {
 
     public function getAllInvoice() {
         $get_anchor = $this->invRepo->getLmsLimitAllAnchor();
+        // dd($get_anchor);
         $id = Auth::user()->user_id;
         $res =  $this->userRepo->getUserDetail($id);
         $aid    =  $res->anchor_id;

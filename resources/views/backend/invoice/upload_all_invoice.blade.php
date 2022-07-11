@@ -66,20 +66,20 @@
                                             <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             @if($anchor==11)
                                             <option value="">Please Select</option>
-                                            @if($get_program)
+                                            {{-- @if($get_program)
                                             {
                                              @foreach($get_program as $row1) 
                                               <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_name}}}</option>
                                                   
                                              @endforeach
-                                              @endif
+                                              @endif --}}
                                             @endif
                                             </select>
                                            
                                 
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    {{-- <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Customer Name  <span class="error_message_label">*</span></label> <span id="pro_limit" class="error"></span>
                                             <span id="adhoc_msg" style="display:none">
@@ -90,7 +90,7 @@
                                              
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Invoice No. <span class="error_message_label">*</span> </label>
@@ -120,25 +120,22 @@
                                             <input type="text" class="form-control" maxlength="15" id="invoice_approve_amount" name="invoice_approve_amount" placeholder="Invoice Approve Amount">
                                             <span id="msgProLimit" class="error"></span>
                                          </div>
-										 <div class="form-group check_upload_inv">
-                                            <label for="txtCreditPeriod">Upload Invoice Copy<span class="error_message_label customFile_astrik"></span></label>
-											
-		<div class="custom-file">
-               <label for="email">Upload Document</label>
-               <input type="file" class="custom-file-input" id="customFile" name="doc_file">
-               <label class="custom-file-label" for="customFile">Choose file</label>
-                <span id="msgFile" class="text-success"></span>
-            </div>
-			
-			
-			
-                                            
-                                        </div>
+										
                                     </div>
-					<div class="col-md-8">
+                                    <div class="form-group check_upload_inv">
+                                       <label for="txtCreditPeriod">Upload Invoice Copy<span class="error_message_label customFile_astrik"></span></label>
+                            
+                                       <div class="custom-file">
+                                                <label for="email">Upload Document</label>
+                                                <input type="file" class="custom-file-input" id="customFile" name="doc_file">
+                                                <label class="custom-file-label" for="customFile">Choose file</label>
+                                                <span id="msgFile" class="text-success"></span>
+                                       </div>
+                                 </div>
+					                     <div class="col-md-8">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Remarks <span class="error_message_label">*</span> </label>
-                                            <textarea class="form-control remark" name="remark" id="remark" rows="5" cols="5" placeholder="Remarks"></textarea>
+                                            <textarea class="form-control remark" name="remark" id="remark" rows="3" cols="3" placeholder="Remarks"></textarea>
                                     </div>
                                     </div>
                 
