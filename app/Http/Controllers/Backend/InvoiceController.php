@@ -82,9 +82,22 @@ class InvoiceController extends Controller {
         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
         $get_program = $this->invRepo->getLimitProgram($aid);
+        $get_supplier = [];
+        foreach($get_program as $v){
+            $program_id = $v->program->prgm_id;
+            $supplierData = $this->invRepo->getProgramOfferByPrgmId($program_id);
+            foreach ($supplierData as $v1){
+                $get_supplierD['user_id'] = $v1->user_id;
+                $get_supplierD['app_id'] = $v1->app_id;
+                $get_supplierD['prgm_offer_id'] = $v1->prgm_offer_id;
+                $get_supplierD['biz_entity_name'] = $v1->biz_entity_name;
+                $get_supplierD['customer_id'] = $v1->customer_id;
+                $get_supplier[$program_id][] = $get_supplierD; 
+            }
+        }
         $get_program_limit = $this->invRepo->geAnchortLimitProgram($aid);
         return view('backend.invoice.upload_all_invoice')
-                        ->with(['get_anchor' => $get_anchor,'anchor' => $chkUser->id,'id' =>  $aid,'limit' => $get_program_limit,'get_program' =>$get_program ]);
+                        ->with(['get_anchor' => $get_anchor,'anchor' => $chkUser->id,'id' =>  $aid,'limit' => $get_program_limit,'get_program' =>$get_program,'get_supplier'=>$get_supplier ]);
     }
 
     public function viewInvoice(Request $req) {

@@ -60,26 +60,37 @@
                                    
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="txtCreditPeriod">Product Program Name
-                                                <span class="error_message_label">*</span>   
-                                            </label>
+                                            <label for="txtCreditPeriod">Customer Name
+                                                <span class="error_message_label">*</span>
+                                            </label><span id="pro_limit" class="error"></span>  
+                                            <span id="adhoc_msg" style="display:none">
+                                                <input name="limit_type" type="checkbox" id="limit_type" class="get_adhoc" value="1">
+                                                <b> Adhoc </b>
+                                          </span>
                                             <select readonly="readonly" class="form-control changeSupplier" id="program_id" name="program_id">
                                             @if($anchor==11)
-                                            <option value="">Please Select</option>
-                                            {{-- @if($get_program)
-                                            {
-                                             @foreach($get_program as $row1) 
-                                              <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}}">{{{$row1->program->prgm_name}}}</option>
-                                                  
+                                            <option value="">Please Select Customer</option>
+                                            @if($get_program)
+                                             @foreach($get_program as $row1)
+                                             @php
+                                                $getSupplierByPrgmId = $get_supplier[$row1->program->prgm_id]??'';
+                                             @endphp 
+                                              <optgroup label="{{{$row1->program->prgm_name}}}">
+                                              @if(!empty($getSupplierByPrgmId))
+                                                @foreach($getSupplierByPrgmId as $row2)
+                                                <option value="{{{$row1->program->prgm_id}}},{{{$row1->app_prgm_limit_id}}},{{{$row2['user_id']}}},{{{$row2['app_id']}}},{{{$row2['prgm_offer_id']}}}">{{ $row2['biz_entity_name'] }}  ({{ $row2['customer_id'] }})</option>
+                                                @endforeach
+                                              @endif
+                                             </optgroup>
                                              @endforeach
-                                              @endif --}}
+                                              @endif
                                             @endif
                                             </select>
                                            
                                 
                                         </div>
                                     </div>
-                                    {{-- <div class="col-md-4">
+                                    {{-- <div class="col-md-4" style="display:none">
                                         <div class="form-group">
                                             <label for="txtCreditPeriod">Customer Name  <span class="error_message_label">*</span></label> <span id="pro_limit" class="error"></span>
                                             <span id="adhoc_msg" style="display:none">
@@ -122,7 +133,7 @@
                                          </div>
 										
                                     </div>
-                                    <div class="form-group check_upload_inv">
+                                    <div class="col-md-4 form-group check_upload_inv">
                                        <label for="txtCreditPeriod">Upload Invoice Copy<span class="error_message_label customFile_astrik"></span></label>
                             
                                        <div class="custom-file">
@@ -146,6 +157,7 @@
                            <span  id="tenorMsg" style="color:red;"></span>
                        </div>
                        <div class="text-right mt-2" id="ApprovePro">
+                           <input type="hidden" readonly="readonly" class="getTenor" id="supplier_id" name="supplier_id">
                             <input type="hidden" id="pro_limit_hide" name="pro_limit_hide">
                            <input type="hidden" value="" id="prgm_offer_id" name="prgm_offer_id">
                             <input type="hidden" value="" id="tenor" name="tenor">
