@@ -252,6 +252,7 @@
       }
       $("#program_id").empty();
       $("#anc_limit").empty();
+      $(".isloader").show();
       var postData =  ({'anchor_id':anchor_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_program_list,
@@ -264,6 +265,7 @@
                 },
                 
                 success: function (data) {
+                    $(".isloader").hide(); 
                     if(data.status==1)
                     {
                         var obj1  = data.get_program;
