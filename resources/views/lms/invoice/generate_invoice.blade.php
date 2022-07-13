@@ -167,3 +167,6 @@
    <p lang="en-US">&nbsp;</p>
    <p style="font-size: 9px;font-family: Book Antiqua;"><strong>Authorized Signatory</strong></span></p>
    <p lang="en-US">&nbsp;</p>
+   <p style="font-size: 9px;font-family: Book Antiqua;"><strong>” I/We hereby declare that though our aggregate turnover in any preceding financial year from 2017-18 onwards is more than the aggregate turnover notified under sub-rule (4) of rule 48, we are not required to prepare an invoice in terms of the provisions of the said sub-rule.”</strong></span></p>
+   <p lang="en-US">&nbsp;</p>
+   
