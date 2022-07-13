@@ -1,19 +1,14 @@
 <style>
-   .header,
+
 .footer {
     width: 100%;
     text-align: center;
     position: fixed;
 }
-.header {
-    top: 0px;
-}
 .footer {
     bottom: 0px;
 }
-.pagenum:before {
-    content: counter(page);
-}
+
 </style>
    <h2 style="font-size: 15px;font-family: Calibri;margin: 0;" align="center"><strong>{{$registeredCompany['cmp_name']}}</strong></h2>
    <h2 style="font-size: 8.5px;font-family: Calibri;margin: 0;" align="center"><strong>Registered office: {{$registeredCompany['cmp_add']}}</strong></h2>
