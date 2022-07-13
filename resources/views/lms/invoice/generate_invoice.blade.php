@@ -1,4 +1,20 @@
-
+<style>
+   .header,
+.footer {
+    width: 100%;
+    text-align: center;
+    position: fixed;
+}
+.header {
+    top: 0px;
+}
+.footer {
+    bottom: 0px;
+}
+.pagenum:before {
+    content: counter(page);
+}
+</style>
    <h2 style="font-size: 15px;font-family: Calibri;margin: 0;" align="center"><strong>{{$registeredCompany['cmp_name']}}</strong></h2>
    <h2 style="font-size: 8.5px;font-family: Calibri;margin: 0;" align="center"><strong>Registered office: {{$registeredCompany['cmp_add']}}</strong></h2>
    <h2 style="font-size: 8.5px;font-family: Calibri;margin: 0;" align="center">
@@ -167,6 +183,8 @@
    <p lang="en-US">&nbsp;</p>
    <p style="font-size: 9px;font-family: Book Antiqua;"><strong>Authorized Signatory</strong></span></p>
    <p lang="en-US">&nbsp;</p>
-   <p style="font-size: 9px;font-family: Book Antiqua;"><strong>” I/We hereby declare that though our aggregate turnover in any preceding financial year from 2017-18 onwards is more than the aggregate turnover notified under sub-rule (4) of rule 48, we are not required to prepare an invoice in terms of the provisions of the said sub-rule.”</strong></span></p>
+   <div class="footer">
+      <p style="font-size: 9px;font-family: Book Antiqua;"><strong>” I/We hereby declare that though our aggregate turnover in any preceding financial year from 2017-18 onwards is more than the aggregate turnover notified under sub-rule (4) of rule 48, we are not required to prepare an invoice in terms of the provisions of the said sub-rule.”</strong></span></p>
    <p lang="en-US">&nbsp;</p>
+   </div>
    
