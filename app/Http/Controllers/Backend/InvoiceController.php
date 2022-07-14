@@ -2788,7 +2788,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
     public function disbursalPaymentEnquiryCron()
     {
         try {
-            //$cLogDetails = \Helpers::cronLogBegin(4);
+            $cLogDetails = \Helpers::cronLogBegin(4);
             $disbursalBatchRequests = $this->lmsRepo->lmsGetDisbursalBatchRequestCron();
             $result['message'] = "No Batch Found";
             $result['code']    = 501; // no batch found
@@ -2946,12 +2946,12 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 } else {
                    $statusCode = 0;
                 }
-           /* if($cLogDetails){
+            if($cLogDetails){
                 \Helpers::cronLogEnd($statusCode,$cLogDetails->cron_log_id);
-            } */
+            } 
             exit;
         } catch (Exception $ex) {
-             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            // return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
 
