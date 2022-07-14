@@ -63,7 +63,7 @@
                                             <label for="txtCreditPeriod">Customer Name
                                                 <span class="error_message_label">*</span>
                                             </label><span id="pro_limit" class="error"></span>  
-                                            <span id="adhoc_msg" style="display:none">
+                                            <span id="adhoc_msg" style="display:none;margin-left: 10px;">
                                                 <input name="limit_type" type="checkbox" id="limit_type" class="get_adhoc" value="1">
                                                 <b> Adhoc </b>
                                           </span>
@@ -84,6 +84,8 @@
                                              </optgroup>
                                              @endforeach
                                               @endif
+                                             @else
+                                             <option value="">No data Found</option>
                                             @endif
                                             </select>
                                            
