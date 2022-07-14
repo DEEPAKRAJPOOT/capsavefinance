@@ -249,9 +249,14 @@
       {
             $("#pro_limit").empty();
              $("#pro_limit_hide").empty();
+             $("#pro_remain_limit").empty();
+             $("#program_id").html("<option value=''>No data found</option>");
+            return false;
       }
       $("#program_id").empty();
       $("#anc_limit").empty();
+      $("#pro_limit").empty();
+      $("#pro_remain_limit").empty();
       $(".isloader").show();
       var postData =  ({'anchor_id':anchor_id,'_token':messages.token});
        jQuery.ajax({
@@ -273,7 +278,8 @@
                         var obj3 = data.get_supplier;
                         $("#anc_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
                         $("#program_id").append("<option value=''>Please Select Customer</option>"); 
-                          //  $("#program_id").append("<option value=''>Please Select Program</option>");  
+                          //  $("#program_id").append("<option value=''>Please Select Program</option>");
+                         if(obj1.length > 0){
                             $(obj1).each(function(i,v){
                              if(v.program!=null)
                              {  
@@ -292,15 +298,14 @@
                                   
                               }                   
                              });
-                          
-                           
-                        
-                       
+                          }else{
+                            $("#program_id").html("<option value=''>No data found</option>");
+                          }
                     }
                     else
                     {
                        
-                               $("#program_id").append("<option value=''>No data found</option>");  
+                      $("#program_id").append("<option value=''>No data found</option>");  
                            
                       
                     }
@@ -325,6 +330,8 @@
       var anchor_id =  $("#anchor_id").val(); 
       if(program_id=='')
       {
+          $("#pro_limit").empty();
+          $("#pro_remain_limit").empty();
           return false; 
       }
       $("#supplier_id").empty();
