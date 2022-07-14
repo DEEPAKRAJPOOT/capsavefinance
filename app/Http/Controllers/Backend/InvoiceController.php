@@ -1992,7 +1992,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                                 } else if($value['RefStatus'] == 'Rejected by Checker' || $value['RefStatus'] == 'Rejected' || $value['RefStatus'] == 'Rejected by Authorizer' || $value['RefStatus'] == 'Rejected online' || $value['RefStatus'] == 'Cancelled') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
                                 } else if($value['RefStatus'] == 'FAILED') {
-                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED'];
+                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED_DISBURSMENT'];
                                 } else {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'];
                                 } 
@@ -2893,7 +2893,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                                     } else if($value['RefStatus'] == 'Rejected by Checker' || $value['RefStatus'] == 'Rejected' || $value['RefStatus'] == 'Rejected by Authorizer' || $value['RefStatus'] == 'Rejected online' || $value['RefStatus'] == 'Cancelled') {
                                         $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
                                     } else if($value['RefStatus'] == 'FAILED') {
-                                        $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED'];
+                                        $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED_DISBURSMENT'];
                                     } else {
                                         $disburseStatus = config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'];
                                     }
