@@ -4,9 +4,9 @@
     width: 100%;
     text-align: center;
     position: fixed;
-}
-.footer {
     bottom: 0px;
+    background: #fff;
+
 }
 
 </style>
@@ -173,12 +173,12 @@
          </tr>
       </tbody>
    </table> --}}
-   <p align="center" style="font-size: 9px;font-family: Book Antiqua;">This is a digitally signed invoice. The certification details of the signatory can be accessed on Acrobat Reader DC.</p>
+   {{-- <p align="center" style="font-size: 9px;font-family: Book Antiqua;">This is a digitally signed invoice. The certification details of the signatory can be accessed on Acrobat Reader DC.</p> --}}
    <span style="font-size: 9px;font-family: Book Antiqua;"><strong>FOR {{$company_data['name']}}</strong></span>
    <p lang="en-US">&nbsp;</p>
    <p style="font-size: 9px;font-family: Book Antiqua;"><strong>Authorized Signatory</strong></span></p>
-   <p align="center" style="font-size: 9px;font-family: Book Antiqua;" class="footer">This is a digitally signed invoice. The certification details of the signatory can be accessed on Acrobat Reader DC.</p>
    <p lang="en-US">&nbsp;</p>
-      <p style="font-size: 9px;font-family: Book Antiqua; margin: 10px;" class="footer"><strong>"I/We hereby declare that though our aggregate turnover in any preceding financial year from 2017-18 onwards is more than the aggregate turnover notified under sub-rule (4) of rule 48, we are not required to prepare an invoice in terms of the provisions of the said sub-rule."</strong></span></p>
+   <p align="center" style="font-size: 10px;font-family: Book Antiqua;">This is a digitally signed invoice. The certification details of the signatory can be accessed on Acrobat Reader DC.</p>
+   <p style="font-size: 10px;font-family: Book Antiqua; margin: 4px;" class="footer"><strong>"I/We hereby declare that though our aggregate turnover in any preceding financial year from 2017-18 onwards is more than the aggregate turnover notified under sub-rule (4) of rule 48, we are not required to prepare an invoice in terms of the provisions of the said sub-rule."</strong></span></p>
    <p lang="en-US">&nbsp;</p>
    
