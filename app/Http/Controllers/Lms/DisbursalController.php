@@ -192,7 +192,8 @@ class DisbursalController extends Controller
 					$requestData[$userid]['Ben_BankName'] = $invoice['supplier_bank_detail']['bank']['bank_name'];
 					$requestData[$userid]['Ben_Email'] = $invoice['supplier']['email'];
 					$requestData[$userid]['Ben_Mobile'] = $invoice['supplier']['mobile_no'];
-					$requestData[$userid]['Mode_of_Pay'] = 'IFT';
+					//$requestData[$userid]['Mode_of_Pay'] = 'IFT';
+                                        $requestData[$userid]['Mode_of_Pay'] = 'BT';
 					$requestData[$userid]['Nature_of_Pay'] = 'MPYMT';
 					$requestData[$userid]['Remarks'] = 'test remarks';
 					$requestData[$userid]['Value_Date'] = date('Y-m-d');

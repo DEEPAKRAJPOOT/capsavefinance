@@ -929,7 +929,8 @@ class InvoiceController extends Controller {
                     $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
                     $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
                     //$exportData[$userid]['Mode_of_Pay'] = $modePay;
-                    $exportData[$userid]['Mode_of_Pay'] = ($bank_id == config('lms.IDFC_BANK_ID')) ? 'IFT' : $modePay;
+                    //$exportData[$userid]['Mode_of_Pay'] = ($bank_id == config('lms.IDFC_BANK_ID')) ? 'IFT' : $modePay;
+                    $exportData[$userid]['Mode_of_Pay'] = ($bank_id == config('lms.IDFC_BANK_ID')) ? 'BT' : $modePay;
                     $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
                     $exportData[$userid]['Remarks'] = 'invoice disbursal';
 
@@ -1261,7 +1262,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $exportData[$userid]['Ben_BankName'] = $bank_name;
                     $exportData[$userid]['Ben_Email'] = $disbursalData['invoice']['supplier']['email'];
                     $exportData[$userid]['Ben_Mobile'] = $disbursalData['invoice']['supplier']['mobile_no'];
-                    $exportData[$userid]['Mode_of_Pay'] = 'IFT';
+                    //$exportData[$userid]['Mode_of_Pay'] = 'IFT';
+                    $exportData[$userid]['Mode_of_Pay'] = 'BT';
                     $exportData[$userid]['Nature_of_Pay'] = 'MPYMT';
                     $exportData[$userid]['Remarks'] = 'test remarks';
                     $exportData[$userid]['Value_Date'] = date('Y-m-d');
