@@ -2851,9 +2851,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     }
                     $time = date('y-m-d H:i:s');
                     $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
-                    echo "<pre>";
-                    print_r($result['result']['http_header']);
-                    exit;
+
+                    echo "==>".$result['result']['http_header'];
+
                     $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
                         .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
                         .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['http_header']  .PHP_EOL
