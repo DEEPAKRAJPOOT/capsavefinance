@@ -176,6 +176,7 @@ class Payment extends BaseModel {
         try {
             $arr['sys_updated_at'] = Helpers::getSysStartDate();
             $arr['sys_created_at'] = $arr['sys_updated_at'];
+            // dd($arr);
             $insertId = self::create($arr)->payment_id;
             $resp['code'] = $insertId;  
             $resp['message'] = 'Payment inserted successfuly';  

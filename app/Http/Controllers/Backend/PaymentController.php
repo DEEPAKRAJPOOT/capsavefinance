@@ -133,6 +133,7 @@ class PaymentController extends Controller {
 			$curdate = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
 			$curdateMesg = Carbon::parse(Helpers::getSysStartDate())->format('d/m/Y');
 			$arrFileData = $request->all();
+			// dd($arrFileData);
 			$validatedData = $request->validate([
 				'payment_type' => Rule::requiredIf(function () use ($request) {
 					return ($request->action_type == 1)?true:false;
