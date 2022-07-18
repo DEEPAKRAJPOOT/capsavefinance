@@ -2790,7 +2790,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
     public function disbursalPaymentEnquiryCron()
     {
         try {
-            $cLogDetails = \Helpers::cronLogBegin(4);
+           // $cLogDetails = \Helpers::cronLogBegin(4);
             $disbursalBatchRequests = $this->lmsRepo->lmsGetDisbursalBatchRequestCron();
             $result['message'] = "No Batch Found";
             $result['code']    = 501; // no batch found
@@ -2833,7 +2833,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
                     $idfcObj= new Idfc_lib();
                     $result = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $params);
-                    dd($result);
 
                     if (isset($result['code'])) {
                         if (isset($result['http_code']) && $result['http_code'] == 200) {
@@ -2942,7 +2941,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById(['batch_status' => 2], $disbursalBatchId);
                 }
             }
-                if(isset($result['code']) == 501) {
+            /*    if(isset($result['code']) == 501) {
                    $statusCode = 3;
                 } else if(isset($result['code']) == 200) {
                     $statusCode = 1;
@@ -2951,7 +2950,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 }
             if($cLogDetails){
                 \Helpers::cronLogEnd($statusCode,$cLogDetails->cron_log_id);
-            }  
+            } */
             exit;
         } catch (Exception $ex) {
             // return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
