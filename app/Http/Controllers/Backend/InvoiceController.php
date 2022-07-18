@@ -2833,6 +2833,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
 
                     $idfcObj= new Idfc_lib();
                     $result = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $params);
+                    echo "<pre>";
+                    print_r($result);
+                    exit;
 
                     if (isset($result['code'])) {
                         if (isset($result['http_code']) && $result['http_code'] == 200) {
