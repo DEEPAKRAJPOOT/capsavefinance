@@ -2597,6 +2597,8 @@ class Helper extends PaypalHelper
                 $adhocExpirDate = strtotime($adhocLimit->end_date);
                 if ($curDate > $adhocExpirDate) {
                     $activeArray[] = false;
+                }elseif(in_array($adhocLimit->status, [2])) {
+                    $activeArray[] = false;
                 }
             }
         }        
@@ -2620,6 +2622,36 @@ class Helper extends PaypalHelper
         $inputArr['file_encp_key'] =  md5('2');
         $inputArr['created_by'] = \Auth::user()->user_id;
         $inputArr['updated_by'] = \Auth::user()->user_id;
+
+        return $inputArr;
+    }
+
+    /**
+     * uploading adhoc limit document data
+     *
+     * @param Exception $exception
+     * @param string    $exMessage
+     * @param boolean   $handler
+     */
+    public static function uploadAppAdhocDocFile($docFile, $userId, $appId, $adhocLimit)
+    {
+        $inputArr = [];
+        if(!empty($docFile)) {
+            if ($docFile) {
+                $targetDir = '/public/user/' . $userId . '/' . $appId . '/adhoc-limit' . '/'. $adhocLimit->app_offer_adhoc_limit_id . '/docs';
+                if (!Storage::exists($targetDir)) {
+                    Storage::makeDirectory($targetDir, 0777, true);
+                }
+                $path = Storage::disk('public')->put($targetDir, $docFile, null);
+                $inputArr['file_path'] = $path;
+            }
+        }
+        $inputArr['file_type'] = !empty($docFile) ? $docFile->getClientMimeType() : '';
+        $inputArr['file_name'] = !empty($docFile) ? $docFile->getClientOriginalName() : '';
+        $inputArr['file_size'] = !empty($docFile) ? $docFile->getClientSize() : '';
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = Auth::user()->user_id;
+        $inputArr['updated_by'] = Auth::user()->user_id;
 
         return $inputArr;
     }
