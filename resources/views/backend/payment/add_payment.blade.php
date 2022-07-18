@@ -227,6 +227,7 @@
         </div>
     </div>
 </div>
+<input type="text" id="checkAlertValue" value="0">
 @endsection
 @section('jscript')
 <style>
@@ -256,7 +257,13 @@ cursor: pointer;
         get_all_unsettled_trans_type:"{{ route('get_all_unsettled_trans_type') }}",
         get_interest_paid_amount:"{{ route('get_interest_paid_amount') }}",
         sysDate:"{{ Carbon\Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d') }}",
-        unique_tds_certificate_no:"{{URL::route('check_unique_tds_certificate_no')}}"
+        unique_tds_certificate_no:"{{URL::route('check_unique_tds_certificate_no')}}",
+        unique_utr_no:"{{ URL::route('check_unique_utr_no') }}",
+        unique_utr_alert:"{{ URL::route('check_unique_utr_alert') }}",
+        unique_cheque_no:"{{ URL::route('check_unique_cheque_no') }}",
+        unique_cheque_alert:"{{ URL::route('check_unique_cheque_alert') }}",
+        unique_unr_no:"{{ URL::route('check_unique_unr_no') }}",
+        unique_unr_alert:"{{ URL::route('check_unique_unr_alert') }}"
     };
 
     var userData = '';
@@ -447,8 +454,152 @@ cursor: pointer;
                 return result;                
             },'Please enter another TDS Certificate No.'
         );
+        $.validator.addMethod("uniqueUtrNoByCustomerId",
+            function(value, element, params) {
+                var check;
+                console.log(check);
+                var result = true;
+                var data = {utr_no : value, _token: messages.token};
+                data['user_id'] = $('#user_id').val();
+                $.ajax({
+                    type:"POST",
+                    async: false,
 
+                    url: messages.unique_utr_no, // script to validate in server side
+                    data: data,
+                    success: function(data) { 
+                        result = (data.status == 1) ? false : true;
+                    }
+                });
+                if(result){
+                    var utrNo = value;
+                    if(utrNo != ''){
+                        console.log('aaaa');
+                        var data = {utr_no : utrNo, _token: messages.token};
+                        data['user_id'] = $('#user_id').val();
+                        $.ajax({
+                            type:"POST",
+                            async: false,
+                            url: messages.unique_utr_alert, // script to validate in server side
+                            data: data,
+                            success: function(res) { 
+                                console.log('res');
+                                if(res['status']!=1){
+                                    if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
+                                        check = 1;
+                                        return false;
+                                    }else{
+                                        $('#utr_no').val('');
+                                        check = 2;
+                                        return true;
+                                    }
+                                    check = 3;
+                                }
+                                    check = 4;
+                                // return true;
+                            }
+                        });  
+                    }
+                }
+                return result;                
+            },'This UTR number is already used by this customer.'
+        );
+
+        $.validator.addMethod("uniquechequeNoByCustomerId",
+            function(value, element, params) {
+                var result = true;
+                var data = {cheque_no : value, _token: messages.token};
+                data['user_id'] = $('#user_id').val();
+                $.ajax({
+                    type:"POST",
+                    async: false,
+
+                    url: messages.unique_cheque_no, // script to validate in server side
+                    data: data,
+                    success: function(data) {                        
+                        result = (data.status == 1) ? false : true;
+                    }
+                });  
+                if(result){
+                    var chequeNo = value;
+                    if(chequeNo != ''){
+                        var data = {cheque_no : chequeNo, _token: messages.token};
+                        data['user_id'] = $('#user_id').val();
+                        $.ajax({
+                            type:"POST",
+                            async: false,
+                            url: messages.unique_cheque_alert, // script to validate in server side
+                            data: data,
+                            success: function(res) { 
+                            var response = false;
+                                if(res['status']!=1){
+                                    if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
+                                        return false;
+                                    }else{
+                                        $('#utr_no').val('');
+                                        return true;
+                                    }
+                                }else{
+                                    return true;
+                                }
+                                // return true;
+                            }
+                        });  
+                    }
+                }              
+                return result;                
+            },'This UTR number is already used by this customer.'
+        );
+        $.validator.addMethod("uniqueUnrNoByCustomerId",
+            function(value, element, params) {
+                var result = true;
+                var data = {unr_no : value, _token: messages.token};
+                data['user_id'] = $('#user_id').val();
+                $.ajax({
+                    type:"POST",
+                    async: false,
+
+                    url: messages.unique_unr_no, // script to validate in server side
+                    data: data,
+                    success: function(data) {                        
+                        result = (data.status == 1) ? false : true;
+                    }
+                });  
+                if(result){
+                    var unrNo = value;
+                    if(unrNo != ''){
+                        var data = {unr_no : unrNo, _token: messages.token};
+                        data['user_id'] = $('#user_id').val();
+                        $.ajax({
+                            type:"POST",
+                            async: false,
+                            url: messages.unique_cheque_alert, // script to validate in server side
+                            data: data,
+                            success: function(res) { 
+                            var response = false;
+                                if(res['status']!=1){
+                                    if(confirm('This UTR Number is already used by another Customer. Do You want to continue?')) {
+                                        return false;
+                                    }else{
+                                        $('#utr_no').val('');
+                                        return true;
+                                    }
+                                }else{
+                                    return true;
+                                }
+                                return true;
+                            }
+                        });  
+                    }
+                }              
+                return result;                
+            },'This UTR number is already used by this customer.'
+        );
         $('#savePayFrm').validate( {
+            onkeyup: false,
+            onclick: false,
+            onfocusout: false,
+            // onsubmit: false,
                 rules: {
                 search_bus: {
                     required: true,
@@ -476,6 +627,9 @@ cursor: pointer;
                     },
                     utr_no:{
                         required:true,
+                        uniqueUtrNoByCustomerId:true,
+                        uniquechequeNoByCustomerId:true,
+                        uniqueUnrNoByCustomerId:true,
                     },
                     description:{
                         required:true,

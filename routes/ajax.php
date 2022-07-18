@@ -1477,4 +1477,28 @@ Route::group(
         'as' => 'upload_approval_mail_copy',
         'uses' => 'AjaxController@uploadApprovalMailCopy'
     ]);
+    Route::post('check-unique-utr-no', [
+        'as' => 'check_unique_utr_no',
+        'uses' => 'AjaxController@checkUniqueUtrNo'
+    ]);
+    Route::post('check-unique-utr-alert', [
+        'as' => 'check_unique_utr_alert',
+        'uses' => 'AjaxController@checkUniqueUtrAlert'
+    ]);
+    Route::post('check-unique-cheque-no', [
+        'as' => 'check_unique_cheque_no',
+        'uses' => 'AjaxController@checkUniqueChequeNo'
+    ]);
+    Route::post('check-unique-cheque-alert', [
+        'as' => 'check_unique_cheque_alert',
+        'uses' => 'AjaxController@checkUniqueChequeAlert'
+    ]);
+    Route::post('check-unique-unr-no', [
+        'as' => 'check_unique_unr_no',
+        'uses' => 'AjaxController@checkUniqueUnrNo'
+    ]);
+    Route::post('check-unique-unr-alert', [
+        'as' => 'check_unique_unr_alert',
+        'uses' => 'AjaxController@checkUniqueUnrAlert'
+    ]);
 });

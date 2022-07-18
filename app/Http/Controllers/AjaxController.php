@@ -56,6 +56,7 @@ use App\Inv\Repositories\Models\AppSanctionLetter;
 use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\User;
 class AjaxController extends Controller {
 
     /**
@@ -3789,7 +3790,20 @@ if ($err) {
        
          $get_program = $this->invRepo->getLimitProgram($request['anchor_id']);
          $get_program_limit = $this->invRepo->geAnchortLimitProgram($request['anchor_id']);
-         return response()->json(['status' => 1,'limit' => $get_program_limit,'get_program' =>$get_program]);
+         $get_supplier = [];
+            foreach($get_program as $v){
+                $program_id = $v->program->prgm_id;
+                $supplierData = $this->invRepo->getProgramOfferByPrgmId($program_id);
+                foreach ($supplierData as $v1){
+                    $get_supplierD['user_id'] = $v1->user_id;
+                    $get_supplierD['app_id'] = $v1->app_id;
+                    $get_supplierD['prgm_offer_id'] = $v1->prgm_offer_id;
+                    $get_supplierD['biz_entity_name'] = $v1->biz_entity_name;
+                    $get_supplierD['customer_id'] = $v1->customer_id;
+                    $get_supplier[$program_id][] = $get_supplierD; 
+                }
+            }
+         return response()->json(['status' => 1,'limit' => $get_program_limit,'get_program' =>$get_program,'get_supplier'=>$get_supplier]);
      }
        public function getProgramLmsSingleList(Request $request)
      {
@@ -6048,4 +6062,82 @@ if ($err) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
         }    
     }
+
+    public function checkUniqueUtrNo(Request $request) 
+    {        
+        $utrNumber = $request->get('utr_no');
+        $userId = $request->has('user_id') ? $request->get('user_id'): null ;
+        $result = $this->lmsRepo->checkUtrNo(['utr_no' => $utrNumber,'user_id'=>$userId]);
+        // dd($result);
+        if (isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    }  
+    
+    public function checkUniqueUtrAlert(Request $request) 
+    {    
+        $utrNumber = $request->get('utr_no');
+        $userId = $request->has('user_id') ? $request->get('user_id'): null ;
+        $result = $this->lmsRepo->checkUtrAlert($utrNumber,$userId);
+        if (!isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    } 
+    
+    public function checkUniqueChequeNo(Request $request) 
+    {        
+        $chequeNumber = $request->get('cheque_no');
+        $userId = $request->has('user_id') ? $request->get('user_id'): null ;
+        $result = $this->lmsRepo->checkUtrNo(['cheque_no' => $chequeNumber,'user_id'=>$userId]);
+        // dd($result);
+        if (isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    } 
+    public function checkUniqueChequeAlert(Request $request) 
+    {        
+        $chequeNumber = $request->get('cheque_no');
+        $userId = $request->has('user_id') ? $request->get('user_id'): null ;
+        $result = $this->lmsRepo->chequeAlert( $chequeNumber,$userId);
+        if (!isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    } 
+    public function checkUniqueUnrNo(Request $request) 
+    {        
+        $unrNumber = $request->get('unr_no');
+        $userId = $request->has('user_id') ? $request->get('user_id'): null ;
+        $result = $this->lmsRepo->checkUtrNo(['unr_no' => $unrNumber,'user_id'=>$userId]);
+        // dd($result);
+        if (isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    } 
+    public function checkUniqueUnrAlert(Request $request) 
+    {        
+        $unrNumber = $request->get('unr_no');
+        $userId = $request->has('user_id') ? $request->get('user_id'): null ;
+        $result = $this->lmsRepo->checkUnrAlert( $unrNumber,$userId);
+        if (!isset($result)) {
+            $result = ['status' => 1];
+        } else {
+            $result = ['status' => 0];
+        }
+        return response()->json($result); 
+    } 
 }

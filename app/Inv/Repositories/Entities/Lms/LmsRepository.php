@@ -1902,5 +1902,23 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 		return AppApprover::mailsForPendingCases();
 	}
 
-	
+	public function checkUtrNo($whereCond){
+		return Payment::where($whereCond)->first();
+	}
+
+	public function checkUtrAlert($utrNumber,$userId){
+		$data = Payment::where('utr_no',$utrNumber)
+						->whereNotIn('user_id',[$userId])->first();
+		return $data;
+	}
+	public function chequeAlert($chequeNumber,$userId){
+		$data = Payment::where('cheque_no',$chequeNumber)
+						->whereNotIn('user_id',[$userId])->first();
+		return $data;
+	}
+	public function checkUnrAlert($unrNumber,$userId){
+		$data = Payment::where('unr_no',$unrNumber)
+						->whereNotIn('user_id',[$userId])->first();
+		return $data;
+	}
 }

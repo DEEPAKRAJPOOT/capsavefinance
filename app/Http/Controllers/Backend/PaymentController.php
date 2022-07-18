@@ -133,6 +133,7 @@ class PaymentController extends Controller {
 			$curdate = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
 			$curdateMesg = Carbon::parse(Helpers::getSysStartDate())->format('d/m/Y');
 			$arrFileData = $request->all();
+			// dd($arrFileData);
 			$validatedData = $request->validate([
 				'payment_type' => Rule::requiredIf(function () use ($request) {
 					return ($request->action_type == 1)?true:false;
@@ -728,24 +729,33 @@ class PaymentController extends Controller {
 			$paymentId = $request->get('payment_id');
 			if($paymentId){
 				$payment = Payment::find($paymentId);
+				$roleData = Helpers::getUserRole();
+                $is_superadmin = isset($roleData[0]) ? $roleData[0]->is_superadmin : 0;
 				if($payment){
-					if($payment->is_settled == '0' && in_array($payment->action_type, [1,3]) && in_array($payment->trans_type, [17,7])){
-						$payment->delete();
-						InterestAccrualTemp::where('payment_id',$paymentId)->delete();
+					if(in_array($payment->is_settled, [Payment::PAYMENT_SETTLED_PENDING, Payment::PAYMENT_SETTLED_PROCESSING]) && 
+						in_array($payment->action_type, [1,3]) && 
+						in_array($payment->trans_type, [17,7])){
 
-						$whereActivi['activity_code'] = 'delete_payment';
-						$activity = $this->master->getActivity($whereActivi);
-						if(!empty($activity)) {
-							$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
-							$activity_desc = 'Delete Payment (Manage Payment)';
-							$arrActivity['app_id'] = null;
-							$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+						if($payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSING && !(Auth::user()->user_id == $payment->updated_by || $is_superadmin)){
+							return response()->json(['status' => 0,'message' => "Invalid Request: Only Super Admin / ".$payment->getUserName->fullname." can delete!"]);
+						}else{
+							$payment->delete();
+							InterestAccrualTemp::where('payment_id',$paymentId)->delete();
+
+							$whereActivi['activity_code'] = 'delete_payment';
+							$activity = $this->master->getActivity($whereActivi);
+							if(!empty($activity)) {
+								$activity_type_id = isset($activity[0]) ? $activity[0]->id : 0;
+								$activity_desc = 'Delete Payment (Manage Payment)';
+								$arrActivity['app_id'] = null;
+								$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($request->all()), $arrActivity);
+							}
+							PaymentApportionment::where('payment_id', $paymentId)
+							->update([
+								'is_active' => 0
+								]);					
+							return response()->json(['status' => 1,'message' => 'Successfully Deleted Payment']); 
 						}
-						PaymentApportionment::where('payment_id', $paymentId)
-						->update([
-							'is_active' => 0
-							]);						
-						return response()->json(['status' => 1,'message' => 'Successfully Deleted Payment']); 
 					}
 					else{
 						return response()->json(['status' => 0,'message' => 'Invalid Request: Payment cannot be deleted']);
