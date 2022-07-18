@@ -2790,7 +2790,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
     public function disbursalPaymentEnquiryCron()
     {
         try {
-           // $cLogDetails = \Helpers::cronLogBegin(4);
+            $cLogDetails = \Helpers::cronLogBegin(4);
             $disbursalBatchRequests = $this->lmsRepo->lmsGetDisbursalBatchRequestCron();
             $result['message'] = "No Batch Found";
             $result['code']    = 501; // no batch found
@@ -2852,7 +2852,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                             $otherData['enq_txn_id'] = $transId;
                             $userFileSaved = null;
                             $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result, $otherData);
-                            continue;
+                           // continue;
                         }
                     } 
                     $fileDirPath = getPathByDISId($data['disbursal_one']['disbursal_id']);
@@ -2955,7 +2955,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById(['batch_status' => 2], $disbursalBatchId);
                 }
             }
-            /*    if(isset($result['code']) == 501) {
+                if(isset($result['code']) == 501) {
                    $statusCode = 3;
                 } else if(isset($result['code']) == 200) {
                     $statusCode = 1;
@@ -2964,7 +2964,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 }
             if($cLogDetails){
                 \Helpers::cronLogEnd($statusCode,$cLogDetails->cron_log_id);
-            } */
+            } 
             exit;
         } catch (Exception $ex) {
             // return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
