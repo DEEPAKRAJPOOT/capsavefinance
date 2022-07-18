@@ -443,6 +443,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
 		foreach($invDisbList as $invDisb){
+			if(!isset($outstandingData[$invDisb->invoice_disbursed_id])){
+				continue;
+			}
 			$principalDr = $outstandingData[$invDisb->invoice_disbursed_id]['priDr'];
 			$principalCr = $outstandingData[$invDisb->invoice_disbursed_id]['priCr'];
 			$principalOut = round((round($principalDr,2) - round($principalCr,2)),2);

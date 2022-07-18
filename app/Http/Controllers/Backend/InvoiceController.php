@@ -1992,7 +1992,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                                 } else if($value['RefStatus'] == 'Rejected by Checker' || $value['RefStatus'] == 'Rejected' || $value['RefStatus'] == 'Rejected by Authorizer' || $value['RefStatus'] == 'Rejected online' || $value['RefStatus'] == 'Cancelled') {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
                                 } else if($value['RefStatus'] == 'FAILED') {
-                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED'];
+                                    $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED_DISBURSMENT'];
                                 } else {
                                     $disburseStatus = config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'];
                                 } 
@@ -2139,6 +2139,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $tInv = 0;
             $appId = '';
             $userId = '';
+            $fullCustName = '';
+            $invNoString ='';
+            $tAmt = 0;
             $invNo = [];
             $idfc_res_text = $bankType = '';
             $disbursalBatchId = $req->get('disbursal_batch_id');
@@ -2149,7 +2152,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $bankType = $latestData->bank_type;
             }
             $disbursal = $disbursalBatchData->disbursal ?? [];
-            $tCust = $disbursal->count();
+            //$tCust = $disbursal->count();
+            $tCust = count($disbursal);
+            if($tCust > 0) {
             $tAmt = number_format($disbursal->sum('disburse_amount'),2);
             foreach($disbursal as $data){
                 foreach($data->invoice_disbursed as $invData) {
@@ -2166,8 +2171,22 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             }
             $custName = HelperS::getUserInfo($userId);
             $fullCustName = $custName->f_name." ".$custName->l_name;
-
             return view('backend.invoice.online_disbursal_rollback')->with(['disbursal_batch_id' => $disbursalBatchId, 'fullCustName' => $fullCustName, 'invNoString' => $invNoString, 'tInv' => $tInv, 'tAmt' => $tAmt, 'tCust' => $tCust, 'appId' => $appData->app_code ?? '', 'res_text' => $idfc_res_text, 'bankType' => $bankType]);
+
+            } else {
+
+            return view('backend.invoice.online_disbursal_rollback')
+                ->with(['disbursal_batch_id' => $disbursalBatchId,
+                    'fullCustName' => $fullCustName,
+                    'invNoString' => $invNoString,
+                    'tInv' => $tInv, 'tAmt' => $tAmt,
+                    'tCust' => $tCust,
+                    'appId' => $appData->app_code ?? '',
+                    'res_text' => $idfc_res_text,
+                    'bankType' => $bankType]);
+
+            }
+
             } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }
@@ -2769,8 +2788,10 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
     public function disbursalPaymentEnquiryCron()
     {
         try {
+            $cLogDetails = \Helpers::cronLogBegin(4);
             $disbursalBatchRequests = $this->lmsRepo->lmsGetDisbursalBatchRequestCron();
-            
+            $result['message'] = "No Batch Found";
+            $result['code']    = 501; // no batch found
             foreach($disbursalBatchRequests as $disbursalBatchRequest) {
                 // $disbursalBatchId = $disbursalBatchRequest->batch_id;
                 $disbursalBatchId = $disbursalBatchRequest->disbursal_batch_id;
@@ -2784,17 +2805,13 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
                 $transDisbursalIds = [];
                 $tranNewIds = [];
-
                 if (!isset($data) || empty($data)) {
                     echo "Something went wrong please try again.";
                 } else {
                     $data = $data->toArray();
                 }
-
                 $message = [];
-
                 if(!empty($reqData)) {
-
                     $http_header = [
                         'timestamp' => date('Y-m-d H:i:s'),
                         'txn_id' => $reqData['txn_id']
@@ -2821,14 +2838,16 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         } else {
                             $http_code = $result['code'] ? $result['code']  : $result['http_code']. ', ';
                             $message = $result['message'] ?? $result['message'];
-                            continue;
+                           // continue;
                             // Session::flash('message', 'Error : '. $http_code  .  $message);
                             // return redirect()->back();
                         }
-                    }
-                    $fileDirPath = getPathByTxnId($transId);
-                    $time = date('y-m-d H:i:s');
+                    } 
+                    $fileDirPath = getPathByDISId($data['disbursal_one']['disbursal_id']);
+                    if(is_null($fileDirPath)) {
 
+                    }
+                    $time = date('y-m-d H:i:s');
                     $result['result']['http_header'] = (is_array($result['result']['http_header'])) ? json_encode($result['result']['http_header']): $result['result']['http_header'];
                     $fileContents = PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['url'].  PHP_EOL
                         .PHP_EOL .' Log  '.$time .PHP_EOL. $result['result']['payload']  .PHP_EOL
@@ -2874,7 +2893,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                                     } else if($value['RefStatus'] == 'Rejected by Checker' || $value['RefStatus'] == 'Rejected' || $value['RefStatus'] == 'Rejected by Authorizer' || $value['RefStatus'] == 'Rejected online' || $value['RefStatus'] == 'Cancelled') {
                                         $disburseStatus = config('lms.DISBURSAL_STATUS')['REJECT'];
                                     } else if($value['RefStatus'] == 'FAILED') {
-                                        $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED'];
+                                        $disburseStatus = config('lms.DISBURSAL_STATUS')['FAILED_DISBURSMENT'];
                                     } else {
                                         $disburseStatus = config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'];
                                     }
@@ -2915,11 +2934,22 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $message = $result['message'] ?? $result['message'];
                     }
                 }
+                $disbureIds = $this->lmsRepo->findDisbursalByUserAndBatchId(['status_id' => config('lms.DISBURSAL_STATUS')['SENT_TO_BANK'], 'disbursal_batch_id' => $disbursalBatchId])->toArray();
+                if(empty($disbureIds)) {
+                    $updateDisbursal = $this->lmsRepo->updateDisbursalBatchById(['batch_status' => 2], $disbursalBatchId);
+                }
             }
-          exit;
-
-            // Session::flash('message', implode(', ', $message));
-            // return redirect()->back()->withErrors('message',trans('backend_messages.batch_disbursed'));
+                if(isset($result['code']) == 501) {
+                   $statusCode = 3;
+                } else if(isset($result['code']) == 200) {
+                    $statusCode = 1;
+                } else {
+                   $statusCode = 0;
+                }
+            if($cLogDetails){
+                \Helpers::cronLogEnd($statusCode,$cLogDetails->cron_log_id);
+            }  
+            exit;
         } catch (Exception $ex) {
             // return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
         }

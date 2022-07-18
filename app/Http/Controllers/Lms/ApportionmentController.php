@@ -114,6 +114,12 @@ class ApportionmentController extends Controller
                 $transList = self::getUnsettledTrans($userId, $payment['date_of_payment']);
                 $invDisbList = $transList->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.INTEREST_OVERDUE')])->pluck('invoice_disbursed_id')->toArray();
                 $invDisbList = array_unique($invDisbList);
+
+                if(!$payment['isApportPayValid'] || in_array($payment['is_settled'],[1,3])){
+                    DB::rollback();
+                    return redirect()->route('unsettled_payments')->withInput()->withErrors('Apportionment is not possible for the selected Payment. Please select valid payment!.');
+                }
+                
                 if(count($invDisbList) <= 50 ){
                     $paySug  = true;
                     $Obj = new ManualApportionmentHelperTemp($this->lmsRepo);
@@ -121,8 +127,7 @@ class ApportionmentController extends Controller
                         $Obj->intAccrual($invDisbId, null, $payment['date_of_payment'], $paymentId);
                     }
                     if(!$payment['isApportPayValid']){
-                        Session::flash('error', trans('Please select Valid Payment!'));
-                        return redirect()->back()->withInput();
+                        return redirect()->route('unsettled_payments')->withInput()->withErrors('Please select Valid Payment!');
                     }
                 }
             }
@@ -148,7 +153,7 @@ class ApportionmentController extends Controller
                     'anchors' =>  $result['anchors']])
             ->with('paymentApportionment',$paymentApportionment);
         } catch (Exception $ex) {
-            return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+            return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex));
         } 
     }
 
@@ -686,10 +691,9 @@ class ApportionmentController extends Controller
             $userDetails = $this->getUserDetails($userId); 
             $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
 
-            if(!$paymentDetails['isApportPayValid'] || empty($checks) || $paymentDetails['is_settled'] == 1){
-                Session::flash('untrans_error', trans('Apportionment is not possible for the selected Payment. Please select valid payment for the unsettled payment screen.'));
+            if(!$paymentDetails['isApportPayValid'] || empty($checks) || in_array($paymentDetails['is_settled'],[1,3])){
                 DB::rollback();
-                return redirect()->back()->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Apportionment is not possible for the selected Payment. Please select valid payment!.');
             }
             $repaymentAmt = $paymentDetails['amount']; 
             
@@ -806,20 +810,26 @@ class ApportionmentController extends Controller
 
             if (!$this->verifyUnSettleTransInitiator($payment)) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions');
+            }
+
+            if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PENDING) {
+                DB::rollback();
+                return redirect()->route('unsettled_payments')->withErrors('Unable to perform Apportionment, Please retry!');
             }
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSED) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions');
             }
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Transactions already settled')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Payment already settled');
             }
 
             $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSED]);
+            DB::commit();
 
             $Obj = new ManualApportionmentHelper($this->lmsRepo);
             $sanctionPageView = false;
@@ -836,9 +846,8 @@ class ApportionmentController extends Controller
 
                 $paymentDetails = $this->getPaymentDetails($paymentId,$userId);
                 if(!$paymentDetails['isApportPayValid'] || empty($checks) || $paymentDetails['is_settled'] == 1){
-                    Session::flash('error', trans('Apportionment is not possible for the selected Payment. Please select valid payment for the unsettled payment screen.'));
                     DB::rollback();
-                    return redirect()->route('unsettled_payments');
+                    return redirect()->route('unsettled_payments')->withErrors('Apportionment is not possible for the selected Payment. Please select valid payment!.');
                 }
                 $repaymentAmt = (float) $paymentDetails['amount']; 
                 $invoiceList = [];
@@ -927,7 +936,7 @@ class ApportionmentController extends Controller
                 if((float) round($amtToSettle,2) > (float) round($repaymentAmt,2)){
                     Session::flash('error', trans('error_messages.apport_invalid_unapplied_amt'));
                     DB::rollback();
-                    return redirect()->route('unsettled_payments')->withInput();
+                    return redirect()->route('unsettled_payments');
                 }
 
                 if(!empty($transactionList)){
@@ -998,7 +1007,7 @@ class ApportionmentController extends Controller
             $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PENDING]);
 
             DB::rollback();
-            return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+            return redirect()->route('unsettled_payments')->withErrors(Helpers::getExceptionMessage($ex));
         }
     }
 
@@ -1717,8 +1726,7 @@ class ApportionmentController extends Controller
 
             if(!$paymentDetails['isApportPayValid']){
                 if(!$paymentDetails['isApportPayValid']['isValid']){
-                    Session::flash('error', trans('Apportionment is not possible for the selected Payment. Please select valid payment for the unsettled payment screen.'));
-                    return redirect()->back()->withInput();
+                    return redirect()->route('unsettled_payments')->withInput()->withErrors('Apportionment is not possible for the selected Payment. Please select valid payment!.');
                 }
             }
             $repaymentAmt = (float) round($paymentDetails['amount'],2); 
@@ -1813,21 +1821,26 @@ class ApportionmentController extends Controller
 
             if (!$this->verifyUnSettleTransInitiator($payment)) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions');
             }
 
+            if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PENDING) {
+                DB::rollback();
+                return redirect()->route('unsettled_payments')->withErrors('Unable to perform Apportionment, Please retry!')->withInput();
+            }
+            
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED_PROCESSED) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Someone is already trying to settle transactions');
             }
 
             if ($payment && $payment->is_settled == Payment::PAYMENT_SETTLED) {
                 DB::rollback();
-                return redirect()->route('unsettled_payments')->withErrors('Transactions already settled')->withInput();
+                return redirect()->route('unsettled_payments')->withErrors('Payement already settled');
             }
 
             $payment->update(['is_settled' => Payment::PAYMENT_SETTLED_PROCESSED]);
-
+            DB::commit();
             $Obj = new ManualApportionmentHelper($this->lmsRepo);
             $sanctionPageView = false;
             if($request->has('sanctionPageView')){

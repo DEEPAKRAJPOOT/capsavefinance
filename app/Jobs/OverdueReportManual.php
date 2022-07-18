@@ -45,6 +45,7 @@ class OverdueReportManual implements ShouldQueue
     public function handle(ReportInterface $reportsRepo)
     {
         ini_set("memory_limit", "-1");
+        ini_set('max_execution_time', 10000);
         
         //Second and fourth Saturday back dated overdue report 
         if($this->isSecondFourthSaturday() && is_null($this->userId) && is_null($this->toDate)){
@@ -70,6 +71,8 @@ class OverdueReportManual implements ShouldQueue
 
     private function downloadOverdueReport($exceldata)
     {
+        ini_set("memory_limit", "-1");
+        ini_set('max_execution_time', 10000);
         $rows = 5;
         $sheet =  new PHPExcel();
         $sheet->setActiveSheetIndex(0)

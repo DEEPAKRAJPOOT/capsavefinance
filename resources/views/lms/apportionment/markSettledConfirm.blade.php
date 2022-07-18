@@ -104,7 +104,7 @@
                     </label>
                     </div>
                     <div class="col-md-2" >
-                        <input type="submit" value="Confirm" class="btn btn-success btn-sm pull-right">
+                        <input type="submit" value="Confirm" class="btn btn-success btn-sm pull-right" onclick="this.disabled='disabled';this.form.submit();">
                     </div>
                 </div>
             </form>
