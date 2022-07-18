@@ -2804,6 +2804,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $transId = $reqData['txn_id'];
                 // $transId = '2RGIK4436OUMXHZGXH';
                 $createdBy = 0;
+                $disbusalApiLogData='';
                 $fundedDate = \Carbon\Carbon::now()->format('Y-m-d');
                 $transDisbursalIds = [];
                 $tranNewIds = [];
