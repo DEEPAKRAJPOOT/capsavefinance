@@ -2852,6 +2852,7 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                             $otherData['enq_txn_id'] = $transId;
                             $userFileSaved = null;
                             $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result, $otherData);
+                            continue;
                         }
                     } 
                     $fileDirPath = getPathByDISId($data['disbursal_one']['disbursal_id']);
