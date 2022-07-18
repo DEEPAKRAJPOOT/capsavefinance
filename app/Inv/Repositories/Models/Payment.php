@@ -252,7 +252,8 @@ class Payment extends BaseModel {
             $lastSettledPaymentDate = date('Y-m-d', strtotime($lastSettledPaymentDate));
             $validPayment = $validPayment->where('date_of_payment','>=',$lastSettledPaymentDate);
             if(strtotime($lastSettledPaymentDate) > strtotime($date_of_payment)){
-                $error = 'Invalid Payment: <br> The backdated <br>  payment from the <br>  last settled payment!';
+                $error = '<a class="btn btn-action-btn btn-sm" title = "Invalid Payment: The backdated payment from the last settled payment!"><i class="fa fa-info" aria-hidden="true"></i></a>';
+                // Invalid Payment: The backdated payment from the last settled payment!
             }
         }
 

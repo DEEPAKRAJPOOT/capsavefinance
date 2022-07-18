@@ -5956,7 +5956,7 @@ class DataRenderer implements DataProviderInterface
                                             }
                                             
                                         }elseif($dataRecords->isApportPayValid['error']){
-                                            $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">(". $dataRecords->isApportPayValid['error'] . ")</span>";
+                                            $btn .= "<span class=\"d-inline-block text-truncate\" style=\"max-width: 150px; color:red; font:9px;\">". $dataRecords->isApportPayValid['error'] . "</span>";
                                         }
                                     }
                                     if($dataRecords->action_type == '5' && $dataRecords->trans_type == '31'){
