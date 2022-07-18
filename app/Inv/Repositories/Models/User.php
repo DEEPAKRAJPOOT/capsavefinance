@@ -629,16 +629,17 @@ class User extends Authenticatable
      */
     public static function getUserByAnchorId($anchId)
     {
-        
         //Check anchId is not blank
         if (empty($anchId)) {
             throw new BlankDataExceptions(trans('error_message.no_data_found'));
         }
+        
         //Check anchId is not an integer
 
-        if (!is_int($anchId)) {
-            throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
-        }
+        // if (!is_int($anchId)) {
+        //     throw new InvalidDataTypeExceptions(trans('error_message.invalid_data_type'));
+        // }
+        // dd($anchId);
 
         $arrAnchUser = self::select('users.*', 'user_app_doc.file_id')
             ->join('user_app_doc', 'users.user_id', '=', 'user_app_doc.user_id')
@@ -646,7 +647,6 @@ class User extends Authenticatable
             ->where('user_app_doc.file_type', 1)
             ->where('users.anchor_id', (int) $anchId)
             ->first();
-
         return ($arrAnchUser ?: false);
     }
     

@@ -148,7 +148,8 @@
           $("#program_id" ).rules( "add", {
         required: true,
         messages: {
-        required: "Please select product program name",
+        // required: "Please select product program name",
+        required: "Please select supplier name",
         }
         });
         $("#invoice_no" ).rules( "add", {
@@ -248,9 +249,15 @@
       {
             $("#pro_limit").empty();
              $("#pro_limit_hide").empty();
+             $("#pro_remain_limit").empty();
+             $("#program_id").html("<option value=''>No data found</option>");
+            return false;
       }
       $("#program_id").empty();
       $("#anc_limit").empty();
+      $("#pro_limit").empty();
+      $("#pro_remain_limit").empty();
+      $(".isloader").show();
       var postData =  ({'anchor_id':anchor_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_program_list,
@@ -261,33 +268,52 @@
                 alert(errorThrown);
                 
                 },
+                
                 success: function (data) {
+                    $(".isloader").hide(); 
                     if(data.status==1)
                     {
                         var obj1  = data.get_program;
                         var obj2   =  data.limit;
+                        var obj3 = data.get_supplier;
                         $("#anc_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_limit+'');
-                           $("#program_id").append("<option value=''>Please Select</option>");  
+                        $("#program_id").append("<option value=''>Please Select Customer</option>"); 
+                          //  $("#program_id").append("<option value=''>Please Select Program</option>");
+                         if(obj1.length > 0){
                             $(obj1).each(function(i,v){
                              if(v.program!=null)
-                             {                                 
-                                   $("#program_id").append("<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+"'>"+v.program.prgm_name+"</option>");  
+                             {  
+                                getSupplierByPrgmId = (obj3[v.program.prgm_id])?obj3[v.program.prgm_id]:'';
+                                $dropDown = "<optgroup label='"+v.program.prgm_name+"'>";
+                                if(getSupplierByPrgmId != ''){
+                                  $(getSupplierByPrgmId).each(function(j,v1){
+                                    if(v1 !=null)
+                                    {           
+                                      $dropDown +="<option value='"+v.program.prgm_id+","+v.app_prgm_limit_id+","+v1.user_id+","+v1.app_id+","+v1.prgm_offer_id+"'>"+v1.biz_entity_name+"&nbsp;&nbsp;("+v1.customer_id+")</option>";  
+                                    }                   
+                                    });
+                                }
+                                $dropDown += "</optgroup>";
+                                $("#program_id").append($dropDown);
+                                  
                               }                   
                              });
-                           
-                        
-                       
+                          }else{
+                            $("#program_id").html("<option value=''>No data found</option>");
+                          }
                     }
                     else
                     {
                        
-                               $("#program_id").append("<option value=''>No data found</option>");  
+                      $("#program_id").append("<option value=''>No data found</option>");  
                            
                       
                     }
                   
                 }
-        }); }); 
+        });
+          
+      }); 
    
     //////// String value not allowed in  amount filed//////////////////////
  $(document).on('keypress','#invoice_approve_amount',function(event){       
@@ -304,11 +330,18 @@
       var anchor_id =  $("#anchor_id").val(); 
       if(program_id=='')
       {
+          $("#pro_limit").empty();
+          $("#pro_remain_limit").empty();
           return false; 
       }
       $("#supplier_id").empty();
       $("#pro_limit").empty();
       $("#pro_limit_hide").empty();
+      IdArray = program_id.split(",");
+      var prgmId = IdArray[0];
+      var appLimitId = IdArray[1];
+      IdsArray = [prgmId,appLimitId];
+      program_id = IdsArray.join(",");
       var postData =  ({'bulk':0,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.front_supplier_list,
@@ -341,23 +374,33 @@
                         var tenor   =  data.tenor;
                         var tenor_old_invoice  = data.tenor_old_invoice;
                         $("#prgm_offer_id").val(offer_id);
+                        var userId = IdArray[2];
+                        var appId = IdArray[3];
+                        var prgmOfferId = IdArray[4];
+                        supplierIdArray = [userId,appId,prgmOfferId];
+                        supplierId = supplierIdArray.join(",");
+                        $("#supplier_id").val('');
+                        $("#supplier_id").val(supplierId);  
+                        $('.getTenor').val(supplierId).trigger("change");
                      ///   $("#tenor_old_invoice").val(tenor_old_invoice);
                      ///   $("#tenor").val(tenor);
                      ///   $("#pro_limit").html('Limit : <span class="fa fa-inr"></span>  '+obj2.anchor_sub_limit+'');
                      ////   $("#pro_limit_hide").val(obj2.anchor_sub_limit);  
                         $("#supplier_id").empty();
-                        $("#supplier_id").append("<option value=''>Please Select Customer</option>");  
-                        $(obj1).each(function(i,v){
-                                 var dApp = v.appCode;
-                                 //$("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.f_name+"&nbsp;"+v.l_name+" ("+ dApp +")</option>");
-                                 $("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.biz_entity_name+"&nbsp;&nbsp;("+v.customer_id+")</option>");  
-                            });
+                        $("#supplier_id").val('');
+                        $("#supplier_id").val(supplierId);  
+                        // $(obj1).each(function(i,v){
+                        //          var dApp = v.appCode;
+                        //          //$("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.f_name+"&nbsp;"+v.l_name+" ("+ dApp +")</option>");
+                        //          $("#supplier_id").append("<option value='"+v.user_id+","+v.app_id+","+v.prgm_offer_id+"'>"+v.biz_entity_name+"&nbsp;&nbsp;("+v.customer_id+")</option>");  
+                        //     });
                        
                     }
                     else
                     {
                         
-                               $("#supplier_id").append("<option value=''>No data found</option>");  
+                              //  $("#supplier_id").append("<option value=''>No data found</option>");
+                               $("#supplier_id").val("");  
                       
                     }
                   
@@ -380,6 +423,11 @@
              return false; 
       }
        $(".isloader").show(); 
+        IdArray = program_id.split(",");
+        var prgmId = IdArray[0];
+        var appLimitId = IdArray[1];
+        IdsArray = [prgmId,appLimitId];
+        program_id = IdsArray.join(",");
      var postData =  ({'bulk':0,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'_token':messages.token});
        jQuery.ajax({
         url: messages.get_tenor,
@@ -418,6 +466,11 @@
         var program_id =  $("#program_id").val(); 
         var anchor_id =  $("#anchor_id").val(); 
         var supplier_id  = $("#supplier_id").val();
+        IdArray = program_id.split(",");
+        var prgmId = IdArray[0];
+        var appLimitId = IdArray[1];
+        IdsArray = [prgmId,appLimitId];
+        program_id = IdsArray.join(",");
         var postData =  ({'bulk':0,'anchor_id':anchor_id,'supplier_id':supplier_id,'program_id':program_id,'is_adhoc':is_adhok,'_token':messages.token});
        jQuery.ajax({
         url: messages.get_adhoc,
