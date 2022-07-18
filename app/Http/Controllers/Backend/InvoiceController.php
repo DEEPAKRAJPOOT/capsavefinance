@@ -2834,8 +2834,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $idfcObj= new Idfc_lib();
                     $result = $idfcObj->api_call(Idfc_lib::BATCH_ENQ, $params);
 
-                    echo "<pre>";
-                    print_r($result);
                    
                     if (isset($result['code'])) {
                         if (isset($result['http_code']) && $result['http_code'] == 200) {
@@ -2846,6 +2844,13 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                            // continue;
                             // Session::flash('message', 'Error : '. $http_code  .  $message);
                             // return redirect()->back();
+
+                            $otherData['disbursal_batch_id'] = $disbursalBatchId;
+                            $otherData['txn_id'] = $transId;
+                            $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
+                            $otherData['enq_txn_id'] = $transId;
+                            $userFileSaved = null;
+                            $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result, $otherData);
                         }
                     } 
                     $fileDirPath = getPathByDISId($data['disbursal_one']['disbursal_id']);
@@ -2871,7 +2876,9 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                     $otherData['txn_id'] = $transId;
                     $otherData['bank_type'] = config('lms.BANK_TYPE')['IDFC'];
                     $otherData['enq_txn_id'] = $transId;
-                    $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result, $otherData);
+                    if(isset($disbusalApiLogData)) {
+                        $disbusalApiLogData = $this->createDisbusalApiLogData($userFileSaved, $result, $otherData);
+                    }
                     $createDisbusalApiLog = $this->lmsRepo->saveUpdateDisbursalApiLog($disbusalApiLogData);
                     if ($createDisbusalApiLog) {
                         $disbursalApiLogId = $createDisbusalApiLog->disbursal_api_log_id;

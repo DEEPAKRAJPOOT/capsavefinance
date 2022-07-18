@@ -68,6 +68,11 @@ class Idfc_lib{
 		if (empty($response['error_no']) && isset($response['curl_info']['http_code']) && $response['curl_info']['http_code'] != 200) {
 			$resp['code'] 	 = "HTTPCode : " . $response['curl_info']['http_code'];
 			$resp['message'] = $response['error'] ?? "Unable to get response. Please retry.";
+                        $resp['result']['url'] = $url;
+                        $resp['result']['payload'] = $payload;
+                        $resp['result']['http_header'] = $http_header;
+                        $resp['result']['response'] = $response['result'];
+                        $resp['http_code'] = $response['curl_info']['http_code'] ?? '';
 			return $resp;
 		}
 		$result = $this->_parseResult($response['result'], $method);
