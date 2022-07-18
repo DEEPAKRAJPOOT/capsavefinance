@@ -110,16 +110,17 @@ class ApportionmentController extends Controller
             if($request->has('payment_id') && $request->payment_id){
                 $paymentId = $request->payment_id;
                 $payment = $this->getPaymentDetails($paymentId,$userId); 
-                $payment_amt = $payment['payment_amt']; 
-                $transList = self::getUnsettledTrans($userId, $payment['date_of_payment']);
-                $invDisbList = $transList->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.INTEREST_OVERDUE')])->pluck('invoice_disbursed_id')->toArray();
-                $invDisbList = array_unique($invDisbList);
 
                 if(!$payment['isApportPayValid'] || in_array($payment['is_settled'],[1,3])){
                     DB::rollback();
                     return redirect()->route('unsettled_payments')->withInput()->withErrors('Apportionment is not possible for the selected Payment. Please select valid payment!.');
                 }
                 
+                $payment_amt = $payment['payment_amt']; 
+                $transList = self::getUnsettledTrans($userId, $payment['date_of_payment']);
+                $invDisbList = $transList->whereIn('trans_type',[config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.INTEREST_OVERDUE')])->pluck('invoice_disbursed_id')->toArray();
+                $invDisbList = array_unique($invDisbList);
+
                 if(count($invDisbList) <= 50 ){
                     $paySug  = true;
                     $Obj = new ManualApportionmentHelperTemp($this->lmsRepo);
@@ -581,19 +582,19 @@ class ApportionmentController extends Controller
             $payment = $this->lmsRepo->getPaymentDetail($paymentId, $userId);
             
             return [
-                'payment_id' => $payment->payment_id,
-                'amount'=>$payment->amount,
-                'date_of_payment'=> $payment->date_of_payment, 
-                'paymentmode'=> $payment->paymentmode,
-                'transactionno'=> $payment->transactionno,
-                'payment_amt' => $payment->amount,
-                'is_settled' => $payment->is_settled,
-                'created_at' => $payment->created_at,
-                'invoice_id' => ($payment->invoice_id)?$payment->invoice->parent_invoice_id:null,
-                'isApportPayValid' => $payment->isApportPayValid,
-                'user_id' => $payment->user_id,
-                'action_type' => $payment->action_type,
-                'trans_type' => $payment->trans_type
+                'payment_id' => $payment->payment_id??null,
+                'amount'=>$payment->amount??null,
+                'date_of_payment'=> $payment->date_of_payment??null, 
+                'paymentmode'=> $payment->paymentmode??null,
+                'transactionno'=> $payment->transactionno??null,
+                'payment_amt' => $payment->amount??null,
+                'is_settled' => $payment->is_settled??null,
+                'created_at' => $payment->created_at??null,
+                'invoice_id' => ($payment->invoice_id ?? NULL)?$payment->invoice->parent_invoice_id:null,
+                'isApportPayValid' => $payment->isApportPayValid??false,
+                'user_id' => $payment->user_id??null,
+                'action_type' => $payment->action_type??null,
+                'trans_type' => $payment->trans_type??null
             ];
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
