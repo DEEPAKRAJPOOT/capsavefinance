@@ -513,8 +513,8 @@ class RefundController extends Controller
             $exportData[$aprvl['refund_req_id']]['Ben_Name'] = $aprvl['payment']['user']['f_name'].' '.$aprvl['payment']['user']['l_name'];
             $exportData[$aprvl['refund_req_id']]['Ben_Email'] = $aprvl['payment']['user']['email'];
             $exportData[$aprvl['refund_req_id']]['Ben_Mobile'] = $aprvl['payment']['user']['mobile_no'];
-            //$exportData[$aprvl['refund_req_id']]['Mode_of_Pay'] = 'IFT';
-            $exportData[$aprvl['refund_req_id']]['Mode_of_Pay'] = 'BT';
+            $exportData[$aprvl['refund_req_id']]['Mode_of_Pay'] = 'IFT';
+            //$exportData[$aprvl['refund_req_id']]['Mode_of_Pay'] = 'BT';
             $exportData[$aprvl['refund_req_id']]['Nature_of_Pay'] = 'MPYMT';
             $exportData[$aprvl['refund_req_id']]['Remarks'] = 'test remarks';
             $exportData[$aprvl['refund_req_id']]['Value_Date'] = date('Y-m-d');
