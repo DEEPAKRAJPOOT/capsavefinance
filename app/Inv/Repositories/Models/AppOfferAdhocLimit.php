@@ -86,4 +86,8 @@ class AppOfferAdhocLimit extends BaseModel {
     public function file(){
         return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id', 'file_id');
     }
+    
+    public function adhocDocument(){
+        return $this->hasmany('App\Inv\Repositories\Models\OfferAdhocDocument', 'offer_adhoc_limit_id', 'app_offer_adhoc_limit_id');
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Lms;
 
+use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
@@ -172,7 +173,8 @@ public function saveAdhocLimit(Request $request) {
 		$validator = Validator::make($request->all(), [
 		   'start_date' => 'required|date_format:"d/m/Y"',
 		   'end_date' => 'required|date_format:"d/m/Y"|after:'.$startDate,
-		   'doc_file' => 'required|mimes:jpeg,jpg,png,pdf',
+		   'doc_file' => 'required',
+		   'doc_file.*' => 'mimes:jpeg,jpg,png,pdf',
 		],['doc_file.mimes' => 'Invalid file format']);
 		
 		if ($validator->fails()) {
@@ -195,12 +197,18 @@ public function saveAdhocLimit(Request $request) {
 			);
 			
 			$createAdhocLimit = $this->appRepo->saveAppOfferAdhocLimit($limitData);
-
 			if ($request->doc_file && $createAdhocLimit) {
-				$adhocDocUploadData = Helpers::uploadAppAdhocDocFile($request->doc_file, $userId, $appId, $createAdhocLimit);
-				$adhocDocFile = $this->docRepo->saveFile($adhocDocUploadData);
-				if($adhocDocFile) {
-					$this->appRepo->saveAppOfferAdhocLimit(['file_id' => $adhocDocFile->file_id], $createAdhocLimit->app_offer_adhoc_limit_id);
+				foreach ($request->doc_file as $documentfile){
+					$adhocDocUploadData = Helpers::uploadAppAdhocDocFile($documentfile, $userId, $appId, $createAdhocLimit);
+					$adhocDocFile = $this->docRepo->saveFile($adhocDocUploadData);
+					$docMapData['offer_adhoc_limit_id'] = $createAdhocLimit->app_offer_adhoc_limit_id;
+					$docMapData['adhoc_doc_file_id'] = $adhocDocFile->file_id;
+					$docMapData['created_at'] = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
+					$docMapData['created_by'] = \Auth::user()->user_id;
+					$OfferAdhocDocument = $this->docRepo->saveAdhocFile($docMapData);
+					if($adhocDocFile) {
+						$this->appRepo->saveAppOfferAdhocLimit(['file_id' => $adhocDocFile->file_id], $createAdhocLimit->app_offer_adhoc_limit_id);
+					}
 				}
 			}
 		}

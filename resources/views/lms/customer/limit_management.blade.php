@@ -205,9 +205,11 @@
                                 @endcan
 
                                 @can('view_adhoc_file')
-                                @if($adc->file_id)
-                                <a href="{{ route('view_adhoc_file', ['file_id' => $adc->file_id ])}}" title="View Document" target="_blank" class="btn btn-action-btn btn-sm float-right"> <i class="fa fa-eye" aria-hidden="true"></i></a>
-                                @endif
+                                <div class="btn-toolbar pull-left" style="margin-top: 22px;">
+                                @foreach ($adc->adhocDocument as $adhocDocument)
+                                <a href="{{ route('view_adhoc_file', ['file_id' => $adhocDocument->adhoc_doc_file_id ])}}" title="View Document" target="_blank" class="btn btn-action-btn btn-sm float-right mr-2"> <i class="fa fa-eye" aria-hidden="true"></i></a>
+                                @endforeach
+                                </div>
                                 @endcan
                             </div>
                         </div>

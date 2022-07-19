@@ -40,7 +40,7 @@
                     <label for="drawingpowervariableamount">Upload Document <span class="error_message_label">*</span></label>
                     <div class="custom-file">
                         <label for="email">Upload Document</label>
-                        <input type="file" class="custom-file-input" id="customFile" name="doc_file" accept="image/jpeg, image/jpg, image/png, application/pdf">
+                        <input type="file" class="custom-file-input" id="customFile" name="doc_file[]" accept="image/jpeg, image/jpg, image/png, application/pdf" multiple>
                         <label class="custom-file-label" for="customFile">Choose file</label>
                         <span id="msgFile" class="text-success"></span>
                     </div>
