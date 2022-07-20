@@ -204,7 +204,7 @@
                                     @endif
                                 @endcan
 
-                                @can('view_adhoc_file')
+                                @can('view_adhoc_document')
                                 </div>
                                 @if (isset($adc->adhocDocument) && !empty($adc->adhocDocument->toArray()))
                                 <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12" >
