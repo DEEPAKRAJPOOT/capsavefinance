@@ -54,7 +54,17 @@ class OfferAdhocDocument extends BaseModel
         'created_by'
     ];
 
+    public static function getAdhocDocuments($app_offer_adhoc_limit_id){
+
+        return self::select('app_offer_adhoc_doc.adhoc_doc_file_id as file_id','file.file_name','file.file_type','users.f_name','users.l_name','app_offer_adhoc_doc.created_at','app_offer_adhoc_doc.created_by')
+                    ->join('file', 'app_offer_adhoc_doc.adhoc_doc_file_id', '=', 'file.file_id')
+                    ->join('users','app_offer_adhoc_doc.created_by', '=', 'users.user_id')
+                    ->where('offer_adhoc_limit_id',$app_offer_adhoc_limit_id)->get();
+    }
+
     public function file(){
         return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id', 'adhoc_doc_file_id');
     }
+
+    
 }

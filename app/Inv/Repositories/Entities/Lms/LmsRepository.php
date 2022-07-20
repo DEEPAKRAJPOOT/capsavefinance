@@ -74,6 +74,7 @@ use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
 use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\OfferAdhocDocument;
 
 /**
  * Lms Repository class
@@ -1216,6 +1217,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static  function getUserAdhocLimitById($id)
 	{
 		return AppOfferAdhocLimit::find($id);
+	}
+
+	public static  function getAdhocDocuments($app_offer_adhoc_limit_id){
+		return OfferAdhocDocument::getAdhocDocuments($app_offer_adhoc_limit_id);
 	}
 
 	public static function getInvoiceSettleStatus(int $invoiceId, $statusOnly = false){

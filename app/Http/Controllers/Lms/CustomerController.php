@@ -157,9 +157,16 @@ public function openApproveAdhocLimit() {
  *
  * @return \Illuminate\Http\Response
  */
-public function viewApproveAdhocLimit(){
-  
-	return view('lms.customer.view_adhoc_document');
+public function viewApproveAdhocLimit(Request $request){
+	try {
+		$data = $request->all();
+		$userId = $data['user_id'];
+		$app_offer_adhoc_limit_id = $data['app_offer_adhoc_limit_id'];
+		$offer_document = $this->lmsRepo->getAdhocDocuments($app_offer_adhoc_limit_id);
+		return view('lms.customer.view_adhoc_document')->with(['offer_document'=>$offer_document]);
+	} catch (Exception $ex) {
+		dd($ex);
+	}
 }
 
 /**
