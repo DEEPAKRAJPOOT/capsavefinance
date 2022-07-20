@@ -87,6 +87,11 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Lms\CustomerController@openApproveAdhocLimit',
             ]);
 
+            Route::get('view-adhoc-document', [
+                'as' => 'view_adhoc_document',
+                'uses' => 'Lms\CustomerController@viewApproveAdhocLimit',
+            ]);
+
             Route::post('save-approve-adhoc-limit', [
                 'as' => 'save_approve_adhoc_limit',
                 'uses' => 'Lms\CustomerController@approveAdhocLimit',

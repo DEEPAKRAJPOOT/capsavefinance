@@ -185,7 +185,7 @@
                                 <label>Start Date </label>
                                 <div class="label-bottom">{{ date('d-m-Y',strtotime($adc->start_date)) }}</div>
                             </div>
-                            <div class="col-lg-2 col-md-6 col-sm-6 col-xs-12">
+                            <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12">
                                 <label>End Date</label>
                                 <div class="label-bottom">{{ date('d-m-Y',strtotime($adc->end_date)) }}</div>
                             </div>
@@ -205,14 +205,19 @@
                                 @endcan
 
                                 @can('view_adhoc_file')
-                                <div class="btn-toolbar pull-left" style="margin-top: 22px;">
+                                
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-sm-6 col-xs-12" >
+                                <a data-toggle="modal" data-target="#viewAdhcDocument" data-url ="{{ route('view_adhoc_document', ['user_id' => request()->get('user_id'), 'app_offer_adhoc_limit_id' => $adc->app_offer_adhoc_limit_id ]) }}" data-height="150px" data-width="100%" data-placement="top" class="btn-sm btn btn-success">View Documents <i class="fa fa-eye" aria-hidden="true"></i></a>
+                                </div>
+                                {{--<div class="btn-toolbar pull-left" style="margin-top: 22px;">
                                 @foreach ($adc->adhocDocument as $adhocDocument)
                                 <a href="{{ route('view_adhoc_file', ['file_id' => $adhocDocument->adhoc_doc_file_id ])}}" title="View Document" target="_blank" class="btn btn-action-btn btn-sm float-right mr-2"> <i class="fa fa-eye" aria-hidden="true"></i></a>
                                 @endforeach
-                                </div>
+                                </div>--}}
                                 @endcan
                             </div>
-                        </div>
+                            </div>
                         @endforeach 
 
                         @endif
@@ -230,6 +235,7 @@
 
 {!!Helpers::makeIframePopup('addAdhocLimit','Add Adhoc Limit', 'modal-lg')!!}
 {!!Helpers::makeIframePopup('approveAdhocLimit','Approve Adhoc Limit', 'modal-xs')!!}
+{!!Helpers::makeIframePopup('viewAdhcDocument','View Adhoc Document', 'modal-lg')!!}
 
 @endsection
 

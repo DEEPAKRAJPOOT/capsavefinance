@@ -153,6 +153,16 @@ public function openApproveAdhocLimit() {
 }
 
 /**
+ * Display view adhoc document popup
+ *
+ * @return \Illuminate\Http\Response
+ */
+public function viewApproveAdhocLimit(){
+  
+	return view('lms.customer.view_adhoc_document');
+}
+
+/**
  * Display add adhoc popup
  *
  * @return \Illuminate\Http\Response
