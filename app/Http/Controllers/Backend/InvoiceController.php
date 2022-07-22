@@ -935,7 +935,8 @@ class InvoiceController extends Controller {
                         $exportData[$userid]['Ben_IFSC'] = config('lms.IDFC_CREDIT_BANK')['BEN_IFSC'];
                         $exportData[$userid]['Ben_Acct_No'] = config('lms.IDFC_CREDIT_BANK')['BEN_ACC_NO'];
                     } else {
-                        $exportData[$userid]['Ben_IFSC'] = ($bank_id == config('lms.IDFC_BANK_ID')) ? null : $ifsc_code;
+                        //$exportData[$userid]['Ben_IFSC'] = ($bank_id == config('lms.IDFC_BANK_ID')) ? null : $ifsc_code;
+                        $exportData[$userid]['Ben_IFSC']    = $ifsc_code;
                         $exportData[$userid]['Ben_Acct_No'] = $acc_no;
                     }
                     $exportData[$userid]['Ben_Name'] = $acc_name;
