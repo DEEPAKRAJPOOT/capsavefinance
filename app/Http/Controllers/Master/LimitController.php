@@ -28,7 +28,12 @@ class LimitController extends Controller
     public function addLimit() {
         $limit_data = $this->masterRepo->findLastLimit();
         if($limit_data != false){
-            $lastStartDate = ($limit_data['start_date']) ? Carbon::parse($limit_data['start_date'])->addDays(+1)->format('d/m/Y') : '';
+            
+            if(!empty($limit_data['end_date']))
+              $lastStartDate = ($limit_data['end_date']) ? Carbon::parse($limit_data['end_date'])->addDays(+1)->format('d/m/Y') : '';
+            else
+              $lastStartDate = ($limit_data['start_date']) ? Carbon::parse($limit_data['start_date'])->addDays(+1)->format('d/m/Y') : '';
+            
         }else{
             $lastStartDate = '';
         }
