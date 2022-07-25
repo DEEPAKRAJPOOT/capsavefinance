@@ -4705,10 +4705,10 @@ class DataRenderer implements DataProviderInterface
                     function ($data) {
                     $end_date = $data->end_date; 
                     $act = $data->is_active;
-                    
-                    if(!empty($end_date) && strtotime($end_date) < strtotime(Carbon::now()->format('Y-m-d')))
-                        $edit='';
-                    else
+                    $edit='';
+                    //if(!empty($end_date) && strtotime($end_date) < strtotime(Carbon::now()->format('Y-m-d')))
+                        //$edit='';
+                    if (empty($end_date) && $act == 1)
                         $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editBorrowerLimitFrame" title="Edit States Detail" data-url ="'.route('edit_borrower_limit', ['limit_id' => $data->limit_id]).'" data-height="310px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
                     
                     $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';

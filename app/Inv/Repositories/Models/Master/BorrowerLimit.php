@@ -114,8 +114,8 @@ class BorrowerLimit extends BaseModel
 
     // update tax_to means end date in gst table
     public static function updateLimitEndDate($id , $date){
-
-        $query = self::where('limit_id','<>',$id)->where('end_date','=',NULL)->orderBy('limit_id', 'DESC')->first();
+        // ->where('end_date','=',NULL)
+        $query = self::where('limit_id','<>',$id)->where('is_active','=',1)->orderBy('limit_id', 'DESC')->first();
         if($query){
             return $query->update(['end_date'=>$date]);
         }else{
