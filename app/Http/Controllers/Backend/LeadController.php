@@ -436,6 +436,7 @@ class LeadController extends Controller {
                     'comp_city' => $arrAnchorVal['city'],
                     'comp_zip' => $arrAnchorVal['pin_code'],
                     'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req'],
+                    'is_phy_blk_inv_req' => $arrAnchorVal['is_phy_blk_inv_req'],
                     'is_fungible' => $arrAnchorVal['is_fungible'],
                     'gst_no'      => $arrAnchorVal['gst_no'],
                 ];
@@ -865,6 +866,7 @@ class LeadController extends Controller {
                 'comp_city' => $arrAnchorVal['city'],
                 'comp_zip' => $arrAnchorVal['pin_code'],
                 'is_phy_inv_req' => $arrAnchorVal['is_phy_inv_req'],
+                'is_phy_blk_inv_req' => $arrAnchorVal['is_phy_blk_inv_req'],
                 'is_fungible' => $arrAnchorVal['is_fungible']
             ];
             if(isset($arrAnchorVal['pan_no']) && !empty($arrAnchorVal['pan_no'])){

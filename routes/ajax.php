@@ -1368,6 +1368,16 @@ Route::group(
         'uses' => 'AjaxController@chkAnchorPhyInvReq'
     ]);
 
+    Route::post('chk_anchor_blk_inv_req',[
+        'as' => 'chk_anchor_blk_inv_req',
+        'uses' => 'AjaxController@chkAnchorPhyBlkInvReq'
+    ]);
+
+    Route::post('chk_anchor_phy_blk_inv_req',[
+        'as' => 'chk_anchor_phy_blk_inv_req',
+        'uses' => 'AjaxController@chkAnchorPhyBlkInvReq'
+    ]);
+
     Route::post('backend_get_invoice_processing_gst_amount',[
         'as' => 'backend_get_invoice_processing_gst_amount',
         'uses' => 'AjaxController@backendGetInvoiceProcessingGstAmount'

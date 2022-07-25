@@ -167,7 +167,7 @@
 
                      </div>
                      <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                            <label for="chrg_type"><strong>Upload Invoice Copy Mandatory</strong></label><br />
                            <div class="form-check-inline ">
                               <label class="fnt">
@@ -180,6 +180,22 @@
                               </label>
                            </div>
                         </div>
+
+                         <div class="col-md-3">
+                           <label for="chrg_type"><strong>Upload Bulk Invoice Copy Mandatory</strong></label><br />
+                           <div class="form-check-inline ">
+                              <label class="fnt">
+                              <input type="radio" class="form-check-input is_phy_blk_inv_req" checked name="is_phy_blk_inv_req" value="1">Yes
+                              </label>
+                           </div>
+                           <div class="form-check-inline">
+                              <label class="fnt">
+                              <input type="radio" class="form-check-input is_phy_blk_inv_req" name="is_phy_blk_inv_req" value="0">No
+                              </label>
+                           </div>
+                        </div>
+
+
                          <div class="col-6">
                               <div class="form-group">
                                  <label for="txtEmail">Is Fungible
@@ -328,6 +344,12 @@
                             })
                 });
                 $('input.is_phy_inv_req').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true,
+                            })
+                });
+                $('input.is_phy_blk_inv_req').each(function () {
                     $(this).rules("add",
                             {
                                 required: true,

@@ -102,6 +102,8 @@
                                             <label class="custom-file-label" for="customFile">Choose file</label>
                                             <span id="customImageFile_msg" class="error"></span>
                                             <span id="msgImageFile" class="text-success"></span>
+                                            <input type="hidden" name="customImageFileval" id="customImageFileval" val="0"></span>
+                                            
                                         </div>
                                       
                                         </div>
@@ -231,7 +233,7 @@
         front_program_list: "{{ URL::route('front_program_list') }}",
         front_supplier_list: "{{ URL::route('front_supplier_list') }}",
         delete_temp_invoice: "{{ URL::route('delete_temp_invoice') }}",
-        chk_anchor_phy_inv_req: "{{ URL::route('chk_anchor_phy_inv_req') }}",
+        chk_anchor_blk_inv_req: "{{ URL::route('chk_anchor_blk_inv_req') }}",
         token: "{{ csrf_token() }}",
     };
 
@@ -241,7 +243,7 @@
             var anchorID = $(this).val();
             // alert("hh");
             $.ajax({
-               url: messages.chk_anchor_phy_inv_req,
+               url: messages.chk_anchor_blk_inv_req,
                type: 'POST',
                data: {
                      'anchorID' : anchorID,
@@ -251,9 +253,11 @@
                   if(response['status'] === '1') {
                     //  $(".check_upload_inv").show();
                     $(".customFile_astrik").html('*');
+                    $("#customImageFileval").val('1');
                   } else {
                     //  $(".check_upload_inv").hide();
                     $(".customFile_astrik").html('');
+                    $("#customImageFileval").val('0');
                   }
                }
             });
