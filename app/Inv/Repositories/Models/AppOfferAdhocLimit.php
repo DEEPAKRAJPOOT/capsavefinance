@@ -54,6 +54,7 @@ class AppOfferAdhocLimit extends BaseModel {
         'start_date',
         'end_date',
         'file_id',
+        'remark',
         'created_at',
         'created_by',
         'updated_at',        

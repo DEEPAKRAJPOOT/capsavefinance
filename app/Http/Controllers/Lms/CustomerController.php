@@ -212,6 +212,9 @@ public function saveAdhocLimit(Request $request) {
 				'created_by' => \Auth::user()->user_id,
               	'created_at' => \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s'),
 			);
+			if (!empty($request->remark)){
+				$limitData['remark'] = $request->remark;
+			}
 			
 			$createAdhocLimit = $this->appRepo->saveAppOfferAdhocLimit($limitData);
 			if ($request->doc_file && $createAdhocLimit) {

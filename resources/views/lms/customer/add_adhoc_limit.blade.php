@@ -46,6 +46,12 @@
                     </div>
                 </div>
             </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label for="remarks">Remarks (Optional)</label>
+                    <input type="text" class="form-control remark" name="remark" id="remarks" value="" placeholder="Enter Remarks" >
+                </div>
+            </div>
         </div>
         <button type="submit" class="btn btn-success float-right btn-sm" id="saveAdhocLimit" >Submit</button>  
     </div>
