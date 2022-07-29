@@ -328,6 +328,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$result[$invDetails->program_id]['anchor_name'] =  $anchorDetails->comp_name;
 			$result[$invDetails->program_id]['prgm_name'] =  $prgmDetails->parentProgram->prgm_name;
 			$result[$invDetails->program_id]['sub_prgm_name'] =  $prgmDetails->prgm_name;
+			$result[$invDetails->program_id]['prgm_type'] =  $prgmDetails->prgm_type == 1 ? 'Vendor' : ($prgmDetails->prgm_type == 2 ? 'Channel' : '');
 			$result[$invDetails->program_id]['client_sanction'] =  count(array_unique($sanctionCase[$invDetails->program_id]));
 			$result[$invDetails->program_id]['ttl_od_customer'] =  count($odCustCnt[$invDetails->program_id]??[]);
 			$result[$invDetails->program_id]['ttl_od_amt'] = ($result[$invDetails->program_id]['ttl_od_amt']??0) + $overdueAmt;

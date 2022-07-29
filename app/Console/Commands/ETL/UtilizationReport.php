@@ -117,7 +117,8 @@ class UtilizationReport extends Command
                             "Principal OverDue Days"    => $dataRecord["Principal OverDue Days"],
                             "Principal OverDue Amount"  => str_replace(',', '', $dataRecord["Principal OverDue Amount"]),
                             "Over Due Days"             => $dataRecord["Over Due Days"],
-                            "Over Due Interest Amount"  => str_replace(',', '', $dataRecord["Over Due Interest Amount"])
+                            "Over Due Interest Amount"  => str_replace(',', '', $dataRecord["Over Due Interest Amount"]),
+                            "Type Of Finance"           => $dataRecord["Type Of Finance"],
                         ]);
                     }
                 }        
