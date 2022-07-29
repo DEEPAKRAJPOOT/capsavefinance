@@ -273,7 +273,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		$curdate = Carbon::parse($curdate)->format('Y-m-d');
 
         $invList = BizInvoice::whereIn('status_id',[8,9,10,12,13,15])
-		->where('supplier_id', 1713)
         ->with('invoice_disbursed');
         if(isset($whereCondition['anchor_id'])){
 			$invList->where('anchor_id',$whereCondition['anchor_id']);
