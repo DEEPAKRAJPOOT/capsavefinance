@@ -183,7 +183,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$fromDate = null;
 			$toDate = null;
 			$intrstRecDate = null;
-			if(($invDisb->invoice->program_offer->payment_frequency == '1' && $invDisb->invoice->program_offer->program->interest_borne_by == '2' ) && (strtotime($invDisb->payment_due_date) >= strtotime($curdate)) ) {
+			$interestBorneBy = $invDisb->invoice->program_offer->program->interest_borne_by;
+
+			if(($invDisb->invoice->program_offer->payment_frequency == '1' && $interestBorneBy == '2' ) && (strtotime($invDisb->payment_due_date) >= strtotime($curdate)) ) {
 				$intrstRecDate = $invDisb->int_accrual_start_dt;
 				$interestAmount = $invDisb->total_interest;
 				$fromDate = $invDisb->int_accrual_start_dt;
@@ -241,6 +243,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'net_disbursement'=>$invDisb->invoice->invoice_amount,
 			'gross'=>'', // blank
 			'net_of_interest'=>'', // blank
+			'interest_borne_by'=> $interestBorneBy == 1 ? 'Anchor' : ($interestBorneBy == 2 ? 'Customer' : ''),
+			'grace_period'=> $invDisb->grace_period,
 
 			// 'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
 			// 'trans_date'=>$invDisb->disbursal->disburse_date,
