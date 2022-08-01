@@ -1162,8 +1162,8 @@
         }else if(currentAppType == 3 && parseInt(prgm_limit_amt.replace(/,/g, '')) <= parseInt(invUtilizedAmt)){
             setError('input[name=prgm_limit_amt]', 'Limit amount can\'t be less than or equal to the previous utilized limit.');
             flag = false;
-        }else if(currentAppType == 2 && previousProgramLimit > 0 && parseInt(prgm_limit_amt.replace(/,/g, '')) <= parseInt(previousProgramLimit)){
-            setError('input[name=prgm_limit_amt]', 'Limit amount can\'t be less than or equal to the previous program limit.');
+        }else if(currentAppType == 2 && previousProgramLimit > 0 && parseInt(prgm_limit_amt.replace(/,/g, '')) < parseInt(previousProgramLimit)){
+            setError('input[name=prgm_limit_amt]', 'Limit amount can\'t be less than the previous program limit.');
             flag = false;
         }else{
             //TAKE REST limit_balance
