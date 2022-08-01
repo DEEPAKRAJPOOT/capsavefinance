@@ -76,7 +76,8 @@ class DisbursalReport extends Command
                                         "To"                                                    => "To_1",
                                         "Sanction date"                                         => "Sanction Date",
                                         "Funds to be received from Anchor or client"            => "Funds_rec From anchor_client",
-                                        "Sanction no."                                          => "Sanction no"
+                                        "Sanction no."                                          => "Sanction no",
+                                        "Grace Period (Days)"                                   => "Grace Period",
                                     ];
                         foreach($searchArray as $key => $searchArr)
                         {
@@ -142,7 +143,9 @@ class DisbursalReport extends Command
                             "Adhoc interest"                        => str_replace(',', '', $dataRecord['Adhoc interest']),
                             "Net Disbursement"                      => str_replace(',', '', $dataRecord['Net Disbursement']),
                             "Gross"                                 => str_replace(',', '', $dataRecord['Gross']),
-                            "Net of interest_PF _Stamp"             => $dataRecord['Net of interest_PF _Stamp']
+                            "Net of interest_PF _Stamp"             => $dataRecord['Net of interest_PF _Stamp'],
+                            "Interest Borne By"                     => $dataRecord['Interest Borne By'],
+                            "Grace Period"                          => $dataRecord['Grace Period'],
                         ]);
                     }
                 }        

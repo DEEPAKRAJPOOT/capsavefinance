@@ -36,6 +36,7 @@ class UtilizationReport extends BaseModel
         "Principal OverDue Days",
         "Principal OverDue Amount",
         "Over Due Days",
-        "Over Due Interest Amount"
+        "Over Due Interest Amount",
+        "Type Of Finance"
     ];
 }

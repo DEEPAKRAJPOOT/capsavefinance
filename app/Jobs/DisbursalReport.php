@@ -60,6 +60,7 @@ class DisbursalReport implements ShouldQueue
     private function generateConsolidatedReport()
     {
         $data = $this->reportsRepo->getDisbursalReport([], $this->sendMail);
+
         if ($this->sendMail) {
             $this->reportGenerateAndSendWithEmail($data, "/Consolidated Report");
         }
@@ -137,8 +138,10 @@ class DisbursalReport implements ShouldQueue
             ->setCellValue('AO'.$rows, 'Adhoc interest')
             ->setCellValue('AP'.$rows, 'Net Disbursement')
             ->setCellValue('AQ'.$rows, 'Gross')
-            ->setCellValue('AR'.$rows, 'Net of interest, PF & Stamp');
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':AR'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+            ->setCellValue('AR'.$rows, 'Net of interest, PF & Stamp')
+            ->setCellValue('AS'.$rows, 'Interest Borne By')
+            ->setCellValue('AT'.$rows, 'Grace Period (Days)');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':AT'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
 			
@@ -186,7 +189,9 @@ class DisbursalReport implements ShouldQueue
             ->setCellValueExplicit('AO'.$rows, '---', \PHPExcel_Cell_DataType::TYPE_STRING)
             ->setCellValueExplicit('AP'.$rows, number_format($rowData['net_disbursement'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
             ->setCellValueExplicit('AQ'.$rows, !empty($rowData['gross']) ? $rowData['gross'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
-            ->setCellValueExplicit('AR'.$rows, !empty($rowData['net_of_interest']) ? $rowData['net_of_interest'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING);
+            ->setCellValueExplicit('AR'.$rows, !empty($rowData['net_of_interest']) ? $rowData['net_of_interest'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('AS'.$rows, !empty($rowData['interest_borne_by']) ? $rowData['interest_borne_by'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING)
+            ->setCellValueExplicit('AT'.$rows, !empty($rowData['grace_period']) ? $rowData['grace_period'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING);
             $rows++;
         }
 

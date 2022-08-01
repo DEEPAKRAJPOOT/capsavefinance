@@ -183,7 +183,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$fromDate = null;
 			$toDate = null;
 			$intrstRecDate = null;
-			if(($invDisb->invoice->program_offer->payment_frequency == '1' && $invDisb->invoice->program_offer->program->interest_borne_by == '2' ) && (strtotime($invDisb->payment_due_date) >= strtotime($curdate)) ) {
+			$interestBorneBy = $invDisb->invoice->program_offer->program->interest_borne_by;
+
+			if(($invDisb->invoice->program_offer->payment_frequency == '1' && $interestBorneBy == '2' ) && (strtotime($invDisb->payment_due_date) >= strtotime($curdate)) ) {
 				$intrstRecDate = $invDisb->int_accrual_start_dt;
 				$interestAmount = $invDisb->total_interest;
 				$fromDate = $invDisb->int_accrual_start_dt;
@@ -241,6 +243,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'net_disbursement'=>$invDisb->invoice->invoice_amount,
 			'gross'=>'', // blank
 			'net_of_interest'=>'', // blank
+			'interest_borne_by'=> $interestBorneBy == 1 ? 'Anchor' : ($interestBorneBy == 2 ? 'Customer' : ''),
+			'grace_period'=> $invDisb->grace_period,
 
 			// 'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
 			// 'trans_date'=>$invDisb->disbursal->disburse_date,
@@ -324,6 +328,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$result[$invDetails->program_id]['anchor_name'] =  $anchorDetails->comp_name;
 			$result[$invDetails->program_id]['prgm_name'] =  $prgmDetails->parentProgram->prgm_name;
 			$result[$invDetails->program_id]['sub_prgm_name'] =  $prgmDetails->prgm_name;
+			$result[$invDetails->program_id]['prgm_type'] =  $prgmDetails->prgm_type == 1 ? 'Vendor Finance' : ($prgmDetails->prgm_type == 2 ? 'Channel Finance' : '');
 			$result[$invDetails->program_id]['client_sanction'] =  count(array_unique($sanctionCase[$invDetails->program_id]));
 			$result[$invDetails->program_id]['ttl_od_customer'] =  count($odCustCnt[$invDetails->program_id]??[]);
 			$result[$invDetails->program_id]['ttl_od_amt'] = ($result[$invDetails->program_id]['ttl_od_amt']??0) + $overdueAmt;

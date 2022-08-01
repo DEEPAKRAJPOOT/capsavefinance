@@ -60,6 +60,7 @@ class UtilizationReport implements ShouldQueue
     private function generateConsolidatedReport()
     {
         $data = $this->reportsRepo->getUtilizationReport([], $this->sendMail);
+
         if ($this->sendMail) {
             $this->reportGenerateAndSendWithEmail($data, "/Consolidated Report");
         }
@@ -117,8 +118,9 @@ class UtilizationReport implements ShouldQueue
         ->setCellValue('U'.$rows,'Principal OverDue Days')
         ->setCellValue('V'.$rows,'Principal OverDue Amount')
         ->setCellValue('W'.$rows,'Over Due Days')
-        ->setCellValue('X'.$rows,'Over Due Interest Amount');
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':X'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        ->setCellValue('X'.$rows,'Over Due Interest Amount')
+        ->setCellValue('Y'.$rows,'Type Of Finance');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':Y'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
             if(!empty($rowData['disbursement'])){
@@ -149,7 +151,8 @@ class UtilizationReport implements ShouldQueue
                             ->setCellValueExplicit('U'.$rows, $inv['principal_od_days'], \PHPExcel_Cell_DataType::TYPE_STRING)
                             ->setCellValueExplicit('V'.$rows, number_format($inv['principal_od_amount'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
                             ->setCellValueExplicit('W'.$rows, $inv['od_days'], \PHPExcel_Cell_DataType::TYPE_STRING)
-                            ->setCellValueExplicit('X'.$rows, number_format($inv['od_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING);
+                            ->setCellValueExplicit('X'.$rows, number_format($inv['od_amt'],2), \PHPExcel_Cell_DataType::TYPE_STRING)
+                            ->setCellValueExplicit('Y'.$rows, !empty($rowData['prgm_type']) ? $rowData['prgm_type'] : '---', \PHPExcel_Cell_DataType::TYPE_STRING);
                             $rows++;
                         }
                     }
