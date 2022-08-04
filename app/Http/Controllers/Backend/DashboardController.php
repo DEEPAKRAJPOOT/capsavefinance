@@ -30,6 +30,15 @@ class DashboardController extends Controller
         $this->userRepo = $user;
          
     }
+    /**
+     * Show the application blank dashboard to the user.
+     *
+     * @return Response
+     */
+    public function dashboardindex(Request $request){
+
+        return view('backend.blankdashboard');
+    }
 
     /**
      * Show the application dashboard to the user.
@@ -40,6 +49,7 @@ class DashboardController extends Controller
     {
         try 
         {
+            //echo "hii";die;
             $corp_user_id = @$request->get('corp_user_id');
             $user_kyc_id = @$request->get('user_kyc_id');
 
