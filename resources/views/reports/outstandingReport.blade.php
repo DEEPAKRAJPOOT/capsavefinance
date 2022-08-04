@@ -149,5 +149,5 @@ function setClientDetails(data){
     $("#customer_id").val(data.customer_id);
 }
 </script>
-<script src="{{ asset('backend/js/lms/send_mail_overdue.js') }}" type="text/javascript"></script>
+<script src="{{ asset('backend/js/lms/send_mail_overdue.js?v=1') }}" type="text/javascript"></script>
 @endsection
