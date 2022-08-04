@@ -41,6 +41,7 @@ use App\Inv\Repositories\Models\ColenderShare;
 use App\Inv\Repositories\Models\LmsUsersLog;
 use App\Inv\Repositories\Models\Lms\InvoiceDisbursed;
 use App\Inv\Repositories\Models\AppProgramOffer;
+use App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail;
 
 class Helper extends PaypalHelper
 {
@@ -2622,5 +2623,37 @@ class Helper extends PaypalHelper
         $inputArr['updated_by'] = \Auth::user()->user_id;
 
         return $inputArr;
+    }
+
+    public static function getlastSacntionedApplication(int $userId){
+       return Application::where('user_id',$userId)->where('curr_status_id',config('common.mst_status_id.APP_SANCTIONED'))->first();
+    }
+
+    public static function getCustomerSanctionedAmt(int $userId){
+        $appData = self::getlastSacntionedApplication($userId);
+        $offerData = null;
+        if($appData){
+            $offerData = AppProgramOffer::where('app_id',$appData->app_id)
+            ->where('is_approve',1)  
+            ->where('status',1)  
+            ->where('is_active',1)
+            ->sum('prgm_limit_amt'); 
+        }
+        return $offerData;
+    }
+    
+    public static function getCustomerUtilizedAmt(int $userId){
+        $marginApprAmt = BizInvoice::whereIn('status_id', [8,9,10]) 
+                        ->where('is_adhoc', 0)
+                        ->where('supplier_id', $userId) 
+                        ->sum('invoice_margin_amount');
+        
+        $invoiceDisbursedDetails = InvoiceDisbursedDetail::whereHas('invoice',function($q) use($userId){
+                            $q->where('supplier_id',$userId);
+                        })->get();
+
+        $marginApprAmt += round((($invoiceDisbursedDetails->sum('total_outstanding_amount') - $invoiceDisbursedDetails->sum('margin_amount')) - ($invoiceDisbursedDetails->sum('total_repayment_amount') -  ( $invoiceDisbursedDetails->sum('margin_repayment') + $invoiceDisbursedDetails->sum('margin_waived_off') + $invoiceDisbursedDetails->sum('margin_tds') + $invoiceDisbursedDetails->sum('margin_write_off')))),2);
+        
+        return $marginApprAmt;   
     }
 }
