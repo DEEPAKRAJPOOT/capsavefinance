@@ -467,8 +467,12 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$offerDetails['user_id'] = $invDetails->supplier_id;
 			$prgmDetails = $invDetails->program;
 			$payment_frequency='none';
+			$disbursement_method = 'Gross';
 			if($invDisb->invoice->program_offer->payment_frequency == '1'){
 				$payment_frequency = 'Up Front';
+				if($prgmDetails->interest_borne_by == 2){
+					$disbursement_method = 'Net';
+				}
 			}else if($invDisb->invoice->program_offer->payment_frequency == '2'){
 				$payment_frequency = 'Monthly';
 			}else if($invDisb->invoice->program_offer->payment_frequency == '3'){
@@ -491,12 +495,13 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'payment_frequency'=>$payment_frequency,
 				'disburse_amount'=>$invDisb->disburse_amt,
 				'interest_amount'=>number_format($invDisb->total_interest,2),
-				'disbursement_method' => 'Net or Gross',
+				'disbursement_method' => $disbursement_method,
 				'client_sanction_limit' => $limitSanctioned[$invDisb->invoice->supplier_id],
 				'limit_available' => $limitAvl[$invDisb->invoice->supplier_id],
-				'tenure' =>	'tenor',
-				'roi' => 'roi',
-				'roodi' => 'roodi',
+				'utilized_amt'=> $limitUsed[$invDisb->invoice->supplier_id],
+				'tenure' =>	$invDisb->tenor_days,
+				'roi' => $invDisb->interest_rate,
+				'roodi' => $invDisb->overdue_interest_rate,
 				'principalOut' => $principalOut,
 				'interestOut' => $interestOut,
 				'overdueDays' => $curOddays,
@@ -504,8 +509,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'soa_balance' => $principalOut + $interestOut + $overdueInterestOut,
 				'grace_period' => $invDisb->grace_period,
 				'odDaysWithoutGrace' => $odDaysWithoutGrace,
-				'maturityDays' => $maturityDays,
-				'sales_person_name'=> ($invDisb->invoice->anchor->salesUser->f_name.' '. $invDisb->invoice->anchor->salesUser->m_name.' '. $invDisb->invoice->anchor->salesUser->l_name)
+				'maturityDays' => $maturityDays
+				//'sales_person_name'=> ($invDisb->invoice->anchor->salesUser->f_name.' '. $invDisb->invoice->anchor->salesUser->m_name.' '. $invDisb->invoice->anchor->salesUser->l_name)
 			];
 			$result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] = $result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] ?? 0;
 			if($principalOut > 100 && ($result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] ?? 0) < $odDaysWithoutGrace){
