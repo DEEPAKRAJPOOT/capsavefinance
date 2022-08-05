@@ -338,14 +338,11 @@ class AnchorUser extends BaseModel {
     }
 
     public static function getAnchorUserDataDetail($anchorId = null) {
-        $roleData = User::getBackendUser(\Auth::user()->user_id);
-        
-        $result = self::with('user');
-        
-        if ($roleData[0]->id == 11) {        
-             $result->where('anchor_id', $anchorId);
+        if ($anchorId) {
+            $data = self::where('anchor_id', $anchorId)->get();
+        }else {
+            $data = self::get();
         }
-        $data = $result->get();
 
         return $data;
     }

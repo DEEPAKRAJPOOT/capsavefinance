@@ -133,13 +133,13 @@
 						</thead>
 						<tbody>
 							@foreach($data['prgmData'] as $key => $value)
+							@php $prgmBalLimit = \Helpers::getPrgmBalLimit($value->prgm_id); @endphp
 							<tr>
 								<td>{{ $value->prgm_name }}</td>
 								<td>{{ ($value->prgm_type == 1 ? 'Vendor Finance' : 'Channel Finance') }}</td>
 								<td> {{ \Helpers::formatCurrency($value->anchor_sub_limit) }}</td>
-								<td> {{ \Helpers::formatCurrency(\Helpers::getPrgmBalLimit($value->prgm_id)) }}</td>
-								<td> {{ \Helpers::formatCurrency($value->anchor_sub_limit - \Helpers::getPrgmBalLimit($value->prgm_id)) }}</td>
-								
+								<td> {{ \Helpers::formatCurrency($prgmBalLimit) }}</td>
+								<td> {{ \Helpers::formatCurrency($value->anchor_sub_limit - $prgmBalLimit) }}</td>
 							</tr>
 							@endforeach
 						</tbody>
@@ -190,7 +190,6 @@
 		</div>
 		@endif
 		@if(isset($data['anchorInvoiceData']))
-
 		<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-4">
 			<div class="card card-statistics">
 				<div class="card-body m-0">
