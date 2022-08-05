@@ -411,10 +411,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		$curdate = $whereCondition['to_date']??$curdate;
 		$invDisbList = InvoiceDisbursed::
 		with([
-			'transactions' => 
-				function($query2) use($curdate){
-					$query2->whereDate('trans_date','<=',$curdate);
-				},
 			'invoice'=>function($query2) use($whereCondition){
 					if(isset($whereCondition['anchor_id'])){
 						$query2->where('anchor_id',$whereCondition['anchor_id']);
@@ -423,14 +419,11 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 						$query2->where('supplier_id',$whereCondition['user_id']);
 					}
 				},
-			'interests' => 
-				function($query2) use($curdate){
-					$query2->whereDate('interest_date','<=',$curdate);
-				},
 			'invoice.lms_user', 
+			'invoice.anchor', 
+			'invoice.program_offer',
 			'invoice.business', 
-			'disbursal',
-			'invoice.app.appLimit'
+			'disbursal'
 		])
 		->whereIn('status_id', [12,13,15,47])
 		->whereHas('invoice', function($query3) use($whereCondition){
@@ -442,8 +435,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 		})
 		->whereDate('int_accrual_start_dt','<=',$curdate)
-		->get();
-		
+        ->get();
+
 		$outstandingData = self::getOutstandingData($curdate);
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
@@ -498,8 +491,12 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'payment_frequency'=>$payment_frequency,
 				'disburse_amount'=>$invDisb->disburse_amt,
 				'interest_amount'=>number_format($invDisb->total_interest,2),
+				'disbursement_method' => 'Net or Gross',
 				'client_sanction_limit' => $limitSanctioned[$invDisb->invoice->supplier_id],
 				'limit_available' => $limitAvl[$invDisb->invoice->supplier_id],
+				'tenure' =>	'tenor',
+				'roi' => 'roi',
+				'roodi' => 'roodi',
 				'principalOut' => $principalOut,
 				'interestOut' => $interestOut,
 				'overdueDays' => $curOddays,
@@ -514,9 +511,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			if($principalOut > 100 && ($result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] ?? 0) < $odDaysWithoutGrace){
 				$result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] = $odDaysWithoutGrace;
 			}
-			
 		}
-		
 		return $result;
 	}
 

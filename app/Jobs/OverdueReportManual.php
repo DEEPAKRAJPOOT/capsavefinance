@@ -54,6 +54,8 @@ class OverdueReportManual implements ShouldQueue
 
         $this->reportsRepo = $reportsRepo;
         $data = $this->reportsRepo->getOverdueReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
+        dd('HI');
+
         $filePath = $this->downloadOverdueReport($data);
         if($this->toDate){
             $this->createOverdueReportLog($this->toDate, $this->userId, $filePath);
@@ -100,6 +102,28 @@ class OverdueReportManual implements ShouldQueue
         ->setCellValue('V'.$rows, 'Maturity Days')
         ->setCellValue('W'.$rows, 'Maturity Bucket')
         ->setCellValue('X'.$rows, 'Sales Person Name');
+        /*->setCellValue('I'.$rows, 'Disbursement Method (Net or Gross)')
+        ->setCellValue('J'.$rows, 'Invoice Due Date')
+        ->setCellValue('K'.$rows, 'Virtual Account #')
+        ->setCellValue('L'.$rows, 'Sanction Limit')
+        ->setCellValue('M'.$rows, 'Limit Available')
+        ->setCellValue('N'.$rows, 'Total Utilization')
+        ->setCellValue('O'.$rows, 'Tenure')
+        ->setCellValue('P'.$rows, 'ROI')
+        ->setCellValue('Q'.$rows, 'ODI Interest')
+        ->setCellValue('R'.$rows, 'Principal O/S')
+        ->setCellValue('S'.$rows, 'Interest')
+        ->setCellValue('T'.$rows, 'Over Due Days')
+        ->setCellValue('U'.$rows, 'Overdue Amount')
+        ->setCellValue('V'.$rows, 'Total Outstanding')
+        ->setCellValue('W'.$rows, 'Grace')
+        ->setCellValue('X'.$rows, 'OverDue After Grace Days')
+        ->setCellValue('Y'.$rows, 'Max Bucket OverDue After Grace Days')
+        ->setCellValue('Z'.$rows, 'Outstanding Max Bucket')
+        ->setCellValue('AA'.$rows, 'Maturity Days')
+        ->setCellValue('AB'.$rows, 'Maturity Bucket')
+        ->setCellValue('AC'.$rows, 'Sales Person Name');
+        */
         $sheet->getActiveSheet()->getStyle('A'.$rows.':X'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
