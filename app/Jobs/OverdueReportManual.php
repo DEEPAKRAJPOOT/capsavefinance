@@ -106,7 +106,7 @@ class OverdueReportManual implements ShouldQueue
         ->setCellValue('AA'.$rows, 'Maturity Days')
         ->setCellValue('AB'.$rows, 'Maturity Bucket');
         //->setCellValue('AC'.$rows, 'Sales Person Name');
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':X'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':AB'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
@@ -131,13 +131,13 @@ class OverdueReportManual implements ShouldQueue
             ->setCellValue('S'.$rows, $rowData['interestOut'])
             ->setCellValue('T'.$rows, $rowData['overdueDays'])
             ->setCellValue('U'.$rows, $rowData['overdueOut'])
-            ->setCellValue('V'.$rows, '=+M'.$rows.'+N'.$rows.'+P'.$rows)
+            ->setCellValue('V'.$rows, '=+R'.$rows.'+S'.$rows.'+U'.$rows)
             ->setCellValue('W'.$rows, $rowData['grace_period'])
             ->setCellValue('X'.$rows, $rowData['odDaysWithoutGrace'])
             ->setCellValue('Y'.$rows, $rowData['maxBucOdDaysWithoutGrace'])
-            ->setCellValue('Z'.$rows, '=IF(AND(M'.$rows.'>100,T'.$rows.'>0),IF(T'.$rows.'<7,"01 - 07 Days",IF(T'.$rows.'<15,"08 - 15 Days",IF(T'.$rows.'<30,"16 - 30 Days",IF(T'.$rows.'<60,"31-60 Days",IF(T'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")')
+            ->setCellValue('Z'.$rows, '= IF(AND(R'.$rows.'>100,Y'.$rows.'>0), IF(Y'.$rows.'<7,"01 - 07 Days", IF(Y'.$rows.'<15,"08 - 15 Days", IF(Y'.$rows.'<30,"16 - 30 Days", IF(Y'.$rows.'<60,"31-60 Days", IF(Y'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")')
             ->setCellValue('AA'.$rows, $rowData['maturityDays'])
-            ->setCellValue('AB'.$rows, '=IF(AND(M'.$rows.'>100,V'.$rows.'>0),IF(V'.$rows.'<7,"01 - 07 Days",IF(V'.$rows.'<15,"08 - 15 Days",IF(V'.$rows.'<30,"16 - 30 Days",IF(V'.$rows.'<60,"31-60 Days",IF(V'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")');
+            ->setCellValue('AB'.$rows, '= IF(AND(R'.$rows.'>100,AA'.$rows.'>0), IF(AA'.$rows.'<7,"01 - 07 Days", IF(AA'.$rows.'<15,"08 - 15 Days", IF(AA'.$rows.'<30,"16 - 30 Days", IF(AA'.$rows.'<60,"31-60 Days", IF(AA'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")');
             //->setCellValue('AC'.$rows, $rowData['sales_person_name'], \PHPExcel_Cell_DataType::TYPE_STRING);
             $rows++;
         }
