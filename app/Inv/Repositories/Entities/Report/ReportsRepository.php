@@ -411,10 +411,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		$curdate = $whereCondition['to_date']??$curdate;
 		$invDisbList = InvoiceDisbursed::
 		with([
-			'transactions' => 
-				function($query2) use($curdate){
-					$query2->whereDate('trans_date','<=',$curdate);
-				},
 			'invoice'=>function($query2) use($whereCondition){
 					if(isset($whereCondition['anchor_id'])){
 						$query2->where('anchor_id',$whereCondition['anchor_id']);
@@ -423,14 +419,11 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 						$query2->where('supplier_id',$whereCondition['user_id']);
 					}
 				},
-			'interests' => 
-				function($query2) use($curdate){
-					$query2->whereDate('interest_date','<=',$curdate);
-				},
 			'invoice.lms_user', 
+			'invoice.anchor', 
+			'invoice.program_offer',
 			'invoice.business', 
-			'disbursal',
-			'invoice.app.appLimit'
+			'disbursal'
 		])
 		->whereIn('status_id', [12,13,15,47])
 		->whereHas('invoice', function($query3) use($whereCondition){
@@ -442,8 +435,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 		})
 		->whereDate('int_accrual_start_dt','<=',$curdate)
-		->get();
-		
+        ->get();
+
 		$outstandingData = self::getOutstandingData($curdate);
 		$sendMail = ($invDisbList->count() > 0)?true:false;
 		$result = [];
@@ -474,31 +467,41 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$offerDetails['user_id'] = $invDetails->supplier_id;
 			$prgmDetails = $invDetails->program;
 			$payment_frequency='none';
+			$disbursement_method = 'Gross';
 			if($invDisb->invoice->program_offer->payment_frequency == '1'){
 				$payment_frequency = 'Up Front';
+				if($prgmDetails->interest_borne_by == 2){
+					$disbursement_method = 'Net';
+				}
 			}else if($invDisb->invoice->program_offer->payment_frequency == '2'){
 				$payment_frequency = 'Monthly';
 			}else if($invDisb->invoice->program_offer->payment_frequency == '3'){
 				$payment_frequency = 'Rear Ended';
 			}
 			// $limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::invoiceAnchorLimitApprove($offerDetails),2);
-			$limitUsed[$offerDetails['prgm_offer_id']] = $limitUsed[$offerDetails['prgm_offer_id']] ?? round(Helper::anchorSupplierPrgmUtilizedLimitByInvoice($offerDetails),2);
-			$limitAvl[$offerDetails['prgm_offer_id']] = $limitAvl[$offerDetails['prgm_offer_id']] ?? $offerDetails['prgm_limit_amt'] - $limitUsed[$offerDetails['prgm_offer_id']];
-			$limitAvl[$offerDetails['prgm_offer_id']] = ($limitAvl[$offerDetails['prgm_offer_id']] > 0) ? $limitAvl[$offerDetails['prgm_offer_id']] : 0; 
+			$limitSanctioned[$invDisb->invoice->supplier_id] = $limitSanctioned[$invDisb->invoice->supplier_id] ?? Helper::getCustomerSanctionedAmt($invDisb->invoice->supplier_id);
+			$limitUsed[$invDisb->invoice->supplier_id] = $limitUsed[$invDisb->invoice->supplier_id] ?? Helper::getCustomerUtilizedAmt($invDisb->invoice->supplier_id);
+			$limitAvl[$invDisb->invoice->supplier_id] = $limitAvl[$invDisb->invoice->supplier_id] ?? $limitSanctioned[$invDisb->invoice->supplier_id] - $limitUsed[$invDisb->invoice->supplier_id];
+			$limitAvl[$invDisb->invoice->supplier_id] = ($limitAvl[$invDisb->invoice->supplier_id] > 0) ? $limitAvl[$invDisb->invoice->supplier_id] : 0; 
 			$result[$invDisb->invoice_disbursed_id] = [
 				'loan_ac'=>config('common.idprefix.APP').$invDisb->invoice->app_id,
 				'cust_name' => $invDisb->invoice->business->biz_entity_name,
 				'customer_id' => $invDisb->invoice->lms_user->customer_id??null,
 				'anchor_name'=> $anchor_name,
 				'invoice_no' => $invDisb->invoice->invoice_no,
-				'disbursement_date'=>Carbon::parse($invDisb->disbursal->funded_date)->format('Y-m-d'),
+				'disbursement_date'=>isset($invDisb->disbursal->funded_date) ? Carbon::parse($invDisb->disbursal->funded_date)->format('Y-m-d'):'',
 				'payment_due_date' => $invDisb->payment_due_date,
 				'virtual_ac' => $invDisb->invoice->lms_user->virtual_acc_id,
 				'payment_frequency'=>$payment_frequency,
 				'disburse_amount'=>$invDisb->disburse_amt,
 				'interest_amount'=>number_format($invDisb->total_interest,2),
-				'client_sanction_limit' => $offerDetails['prgm_limit_amt'],
-				'limit_available' => $limitAvl[$offerDetails['prgm_offer_id']],
+				'disbursement_method' => $disbursement_method,
+				'client_sanction_limit' => $limitSanctioned[$invDisb->invoice->supplier_id],
+				'limit_available' => $limitAvl[$invDisb->invoice->supplier_id],
+				'utilized_amt'=> $limitUsed[$invDisb->invoice->supplier_id],
+				'tenure' =>	$invDisb->tenor_days,
+				'roi' => $invDisb->interest_rate,
+				'roodi' => $invDisb->overdue_interest_rate,
 				'principalOut' => $principalOut,
 				'interestOut' => $interestOut,
 				'overdueDays' => $curOddays,
@@ -506,16 +509,14 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'soa_balance' => $principalOut + $interestOut + $overdueInterestOut,
 				'grace_period' => $invDisb->grace_period,
 				'odDaysWithoutGrace' => $odDaysWithoutGrace,
-				'maturityDays' => $maturityDays,
-				'sales_person_name'=> ($invDisb->invoice->anchor->salesUser->f_name.' '. $invDisb->invoice->anchor->salesUser->m_name.' '. $invDisb->invoice->anchor->salesUser->l_name)
+				'maturityDays' => $maturityDays
+				//'sales_person_name'=> ($invDisb->invoice->anchor->salesUser->f_name.' '. $invDisb->invoice->anchor->salesUser->m_name.' '. $invDisb->invoice->anchor->salesUser->l_name)
 			];
 			$result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] = $result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] ?? 0;
 			if($principalOut > 100 && ($result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] ?? 0) < $odDaysWithoutGrace){
 				$result[$invDisb->invoice_disbursed_id]['maxBucOdDaysWithoutGrace'] = $odDaysWithoutGrace;
 			}
-			
 		}
-		
 		return $result;
 	}
 

@@ -54,6 +54,7 @@ class OverdueReportManual implements ShouldQueue
 
         $this->reportsRepo = $reportsRepo;
         $data = $this->reportsRepo->getOverdueReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
+
         $filePath = $this->downloadOverdueReport($data);
         if($this->toDate){
             $this->createOverdueReportLog($this->toDate, $this->userId, $filePath);
@@ -84,23 +85,28 @@ class OverdueReportManual implements ShouldQueue
         ->setCellValue('F'.$rows, 'Disbursement Amount')
         ->setCellValue('G'.$rows, 'Interest Frequency')
         ->setCellValue('H'.$rows, 'Interest Amount')
-        ->setCellValue('I'.$rows, 'Invoice Due Date')
-        ->setCellValue('J'.$rows, 'Virtual Account #')
-        ->setCellValue('K'.$rows, 'Sanction Limit')
-        ->setCellValue('L'.$rows, 'Limit Available')
-        ->setCellValue('M'.$rows, 'O/s Amount')
-        ->setCellValue('N'.$rows, 'Interest')
-        ->setCellValue('O'.$rows, 'Over Due Days')
-        ->setCellValue('P'.$rows, 'Overdue Amount')
-        ->setCellValue('Q'.$rows, 'SoA Balance')
-        ->setCellValue('R'.$rows, 'Grace')
-        ->setCellValue('S'.$rows, 'OverDue After Grace Days')
-        ->setCellValue('T'.$rows, 'Max Bucket OverDue After Grace Days')
-        ->setCellValue('U'.$rows, 'Outstanding Max Bucket')
-        ->setCellValue('V'.$rows, 'Maturity Days')
-        ->setCellValue('W'.$rows, 'Maturity Bucket')
-        ->setCellValue('X'.$rows, 'Sales Person Name');
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':X'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
+        ->setCellValue('I'.$rows, 'Disbursement Method (Net or Gross)')
+        ->setCellValue('J'.$rows, 'Invoice Due Date')
+        ->setCellValue('K'.$rows, 'Virtual Account #')
+        ->setCellValue('L'.$rows, 'Sanction Limit')
+        ->setCellValue('M'.$rows, 'Limit Available')
+        ->setCellValue('N'.$rows, 'Total Utilization')
+        ->setCellValue('O'.$rows, 'Tenure')
+        ->setCellValue('P'.$rows, 'ROI')
+        ->setCellValue('Q'.$rows, 'ODI Interest')
+        ->setCellValue('R'.$rows, 'Principal O/S')
+        ->setCellValue('S'.$rows, 'Interest')
+        ->setCellValue('T'.$rows, 'Over Due Days')
+        ->setCellValue('U'.$rows, 'Overdue Amount')
+        ->setCellValue('V'.$rows, 'Total Outstanding')
+        ->setCellValue('W'.$rows, 'Grace')
+        ->setCellValue('X'.$rows, 'OverDue After Grace Days')
+        ->setCellValue('Y'.$rows, 'Max Bucket OverDue After Grace Days')
+        ->setCellValue('Z'.$rows, 'Outstanding Max Bucket')
+        ->setCellValue('AA'.$rows, 'Maturity Days')
+        ->setCellValue('AB'.$rows, 'Maturity Bucket');
+        //->setCellValue('AC'.$rows, 'Sales Person Name');
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':AB'.$rows)->applyFromArray(['font' => ['bold'  => true]]);
         $rows++;
         foreach($exceldata as $rowData){
             $sheet->setActiveSheetIndex(0)
@@ -112,22 +118,27 @@ class OverdueReportManual implements ShouldQueue
             ->setCellValue('F'.$rows, $rowData['disburse_amount'])
             ->setCellValue('G'.$rows, $rowData['payment_frequency'])
             ->setCellValue('H'.$rows, $rowData['interest_amount'])
-            ->setCellValue('I'.$rows, $rowData['payment_due_date'])
-            ->setCellValue('J'.$rows, $rowData['virtual_ac'])
-            ->setCellValue('K'.$rows, number_format($rowData['client_sanction_limit'],2))
-            ->setCellValue('L'.$rows, number_format($rowData['limit_available'],2))
-            ->setCellValue('M'.$rows, $rowData['principalOut'])
-            ->setCellValue('N'.$rows, $rowData['interestOut'])
-            ->setCellValue('O'.$rows, $rowData['overdueDays'])
-            ->setCellValue('P'.$rows, $rowData['overdueOut'])
-            ->setCellValue('Q'.$rows, '=+M'.$rows.'+N'.$rows.'+P'.$rows)
-            ->setCellValue('R'.$rows, $rowData['grace_period'])
-            ->setCellValue('S'.$rows, $rowData['odDaysWithoutGrace'])
-            ->setCellValue('T'.$rows, $rowData['maxBucOdDaysWithoutGrace'])
-            ->setCellValue('U'.$rows, '=IF(AND(M'.$rows.'>100,T'.$rows.'>0),IF(T'.$rows.'<7,"01 - 07 Days",IF(T'.$rows.'<15,"08 - 15 Days",IF(T'.$rows.'<30,"16 - 30 Days",IF(T'.$rows.'<60,"31-60 Days",IF(T'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")')
-            ->setCellValue('V'.$rows, $rowData['maturityDays'])
-            ->setCellValue('W'.$rows, '=IF(AND(M'.$rows.'>100,V'.$rows.'>0),IF(V'.$rows.'<7,"01 - 07 Days",IF(V'.$rows.'<15,"08 - 15 Days",IF(V'.$rows.'<30,"16 - 30 Days",IF(V'.$rows.'<60,"31-60 Days",IF(V'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")')
-            ->setCellValue('X'.$rows, $rowData['sales_person_name'], \PHPExcel_Cell_DataType::TYPE_STRING);
+            ->setCellValue('I'.$rows, $rowData['disbursement_method'])
+            ->setCellValue('J'.$rows, $rowData['payment_due_date'])
+            ->setCellValue('K'.$rows, $rowData['virtual_ac'])
+            ->setCellValue('L'.$rows, number_format($rowData['client_sanction_limit'],2))
+            ->setCellValue('M'.$rows, number_format($rowData['limit_available'],2))
+            ->setCellValue('N'.$rows, $rowData['utilized_amt'])
+            ->setCellValue('O'.$rows, $rowData['tenure'])
+            ->setCellValue('P'.$rows, $rowData['roi'])
+            ->setCellValue('Q'.$rows, $rowData['roodi'])
+            ->setCellValue('R'.$rows, $rowData['principalOut'])
+            ->setCellValue('S'.$rows, $rowData['interestOut'])
+            ->setCellValue('T'.$rows, $rowData['overdueDays'])
+            ->setCellValue('U'.$rows, $rowData['overdueOut'])
+            ->setCellValue('V'.$rows, '=+R'.$rows.'+S'.$rows.'+U'.$rows)
+            ->setCellValue('W'.$rows, $rowData['grace_period'])
+            ->setCellValue('X'.$rows, $rowData['odDaysWithoutGrace'])
+            ->setCellValue('Y'.$rows, $rowData['maxBucOdDaysWithoutGrace'])
+            ->setCellValue('Z'.$rows, '= IF(AND(R'.$rows.'>100,Y'.$rows.'>0), IF(Y'.$rows.'<7,"01 - 07 Days", IF(Y'.$rows.'<15,"08 - 15 Days", IF(Y'.$rows.'<30,"16 - 30 Days", IF(Y'.$rows.'<60,"31-60 Days", IF(Y'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")')
+            ->setCellValue('AA'.$rows, $rowData['maturityDays'])
+            ->setCellValue('AB'.$rows, '= IF(AND(R'.$rows.'>100,AA'.$rows.'>0), IF(AA'.$rows.'<7,"01 - 07 Days", IF(AA'.$rows.'<15,"08 - 15 Days", IF(AA'.$rows.'<30,"16 - 30 Days", IF(AA'.$rows.'<60,"31-60 Days", IF(AA'.$rows.'<90,"61 - 90 Days","90 + Days"))))),"Not Outstanding")');
+            //->setCellValue('AC'.$rows, $rowData['sales_person_name'], \PHPExcel_Cell_DataType::TYPE_STRING);
             $rows++;
         }
 

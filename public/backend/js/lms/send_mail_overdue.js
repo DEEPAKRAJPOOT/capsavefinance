@@ -20,10 +20,15 @@ try {
                     d.customer_id = $('input[name=customer_id]').val();
                     d._token = messages.token;
                 },
-                "error": function () {  // error handling                   
+                complete: function () {
+                    $('#sendMailBtn').prop('disabled', false); 
+                },
+                "error": function () {  // error handling   
+                    $('#sendMailBtn').prop('disabled', false);                 
                     $("#lmsOverdueLogsList").append('<tbody class="appList-error"><tr><th colspan="3">' + messages.data_not_found + '</th></tr></tbody>');
                     $("#lmsOverdueLogsList_processing").css("display", "none");
-                }
+                } 
+                
             },
             columns: [
                 {data: 'customer_id'},
@@ -37,12 +42,14 @@ try {
 
         //Search
         $('#sendMailBtn').on('click', function (e) {
+            $('#sendMailBtn').prop('disabled', true);
             $("#to_date").parent().find('span.error').detach();
             if (!$("#to_date").val()) {
                 $("#to_date").parent().append('<span class="error">Please Select To Date</span>');
                 return false;
             }
             oTable.draw();
+            //$('#sendMailBtn').prop('disabled', false); 
         });
         oTable.draw();
     });    
