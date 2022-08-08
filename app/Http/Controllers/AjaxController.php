@@ -5813,7 +5813,7 @@ if ($err) {
             \Artisan::call("report:overdueManual", ['user' => $userId, 'date' => $to_date]);
         }
     
-        $overdueReportLogs = OverdueReportLog::get();
+        $overdueReportLogs = OverdueReportLog::orderBy('id','desc')->get();
         return $dataProvider->getOverdueReportLogs($this->request, $overdueReportLogs);
     }
 
