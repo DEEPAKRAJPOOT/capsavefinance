@@ -63,9 +63,9 @@
 						</thead>
 						<tbody>
 							<tr>
-								<td> {{ count($data['lenderAnchorData']) }}</td>
-								<td> {{ count($data['lenderAnchorData']->where('is_active', 1)) }}</td>
-								<td> {{ count($data['lenderAnchorData']->where('is_active', 0)) }}</td>
+								<td> {{ $data['lenderAnchorData']['total'] }}</td>
+								<td> {{ $data['lenderAnchorData']['active'] }}</td>
+								<td> {{ $data['lenderAnchorData']['inactive'] }}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -97,9 +97,9 @@
 						</thead>
 						<tbody>
 							<tr>
-								<td> {{ count($data['anchorUserData']) }}</td>
-								<td> {{ count($data['anchorUserData']->where("is_registered", 1)) }}</td>
-								<td> {{ count($data['anchorUserData']->where("is_registered", 0)) }}</td>
+								<td> {{ $data['anchorUserData']['total'] }}</td>
+								<td> {{ $data['anchorUserData']['registered'] }}</td>
+								<td> {{ $data['anchorUserData']['unregistered'] }}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -175,13 +175,12 @@
 						</thead>
 						<tbody>
 							<tr>
-								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['APP_INCOMPLETE'])) }}</td>
-								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['COMPLETED'])) }}</td>
-								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['OFFER_GENERATED'])) }}</td>
-								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['OFFER_LIMIT_APPROVED'])) }}</td>
-								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['SANCTION_LETTER_GENERATED'])) }}</td>
-								<td> {{ count($data['anchorAppData']->where('curr_status_id', config('common.mst_status_id')['APP_SANCTIONED'])) }}</td>
-
+								<td> {{ $data['anchorAppData']['APP_INCOMPLETE'] }}</td>
+								<td> {{ $data['anchorAppData']['COMPLETED'] }}</td>
+								<td> {{ $data['anchorAppData']['OFFER_GENERATED'] }}</td>
+								<td> {{ $data['anchorAppData']['OFFER_LIMIT_APPROVED'] }}</td>
+								<td> {{ $data['anchorAppData']['SANCTION_LETTER_GENERATED'] }}</td>
+								<td> {{ $data['anchorAppData']['APP_SANCTIONED'] }}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -219,15 +218,15 @@
 						</thead>
 						<tbody>
 							<tr>
-								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['PENDING'])) }}</td>
-								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['APPROVED'])) }}</td>
-								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['DISBURSMENT_QUE'])) }}</td>
-								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['SENT_TO_BANK'])) }}</td>
-								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['FAILED_DISBURSMENT'])) }}</td>
-								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['DISBURSED'])) }}</td>
-								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['PAYMENT_SETTLED'])) }}</td>
-								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['REJECT'])) }}</td>
-								<td> {{ count($data['anchorInvoiceData']->where('status_id', config('lms.mst_status_invoice')['EXCEPTION_CASE'])) }}</td>
+								<td> {{ $data['anchorInvoiceData']['PENDING'] }}</td>
+								<td> {{ $data['anchorInvoiceData']['APPROVED'] }}</td>
+								<td> {{ $data['anchorInvoiceData']['DISBURSMENT_QUE'] }}</td>
+								<td> {{ $data['anchorInvoiceData']['SENT_TO_BANK'] }}</td>
+								<td> {{ $data['anchorInvoiceData']['FAILED_DISBURSMENT'] }}</td>
+								<td> {{ $data['anchorInvoiceData']['DISBURSED'] }}</td>
+								<td> {{ $data['anchorInvoiceData']['PAYMENT_SETTLED'] }}</td>
+								<td> {{ $data['anchorInvoiceData']['REJECT'] }}</td>
+								<td> {{ $data['anchorInvoiceData']['EXCEPTION_CASE'] }}</td>
 							</tr>
 						</tbody>
 					</table>

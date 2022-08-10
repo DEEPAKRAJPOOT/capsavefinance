@@ -552,13 +552,28 @@ class BizInvoice extends BaseModel
     
     public static function getAnchorInvoiceDataDetail($anchorId = null) 
     {  
-        $data = self::whereHas('supplier', function($query) use($anchorId) {
-            if (!is_null($anchorId)) {
-                $query->where('anchor_id', $anchorId);
-            }
-        })->get();
-               
-        return $data ?? '';
+        if (!is_null($anchorId)) {
+            $data['PENDING'] = self::whereHas('supplier', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->where('status_id', config('lms.mst_status_invoice')['PENDING'])->count();
+            $data['APPROVED'] = self::whereHas('supplier', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->where('status_id', config('lms.mst_status_invoice')['APPROVED'])->count();
+            $data['DISBURSMENT_QUE'] = self::whereHas('supplier', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->where('status_id', config('lms.mst_status_invoice')['DISBURSMENT_QUE'])->count();
+            $data['SENT_TO_BANK'] = self::whereHas('supplier', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->where('status_id', config('lms.mst_status_invoice')['SENT_TO_BANK'])->count();
+            $data['FAILED_DISBURSMENT'] = self::whereHas('supplier', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->where('status_id', config('lms.mst_status_invoice')['FAILED_DISBURSMENT'])->count();
+            $data['DISBURSED'] = self::whereHas('supplier', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->where('status_id', config('lms.mst_status_invoice')['DISBURSED'])->count();
+            $data['PAYMENT_SETTLED'] = self::whereHas('supplier', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->where('status_id', config('lms.mst_status_invoice')['PAYMENT_SETTLED'])->count();
+            $data['REJECT'] = self::whereHas('supplier', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->where('status_id', config('lms.mst_status_invoice')['REJECT'])->count();
+            $data['EXCEPTION_CASE'] = self::whereHas('supplier', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->where('status_id', config('lms.mst_status_invoice')['EXCEPTION_CASE'])->count();
+        }else{
+            $data['PENDING'] = self::where('status_id', config('lms.mst_status_invoice')['PENDING'])->count();
+            $data['APPROVED'] = self::where('status_id', config('lms.mst_status_invoice')['APPROVED'])->count();
+            $data['DISBURSMENT_QUE'] = self::where('status_id', config('lms.mst_status_invoice')['DISBURSMENT_QUE'])->count();
+            $data['SENT_TO_BANK'] = self::where('status_id', config('lms.mst_status_invoice')['SENT_TO_BANK'])->count();
+            $data['FAILED_DISBURSMENT'] = self::where('status_id', config('lms.mst_status_invoice')['FAILED_DISBURSMENT'])->count();
+            $data['DISBURSED'] = self::where('status_id', config('lms.mst_status_invoice')['DISBURSED'])->count();
+            $data['PAYMENT_SETTLED'] = self::where('status_id', config('lms.mst_status_invoice')['PAYMENT_SETTLED'])->count();
+            $data['REJECT'] = self::where('status_id', config('lms.mst_status_invoice')['REJECT'])->count();
+            $data['EXCEPTION_CASE'] = self::where('status_id', config('lms.mst_status_invoice')['EXCEPTION_CASE'])->count();
+        }
+        return $data;
     }
     
     /* update invoice amount with statusid  */

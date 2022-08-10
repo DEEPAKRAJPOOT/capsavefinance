@@ -1881,12 +1881,15 @@ class UserRepository extends BaseRepositories implements UserInterface
     }    
     public function getLenderAnchorDetail($anchorId = null)
     {
-        return Anchor::get();
+        $data['total'] = Anchor::count();
+        $data['active'] = Anchor::where('is_active', 1)->count();
+        $data['inactive'] = Anchor::where('is_active', 0)->count();
+        return $data;
     }
 
-    public function getAnchorUserDataDetail($anchorId = null)
+    public function getAnchorUserDataDetail($anchorId = null, $roleId = null)
     {
-        return AnchorUser::getAnchorUserDataDetail($anchorId);
+        return AnchorUser::getAnchorUserDataDetail($anchorId, $roleId);
     }
 
     public function getAnchorInactiveUserDataDetail($anchorId = null)

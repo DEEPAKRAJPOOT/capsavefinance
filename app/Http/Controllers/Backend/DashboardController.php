@@ -51,12 +51,10 @@ class DashboardController extends Controller
         {
             $corp_user_id = @$request->get('corp_user_id');
             $user_kyc_id = @$request->get('user_kyc_id');
-
-            $user = Auth::user();
-            $userId = (int) $user->user_id;
-            // $role_id = DB::table('role_user')->where(['user_id' => $userId])->pluck('role_id')->toArray();
-            // $userRole = DB::table('roles')->whereIn('id',$role_id)->first();
-            $userRole = $user->allRoles()->first();
+            $User = Auth::user();
+            $userId = (int) $User->user_id;
+            $role_id = DB::table('role_user')->where(['user_id' => $userId])->pluck('role_id');
+            $userRole = DB::table('roles')->whereIn('id',$role_id)->first();
 
             $recentRights = [];
             $benifinary = [];
@@ -72,13 +70,14 @@ class DashboardController extends Controller
                 $userKycId = (int) $user_kyc_id;
                 $userId = null;
             } else {
-                // $userId = (int) Auth::user()->user_id;
-                $benifinary['user_kyc_id'] = $userKycId = (int) $user->user_kyc_id;
+                $userId = (int) $User->user_id;
+                $userKycId = (int) $User->user_kyc_id;
+                $benifinary['user_kyc_id'] = (int) $User->user_kyc_id;
                 $benifinary['corp_user_id'] = 0;
                 $benifinary['is_by_company'] = 0;
                 
             }
-            $benifinary['user_type'] = (int) $user->user_type;
+            $benifinary['user_type'] = (int) $User->user_type;
             $data = [];
 
             if($userRole->id == 11) {
@@ -93,16 +92,17 @@ class DashboardController extends Controller
 
                 $data['prgmData'] = $this->userRepo->getPrgmDetail($anchorId, $data['anchorData']->prgm_id);
                 
-                $data['anchorUserData'] = $this->userRepo->getAnchorUserDataDetail($anchorId);
-                // $data['anchorUserData']->inactiveUsers = $this->userRepo->getAnchorInactiveUserDataDetail($anchorId);
+                $data['anchorUserData'] = $this->userRepo->getAnchorUserDataDetail($anchorId, $userRole->id);
+                //$data['anchorUserData']->inactiveUsers = $this->userRepo->getAnchorInactiveUserDataDetail($anchorId);
                 
                 $data['anchorAppData'] = $this->userRepo->getAnchorAppDataDetail($anchorId);
                 $data['anchorInvoiceData'] = $this->userRepo->getAnchorInvoiceDataDetail($anchorId);
             } else {
                 $data['lenderAnchorData'] = $this->userRepo->getLenderAnchorDetail();
-                $data['anchorUserData'] = $this->userRepo->getAnchorUserDataDetail();
-                // $data['anchorUserData']->inactiveUsers = $this->userRepo->getAnchorInactiveUserDataDetail();
-                
+
+                $data['anchorUserData'] = $this->userRepo->getAnchorUserDataDetail(NULL, $userRole->id);
+                //$data['anchorUserData']->inactiveUsers = $this->userRepo->getAnchorInactiveUserDataDetail();
+
                 $data['anchorAppData'] = $this->userRepo->getAnchorAppDataDetail();
                 $data['anchorInvoiceData'] = $this->userRepo->getAnchorInvoiceDataDetail();
             }

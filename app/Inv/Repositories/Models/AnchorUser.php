@@ -337,12 +337,17 @@ class AnchorUser extends BaseModel {
         return ($rowUpdate ? true : false);
     }
 
-    public static function getAnchorUserDataDetail($anchorId = null) {
-        if ($anchorId) {
-            $data = self::where('anchor_id', $anchorId)->get();
-        }else {
-            $data = self::get();
-        }
+    public static function getAnchorUserDataDetail($anchorId = null, $roleId = null) {
+        
+        if ($roleId == 11 && $anchorId) {        
+            $data['total'] = self::where('anchor_id', $anchorId)->count();
+            $data['registered'] = self::where('anchor_id', $anchorId)->where("is_registered", 1)->count();
+            $data['unregistered'] = self::where('anchor_id', $anchorId)->where("is_registered", 0)->count();
+        }else{
+            $data['total'] = self::count();
+            $data['registered'] = self::where("is_registered", 1)->count();
+            $data['unregistered'] = self::where("is_registered", 0)->count();
+        }  
 
         return $data;
     }

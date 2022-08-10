@@ -1015,14 +1015,24 @@ class Application extends BaseModel
     }    
     
     public static function getAnchorAppDataDetail($anchorId = null) 
-    {  
-        $appData = self::whereHas('user', function($query) use($anchorId) {
-            if (!is_null($anchorId)) {
-                $query->where('anchor_id', $anchorId);
-            }
-        })->get();
-               
-        return $appData ?? '';
+    { 
+        if (!is_null($anchorId)) {
+            $data['APP_INCOMPLETE'] = self::where('curr_status_id', config('common.mst_status_id.APP_INCOMPLETE'))->whereHas('user', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->count();
+            $data['COMPLETED'] = self::where('curr_status_id', config('common.mst_status_id.COMPLETED'))->whereHas('user', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->count();
+            $data['OFFER_GENERATED'] = self::where('curr_status_id', config('common.mst_status_id.OFFER_GENERATED'))->whereHas('user', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->count();
+            $data['OFFER_LIMIT_APPROVED'] = self::where('curr_status_id', config('common.mst_status_id.OFFER_LIMIT_APPROVED'))->whereHas('user', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->count();
+            $data['SANCTION_LETTER_GENERATED'] = self::where('curr_status_id', config('common.mst_status_id.SANCTION_LETTER_GENERATED'))->whereHas('user', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->count();
+            $data['APP_SANCTIONED'] = self::where('curr_status_id', config('common.mst_status_id.APP_SANCTIONED'))->whereHas('user', function($query) use($anchorId) { $query->where('anchor_id', $anchorId);})->count();
+        }
+        else{
+            $data['APP_INCOMPLETE'] = self::where('curr_status_id', config('common.mst_status_id.APP_INCOMPLETE'))->count();
+            $data['COMPLETED'] = self::where('curr_status_id', config('common.mst_status_id.COMPLETED'))->count();
+            $data['OFFER_GENERATED'] = self::where('curr_status_id', config('common.mst_status_id.OFFER_GENERATED'))->count();
+            $data['OFFER_LIMIT_APPROVED'] = self::where('curr_status_id', config('common.mst_status_id.OFFER_LIMIT_APPROVED'))->count();
+            $data['SANCTION_LETTER_GENERATED'] = self::where('curr_status_id', config('common.mst_status_id.SANCTION_LETTER_GENERATED'))->count();
+            $data['APP_SANCTIONED'] = self::where('curr_status_id', config('common.mst_status_id.APP_SANCTIONED'))->count();
+        }
+        return $data;
     }
 
     public function sanctionDate() {
