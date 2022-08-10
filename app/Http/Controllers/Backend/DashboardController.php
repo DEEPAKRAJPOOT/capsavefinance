@@ -49,11 +49,10 @@ class DashboardController extends Controller
     {
         try 
         {
-            //echo "hii";die;
             $corp_user_id = @$request->get('corp_user_id');
             $user_kyc_id = @$request->get('user_kyc_id');
-
-            $userId = (int) Auth::user()->user_id;
+            $User = Auth::user();
+            $userId = (int) $User->user_id;
             $role_id = DB::table('role_user')->where(['user_id' => $userId])->pluck('role_id');
             $userRole = DB::table('roles')->whereIn('id',$role_id)->first();
 
@@ -71,18 +70,18 @@ class DashboardController extends Controller
                 $userKycId = (int) $user_kyc_id;
                 $userId = null;
             } else {
-                $userId = (int) Auth::user()->user_id;
-                $userKycId = (int) Auth::user()->user_kyc_id;
-                $benifinary['user_kyc_id'] = (int) Auth::user()->user_kyc_id;
+                $userId = (int) $User->user_id;
+                $userKycId = (int) $User->user_kyc_id;
+                $benifinary['user_kyc_id'] = (int) $User->user_kyc_id;
                 $benifinary['corp_user_id'] = 0;
                 $benifinary['is_by_company'] = 0;
                 
             }
-            $benifinary['user_type'] = (int) Auth::user()->user_type;
+            $benifinary['user_type'] = (int) $User->user_type;
             $data = [];
 
             if($userRole->id == 11) {
-                $anchorId = Auth::user()->anchor_id;
+                $anchorId = $user->anchor_id;
 
                 $data['anchorData'] = $this->userRepo->getAnchorDetail($anchorId);
                 $data['anchorData']->totalLimit = $data['anchorData']->anchor_limit;
@@ -93,21 +92,20 @@ class DashboardController extends Controller
 
                 $data['prgmData'] = $this->userRepo->getPrgmDetail($anchorId, $data['anchorData']->prgm_id);
                 
-                $data['anchorUserData'] = $this->userRepo->getAnchorUserDataDetail($anchorId);
-                $data['anchorUserData']->inactiveUsers = $this->userRepo->getAnchorInactiveUserDataDetail($anchorId);
+                $data['anchorUserData'] = $this->userRepo->getAnchorUserDataDetail($anchorId, $userRole->id);
+                //$data['anchorUserData']->inactiveUsers = $this->userRepo->getAnchorInactiveUserDataDetail($anchorId);
                 
                 $data['anchorAppData'] = $this->userRepo->getAnchorAppDataDetail($anchorId);
                 $data['anchorInvoiceData'] = $this->userRepo->getAnchorInvoiceDataDetail($anchorId);
             } else {
-
                 $data['lenderAnchorData'] = $this->userRepo->getLenderAnchorDetail();
-                $data['anchorUserData'] = $this->userRepo->getAnchorUserDataDetail();
-                $data['anchorUserData']->inactiveUsers = $this->userRepo->getAnchorInactiveUserDataDetail();
-                
+
+                $data['anchorUserData'] = $this->userRepo->getAnchorUserDataDetail(NULL, $userRole->id);
+                //$data['anchorUserData']->inactiveUsers = $this->userRepo->getAnchorInactiveUserDataDetail();
+
                 $data['anchorAppData'] = $this->userRepo->getAnchorAppDataDetail();
                 $data['anchorInvoiceData'] = $this->userRepo->getAnchorInvoiceDataDetail();
             }
-            // dd($data['anchorAppData']);
             return view('backend.dashboard',compact('benifinary','data'));
         } catch (Exception $ex) {
             return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();

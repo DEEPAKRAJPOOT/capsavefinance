@@ -480,6 +480,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, "role_user", 'user_id')->where('is_logged_in_role', 1);
     }
 
+    public function allRoles()
+    {
+        return $this->belongsToMany(Role::class, "role_user", 'user_id');
+    }
+
     /**
      * Assign the given role to the user.
      *
