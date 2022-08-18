@@ -64,7 +64,7 @@
                                 <tr role="row" class="odd">
                                     <td>{{ $i++ }}</td>
                                     <td>{{ $company['cmp_name'] }}</td>
-                                    <td>{{ $company['cmp_add'] }}</td>
+                                    <td style="word-break: break-all;">{{ $company['cmp_add'] }}</td>
                                     <td>{{ $company['gst_no'] }}</td>                                      
                                     <td>{{ $company['pan_no'] }}</td>   
                                     <td>{{ $company['cin_no'] }}</td>
