@@ -743,7 +743,20 @@ class userInvoiceController extends Controller
             $sgst_amt = 0;
             $sgst_rate = 0;
             $base_amt = $totalamount;
-            if ($txn->gst == 1 && !in_array($txn->trans_type, [config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) && $txn->parent_trans_id != null) {
+            
+            $cdnFlag = true;
+            if($txn->parent_trans_id){
+                if(in_array($txn->parentTransactions->trans_type,[config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                    $cdnFlag = false;
+                }
+            }
+
+            $odFlag = true;
+            if(in_array($txn->trans_type,[config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                $odFlag = false;
+            }
+
+            if ($txn->gst == 1 && $odFlag && $cdnFlag) {
                 $base_amt = (!is_null($txn->base_amt) ? $txn->base_amt : $totalamount * 100/(100 + $totalGST));
                 if(!$is_state_diffrent) {
                     $cgst_rate = ($totalGST/2);
