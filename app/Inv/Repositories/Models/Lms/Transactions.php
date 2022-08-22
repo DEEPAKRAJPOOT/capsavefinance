@@ -1269,7 +1269,7 @@ class Transactions extends BaseModel {
        }
        return $sql->whereHas('transType', function($query) use ($invoiceType) { 
             if($invoiceType == 'I') {
-                 $query->where('id','=','9');
+                $query->whereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
              }  else {
                 $query->where('chrg_master_id','!=','0');
             }
