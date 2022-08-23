@@ -15,8 +15,8 @@
             $balanceAmount = $repayment->amount;
         @endphp
             <tr>
-                <td>{{date('d-m-Y',strtotime($repayment->date_of_payment))}}</td>
                 <td>{{date('d-M-Y',strtotime($repayment->created_at))}}</td>
+                <td>{{date('d-m-Y',strtotime($repayment->date_of_payment))}}</td>
                 <td>{{ $repayment->paymentname }}</td>
                 <td></td>
                 <td></td>
@@ -31,8 +31,8 @@
                         $balanceAmount += $repay->amount;
                 @endphp
                 <tr role="row" >
-                    <td> {{date('d-m-Y',strtotime($repay->trans_date))}}</td>
                     <td> {{date('d-m-Y',strtotime($repay->created_at))}}</td>
+                    <td> {{date('d-m-Y',strtotime($repay->trans_date))}}</td>
                     <td> {{$repay->TransName}}</td>
                     <td>
                         @if($repay->invoice_disbursed_id && $repay->invoiceDisbursed->invoice_id)
