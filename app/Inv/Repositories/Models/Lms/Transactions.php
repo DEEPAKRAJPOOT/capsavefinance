@@ -721,6 +721,9 @@ class Transactions extends BaseModel {
         if(!empty($where['trans_type_in'])){
             $query = $query->whereIn('trans_type',$where['trans_type_in']); 
         }
+        if(!empty($where['trans_date'])){
+            $query = $query->where('trans_date', '<=', $where['trans_date']);
+        }
         return $query->get();
     }
 
