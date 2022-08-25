@@ -103,7 +103,7 @@ class DisbursalBatch extends BaseModel {
                                                 //$newQuery->where('disbursal_id', 5597);
 					})
 					->orderBy('disbursal_batch_id', 'DESC')
-					->whereDate('created_at', '=', $to_date)
+					// ->whereDate('created_at', '=', $to_date)
 					->get();
 		return $result;
 	}
