@@ -1096,7 +1096,7 @@ class ApportionmentController extends Controller
                         if($transType == config('lms.TRANS_TYPE.INTEREST')){
                             $billType = 'I';
                         }elseif($transType == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                            $billType = 'C';
+                            $billType = 'I';
                         }
                         if($billType){
                             $controller->generateCapsaveInvoice($transIds, $userId, $billType);

@@ -525,7 +525,7 @@ class InvoiceController extends Controller {
             $invDisbIds = array_keys($invDisb);
 
             $intList = Transactions::whereIn('invoice_disbursed_id',$invDisbIds)
-            ->where('trans_type','9')
+            ->whereIn('trans_type', [config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
             ->where('user_id',$userId)
             ->where('entry_type','0')
             ->where('is_invoice_generated','0')
