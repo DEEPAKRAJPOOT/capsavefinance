@@ -4889,6 +4889,12 @@ class DataRenderer implements DataProviderInterface
                 }
             )
             ->editColumn(
+                'tran_id',
+                function ($trans) {
+                    return (isset($trans->transaction->invoiceDisbursed->disbursal->tran_id)) ? $trans->transaction->invoiceDisbursed->disbursal->tran_id : '';
+                }
+            )
+            ->editColumn(
                 'currency',
                 function ($trans) {
                     return $trans->currency;
