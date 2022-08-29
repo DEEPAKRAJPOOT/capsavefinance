@@ -109,7 +109,10 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'as' => 'tds_download_reports',
                 'uses' => 'Backend\ReportController@downloadTdsReport'
             ]);
-             
+            Route::get('/outstandingreportManual', [
+                'as' => 'outstanding_report_manual',
+                'uses' => 'Backend\ReportController@outstandingReportManual'
+            ]);
         });
 
         Route::group(['prefix' => 'application'], function () {

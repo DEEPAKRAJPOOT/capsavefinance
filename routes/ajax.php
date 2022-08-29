@@ -1511,4 +1511,12 @@ Route::group(
         'as' => 'check_unique_unr_alert',
         'uses' => 'AjaxController@checkUniqueUnrAlert'
     ]);
+    Route::post('lms_send_invoice_outstanding_due', [
+        'as' => 'lms_send_invoice_outstanding_due',
+        'uses' => 'AjaxController@sendInvoiceOutstandingReportByMail'
+    ]);
+    Route::post('lms_get_invoice_outstanding_list', [
+        'as' => 'lms_get_invoice_outstanding_list',
+        'uses' => 'AjaxController@getInvoiceOutstandingList'
+    ]);
 });

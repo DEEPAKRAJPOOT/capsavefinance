@@ -938,7 +938,12 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                     Route::get('/overdue/download', [
                         'as' => 'overdue_report_download',
                         'uses' => 'Backend\ReportController@downloadOverdueReportFromLogs',
-                    ]);                    
+                    ]);
+
+                    Route::get('/outstanding/download', [
+                        'as' => 'outstanding_report_download',
+                        'uses' => 'Backend\ReportController@downloadOutstandingReportFromLogs',
+                    ]);
 
                     Route::get('/realisationreport', [
                         'as' => 'report_realisationreport',

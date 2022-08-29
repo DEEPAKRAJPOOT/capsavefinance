@@ -19,6 +19,11 @@
         <a class=" {{( $active=='outstandingreport') ? 'active': null }} " href="{{route('report_outstandingreport')}}">Outstanding Report  </a>
     </li>
     @endcan
+    @can('outstanding_report_manual')
+    <li>
+        <a class=" {{( $active=='outstandingreportmanual') ? 'active': null }} " href="{{route('outstanding_report_manual')}}">Outstanding Report V2</a>
+    </li>
+    @endcan
     @can('report_realisationreport')
      <li>
         <a class=" {{( $active=='realisationreport') ? 'active': null }} " href="{{route('report_realisationreport')}}"> Realisation Report </a>

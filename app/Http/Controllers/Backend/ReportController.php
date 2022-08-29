@@ -24,6 +24,7 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use App\Inv\Repositories\Contracts\ReportInterface;
 use App\Inv\Repositories\Models\Lms\OverdueReportLog;
 use App\Inv\Repositories\Contracts\InvoiceInterface as InvoiceInterface;
+use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
 
 class ReportController extends Controller
 {
@@ -1223,4 +1224,18 @@ class ReportController extends Controller
     public function etlReportSync(){
         return $this->reportsRepo->etlReportSync();
     }
+
+	public function outstandingReportManual(Request $request){
+		try {
+			return view('reports.outstandingReportManual');
+		} catch (Exception $ex) {
+			return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex))->withInput();
+		}
+	}
+
+	public function downloadOutstandingReportFromLogs(Request $request)
+	{
+		$reportLog = OutstandingReportLog::findOrfail($request->report_log_id);
+		return response()->download($reportLog->file_path);
+	}
 }

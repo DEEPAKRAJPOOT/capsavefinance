@@ -8907,4 +8907,33 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->make(true);
     }
+
+    public function getOutstandingReportLogs(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['customer_id', 'date', 'action'])
+            ->addColumn('customer_id', function($overdueLog){
+                $data = 'All';
+                if($overdueLog->lmsUser){
+                    $data = $overdueLog->lmsUser->customer_id;
+                }
+                return $data;
+            })
+            ->addColumn('date', function ($overdueLog) {
+                return Carbon::parse($overdueLog->to_date)->format('d/m/Y');
+            })
+            ->addColumn('created_at', function ($overdueLog) {
+                return Helpers::convertDateTimeFormat($overdueLog->created_at, $fromDateFormat='Y-m-d H:i:s', $toDateFormat='d-m-Y h:i A');
+            })
+            ->addColumn('created_by', function ($overdueLog) {
+                return ucwords($overdueLog->createdByUserName);
+            })
+            ->addColumn('action', function ($overdueLog) {
+                if(Helpers::checkPermission('outstanding_report_download') ){
+                    return "<a href=\"".route('outstanding_report_download', ['report_log_id' => $overdueLog->id])."\" class='btn  btn-success btn-sm'>Download Report</a>";
+                }
+                return '';
+            })
+            ->make(true);
+    }
 }
