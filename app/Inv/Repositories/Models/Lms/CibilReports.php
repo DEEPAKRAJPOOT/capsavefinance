@@ -67,6 +67,7 @@ class CibilReports extends BaseModel {
         if (!empty($whereRawCondition)) {
             $res->whereRaw($whereRawCondition);
         }
+        $res->orderBy('cibil_report_id', 'desc');
         return $res;
     }
     
