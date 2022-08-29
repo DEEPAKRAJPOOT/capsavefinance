@@ -11,6 +11,7 @@ use App\Inv\Repositories\Models\BizPanGst;
 use App\Inv\Repositories\Models\Application;
 use App\Inv\Repositories\Models\LmsUser;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Master\Segment;
 use App\Inv\Repositories\Models\Master\Industry;
 use Carbon\Carbon;
 use Auth;
@@ -233,7 +234,10 @@ class Business extends BaseModel
     public function app(){
         return $this->belongsTo('App\Inv\Repositories\Models\Application','biz_id','biz_id');
     }
-
+    
+    public function segment(){
+        return $this->hasOne('App\Inv\Repositories\Models\Master\Segment','id','biz_segment');
+    }
     public function address(){
         return $this->hasMany('App\Inv\Repositories\Models\BusinessAddress','biz_id','biz_id')->where('biz_owner_id', null);
     }
