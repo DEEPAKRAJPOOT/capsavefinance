@@ -1590,8 +1590,8 @@ class UserEventsListener extends BaseEvent
             $userData['email'] = $data['email'];
             $rowData = '';
             foreach($data['data'] as $key=>$val){
-                $d = date('d/m/Y',strtotime($val['due_date']));
-                $m = date('d/m/Y',strtotime($val['maturity_date']));
+                $d = $val['due_date']?date('d/m/Y',strtotime($val['due_date'])):'N/A';
+                $m = $val['maturity_date']?date('d/m/Y',strtotime($val['maturity_date'])):'N/A';
             $rowData .='<tr>
               <td
                 style="font-family: Calibri !important; box-sizing: border-box; font-size: 0.917rem !important; text-align: left; padding: 10px 10px 10px 0px; border-top:1px solid #ccc;border-right:1px solid #ccc;padding: 2px 5px;font-size: 0.917rem !important;line-height: 18px;vertical-align: top;">
