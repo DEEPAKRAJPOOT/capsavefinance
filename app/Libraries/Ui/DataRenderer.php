@@ -8930,7 +8930,11 @@ class DataRenderer implements DataProviderInterface
             })
             ->addColumn('action', function ($overdueLog) {
                 if(Helpers::checkPermission('outstanding_report_download') ){
-                    return "<a href=\"".route('outstanding_report_download', ['report_log_id' => $overdueLog->id])."\" class='btn  btn-success btn-sm'>Download Report</a>";
+                    if($overdueLog->file_path){
+                        return "<a href=\"".route('outstanding_report_download', ['report_log_id' => $overdueLog->id])."\" class='btn  btn-success btn-sm'>Download Report</a>";
+                    }else{
+                        return ' <button class="btn btn-primary" disabled> <span class="spinner-grow spinner-grow-sm"></span> Loading.. </button>';
+                    }
                 }
                 return '';
             })

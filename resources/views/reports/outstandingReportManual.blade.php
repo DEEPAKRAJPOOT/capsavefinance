@@ -26,7 +26,7 @@
                     'class' => 'form-control',
                     'required' => 'required',
                     'placeholder' => 'To Date',
-                    //'id'=>'to_date',
+                    'id'=>'to_date',
                     'autocomplete'=>'off',
                     'readonly'=>true
                     ])
@@ -109,11 +109,11 @@
         token: "{{ csrf_token() }}",
     };
 
-    $('#to_date').datetimepicker({
-        format: 'dd/mm/yyyy',
-        autoclose: true,
-        minView: 2, 
-    });
+    // $('#to_date').datetimepicker({
+    //     format: 'dd/mm/yyyy',
+    //     autoclose: true,
+    //     minView: 2, 
+    // });
     
     $(document).ready(function(){
       var sample_data = new Bloodhound({

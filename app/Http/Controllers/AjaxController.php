@@ -58,6 +58,7 @@ use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
+
 class AjaxController extends Controller {
 
     /**
@@ -6178,7 +6179,8 @@ if ($err) {
         if ($this->request->get('to_date')) {
             $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d');
             $userId  = $this->request->get('user_id') ?? 'all';
-            \Artisan::call("report:outstandingManual", ['user' => $userId, 'date' => $to_date]);
+            $odReportLog = OutstandingReportLog::create([ 'user_id' => $userId, 'to_date' => $to_date]);
+            \Artisan::call("report:outstandingManual", ['user' => $userId, 'date' => $to_date, 'logId' => $odReportLog]);
         }
     
         $overdueReportLogs = OutstandingReportLog::orderBy('id','desc')->get();

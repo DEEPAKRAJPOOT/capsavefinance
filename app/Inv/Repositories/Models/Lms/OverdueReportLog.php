@@ -14,6 +14,13 @@ class OverdueReportLog extends BaseModel {
 
     protected $table = 'overdue_report_logs';
 
+      /**
+     * Custom primary key is set for the table
+     *
+     * @var integer
+     */
+    protected $primaryKey = 'id';
+
     /**
      * Maintain created_at and updated_at automatically
      *

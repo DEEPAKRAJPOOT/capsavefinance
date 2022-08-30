@@ -16,7 +16,8 @@ class OutstandingReport extends Command
 
     protected $signature = 'report:outstandingManual
     {date=now : Date of Outstanding Report(YYYY/MM/DD)}
-    {user=all : The ID of the user}';
+    {user=all : The ID of the user}
+    {logId=NULL : The ID of the OverdueReportLog}';
 
     /**
      * The console command description.

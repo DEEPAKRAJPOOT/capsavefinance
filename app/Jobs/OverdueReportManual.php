@@ -56,18 +56,18 @@ class OverdueReportManual implements ShouldQueue
         $data = $this->reportsRepo->getOverdueReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
 
         $filePath = $this->downloadOverdueReport($data);
-        if($this->toDate){
-            $this->createOverdueReportLog($this->toDate, $this->userId, $filePath);
+        if($this->logId){
+            $this->createOverdueReportLog($this->toDate, $this->userId, $filePath, $this->logId);
         }
     }
 
-    private function createOverdueReportLog($toDate, $userId, $filePath)
+    private function createOverdueReportLog($toDate, $userId, $filePath, $logId)
     {
-        OverdueReportLog::create([
+        OverdueReportLog::updateOrCreate([
             'user_id'   => $userId,
             'to_date'   => $toDate,
             'file_path' => $filePath,
-        ]);
+        ],['id',$logId]);
     }
 
     private function downloadOverdueReport($exceldata)
