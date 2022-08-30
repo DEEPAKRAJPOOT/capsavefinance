@@ -14,19 +14,21 @@
     </section>
     <div class="card">
         <div class="card-body">
-            <div class="row">   
+            <div class="row">  
+               
                 @can('lms_send_invoice_outstanding_due')
                 <div class="row col-md-12">                
                  <div class="col-md-4">
                     {!!
                     Form::text('to_date',
-                    null,
+                    Carbon\Carbon::now()->format('d/m/Y'),
                     [
                     'class' => 'form-control',
                     'required' => 'required',
                     'placeholder' => 'To Date',
-                    'id'=>'to_date',
-                    'autocomplete'=>'off'
+                    //'id'=>'to_date',
+                    'autocomplete'=>'off',
+                    'readonly'=>true
                     ])
                     !!} 
                 </div>
