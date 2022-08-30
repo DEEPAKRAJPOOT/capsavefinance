@@ -28,9 +28,15 @@
          <td style="border: 1px solid #ddd;padding: 2px;">
             <span style="font-size: 9px;font-family: Calibri;">{{$txns['desc']}}</span>
          </td>
+         @if($txns['desc'] == "Over")
+         <td style="border: 1px solid #ddd;padding: 2px;">
+            <span style="font-size: 9px;font-family: Calibri;">{{997119}}</span>
+         </td>
+         @else
          <td style="border: 1px solid #ddd;padding: 2px;">
             <span style="font-size: 9px;font-family: Calibri;">{{$txns['sac']}}</span>
          </td>
+         @endif
          <td style="border: 1px solid #ddd;padding: 2px;">
             <span style="font-size: 9px;font-family: Calibri;">{{ $txns['trans_date'] }}</span>
          </td>
