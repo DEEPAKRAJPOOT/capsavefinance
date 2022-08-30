@@ -825,7 +825,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				}
 			}
 		   
-			$odiInterest = round((round($disbDetails->overdue_rate,2) - round($disbDetails->interest_rate,2)),2);
+			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
 		   
 			$principalOverdueCategory='';
 			if(strtotime($disbDetails->payment_due_date) > strtotime($curdate)){
@@ -838,19 +838,23 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 					$principalOverdueCategory='Overdue';
 				}
 			}
-			
-			$maxDPD = $disbDetails->dpd;
+			$principalDPD = 0;
+			$now = Carbon::parse($curdate);
+            $paymentDueDate = Carbon::parse($invDisb->payment_due_date);
+            $principalDPD = $paymentDueDate->diffInDays($now);
+
+			$maxDPD = $principalDPD;
 			$outstanding_max_bucket = "Not Outstanding";
-			if($principalOutstanding > 100 && $disbDetails->dpd > 0){
-				if($disbDetails->dpd < 7)
+			if($principalOutstanding > 100 && $maxDPD > 0){
+				if($maxDPD < 7)
 				  $outstanding_max_bucket = "01 - 07 Days";
-				else if($disbDetails->dpd < 15)
+				else if($maxDPD < 15)
 				  $outstanding_max_bucket = "08 - 15 Days";
-				else if($disbDetails->dpd < 30)  
+				else if($maxDPD < 30)  
 				  $outstanding_max_bucket = "08 - 15 Days";
-				else if($disbDetails->dpd < 60) 
+				else if($maxDPD < 60) 
 				  $outstanding_max_bucket = "31 - 60 Days"; 
-				else if($disbDetails->dpd < 90)
+				else if($maxDPD < 90)
 				  $outstanding_max_bucket = "61 - 90 Days";  
 				else
 				  $outstanding_max_bucket = "90 + Days"; 
@@ -898,7 +902,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'paymentDueDate' => isset($invDisb->payment_due_date) ? Carbon::parse($invDisb->payment_due_date)->format('d-m-Y'):'',
 				'virtualAc' => $invDetails->lms_user->virtual_acc_id ?? '',
 				'tenure' =>	$disbDetails->tenor,
-				'roi' => $disbDetails->interest_rate,
+				'roi' => $invDisb->interest_rate,
 				'odi' => $odiInterest,
 				'principalOut' => round($principalOutstanding,2),
 				'interestOut' => round($interestOutstanding,2),
@@ -910,7 +914,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'principalGraceDays' => $disbDetails->grace_period,
 				'principalOverdue' => '',
 				'principalOverdueCategory'=> $principalOverdueCategory,
-				'principalDPD' => $disbDetails->dpd,
+				'principalDPD' => $principalDPD,
 				'interestPDP' => 0,
 				'finalDPD' => $maxDPD,
 				'outstandingMaxBucket' => $outstanding_max_bucket,
@@ -1031,7 +1035,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				}
 			}
 		   
-			$odiInterest = round((round($disbDetails->overdue_rate,2) - round($disbDetails->interest_rate,2)),2);
+			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
 		   
 			$principalOverdueCategory='';
 			if(strtotime($disbDetails->payment_due_date) > strtotime($curdate)){
@@ -1044,19 +1048,24 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 					$principalOverdueCategory='Overdue';
 				}
 			}
-			
-			$maxDPD = $disbDetails->dpd;
+			$principalDPD = 0;
+			$now = Carbon::parse($curdate);
+            $paymentDueDate = Carbon::parse($invDisb->payment_due_date);
+            $principalDPD = $paymentDueDate->diffInDays($now);
+
+			$maxDPD = $principalDPD;
+
 			$outstanding_max_bucket = "Not Outstanding";
-			if($principalOutstanding > 100 && $disbDetails->dpd > 0){
-				if($disbDetails->dpd < 7)
+			if($principalOutstanding > 100 && $maxDPD > 0){
+				if($maxDPD < 7)
 				  $outstanding_max_bucket = "01 - 07 Days";
-				else if($disbDetails->dpd < 15)
+				else if($maxDPD < 15)
 				  $outstanding_max_bucket = "08 - 15 Days";
-				else if($disbDetails->dpd < 30)  
+				else if($maxDPD < 30)  
 				  $outstanding_max_bucket = "08 - 15 Days";
-				else if($disbDetails->dpd < 60) 
+				else if($maxDPD < 60) 
 				  $outstanding_max_bucket = "31 - 60 Days"; 
-				else if($disbDetails->dpd < 90)
+				else if($maxDPD < 90)
 				  $outstanding_max_bucket = "61 - 90 Days";  
 				else
 				  $outstanding_max_bucket = "90 + Days"; 
@@ -1105,7 +1114,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'paymentDueDate' => isset($invDisb->payment_due_date) ? Carbon::parse($invDisb->payment_due_date)->format('d-m-Y'):'',
 				'virtualAc' => $invDetails->lms_user->virtual_acc_id ?? '',
 				'tenure' =>	$disbDetails->tenor,
-				'roi' => $disbDetails->interest_rate,
+				'roi' => $invDisb->interest_rate,
 				'odi' => $odiInterest,
 				'principalOut' => round($principalOutstanding,2),
 				'interestOut' => round($interestOutstanding,2),
@@ -1117,7 +1126,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'principalGraceDays' => $disbDetails->grace_period,
 				'principalOverdue' => '',
 				'principalOverdueCategory'=> $principalOverdueCategory,
-				'principalDPD' => $disbDetails->dpd,
+				'principalDPD' => $principalDPD,
 				'interestPDP' => 0,
 				'finalDPD' => $maxDPD,
 				'outstandingMaxBucket' => $outstanding_max_bucket,

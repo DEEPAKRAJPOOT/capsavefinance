@@ -104,7 +104,7 @@ class OutstandingReportManual implements ShouldQueue
         ->setCellValue('S'.$rows, 'ROI')
         ->setCellValue('T'.$rows, 'ODI Interest')
         ->setCellValue('U'.$rows, 'Principal O/S')
-        ->setCellValue('V'.$rows, 'Interest')
+        ->setCellValue('V'.$rows, 'Interest Outstanding')
         ->setCellValue('W'.$rows, 'Overdue Interest Posted')
         ->setCellValue('X'.$rows, 'Overdue Amount')
         ->setCellValue('Y'.$rows, 'Invoice level charge O/S')
