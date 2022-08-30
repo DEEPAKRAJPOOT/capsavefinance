@@ -73,11 +73,11 @@ class OutstandingReportManual implements ShouldQueue
 
     private function createOutstandingReportLog($toDate, $userId, $filePath, $logId)
     {
-        OutstandingReportLog::updateOrCreate([
+        OutstandingReportLog::updateOrCreate(['id' => $logId],[
             'user_id'   => $userId,
             'to_date'   => $toDate,
             'file_path' => $filePath,
-        ],['id',$logId]);
+        ]);
     }
 
     private function downloadOutstandingReport($exceldata)
