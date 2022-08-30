@@ -885,27 +885,27 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'anchorName'=> $anchor_name,
 				'invoiceNo' => $invDetails->invoice_no,
 				'disbursementDate' => isset($disbDetails->funded_date) ? Carbon::parse($disbDetails->funded_date)->format('d-m-Y'):'',
-				'invoiceAmt' => number_format($disbDetails->request_amount,2),
-				'invoiceApproveAmount' => number_format($disbDetails->approve_amount,2),
-				'marginPosted' => number_format($disbDetails->margin_amount,2),
-				'upfrontInterest' => ($prgmDetails->interest_borne_byv == 2 && $offer->payment_frequency == 1) ? number_format($disbDetails->upfront_interest,2) : 0,
-				'chargeDeduction' => number_format(0,2),
-				'invoiceLevelChrg'=> number_format($charges->sum('amount'),2),
-				'disburseAmount' => number_format($disbDetails->final_disbursed_amount,2),
+				'invoiceAmt' => round($disbDetails->request_amount,2),
+				'invoiceApproveAmount' => round($disbDetails->approve_amount,2),
+				'marginPosted' => round($disbDetails->margin_amount,2),
+				'upfrontInterest' => ($prgmDetails->interest_borne_byv == 2 && $offer->payment_frequency == 1) ? round($disbDetails->upfront_interest,2) : 0,
+				'chargeDeduction' => round(0,2),
+				'invoiceLevelChrg'=> round($charges->sum('amount'),2),
+				'disburseAmount' => round($disbDetails->final_disbursed_amount,2),
 				'paymentFrequency' => $payment_frequency,
-				'interestPosted' => number_format($disbDetails->interest_capitalized,2), 
+				'interestPosted' => round($disbDetails->interest_capitalized,2), 
 				'disbursementMethod' => $disbursement_method,
 				'paymentDueDate' => isset($disbDetails->payment_due_date) ? Carbon::parse($disbDetails->payment_due_date)->format('d-m-Y'):'',
 				'virtualAc' => $invDetails->lms_user->virtual_acc_id ?? '',
 				'tenure' =>	$disbDetails->tenor,
 				'roi' => $disbDetails->interest_rate,
 				'odi' => $odiInterest,
-				'principalOut' => number_format($principalOutstanding,2),
-				'interestOut' => number_format($interestOutstanding,2),
-				'overduePosted' => number_format($disbDetails->overdue_capitalized,2),
-				'overdueOut' => number_format($overdueAmount,2),
-				'invoiceLevelChrgOut'=> number_format($charges->sum('outstanding'),2),
-				'totalOutStanding' => number_format($totalOutstanding,2),
+				'principalOut' => round($principalOutstanding,2),
+				'interestOut' => round($interestOutstanding,2),
+				'overduePosted' => round($disbDetails->overdue_capitalized,2),
+				'overdueOut' => round($overdueAmount,2),
+				'invoiceLevelChrgOut'=> round($charges->sum('outstanding'),2),
+				'totalOutStanding' => round($totalOutstanding,2),
 				'intGraceDays' => '',
 				'principalGraceDays' => $disbDetails->grace_period,
 				'principalOverdue' => '',
@@ -916,9 +916,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'outstandingMaxBucket' => $outstanding_max_bucket,
 				'maturityDays' => $maturityDays,
 				'maturityBucket' => $maturityMaxbucket,
-				'marginToRefunded' => number_format($margin_to_refunded,2),
-				'interestToRefunded' => number_format($interest_to_refunded,2),
-				'overdueToRefunded' => number_format($overdueinterest_to_refunded,2)
+				'marginToRefunded' => round($margin_to_refunded,2),
+				'interestToRefunded' => round($interest_to_refunded,2),
+				'overdueToRefunded' => round($overdueinterest_to_refunded,2)
 			];
 		}
 		return $result;
@@ -991,8 +991,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 	
 			$overdueAmount = $transactions->overdue_os_amount;
 			$overdueAmount = $overdueAmount > 0 ? $overdueAmount : 0;
-	
-			$charges = $invDisb->transaction()->whereDate('created_at','<=',$curdate)->where('trans_type','>', '50')->where('entry_type','0')->where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->select(['amount', 'outstanding'])->get();
 		   
 			$totalOutstanding = ($principalOutstanding + $interestOutstanding + $overdueAmount + $transactions->charge_os_amount);
 	
@@ -1094,27 +1092,27 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'anchorName'=> $anchor_name,
 				'invoiceNo' => $invDetails->invoice_no,
 				'disbursementDate' => isset($disbDetails->funded_date) ? Carbon::parse($disbDetails->funded_date)->format('d-m-Y'):'',
-				'invoiceAmt' => number_format($disbDetails->request_amount,2),
-				'invoiceApproveAmount' => number_format($disbDetails->approve_amount,2),
-				'marginPosted' => number_format($disbDetails->margin_amount,2),
-				'upfrontInterest' => ($prgmDetails->interest_borne_byv == 2 && $offer->payment_frequency == 1) ? number_format($disbDetails->upfront_interest,2) : 0,
-				'chargeDeduction' => number_format(0,2),
-				'invoiceLevelChrg'=> number_format($charges->sum('amount'),2),
-				'disburseAmount' => number_format($disbDetails->final_disbursed_amount,2),
+				'invoiceAmt' => round($disbDetails->request_amount,2),
+				'invoiceApproveAmount' => round($disbDetails->approve_amount,2),
+				'marginPosted' => round($disbDetails->margin_amount,2),
+				'upfrontInterest' => ($prgmDetails->interest_borne_byv == 2 && $offer->payment_frequency == 1) ? round($disbDetails->upfront_interest,2) : 0,
+				'chargeDeduction' => round(0,2),
+				'invoiceLevelChrg'=> round($transactions->charge_amount,2),
+				'disburseAmount' => round($disbDetails->final_disbursed_amount,2),
 				'paymentFrequency' => $payment_frequency,
-				'interestPosted' => number_format($disbDetails->interest_capitalized,2), 
+				'interestPosted' => round($disbDetails->interest_capitalized,2), 
 				'disbursementMethod' => $disbursement_method,
 				'paymentDueDate' => isset($disbDetails->payment_due_date) ? Carbon::parse($disbDetails->payment_due_date)->format('d-m-Y'):'',
 				'virtualAc' => $invDetails->lms_user->virtual_acc_id ?? '',
 				'tenure' =>	$disbDetails->tenor,
 				'roi' => $disbDetails->interest_rate,
 				'odi' => $odiInterest,
-				'principalOut' => number_format($principalOutstanding,2),
-				'interestOut' => number_format($interestOutstanding,2),
-				'overduePosted' => number_format($disbDetails->overdue_capitalized,2),
-				'overdueOut' => number_format($overdueAmount,2),
-				'invoiceLevelChrgOut'=> number_format($transactions->charge_os_amount,2),
-				'totalOutStanding' => number_format($totalOutstanding,2),
+				'principalOut' => round($principalOutstanding,2),
+				'interestOut' => round($interestOutstanding,2),
+				'overduePosted' => round($disbDetails->overdue_capitalized,2),
+				'overdueOut' => round($overdueAmount,2),
+				'invoiceLevelChrgOut'=> round($transactions->charge_os_amount,2),
+				'totalOutStanding' => round($totalOutstanding,2),
 				'intGraceDays' => '',
 				'principalGraceDays' => $disbDetails->grace_period,
 				'principalOverdue' => '',
@@ -1125,9 +1123,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'outstandingMaxBucket' => $outstanding_max_bucket,
 				'maturityDays' => $maturityDays,
 				'maturityBucket' => $maturityMaxbucket,
-				'marginToRefunded' => number_format($margin_to_refunded,2),
-				'interestToRefunded' => number_format($interest_to_refunded,2),
-				'overdueToRefunded' => number_format($overdueinterest_to_refunded,2)
+				'marginToRefunded' => round($margin_to_refunded,2),
+				'interestToRefunded' => round($interest_to_refunded,2),
+				'overdueToRefunded' => round($overdueinterest_to_refunded,2)
 			];
 		}
 		return $result;

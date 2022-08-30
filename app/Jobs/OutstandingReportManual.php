@@ -13,7 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Inv\Repositories\Contracts\ReportInterface;
-use App\Inv\Repositories\Models\Lms\OverdueReportLog;
+use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
 
 class OutstandingReportManual implements ShouldQueue
@@ -67,7 +67,7 @@ class OutstandingReportManual implements ShouldQueue
 
     private function createOutstandingReportLog($toDate, $userId, $filePath)
     {
-        OverdueReportLog::create([
+        OutstandingReportLog::create([
             'user_id'   => $userId,
             'to_date'   => $toDate,
             'file_path' => $filePath,
