@@ -87,9 +87,6 @@ class OutstandingReport extends Command
                 array_push($dataRecords, array_combine($headings, $rowData[0]));
             }
 
-            OutstandingReportModel::truncate();
-            // database insertion
-            // dd($dataRecords[7]);
             $batchNo = strtotime("now");
             foreach($dataRecords as $dataRecord)
             {  
