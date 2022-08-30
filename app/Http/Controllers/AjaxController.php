@@ -6180,7 +6180,7 @@ if ($err) {
             $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d');
             $userId  = $this->request->get('user_id') ?? 'all';
             $odReportLog = OutstandingReportLog::create([ 'user_id' => $userId, 'to_date' => $to_date]);
-            \Artisan::call("report:outstandingManual", ['user' => $userId, 'date' => $to_date, 'logId' => $odReportLog]);
+            \Artisan::call("report:outstandingManual", ['user' => $userId, 'date' => $to_date, 'logId' => $odReportLog->id ?? NULL]);
         }
     
         $overdueReportLogs = OutstandingReportLog::orderBy('id','desc')->get();
