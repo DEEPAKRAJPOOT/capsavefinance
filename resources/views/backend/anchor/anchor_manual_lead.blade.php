@@ -257,7 +257,10 @@ $messages = session()->get('message', false);
             $.validator.addMethod("alphabetsnspacendot", function(value, element) {
                 return this.optional(element) || /^[a-zA-Z. ]*$/.test(value);
             });
-            
+            jQuery.validator.addMethod("noSpace", function(value, element) { 
+                return value.indexOf(" ") < 0 && value != ""; 
+            });
+
 //            $.validator.addMethod("panValidator", function(value, element) {
 //                var values = value;
 //                var pannoformat = new RegExp('^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
@@ -314,8 +317,8 @@ $messages = session()->get('message', false);
                     $(this).rules("add",
                             {
                                 required: true,
-                                alphaSpace: true,
-                                messages: {'alphaSpace' : "Only letters allowed" }
+                                noSpace: true,
+                                messages: {'noSpace' : "Space not allowed" }
                             })
                 });
                 $('input.comp_name').each(function () {

@@ -242,6 +242,9 @@
         jQuery.validator.addMethod("emailExt", function(value, element, param) {
             return value.match(/^[a-zA-Z0-9_\.%\+\-]+@[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,}$/);
          },'please enter a valid email');
+         jQuery.validator.addMethod("noSpace", function(value, element) { 
+                return value.indexOf(" ") < 0 && value != ""; 
+            });
 
             $.validator.addMethod("isexistemail", function(value, element) {
                 var email = value;
@@ -284,8 +287,8 @@
                     $(this).rules("add",
                             {
                                 required: true,
-                                alphaSpace: true,
-                                messages: {'alphaSpace' : "Only letters allowed" }
+                                noSpace: true,
+                                messages: {'noSpace' : "Space not allowed" }
                             })
                 });
                 $('input.biz_name').each(function () {

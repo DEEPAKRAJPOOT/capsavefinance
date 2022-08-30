@@ -246,7 +246,23 @@ var messages={
             });
             
             $('#registerForm').on('submit', function (event) {
-                
+
+                 $('input.f_name').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true,
+                                alphaSpace: true,
+                                messages: {'alphaSpace' : "Only letters allowed" }
+                            })
+                });
+                 $('input.l_name').each(function () {
+                    $(this).rules("add",
+                            {
+                                required: true,
+                                noSpace: true,
+                                messages: {'noSpace' : "Space not allowed" }
+                            })
+                });
                 $('input.pan_no').each(function () {
                     $(this).rules("add",
                         {
