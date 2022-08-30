@@ -48,9 +48,11 @@ class OutstandingReportManual implements ShouldQueue
         ini_set('max_execution_time', 10000);
         
         //Second and fourth Saturday back dated overdue report 
-        if($this->isSecondFourthSaturday() && is_null($this->userId) && is_null($this->toDate)){
-            $this->toDate = date('Y-m-d');
-        }
+        // if($this->isSecondFourthSaturday() && is_null($this->userId) && is_null($this->toDate)){
+        //     $this->toDate = date('Y-m-d');
+        // }
+
+        $this->toDate = date('Y-m-d');
 
         $this->reportsRepo = $reportsRepo;
         //if to date== current date OR to date is null getOutstandingReportManual else getOutstandingReportManualbackDate
@@ -105,7 +107,7 @@ class OutstandingReportManual implements ShouldQueue
         ->setCellValue('V'.$rows, 'Interest')
         ->setCellValue('W'.$rows, 'Overdue Interest Posted')
         ->setCellValue('X'.$rows, 'Overdue Amount')
-        ->setCellValue('Y'.$rows, 'Invoice level charge O/s')
+        ->setCellValue('Y'.$rows, 'Invoice level charge O/S')
         ->setCellValue('Z'.$rows, 'Total Outstanding')
         ->setCellValue('AA'.$rows, 'Grace Days - Interest')
         ->setCellValue('AB'.$rows, 'Grace')

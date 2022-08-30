@@ -14,7 +14,7 @@ class OutstandingReport extends Command
      * @var string
      */
 
-    protected $signature = 'report:OutstandingManual
+    protected $signature = 'report:outstandingManual
     {date=now : Date of Outstanding Report(YYYY/MM/DD)}
     {user=all : The ID of the user}';
 
@@ -53,7 +53,7 @@ class OutstandingReport extends Command
         $toDate = $this->argument('date');
 
         if(trim(strtolower($toDate)) == 'now'){
-            $toDate = '2022-08-22';
+            $toDate = NULL;
         }
 
         if(trim(strtolower($userId)) == 'all'){
