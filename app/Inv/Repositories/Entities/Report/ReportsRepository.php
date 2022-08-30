@@ -888,7 +888,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'invoiceAmt' => number_format($disbDetails->request_amount,2),
 				'invoiceApproveAmount' => number_format($disbDetails->approve_amount,2),
 				'marginPosted' => number_format($disbDetails->margin_amount,2),
-				'upfrontInterest' => number_format($disbDetails->upfront_interest,2),
+				'upfrontInterest' => ($prgmDetails->interest_borne_byv == 2 && $offer->payment_frequency == 1) ? number_format($disbDetails->upfront_interest,2) : 0,
 				'chargeDeduction' => number_format(0,2),
 				'invoiceLevelChrg'=> number_format($charges->sum('amount'),2),
 				'disburseAmount' => number_format($disbDetails->final_disbursed_amount,2),
@@ -966,11 +966,11 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$transactions = Transactions::select('invoice_disbursed_id',
 			DB::raw('sum(IF (trans_type = 9 ,(amount-getTransCancelDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as interest_posted'),
 			DB::raw('sum(IF (trans_type = 33 ,(amount-getTransCancelDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as overdue_interest_posted'),
-			DB::raw('sum(IF (trans_type = 9 ,(getTransOutstandingDateAmt(trans_id, amount,  \''.$curdate.'\')),0)) as interest_os_amount'),
-			DB::raw('sum(IF (trans_type = 33 ,(getTransOutstandingDateAmt(trans_id, amount,  \''.$curdate.'\')),0)) as overdue_os_amount'),
-			DB::raw('sum(IF (trans_type = 16 ,(getTransOutstandingDateAmt(trans_id, amount,  \''.$curdate.'\')),0)) as principal_os_amount'),
+			DB::raw('sum(IF (trans_type = 9 ,(getTransOutstandingDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as interest_os_amount'),
+			DB::raw('sum(IF (trans_type = 33 ,(getTransOutstandingDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as overdue_os_amount'),
+			DB::raw('sum(IF (trans_type = 16 ,(getTransOutstandingDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as principal_os_amount'),
 			DB::raw('sum(IF (trans_type > 50 ,(amount - getTransCancelDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as charge_amount'),
-			DB::raw('sum(IF (trans_type > 50 ,(getTransOutstandingDateAmt(trans_id, amount,  \''.$curdate.'\')),0)) as charge_os_amount'))
+			DB::raw('sum(IF (trans_type > 50 ,(getTransOutstandingDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as charge_os_amount'))
 					->where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)
 					->whereNULL('parent_trans_id')
 					->whereNULL('link_trans_id')
@@ -1097,7 +1097,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'invoiceAmt' => number_format($disbDetails->request_amount,2),
 				'invoiceApproveAmount' => number_format($disbDetails->approve_amount,2),
 				'marginPosted' => number_format($disbDetails->margin_amount,2),
-				'upfrontInterest' => number_format($disbDetails->upfront_interest,2),
+				'upfrontInterest' => ($prgmDetails->interest_borne_byv == 2 && $offer->payment_frequency == 1) ? number_format($disbDetails->upfront_interest,2) : 0,
 				'chargeDeduction' => number_format(0,2),
 				'invoiceLevelChrg'=> number_format($charges->sum('amount'),2),
 				'disburseAmount' => number_format($disbDetails->final_disbursed_amount,2),
