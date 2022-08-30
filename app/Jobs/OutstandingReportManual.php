@@ -62,18 +62,19 @@ class OutstandingReportManual implements ShouldQueue
             $data = $this->reportsRepo->getBackDateOutstandingReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
         }
         $filePath = $this->downloadOutstandingReport($data);
-        if($this->toDate){
-            $this->createOutstandingReportLog($this->toDate, $this->userId, $filePath);
+        
+        if($this->toDate && $this->logId){
+            $this->createOutstandingReportLog($this->toDate, $this->userId, $filePath, $this->logId);
         }
     }
 
-    private function createOutstandingReportLog($toDate, $userId, $filePath)
+    private function createOutstandingReportLog($toDate, $userId, $filePath, $logId)
     {
-        OutstandingReportLog::create([
+        OutstandingReportLog::updateOrCreate([
             'user_id'   => $userId,
             'to_date'   => $toDate,
             'file_path' => $filePath,
-        ]);
+        ],['id',$logId]);
     }
 
     private function downloadOutstandingReport($exceldata)
