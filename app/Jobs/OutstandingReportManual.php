@@ -24,6 +24,7 @@ class OutstandingReportManual implements ShouldQueue
     private $emailTo;
     private $userId;
     private $toDate;
+    private $logId;
     /**
      * Create a new job instance.
      *
