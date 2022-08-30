@@ -116,7 +116,7 @@ class OutstandingReport extends Command
                     'ROI' => (float)$dataRecord['ROI'],
                     'ODI Interest' => (float)$dataRecord['ODI Interest'],
                     'Principal Outstanding' => (double)$dataRecord['Principal Outstanding'],
-                    'Interest' => (double)$dataRecord['Interest'],
+                    'Interest' => (double)$dataRecord['Interest Outstanding'],
                     'Overdue Interest Posted' => (double)$dataRecord['Overdue Interest Posted'],
                     'Overdue Amount' => (double)$dataRecord['Overdue Amount'],
                     'Invoice Level Charges Outstanding' => (double)$dataRecord['Invoice Level Charges Outstanding'],
