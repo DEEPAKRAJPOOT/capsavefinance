@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Inv\Repositories\Models\AppLimit;
 use App\Inv\Repositories\Models\AppSecurityDoc;
+use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Master\SecurityDocument;
 
 class ImportPrePostSecurityData extends Command
@@ -41,8 +42,13 @@ class ImportPrePostSecurityData extends Command
      */
     public function handle()
     {
-        $fullFilePath = 'public/prepostcsvfiledata/RTA_CAM_Reviewer_Summary-Data-final.csv';
-        //$fullFilePath = '/public/prepostcsvfiledata/rta_cam_reviewer_prepost_cond_latest_data_436_Lot 2-24AUG22.csv';
+        //$fullFilePath = 'public/prepostcsvfiledata/RTA_CAM_Reviewer_Summary-Data-final.csv'; //first please uncomment file for imported data
+        //$fullFilePath = 'public/prepostcsvfiledata/rta_cam_reviewer_prepost_cond_latest_data_436_Lot 2-24AUG22.csv'; //after first file data imported then second please uncomment file for imported data please comment first file
+        //$fullFilePath = '/home/deepak/Documents/prepostimportData/c1.csv';
+        if (!isset($fullFilePath)){
+            $this->info('Csv file has been not found.Please try again.');
+            return false;
+        }
         $fileArrayData = $this->csvToArray($fullFilePath);
         //dd($fileArrayData);
         if ($fileArrayData['status'] != 'success') {
@@ -58,8 +64,7 @@ class ImportPrePostSecurityData extends Command
             }
         }
         \DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        $maturity_date = null;
-        $renewal_reminder_days = $renewal_reminder_date = null;
+        $renewal_reminder_days = $renewal_reminder_date = $maturity_date = null;
         foreach ($rowData as $key => $arrCamData) {
             $mstSecurityData = SecurityDocument::where(['name' => trim($arrCamData['security_doc_id']), 'is_active' => 1])->first('security_doc_id');
 
@@ -87,14 +92,15 @@ class ImportPrePostSecurityData extends Command
                     $cloneAppSecData->save();
                 }
                 $updateStatus = AppSecurityDoc::where(['app_id' => $arrCamData['app_id'], 'biz_id' => $arrCamData['biz_id'], 'status' => 1, 'is_non_editable' => 0, 'is_active' => 1])->update(['is_non_editable' => 1, 'status' => 2]);
-            } else if ($arrCamData['app_status'] != 'Approved' && $arrCamData['app_status'] != 'Completed' && $arrCamData['app_status'] != 'Offer Generated' && $arrCamData['app_status'] != 'Incomplete' && $arrCamData['app_status'] != 'Offer Rejected' && $arrCamData['app_status'] != 'Incomplete' && $arrCamData['app_status'] != 'Incomplete') {
-                $AppLimitData = AppLimit::where(['user_id' => $arrCamData['user_id'], 'app_id' => $arrCamData['app_id'], 'biz_id' => $arrCamData['biz_id'], 'status' => 1])->first('actual_end_date', 'end_date');
+            } else if ($arrCamData['app_status'] != 'Approved' && $arrCamData['app_status'] != 'Completed' && $arrCamData['app_status'] != 'Offer Generated' && $arrCamData['app_status'] != 'Incomplete' && $arrCamData['app_status'] != 'Offer Rejected' && $arrCamData['app_status'] != 'Rejected' && $arrCamData['app_status'] != 'On Hold' && $arrCamData['app_status'] != 'Data Pending' && $arrCamData['app_status'] != 'Cancelled') {
+                $AppLimitData = AppLimit::where(['user_id' => $arrCamData['user_id'], 'app_id' => $arrCamData['app_id'], 'biz_id' => $arrCamData['biz_id'], 'status' => 1])->first();
+                $maturity_date = null;
                 if (isset($arrCamData['maturity_date']) && !empty($arrCamData['maturity_date']) && $arrCamData['maturity_date'] != '') {
                     $maturity_date = Carbon::parse($arrCamData['maturity_date'])->format('Y-m-d');
-                } else {
-                    if ($AppLimitData) {
-                        $maturity_date   =  $AppLimitData->actual_end_date ? $AppLimitData->actual_end_date : $AppLimitData->end_date;
-                    }
+                }
+
+                if ($AppLimitData && $maturity_date == null) {
+                    $maturity_date   =  $AppLimitData->actual_end_date ? $AppLimitData->actual_end_date : $AppLimitData->end_date;
                 }
                 if ($maturity_date) {
                     $renewal_reminder_days = 7;
@@ -110,7 +116,11 @@ class ImportPrePostSecurityData extends Command
                         $offerPrgmID = [];
                         foreach ($offerID as $key => $offerIdV) {
                             $a = explode('-', $offerIdV);
-                            $offerPrgmID[$a[1]] = $a[1];
+                            $whereCondition = ['prgm_offer_id'=>$a[1],'app_id' => $arrCamData['app_id'], 'is_approve' => 1, 'is_active' => 1, 'status' => 1];
+                            $offerList = AppProgramOffer::getPrgmOfferByAppId($whereCondition);
+                            if($offerList){
+                                $offerPrgmID[$a[1]] = $a[1];
+                            }
                         }
                         if (!empty($offerPrgmID)) {
                             $arrCamData['prgm_offer_id'] = array_rand($offerPrgmID);
@@ -130,14 +140,14 @@ class ImportPrePostSecurityData extends Command
                         'exception_received_date' =>  null,
                         'exception_remark' => null,
                         'extended_due_date' => null,
-                        'maturity_date' => $maturity_date,
-                        'renewal_reminder_days' => $renewal_reminder_days,
+                        'maturity_date' => isset($maturity_date) ? $maturity_date : null,
+                        'renewal_reminder_days' => isset($renewal_reminder_days) ? $renewal_reminder_days : null,
                         'amount_expected' => isset($arrCamData['amount_expected']) ? str_replace(",", "", trim($arrCamData['amount_expected'])) : null,
                         'document_amount' => isset($arrCamData['document_amount']) ?  str_replace(",", "", trim($arrCamData['document_amount'])) : null,
                         'doc_type' => isset($arrCamData['cond_type']) ? $arrCamData['cond_type'] : null,
                         'created_at' => isset($arrCamData['created_at']) ? Carbon::parse($arrCamData['created_at'])->format('Y-m-d H:i:s') : null,
                         'created_by' => isset($arrCamData['created_by']) ? $arrCamData['created_by'] : null,
-                        'renewal_reminder_date' => $renewal_reminder_date,
+                        'renewal_reminder_date' => isset($renewal_reminder_date) ? $renewal_reminder_date : null,
                         'is_non_editable' => 0,
                         'status' => 3,
                     );

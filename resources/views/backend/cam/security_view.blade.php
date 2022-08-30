@@ -117,7 +117,14 @@
                                                     <tr>
                                                     <td></td>
                                                     <td><b>Doc Upload:</b></td>
-                                                    <td><a href="{{ route('download_s3_file', ['file_id' => $listingData['file_id'] ]) }}" title="Download Document"><i class="fa fa-lg fa-download ml-3" aria-hidden="true"></i></a></td>
+                                                    <td>
+                                                    @if($listingData->is_upload && $listingData->is_upload == 1)
+                                                    <a href="{{ route('download_s3_file', ['file_id' => $listingData['file_id'] ]) }}" title="Download Document"><i class="fa fa-lg fa-download ml-3" aria-hidden="true"></i></a>
+                                                    @else
+                                                    N/A
+                                                    @endif
+                                                        
+                                                    </td>
                                                     <td><b>Created At: </b></td>
                                                     <td>{{ !empty($listingData->created_at) ? Carbon::parse($listingData->created_at)->format('d-m-Y') : 'N/A' }}</td>
                                                 </tr>
