@@ -59,6 +59,10 @@
                     isset($user['customer_id']) ? $user['customer_id'] : null, 
                     [ 'id'=>'customer_id' ])
                 !!}
+                 {!! Form::hidden('generate_report',  
+                    0, 
+                    [ 'id'=>'generate_report' ])
+                !!}
                   <div class="col-12 dataTables_wrapper mt-4">
                     <div class="overflow">
                         <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">

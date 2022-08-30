@@ -18,6 +18,7 @@ try {
                     d.to_date = $('input[name="to_date"]').val();
                     d.user_id = $('input[name=user_id]').val();
                     d.customer_id = $('input[name=customer_id]').val();
+                    d.generate_report = $('input[name=generate_report]').val();
                     d._token = messages.token;
                 },
                 complete: function () {
@@ -42,12 +43,14 @@ try {
 
         //Search
         $('#sendMailBtn').on('click', function (e) {
+            $("#generate_report").val('0');
             $('#sendMailBtn').prop('disabled', true);
             $("#to_date").parent().find('span.error').detach();
             if (!$("#to_date").val()) {
                 $("#to_date").parent().append('<span class="error">Please Select To Date</span>');
                 return false;
             }
+            $("#generate_report").val('1')
             oTable.draw();
             //$('#sendMailBtn').prop('disabled', false); 
         });

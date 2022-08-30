@@ -6176,7 +6176,7 @@ if ($err) {
     
     public function sendInvoiceOutstandingReportByMail(DataProviderInterface $dataProvider)
     {
-        if ($this->request->get('to_date')) {
+        if ($this->request->get('to_date') && $this->request->get('generate_report')) {
             $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d');
             $userId  = $this->request->get('user_id') ?? 'all';
             $odReportLog = OutstandingReportLog::create([ 'user_id' => $userId, 'to_date' => $to_date]);
