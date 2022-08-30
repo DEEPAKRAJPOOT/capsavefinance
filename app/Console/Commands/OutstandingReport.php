@@ -52,6 +52,7 @@ class OutstandingReport extends Command
 
         $userId = $this->argument('user');
         $toDate = $this->argument('date');
+        $logId = $this->argument('logId');
 
         if(trim(strtolower($toDate)) == 'now'){
             $toDate = NULL;
@@ -61,8 +62,12 @@ class OutstandingReport extends Command
             $userId = NULL;
         }
 
+        if(trim(strtolower($logId)) == 'NULL'){
+            $logId = NULL;
+        }
+
         // consolidated report
-        OutstandingReportManualJob::dispatch($this->emailTo, $userId, $toDate)
+        OutstandingReportManualJob::dispatch($this->emailTo, $userId, $toDate, $logId)
                         ->delay(now()->addSeconds(10));
     }
 }

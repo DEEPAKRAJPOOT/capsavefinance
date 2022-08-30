@@ -29,12 +29,14 @@ class OutstandingReportManual implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($emailTo, $userId, $toDate)
+    public function __construct($emailTo, $userId, $toDate, $logId)
     {
         $this->sendMail = false;
         $this->emailTo  = $emailTo;
         $this->userId = $userId;
         $this->toDate = $toDate;
+        $this->logId = $logId;
+
     }
 
     /**
