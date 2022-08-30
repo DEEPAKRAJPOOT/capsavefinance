@@ -90,9 +90,11 @@ class OutstandingReport extends Command
             OutstandingReportModel::truncate();
             // database insertion
             // dd($dataRecords[7]);
+            $batchNo = strtotime("now");
             foreach($dataRecords as $dataRecord)
             {  
                 OutstandingReportModel::create([
+                    'Batch No' => $batchNo,
                     'Customer Name' => $dataRecord['Customer Name'],
                     'Customer ID' => $dataRecord['Customer ID'],
                     'Anchor Name' => $dataRecord['Anchor Name'],

@@ -75,7 +75,7 @@ class Kernel extends ConsoleKernel
             // To Generate Receipt Report
             $schedule->command('report:receipt')->timezone(config('common.timezone'))->dailyAt('23:52');
             // To Generate Outstanding Report Manual
-            $schedule->command('report:outstandingManual')->timezone(config('common.timezone'))->saturdays()->at('23:30');
+            $schedule->command('report:outstandingManual')->timezone(config('common.timezone'))->dailyAt('22:45');
         }
         $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt('23:00');
         $schedule->command('lms:maturityinvoicedueAlert')->timezone(config('common.timezone'))->dailyAt('21:30');
@@ -88,10 +88,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('etl:report_utilization')->timezone(config('common.timezone'))->dailyAt('01:25');
         $schedule->command('etl:report_disbursal')->timezone(config('common.timezone'))->dailyAt('01:30');
         $schedule->command('etl:report_account_disbursal')->timezone(config('common.timezone'))->dailyAt('01:35');
-
+        $schedule->command('etl:report_outstanding')->timezone(config('common.timezone'))->dailyAt('01:40');
         $schedule->command('lms:disbursalBatchRequest')->timezone(config('common.timezone'))->between('10:00','23:00')->hourlyAt('1');
         $schedule->command('alert:approvalMailForPendingCases')->timezone(config('common.timezone'))->tuesdays()->dailyAt('20:45');
-        $schedule->command('etl:report_outstanding')->timezone(config('common.timezone'))->dailyAt('01:25');
     }
     
     /**
