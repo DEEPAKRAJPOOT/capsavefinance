@@ -245,9 +245,9 @@
          jQuery.validator.addMethod("noSpace", function(value, element) { 
                 return value.indexOf(" ") < 0 && value != ""; 
             });
-        jQuery.validator.addMethod("alphanumeric", function(value, element) {
-            return this.optional(element) || /^\w+$/i.test(value);
-        }, "Letters, numbers, and underscores only please");
+            jQuery.validator.addMethod("lettersonly", function(value, element) {
+                return this.optional(element) || /^[a-z]+$/i.test(value);
+            }, "Letters only please");
             $.validator.addMethod("isexistemail", function(value, element) {
                 var email = value;
                 let status = false;
@@ -290,7 +290,7 @@
                             {
                                 required: true,
                                 noSpace: true,
-                                alphanumeric: true,
+                                lettersonly: true,
                                 messages: {'noSpace' : "Space not allowed" }
                             })
                 });
