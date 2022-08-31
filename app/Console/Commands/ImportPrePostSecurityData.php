@@ -44,8 +44,8 @@ class ImportPrePostSecurityData extends Command
     {
         //$fullFilePath = 'public/prepostcsvfiledata/RTA_CAM_Reviewer_Summary-Data-final.csv'; //first please uncomment file for imported data
         //$fullFilePath = 'public/prepostcsvfiledata/rta_cam_reviewer_prepost_cond_latest_data_436_Lot 2-24AUG22.csv'; //after first file data imported then second please uncomment file for imported data please comment first file
-        //$fullFilePath = '/home/deepak/Documents/prepostimportData/c1.csv';
-        if (!isset($fullFilePath)){
+        //$fullFilePath = '/home/deepak/Documents/prepostimportData/c1.csv'; //for testing purpose data for local system
+        if (!isset($fullFilePath)) {
             $this->info('Csv file has been not found.Please try again.');
             return false;
         }
@@ -114,12 +114,15 @@ class ImportPrePostSecurityData extends Command
                     if ($arrCamData['ProductNameANDProgramOfferid'] != 'NULL') {
                         $offerID = explode("|", $arrCamData['ProductNameANDProgramOfferid']);
                         $offerPrgmID = [];
-                        foreach ($offerID as $key => $offerIdV) {
-                            $a = explode('-', $offerIdV);
-                            $whereCondition = ['prgm_offer_id'=>$a[1],'app_id' => $arrCamData['app_id'], 'is_approve' => 1, 'is_active' => 1, 'status' => 1];
-                            $offerList = AppProgramOffer::getPrgmOfferByAppId($whereCondition);
-                            if($offerList){
-                                $offerPrgmID[$a[1]] = $a[1];
+                        $cntOfferID = count($offerID);
+                        if ($cntOfferID == 1) {
+                            foreach ($offerID as $key => $offerIdV) {
+                                $a = explode('-', $offerIdV);
+                                $whereCondition = ['prgm_offer_id' => $a[1], 'app_id' => $arrCamData['app_id'], 'is_approve' => 1, 'is_active' => 1, 'status' => 1];
+                                $offerList = AppProgramOffer::getPrgmOfferByAppId($whereCondition);
+                                if ($offerList) {
+                                    $offerPrgmID[$a[1]] = $a[1];
+                                }
                             }
                         }
                         if (!empty($offerPrgmID)) {
