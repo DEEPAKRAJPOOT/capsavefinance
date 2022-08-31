@@ -75,7 +75,7 @@ class Kernel extends ConsoleKernel
             // To Generate Receipt Report
             $schedule->command('report:receipt')->timezone(config('common.timezone'))->dailyAt('23:52');
             // To Generate Outstanding Report Manual
-            $schedule->command('report:outstandingManual')->timezone(config('common.timezone'))->dailyAt('22:45');
+            $schedule->command('report:outstandingManual')->timezone(config('common.timezone'))->dailyAt('23:54');
         }
         $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt('23:00');
         $schedule->command('lms:maturityinvoicedueAlert')->timezone(config('common.timezone'))->dailyAt('21:30');
