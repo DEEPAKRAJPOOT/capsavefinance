@@ -158,12 +158,9 @@ $(document).ready(function () {
     $.validator.addMethod("alphabetsnspacendotandnumbers", function(value, element) {
         return this.optional(element) || /^[a-zA-Z0-9. }]*$/.test(value);
     });
-    jQuery.validator.addMethod("noSpace", function(value, element) { 
-        return value.indexOf(" ") < 0 && value != ""; 
-    });
     jQuery.validator.addMethod("lettersonly", function(value, element) {
          return this.optional(element) || /^[a-z]+$/i.test(value);
-      }, "Letters only please"); 
+      }); 
 
    $('#saveLead').on('click', function (event) {
          $('input.f_name').each(function () {
@@ -179,9 +176,8 @@ $(document).ready(function () {
             $(this).rules("add",
                      {
                         required: true,
-                        noSpace: true,
                         lettersonly: true,
-                        messages: {'noSpace' : "Space not allowed" }
+                        messages: {'lettersonly' : "Letters only please"}
                      })
          });
          $('input.comp_name').each(function () {
