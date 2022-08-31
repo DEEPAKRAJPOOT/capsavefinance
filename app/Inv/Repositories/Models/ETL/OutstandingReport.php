@@ -13,6 +13,7 @@ class OutstandingReport extends BaseModel
     public $userstamps = false;
 
     protected $fillable = [
+        'Batch No',
         'Customer ID',
         'Anchor Name',
         'Invoice No',
