@@ -65,7 +65,6 @@ class ImportPrePostSecurityData extends Command
             }
         }
         \DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        $renewal_reminder_days = $renewal_reminder_date = $maturity_date = null;
         foreach ($rowData as $key => $arrCamData) {
             $applicationData = Application::where(['app_id' => trim($arrCamData['app_id'])])->first('curr_status_id');
             if ($applicationData) {
@@ -98,20 +97,19 @@ class ImportPrePostSecurityData extends Command
                     $updateStatus = AppSecurityDoc::where(['app_id' => $arrCamData['app_id'], 'biz_id' => $arrCamData['biz_id'], 'status' => 1, 'is_non_editable' => 0, 'is_active' => 1])->update(['is_non_editable' => 1, 'status' => 2]);
                 } else if ($arrCamData['app_status'] != 21 && $arrCamData['app_status'] != 20 && $arrCamData['app_status'] != 56 && $arrCamData['app_status'] != 49 && $arrCamData['app_status'] != 23 && $arrCamData['app_status'] != 43 && $arrCamData['app_status'] != 45 && $arrCamData['app_status'] != 46 && $arrCamData['app_status'] != 44 && $arrCamData['app_status'] != 55) {
                     $AppLimitData = AppLimit::where(['user_id' => $arrCamData['user_id'], 'app_id' => $arrCamData['app_id'], 'biz_id' => $arrCamData['biz_id'], 'status' => 1])->first();
-                    $maturity_date = null;
-                    if (isset($arrCamData['maturity_date']) && !empty($arrCamData['maturity_date']) && $arrCamData['maturity_date'] != '') {
-                        $maturity_date = Carbon::parse($arrCamData['maturity_date'])->format('Y-m-d');
-                    }
+                    $renewal_reminder_days = $renewal_reminder_date = $maturity_date = null;
+                    // if (isset($arrCamData['maturity_date']) && !empty($arrCamData['maturity_date']) && $arrCamData['maturity_date'] != '') {
+                    //     $maturity_date = Carbon::parse($arrCamData['maturity_date'])->format('Y-m-d');
+                    // }
 
-                    if ($AppLimitData && $maturity_date == null) {
+                    if ($AppLimitData) {
                         $maturity_date   =  $AppLimitData->actual_end_date ? $AppLimitData->actual_end_date : $AppLimitData->end_date;
-                    }
-                    if ($maturity_date) {
                         $renewal_reminder_days = 7;
                         $rmd = strtotime('-' . $renewal_reminder_days . ' days', strtotime($maturity_date));
                         $rmd = date('Y-m-d', $rmd);
                         $renewal_reminder_date = $rmd;
                     }
+
                     $arrAppSecurityDoc1 = AppSecurityDoc::where(['app_id' => $arrCamData['app_id'], 'biz_id' => $arrCamData['biz_id'], 'is_active' => 1, 'is_non_editable' => 0, 'status' => 1])->first();
                     if ($arrAppSecurityDoc1) {
                         $updateStatus1 = AppSecurityDoc::where(['app_id' => $arrCamData['app_id'], 'biz_id' => $arrCamData['biz_id'], 'status' => 1, 'is_non_editable' => 0, 'is_active' => 1])->update(['is_non_editable' => 1, 'status' => 2]);
