@@ -152,6 +152,7 @@ class ImportPrePostSecurityData extends Command
                             'doc_type' => isset($arrCamData['cond_type']) ? $arrCamData['cond_type'] : null,
                             'created_at' => isset($arrCamData['created_at']) ? Carbon::parse($arrCamData['created_at'])->format('Y-m-d H:i:s') : null,
                             'created_by' => isset($arrCamData['created_by']) ? $arrCamData['created_by'] : null,
+                            'updated_by' => null,
                             'renewal_reminder_date' => isset($renewal_reminder_date) ? $renewal_reminder_date : null,
                             'is_non_editable' => 0,
                             'status' => 3,
