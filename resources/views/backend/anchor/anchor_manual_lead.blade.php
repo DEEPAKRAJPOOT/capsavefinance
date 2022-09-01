@@ -257,9 +257,9 @@ $messages = session()->get('message', false);
             $.validator.addMethod("alphabetsnspacendot", function(value, element) {
                 return this.optional(element) || /^[a-zA-Z. ]*$/.test(value);
             });
-            jQuery.validator.addMethod("lettersonly", function(value, element) {
-                return this.optional(element) || /^[a-z]+$/i.test(value);
-            });
+            // jQuery.validator.addMethod("lettersonly", function(value, element) {
+            //     return this.optional(element) || /^[a-z]+$/i.test(value);
+            // });
 
 //            $.validator.addMethod("panValidator", function(value, element) {
 //                var values = value;
@@ -310,15 +310,15 @@ $messages = session()->get('message', false);
                             {
                                 required: true,
                                 alphaSpace: true,
-                                messages: {'alphaSpace' : "Only letters allowed" }
+                                messages: {'alphaSpace' : "Only letters and space allowed." }
                             })
                 });
                  $('input.l_name').each(function () {
                     $(this).rules("add",
                             {
                                 required: true,
-                                lettersonly: true,
-                                messages: {'lettersonly' : "Letters only please" }
+                                alphaSpace: true,
+                                messages: {'alphaSpace' : "Only letters and space allowed." }
                                 
                             })
                 });

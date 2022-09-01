@@ -213,8 +213,8 @@
                 return this.optional(element) || /^[a-zA-Z]*$/.test(value);
             });
 
-            $.validator.addMethod("alphaSpace", function(value, element) {
-                return this.optional(element) || /^[a-zA-Z\s]*$/.test(value);
+            $.validator.addMethod("alphabetsnspace", function(value, element) {
+                return this.optional(element) || /^[a-zA-Z\s]+$/.test(value);
             });
             
             $.validator.addMethod("alphabetsnspacendot", function(value, element) {
@@ -242,9 +242,9 @@
         jQuery.validator.addMethod("emailExt", function(value, element, param) {
             return value.match(/^[a-zA-Z0-9_\.%\+\-]+@[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,}$/);
          },'please enter a valid email');
-        jQuery.validator.addMethod("lettersonly", function(value, element) {
-            return this.optional(element) || /^[a-z]+$/i.test(value);
-        });
+        // jQuery.validator.addMethod("lettersonly", function(value, element) {
+        //     return this.optional(element) || /^[a-z]+$/i.test(value);
+        // });
             $.validator.addMethod("isexistemail", function(value, element) {
                 var email = value;
                 let status = false;
@@ -278,16 +278,16 @@
                     $(this).rules("add",
                             {
                                 required: true,
-                                alphaSpace: true,
-                                messages: {'alphaSpace' : "Only letters allowed" }
+                                alphabetsnspace: true,
+                                messages: {'alphabetsnspace' : "Only letters and space allowed." }
                             })
                 });
                  $('input.l_name').each(function () {
                     $(this).rules("add",
                             {
                                 required: true,
-                                lettersonly: true,
-                                messages: {'lettersonly' : "Letters only please"}
+                                alphabetsnspace: true,
+                                messages: {'alphabetsnspace' : "Only letters and space allowed."}
                             })
                 });
                 $('input.biz_name').each(function () {

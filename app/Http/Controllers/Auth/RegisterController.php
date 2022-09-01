@@ -287,7 +287,6 @@ use RegistersUsers,
             $data = [];
             $arrFileData = [];
             $arrFileData = $request->all();
-            //dd($arrFileData);
             //echo "ddddssssd"; exit;
             //Saving data into database
             $AnchorData = $this->userRepo->getAnchorByPan($arrFileData['pan_no']);                        

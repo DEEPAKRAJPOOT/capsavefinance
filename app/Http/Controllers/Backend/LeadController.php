@@ -133,7 +133,7 @@ class LeadController extends Controller {
 
     public function updateBackendLead(Request $request) {
         try {
-                
+                // dd($request->all());
                 $userId = $request->get('userId'); 
                 $attributes['f_name'] = $request->get('f_name');
                 $attributes['l_name'] = $request->get('l_name'); 
@@ -143,7 +143,6 @@ class LeadController extends Controller {
                 // $attributes['user_type'] = $request->get('anchor_user_type');
                 $is_registerd = $request->get('is_registerd');
                 $prevanchorInfo = $this->userRepo->getAnchorUsersByUserId($userId);
-                
                 if($is_registerd === "1"){
                     
                     if($prevanchorInfo['email'] !== $email){
@@ -197,6 +196,8 @@ class LeadController extends Controller {
                 }else{
 
                     $attributes['phone'] = $request->get('mobile_no');
+                    $attributes['name'] = $request->get('f_name');
+                    $attributes['l_name'] = $request->get('l_name');
                     $anchoruserInfo =$this->userRepo->updateAnchorUser($userId,$attributes);
 
                 }

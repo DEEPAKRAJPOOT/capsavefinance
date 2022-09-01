@@ -185,7 +185,6 @@ class AnchorUser extends BaseModel {
         if (empty($arrUserData)) {
             throw new BlankDataExceptions(trans('error_messages.no_data_found'));
         }
-        
         $rowUpdate = self::find((int) $anchUId)->update($arrUserData);
         return ($rowUpdate ? true : false);
     }
