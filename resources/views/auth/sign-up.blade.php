@@ -189,9 +189,7 @@ var messages={
                     return false;
                 }
             });
-            $.validator.addMethod("alphaSpace", function(value, element) {
-                return this.optional(element) || /^[a-zA-Z\s]*$/.test(value);
-            });
+           
             $.validator.addMethod("isexistemail", function(value, element) {
                 var email = value;
                 let status = false;
