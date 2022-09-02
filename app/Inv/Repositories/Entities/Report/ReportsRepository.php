@@ -840,8 +840,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 			$transDetails = $invDisb->transactions()->whereNull('payment_id')->where('outstanding', '>', 0)->whereIn('trans_type',[9,16])->where('entry_type','0')->get();
 			
-			$interestDPD = $transDetails->max('dpd');
-			$principalDPD = $transDetails->max('dpd');
+			$interestDPD = $transDetails->where('trans_type',9)->max('dpd');
+			$principalDPD = $transDetails->where('trans_type',16)->max('dpd');
 			unset($transDetails);
 			$maxDPD = $principalDPD > $interestDPD ? $principalDPD : $interestDPD;
 			$outstanding_max_bucket = "Not Outstanding";
