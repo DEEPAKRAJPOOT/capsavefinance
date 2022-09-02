@@ -557,16 +557,36 @@ trait ApplicationTrait
                     $this->appRepo->saveCamReviewerRiskData($camReviewerRiskArrData);
                 }   
                 
-                //rta_cam_reviewer_prepost_cond
+                //rta_cam_reviewer_prepost_cond //OLD table for Pre/Post Data not used below table is used
                 //Get and save cam reviewer prepost cond data         
-                $whereCond=[];
-                $whereCond['cam_reviewer_summary_id'] = $camReviewerSummaryId;
-                $camReviewerPrePostData = $this->appRepo->getCamReviewerPrePostData($whereCond);
-                foreach($camReviewerPrePostData as $camReviewerPrePost) {
-                    $camReviewerPrePostArrData = $camReviewerPrePost ? $this->arrayExcept($camReviewerPrePost->toArray(), array_merge($excludeKeys, ['prepost_cond_id'])) : [];
-                    $camReviewerPrePostArrData['cam_reviewer_summary_id'] = $newCamReviewerSummaryId;                     
-                    $this->appRepo->saveCamReviewerPrePostData($camReviewerPrePostArrData);
-                }                  
+                // $whereCond=[];
+                // $whereCond['cam_reviewer_summary_id'] = $camReviewerSummaryId;
+                // $camReviewerPrePostData = $this->appRepo->getCamReviewerPrePostData($whereCond);
+                // foreach($camReviewerPrePostData as $camReviewerPrePost) {
+                //     $camReviewerPrePostArrData = $camReviewerPrePost ? $this->arrayExcept($camReviewerPrePost->toArray(), array_merge($excludeKeys, ['prepost_cond_id'])) : [];
+                //     $camReviewerPrePostArrData['cam_reviewer_summary_id'] = $newCamReviewerSummaryId;                     
+                //     $this->appRepo->saveCamReviewerPrePostData($camReviewerPrePostArrData);
+                // }
+
+                //rta_app_security_doc
+                //Get and save cam reviewer prepost cond data new functionality     
+                $appSecurtiyDocs = AppSecurityDoc::where(['cam_reviewer_summary_id' => $camReviewerSummaryId,'is_active' => 1])->whereIn('status', [2])->whereIn('is_non_editable', [1])->get();
+                if (!empty($appSecurtiyDocs)) {
+                    foreach ($appSecurtiyDocs as $clone) {
+                        $cloneAppSecurityData = $clone->replicate();
+                        $cloneAppSecurityData->cam_reviewer_summary_id = $newCamReviewerSummaryId;
+                        $cloneAppSecurityData->app_id = $newAppId; 
+                        $cloneAppSecurityData->biz_id = $newBizId;
+                        $cloneAppSecurityData->prgm_offer_id = NULL;
+                        $cloneAppSecurityData->is_non_editable = 0;
+                        $cloneAppSecurityData->status = 1;
+                        //$cloneAppSecurityData->created_at = NULL;
+                        $cloneAppSecurityData->updated_at = NULL;
+                        $cloneAppSecurityData->created_by = NULL;
+                        $cloneAppSecurityData->updated_by = NULL;
+                        $cloneAppSecurityData->save();
+                    }
+                }
             }  
             
             $wfStageArr = [1, 2, 5, 10];
