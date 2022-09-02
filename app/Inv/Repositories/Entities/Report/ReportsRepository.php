@@ -838,11 +838,11 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 					$principalOverdueCategory='Overdue';
 				}
 			}
-			//$transDetails = $invDisb->transaction()->whereIn('trans_type',[9,16])->where('entry_type','0')->get();
+			$transDetails = $invDisb->transactions()->whereNull('payment_id')->where('outstanding', '>', 0)->whereIn('trans_type',[9,16])->where('entry_type','0')->get();
 			
-			$interestDPD = Transactions::getMaxDpdInvoiceTransaction($invDisb->invoice_disbursed_id, 9);
-			$principalDPD = Transactions::getMaxDpdInvoiceTransaction($invDisb->invoice_disbursed_id, 16);
-			
+			$interestDPD = $transDetails->max('dpd');
+			$principalDPD = $transDetails->max('dpd');
+			unset($transDetails);
 			$maxDPD = $principalDPD > $interestDPD ? $principalDPD : $interestDPD;
 			$outstanding_max_bucket = "Not Outstanding";
 			if($principalOutstanding > 100 && $maxDPD > 0){
