@@ -838,12 +838,12 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 					$principalOverdueCategory='Overdue';
 				}
 			}
-			$principalDPD = 0;
-			$now = Carbon::parse($curdate);
-            $paymentDueDate = Carbon::parse($invDisb->payment_due_date);
-            $principalDPD = $paymentDueDate->diffInDays($now);
-
-			$maxDPD = $principalDPD;
+			//$transDetails = $invDisb->transaction()->whereIn('trans_type',[9,16])->where('entry_type','0')->get();
+			
+			$interestDPD = Transactions::getMaxDpdInvoiceTransaction($invDisb->invoice_disbursed_id, 9);
+			$principalDPD = Transactions::getMaxDpdInvoiceTransaction($invDisb->invoice_disbursed_id, 16);
+			
+			$maxDPD = $principalDPD > $interestDPD ? $principalDPD : $interestDPD;
 			$outstanding_max_bucket = "Not Outstanding";
 			if($principalOutstanding > 100 && $maxDPD > 0){
 				if($maxDPD < 7)
@@ -914,8 +914,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'principalGraceDays' => $disbDetails->grace_period,
 				'principalOverdue' => '',
 				'principalOverdueCategory'=> $principalOverdueCategory,
-				'principalDPD' => $principalDPD,
-				'interestPDP' => 0,
+				'principalDPD' => ($principalDPD > 0) ? $principalDPD : 0,
+				'interestDPD' => (round($interestOutstanding,2) > 0) ? ($interestDPD > 0 ? $interestDPD : 0) : 0,
 				'finalDPD' => $maxDPD,
 				'outstandingMaxBucket' => $outstanding_max_bucket,
 				'maturityDays' => $maturityDays,

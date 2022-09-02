@@ -161,7 +161,7 @@ class OutstandingReportManual implements ShouldQueue
             ->setCellValue('AC'.$rows, $rowData['principalOverdue'])
             ->setCellValue('AD'.$rows, $rowData['principalOverdueCategory'])
             ->setCellValue('AE'.$rows, $rowData['principalDPD'])
-            ->setCellValue('AF'.$rows, $rowData['interestPDP'])
+            ->setCellValue('AF'.$rows, $rowData['interestDPD'])
             ->setCellValue('AG'.$rows, $rowData['finalDPD'])
             ->setCellValue('AH'.$rows, $rowData['outstandingMaxBucket'])
             ->setCellValue('AI'.$rows, $rowData['maturityDays'])

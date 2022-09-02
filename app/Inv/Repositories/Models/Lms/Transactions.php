@@ -511,22 +511,27 @@ class Transactions extends BaseModel {
 
     public function getDpdAttribute(){
         $to = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
-        if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-            $from = Carbon::parse($this->invoiceDisbursed->payment_due_date)->format('Y-m-d');
-        }
-        elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-            $inv = $this->invoiceDisbursed->invoice;
-            if($inv->program_offer->payment_frequency == 1 && $inv->program->interest_borne_by == '1'){
-                $from = Carbon::parse($this->invoiceDisbursed->disbursal->disburse_date)->format('Y-m-d');
-            }else{
-                $from = Carbon::parse($this->trans_date)->format('Y-m-d');
+        $number_days = 0;
+        if($this->entry_type == 0){
+            if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
+                $from = Carbon::parse($this->invoiceDisbursed->payment_due_date)->format('Y-m-d');
+                $graceEnd = Carbon::parse($this->invoiceDisbursed->payment_due_date)->addDays($this->invoiceDisbursed->grace_period)->format('Y-m-d');
+                if(strtotime($to) >= strtotime($graceEnd) && $this->outstanding > 0){
+                    $number_days = (strtotime($to) - strtotime($from)) / (60 * 60 * 24);
+                }
+            }
+            if($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+                $inv = $this->invoiceDisbursed->invoice;
+                if($inv->program_offer->payment_frequency == 1 && $inv->program->interest_borne_by == '1'){
+                    $from = Carbon::parse($this->invoiceDisbursed->disbursal->disburse_date)->format('Y-m-d');
+                }else{
+                    $from = Carbon::parse($this->trans_date)->format('Y-m-d');
+                }
+                if(strtotime($to) > strtotime($from) && $this->outstanding > 0 ){
+                    $number_days = (strtotime($to) - strtotime($from)) / (60 * 60 * 24);
+                }
             }
         }
-        $number_days = 0;
-        if(strtotime($to) > strtotime($from)){
-            $number_days = (strtotime($to) - strtotime($from)) / (60 * 60 * 24);
-        }
-
         return $number_days;
     }
 
@@ -1051,6 +1056,16 @@ class Transactions extends BaseModel {
         ->get();
         $maxDPD = $transactions->max('dpd');
         return $transactions->where('dpd','=',$maxDPD)->first();
+    }
+
+    public static function getMaxDpdInvoiceTransaction($invDesbId, $transType){
+        $transactions =  self::whereNull('parent_trans_id')
+        ->whereNull('payment_id')
+        ->where('invoice_disbursed_id','=',$invDesbId)
+        ->where('trans_type','=',$transType)        
+        ->where('outstanding', '>', 0)
+        ->get();
+        return $maxDPD = $transactions->max('dpd');
     }
 
     /*** save repayment transaction details for invoice  **/
