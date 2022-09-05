@@ -557,14 +557,15 @@ class InvoiceController extends Controller {
         } else {
             $benifiName = isset($value['user']['biz']['biz_entity_name']) ? $value['user']['biz']['biz_entity_name'] : '';
         }            
-        $userMailArr['receiver_user_name'] = $name = isset($value['user']['email']) ?  $value['user']['biz']['biz_entity_name'] : $value['user']['biz']['biz_entity_name'];
-        $userMailArr['amount'] = \Helpers::formatCurrencyNoSymbol($value['disburse_amount']);
+        $userMailArr['receiver_user_name'] = $name = isset($value['user']['email']) ?  $value['user']['biz']['biz_entity_name'] : $value['user']['biz']['biz_entity_name'].',';
+        $userMailArr['amount'] = number_format($value['disburse_amount'],2);
         $userMailArr['receiver_email'] = isset($value['user']['email']) ? $value['user']['email'] : $value['user']['anchor']['comp_email'];
         $fullName = $value['user']['f_name'].' '.$value['user']['l_name'];
-        $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID').'('.$fullName.')';
+        $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID').'-'.$fullName;
+        $userMailArr['id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
         $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
         $userMailArr['utr_no'] = isset($value['tran_id']) ? $value['tran_id'] : '';
-        $userMailArr['benefi_name'] = $benifiName;
+        // $userMailArr['benefi_name'] = $benifiName;
         $userMailArr['disbursed_date'] = isset($value['disburse_date']) ? Carbon::parse($value['disburse_date'])->format('d-m-Y') : '';  
         $userMailArr['anchor_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['comp_email']) ? $value['user']['anchor']['comp_email'] : null;
         $userMailArr['sales_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['sales_user']) ? $value['user']['anchor']['sales_user']['email'] : null;
