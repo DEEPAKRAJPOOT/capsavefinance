@@ -7,23 +7,23 @@ use PHPExcel_IOFactory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
-use App\Inv\Repositories\Models\ETL\OutstandingReport as OutstandingReportModel;
+use App\Inv\Repositories\Models\ETL\OutstandingReportMonthly as OutstandingReportMonthlyModel;
 
-class OutstandingReport extends Command
+class OutstandingReportMonthly extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'etl:report_outstanding';
+    protected $signature = 'etl:report_outstanding_monthly';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'To sync outstanding report to ETL database';
+    protected $description = 'To sync outstanding report monthly to ETL database';
 
     /**
      * Create a new command instance.
@@ -43,10 +43,15 @@ class OutstandingReport extends Command
     public function handle()
     {
         $reportDate = now()->format('Y-m-d');
+        $end = new Carbon('last day of last month');
+        $monthEndDate = Carbon::parse($end)->format('Y-m-d');
         ini_set('memory_limit', '-1'); // now()->subDays(1)->format('Ymd');
-        $filePath = OutstandingReportLog::whereNull('user_id')->whereDate('to_date',$reportDate)->where('created_by','0')->orderBy('id','desc')->limit(1)->first()->file_path;
-
-        if(file_exists($filePath)) {
+        $data = OutstandingReportLog::whereNull('user_id')->whereDate('to_date',$reportDate)->where('created_by','0')->orderBy('id','desc')->limit(1)->first();
+        if(isset($data)){
+            $filePath = $data->file_path;
+            $lastPulledDate = $data->created_at;
+            $lastPulledDateString = Carbon::parse($lastPulledDate)->format("Y-m-d");
+        if(file_exists($filePath) && $reportDate === $lastPulledDateString) {
             try {
                 $inputFileType = PHPExcel_IOFactory::identify($filePath);
                 $objReader = PHPExcel_IOFactory::createReader($inputFileType);
@@ -90,7 +95,7 @@ class OutstandingReport extends Command
             $batchNo = strtotime("now");
             foreach($dataRecords as $dataRecord)
             {  
-                OutstandingReportModel::create([
+                OutstandingReportMonthlyModel::create([
                     'Batch No' => $batchNo,
                     'Customer Name' => $dataRecord['Customer Name'],
                     'Customer ID' => $dataRecord['Customer ID'],
@@ -133,9 +138,11 @@ class OutstandingReport extends Command
                     'Balance Overdue Interest to be refunded' => (double)$dataRecord['Balance Overdue Interest to be refunded']
                 ]);
             }
-            $this->info("The Outstanding Report sync to database successfully.");
+            $this->info("The Outstanding Report Manual sync to database successfully.");
         } else {
-            $this->info("No Outstanding Report found.");
+            $this->info("No Outstanding Report Manual found.");
         }
+        }
+        
     }
 }
