@@ -558,7 +558,7 @@ class InvoiceController extends Controller {
             $benifiName = isset($value['user']['biz']['biz_entity_name']) ? $value['user']['biz']['biz_entity_name'] : '';
         }            
         $userMailArr['receiver_user_name'] = $name = isset($value['user']['email']) ?  $value['user']['biz']['biz_entity_name'] : $value['user']['biz']['biz_entity_name'];
-        $userMailArr['amount'] = round($value['disburse_amount'],2);
+        $userMailArr['amount'] = \Helpers::formatCurrencyNoSymbol($value['disburse_amount']);
         $userMailArr['receiver_email'] = isset($value['user']['email']) ? $value['user']['email'] : $value['user']['anchor']['comp_email'];
         $fullName = $value['user']['f_name'].' '.$value['user']['l_name'];
         $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID').'('.$fullName.')';
