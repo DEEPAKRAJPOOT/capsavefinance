@@ -780,7 +780,7 @@ class Transactions extends BaseModel {
         if(isset($transactions['trans_type']) && !isset($transactions['is_transaction'])){
             $transType = $transactions['trans_type'];
             $chrg_id = TransType::where('id',$transType)->value('chrg_master_id');
-            if($chrg_id > 0 || $transType == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+            if($chrg_id > 0){
                 $transactions['is_transaction'] = false;
             }else{
                 $transactions['is_transaction'] = true;
