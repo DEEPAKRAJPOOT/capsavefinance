@@ -288,7 +288,7 @@ return [
     'idprefix' => [
         'APP' => 'CAPAI',
         'VA' => 'CAPVA',
-        'CUSTID' => 'CAP',
+        'CUSTID' => 'CAP0',
         'REFUND' => 'REF',
         'LEADID' => 'CAP',
         'PAYMENTID' => 'CAPPI',
