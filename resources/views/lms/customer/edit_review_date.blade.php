@@ -4,7 +4,7 @@
     $limitExpirationDate = date('Y-m-d', strtotime('+1 years -1 day',strtotime($data[0]->start_date)));
     $readInDays = config('lms.SHOW_EDIT_REVIEW_DATE_BUTTON_IN_DAYS').' days';
     $endDate = $data[0]->end_date;
-    $editReviewDate = date('Y-m-d', strtotime('+'.$readInDays,strtotime($endDate)));
+    $editReviewDate = $endDate;//date('Y-m-d', strtotime('+'.$readInDays,strtotime($endDate)));
     $reviewDate = (isset($AppLimitReview) && $AppLimitReview->review_date)?date('d/m/Y', strtotime($AppLimitReview->review_date)):date('d/m/Y', strtotime($endDate));
     $commentTxt = '';
 @endphp

@@ -61,6 +61,7 @@
                                 $limitExpDate = '';
                                 if ($uLimit->limit_expiration_date != null){
                                     $limitExpDate  = $obj->convertDateTimeFormat($uLimit->limit_expiration_date, $fromDateFormat='Y-m-d', $toDateFormat='d-m-Y');
+                                    $limitExpDateCheck  = date('Y-m-d', strtotime($limitExpDate));
                                 }
                                 $readInDays = config('lms.SHOW_EDIT_REVIEW_DATE_BUTTON_IN_DAYS').' days';
                                 $endDate = $uLimit->end_date;
@@ -81,8 +82,12 @@
                                             $isShowReviewButton = false;
                                             if ($editReviewButtonShowDate == $curDate){
                                                 $isShowReviewButton = true;
+                                                echo "test1";
                                             }elseif (($curDate > $editReviewButtonShowDate) && ($curDate < $endDate)) {
                                                 $isShowReviewButton = true;
+                                                if ($endDate == $limitExpDateCheck && $limitExpDate != ''){
+                                                    $isShowReviewButton = false;
+                                                }
                                             }
                                         @endphp
                                         @if($isShowReviewButton) 

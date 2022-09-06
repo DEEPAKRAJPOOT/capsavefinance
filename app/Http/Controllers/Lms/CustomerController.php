@@ -365,7 +365,7 @@ public function updateReviewDate(Request $request){
 		}
 
 		$validator = Validator::make($request->all(), [
-			'review_date' => 'required|date_format:"d/m/Y"|after:' . date('d/m/Y', strtotime($endDate)) . '|before:' . date('d/m/Y', strtotime($limitExpirationDate)),
+			'review_date' => 'required|date_format:"d/m/Y"|after_or_equal:' . date('d/m/Y', strtotime($endDate)) . '|before_or_equal:' . date('d/m/Y', strtotime($limitExpirationDate)),
 		]);
 
 		if ($validator->fails()) {
