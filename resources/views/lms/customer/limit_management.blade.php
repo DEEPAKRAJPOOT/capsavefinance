@@ -82,7 +82,6 @@
                                             $isShowReviewButton = false;
                                             if ($editReviewButtonShowDate == $curDate){
                                                 $isShowReviewButton = true;
-                                                echo "test1";
                                             }elseif (($curDate > $editReviewButtonShowDate) && ($curDate < $endDate)) {
                                                 $isShowReviewButton = true;
                                                 if ($endDate == $limitExpDateCheck && $limitExpDate != ''){
