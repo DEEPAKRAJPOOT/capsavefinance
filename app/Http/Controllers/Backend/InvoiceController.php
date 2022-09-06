@@ -560,7 +560,7 @@ class InvoiceController extends Controller {
         $userMailArr['receiver_user_name'] = $name = isset($value['user']['email']) ?  $value['user']['biz']['biz_entity_name'] : $value['user']['biz']['biz_entity_name'].',';
         $userMailArr['amount'] = number_format($value['disburse_amount'],2);
         $userMailArr['receiver_email'] = isset($value['user']['email']) ? $value['user']['email'] : $value['user']['anchor']['comp_email'];
-        $fullName = $value['user']['f_name'].' '.$value['user']['l_name'];
+        $fullName = $value['user']['biz']['biz_entity_name'];
         $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID').'-'.$fullName;
         $userMailArr['id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
         $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
