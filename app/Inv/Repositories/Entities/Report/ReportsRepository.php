@@ -777,6 +777,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 			$principalOutstanding = round((round($disbDetails->principal_amount,2) - (round($disbDetails->principal_repayment,2) + round($disbDetails->principal_waived_of,2) + round($disbDetails->principal_tds,2) + round($disbDetails->principal_write_off,2))),2);
 			$principalOutstanding = $principalOutstanding > 0 ? $principalOutstanding : 0;
+
+			$marginOutstanding = round((round($disbDetails->margin_amount,2) - (round($disbDetails->margin_repayment,2) + round($disbDetails->margin_waived_of,2) + round($disbDetails->margin_tds,2) + round($disbDetails->margin_write_off,2))),2);
+			$marginOutstanding = $marginOutstanding > 0 ? $marginOutstanding : 0;
 	
 			$interestOutstanding = round((round($disbDetails->interest_capitalized,2) - (round($disbDetails->interest_repayment,2) + round($disbDetails->interest_waived_off,2) + round($disbDetails->interest_tds,2) + round($disbDetails->interset_write_off,2))),2);
 			$interestOutstanding = $interestOutstanding > 0 ? $interestOutstanding : 0;
@@ -805,8 +808,13 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 	
 			$prgmDetails = $invDetails->program;
-	
+
 			$prgmType = $prgmDetails->prgm_type;
+			if($prgmType == 1){
+				$product = 'Vendor Finance';
+			}elseif($prgmType == 2){
+				$product = 'Channel Finance';
+			}
 			
 			$disbursement_method = 'Net';
 	
@@ -896,6 +904,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'chargeDeduction' => round(0,2),
 				'invoiceLevelChrg'=> round($charges->sum('amount'),2),
 				'disburseAmount' => round(($invDisb->disburse_amt - ($invDisb->total_interest + $invDisb->processing_fee + $invDisb->processing_fee_gst)),2),
+				'product' => $product,
 				'paymentFrequency' => $payment_frequency,
 				'interestPosted' => round($disbDetails->interest_capitalized,2), 
 				'disbursementMethod' => $disbursement_method,
@@ -905,6 +914,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'roi' => $invDisb->interest_rate,
 				'odi' => $odiInterest,
 				'principalOut' => round($principalOutstanding,2),
+				'marginOut' => round($marginOutstanding,2),
 				'interestOut' => round($interestOutstanding,2),
 				'overduePosted' => round($disbDetails->overdue_capitalized,2),
 				'overdueOut' => round($overdueAmount,2),
