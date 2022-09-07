@@ -7,11 +7,11 @@
 
         <div class="row">
             <div class="form-group col-6">
-                <label for="single_limit">Single Borrower Limit (in mn)<span class="mandatory">*</span></label>
+                <label for="single_limit">Single Borrower Limit (In Mn)<span class="mandatory">*</span></label>
                 <input type="text" class="form-control" id="single_limit" name="single_limit" placeholder="Single Borrower Limit">
             </div>
             <div class="form-group col-6">
-                <label for="multiple_limit">Group Borrower Limit (in mn)<span class="mandatory">*</span></label>
+                <label for="multiple_limit">Group Borrower Limit (In Mn)<span class="mandatory">*</span></label>
                 <input type="text" name="multiple_limit" id="multiple_limit" class="form-control" placeholder="Multiple Borrower Limit">
             </div>
         </div>

@@ -103,15 +103,16 @@ class BorrowerLimit extends BaseModel
     }
 
     public static function expirePastLimit(){
-
-        $result = self::where('end_date','<',Carbon::now())->where('is_active',1)->update(['is_active'=>0]);
+        DB::enableQueryLog();
+        $result = self::where('end_date','<',Carbon::now()->format('Y-m-d'))->whereNotNUll('end_date')->where('is_active',1)->update(['is_active'=>0]);
+        dd(DB::getQueryLog());
         return $result?true:false;
     }
 
     // update tax_to means end date in gst table
     public static function updatePrevLimitStatus(){
         DB::enableQueryLog();
-        return self::whereDate('end_date','<',Carbon::now())->update(['is_active'=>0]);
+        return self::whereDate('end_date','<',Carbon::now()->format('Y-m-d'))->update(['is_active'=>0]);
         //dd(DB::getQueryLog());
 
         
