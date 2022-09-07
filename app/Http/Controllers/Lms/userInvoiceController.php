@@ -744,19 +744,12 @@ class userInvoiceController extends Controller
             $sgst_rate = 0;
             $base_amt = $totalamount;
             
-            $cdnFlag = true;
-            if($txn->parent_trans_id){
-                if(in_array($txn->parentTransactions->trans_type,[config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
-                    $cdnFlag = false;
-                }
-            }
-
             $odFlag = true;
             if(in_array($txn->trans_type,[config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
                 $odFlag = false;
             }
 
-            if ($txn->gst == 1 && $odFlag && $cdnFlag) {
+            if ($txn->gst == 1 && $odFlag) {
                 $base_amt = (!is_null($txn->base_amt) ? $txn->base_amt : $totalamount * 100/(100 + $totalGST));
                 if(!$is_state_diffrent) {
                     $cgst_rate = ($totalGST/2);
@@ -795,7 +788,7 @@ class userInvoiceController extends Controller
             } else {
                 $days = '---';
             }
-            if(!$cdnFlag && !$odFlag){
+            if(!$odFlag){
                 $sac_code = config('lms.SAC_CODE_FOR_ODI_INVOICE');
             }
             
