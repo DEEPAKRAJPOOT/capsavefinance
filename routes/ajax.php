@@ -1295,6 +1295,11 @@ Route::group(
         'uses' => 'AjaxController@getLimitList',
     ]);
 
+    Route::post('/expire_past_limit', [
+        'as' => 'expire_past_limit',
+        'uses' => 'AjaxController@expirePastLimit',
+    ]);
+
     Route::post('backend_ajax_get_refund_batch_request',[
         'as' => 'backend_ajax_get_refund_batch_request',
         'uses' => 'AjaxController@getBackendRefundBatchRequest'

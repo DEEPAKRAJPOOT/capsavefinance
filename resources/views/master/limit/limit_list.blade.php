@@ -38,8 +38,8 @@
                             <thead>
                                 <tr role="row">
                                     <th>Sr No.</th>
-                                    <th>Single Borrower limit (in mn)</th>
-                                    <th>Group Borrower Limit (in mn)</th>
+                                    <th>Single Borrower Limit (In Mn)</th>
+                                    <th>Group Borrower Limit (In Mn)</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
                                     <th>Status</th>
@@ -68,9 +68,10 @@
 
 var messages = {
     get_ajax_limit_list: "{{ URL::route('get_ajax_limit_list') }}",
+    expire_past_limit:"{{ URL::route('expire_past_limit') }}",
     data_not_found: "{{ trans('error_messages.data_not_found') }}",
     token: "{{ csrf_token() }}",
     };
 </script>
-<script src="{{ asset('backend/js/ajax-js/limit.js') }}"></script>
+<script src="{{ asset('backend/js/ajax-js/limit.js') }}?v=1"></script>
 @endsection

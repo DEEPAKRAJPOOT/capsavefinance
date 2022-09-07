@@ -79,9 +79,12 @@
 
 <script>
         var lastLimitDate = "{{$lastStartDate}}";
-        if(lastLimitDate === ''){
-            lastLimitDate = new Date();
-        }
+        
+        
+        /*var lastLimitDate = new Date();
+         lastLimitDate.setDate(lastLimitDate.getDate() + 1);
+         console.log(lastLimitDate);*/
+        
         $("#start_date").datetimepicker({
             format: 'dd/mm/yyyy',
             pickerPosition: 'bottom-right',

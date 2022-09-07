@@ -5267,6 +5267,21 @@ if ($err) {
         return $data;
     }
 
+    public function expirePastLimit(Request $request){
+
+        $expirePastLimit = $this->masterRepo->expirePastLimit();
+        if($expirePastLimit){
+            $response['status'] = 1;
+            $response['message'] = 'Limit expired successfully.';
+            return json_encode($response);
+        }else{
+            $response['status'] = 0;
+            $response['message'] = 'Something went wrong!';
+            return json_encode($response);
+        }
+        
+    }
+
     public function getBackendDisbursalBatchRequest(DataProviderInterface $dataProvider) {
         $disbursalBatchRequest = $this->lmsRepo->lmsGetDisbursalBatchRequest();
         $data = $dataProvider->lmsGetDisbursalBatchRequest($this->request, $disbursalBatchRequest);

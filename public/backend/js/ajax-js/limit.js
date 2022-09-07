@@ -41,3 +41,32 @@ try {
         console.log(e);
     }
 }
+
+
+try {
+    jQuery(document).ready(function ($) {
+        $(".loader-ring").show();
+        $.ajax({
+            type: "post",
+            url: messages.expire_past_limit,
+            data: {_token:messages.token},
+            dataType: "json",
+            cache: false,
+            success: function (response) {
+                if(response){
+                    console.log('expires');
+                }
+
+                $(".loader-ring").hide();
+            },
+            async:true
+        });
+    return false;
+
+    });
+
+} catch (e) {
+    if (typeof console !== 'undefined') {
+        console.log(e);
+    }
+}

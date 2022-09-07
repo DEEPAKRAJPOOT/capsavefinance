@@ -4703,16 +4703,30 @@ class DataRenderer implements DataProviderInterface
                 ->addColumn(
                     'is_active',
                     function ($data) {
-                    $end_date = $data->end_date; 
-                    $act = $data->is_active;
-                    $edit='';
-                    //if(!empty($end_date) && strtotime($end_date) < strtotime(Carbon::now()->format('Y-m-d')))
-                        //$edit='';
-                    if (empty($end_date) && $act == 1)
-                        $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editBorrowerLimitFrame" title="Edit States Detail" data-url ="'.route('edit_borrower_limit', ['limit_id' => $data->limit_id]).'" data-height="310px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
-                    
-                    $status = '<div class="btn-group"><label class="badge badge-'.($act==1 ? 'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'In-Active').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
-                    return $status;
+                        $startDate = Carbon::parse($data->start_date);
+                        $todayDate = Carbon::now();
+                        if ($startDate->gte($todayDate)) { 
+                            $futureDate = true;
+                        }else{
+                            $futureDate = false;
+                        }
+                        
+                        $end_date = $data->end_date; 
+                        $act = $data->is_active;
+                        $edit='';
+                        //if(!empty($end_date) && strtotime($end_date) < strtotime(Carbon::now()->format('Y-m-d')))
+                            //$edit='';
+                        if ($futureDate && $act == 1)
+                            $edit = '<a class="btn btn-action-btn btn-sm" data-toggle="modal" data-target="#editBorrowerLimitFrame" title="Edit Limit" data-url ="'.route('edit_borrower_limit', ['limit_id' => $data->limit_id]).'" data-height="310px" data-width="100%" data-placement="top"><i class="fa fa-edit"></a>';
+                        if ($futureDate && $act == 1){
+                            $status = '<div class="btn-group"><label class="badge badge-warning pt-2 pl-3 pr-3 current-status" style="color: black;font-size: 11px;margin: 4px;">Pending </label> &nbsp;'. $edit.'</div>';
+                        }else if($futureDate == false && $act == 1){
+                            $status = '<div class="btn-group"><label class="badge badge-success pt-2 pl-3 pr-3 current-status">Active</div>';
+                        }else{
+                            $status = '<div class="btn-group"><label class="badge badge-danger pt-2 current-status">Limit-Expired</div>';
+                        }
+                        //$status = '<div class="btn-group"><label class="badge badge-'.(($futureDate && $act==1) ?'warning pt-2 pl-3 pr-3': 'success pt-2 pl-3 pr-3'($futureDate == false && $act==1)?'success pt-2 pl-3 pr-3' : 'danger pt-2').' current-status">'.($act==1 ? 'Active' : 'Limit-Expired').'&nbsp; &nbsp;</label> &nbsp;'. $edit.'</div>';
+                        return $status;
                     }
                 )
                 ->filter(function ($query) use ($request) {

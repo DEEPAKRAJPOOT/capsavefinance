@@ -578,6 +578,12 @@ class MasterRepository extends BaseRepositories implements MasterInterface
         return $result;
     }
 
+    public function expirePastLimit(){
+
+        $result = BorrowerLimit::expirePastLimit();
+        return $result;
+    }
+
     public function updateLimitEndDate($id, $date)
     {
         return BorrowerLimit::updateLimitEndDate($id, $date);

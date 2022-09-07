@@ -102,6 +102,12 @@ class BorrowerLimit extends BaseModel
         return $result?$result:false;
     }
 
+    public static function expirePastLimit(){
+
+        $result = self::where('end_date','<',Carbon::now())->where('is_active',1)->update(['is_active'=>0]);
+        return $result?true:false;
+    }
+
     // update tax_to means end date in gst table
     public static function updatePrevLimitStatus(){
         DB::enableQueryLog();

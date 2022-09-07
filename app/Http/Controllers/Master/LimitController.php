@@ -27,18 +27,24 @@ class LimitController extends Controller
 
     public function addLimit() {
         $limit_data = $this->masterRepo->findLastLimit();
-        if($limit_data != false){
-            
+        /*if($limit_data != false){
+            dd(Carbon::now()->addDays(+1)->format('d/m/Y'));
             if(!empty($limit_data['end_date']))
               $lastStartDate = ($limit_data['end_date']) ? Carbon::parse($limit_data['end_date'])->addDays(+1)->format('d/m/Y') : '';
             else
               $lastStartDate = ($limit_data['start_date']) ? Carbon::parse($limit_data['start_date'])->addDays(+1)->format('d/m/Y') : '';
             
-        }else{
-            $lastStartDate = '';
+        }else{ }*/
+        $lastStartDate = Carbon::now()->addDays(+1)->format('d/m/Y');
+        $limit=1;
+        if($limit_data == false){
+          $limit=0;
+          $lastStartDate = Carbon::now()->format('d/m/Y');
         }
+            
+       
         
-        return view('master.limit.add_limit',['lastStartDate'=>$lastStartDate]);
+        return view('master.limit.add_limit',['lastStartDate'=>$lastStartDate,'limit'=>$limit]);
     }
 
 
@@ -66,7 +72,7 @@ class LimitController extends Controller
                 $this->masterRepo->updateLimitEndDate($status->limit_id, $e_date);
             }
             if($status){
-                Session::flash('message', $limit_id ? trans('master_messages.borrower_limit_success') :trans('master_messages.gst_add_success'));
+                Session::flash('message',trans('master_messages.borrower_limit_success'));
                 return redirect()->route('get_borrower_limit');
             }else{
                 Session::flash('error', trans('master_messages.something_went_wrong'));
