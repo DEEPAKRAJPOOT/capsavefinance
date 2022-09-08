@@ -84,7 +84,7 @@ class OutstandingReportManual implements ShouldQueue
     {
         ini_set("memory_limit", "-1");
         ini_set('max_execution_time', 10000);
-        $rows = 5;
+        $rows = 1;
         $sheet =  new PHPExcel();
         $sheet->setActiveSheetIndex(0)
         ->setCellValue('A'.$rows, 'Customer Name')
@@ -186,7 +186,7 @@ class OutstandingReportManual implements ShouldQueue
             Storage::makeDirectory($dirPath);
         }
         $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Outstanding Report'.time().'.xlsx';
+        $filePath = $storage_path.'/Invoice Outstanding Report'.'_'.date('dmY').'.xlsx';
         $objWriter->save($filePath);
         return $filePath;
     }

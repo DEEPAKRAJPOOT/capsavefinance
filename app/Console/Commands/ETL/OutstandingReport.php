@@ -60,7 +60,7 @@ class OutstandingReport extends Command
             $highestColumn = $sheet->getHighestColumn();
 
             // create array of headings
-            $headingRow = 5;
+            $headingRow = 1;
             $headings = $sheet->rangeToArray('A' . $headingRow . ':' . $highestColumn . $headingRow, NULL, TRUE, FALSE);
             if (is_array($headings) && count($headings)) {
                 $headings = array_values($headings[0]);
