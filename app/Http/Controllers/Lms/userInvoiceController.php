@@ -744,7 +744,12 @@ class userInvoiceController extends Controller
             $sgst_rate = 0;
             $base_amt = $totalamount;
             
-            if ($txn->gst == 1) {
+            $odFlag = true;
+            if(in_array($txn->trans_type,[config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+                $odFlag = false;
+            }
+
+            if ($txn->gst == 1 && $odFlag) {
                 $base_amt = (!is_null($txn->base_amt) ? $txn->base_amt : $totalamount * 100/(100 + $totalGST));
                 if(!$is_state_diffrent) {
                     $cgst_rate = ($totalGST/2);
@@ -766,16 +771,25 @@ class userInvoiceController extends Controller
             $desc = $txn->transType->trans_name;
             if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST')) {
                 $desc =  "Interest for period " . date('d-M-Y', strtotime($txn->fromIntDate)) . " To " . date('d-M-Y', strtotime($txn->toIntDate));
+                $dueDate = strtotime($txn->toIntDate);
+                $now = strtotime($txn->fromIntDate);
+                $datediff = abs($dueDate - $now);
+                $OdandInterestRate = $txn->InvoiceDisbursed->invoice->program_offer->overdue_interest_rate + $txn->InvoiceDisbursed->invoice->program_offer->interest_rate;
+                $days = (round($datediff / (60 * 60 * 24)) + 1) . ' days -From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';  
                 $sac_code = config('lms.SAC_CODE_FOR_INT_INVOICE');
             } 
-            if ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
+            elseif ($txn->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')) {
                 $dueDate = strtotime($txn->toIntDate); // or your date as well
                 $now = strtotime($txn->fromIntDate);
                 $datediff = abs($dueDate - $now);
                 $OdandInterestRate = $txn->InvoiceDisbursed->invoice->program_offer->overdue_interest_rate + $txn->InvoiceDisbursed->invoice->program_offer->interest_rate;
-                $days = (round($datediff / (60 * 60 * 24)) + 1) . ' days -From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';                
+                $days = (round($datediff / (60 * 60 * 24)) + 1) . ' days -From:' . date('d-M-Y', strtotime($txn->fromIntDate)) . " to " . date('d-M-Y', strtotime($txn->toIntDate)) . ' @ ' . $OdandInterestRate . '%';  
+                $sac_code = config('lms.SAC_CODE_FOR_ODI_INVOICE');              
             } else {
                 $days = '---';
+            }
+            if(!$odFlag){
+                $sac_code = config('lms.SAC_CODE_FOR_ODI_INVOICE');
             }
             
             $intrest_charges[$key] = array(

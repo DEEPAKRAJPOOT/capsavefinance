@@ -780,7 +780,7 @@ class Transactions extends BaseModel {
         if(isset($transactions['trans_type']) && !isset($transactions['is_transaction'])){
             $transType = $transactions['trans_type'];
             $chrg_id = TransType::where('id',$transType)->value('chrg_master_id');
-            if($chrg_id > 0 || $transType == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+            if($chrg_id > 0){
                 $transactions['is_transaction'] = false;
             }else{
                 $transactions['is_transaction'] = true;
@@ -1269,7 +1269,7 @@ class Transactions extends BaseModel {
        }
        return $sql->whereHas('transType', function($query) use ($invoiceType) { 
             if($invoiceType == 'I') {
-                 $query->where('id','=','9');
+                $query->whereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
              }  else {
                 $query->where('chrg_master_id','!=','0');
             }

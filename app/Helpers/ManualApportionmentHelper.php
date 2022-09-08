@@ -774,7 +774,7 @@ class ManualApportionmentHelper{
             if($trans->trans_type == config('lms.TRANS_TYPE.INTEREST')){
                 $billType = 'I';
             }elseif($trans->trans_type == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                $billType = 'C';
+                $billType = 'I';
             }elseif($trans->trans_type >= 50){
                 $billType = 'C';
             }
