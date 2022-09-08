@@ -344,7 +344,6 @@ class InvoiceController extends Controller {
                 Session::flash('error', trans('backend_messages.lms_eod_batch_process_msg'));
                 return back();
             }
-
             $userId = $request->user_id;
             $disbursalBatchId = $request->disbursal_batch_id;
             $transId = $request->trans_id;
@@ -556,19 +555,21 @@ class InvoiceController extends Controller {
         if($value['lms_user']['user']['is_buyer'] == 2) {
             $benifiName = isset($value['lms_user']['user']['anchor_bank_details']['acc_name']) ? $value['lms_user']['user']['anchor_bank_details']['acc_name'] : '';
         } else {
-            $benifiName = isset($value['lms_user']['bank_details']['acc_name']) ? $value['lms_user']['bank_details']['acc_name'] : '';
+            $benifiName = isset($value['user']['biz']['biz_entity_name']) ? $value['user']['biz']['biz_entity_name'] : '';
         }            
-        $userMailArr['receiver_user_name'] = $name = isset($value['user']['email']) ?  $value['user']['f_name']. ' ' . $value['user']['l_name'] : $value['user']['anchor']['comp_name'];
-        $userMailArr['amount'] = $value['disburse_amount'];
+        $userMailArr['receiver_user_name'] = $name = isset($value['user']['email']) ?  $value['user']['biz']['biz_entity_name'] : $value['user']['biz']['biz_entity_name'].',';
+        $userMailArr['amount'] = number_format($value['disburse_amount'],2);
         $userMailArr['receiver_email'] = isset($value['user']['email']) ? $value['user']['email'] : $value['user']['anchor']['comp_email'];
-        $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
+        $fullName = $value['user']['biz']['biz_entity_name'];
+        $userMailArr['user_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID').'-'.$fullName;
+        $userMailArr['id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'CUSTID');
         $userMailArr['app_id'] = \Helpers::formatIdWithPrefix($value['user_id'], 'APP');
         $userMailArr['utr_no'] = isset($value['tran_id']) ? $value['tran_id'] : '';
-        $userMailArr['benefi_name'] = $benifiName;
+        // $userMailArr['benefi_name'] = $benifiName;
         $userMailArr['disbursed_date'] = isset($value['disburse_date']) ? Carbon::parse($value['disburse_date'])->format('d-m-Y') : '';  
         $userMailArr['anchor_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['comp_email']) ? $value['user']['anchor']['comp_email'] : null;
         $userMailArr['sales_email'] = isset($value['user']['anchor']) && isset($value['user']['anchor']['sales_user']) ? $value['user']['anchor']['sales_user']['email'] : null;
-        $userMailArr['auth_email'] = \Auth::user() ? \Auth::user()->email : null;        
+        $userMailArr['auth_email'] = \Auth::user() ? \Auth::user()->email : null; 
         Event::dispatch("LMS_USER_DISBURSAL", serialize($userMailArr));
 
         // $userMailArr['receiver_user_name'] = $name = $value['user']['anchor']['comp_name'];
@@ -2815,7 +2816,8 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                 $sysDate =  \Helpers::getSysStartDate();
                 date_default_timezone_set("Asia/Kolkata");
                 $data = $this->lmsRepo->getdisbursalBatchByDBId($disbursalBatchId);
-                $reqData['txn_id'] = $data['disbursal_api_log']['txn_id'];
+                // dd($data['disbursal_api_log']);
+                $reqData['txn_id'] = isset($data['disbursal_api_log']) ? $data['disbursal_api_log']['txn_id'] : 1;
                 $transId = $reqData['txn_id'];
                 // $transId = '2RGIK4436OUMXHZGXH';
                 $createdBy = 0;
