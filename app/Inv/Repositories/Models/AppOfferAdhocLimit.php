@@ -53,6 +53,8 @@ class AppOfferAdhocLimit extends BaseModel {
         'limit_amt',
         'start_date',
         'end_date',
+        'file_id',
+        'remark',
         'created_at',
         'created_by',
         'updated_at',        
@@ -80,5 +82,13 @@ class AppOfferAdhocLimit extends BaseModel {
         $mytime = Carbon::now();
         $dateTime  =  $mytime->toDateTimeString();
         return self::where(['user_id' => $attr['user_id'],'prgm_offer_id' => $attr['prgm_offer_id'],'status' => 1])->whereRaw('CAST("'.$dateTime.'" AS DATE) between `start_date` and `end_date`')->sum('limit_amt');
+    }
+
+    public function file(){
+        return $this->belongsTo('App\Inv\Repositories\Models\UserFile', 'file_id', 'file_id');
+    }
+    
+    public function adhocDocument(){
+        return $this->hasmany('App\Inv\Repositories\Models\OfferAdhocDocument', 'offer_adhoc_limit_id', 'app_offer_adhoc_limit_id');
     }
 }

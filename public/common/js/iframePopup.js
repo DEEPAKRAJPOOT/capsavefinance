@@ -114,6 +114,7 @@ var iframe_ids = [
     'editPaymentFrm',
     'addAdhocLimit',
     'approveAdhocLimit',
+    'viewAdhcDocument',
     'confirmCopyApp',
     'confirmEnhanceLimit',
     'confirmReduceLimit',

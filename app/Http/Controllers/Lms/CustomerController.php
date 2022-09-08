@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Lms;
 
+use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
@@ -152,6 +153,23 @@ public function openApproveAdhocLimit() {
 }
 
 /**
+ * Display view adhoc document popup
+ *
+ * @return \Illuminate\Http\Response
+ */
+public function viewApproveAdhocLimit(Request $request){
+	try {
+		$data = $request->all();
+		$userId = $data['user_id'];
+		$app_offer_adhoc_limit_id = $data['app_offer_adhoc_limit_id'];
+		$offer_document = $this->lmsRepo->getAdhocDocuments($app_offer_adhoc_limit_id);
+		return view('lms.customer.view_adhoc_document')->with(['offer_document'=>$offer_document]);
+	} catch (Exception $ex) {
+		dd($ex);
+	}
+}
+
+/**
  * Display add adhoc popup
  *
  * @return \Illuminate\Http\Response
@@ -167,18 +185,20 @@ public function saveAdhocLimit(Request $request) {
 
 		$data = $this->lmsRepo->appPrgmOfferById($prgmOfferId);
 		$userId = $data->programLimit->appLimit->user_id; 
+		$appId = $data->programLimit->appLimit->app_id; 
 
 		$validator = Validator::make($request->all(), [
 		   'start_date' => 'required|date_format:"d/m/Y"',
 		   'end_date' => 'required|date_format:"d/m/Y"|after:'.$startDate,
-		]);
+		   'doc_file' => 'required',
+		   'doc_file.*' => 'mimes:jpeg,jpg,png,pdf',
+		],['doc_file.mimes' => 'Invalid file format']);
 		
 		if ($validator->fails()) {
 			Session::flash('error', $validator->messages()->first());
 			return redirect()->route('limit_management', ['user_id' => $userId])->withInput();
-		}
-		
-			
+		}		
+		\DB::beginTransaction();
 		if($data) {
 			$limitData = array(
 				'user_id' => $userId,
@@ -192,8 +212,25 @@ public function saveAdhocLimit(Request $request) {
 				'created_by' => \Auth::user()->user_id,
               	'created_at' => \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s'),
 			);
+			if (!empty($request->remark)){
+				$limitData['remark'] = $request->remark;
+			}
 			
 			$createAdhocLimit = $this->appRepo->saveAppOfferAdhocLimit($limitData);
+			if ($request->doc_file && $createAdhocLimit) {
+				foreach ($request->doc_file as $documentfile){
+					$adhocDocUploadData = Helpers::uploadAppAdhocDocFile($documentfile, $userId, $appId, $createAdhocLimit);
+					$adhocDocFile = $this->docRepo->saveFile($adhocDocUploadData);
+					$docMapData['offer_adhoc_limit_id'] = $createAdhocLimit->app_offer_adhoc_limit_id;
+					$docMapData['adhoc_doc_file_id'] = $adhocDocFile->file_id;
+					$docMapData['created_at'] = \Carbon\Carbon::now(config('common.timezone'))->format('Y-m-d h:i:s');
+					$docMapData['created_by'] = \Auth::user()->user_id;
+					$OfferAdhocDocument = $this->docRepo->saveAdhocFile($docMapData);
+					if($adhocDocFile) {
+						$this->appRepo->saveAppOfferAdhocLimit(['file_id' => $adhocDocFile->file_id], $createAdhocLimit->app_offer_adhoc_limit_id);
+					}
+				}
+			}
 		}
 		$whereActivi['activity_code'] = 'save_adhoc_limit';
 		$activity = $this->master->getActivity($whereActivi);
@@ -202,13 +239,15 @@ public function saveAdhocLimit(Request $request) {
 			$activity_desc = 'Save Adhoc Limit in Limit Management (Manage Sanction Cases) '. null;
 			$arrActivity['app_id'] = null;
 			$this->activityLogByTrait($activity_type_id, $activity_desc, response()->json($limitData), $arrActivity);
-		} 
+		}
+		\DB::commit(); 
 		if($createAdhocLimit) {
 			Session::flash('message',trans('success_messages.AdhocLimitCreated'));
 			return redirect()->route('limit_management', ['user_id' => $userId]);
-		} 
+		}
 	} catch (Exception $ex) {
-		dd($ex);
+		\DB::rollback();
+		return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
 	}
 }
 
@@ -262,6 +301,24 @@ public function approveAdhocLimit(Request $request) {
  */
 public function listInvoice() {
 	return view('lms.customer.list_invoices');
+}
+
+public function viewAdhocUploadedFile(Request $request){
+	try {
+		$file_id  = $request->get('file_id');
+		$fileData = $this->docRepo->getFileByFileId($file_id);
+
+		$filePath = 'app/public/'.$fileData->file_path;
+		$path     = storage_path($filePath);
+
+		if (file_exists($path)) {
+			return response()->file($path);
+		} else{
+			exit('Requested file does not exist on our server!');
+		}
+	} catch (Exception $ex) {
+		return redirect()->back()->withErrors(Helpers::getExceptionMessage($ex));
+	}
 }
 
 }
