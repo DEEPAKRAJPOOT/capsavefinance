@@ -40,6 +40,8 @@ class LimitController extends Controller
         if($limit_data == false){
           $limit=0;
           $lastStartDate = Carbon::now()->format('d/m/Y');
+        }else{
+            $lastStartDate = Carbon::parse($limit_data->end_date)->addDays(+1)->format('d/m/Y');
         }
             
        
@@ -60,9 +62,14 @@ class LimitController extends Controller
                 $limit_id = preg_replace('#[^0-9]#', '', $request->get('id'));
                 $limit_data = $this->masterRepo->findLimitById($limit_id);
                 if(!empty($limit_data)) {
-                    $e_date = Carbon::createFromFormat('d/m/Y', $request['start_date'])->addDays(-1)->format('Y-m-d');
+                    
                     $arrSaveData['start_date'] = ($request['start_date']) ? Carbon::createFromFormat('d/m/Y', $request['start_date'])->format('Y-m-d') : '';
                     $status = $this->masterRepo->updateLimit($arrSaveData, $limit_id);
+                    if((int)$request['is_active']){
+                        $e_date = Carbon::createFromFormat('d/m/Y', $request['start_date'])->addDays(-1)->format('Y-m-d');
+                    }else{
+                        $e_date = null;
+                    }
                     $this->masterRepo->updateLimitEndDate($limit_id, $e_date);
                 }
             }else{
