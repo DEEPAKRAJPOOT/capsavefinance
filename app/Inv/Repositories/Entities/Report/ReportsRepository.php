@@ -787,8 +787,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$overdueAmount = round((round($disbDetails->overdue_capitalized,2) - round($disbDetails->overdue_repayment,2)- round($disbDetails->overdue_waived_off,2) - round($disbDetails->overdue_tds,2) - round($disbDetails->overdue_write_off,2)),2);
 			$overdueAmount = $overdueAmount > 0 ? $overdueAmount : 0;
 	
-			$charges = $invDisb->transaction()->where('trans_type','>', '50')->where('entry_type','0')->where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->select(['amount', 'outstanding'])->get();
-		   
+			$charges = Transactions::where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->where('trans_type','>', '50')->where('entry_type','0')->where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->select(['amount', 'outstanding'])->get();
+			  
 			$totalOutstanding = ($principalOutstanding + $interestOutstanding + $overdueAmount + $charges->sum('outstanding'));
 	
 			if($totalOutstanding <= 0){
@@ -846,11 +846,14 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 					$principalOverdueCategory='Overdue';
 				}
 			}
-			$transDetails = $invDisb->transactions()->whereNull('payment_id')->where('outstanding', '>', 0)->whereIn('trans_type',[9,16])->where('entry_type','0')->get();
-			
+			$transDetails = Transactions::where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->whereNull('payment_id')->where('outstanding', '>', 0)->whereIn('trans_type',[9,16])->where('entry_type','0')->get();
 			$interestDPD = $transDetails->where('trans_type',9)->max('dpd');
 			$principalDPD = $transDetails->where('trans_type',16)->max('dpd');
 			unset($transDetails);
+
+			$principalDPD = (round($principalOutstanding,2) > 0) ? ($principalDPD > 0 ? $principalDPD : 0) : 0;
+			$interestDPD = (round($interestOutstanding,2) > 0) ? ($interestDPD > 0 ? $interestDPD : 0) : 0;
+
 			$maxDPD = $principalDPD > $interestDPD ? $principalDPD : $interestDPD;
 			$outstanding_max_bucket = "Not Outstanding";
 			if($principalOutstanding > 100 && $maxDPD > 0){
