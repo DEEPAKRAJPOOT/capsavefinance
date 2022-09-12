@@ -186,7 +186,7 @@ class OutstandingReportManual implements ShouldQueue
             Storage::makeDirectory($dirPath);
         }
         $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Invoice Outstanding Report'.'_'.date('dmY').'.xlsx';
+        $filePath = $storage_path.'/Invoice Outstanding Report'.'_'.time().'.xlsx';
         $objWriter->save($filePath);
         return $filePath;
     }
