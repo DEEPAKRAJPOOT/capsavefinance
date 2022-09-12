@@ -1140,7 +1140,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'principalOverdue' => '',
 				'principalOverdueCategory'=> $principalOverdueCategory,
 				'principalDPD' => $principalDPD,
-				'interestPDP' => 0,
+				'interestDPD' => 0,
 				'finalDPD' => $maxDPD,
 				'outstandingMaxBucket' => $outstanding_max_bucket,
 				'maturityDays' => $maturityDays,
