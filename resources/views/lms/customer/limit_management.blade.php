@@ -87,7 +87,7 @@
                             @endif
                         </div>
                     </div>
-                    @foreach($uLimit->programLimit as $limit)                      
+                    @foreach($uLimit->supplyProgramLimit as $limit)                      
                     <div class="limit-odd">  
                         <div class="row" style="margin-top:20px;">
                             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
