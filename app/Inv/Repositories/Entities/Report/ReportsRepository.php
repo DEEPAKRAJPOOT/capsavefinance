@@ -836,7 +836,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
 		   
 			$principalOverdueCategory = '';
-			if(strtotime($disbDetails->payment_due_date) <= strtotime($curdate)){
+			if(!is_null($disbDetails->payment_due_date) && strtotime($disbDetails->payment_due_date) <= strtotime($curdate) ){
 				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $disbDetails->payment_due_date);
 				$daysToAdd = (int)$disbDetails->grace_period;
 				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
@@ -1052,7 +1052,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
 		   
 			$principalOverdueCategory='';
-			if(strtotime($disbDetails->payment_due_date) <= strtotime($curdate)){
+			if(!is_null($disbDetails->payment_due_date) && strtotime($disbDetails->payment_due_date) <= strtotime($curdate)){
 				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $disbDetails->payment_due_date);
 				$daysToAdd = (int)$disbDetails->grace_period;
 				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
