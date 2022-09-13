@@ -42,7 +42,7 @@ class OutstandingReportMonthly extends Command
      */
     public function handle()
     {
-        $reportDate = now()->format('Y-m-d');
+        $reportDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
         $end = new Carbon('last day of last month');
         $monthEndDate = Carbon::parse($end)->format('Y-m-d');
         ini_set('memory_limit', '-1'); // now()->subDays(1)->format('Ymd');

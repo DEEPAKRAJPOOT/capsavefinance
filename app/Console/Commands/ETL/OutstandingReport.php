@@ -42,8 +42,8 @@ class OutstandingReport extends Command
      */
     public function handle()
     {
-        $reportDate = now()->format('Y-m-d');
-        ini_set('memory_limit', '-1'); // now()->subDays(1)->format('Ymd');
+        $reportDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
+        ini_set('memory_limit', '-1'); //
         $filePath = OutstandingReportLog::whereNull('user_id')->whereDate('to_date',$reportDate)->where('created_by','0')->orderBy('id','desc')->limit(1)->first()->file_path;
 
         if(file_exists($filePath)) {
@@ -115,8 +115,8 @@ class OutstandingReport extends Command
                     'Invoice Due Date' => implode("-", array_reverse(explode("-", $dataRecord['Invoice Due Date']))),
                     'Virtual Account No' => $dataRecord['Virtual Account No'],
                     'Tenure' => (int)$dataRecord['Tenure'],
-                    'ROI' => (float)$dataRecord['ROI Rate'],
-                    'ODI Interest' => (float)$dataRecord['ODI Interest Rate'],
+                    'ROI' => $dataRecord['ROI Rate'],
+                    'ODI Interest' => $dataRecord['ODI Interest Rate'],
                     'Principal Outstanding' => (double)$dataRecord['Principal Outstanding'],
                     'Margin O/S' => (double)$dataRecord['Margin Outstanding'],
                     'Interest' => (double)$dataRecord['Interest Outstanding'],
@@ -126,7 +126,7 @@ class OutstandingReport extends Command
                     'Total Outstanding' => (double)$dataRecord['Total Outstanding'],
                     'Grace Days Interest' => (int)$dataRecord['Grace Days Interest'],
                     'Grace Days Principal' => (int)$dataRecord['Grace Days Principal'],
-                    'Principal Overdue' => (double)$dataRecord['Principal Overdue'],
+                    'Principal Overdue' => $dataRecord['Principal Overdue'],
                     'Principal Overdue Category' => $dataRecord['Principal Overdue Category'],
                     'Principal DPD' => (int)$dataRecord['Principal DPD'],
                     'Interest DPD' => (int)$dataRecord['Interest DPD'],
