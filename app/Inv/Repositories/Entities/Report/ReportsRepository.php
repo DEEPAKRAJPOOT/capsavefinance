@@ -836,7 +836,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
 		   
 			$principalOverdueCategory = '';
-			if(strtotime($disbDetails->payment_due_date) > strtotime($curdate)){
+			if(strtotime($disbDetails->payment_due_date) <= strtotime($curdate)){
 				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $disbDetails->payment_due_date);
 				$daysToAdd = (int)$disbDetails->grace_period;
 				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
@@ -871,7 +871,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				  $outstanding_max_bucket = "90 + Days"; 
 			}
 
-			$diff=date_diff(date_create($disbDetails->payment_due_date),date_create($curdate));
+			$diff=date_diff(date_create($curdate),date_create($disbDetails->payment_due_date));
 			$maturityDays = $diff->format("%r%a");
 			$maturityDays = ($maturityDays > 0) ? $maturityDays : 0;
 			
@@ -1052,7 +1052,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
 		   
 			$principalOverdueCategory='';
-			if(strtotime($disbDetails->payment_due_date) > strtotime($curdate)){
+			if(strtotime($disbDetails->payment_due_date) <= strtotime($curdate)){
 				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $disbDetails->payment_due_date);
 				$daysToAdd = (int)$disbDetails->grace_period;
 				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
@@ -1085,7 +1085,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				  $outstanding_max_bucket = "90 + Days"; 
 			}
 
-			$diff=date_diff(date_create($disbDetails->payment_due_date),date_create($curdate));
+			$diff=date_diff(date_create($curdate),date_create($disbDetails->payment_due_date));
 			$maturityDays = $diff->format("%r%a");
 			
 			$maturityMaxbucket = "Not Outstanding";

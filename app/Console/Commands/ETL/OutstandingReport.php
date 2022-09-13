@@ -70,7 +70,11 @@ class OutstandingReport extends Command
                 'Disbursement Method (Net or Gross)' => 'Disbursement Method Net or Gross',
                 'Principal O/S' => 'Principal Outstanding',
                 'Invoice level charge O/S' => 'Invoice Level Charges Outstanding',
-                'Grace Days - Interest' => 'Grace Days Interest'];
+                'Grace Days - Interest' => 'Grace Days Interest',
+                'Margin O/S' => 'Margin Outstanding',
+                'Grace Days - Principal' => 'Grace Days Principal',
+                'ODI Interest %' => 'ODI Interest Rate',
+                'ROI %' => 'ROI Rate'];
                 foreach($searchArray as $key => $searchArr)
                 {
                     $searchKey = array_search($key, $headings);
@@ -111,17 +115,17 @@ class OutstandingReport extends Command
                     'Invoice Due Date' => implode("-", array_reverse(explode("-", $dataRecord['Invoice Due Date']))),
                     'Virtual Account No' => $dataRecord['Virtual Account No'],
                     'Tenure' => (int)$dataRecord['Tenure'],
-                    'ROI' => (float)$dataRecord['ROI %'],
-                    'ODI Interest' => (float)$dataRecord['ODI Interest %'],
+                    'ROI' => (float)$dataRecord['ROI Rate'],
+                    'ODI Interest' => (float)$dataRecord['ODI Interest Rate'],
                     'Principal Outstanding' => (double)$dataRecord['Principal Outstanding'],
-                    'Margin O/S' => (double)$dataRecord['Margin O/S'],
+                    'Margin O/S' => (double)$dataRecord['Margin Outstanding'],
                     'Interest' => (double)$dataRecord['Interest Outstanding'],
                     'Overdue Interest Posted' => (double)$dataRecord['Overdue Interest Posted'],
                     'Overdue Interest Outstanding' => (double)$dataRecord['Overdue Interest Outstanding'],
                     'Invoice Level Charges Outstanding' => (double)$dataRecord['Invoice Level Charges Outstanding'],
                     'Total Outstanding' => (double)$dataRecord['Total Outstanding'],
                     'Grace Days Interest' => (int)$dataRecord['Grace Days Interest'],
-                    'Grace Days Principal' => (int)$dataRecord['Grace Days - Principal'],
+                    'Grace Days Principal' => (int)$dataRecord['Grace Days Principal'],
                     'Principal Overdue' => (double)$dataRecord['Principal Overdue'],
                     'Principal Overdue Category' => $dataRecord['Principal Overdue Category'],
                     'Principal DPD' => (int)$dataRecord['Principal DPD'],
