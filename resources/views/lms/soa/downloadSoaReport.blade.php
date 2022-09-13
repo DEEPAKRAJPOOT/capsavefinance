@@ -140,6 +140,9 @@
                             <span style="font-size: small;"><strong>Tran Type</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
+                            <span style="font-size: small;"><strong>UTR</strong></span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Batch No</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
@@ -177,6 +180,9 @@
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['trans_type']}}</span>
+                        </td>
+                        <td style="border: 1px solid #ddd;padding: 5px;">
+                            <span style="font-size: small;">{{$record['utr']}}</span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;">
                             <span style="font-size: small;">{{$record['batch_no']}}</span>
