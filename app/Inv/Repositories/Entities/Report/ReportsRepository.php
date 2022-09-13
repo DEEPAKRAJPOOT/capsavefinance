@@ -460,7 +460,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$odDaysWithoutGrace = ($curOddays)?$curOddays - $invDisb->grace_period:0;
 
 			$diff=date_diff(date_create($invDisb->payment_due_date),date_create($curdate));
-			$maturityDays = $diff->format("%a");
+			$maturityDays = $diff->format("%r%a");
 			$invDetails = $invDisb->invoice;
 			$anchor_name = $invDetails->anchor->comp_name;
 			$offerDetails = $invDetails->program_offer->toArray();
@@ -835,7 +835,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 		   
 			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
 		   
-			$principalOverdueCategory='';
+			$principalOverdueCategory = '';
 			if(strtotime($disbDetails->payment_due_date) > strtotime($curdate)){
 				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $disbDetails->payment_due_date);
 				$daysToAdd = (int)$disbDetails->grace_period;
@@ -872,7 +872,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 
 			$diff=date_diff(date_create($disbDetails->payment_due_date),date_create($curdate));
-			$maturityDays = $diff->format("%a");
+			$maturityDays = $diff->format("%r%a");
+			$maturityDays = ($maturityDays > 0) ? $maturityDays : 0;
 			
 			$maturityMaxbucket = "Not Outstanding";
 			if($principalOutstanding > 0 && $maturityDays > 0){
@@ -1085,7 +1086,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 
 			$diff=date_diff(date_create($disbDetails->payment_due_date),date_create($curdate));
-			$maturityDays = $diff->format("%a");
+			$maturityDays = $diff->format("%r%a");
 			
 			$maturityMaxbucket = "Not Outstanding";
 			if($principalOutstanding > 100 && $maturityDays > 0){
