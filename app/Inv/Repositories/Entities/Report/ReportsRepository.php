@@ -857,15 +857,15 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$maxDPD = $principalDPD > $interestDPD ? $principalDPD : $interestDPD;
 			$outstanding_max_bucket = "Not Outstanding";
 			if($principalOutstanding > 0 && $maxDPD > 0){
-				if($maxDPD < 7)
+				if($maxDPD <= 7)
 				  $outstanding_max_bucket = "01 - 07 Days";
-				else if($maxDPD < 15)
+				else if($maxDPD <= 15)
 				  $outstanding_max_bucket = "08 - 15 Days";
-				else if($maxDPD < 30)  
+				else if($maxDPD <= 30)  
 				  $outstanding_max_bucket = "16 - 30 Days";
-				else if($maxDPD < 60) 
+				else if($maxDPD <= 60) 
 				  $outstanding_max_bucket = "31 - 60 Days"; 
-				else if($maxDPD < 90)
+				else if($maxDPD <= 90)
 				  $outstanding_max_bucket = "61 - 90 Days";  
 				else
 				  $outstanding_max_bucket = "90 + Days"; 
@@ -876,15 +876,15 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			
 			$maturityMaxbucket = "Not Outstanding";
 			if($principalOutstanding > 0 && $maturityDays > 0){
-				if($maturityDays < 7)
+				if($maturityDays <= 7)
 				  $maturityMaxbucket = "01 - 07 Days";
-				else if($maturityDays < 15)
+				else if($maturityDays <= 15)
 				  $maturityMaxbucket = "08 - 15 Days";
-				else if($maturityDays < 30)  
+				else if($maturityDays <= 30)  
 				  $maturityMaxbucket = "16 - 30 Days";
-				else if($maturityDays < 60) 
+				else if($maturityDays <= 60) 
 				  $maturityMaxbucket = "31 - 60 Days"; 
-				else if($maturityDays < 90)
+				else if($maturityDays <= 90)
 				  $maturityMaxbucket = "61 - 90 Days";  
 				else
 				  $maturityMaxbucket = "90 + Days"; 
@@ -1075,7 +1075,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				else if($maxDPD <= 15)
 				  $outstanding_max_bucket = "08 - 15 Days";
 				else if($maxDPD <= 30)  
-				  $outstanding_max_bucket = "08 - 15 Days";
+				  $outstanding_max_bucket = "16 - 30 Days";
 				else if($maxDPD <= 60) 
 				  $outstanding_max_bucket = "31 - 60 Days"; 
 				else if($maxDPD <= 90)
@@ -1094,7 +1094,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				else if($maturityDays <= 15)
 				  $maturityMaxbucket = "08 - 15 Days";
 				else if($maturityDays <= 30)  
-				  $maturityMaxbucket = "08 - 15 Days";
+				  $maturityMaxbucket = "16 - 30 Days";
 				else if($maturityDays <= 60) 
 				  $maturityMaxbucket = "31 - 60 Days"; 
 				else if($maturityDays <= 90)
