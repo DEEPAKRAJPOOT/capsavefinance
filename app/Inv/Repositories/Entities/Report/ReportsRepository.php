@@ -840,9 +840,10 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $disbDetails->payment_due_date);
 				$daysToAdd = (int)$disbDetails->grace_period;
 				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
-				if(strtotime($dateoverdueFormat) < strtotime($curdate)){
+				if(strtotime($dateoverdueFormat) > strtotime($curdate) && strtotime($disbDetails->payment_due_date) <= strtotime($curdate)){
 					$principalOverdueCategory='with in grace';
-				}else{
+				}
+				else{
 					$principalOverdueCategory='Overdue';
 				}
 			}
@@ -1052,13 +1053,14 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
 		   
 			$principalOverdueCategory='';
-			if(!is_null($disbDetails->payment_due_date) && strtotime($disbDetails->payment_due_date) <= strtotime($curdate)){
+			if(!is_null($disbDetails->payment_due_date) && strtotime($disbDetails->payment_due_date) <= strtotime($curdate) ){
 				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $disbDetails->payment_due_date);
 				$daysToAdd = (int)$disbDetails->grace_period;
 				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
-				if(strtotime($dateoverdueFormat) < strtotime($curdate)){
+				if(strtotime($dateoverdueFormat) > strtotime($curdate) && strtotime($disbDetails->payment_due_date) <= strtotime($curdate)){
 					$principalOverdueCategory='with in grace';
-				}else{
+				}
+				else{
 					$principalOverdueCategory='Overdue';
 				}
 			}
