@@ -96,7 +96,7 @@ class OutstandingReportMonthly extends Command
                 array_push($dataRecords, array_combine($headings, $rowData[0]));
             }
 
-            $batchNo = strtotime("now");
+            $batchNo = Carbon::now()->setTimezone(config('common.timezone'))->timestamp;
             foreach($dataRecords as $dataRecord)
             {  
                 OutstandingReportMonthlyModel::create([
