@@ -47,29 +47,35 @@ class OutstandingReportManual implements ShouldQueue
      */
     public function handle(ReportInterface $reportsRepo)
     {
-        ini_set("memory_limit", "-1");
-        ini_set('max_execution_time', 10000);
-        
-        //Second and fourth Saturday back dated overdue report 
-        // if($this->isSecondFourthSaturday() && is_null($this->userId) && is_null($this->toDate)){
-        //     $this->toDate = date('Y-m-d');
-        // }
+        DB::beginTransaction();
+        try {
+            ini_set("memory_limit", "-1");
+            ini_set('max_execution_time', 10000);
+            
+            //Second and fourth Saturday back dated overdue report 
+            // if($this->isSecondFourthSaturday() && is_null($this->userId) && is_null($this->toDate)){
+            //     $this->toDate = date('Y-m-d');
+            // }
 
-        //$this->toDate = date('Y-m-d');
-        $this->toDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
-        $this->reportsRepo = $reportsRepo;
-        //if to date== current date OR to date is null getOutstandingReportManual else getOutstandingReportManualbackDate
-        //if($this->toDate === date('Y-m-d')){
-            $data = $this->reportsRepo->getOutstandingReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
-        //}
-        // else if($this->toDate < date('Y-m-d')){
-        //     $data = $this->reportsRepo->getBackDateOutstandingReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
-        // }
-        $filePath = $this->downloadOutstandingReport($data);
-        
-        if($this->toDate && $this->logId){
-            $this->createOutstandingReportLog($this->toDate, $this->userId, $filePath, $this->logId);
-        }
+            //$this->toDate = date('Y-m-d');
+            $this->toDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
+            $this->reportsRepo = $reportsRepo;
+            //if to date== current date OR to date is null getOutstandingReportManual else getOutstandingReportManualbackDate
+            //if($this->toDate === date('Y-m-d')){
+                $data = $this->reportsRepo->getOutstandingReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
+            //}
+            // else if($this->toDate < date('Y-m-d')){
+            //     $data = $this->reportsRepo->getBackDateOutstandingReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
+            // }
+            $filePath = $this->downloadOutstandingReport($data);
+            
+            if($this->toDate && $this->logId){
+                $this->createOutstandingReportLog($this->toDate, $this->userId, $filePath, $this->logId);
+            }
+            DB::commit();
+        } catch (Exception $ex) {
+            DB::rollback();
+        } 
     }
 
     private function createOutstandingReportLog($toDate, $userId, $filePath, $logId)
