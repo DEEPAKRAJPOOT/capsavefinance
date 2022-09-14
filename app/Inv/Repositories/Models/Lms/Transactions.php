@@ -658,7 +658,7 @@ class Transactions extends BaseModel {
             config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),
             config('lms.TRANS_TYPE.MARGIN'),
             config('lms.TRANS_TYPE.INTEREST'),
-            config('lms.TRANS_TYPE.INTEREST_OVERDUE')])){
+            config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) && $this->entry_type == 0 && is_null($this->link_trans_id) && is_null($this->parent_trans_id)){
             
             $paymentFrequency = $this->invoiceDisbursed->invoice->program_offer->payment_frequency;
             $intBornBy = $this->invoiceDisbursed->invoice->program_offer->interest_borne_by;
