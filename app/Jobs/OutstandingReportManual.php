@@ -175,9 +175,14 @@ class OutstandingReportManual implements ShouldQueue
             ->setCellValue('AO'.$rows, $rowData['overdueToRefunded']);
             $rows++;
         }
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        //$objWriter->setPreCalculateFormulas(true);
+        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+        header("Cache-Control: no-store, no-cache, must-revalidate");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+        clearstatcache();
         $dirPath = 'public/report/temp/OutstandingReport/manual/console';
         if(!App::runningInConsole()){
             $dirPath = 'public/report/temp/OutstandingReport/manual/http';
@@ -186,7 +191,7 @@ class OutstandingReportManual implements ShouldQueue
             Storage::makeDirectory($dirPath);
         }
         $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Invoice Outstanding Report'.'_'.Carbon::now()->setTimezone(config('common.timezone'))->timestamp.'.xlsx';
+        $filePath = $storage_path.'/Invoice Outstanding Report'.'_'.Carbon::now()->setTimezone(config('common.timezone'))->format('Ymd_hisA').'.xlsx';
         $objWriter->save($filePath);
         return $filePath;
     }

@@ -851,6 +851,8 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 					$principalOverdueCategory='Overdue';
 				}
 			}
+			$interestDPD = 0;
+			$principalDPD = 0;
 			$transDetails = Transactions::where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->whereNull('payment_id')->where('outstanding', '>', 0)->whereIn('trans_type',[9,16])->where('entry_type','0')->get();
 			$interestDPD = $transDetails->where('trans_type',9)->max('dpd');
 			$principalDPD = $transDetails->where('trans_type',16)->max('dpd');
@@ -876,7 +878,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				  $outstanding_max_bucket = "90 + Days"; 
 			}
 
-			$diff=date_diff(date_create($curdate),date_create($disbDetails->payment_due_date));
+			$diff=date_diff(date_create($curdate),date_create($invDisb->payment_due_date));
 			$maturityDays = $diff->format("%r%a");
 			$maturityDays = ($maturityDays > 0) ? $maturityDays : 0;
 			
@@ -934,7 +936,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'principalOverdue' => '',
 				'principalOverdueCategory'=> $principalOverdueCategory,
 				'principalDPD' => ($principalDPD > 0) ? $principalDPD : 0,
-				'interestDPD' => (round($interestOutstanding,2) > 0) ? ($interestDPD > 0 ? $interestDPD : 0) : 0,
+				'interestDPD' => ($interestDPD > 0) ? $interestDPD : 0,
 				'finalDPD' => $maxDPD,
 				'outstandingMaxBucket' => $outstanding_max_bucket,
 				'maturityDays' => $maturityDays,
