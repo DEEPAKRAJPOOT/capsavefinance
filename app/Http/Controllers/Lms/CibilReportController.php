@@ -107,14 +107,19 @@ class CibilReportController extends Controller
       foreach ($countBucketData as $key => $bucketData) {
         $this->userWiseData[$bucketData->supplier_id] = $bucketData; 
       };
+      
       // $date = "2021-10-31 23:59:59";
       $whereCond = ['date' => $date, 'status_ids' => [12,13,15]];
       $cibilRecords = $this->lmsRepo->getAllBusinessForSheet($whereCond);
 
       foreach ($cibilRecords as $key => $cibilRecord) {
+       
           $this->cibilRecord = $cibilRecord;
           $appBusiness = $cibilRecord->business;
           $appId = $appBusiness->app->app_id;
+          if((int)$cibilRecord->supplier_id == 146){
+            dd($cibilRecord);
+          }
           $userId = $appBusiness->user_id;
 
           $this->selectedDisbursedData[] = $this->cibilRecord->invoice_disbursed->invoice_disbursed_id;
@@ -122,7 +127,7 @@ class CibilReportController extends Controller
 				  $customerId = 'CAP'.$capId;
           $this->formatedCustId = $customerId; /* Helper::formatIdWithPrefix($userId, 'CUSTID') */
           $this->business_category = isset($appBusiness->msme_type) && array_search(config('common.MSMETYPE')[$appBusiness->msme_type], config('common.MSMETYPE')) ? config('common.MSMETYPE')[$appBusiness->msme_type] : NULL;
-          $this->constitutionName = !empty($appBusiness->constitution->cibil_lc_code) ? $appBusiness->constitution->name : ''; //config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution]
+          $this->constitutionName = (isset($appBusiness->constitution) && !empty($appBusiness->constitution)) ? $appBusiness->constitution->name : ''; //config('common.LEGAL_CONSTITUTION')[$appBusiness->biz_constitution]
           $this->account_status = $this->lmsRepo->getAccountStatus($userId); 
 
           $cibilReportData['bs'] = $this->_getBSData($appBusiness);
