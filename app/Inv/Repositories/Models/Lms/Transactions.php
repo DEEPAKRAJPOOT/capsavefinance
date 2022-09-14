@@ -672,6 +672,10 @@ class Transactions extends BaseModel {
                     return Carbon::parse($this->invoiceDisbursed->int_accrual_start_dt)->format('Y-m-d');
                 }
             }
+            else{
+                return Carbon::parse($this->trans_date)->format('Y-m-d');
+            }
+            
         }else{
             return Carbon::parse($this->trans_date)->format('Y-m-d');
         }
