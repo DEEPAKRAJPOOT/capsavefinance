@@ -6,6 +6,7 @@ use PHPExcel;
 use Carbon\Carbon;
 use PHPExcel_IOFactory;
 use Illuminate\Bus\Queueable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
@@ -13,8 +14,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Inv\Repositories\Contracts\ReportInterface;
-use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
 use App\Inv\Repositories\Models\Master\EmailTemplate;
+use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
 
 class OutstandingReportManual implements ShouldQueue
 {
