@@ -822,25 +822,29 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			 * For VFS, Gross if int borne by anchor and net if int borne by supplier.
 			 * For Channel Finance, Gross if int borne by buyer and net if int borne by anchor. 
 			**/
-			if($prgmType == '1'){ 
-				if($prgmDetails->interest_borne_by == '1'){
-					$disbursement_method = 'Gross';
+			//if($offer->payment_frequency == 1){
+				if($prgmType == '1'){
+					if($prgmDetails->interest_borne_by == '1'){
+						$disbursement_method = 'Gross';
+					}
 				}
-			} 
-			elseif($prgmType == '2'){
-				if($prgmDetails->interest_borne_by == '2'){
-					$disbursement_method = 'Gross';
+				elseif($prgmType == '2'){
+					if($prgmDetails->interest_borne_by == '2'){
+						$disbursement_method = 'Gross';
+					}
 				}
-			}
+			// }else{
+			// 	$disbursement_method = 'Gross';
+			// }
 		   
 			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
 		   
 			$principalOverdueCategory = '';
-			if(!is_null($disbDetails->payment_due_date) && strtotime($disbDetails->payment_due_date) <= strtotime($curdate) ){
-				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $disbDetails->payment_due_date);
+			if(($principalOutstanding > 0) && isset($invDisb->payment_due_date) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) ){
+				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $invDisb->payment_due_date);
 				$daysToAdd = (int)$disbDetails->grace_period;
 				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
-				if(strtotime($dateoverdueFormat) > strtotime($curdate) && strtotime($disbDetails->payment_due_date) <= strtotime($curdate)){
+				if(strtotime($dateoverdueFormat) > strtotime($curdate) && strtotime($invDisb->payment_due_date) <= strtotime($curdate)){
 					$principalOverdueCategory='with in grace';
 				}
 				else{
