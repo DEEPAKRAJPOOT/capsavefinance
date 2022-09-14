@@ -662,7 +662,7 @@ class Transactions extends BaseModel {
             
             $paymentFrequency = $this->invoiceDisbursed->invoice->program_offer->payment_frequency;
             $intBornBy = $this->invoiceDisbursed->invoice->program_offer->interest_borne_by;
-            $prgmType = $this->invoiceDisbursed->program->prgm_type;
+            $prgmType = $this->invoiceDisbursed->invoice->program->prgm_type;
 
             if(in_array($this->trans_type,[config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.MARGIN')])){
                 return Carbon::parse($this->invoiceDisbursed->payment_due_date)->format('Y-m-d');
