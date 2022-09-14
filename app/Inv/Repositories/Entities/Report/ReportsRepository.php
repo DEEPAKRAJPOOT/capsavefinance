@@ -791,7 +791,12 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			  
 			$totalOutstanding = ($principalOutstanding + $interestOutstanding + $overdueAmount + $charges->sum('outstanding'));
 	
-			if($totalOutstanding <= 0){
+			$interest_to_refunded = round((round($invDisb->disburseDetails->interest_refundable,2) - round($invDisb->disburseDetails->interest_refunded,2)),2);
+			$margin_to_refunded = round((round($invDisb->disburseDetails->margin_repayment,2) - round($invDisb->disburseDetails->margin_refunded,2)),2);
+			$overdueinterest_to_refunded = round((round($invDisb->disburseDetails->overdue_refundable,2) - round($invDisb->disburseDetails->overdue_refunded,2)),2);
+			
+
+			if($totalOutstanding <= 0 && $interest_to_refunded <= 0 && $margin_to_refunded <= 0 && $overdueinterest_to_refunded <= 0){
 				continue;
 			}
 	
@@ -816,23 +821,28 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				$product = 'Channel Finance';
 			}
 			
-			$disbursement_method = 'Net';
+			$disbursement_method = 'Gross';
 	
 			/**
 			 * For VFS, Gross if int borne by anchor and net if int borne by supplier.
 			 * For Channel Finance, Gross if int borne by buyer and net if int borne by anchor. 
 			**/
-			//if($offer->payment_frequency == 1){
-				if($prgmType == '1'){
-					if($prgmDetails->interest_borne_by == '1'){
-						$disbursement_method = 'Gross';
-					}
-				}
-				elseif($prgmType == '2'){
-					if($prgmDetails->interest_borne_by == '2'){
-						$disbursement_method = 'Gross';
-					}
-				}
+
+			if($prgmDetails->interest_borne_by == 2 && $offer->payment_frequency == 1 && $invDisb->total_interest > 0){
+				$disbursement_method = 'Net';
+			}
+			
+			// if($offer->payment_frequency == 1){
+			// 	if($prgmType == '1'){
+			// 		if($prgmDetails->interest_borne_by == '1'){
+			// 			$disbursement_method = 'Gross';
+			// 		}
+			// 	}
+			// 	elseif($prgmType == '2'){
+			// 		if($prgmDetails->interest_borne_by == '2'){
+			// 			$disbursement_method = 'Gross';
+			// 		}
+			// 	}
 			// }else{
 			// 	$disbursement_method = 'Gross';
 			// }
@@ -898,10 +908,6 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				  $maturityMaxbucket = "90 + Days"; 
 			}
 
-			$interest_to_refunded = round((round($invDisb->disburseDetails->interest_refundable,2) - round($invDisb->disburseDetails->interest_refunded,2)),2);
-			$margin_to_refunded = round((round($invDisb->disburseDetails->margin_repayment,2) - round($invDisb->disburseDetails->margin_refunded,2)),2);
-			$overdueinterest_to_refunded = round((round($invDisb->disburseDetails->overdue_refundable,2) - round($invDisb->disburseDetails->overdue_refunded,2)),2);
-			
 			$result[$invDisb->invoice_disbursed_id] = [
 				'custName' => $invDetails->business->biz_entity_name ?? '',
 				'customerId' => $invDetails->lms_user->customer_id ?? '',
