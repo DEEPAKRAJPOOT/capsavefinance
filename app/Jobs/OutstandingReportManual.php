@@ -55,15 +55,16 @@ class OutstandingReportManual implements ShouldQueue
         //     $this->toDate = date('Y-m-d');
         // }
 
-        $this->toDate = date('Y-m-d');
-
+        //$this->toDate = date('Y-m-d');
+        $this->toDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
         $this->reportsRepo = $reportsRepo;
         //if to date== current date OR to date is null getOutstandingReportManual else getOutstandingReportManualbackDate
-        if($this->toDate === date('Y-m-d')){
+        //if($this->toDate === date('Y-m-d')){
             $data = $this->reportsRepo->getOutstandingReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
-        }else if($this->toDate < date('Y-m-d')){
-            $data = $this->reportsRepo->getBackDateOutstandingReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
-        }
+        //}
+        // else if($this->toDate < date('Y-m-d')){
+        //     $data = $this->reportsRepo->getBackDateOutstandingReportManual(['user_id' => $this->userId, 'to_date' => $this->toDate], $this->sendMail);
+        // }
         $filePath = $this->downloadOutstandingReport($data);
         
         if($this->toDate && $this->logId){
@@ -175,14 +176,7 @@ class OutstandingReportManual implements ShouldQueue
             ->setCellValue('AO'.$rows, $rowData['overdueToRefunded']);
             $rows++;
         }
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-        header("Cache-Control: no-store, no-cache, must-revalidate");
-        header("Cache-Control: post-check=0, pre-check=0", false);
-        header("Pragma: no-cache");
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
-        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
-        clearstatcache();
         $dirPath = 'public/report/temp/OutstandingReport/manual/console';
         if(!App::runningInConsole()){
             $dirPath = 'public/report/temp/OutstandingReport/manual/http';
@@ -191,7 +185,18 @@ class OutstandingReportManual implements ShouldQueue
             Storage::makeDirectory($dirPath);
         }
         $storage_path = storage_path('app/'.$dirPath);
-        $filePath = $storage_path.'/Invoice Outstanding Report'.'_'.Carbon::now()->setTimezone(config('common.timezone'))->format('Ymd_hisA').'.xlsx';
+        $filename = 'Invoice Outstanding Report'.'_'.Carbon::now()->setTimezone(config('common.timezone'))->format('Ymd_hisA').'.xlsx';
+        $filePath = $storage_path.'/'.$filename;
+        
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'); //mime type
+        header('Content-Disposition: attachment;filename="'.$filePath.'"'); //tell browser what's the file name
+        header('Cache-Control: max-age=0'); //no cache
+        header("Cache-Control: no-store, no-cache, must-revalidate");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($sheet, 'Excel2007');
+       
         $objWriter->save($filePath);
         return $filePath;
     }
