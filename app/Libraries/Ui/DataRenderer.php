@@ -4892,7 +4892,7 @@ class DataRenderer implements DataProviderInterface
                 'tran_id',
                 function ($trans) {
                     if(isset($trans->transaction)){
-                        if($trans->transaction->trans_type == 16 && $trans->transaction->entry_type == 0){
+                        if($trans->transaction->trans_type == 16 || $trans->transaction->trans_type == 32  && $trans->transaction->entry_type == 0){
                             return (isset($trans->transaction->invoiceDisbursed->disbursal->tran_id)) ? $trans->transaction->invoiceDisbursed->disbursal->tran_id : '';
                         }elseif($trans->transaction->entry_type == 1 && !is_null($trans->transaction->payment_id)){
                            return $trans->transaction->payment->transactionNo;

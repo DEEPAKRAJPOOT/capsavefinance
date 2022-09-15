@@ -202,8 +202,12 @@ class SoaController extends Controller
                 $dr = round($data->debit_amount,2);
                 $utr = null;
                 if(isset($data->transaction)){
-                    if($data->transaction->trans_type == 16 && $data->transaction->entry_type == 0){
-                        $utr = $data->transaction->invoiceDisbursed->disbursal->tran_id;
+                    if($data->transaction->trans_type == 16 || $data->transaction->trans_type == 32 && $data->transaction->entry_type == 0){
+                        if(!isset($data->transaction->invoiceDisbursed->disbursal)){
+                            $utr = '';
+                        }else{
+                            $utr = $data->transaction->invoiceDisbursed->disbursal->tran_id;
+                        }
                     }elseif($data->transaction->entry_type == 1 && !is_null($data->transaction->payment_id)){
                         $utr = $data->transaction->payment->transactionNo;
                         
