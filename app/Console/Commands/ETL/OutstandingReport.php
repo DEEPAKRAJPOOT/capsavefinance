@@ -44,15 +44,17 @@ class OutstandingReport extends Command
     {
         $reportDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
         ini_set('memory_limit', '-1'); //
-        $filePath = OutstandingReportLog::whereNull('user_id')->whereDate('to_date',$reportDate)->where('created_by','0')->orderBy('id','desc')->limit(1)->first()->file_path;
-
+        $outstandingReportLog = OutstandingReportLog::whereNull('user_id')->whereDate('to_date',$reportDate)->where('created_by','0')->orderBy('id','desc')->limit(1)->first();
+        $filePath = $outstandingReportLog->file_path;
+        $reportLogId = $outstandingReportLog->id;
         if(file_exists($filePath)) {
             try {
                 $inputFileType = PHPExcel_IOFactory::identify($filePath);
                 $objReader = PHPExcel_IOFactory::createReader($inputFileType);
                 $objPHPExcel = $objReader->load($filePath);
             } catch (\Exception $e) {
-                die('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
+                $this->error('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
+                die();
             }
             //  Get worksheet dimensions
             $sheet = $objPHPExcel->getSheet(0);
@@ -91,10 +93,11 @@ class OutstandingReport extends Command
                 array_push($dataRecords, array_combine($headings, $rowData[0]));
             }
 
-            $batchNo = strtotime("now");
+            $batchNo = Carbon::now()->setTimezone(config('common.timezone'))->timestamp;
             foreach($dataRecords as $dataRecord)
             {  
                 OutstandingReportModel::create([
+                    'report_log_id' => $reportLogId, 
                     'Batch No' => $batchNo,
                     'Customer Name' => $dataRecord['Customer Name'],
                     'Customer ID' => $dataRecord['Customer ID'],

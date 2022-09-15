@@ -42,22 +42,18 @@ class OutstandingReportMonthly extends Command
      */
     public function handle()
     {
-        $reportDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
-        $end = new Carbon('last day of last month');
-        $monthEndDate = Carbon::parse($end)->format('Y-m-d');
-        ini_set('memory_limit', '-1'); // now()->subDays(1)->format('Ymd');
-        $data = OutstandingReportLog::whereNull('user_id')->whereDate('to_date',$reportDate)->where('created_by','0')->orderBy('id','desc')->limit(1)->first();
-        if(isset($data)){
-            $filePath = $data->file_path;
-            $lastPulledDate = $data->created_at;
-            $lastPulledDateString = Carbon::parse($lastPulledDate)->format("Y-m-d");
-        if(file_exists($filePath) && $reportDate === $lastPulledDateString) {
+        $reportDate = Carbon::now()->setTimezone(config('common.timezone'))->endOfMonth()->format('Y-m-d');
+        $outstandingReportLog = OutstandingReportLog::whereNull('user_id')->whereDate('to_date',$reportDate)->where('created_by','0')->orderBy('id','desc')->limit(1)->first();
+        $filePath = $outstandingReportLog->file_path ?? NULL;
+        $reportLogId = $outstandingReportLog->id ?? NULL;
+        if(file_exists($filePath)) {
             try {
                 $inputFileType = PHPExcel_IOFactory::identify($filePath);
                 $objReader = PHPExcel_IOFactory::createReader($inputFileType);
                 $objPHPExcel = $objReader->load($filePath);
             } catch (\Exception $e) {
-                die('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
+                $this->error('Error loading file "'.pathinfo($filePath,PATHINFO_BASENAME).'": '.$e->getMessage());
+                die();
             }
             //  Get worksheet dimensions
             $sheet = $objPHPExcel->getSheet(0);
@@ -100,6 +96,7 @@ class OutstandingReportMonthly extends Command
             foreach($dataRecords as $dataRecord)
             {  
                 OutstandingReportMonthlyModel::create([
+                    'report_log_id' => $reportLogId, 
                     'Batch No' => $batchNo,
                     'Customer Name' => $dataRecord['Customer Name'],
                     'Customer ID' => $dataRecord['Customer ID'],
@@ -148,7 +145,5 @@ class OutstandingReportMonthly extends Command
         } else {
             $this->info("No Outstanding Report Manual found.");
         }
-        }
-        
     }
 }
