@@ -140,7 +140,7 @@
                             <span style="font-size: small;"><strong>Tran Type</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
-                            <span style="font-size: small;"><strong>UTR</strong></span>
+                            <span style="font-size: small;"><strong>UTR No</strong></span>
                         </td>
                         <td style="border: 1px solid #ddd;padding: 5px;" bgcolor="#f2f2f2">
                             <span style="font-size: small;"><strong>Batch No</strong></span>

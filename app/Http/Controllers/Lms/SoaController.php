@@ -382,7 +382,7 @@ class SoaController extends Controller
                 ->setCellValue('B'.$rows, 'Tran Date')
                 ->setCellValue('C'.$rows, 'Value Date')
                 ->setCellValue('D'.$rows, 'Tran Type')
-                ->setCellValue('E'.$rows, 'UTR')
+                ->setCellValue('E'.$rows, 'UTR No')
                 ->setCellValue('F'.$rows, 'Batch No')
                 ->setCellValue('G'.$rows, 'Invoice No')
                 ->setCellValue('H'.$rows, 'Capsave Invoice No')
