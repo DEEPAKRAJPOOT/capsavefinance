@@ -6,7 +6,7 @@ try {
             processing: true,
             serverSide: true,
             pageLength: 50,
-            deferLoading: 0,
+            // deferLoading: 0,
             dom: 'lBrtip',
             bSort: false,
             responsive: true,

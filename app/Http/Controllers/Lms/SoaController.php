@@ -202,7 +202,7 @@ class SoaController extends Controller
                 $dr = round($data->debit_amount,2);
                 $utr = null;
                 if(isset($data->transaction)){
-                    if($data->transaction->trans_type == 16 || $data->transaction->trans_type == 32 && $data->transaction->entry_type == 0){
+                    if($data->transaction->trans_type == 16 && $data->transaction->entry_type == 0){
                         if(!isset($data->transaction->invoiceDisbursed->disbursal)){
                             $utr = '';
                         }else{
@@ -211,6 +211,8 @@ class SoaController extends Controller
                     }elseif($data->transaction->entry_type == 1 && !is_null($data->transaction->payment_id)){
                         $utr = $data->transaction->payment->transactionNo;
                         
+                    }elseif($data->transaction->trans_type == 32 && $data->transaction->entry_type == 0){
+                        $utr = $data->transaction->refundTrans->refundReq->tran_no;
                     }
                 }
                 $balance = round(($balance + $dr - $cr),2);
@@ -275,7 +277,7 @@ class SoaController extends Controller
                         });
                     }
                 }
-                $transactionList->with('transaction.invoiceDisbursed.disbursal','transaction.payment')->whereHas('lmsUser',function ($query) use ($request) {
+                $transactionList->with('transaction.invoiceDisbursed.disbursal','transaction.payment','transaction.refundTrans.refundReq')->whereHas('lmsUser',function ($query) use ($request) {
                     $customer_id = trim($request->get('customer_id'));
                     $query->where('customer_id', '=', "$customer_id");
                 });

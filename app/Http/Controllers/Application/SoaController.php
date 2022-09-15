@@ -148,7 +148,7 @@ class SoaController extends Controller {
                 $dr = round($data->debit_amount,2);
                 $utr = null;
                 if(isset($data->transaction)){
-                    if($data->transaction->trans_type == 16 || $data->transaction->trans_type == 32 && $data->transaction->entry_type == 0){
+                    if($data->transaction->trans_type == 16 && $data->transaction->entry_type == 0){
                         if(!isset($data->transaction->invoiceDisbursed->disbursal)){
                             $utr = '';
                         }else{
@@ -157,6 +157,8 @@ class SoaController extends Controller {
                     }elseif($data->transaction->entry_type == 1 && !is_null($data->transaction->payment_id)){
                         $utr = $data->transaction->payment->transactionNo;
                         
+                    }elseif($data->transaction->trans_type == 32 && $data->transaction->entry_type == 0){
+                        $utr = $data->transaction->refundTrans->refundReq->tran_no;
                     }
                 }
                 $balance = round(($balance + $dr - $cr),2);
@@ -166,6 +168,7 @@ class SoaController extends Controller {
                 $preparedData[$key][$k]['trans_date'] = date('d-m-Y',strtotime($data->trans_date));
                 $preparedData[$key][$k]['value_date'] = date('d-m-Y',strtotime($data->value_date));
                 $preparedData[$key][$k]['trans_type'] = trim($data->transaction->transname);
+                $preparedData[$key][$k]['utr'] = $utr;
                 $preparedData[$key][$k]['batch_no'] = $data->batch_no;
                 $preparedData[$key][$k]['invoice_no'] = $data->invoice_no;
                 $preparedData[$key][$k]['capsave_invoice_no'] = $data->transaction->capsaveinvoiceno;
@@ -265,7 +268,7 @@ class SoaController extends Controller {
                 ->setCellValue('B'.$rows, 'Tran Date')
                 ->setCellValue('C'.$rows, 'Value Date')
                 ->setCellValue('D'.$rows, 'Tran Type')
-                ->setCellValue('E'.$rows, 'Tran Type')
+                ->setCellValue('E'.$rows, 'UTR No')
                 ->setCellValue('F'.$rows, 'Batch No')
                 ->setCellValue('G'.$rows, 'Invoice No')
                 ->setCellValue('H'.$rows, 'Capsave Invoice No')
