@@ -43,7 +43,7 @@ class OutstandingReport extends BaseModel
         'Invoice Level Charges Outstanding',
         'Total Outstanding',
         'Grace Days Interest',
-        'Grace Days - Principal',
+        'Grace Days Principal',
         'Principal Overdue',
         'Principal Overdue Category',
         'Principal DPD',
