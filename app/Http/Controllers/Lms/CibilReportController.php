@@ -117,9 +117,6 @@ class CibilReportController extends Controller
           $this->cibilRecord = $cibilRecord;
           $appBusiness = $cibilRecord->business;
           $appId = $appBusiness->app->app_id;
-          if((int)$cibilRecord->supplier_id == 146){
-            dd($cibilRecord);
-          }
           $userId = $appBusiness->user_id;
 
           $this->selectedDisbursedData[] = $this->cibilRecord->invoice_disbursed->invoice_disbursed_id;
