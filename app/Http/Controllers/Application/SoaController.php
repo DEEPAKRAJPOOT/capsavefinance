@@ -146,6 +146,19 @@ class SoaController extends Controller {
             foreach ($expData as $k => $data) {
                 $cr = round($data->credit_amount,2);
                 $dr = round($data->debit_amount,2);
+                $utr = null;
+                if(isset($data->transaction)){
+                    if($data->transaction->trans_type == 16 || $data->transaction->trans_type == 32 && $data->transaction->entry_type == 0){
+                        if(!isset($data->transaction->invoiceDisbursed->disbursal)){
+                            $utr = '';
+                        }else{
+                            $utr = $data->transaction->invoiceDisbursed->disbursal->tran_id;
+                        }
+                    }elseif($data->transaction->entry_type == 1 && !is_null($data->transaction->payment_id)){
+                        $utr = $data->transaction->payment->transactionNo;
+                        
+                    }
+                }
                 $balance = round(($balance + $dr - $cr),2);
                 $preparedData[$key][$k]['payment_id'] = $data->transaction->payment_id;
                 $preparedData[$key][$k]['parent_trans_id'] = $data->transaction->parent_trans_id;
@@ -204,7 +217,7 @@ class SoaController extends Controller {
                 }
             }
 
-            $transactionList->whereHas('lmsUser',function ($query) use ($request) {
+            $transactionList->with('transaction.invoiceDisbursed.disbursal','transaction.payment')->whereHas('lmsUser',function ($query) use ($request) {
                 $customer_id = trim($request->get('customer_id'));
                 $query->where('customer_id', '=', "$customer_id");
             });        
@@ -252,16 +265,17 @@ class SoaController extends Controller {
                 ->setCellValue('B'.$rows, 'Tran Date')
                 ->setCellValue('C'.$rows, 'Value Date')
                 ->setCellValue('D'.$rows, 'Tran Type')
-                ->setCellValue('E'.$rows, 'Batch No')
-                ->setCellValue('F'.$rows, 'Invoice No')
-                ->setCellValue('G'.$rows, 'Capsave Invoice No')
-                ->setCellValue('H'.$rows, 'Narration')
-                ->setCellValue('I'.$rows, 'Currency')
-                ->setCellValue('J'.$rows, 'Debit')
-                ->setCellValue('K'.$rows, 'Credit')
-                ->setCellValue('L'.$rows, 'Balance');
+                ->setCellValue('E'.$rows, 'Tran Type')
+                ->setCellValue('F'.$rows, 'Batch No')
+                ->setCellValue('G'.$rows, 'Invoice No')
+                ->setCellValue('H'.$rows, 'Capsave Invoice No')
+                ->setCellValue('I'.$rows, 'Narration')
+                ->setCellValue('J'.$rows, 'Currency')
+                ->setCellValue('K'.$rows, 'Debit')
+                ->setCellValue('L'.$rows, 'Credit')
+                ->setCellValue('M'.$rows, 'Balance');
         
-        $sheet->getActiveSheet()->getStyle('A'.$rows.':L'.$rows)->getFill()->applyFromArray(array(
+        $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->getFill()->applyFromArray(array(
             'type' => PHPExcel_Style_Fill::FILL_SOLID,
             'startcolor' => [ 'rgb' => "CAD7D3" ],
             'font' => [ 'bold'  => true ]
@@ -285,28 +299,29 @@ class SoaController extends Controller {
                     ->setCellValue('B' . $rows, $rowData['trans_date'] ?: '')
                     ->setCellValue('C' . $rows, $rowData['value_date'] ?: '')
                     ->setCellValue('D' . $rows, $rowData['trans_type'] ?: '')
-                    ->setCellValue('E' . $rows, $rowData['batch_no'] ?: '')
-                    ->setCellValue('F' . $rows, $rowData['invoice_no'] ?: '')
-                    ->setCellValue('G' . $rows, $rowData['capsave_invoice_no'] ?: '')
-                    ->setCellValue('H' . $rows, $rowData['narration'] ?: '')
-                    ->setCellValue('I' . $rows, $rowData['currency'] ?: '')
-                    ->setCellValue('J' . $rows, $rowData['debit'] ?: '')
-                    ->setCellValue('K' . $rows, $rowData['credit'] ?: '')
-                    ->setCellValue('L' . $rows, $rowData['balance'] ?: '');
+                    ->setCellValue('E' . $rows, $rowData['utr'] ?: '')
+                    ->setCellValue('F' . $rows, $rowData['batch_no'] ?: '')
+                    ->setCellValue('G' . $rows, $rowData['invoice_no'] ?: '')
+                    ->setCellValue('H' . $rows, $rowData['capsave_invoice_no'] ?: '')
+                    ->setCellValue('I' . $rows, $rowData['narration'] ?: '')
+                    ->setCellValue('J' . $rows, $rowData['currency'] ?: '')
+                    ->setCellValue('K' . $rows, $rowData['debit'] ?: '')
+                    ->setCellValue('L' . $rows, $rowData['credit'] ?: '')
+                    ->setCellValue('M' . $rows, $rowData['balance'] ?: '');
                 
                 $color = 'FFFFFF';
                 if($rowData['soabackgroundcolor']){
                     $color = trim($rowData['soabackgroundcolor'],'#');
                 }
                 
-                $sheet->getActiveSheet()->getStyle('A'.$rows.':L'.$rows)->getFill()->applyFromArray(array(
+                $sheet->getActiveSheet()->getStyle('A'.$rows.':M'.$rows)->getFill()->applyFromArray(array(
                     'type' => PHPExcel_Style_Fill::FILL_SOLID,
                     'startcolor' => array( 'rgb' => $color)
                 ));
                 $rows++;
             }
         }
-        foreach(range('A','L') as $columnID) {
+        foreach(range('A','M') as $columnID) {
             $sheet->getActiveSheet()->getColumnDimension($columnID)
                 ->setAutoSize(true);
         }

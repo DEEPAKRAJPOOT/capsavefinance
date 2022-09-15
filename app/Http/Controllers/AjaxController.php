@@ -5756,7 +5756,7 @@ if ($err) {
                 }
             }
         }
-        $transactionList = $transactionList->whereHas('lmsUser',function ($query) use ($request) {
+        $transactionList = $transactionList->with('transaction.invoiceDisbursed.disbursal','transaction.payment')->whereHas('lmsUser',function ($query) use ($request) {
             $customer_id = trim($request->get('customer_id')) ?? null ;
             $query->where('customer_id', '=', "$customer_id");
         })
@@ -5789,7 +5789,7 @@ if ($err) {
             }
         }
 
-        $transactionList = $transactionList->whereHas('lmsUser',function ($query) use ($request) {
+        $transactionList = $transactionList->with('transaction.invoiceDisbursed.disbursal','transaction.payment')->whereHas('lmsUser',function ($query) use ($request) {
             $customer_id = trim($request->get('customer_id')) ?? null ;
             $query->where('customer_id', '=', "$customer_id");
         })

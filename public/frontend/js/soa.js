@@ -38,6 +38,7 @@ try {
                 {data: 'trans_date', width:'80px'},
                 {data: 'value_date', width:'80px'},
                 {data: 'trans_type'},
+                {data: 'tran_id'},
                 {data: 'batch_no'},
                 {data: 'invoice_no'},
                 {data: 'capsave_invoice_no'},

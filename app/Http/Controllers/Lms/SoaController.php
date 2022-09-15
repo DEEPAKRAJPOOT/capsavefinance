@@ -438,7 +438,7 @@ class SoaController extends Controller
                 $rows++;
             }
         }
-        foreach(range('A','L') as $columnID) {
+        foreach(range('A','M') as $columnID) {
             $sheet->getActiveSheet()->getColumnDimension($columnID)
                   ->setWidth('13');
         }
