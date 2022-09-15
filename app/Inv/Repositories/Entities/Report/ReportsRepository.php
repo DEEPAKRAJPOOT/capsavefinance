@@ -874,7 +874,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 
 			$maxDPD = $principalDPD > $interestDPD ? $principalDPD : $interestDPD;
 			$outstanding_max_bucket = "Not Outstanding";
-			if($principalOutstanding > 0 && $maxDPD > 0){
+			if($maxDPD > 0){
 				if($maxDPD <= 7)
 				  $outstanding_max_bucket = "01 - 07 Days";
 				else if($maxDPD <= 15)
@@ -940,7 +940,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'totalOutStanding' => round($totalOutstanding,2),
 				'intGraceDays' => '',
 				'principalGraceDays' => $disbDetails->grace_period,
-				'principalOverdue' => '',
+				'principalOverdue' => $principalOverdue,
 				'principalOverdueCategory'=> $principalOverdueCategory,
 				'principalDPD' => ($principalDPD > 0) ? $principalDPD : 0,
 				'interestDPD' => ($interestDPD > 0) ? $interestDPD : 0,
