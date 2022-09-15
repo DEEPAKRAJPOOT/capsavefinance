@@ -13,6 +13,7 @@ class OutstandingReportMonthly extends BaseModel
     public $userstamps = false;
 
     protected $fillable = [
+        'report_log_id',
         'Batch No',
         'Customer Name',
         'Customer ID',
