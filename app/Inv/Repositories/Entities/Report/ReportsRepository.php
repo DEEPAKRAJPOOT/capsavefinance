@@ -460,7 +460,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$odDaysWithoutGrace = ($curOddays)?$curOddays - $invDisb->grace_period:0;
 
 			$diff=date_diff(date_create($invDisb->payment_due_date),date_create($curdate));
-			$maturityDays = $diff->format("%a");
+			$maturityDays = $diff->format("%r%a");
 			$invDetails = $invDisb->invoice;
 			$anchor_name = $invDetails->anchor->comp_name;
 			$offerDetails = $invDetails->program_offer->toArray();
@@ -777,6 +777,9 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 			$principalOutstanding = round((round($disbDetails->principal_amount,2) - (round($disbDetails->principal_repayment,2) + round($disbDetails->principal_waived_of,2) + round($disbDetails->principal_tds,2) + round($disbDetails->principal_write_off,2))),2);
 			$principalOutstanding = $principalOutstanding > 0 ? $principalOutstanding : 0;
+
+			$marginOutstanding = round((round($disbDetails->margin_amount,2) - (round($disbDetails->margin_repayment,2) + round($disbDetails->margin_waived_of,2) + round($disbDetails->margin_tds,2) + round($disbDetails->margin_write_off,2))),2);
+			$marginOutstanding = $marginOutstanding > 0 ? $marginOutstanding : 0;
 	
 			$interestOutstanding = round((round($disbDetails->interest_capitalized,2) - (round($disbDetails->interest_repayment,2) + round($disbDetails->interest_waived_off,2) + round($disbDetails->interest_tds,2) + round($disbDetails->interset_write_off,2))),2);
 			$interestOutstanding = $interestOutstanding > 0 ? $interestOutstanding : 0;
@@ -784,11 +787,16 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$overdueAmount = round((round($disbDetails->overdue_capitalized,2) - round($disbDetails->overdue_repayment,2)- round($disbDetails->overdue_waived_off,2) - round($disbDetails->overdue_tds,2) - round($disbDetails->overdue_write_off,2)),2);
 			$overdueAmount = $overdueAmount > 0 ? $overdueAmount : 0;
 	
-			$charges = $invDisb->transaction()->where('trans_type','>', '50')->where('entry_type','0')->where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->select(['amount', 'outstanding'])->get();
-		   
+			$charges = Transactions::where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->where('trans_type','>', '50')->where('entry_type','0')->where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->select(['amount', 'outstanding'])->get();
+			  
 			$totalOutstanding = ($principalOutstanding + $interestOutstanding + $overdueAmount + $charges->sum('outstanding'));
 	
-			if($totalOutstanding <= 0){
+			$interest_to_refunded = round((round($invDisb->disburseDetails->interest_refundable,2) - round($invDisb->disburseDetails->interest_refunded,2)),2);
+			$margin_to_refunded = round((round($invDisb->disburseDetails->margin_repayment,2) - round($invDisb->disburseDetails->margin_refunded,2)),2);
+			$overdueinterest_to_refunded = round((round($invDisb->disburseDetails->overdue_refundable,2) - round($invDisb->disburseDetails->overdue_refunded,2)),2);
+			
+
+			if($totalOutstanding <= 0 && $interest_to_refunded <= 0 && $margin_to_refunded <= 0 && $overdueinterest_to_refunded <= 0 && $marginOutstanding <= 0){
 				continue;
 			}
 	
@@ -805,84 +813,102 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			}
 	
 			$prgmDetails = $invDetails->program;
-	
+
 			$prgmType = $prgmDetails->prgm_type;
+			if($prgmType == 1){
+				$product = 'Vendor Finance';
+			}elseif($prgmType == 2){
+				$product = 'Channel Finance';
+			}
 			
-			$disbursement_method = 'Net';
+			$disbursement_method = 'Gross';
 	
 			/**
 			 * For VFS, Gross if int borne by anchor and net if int borne by supplier.
 			 * For Channel Finance, Gross if int borne by buyer and net if int borne by anchor. 
 			**/
-			if($prgmType == '1'){ 
-				if($prgmDetails->interest_borne_by == '1'){
-					$disbursement_method = 'Gross';
-				}
-			} 
-			elseif($prgmType == '2'){
-				if($prgmDetails->interest_borne_by == '2'){
-					$disbursement_method = 'Gross';
-				}
+
+			if($prgmDetails->interest_borne_by == 2 && $offer->payment_frequency == 1 && $invDisb->total_interest > 0){
+				$disbursement_method = 'Net';
 			}
+			
+			// if($offer->payment_frequency == 1){
+			// 	if($prgmType == '1'){
+			// 		if($prgmDetails->interest_borne_by == '1'){
+			// 			$disbursement_method = 'Gross';
+			// 		}
+			// 	}
+			// 	elseif($prgmType == '2'){
+			// 		if($prgmDetails->interest_borne_by == '2'){
+			// 			$disbursement_method = 'Gross';
+			// 		}
+			// 	}
+			// }else{
+			// 	$disbursement_method = 'Gross';
+			// }
 		   
 			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
-		   
-			$principalOverdueCategory='';
-			if(strtotime($disbDetails->payment_due_date) > strtotime($curdate)){
-				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $disbDetails->payment_due_date);
+			$principalOverdue = '';
+			$principalOverdueCategory = '';
+			if(($principalOutstanding > 0) && isset($invDisb->payment_due_date) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) ){
+				$principalOverdue = $principalOutstanding;
+				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $invDisb->payment_due_date);
 				$daysToAdd = (int)$disbDetails->grace_period;
 				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
-				if(strtotime($dateoverdueFormat) < strtotime($curdate)){
+				if(strtotime($dateoverdueFormat) > strtotime($curdate) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) && $daysToAdd > 0){
 					$principalOverdueCategory='with in grace';
-				}else{
+				}
+				else{
 					$principalOverdueCategory='Overdue';
 				}
 			}
-			$transDetails = $invDisb->transactions()->whereNull('payment_id')->where('outstanding', '>', 0)->whereIn('trans_type',[9,16])->where('entry_type','0')->get();
-			
+			$interestDPD = 0;
+			$principalDPD = 0;
+			$transDetails = Transactions::where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->whereNull('payment_id')->where('outstanding', '>', 0)->whereIn('trans_type',[9,16])->where('entry_type','0')->get();
 			$interestDPD = $transDetails->where('trans_type',9)->max('dpd');
 			$principalDPD = $transDetails->where('trans_type',16)->max('dpd');
 			unset($transDetails);
+
+			$principalDPD = (round($principalOutstanding,2) > 0) ? ($principalDPD > 0 ? $principalDPD : 0) : 0;
+			$interestDPD = (round($interestOutstanding,2) > 0) ? ($interestDPD > 0 ? $interestDPD : 0) : 0;
+
 			$maxDPD = $principalDPD > $interestDPD ? $principalDPD : $interestDPD;
 			$outstanding_max_bucket = "Not Outstanding";
-			if($principalOutstanding > 100 && $maxDPD > 0){
-				if($maxDPD < 7)
+			if($maxDPD > 0){
+				if($maxDPD <= 7)
 				  $outstanding_max_bucket = "01 - 07 Days";
-				else if($maxDPD < 15)
+				else if($maxDPD <= 15)
 				  $outstanding_max_bucket = "08 - 15 Days";
-				else if($maxDPD < 30)  
-				  $outstanding_max_bucket = "08 - 15 Days";
-				else if($maxDPD < 60) 
+				else if($maxDPD <= 30)  
+				  $outstanding_max_bucket = "16 - 30 Days";
+				else if($maxDPD <= 60) 
 				  $outstanding_max_bucket = "31 - 60 Days"; 
-				else if($maxDPD < 90)
+				else if($maxDPD <= 90)
 				  $outstanding_max_bucket = "61 - 90 Days";  
 				else
 				  $outstanding_max_bucket = "90 + Days"; 
 			}
 
-			$diff=date_diff(date_create($disbDetails->payment_due_date),date_create($curdate));
-			$maturityDays = $diff->format("%a");
+			$diff=date_diff(date_create($curdate),date_create($invDisb->payment_due_date));
+			$maturityDays = $diff->format("%r%a");
+			$maturityDays = ($maturityDays > 0) ? $maturityDays : 0;
 			
 			$maturityMaxbucket = "Not Outstanding";
-			if($principalOutstanding > 100 && $maturityDays > 0){
-				if($maturityDays < 7)
+			if($principalOutstanding > 0 && $maturityDays > 0){
+				if($maturityDays <= 7)
 				  $maturityMaxbucket = "01 - 07 Days";
-				else if($maturityDays < 15)
+				else if($maturityDays <= 15)
 				  $maturityMaxbucket = "08 - 15 Days";
-				else if($maturityDays < 30)  
-				  $maturityMaxbucket = "08 - 15 Days";
-				else if($maturityDays < 60) 
+				else if($maturityDays <= 30)  
+				  $maturityMaxbucket = "16 - 30 Days";
+				else if($maturityDays <= 60) 
 				  $maturityMaxbucket = "31 - 60 Days"; 
-				else if($maturityDays < 90)
+				else if($maturityDays <= 90)
 				  $maturityMaxbucket = "61 - 90 Days";  
 				else
 				  $maturityMaxbucket = "90 + Days"; 
 			}
 
-			$interest_to_refunded = round((round($invDisb->disburseDetails->interest_refundable,2) - round($invDisb->disburseDetails->interest_refunded,2)),2);
-			$margin_to_refunded = round((round($invDisb->disburseDetails->margin_repayment,2) - round($invDisb->disburseDetails->margin_refunded,2)),2);
-			$overdueinterest_to_refunded = round((round($invDisb->disburseDetails->overdue_refundable,2) - round($invDisb->disburseDetails->overdue_refunded,2)),2);
-			
 			$result[$invDisb->invoice_disbursed_id] = [
 				'custName' => $invDetails->business->biz_entity_name ?? '',
 				'customerId' => $invDetails->lms_user->customer_id ?? '',
@@ -896,6 +922,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'chargeDeduction' => round(0,2),
 				'invoiceLevelChrg'=> round($charges->sum('amount'),2),
 				'disburseAmount' => round(($invDisb->disburse_amt - ($invDisb->total_interest + $invDisb->processing_fee + $invDisb->processing_fee_gst)),2),
+				'product' => $product,
 				'paymentFrequency' => $payment_frequency,
 				'interestPosted' => round($disbDetails->interest_capitalized,2), 
 				'disbursementMethod' => $disbursement_method,
@@ -905,6 +932,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'roi' => $invDisb->interest_rate,
 				'odi' => $odiInterest,
 				'principalOut' => round($principalOutstanding,2),
+				'marginOut' => round($marginOutstanding,2),
 				'interestOut' => round($interestOutstanding,2),
 				'overduePosted' => round($disbDetails->overdue_capitalized,2),
 				'overdueOut' => round($overdueAmount,2),
@@ -912,10 +940,10 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'totalOutStanding' => round($totalOutstanding,2),
 				'intGraceDays' => '',
 				'principalGraceDays' => $disbDetails->grace_period,
-				'principalOverdue' => '',
+				'principalOverdue' => $principalOverdue,
 				'principalOverdueCategory'=> $principalOverdueCategory,
 				'principalDPD' => ($principalDPD > 0) ? $principalDPD : 0,
-				'interestDPD' => (round($interestOutstanding,2) > 0) ? ($interestDPD > 0 ? $interestDPD : 0) : 0,
+				'interestDPD' => ($interestDPD > 0) ? $interestDPD : 0,
 				'finalDPD' => $maxDPD,
 				'outstandingMaxBucket' => $outstanding_max_bucket,
 				'maturityDays' => $maturityDays,
@@ -1038,13 +1066,14 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
 		   
 			$principalOverdueCategory='';
-			if(strtotime($disbDetails->payment_due_date) > strtotime($curdate)){
+			if(!is_null($disbDetails->payment_due_date) && strtotime($disbDetails->payment_due_date) <= strtotime($curdate) ){
 				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $disbDetails->payment_due_date);
 				$daysToAdd = (int)$disbDetails->grace_period;
 				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
-				if(strtotime($dateoverdueFormat) < strtotime($curdate)){
+				if(strtotime($dateoverdueFormat) > strtotime($curdate) && strtotime($disbDetails->payment_due_date) <= strtotime($curdate)){
 					$principalOverdueCategory='with in grace';
-				}else{
+				}
+				else{
 					$principalOverdueCategory='Overdue';
 				}
 			}
@@ -1057,34 +1086,34 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 
 			$outstanding_max_bucket = "Not Outstanding";
 			if($principalOutstanding > 100 && $maxDPD > 0){
-				if($maxDPD < 7)
+				if($maxDPD <= 7)
 				  $outstanding_max_bucket = "01 - 07 Days";
-				else if($maxDPD < 15)
+				else if($maxDPD <= 15)
 				  $outstanding_max_bucket = "08 - 15 Days";
-				else if($maxDPD < 30)  
-				  $outstanding_max_bucket = "08 - 15 Days";
-				else if($maxDPD < 60) 
+				else if($maxDPD <= 30)  
+				  $outstanding_max_bucket = "16 - 30 Days";
+				else if($maxDPD <= 60) 
 				  $outstanding_max_bucket = "31 - 60 Days"; 
-				else if($maxDPD < 90)
+				else if($maxDPD <= 90)
 				  $outstanding_max_bucket = "61 - 90 Days";  
 				else
 				  $outstanding_max_bucket = "90 + Days"; 
 			}
 
-			$diff=date_diff(date_create($disbDetails->payment_due_date),date_create($curdate));
-			$maturityDays = $diff->format("%a");
+			$diff=date_diff(date_create($curdate),date_create($disbDetails->payment_due_date));
+			$maturityDays = $diff->format("%r%a");
 			
 			$maturityMaxbucket = "Not Outstanding";
 			if($principalOutstanding > 100 && $maturityDays > 0){
-				if($maturityDays < 7)
+				if($maturityDays <= 7)
 				  $maturityMaxbucket = "01 - 07 Days";
-				else if($maturityDays < 15)
+				else if($maturityDays <= 15)
 				  $maturityMaxbucket = "08 - 15 Days";
-				else if($maturityDays < 30)  
-				  $maturityMaxbucket = "08 - 15 Days";
-				else if($maturityDays < 60) 
+				else if($maturityDays <= 30)  
+				  $maturityMaxbucket = "16 - 30 Days";
+				else if($maturityDays <= 60) 
 				  $maturityMaxbucket = "31 - 60 Days"; 
-				else if($maturityDays < 90)
+				else if($maturityDays <= 90)
 				  $maturityMaxbucket = "61 - 90 Days";  
 				else
 				  $maturityMaxbucket = "90 + Days"; 
@@ -1127,7 +1156,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 				'principalOverdue' => '',
 				'principalOverdueCategory'=> $principalOverdueCategory,
 				'principalDPD' => $principalDPD,
-				'interestPDP' => 0,
+				'interestDPD' => 0,
 				'finalDPD' => $maxDPD,
 				'outstandingMaxBucket' => $outstanding_max_bucket,
 				'maturityDays' => $maturityDays,

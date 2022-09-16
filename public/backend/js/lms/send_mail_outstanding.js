@@ -23,6 +23,7 @@ try {
                 },
                 complete: function () {
                     $('#sendMailBtn').prop('disabled', false); 
+
                 },
                 "error": function () {  // error handling   
                     $('#sendMailBtn').prop('disabled', false);                 
@@ -43,14 +44,20 @@ try {
 
         //Search
         $('#sendMailBtn').on('click', function (e) {
-            $("#generate_report").val('0');
-            $('#sendMailBtn').prop('disabled', true);
-            $("#to_date").parent().find('span.error').detach();
-            if (!$("#to_date").val()) {
-                $("#to_date").parent().append('<span class="error">Please Select To Date</span>');
-                return false;
+            if(confirm('Are you sure you want to generate the report') === true){
+                $("#generate_report").val('0');
+                $('#sendMailBtn').prop('disabled', true);
+                $("#to_date").parent().find('span.error').detach();
+                if (!$("#to_date").val()) {
+                    $("#to_date").parent().append('<span class="error">Please Select To Date</span>');
+                    return false;
             }
             $("#generate_report").val('1')
+
+            }else{
+                return false;
+            }
+            
             oTable.draw();
             //$('#sendMailBtn').prop('disabled', false); 
         });

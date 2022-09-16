@@ -21,7 +21,7 @@
     @endcan
     @can('outstanding_report_manual')
     <li>
-        <a class=" {{( $active=='outstandingreportmanual') ? 'active': null }} " href="{{route('outstanding_report_manual')}}">Outstanding Report V2</a>
+        <a class=" {{( $active=='outstandingreportmanual') ? 'active': null }} " href="{{route('outstanding_report_manual')}}">Invoice Outstanding Report</a>
     </li>
     @endcan
     @can('report_realisationreport')

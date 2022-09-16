@@ -4,11 +4,11 @@ namespace App\Inv\Repositories\Models\ETL;
 
 use App\Inv\Repositories\Factory\Models\BaseModel;
 
-class OutstandingReport extends BaseModel
+class OutstandingReportMonthly extends BaseModel
 {
     
     protected $connection = 'mysql2';
-    protected $table = 'etl_outstanding_report';
+    protected $table = 'etl_outstanding_report_monthly';
     public $timestamps = false;
     public $userstamps = false;
 

@@ -7,23 +7,23 @@ use PHPExcel_IOFactory;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
-use App\Inv\Repositories\Models\ETL\OutstandingReport as OutstandingReportModel;
+use App\Inv\Repositories\Models\ETL\OutstandingReportMonthly as OutstandingReportMonthlyModel;
 
-class OutstandingReport extends Command
+class OutstandingReportMonthly extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'etl:report_outstanding';
+    protected $signature = 'etl:report_outstanding_monthly';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'To sync outstanding report to ETL database';
+    protected $description = 'To sync outstanding report monthly to ETL database';
 
     /**
      * Create a new command instance.
@@ -42,11 +42,10 @@ class OutstandingReport extends Command
      */
     public function handle()
     {
-        $reportDate = Carbon::now()->setTimezone(config('common.timezone'))->format('Y-m-d');
-        ini_set('memory_limit', '-1'); //
+        $reportDate = Carbon::now()->setTimezone(config('common.timezone'))->endOfMonth()->format('Y-m-d');
         $outstandingReportLog = OutstandingReportLog::whereNull('user_id')->whereDate('to_date',$reportDate)->where('created_by','0')->orderBy('id','desc')->limit(1)->first();
-        $filePath = $outstandingReportLog->file_path;
-        $reportLogId = $outstandingReportLog->id;
+        $filePath = $outstandingReportLog->file_path ?? NULL;
+        $reportLogId = $outstandingReportLog->id ?? NULL;
         if(file_exists($filePath)) {
             try {
                 $inputFileType = PHPExcel_IOFactory::identify($filePath);
@@ -96,7 +95,7 @@ class OutstandingReport extends Command
             $batchNo = Carbon::now()->setTimezone(config('common.timezone'))->timestamp;
             foreach($dataRecords as $dataRecord)
             {  
-                OutstandingReportModel::create([
+                OutstandingReportMonthlyModel::create([
                     'report_log_id' => $reportLogId, 
                     'Batch No' => $batchNo,
                     'Customer Name' => $dataRecord['Customer Name'],
@@ -118,8 +117,8 @@ class OutstandingReport extends Command
                     'Invoice Due Date' => implode("-", array_reverse(explode("-", $dataRecord['Invoice Due Date']))),
                     'Virtual Account No' => $dataRecord['Virtual Account No'],
                     'Tenure' => (int)$dataRecord['Tenure'],
-                    'ROI' => $dataRecord['ROI Rate'],
-                    'ODI Interest' => $dataRecord['ODI Interest Rate'],
+                    'ROI' => (float)$dataRecord['ROI Rate'],
+                    'ODI Interest' => (float)$dataRecord['ODI Interest Rate'],
                     'Principal Outstanding' => (double)$dataRecord['Principal Outstanding'],
                     'Margin O/S' => (double)$dataRecord['Margin Outstanding'],
                     'Interest' => (double)$dataRecord['Interest Outstanding'],
@@ -129,7 +128,7 @@ class OutstandingReport extends Command
                     'Total Outstanding' => (double)$dataRecord['Total Outstanding'],
                     'Grace Days Interest' => (int)$dataRecord['Grace Days Interest'],
                     'Grace Days Principal' => (int)$dataRecord['Grace Days Principal'],
-                    'Principal Overdue' => $dataRecord['Principal Overdue'],
+                    'Principal Overdue' => (double)$dataRecord['Principal Overdue'],
                     'Principal Overdue Category' => $dataRecord['Principal Overdue Category'],
                     'Principal DPD' => (int)$dataRecord['Principal DPD'],
                     'Interest DPD' => (int)$dataRecord['Interest DPD'],
@@ -142,9 +141,9 @@ class OutstandingReport extends Command
                     'Balance Overdue Interest to be refunded' => (double)$dataRecord['Balance Overdue Interest to be refunded']
                 ]);
             }
-            $this->info("The Outstanding Report sync to database successfully.");
+            $this->info("The Outstanding Report Manual sync to database successfully.");
         } else {
-            $this->info("No Outstanding Report found.");
+            $this->info("No Outstanding Report Manual found.");
         }
     }
 }
