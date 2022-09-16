@@ -565,7 +565,12 @@ class DataRenderer implements DataProviderInterface
                                             $act = $act . $moveToBackStageUrl;
                                         }
                                     } else {
-                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';    
+                                        $status = DB::table('app_sanction_letter')->where(['app_id' => $app->app_id])->orderBy('sanction_letter_id', 'desc')->pluck('status')->first();
+                                       if($status == 3){
+                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" onclick="alert(\'You cannot move this case to next stage as sanction letter is in process/regenerated\')" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';
+                                       }else{
+                                        $act = $act . '&nbsp;<a href="#" title="Move to Next Stage" data-toggle="modal" data-target="#sendNextstage" data-url="' . route('send_case_confirmBox', ['user_id' => $app->user_id,'app_id' => $app->app_id, 'biz_id' => $request->get('biz_id')]) . '" data-height="370px" data-width="100%" data-placement="top" class="btn btn-action-btn btn-sm"><i class="fa fa-share" aria-hidden="true"></i></a> ';
+                                       }    
 
                                         if ($roleData[0]->id != 4 && !empty($currentStage->assign_role)) {
                                             $act = $act . $moveToBackStageUrl;
@@ -8938,6 +8943,99 @@ class DataRenderer implements DataProviderInterface
                 }
                 return '';
             })
+            ->make(true);
+    }
+
+    // get new sanction letter list
+    public function getNewSanctionLetterList(Request $request, $data)
+    {
+        return DataTables::of($data)
+            ->rawColumns(['action','status'])
+            ->editColumn(
+                'status',
+                function ($data) {
+                    switch($data->status){
+                        case(1):
+                          $status = '<span class="badge badge-warning">SL Incomplete</span>';
+                          break;                          
+                        case(2):
+                           $status = '<span class="badge badge-success">SL Completed</span>';
+                            break;
+                        case(3):
+                            $status =  '<span class="badge badge-primary">SL Regenerated</span>';
+                            break;
+                        case(4):
+                            $status =  '<span class="badge badge-danger">SL Expired</span>';
+                            break;
+                        default:
+                            $status =  '<span class="badge badge-info">SL Pending</span>';
+                    }
+                    return $status;
+                }
+            )
+            ->editColumn(
+                'created_by',
+                function ($data) {
+                    return \Helpers::getUserName($data->created_by);
+                }
+            ) 
+            ->editColumn(
+                'created_at',
+                function ($data) {
+                    return \Carbon\Carbon::parse($data->created_at)->format('d-m-Y H:i:s');
+                }
+            )  
+            ->editColumn('date_of_final_submission',  function ($data) {
+                if($data->date_of_final_submission){
+                   return \Carbon\Carbon::parse($data->date_of_final_submission)->format('d-m-Y');
+                }else{
+                    return 'Not Submitted Yet';
+                }
+            })
+            ->editColumn(
+                'action',
+                function ($data) {
+                $link = '';
+                if(Helpers::checkPermission('view_new_sanction_letter') ){
+                    $link .="<a href=\"".route('view_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' =>$data->sanction_letter_id, 'action_type' => 'view'] )."\" title='View' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-eye' aria-hidden='true'></i></a>";
+                }
+                if(Helpers::checkPermission('create_new_sanction_letter') ){
+                    if (in_array($data->status,[0,1])){
+                        $link .="<a href=\"".route('create_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' => $data->sanction_letter_id, 'action_type' => 'edit'] ) ."\" title='Edit' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></a>";
+                    }
+                }
+                if(Helpers::checkPermission('download_new_sanction_letter') ){
+                    $link .="<a href=\"".route('download_new_sanction_letter', ['app_id' => request()->get('app_id'), 'biz_id' => request()->get('biz_id'),'sanction_letter_id' => $data->sanction_letter_id, 'action_type' => 'download'] ) ."\" title='Download' class='btn btn-action-btn btn-sm mr-1'><i class='fa fa-download' aria-hidden='true'></i></a>";
+                }
+                if(Helpers::checkPermission('update_regenerate_sanction_letter') ){
+                    if ($data->status == 2){
+                        if($data->is_regenerated == 1){
+                            $appData = Application::find($data->app_id);
+                            if($appData->status == 1){
+                                $link .='<a href="javascript:void(0);" title="Regenerate" class="btn btn-action-btn btn-sm mr-1" id="regenerateButton" data-id="'.$data->sanction_letter_id.'"><i class="fa fa-repeat" aria-hidden="true"></i></a>';
+                            }
+                        }
+                    }
+                }
+                return $link;
+                }
+            )
+            ->filter(function ($query) use ($request) {
+                   if (!empty($request->get('from_date')) && !empty($request->get('to_date'))) {               
+                        $query->where(function ($query) use ($request) {
+                            $from_date = Carbon::createFromFormat('d/m/Y', $request->get('from_date'))->format('Y-m-d H:i:s');
+                            $to_date = Carbon::createFromFormat('d/m/Y', $request->get('to_date'))->format('Y-m-d H:i:s');
+                            $query->whereBetween('date_of_final_submission',  [$from_date, $to_date]);
+                        });                        
+                    }
+                    if(!empty($request->get('ref_no'))){
+                        $query->where(function ($query) use ($request) {
+                           $ref_no = trim($request->get('ref_no'));
+                           $query->where('ref_no', 'like', "%$ref_no%");
+                        });
+                    }
+                    
+                })
             ->make(true);
     }
 }

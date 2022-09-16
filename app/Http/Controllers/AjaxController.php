@@ -6186,4 +6186,32 @@ if ($err) {
         $overdueReportLogs = OutstandingReportLog::orderBy('id','desc')->get();
         return $dataProvider->getOutstandingReportLogs($this->request, $overdueReportLogs);
     }
+    //Get new sanction letter
+    public function getNewSanctionLetterList(DataProviderInterface $dataProvider) {
+        $app_id =  (int) $this->request->get('app_id');
+        $whereCondition=[];
+        $whereCondition['app_id'] = $app_id;
+        $sanctionLetterdata = $this->application->getOfferNewSanctionLetterData($whereCondition);
+        $data = $dataProvider->getNewSanctionLetterList($this->request, $sanctionLetterdata);
+        return $data;
+    }
+    //Update sanction regenerate letter
+    public function updateRegenerateSanctionLetter(Request $request) {
+       $sanction_id =  (int) $this->request->get('sanction_id');
+       $app_id =  (int) $this->request->get('app_id');
+       $result = AppSanctionLetter::whereNotIn('sanction_letter_id',[$sanction_id])->where('app_id',$app_id)->update(["status" => 4]);
+       $result = AppSanctionLetter::where('sanction_letter_id',$sanction_id)->where('app_id',$app_id)->update(["status" => 3, "is_regenerated" => 0]);
+       if($result)
+       {
+            $appData = $this->application->getAppDataByAppId($app_id);
+            //if($appData->curr_status_id == config('common.mst_status_id.SANCTION_LETTER_GENERATED')){
+               //Helpers::updateAppCurrentStatus($app_id, config('common.mst_status_id.APP_SANCTIONED'));
+            //}
+           return response()->json(['status' => 1]); 
+       }
+       else
+       {
+           return response()->json(['status' => 0]); 
+       }
+    }
 }

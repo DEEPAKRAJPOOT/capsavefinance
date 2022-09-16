@@ -587,6 +587,16 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\DocumentController@seeUploadFile'
 
             ]);
+            //New Sanction Letter
+            Route::get('new-sanction-letter', [
+                'as' => 'list_new_sanction_letter',
+                'uses' => 'Backend\ApplicationController@ListNewSanctionLetter'
+            ]);
+
+            Route::get('create-new-sanction-letter', [
+                'as' => 'create_new_sanction_letter',
+                'uses' => 'Backend\ApplicationController@createNewSanctionLetter',
+            ]);
 
             Route::get('app-pull-back-confirmBox', [
                 'as' => 'app_pull_back_confirmBox',
@@ -597,6 +607,26 @@ Route::domain(config('proin.backend_uri'))->group(function () {
                 'uses' => 'Backend\DocumentController@downloadStorageFile'
             ]);
 
+            Route::post('save-new-sanction-letter', [
+                'as' => 'save_new_sanction_letter',
+                'uses' => 'Backend\ApplicationController@saveNewSanctionLetterSupplyChain',
+            ]);
+            
+            Route::get('view-new-sanction-letter', [
+                'as' => 'view_new_sanction_letter',
+                'uses' => 'Backend\ApplicationController@viewNewSanctionLetterSupplyChain',
+            ]);
+
+            Route::get('download-new-sanction-letter', [
+                'as' => 'download_new_sanction_letter',
+                'uses' => 'Backend\ApplicationController@downloadNewSanctionLetterSupplyChain',
+            ]);
+
+            Route::post('send-new-sanction-letter-on-mail', [
+                'as' => 'send_new_sanction_letter_on_mail',
+                'uses' => 'Backend\ApplicationController@sendNewSanctionLetterSupplyChainMail',
+            ]);
+           
             //start section cam
              Route::group(['prefix' => 'cam'], function () {
 
