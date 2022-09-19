@@ -1859,19 +1859,33 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 
     public function getAllBusinessForSheet($whereCond) {
-		// return Application::with(['business', 'bizInvoice.invoice_disbursed'])->whereHas('bizInvoice.invoice_disbursed', function ($q) use ($whereCond) {
-		// 	$q->where('is_posted_in_cibil',$whereCond['is_posted_in_cibil']);
-		// 	$q->where('updated_at', '<=', $whereCond['date']);
-		// 	$q->whereIn('status_id', $whereCond['status_ids']);
-		// })->get();
-
-		return BizInvoice::with(['invoice_disbursed', 'business', 'app'])->whereHas('invoice_disbursed', function ($q) use ($whereCond) {
-			$q->where('created_at', '<=', $whereCond['date']);
-			$q->whereIn('status_id', $whereCond['status_ids']);
+		$startDate = Carbon::createFromFormat('Y-m-d', $whereCond['date'], 'Asia/Kolkata')->firstOfMonth()->setTimezone('UTC')->format('Y-m-d H:i:s');
+		$endDate = Carbon::createFromFormat('Y-m-d', $whereCond['date'], 'Asia/Kolkata')->endOfDay()->setTimezone('UTC')->format('Y-m-d H:i:s');
+		$statusIds = $whereCond['status_ids'];
+		$invoices = BizInvoice::select(DB::raw('max(invoice_id) as maxInv,supplier_id, count(invoice_id) as invCnt '))->whereHas('invoice_disbursed', function ($q) use ($startDate, $endDate, $statusIds) {
+			$q->where('created_at', '>=', $startDate);
+			$q->where('created_at', '<=', $endDate);
+			$q->whereIn('status_id', $statusIds);
 		})
 		->groupBy('supplier_id')
 		->get();
 
+		$collection = null;
+
+		foreach ($invoices as $key => $inv) {
+			$r = BizInvoice::with(['invoice_disbursed', 'business', 'app'])
+			->where('invoice_id',$inv->maxInv)->get();
+			if($r){
+
+				$r[0]->invCount = $inv->invCnt;
+				if($collection){
+					$collection = $collection->merge($r);
+				}else{
+					$collection = $r;
+				}
+			}
+		}
+		return $collection;
     }
 
 	public function saveChargeTransDeleteLog($attr)
