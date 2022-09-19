@@ -37,15 +37,27 @@
                                 <div class="card-body">
                                     <div class="row">
 
-                                        <div class="col-md-3">
+                                        {{-- <div class="col-md-3"> --}}
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                        </div>
+                                        {{-- </div> --}}
                                         <div class="col-md-5">
-                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number">
+                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number/ Customer Id">
+                                        </div>
+                                        <div class="col-md-4">
+                                            {!!
+                                            Form::text('customer_id',
+                                            null,
+                                            [
+                                            'class' => 'form-control',
+                                            'placeholder' => 'Search by Customer Id',
+                                            'id'=>'customer_id'
+                                            ])
+                                            !!} 
                                         </div> 
                                         <div class="col-md-1">
                                             <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
                                         </div>  
+
                                         <!--
                                         
                                         <div class="col-md-2"></div>
@@ -53,6 +65,7 @@
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                             <select class="form-control form-control-sm changeBiz searchbtn"  name="search_biz" id="search_biz">
                                                 <option value="">Select Business Name  </option>
+                                               
                                                 @foreach($get_bus as $row)
                                                 @php if(isset($row->business->biz_id)) { @endphp
                                                 <option value="{{{$row->business->biz_id}}}">{{{$row->business->biz_entity_name}}} </option>

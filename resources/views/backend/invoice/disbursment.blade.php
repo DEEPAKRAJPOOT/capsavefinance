@@ -36,12 +36,31 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-md-5">
+                                        {{-- <div class="col-md-5"> --}}
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                        </div>
+                                        {{-- </div> --}}
                                         <div class="col-md-5">
                                             <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number">
-                                        </div> 
+                                        </div>
+                                        <div class="col-md-3">
+                                            {!!
+                                            Form::text('customer_id',
+                                            null,
+                                            [
+                                            'class' => 'form-control',
+                                            'placeholder' => 'Search by Customer Id',
+                                            'id'=>'customer_id'
+                                            ])
+                                            !!} 
+                                        </div>  
+                                        <div class="col-md-3">
+                                            <select class="form-control" id="batch_id" name="batch_id">
+                                                <option value="" selected="">All</option>
+                                                @foreach($batchData as $batch)
+                                                <option value="{{ $batch->batch_id }}">{{ $batch->batch_id }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>                                       
                                         <div class="col-md-1">
                                             <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
                                         </div>  

@@ -36,12 +36,23 @@
                                <div class="card">
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-2">
+                                            {{-- <div class="col-md-2"> --}}
                                                  <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
-                                            </div>
-                                              <div class="col-md-5">
+                                            {{-- </div> --}}
+                                              <div class="col-md-4">
                                                   <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number ">
                                               </div> 
+                                              <div class="col-md-3">
+                                                {!!
+                                                Form::text('customer_id',
+                                                null,
+                                                [
+                                                'class' => 'form-control',
+                                                'placeholder' => 'Search by Customer Id',
+                                                'id'=>'customer_id'
+                                                ])
+                                                !!} 
+                                            </div> 
                                              <div class="col-md-1">
                                              <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
                                              </div>  

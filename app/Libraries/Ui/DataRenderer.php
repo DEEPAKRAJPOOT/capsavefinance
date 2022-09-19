@@ -1379,6 +1379,15 @@ class DataRenderer implements DataProviderInterface
                      });
                 });
                         }
+                        if ($request->get('customer_id') != '') {
+                            $query->where(function ($query) use ($request) {
+                                $customer_id = trim($request->get('customer_id'));
+                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
+                                        $q->where('user_id', 'like', "%$customer_id%");
+                                });
+                            });
+                        }
+                        
                     
                 })
               ->make(true);
@@ -1612,6 +1621,14 @@ class DataRenderer implements DataProviderInterface
                      });
                 });
                         }
+                        if ($request->get('customer_id') != '') {
+                            $query->where(function ($query) use ($request) {
+                                $customer_id = trim($request->get('customer_id'));
+                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
+                                        $q->where('user_id', 'like', "%$customer_id%");
+                                });
+                            });
+                        }
                     
                 })
               ->make(true);
@@ -1785,6 +1802,9 @@ class DataRenderer implements DataProviderInterface
                      })
                      ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('user_id', 'like', "%$search_keyword%");
                      });
                 });
                         }
@@ -1994,6 +2014,14 @@ class DataRenderer implements DataProviderInterface
                      });
                 });
                         }
+                        if ($request->get('customer_id') != '') {
+                            $query->where(function ($query) use ($request) {
+                                $customer_id = trim($request->get('customer_id'));
+                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
+                                        $q->where('user_id', 'like', "%$customer_id%");
+                                });
+                            });
+                        }
                     
                 })
               ->make(true);
@@ -2006,7 +2034,7 @@ class DataRenderer implements DataProviderInterface
     { 
         
       return DataTables::of($invoice)
-               ->rawColumns(['updated_at','anchor_name','customer_detail','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
+               ->rawColumns(['updated_at','anchor_name','customer_detail','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date','batch_id'])
                ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {     
@@ -2103,6 +2131,24 @@ class DataRenderer implements DataProviderInterface
                      });
                 });
                         }
+                        if ($request->get('customer_id') != '') {
+                            $query->where(function ($query) use ($request) {
+                                $customer_id = trim($request->get('customer_id'));
+                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
+                                        $q->where('user_id', 'like', "%$customer_id%");
+                                });
+                            });
+                        }
+                        if ($request->get('batch_id') != '') {
+                            if ($request->has('batch_id')) {
+                                    $query->where(function ($query) use ($request) {
+                                        $batch_id = trim($request->get('batch_id'));
+                                            $query->whereHas('invoice_disbursed.disbursal.disbursal_batch', function ($q) use ($batch_id){
+                                                $q->where('batch_id', 'like', "%$batch_id%");
+                                        });
+                                    });
+                            }
+                        }
                     
                 })
               ->make(true);
@@ -2190,6 +2236,14 @@ class DataRenderer implements DataProviderInterface
                         $q->where('comp_name', 'like', "%$search_keyword%");
                      });
                 });
+                        }
+                        if ($request->get('customer_id') != '') {
+                            $query->where(function ($query) use ($request) {
+                                $customer_id = trim($request->get('customer_id'));
+                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
+                                        $q->where('user_id', 'like', "%$customer_id%");
+                                });
+                            });
                         }
                     
                 })
@@ -2328,6 +2382,14 @@ class DataRenderer implements DataProviderInterface
                      });
                 });
                         }
+                        if ($request->get('customer_id') != '') {
+                            $query->where(function ($query) use ($request) {
+                                $customer_id = trim($request->get('customer_id'));
+                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
+                                        $q->where('user_id', 'like', "%$customer_id%");
+                                });
+                            });
+                        }
                     
                 })
               ->make(true);
@@ -2436,19 +2498,19 @@ class DataRenderer implements DataProviderInterface
                         }
                        $expl  =  explode(",",$invoice->program->invoice_approval); 
                        $action = "";
-                     if($invoice->userDetail->is_active==1)
-                     {
-                       if( $chkUser->id!=11)
-                      { 
-                       $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"   data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv5"><option value="0">Change Status</option>';
-                       $action .= '<option value="7">Pending</option>';
-                    //    if(in_array($customer, $expl)) 
-                    //    {
-                    //     $action .='<option value="8">Approve</option>';
-                    //    }
-                        $action .='</select></div>';
-                      }
-                     }
+                    //  if($invoice->userDetail->is_active==1)
+                    //  {
+                    //    if( $chkUser->id!=11)
+                    //   { 
+                    //    $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"   data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv5"><option value="0">Change Status</option>';
+                    //    $action .= '<option value="7">Pending</option>';
+                    // //    if(in_array($customer, $expl)) 
+                    // //    {
+                    // //     $action .='<option value="8">Approve</option>';
+                    // //    }
+                    //     $action .='</select></div>';
+                    //   }
+                    //  }
                      
                         return $action;
 
@@ -2466,6 +2528,14 @@ class DataRenderer implements DataProviderInterface
                         $q->where('comp_name', 'like', "%$search_keyword%");
                      });
                 });
+                        }
+                        if ($request->get('customer_id') != '') {
+                            $query->where(function ($query) use ($request) {
+                                $customer_id = trim($request->get('customer_id'));
+                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
+                                        $q->where('user_id', 'like', "%$customer_id%");
+                                });
+                            });
                         }
                     
                 }) 
