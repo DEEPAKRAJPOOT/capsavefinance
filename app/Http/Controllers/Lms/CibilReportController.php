@@ -129,7 +129,7 @@ class CibilReportController extends Controller
             $cibilReportData['bs'] = $this->_getBSData($appBusiness);
             $cibilReportData['as'] = $this->_getASData($appBusiness);
             $cibilReportData['rs'] = $this->_getRSData($appBusiness);
-            $cibilReportData['cr'] = $this->_getCRData($appBusiness);
+            $cibilReportData['cr'] = $this->_getCRData($appBusiness,$date);
             $cibilReportData['gs'] = $this->_getGSData($appBusiness);
             $cibilReportData['ss'] = $this->_getSSData($appBusiness);
             $cibilReportData['cd'] = $this->_getCDData($appBusiness);
