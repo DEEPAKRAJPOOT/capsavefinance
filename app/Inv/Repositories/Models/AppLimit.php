@@ -119,14 +119,17 @@ class AppLimit extends BaseModel {
         return $this->hasOne('App\Inv\Repositories\Models\Master\Product', 'product_id', 'id');
     }  
     
-     public function programLimit(){
+    public function programLimit(){
         return $this->hasMany('App\Inv\Repositories\Models\AppProgramLimit','app_limit_id','app_limit_id');
     }
    
+    public function supplyProgramLimit(){
+        return $this->hasMany('App\Inv\Repositories\Models\AppProgramLimit','app_limit_id','app_limit_id')->where('product_id',1);
+    }
     
     public static  function getUserApproveLimit($user_id)
     {
-        return  AppLimit::with(['app','programLimit','programLimit.product','programLimit.offer.program','programLimit.offer.anchor','programLimit.offer.adhoc_limit'])
+        return  AppLimit::with(['app','supplyProgramLimit','supplyProgramLimit.product','supplyProgramLimit.offer.program','supplyProgramLimit.offer.anchor','supplyProgramLimit.offer.adhoc_limit'])
                         ->whereHas('app', function ($query) {
                             $query->whereNotIn('curr_status_id', [config('common.mst_status_id')['APP_REJECTED'], config('common.mst_status_id')['APP_CANCEL']]);
                         })

@@ -460,7 +460,7 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			$odDaysWithoutGrace = ($curOddays)?$curOddays - $invDisb->grace_period:0;
 
 			$diff=date_diff(date_create($invDisb->payment_due_date),date_create($curdate));
-			$maturityDays = $diff->format("%a");
+			$maturityDays = $diff->format("%r%a");
 			$invDetails = $invDisb->invoice;
 			$anchor_name = $invDetails->anchor->comp_name;
 			$offerDetails = $invDetails->program_offer->toArray();
@@ -730,5 +730,442 @@ class ReportsRepository extends BaseRepositories implements ReportInterface {
 			'report_2' => $report_2_res,
 			'report_3' => $report_3_res,
 		];
+	}
+ 
+	public function getOutstandingReportManual($whereCondition=[], &$sendMail){
+		$curdate = Helper::getSysStartDate();
+		$curdate = Carbon::parse($curdate)->format('Y-m-d');
+		$curdate = $whereCondition['to_date']??$curdate;
+		$invDisbList = InvoiceDisbursed::
+		with([
+			'invoice'=>function($query2) use($whereCondition){
+					if(isset($whereCondition['anchor_id'])){
+						$query2->where('anchor_id',$whereCondition['anchor_id']);
+					}
+					if(isset($whereCondition['user_id'])){
+						$query2->where('supplier_id',$whereCondition['user_id']);
+					}
+				},
+			'invoice.lms_user', 
+			'invoice.anchor', 
+			'invoice.program_offer',
+			'invoice.business', 
+			'disbursal',
+			'transaction',
+			'disburseDetails'
+		])
+		->whereIn('status_id', [12,13,15,47])
+		->whereHas('invoice', function($query3) use($whereCondition){
+			if(isset($whereCondition['anchor_id'])){
+				$query3->where('anchor_id',$whereCondition['anchor_id']);
+			}
+			if(isset($whereCondition['user_id'])){
+				$query3->where('supplier_id',$whereCondition['user_id']);
+			}
+		})
+		->whereDate('int_accrual_start_dt','<=',$curdate)
+		->get();
+	
+		$outstandingData = self::getOutstandingData($curdate);
+		$sendMail = ($invDisbList->count() > 0)?true:false;
+		$result = [];
+		foreach($invDisbList as $invDisb){
+			$invDetails = $invDisb->invoice;
+			$disbDetails = $invDisb->disburseDetails;
+			if(!$disbDetails){
+				continue;
+			}
+			$principalOutstanding = round((round($disbDetails->principal_amount,2) - (round($disbDetails->principal_repayment,2) + round($disbDetails->principal_waived_of,2) + round($disbDetails->principal_tds,2) + round($disbDetails->principal_write_off,2))),2);
+			$principalOutstanding = $principalOutstanding > 0 ? $principalOutstanding : 0;
+
+			$marginOutstanding = round((round($disbDetails->margin_amount,2) - (round($disbDetails->margin_repayment,2) + round($disbDetails->margin_waived_of,2) + round($disbDetails->margin_tds,2) + round($disbDetails->margin_write_off,2))),2);
+			$marginOutstanding = $marginOutstanding > 0 ? $marginOutstanding : 0;
+	
+			$interestOutstanding = round((round($disbDetails->interest_capitalized,2) - (round($disbDetails->interest_repayment,2) + round($disbDetails->interest_waived_off,2) + round($disbDetails->interest_tds,2) + round($disbDetails->interset_write_off,2))),2);
+			$interestOutstanding = $interestOutstanding > 0 ? $interestOutstanding : 0;
+	
+			$overdueAmount = round((round($disbDetails->overdue_capitalized,2) - round($disbDetails->overdue_repayment,2)- round($disbDetails->overdue_waived_off,2) - round($disbDetails->overdue_tds,2) - round($disbDetails->overdue_write_off,2)),2);
+			$overdueAmount = $overdueAmount > 0 ? $overdueAmount : 0;
+	
+			$charges = Transactions::where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->where('trans_type','>', '50')->where('entry_type','0')->where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->select(['amount', 'outstanding'])->get();
+			  
+			$totalOutstanding = ($principalOutstanding + $interestOutstanding + $overdueAmount + $charges->sum('outstanding'));
+	
+			$interest_to_refunded = round((round($invDisb->disburseDetails->interest_refundable,2) - round($invDisb->disburseDetails->interest_refunded,2)),2);
+			$margin_to_refunded = round((round($invDisb->disburseDetails->margin_repayment,2) - round($invDisb->disburseDetails->margin_refunded,2)),2);
+			$overdueinterest_to_refunded = round((round($invDisb->disburseDetails->overdue_refundable,2) - round($invDisb->disburseDetails->overdue_refunded,2)),2);
+			
+
+			if($totalOutstanding <= 0 && $interest_to_refunded <= 0 && $margin_to_refunded <= 0 && $overdueinterest_to_refunded <= 0 && $marginOutstanding <= 0){
+				continue;
+			}
+	
+			$anchor_name = $invDetails->anchor->comp_name ?? '';
+			$offer = $invDetails->program_offer;
+	
+			$payment_frequency='none';
+			if($offer->payment_frequency == '1'){
+				$payment_frequency = 'Up Front';
+			}else if($offer->payment_frequency == '2'){
+				$payment_frequency = 'Monthly';
+			}else if($offer->payment_frequency == '3'){
+				$payment_frequency = 'Rear Ended';
+			}
+	
+			$prgmDetails = $invDetails->program;
+
+			$prgmType = $prgmDetails->prgm_type;
+			if($prgmType == 1){
+				$product = 'Vendor Finance';
+			}elseif($prgmType == 2){
+				$product = 'Channel Finance';
+			}
+			
+			$disbursement_method = 'Gross';
+	
+			/**
+			 * For VFS, Gross if int borne by anchor and net if int borne by supplier.
+			 * For Channel Finance, Gross if int borne by buyer and net if int borne by anchor. 
+			**/
+
+			if($prgmDetails->interest_borne_by == 2 && $offer->payment_frequency == 1 && $invDisb->total_interest > 0){
+				$disbursement_method = 'Net';
+			}
+			
+			// if($offer->payment_frequency == 1){
+			// 	if($prgmType == '1'){
+			// 		if($prgmDetails->interest_borne_by == '1'){
+			// 			$disbursement_method = 'Gross';
+			// 		}
+			// 	}
+			// 	elseif($prgmType == '2'){
+			// 		if($prgmDetails->interest_borne_by == '2'){
+			// 			$disbursement_method = 'Gross';
+			// 		}
+			// 	}
+			// }else{
+			// 	$disbursement_method = 'Gross';
+			// }
+		   
+			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
+			$principalOverdue = '';
+			$principalOverdueCategory = '';
+			if(($principalOutstanding > 0) && isset($invDisb->payment_due_date) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) ){
+				$principalOverdue = $principalOutstanding;
+				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $invDisb->payment_due_date);
+				$daysToAdd = (int)$disbDetails->grace_period;
+				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
+				if(strtotime($dateoverdueFormat) > strtotime($curdate) && strtotime($invDisb->payment_due_date) <= strtotime($curdate) && $daysToAdd > 0){
+					$principalOverdueCategory='with in grace';
+				}
+				else{
+					$principalOverdueCategory='Overdue';
+				}
+			}
+			$interestDPD = 0;
+			$principalDPD = 0;
+			$transDetails = Transactions::where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)->whereNull('payment_id')->where('outstanding', '>', 0)->whereIn('trans_type',[9,16])->where('entry_type','0')->get();
+			$interestDPD = $transDetails->where('trans_type',9)->max('dpd');
+			$principalDPD = $transDetails->where('trans_type',16)->max('dpd');
+			unset($transDetails);
+
+			$principalDPD = (round($principalOutstanding,2) > 0) ? ($principalDPD > 0 ? $principalDPD : 0) : 0;
+			$interestDPD = (round($interestOutstanding,2) > 0) ? ($interestDPD > 0 ? $interestDPD : 0) : 0;
+
+			$maxDPD = $principalDPD > $interestDPD ? $principalDPD : $interestDPD;
+			$outstanding_max_bucket = "Not Outstanding";
+			if($maxDPD > 0){
+				if($maxDPD <= 7)
+				  $outstanding_max_bucket = "01 - 07 Days";
+				else if($maxDPD <= 15)
+				  $outstanding_max_bucket = "08 - 15 Days";
+				else if($maxDPD <= 30)  
+				  $outstanding_max_bucket = "16 - 30 Days";
+				else if($maxDPD <= 60) 
+				  $outstanding_max_bucket = "31 - 60 Days"; 
+				else if($maxDPD <= 90)
+				  $outstanding_max_bucket = "61 - 90 Days";  
+				else
+				  $outstanding_max_bucket = "90 + Days"; 
+			}
+
+			$diff=date_diff(date_create($curdate),date_create($invDisb->payment_due_date));
+			$maturityDays = $diff->format("%r%a");
+			$maturityDays = ($maturityDays > 0) ? $maturityDays : 0;
+			
+			$maturityMaxbucket = "Not Outstanding";
+			if($principalOutstanding > 0 && $maturityDays > 0){
+				if($maturityDays <= 7)
+				  $maturityMaxbucket = "01 - 07 Days";
+				else if($maturityDays <= 15)
+				  $maturityMaxbucket = "08 - 15 Days";
+				else if($maturityDays <= 30)  
+				  $maturityMaxbucket = "16 - 30 Days";
+				else if($maturityDays <= 60) 
+				  $maturityMaxbucket = "31 - 60 Days"; 
+				else if($maturityDays <= 90)
+				  $maturityMaxbucket = "61 - 90 Days";  
+				else
+				  $maturityMaxbucket = "90 + Days"; 
+			}
+
+			$result[$invDisb->invoice_disbursed_id] = [
+				'custName' => $invDetails->business->biz_entity_name ?? '',
+				'customerId' => $invDetails->lms_user->customer_id ?? '',
+				'anchorName'=> $anchor_name,
+				'invoiceNo' => $invDetails->invoice_no,
+				'disbursementDate' => isset($disbDetails->funded_date) ? Carbon::parse($disbDetails->funded_date)->format('d-m-Y'):'',
+				'invoiceAmt' => round($disbDetails->request_amount,2),
+				'invoiceApproveAmount' => round($disbDetails->approve_amount,2),
+				'marginPosted' => round($disbDetails->margin_amount,2),
+				'upfrontInterest' => ($prgmDetails->interest_borne_by == 2 && $offer->payment_frequency == 1) ? round($invDisb->total_interest,2) : 0,
+				'chargeDeduction' => round(0,2),
+				'invoiceLevelChrg'=> round($charges->sum('amount'),2),
+				'disburseAmount' => round(($invDisb->disburse_amt - ($invDisb->total_interest + $invDisb->processing_fee + $invDisb->processing_fee_gst)),2),
+				'product' => $product,
+				'paymentFrequency' => $payment_frequency,
+				'interestPosted' => round($disbDetails->interest_capitalized,2), 
+				'disbursementMethod' => $disbursement_method,
+				'paymentDueDate' => isset($invDisb->payment_due_date) ? Carbon::parse($invDisb->payment_due_date)->format('d-m-Y'):'',
+				'virtualAc' => $invDetails->lms_user->virtual_acc_id ?? '',
+				'tenure' =>	$disbDetails->tenor,
+				'roi' => $invDisb->interest_rate,
+				'odi' => $odiInterest,
+				'principalOut' => round($principalOutstanding,2),
+				'marginOut' => round($marginOutstanding,2),
+				'interestOut' => round($interestOutstanding,2),
+				'overduePosted' => round($disbDetails->overdue_capitalized,2),
+				'overdueOut' => round($overdueAmount,2),
+				'invoiceLevelChrgOut'=> round($charges->sum('outstanding'),2),
+				'totalOutStanding' => round($totalOutstanding,2),
+				'intGraceDays' => '',
+				'principalGraceDays' => $disbDetails->grace_period,
+				'principalOverdue' => $principalOverdue,
+				'principalOverdueCategory'=> $principalOverdueCategory,
+				'principalDPD' => ($principalDPD > 0) ? $principalDPD : 0,
+				'interestDPD' => ($interestDPD > 0) ? $interestDPD : 0,
+				'finalDPD' => $maxDPD,
+				'outstandingMaxBucket' => $outstanding_max_bucket,
+				'maturityDays' => $maturityDays,
+				'maturityBucket' => $maturityMaxbucket,
+				'marginToRefunded' => round($margin_to_refunded,2),
+				'interestToRefunded' => round($interest_to_refunded,2),
+				'overdueToRefunded' => round($overdueinterest_to_refunded,2)
+			];
+		}
+		return $result;
+	}
+
+	public function getBackDateOutstandingReportManual($whereCondition=[], &$sendMail){
+		$curdate = Helper::getSysStartDate();
+		$curdate = Carbon::parse($curdate)->format('Y-m-d');
+		$curdate = $whereCondition['to_date']??$curdate;
+		$invDisbList = InvoiceDisbursed::
+		with([
+			'invoice'=>function($query2) use($whereCondition){
+					if(isset($whereCondition['anchor_id'])){
+						$query2->where('anchor_id',$whereCondition['anchor_id']);
+					}
+					if(isset($whereCondition['user_id'])){
+						$query2->where('supplier_id',$whereCondition['user_id']);
+					}
+				},
+			'invoice.lms_user', 
+			'invoice.anchor', 
+			'invoice.program_offer',
+			'invoice.business', 
+			'disbursal',
+			'transaction',
+			'disburseDetails'
+		])
+		->whereIn('status_id', [12,13,15,47])
+		->whereHas('invoice', function($query3) use($whereCondition){
+			if(isset($whereCondition['anchor_id'])){
+				$query3->where('anchor_id',$whereCondition['anchor_id']);
+			}
+			if(isset($whereCondition['user_id'])){
+				$query3->where('supplier_id',$whereCondition['user_id']);
+			}
+		})
+		->whereDate('int_accrual_start_dt','<=',$curdate)
+		->get();
+	
+		$outstandingData = self::getOutstandingData($curdate);
+		$sendMail = ($invDisbList->count() > 0)?true:false;
+		$result = [];
+		foreach($invDisbList as $invDisb){
+			
+			$transactions = Transactions::select('invoice_disbursed_id',
+			DB::raw('sum(IF (trans_type = 9 ,(amount-getTransCancelDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as interest_posted'),
+			DB::raw('sum(IF (trans_type = 33 ,(amount-getTransCancelDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as overdue_interest_posted'),
+			DB::raw('sum(IF (trans_type = 9 ,(getTransOutstandingDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as interest_os_amount'),
+			DB::raw('sum(IF (trans_type = 33 ,(getTransOutstandingDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as overdue_os_amount'),
+			DB::raw('sum(IF (trans_type = 16 ,(getTransOutstandingDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as principal_os_amount'),
+			DB::raw('sum(IF (trans_type > 50 ,(amount - getTransCancelDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as charge_amount'),
+			DB::raw('sum(IF (trans_type > 50 ,(getTransOutstandingDateAmt(trans_id, amount, \''.$curdate.'\')),0)) as charge_os_amount'))
+					->where('invoice_disbursed_id',$invDisb->invoice_disbursed_id)
+					->whereNULL('parent_trans_id')
+					->whereNULL('link_trans_id')
+					->where('entry_type','=',0)
+					->whereDate('created_at','<=',$curdate)
+					->first();
+			$invDetails = $invDisb->invoice;
+			$disbDetails = $invDisb->disburseDetails;
+			if(!$disbDetails || !$transactions){
+				continue;
+			}
+			
+			$principalOutstanding = $transactions->principal_os_amount;			
+			$principalOutstanding = $principalOutstanding > 0 ? $principalOutstanding : 0;
+	
+			$interestOutstanding = $transactions->interest_os_amount;
+			$interestOutstanding = $interestOutstanding > 0 ? $interestOutstanding : 0;
+	
+			$overdueAmount = $transactions->overdue_os_amount;
+			$overdueAmount = $overdueAmount > 0 ? $overdueAmount : 0;
+		   
+			$totalOutstanding = ($principalOutstanding + $interestOutstanding + $overdueAmount + $transactions->charge_os_amount);
+	
+			if($totalOutstanding <= 0){
+				continue;
+			}
+	
+			$anchor_name = $invDetails->anchor->comp_name ?? '';
+			$offer = $invDetails->program_offer;
+	
+			$payment_frequency='none';
+			if($offer->payment_frequency == '1'){
+				$payment_frequency = 'Up Front';
+			}else if($offer->payment_frequency == '2'){
+				$payment_frequency = 'Monthly';
+			}else if($offer->payment_frequency == '3'){
+				$payment_frequency = 'Rear Ended';
+			}
+	
+			$prgmDetails = $invDetails->program;
+	
+			$prgmType = $prgmDetails->prgm_type;
+			
+			$disbursement_method = 'Net';
+	
+			/**
+			 * For VFS, Gross if int borne by anchor and net if int borne by supplier.
+			 * For Channel Finance, Gross if int borne by buyer and net if int borne by anchor. 
+			**/
+			if($prgmType == '1'){ 
+				if($prgmDetails->interest_borne_by == '1'){
+					$disbursement_method = 'Gross';
+				}
+			} 
+			elseif($prgmType == '2'){
+				if($prgmDetails->interest_borne_by == '2'){
+					$disbursement_method = 'Gross';
+				}
+			}
+		   
+			$odiInterest = round((round($invDisb->overdue_interest_rate,2) - round($invDisb->interest_rate,2)),2);
+		   
+			$principalOverdueCategory='';
+			if(!is_null($disbDetails->payment_due_date) && strtotime($disbDetails->payment_due_date) <= strtotime($curdate) ){
+				$dateoverdueFormat = Carbon::createFromFormat('Y-m-d', $disbDetails->payment_due_date);
+				$daysToAdd = (int)$disbDetails->grace_period;
+				$dateoverdueFormat = $dateoverdueFormat->addDays($daysToAdd);
+				if(strtotime($dateoverdueFormat) > strtotime($curdate) && strtotime($disbDetails->payment_due_date) <= strtotime($curdate)){
+					$principalOverdueCategory='with in grace';
+				}
+				else{
+					$principalOverdueCategory='Overdue';
+				}
+			}
+			$principalDPD = 0;
+			$now = Carbon::parse($curdate);
+            $paymentDueDate = Carbon::parse($invDisb->payment_due_date);
+            $principalDPD = $paymentDueDate->diffInDays($now);
+
+			$maxDPD = $principalDPD;
+
+			$outstanding_max_bucket = "Not Outstanding";
+			if($principalOutstanding > 100 && $maxDPD > 0){
+				if($maxDPD <= 7)
+				  $outstanding_max_bucket = "01 - 07 Days";
+				else if($maxDPD <= 15)
+				  $outstanding_max_bucket = "08 - 15 Days";
+				else if($maxDPD <= 30)  
+				  $outstanding_max_bucket = "16 - 30 Days";
+				else if($maxDPD <= 60) 
+				  $outstanding_max_bucket = "31 - 60 Days"; 
+				else if($maxDPD <= 90)
+				  $outstanding_max_bucket = "61 - 90 Days";  
+				else
+				  $outstanding_max_bucket = "90 + Days"; 
+			}
+
+			$diff=date_diff(date_create($curdate),date_create($disbDetails->payment_due_date));
+			$maturityDays = $diff->format("%r%a");
+			
+			$maturityMaxbucket = "Not Outstanding";
+			if($principalOutstanding > 100 && $maturityDays > 0){
+				if($maturityDays <= 7)
+				  $maturityMaxbucket = "01 - 07 Days";
+				else if($maturityDays <= 15)
+				  $maturityMaxbucket = "08 - 15 Days";
+				else if($maturityDays <= 30)  
+				  $maturityMaxbucket = "16 - 30 Days";
+				else if($maturityDays <= 60) 
+				  $maturityMaxbucket = "31 - 60 Days"; 
+				else if($maturityDays <= 90)
+				  $maturityMaxbucket = "61 - 90 Days";  
+				else
+				  $maturityMaxbucket = "90 + Days"; 
+			}
+
+			$interest_to_refunded = round((round($invDisb->disburseDetails->interest_refundable,2) - round($invDisb->disburseDetails->interest_refunded,2)),2);
+			$margin_to_refunded = round((round($invDisb->disburseDetails->margin_repayment,2) - round($invDisb->disburseDetails->margin_refunded,2)),2);
+			$overdueinterest_to_refunded = round((round($invDisb->disburseDetails->overdue_refundable,2) - round($invDisb->disburseDetails->overdue_refunded,2)),2);
+			
+
+			$result[$invDisb->invoice_disbursed_id] = [
+				'custName' => $invDetails->business->biz_entity_name ?? '',
+				'customerId' => $invDetails->lms_user->customer_id ?? '',
+				'anchorName'=> $anchor_name,
+				'invoiceNo' => $invDetails->invoice_no,
+				'disbursementDate' => isset($disbDetails->funded_date) ? Carbon::parse($disbDetails->funded_date)->format('d-m-Y'):'',
+				'invoiceAmt' => round($disbDetails->request_amount,2),
+				'invoiceApproveAmount' => round($disbDetails->approve_amount,2),
+				'marginPosted' => round($disbDetails->margin_amount,2),
+				'upfrontInterest' => ($prgmDetails->interest_borne_by == 2 && $offer->payment_frequency == 1) ? round($invDisb->total_interest,2) : 0,
+				'chargeDeduction' => round(0,2),
+				'invoiceLevelChrg'=> round($transactions->charge_amount,2),
+				'disburseAmount' => round(($invDisb->disburse_amt - ($invDisb->total_interest + $invDisb->processing_fee + $invDisb->processing_fee_gst)),2),
+				'paymentFrequency' => $payment_frequency,
+				'interestPosted' => round($disbDetails->interest_capitalized,2), 
+				'disbursementMethod' => $disbursement_method,
+				'paymentDueDate' => isset($invDisb->payment_due_date) ? Carbon::parse($invDisb->payment_due_date)->format('d-m-Y'):'',
+				'virtualAc' => $invDetails->lms_user->virtual_acc_id ?? '',
+				'tenure' =>	$disbDetails->tenor,
+				'roi' => $invDisb->interest_rate,
+				'odi' => $odiInterest,
+				'principalOut' => round($principalOutstanding,2),
+				'interestOut' => round($interestOutstanding,2),
+				'overduePosted' => round($disbDetails->overdue_capitalized,2),
+				'overdueOut' => round($overdueAmount,2),
+				'invoiceLevelChrgOut'=> round($transactions->charge_os_amount,2),
+				'totalOutStanding' => round($totalOutstanding,2),
+				'intGraceDays' => '',
+				'principalGraceDays' => $disbDetails->grace_period,
+				'principalOverdue' => '',
+				'principalOverdueCategory'=> $principalOverdueCategory,
+				'principalDPD' => $principalDPD,
+				'interestDPD' => 0,
+				'finalDPD' => $maxDPD,
+				'outstandingMaxBucket' => $outstanding_max_bucket,
+				'maturityDays' => $maturityDays,
+				'maturityBucket' => $maturityMaxbucket,
+				'marginToRefunded' => round($margin_to_refunded,2),
+				'interestToRefunded' => round($interest_to_refunded,2),
+				'overdueToRefunded' => round($overdueinterest_to_refunded,2)
+			];
+		}
+		return $result;
 	}
 }

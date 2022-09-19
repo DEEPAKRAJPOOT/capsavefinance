@@ -4,7 +4,7 @@ namespace App\Inv\Repositories\Models\Lms;
 use App\Inv\Repositories\Factory\Models\BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class OverdueReportLog extends BaseModel {
+class OutstandingReportLog extends BaseModel {
 
     use SoftDeletes;
     /* The database table used by the model.
@@ -12,14 +12,7 @@ class OverdueReportLog extends BaseModel {
      * @var string
      */
 
-    protected $table = 'overdue_report_logs';
-
-      /**
-     * Custom primary key is set for the table
-     *
-     * @var integer
-     */
-    protected $primaryKey = 'id';
+    protected $table = 'outstanding_report_logs';
 
     /**
      * Maintain created_at and updated_at automatically

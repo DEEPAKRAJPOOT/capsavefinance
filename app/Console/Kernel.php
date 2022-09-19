@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\OverdueReport::class,
         \App\Console\Commands\OverdueReportManual::class,
         \App\Console\Commands\ApproverMailForPendingCases::class,
+        \App\Console\Commands\OutstandingReport::class,
     ];
 
     /**
@@ -73,6 +74,8 @@ class Kernel extends ConsoleKernel
             $schedule->command('report:margin')->timezone(config('common.timezone'))->dailyAt('23:50');
             // To Generate Receipt Report
             $schedule->command('report:receipt')->timezone(config('common.timezone'))->dailyAt('23:52');
+            // To Generate Outstanding Report Manual
+            $schedule->command('report:outstandingManual')->timezone(config('common.timezone'))->dailyAt('23:54');
         }
         $schedule->command('command:lenovoNewUser')->timezone(config('common.timezone'))->dailyAt('23:00');
         $schedule->command('lms:maturityinvoicedueAlert')->timezone(config('common.timezone'))->dailyAt('21:30');
@@ -85,9 +88,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('etl:report_utilization')->timezone(config('common.timezone'))->dailyAt('01:25');
         $schedule->command('etl:report_disbursal')->timezone(config('common.timezone'))->dailyAt('01:30');
         $schedule->command('etl:report_account_disbursal')->timezone(config('common.timezone'))->dailyAt('01:35');
-
+        $schedule->command('etl:report_outstanding')->timezone(config('common.timezone'))->dailyAt('01:40');
         $schedule->command('lms:disbursalBatchRequest')->timezone(config('common.timezone'))->between('10:00','23:00')->hourlyAt('1');
+        $schedule->command('lms:disbursalBatchRequest')->timezone(config('common.timezone'))->dailyAt('22:50');
         $schedule->command('alert:approvalMailForPendingCases')->timezone(config('common.timezone'))->tuesdays()->dailyAt('20:45');
+        $schedule->command('etl:report_outstanding_monthly')->timezone(config('common.timezone'))->monthlyOn(1, '01:45');
     }
     
     /**

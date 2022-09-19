@@ -57,6 +57,8 @@ use App\Inv\Repositories\Models\AppProgramOffer;
 use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\User;
+use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
+
 class AjaxController extends Controller {
 
     /**
@@ -6150,4 +6152,38 @@ if ($err) {
         }
         return response()->json($result); 
     } 
+
+    public function getInvoiceOutstandingList(DataProviderInterface $dataProvider) {
+        if($this->request->get('from_date')!= '' && $this->request->get('to_date')!=''){
+            $from_date = Carbon::createFromFormat('d/m/Y', $this->request->get('from_date'))->format('d/m/Y');
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('d/m/Y');
+        }
+        $condArr = [
+            'from_date' => $from_date ?? NULL,
+            'to_date' => $to_date ?? NULL,
+            'user_id' => $this->request->get('user_id'),
+            'customer_id' => $this->request->get('customer_id'),
+            'type' => 'excel',
+        ];
+        $transactionList = $this->invRepo->getReportAllOutstandingInvoice();
+        $users = $dataProvider->getReportAllOverdueInvoice($this->request, $transactionList);
+        $users     = $users->getData(true);
+        $users['excelUrl'] = route('pdf_invoice_over_due_url', $condArr);
+        $condArr['type']  = 'pdf';
+        $users['pdfUrl'] = route('pdf_invoice_over_due_url', $condArr);
+        return new JsonResponse($users);
+    }
+    
+    public function sendInvoiceOutstandingReportByMail(DataProviderInterface $dataProvider)
+    {
+        if ($this->request->get('to_date') && $this->request->get('generate_report')) {
+            $to_date = Carbon::createFromFormat('d/m/Y', $this->request->get('to_date'))->format('Y-m-d');
+            $userId  = $this->request->get('user_id') ?? 'all';
+            $odReportLog = OutstandingReportLog::create([ 'user_id' => $userId, 'to_date' => $to_date]);
+            \Artisan::call("report:outstandingManual", ['user' => $userId, 'date' => $to_date, 'logId' => $odReportLog->id ?? NULL]);
+        }
+    
+        $overdueReportLogs = OutstandingReportLog::orderBy('id','desc')->get();
+        return $dataProvider->getOutstandingReportLogs($this->request, $overdueReportLogs);
+    }
 }

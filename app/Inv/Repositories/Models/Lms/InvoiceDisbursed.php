@@ -110,6 +110,10 @@ class InvoiceDisbursed extends BaseModel {
 	public function accruedInterest(){
 		return $this->hasMany('App\Inv\Repositories\Models\Lms\InterestAccrual','invoice_disbursed_id','invoice_disbursed_id')->orderBy('interest_date', 'DESC');
 	}
+
+	public function disburseDetails(){
+		return $this->hasOne('App\Inv\Repositories\Models\Lms\InvoiceDisbursedDetail','invoice_disbursed_id','invoice_disbursed_id');
+	}
 	
 	public function appProgramOffer(){
 		return $this->belongsTo('App\Inv\Repositories\Models\AppProgramOffer');
@@ -332,4 +336,11 @@ class InvoiceDisbursed extends BaseModel {
 					  ->whereIn('status_id', [12,13,15]);
 				})->sum('disburse_amt');
 	}
+
+	public static function getReportAllOutstandingInvoice()
+	 {
+		  $currentDate =  Carbon::now()->format('Y-m-d');
+		  return self::where(['status_id' => 12])->whereRaw("ADDDATE(DATE(payment_due_date),grace_period) < '".$currentDate."'")/*->with(['InterestAccrual','invoice','Invoice.business','Invoice.anchor','Invoice.supplier','Invoice.userFile','Invoice.program','Invoice.program_offer','Invoice.Invoiceuser','disbursal.disbursal_batch','Invoice.lms_user'])*/->orderBy('invoice_id', 'DESC');
+	   
+	 }
 }

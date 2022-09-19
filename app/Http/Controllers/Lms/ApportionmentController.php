@@ -1085,24 +1085,12 @@ class ApportionmentController extends Controller
             $controller = app()->make('App\Http\Controllers\Lms\userInvoiceController');
             $billData = [];
             foreach($transactionList as $trans){
-                $billData[$trans['user_id']][$trans['trans_type']][$trans['trans_id']] = $trans['trans_id'];
+                $billData[$trans['user_id']][$trans['trans_id']] = $trans['trans_id'];
             }
 
-            foreach($billData as $userId => $transTypes){
-                foreach($transTypes as $transType => $trans){
-                    $transIds = array_keys($trans);
-                    if(!empty($transIds)){
-                        $billType = null;
-                        if($transType == config('lms.TRANS_TYPE.INTEREST')){
-                            $billType = 'I';
-                        }elseif($transType == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
-                            $billType = 'C';
-                        }
-                        if($billType){
-                            $controller->generateCapsaveInvoice($transIds, $userId, $billType);
-                        }
-                    }
-                }
+            foreach($billData as $userId => $trans){
+                $transIds = array_keys($trans);
+                $controller->generateCapsaveInvoice($transIds, $userId, 'I');
             }
 
             $whereActivi['activity_code'] = 'apport_running_save';

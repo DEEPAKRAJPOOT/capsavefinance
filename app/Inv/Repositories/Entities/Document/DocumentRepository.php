@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\AppDocument;
 use App\Inv\Repositories\Models\AppDocProduct;
 use App\Inv\Repositories\Models\BizOwner;
 use App\Inv\Repositories\Models\UserFile;
+use App\Inv\Repositories\Models\OfferAdhocDocument;
 use App\Inv\Repositories\Contracts\Traits\AuthTrait;
 use App\Inv\Repositories\Models\ProgramDoc;
 
@@ -219,6 +220,26 @@ class DocumentRepository implements DocumentInterface
         }
         
         return UserFile::create($attributes);
+    }
+
+     /**
+     * save file method
+     *
+     * @param mixed $requests
+     */
+    
+    public function saveAdhocFile($attributes = []){
+        /**
+         * Check Valid Array
+         */
+        if (!is_array($attributes)) {
+            throw new InvalidDataTypeExceptions('Please send an array');
+        }
+        if (empty($attributes)) {
+            throw new BlankDataExceptions('No Data Found');
+        }
+        
+        return OfferAdhocDocument::create($attributes);
     }
     
     

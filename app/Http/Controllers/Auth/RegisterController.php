@@ -603,7 +603,7 @@ use RegistersUsers,
         $Otpstring = mt_rand(1000, 9999);
         $countOtp = $this->userRepo->getOtps($userId)->toArray();
         //dd($countOtp);
-        if (isset($countOtp)) {
+        if (!empty($countOtp)) {
             $firstData = $countOtp[0]['otp_exp_time'];
             $updatedTime = new DateTime($firstData);
             $currentDate = new DateTime();

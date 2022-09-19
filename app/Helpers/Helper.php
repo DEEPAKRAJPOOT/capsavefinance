@@ -2598,6 +2598,8 @@ class Helper extends PaypalHelper
                 $adhocExpirDate = strtotime($adhocLimit->end_date);
                 if ($curDate > $adhocExpirDate) {
                     $activeArray[] = false;
+                }elseif(in_array($adhocLimit->status, [2])) {
+                    $activeArray[] = false;
                 }
             }
         }        
@@ -2643,17 +2645,46 @@ class Helper extends PaypalHelper
     }
     
     public static function getCustomerUtilizedAmt(int $userId){
-        $marginApprAmt = BizInvoice::whereIn('status_id', [8,9,10]) 
-                        ->where('is_adhoc', 0)
-                        ->where('supplier_id', $userId) 
-                        ->sum('invoice_margin_amount');
-        
-        $invoiceDisbursedDetails = InvoiceDisbursedDetail::whereHas('invoice',function($q) use($userId){
-                            $q->where('supplier_id',$userId);
-                        })->get();
+            $marginApprAmt = BizInvoice::whereIn('status_id', [8,9,10]) 
+                            ->where('is_adhoc', 0)
+                            ->where('supplier_id', $userId) 
+                            ->sum('invoice_margin_amount');
+            
+            $invoiceDisbursedDetails = InvoiceDisbursedDetail::whereHas('invoice',function($q) use($userId){
+                                $q->where('supplier_id',$userId);
+                            })->get();
 
-        $marginApprAmt += round((($invoiceDisbursedDetails->sum('total_outstanding_amount') - $invoiceDisbursedDetails->sum('margin_amount')) - ($invoiceDisbursedDetails->sum('total_repayment_amount') -  ( $invoiceDisbursedDetails->sum('margin_repayment') + $invoiceDisbursedDetails->sum('margin_waived_off') + $invoiceDisbursedDetails->sum('margin_tds') + $invoiceDisbursedDetails->sum('margin_write_off')))),2);
-        
-        return $marginApprAmt;   
+            $marginApprAmt += round((($invoiceDisbursedDetails->sum('total_outstanding_amount') - $invoiceDisbursedDetails->sum('margin_amount')) - ($invoiceDisbursedDetails->sum('total_repayment_amount') -  ( $invoiceDisbursedDetails->sum('margin_repayment') + $invoiceDisbursedDetails->sum('margin_waived_off') + $invoiceDisbursedDetails->sum('margin_tds') + $invoiceDisbursedDetails->sum('margin_write_off')))),2);
+            
+            return $marginApprAmt;   
+             }
+    /**
+     * uploading adhoc limit document data
+     *
+     * @param Exception $exception
+     * @param string    $exMessage
+     * @param boolean   $handler
+     */
+    public static function uploadAppAdhocDocFile($docFile, $userId, $appId, $adhocLimit)
+    {
+        $inputArr = [];
+        if(!empty($docFile)) {
+            if ($docFile) {
+                $targetDir = '/public/user/' . $userId . '/' . $appId . '/adhoc-limit' . '/'. $adhocLimit->app_offer_adhoc_limit_id . '/docs';
+                if (!Storage::exists($targetDir)) {
+                    Storage::makeDirectory($targetDir, 0777, true);
+                }
+                $path = Storage::disk('public')->put($targetDir, $docFile, null);
+                $inputArr['file_path'] = $path;
+            }
+        }
+        $inputArr['file_type'] = !empty($docFile) ? $docFile->getClientMimeType() : '';
+        $inputArr['file_name'] = !empty($docFile) ? $docFile->getClientOriginalName() : '';
+        $inputArr['file_size'] = !empty($docFile) ? $docFile->getClientSize() : '';
+        $inputArr['file_encp_key'] =  md5('2');
+        $inputArr['created_by'] = Auth::user()->user_id;
+        $inputArr['updated_by'] = Auth::user()->user_id;
+
+        return $inputArr;
     }
 }

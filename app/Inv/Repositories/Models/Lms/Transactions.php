@@ -511,22 +511,22 @@ class Transactions extends BaseModel {
 
     public function getDpdAttribute(){
         $to = Carbon::parse(Helpers::getSysStartDate())->format('Y-m-d');
-        if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
-            $from = Carbon::parse($this->invoiceDisbursed->payment_due_date)->format('Y-m-d');
-        }
-        elseif($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-            $inv = $this->invoiceDisbursed->invoice;
-            if($inv->program_offer->payment_frequency == 1 && $inv->program->interest_borne_by == '1'){
-                $from = Carbon::parse($this->invoiceDisbursed->disbursal->disburse_date)->format('Y-m-d');
-            }else{
-                $from = Carbon::parse($this->trans_date)->format('Y-m-d');
+        $number_days = 0;
+        if($this->entry_type == 0){
+            $from = Carbon::parse($this->paymentduedate)->format('Y-m-d');
+            $graceEnd = Carbon::parse($from)->addDays($this->invoiceDisbursed->grace_period)->format('Y-m-d');
+
+            if($this->trans_type == config('lms.TRANS_TYPE.PAYMENT_DISBURSED')){
+                if(strtotime($to) >= strtotime($graceEnd) && $this->outstanding > 0){
+                    $number_days = (strtotime($to) - strtotime($from)) / (60 * 60 * 24);
+                }
+            }
+            if($this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
+                if(strtotime($to) > strtotime($from) && $this->outstanding > 0 ){
+                    $number_days = (strtotime($to) - strtotime($from)) / (60 * 60 * 24);
+                }
             }
         }
-        $number_days = 0;
-        if(strtotime($to) > strtotime($from)){
-            $number_days = (strtotime($to) - strtotime($from)) / (60 * 60 * 24);
-        }
-
         return $number_days;
     }
 
@@ -654,10 +654,25 @@ class Transactions extends BaseModel {
 
     public  function getPaymentDueDateAttribute()
     {
-        if(in_array($this->trans_type,[config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.MARGIN')])){
-            return Carbon::parse($this->invoiceDisbursed->payment_due_date)->format('Y-m-d');
-        }elseif($this->invoiceDisbursed && $this->invoiceDisbursed->invoice->program_offer->payment_frequency == 1  && $this->trans_type == config('lms.TRANS_TYPE.INTEREST')){
-            return Carbon::parse($this->invoiceDisbursed->payment_due_date)->format('Y-m-d');
+        if(in_array($this->trans_type,[
+            config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),
+            config('lms.TRANS_TYPE.MARGIN'),
+            config('lms.TRANS_TYPE.INTEREST'),
+            config('lms.TRANS_TYPE.INTEREST_OVERDUE')]) && $this->entry_type == 0 && is_null($this->link_trans_id) && is_null($this->parent_trans_id)){
+            
+            $paymentFrequency = $this->invoiceDisbursed->invoice->program_offer->payment_frequency;
+            $intBornBy = $this->invoiceDisbursed->invoice->program_offer->interest_borne_by;
+            $prgmType = $this->invoiceDisbursed->invoice->program->prgm_type;
+
+            if(in_array($this->trans_type,[config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.MARGIN')])){
+                return Carbon::parse($this->invoiceDisbursed->payment_due_date)->format('Y-m-d');
+            }
+            elseif(in_array($this->trans_type,[config('lms.TRANS_TYPE.INTEREST')]) && is_null($this->trans_running_id)){
+                if($paymentFrequency == 1 && $intBornBy == 1){
+                    return Carbon::parse($this->invoiceDisbursed->int_accrual_start_dt)->format('Y-m-d');
+                }
+            }
+            return Carbon::parse($this->trans_date)->format('Y-m-d');
         }else{
             return Carbon::parse($this->trans_date)->format('Y-m-d');
         }
@@ -778,7 +793,7 @@ class Transactions extends BaseModel {
         if(isset($transactions['trans_type']) && !isset($transactions['is_transaction'])){
             $transType = $transactions['trans_type'];
             $chrg_id = TransType::where('id',$transType)->value('chrg_master_id');
-            if($chrg_id > 0 || $transType == config('lms.TRANS_TYPE.INTEREST_OVERDUE')){
+            if($chrg_id > 0){
                 $transactions['is_transaction'] = false;
             }else{
                 $transactions['is_transaction'] = true;
@@ -1056,6 +1071,16 @@ class Transactions extends BaseModel {
         return $transactions->where('dpd','=',$maxDPD)->first();
     }
 
+    public static function getMaxDpdInvoiceTransaction($invDesbId, $transType){
+        $transactions =  self::whereNull('parent_trans_id')
+        ->whereNull('payment_id')
+        ->where('invoice_disbursed_id','=',$invDesbId)
+        ->where('trans_type','=',$transType)        
+        ->where('outstanding', '>', 0)
+        ->get();
+        return $maxDPD = $transactions->max('dpd');
+    }
+
     /*** save repayment transaction details for invoice  **/
     public static function saveRepaymentTrans($transactions)
     {
@@ -1257,7 +1282,7 @@ class Transactions extends BaseModel {
        }
        return $sql->whereHas('transType', function($query) use ($invoiceType) { 
             if($invoiceType == 'I') {
-                 $query->where('id','=','9');
+                $query->whereIn('id',[config('lms.TRANS_TYPE.INTEREST'),config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
              }  else {
                 $query->where('chrg_master_id','!=','0');
             }

@@ -1415,5 +1415,10 @@ use CommonRepositoryTraits;
 
         return $result;
     }
+
+    public function getReportAllOutstandingInvoice()
+    {
+        return InvoiceDisbursed::getReportAllOutstandingInvoice();
+    }
          
 }

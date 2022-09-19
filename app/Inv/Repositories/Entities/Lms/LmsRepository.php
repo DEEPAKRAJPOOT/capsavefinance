@@ -74,6 +74,7 @@ use App\Inv\Repositories\Models\Lms\CustomerTransactionSOA;
 use App\Inv\Repositories\Models\InvoiceStatusLog;
 use App\Inv\Repositories\Models\Lms\ChargeTransactionDeleteLog;
 use App\Inv\Repositories\Models\AppApprover;
+use App\Inv\Repositories\Models\OfferAdhocDocument;
 
 /**
  * Lms Repository class
@@ -703,7 +704,7 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 
    public function getDisbursals($disburseIds)
    {
-	  return Disbursal::with(['lms_user','lms_user.user', 'lms_user.bank_details', 'lms_user.user.anchor_bank_details', 'lms_user.userCreatedBy'])->whereIn('disbursal_id', $disburseIds)->with('user.anchor', 'user.anchor.salesUser')
+	  return Disbursal::with(['lms_user','lms_user.user', 'lms_user.bank_details', 'lms_user.user.anchor_bank_details', 'lms_user.userCreatedBy'])->whereIn('disbursal_id', $disburseIds)->with('user.anchor', 'user.anchor.salesUser','user.biz')
 			->get();
    }
 
@@ -1216,6 +1217,10 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	public static  function getUserAdhocLimitById($id)
 	{
 		return AppOfferAdhocLimit::find($id);
+	}
+
+	public static  function getAdhocDocuments($app_offer_adhoc_limit_id){
+		return OfferAdhocDocument::getAdhocDocuments($app_offer_adhoc_limit_id);
 	}
 
 	public static function getInvoiceSettleStatus(int $invoiceId, $statusOnly = false){
@@ -1854,19 +1859,33 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 
     public function getAllBusinessForSheet($whereCond) {
-		// return Application::with(['business', 'bizInvoice.invoice_disbursed'])->whereHas('bizInvoice.invoice_disbursed', function ($q) use ($whereCond) {
-		// 	$q->where('is_posted_in_cibil',$whereCond['is_posted_in_cibil']);
-		// 	$q->where('updated_at', '<=', $whereCond['date']);
-		// 	$q->whereIn('status_id', $whereCond['status_ids']);
-		// })->get();
-
-		return BizInvoice::with(['invoice_disbursed', 'business','business.segment', 'app'])->whereHas('invoice_disbursed', function ($q) use ($whereCond) {
-			$q->where('created_at', '<=', $whereCond['date']);
-			$q->whereIn('status_id', $whereCond['status_ids']);
+		$startDate = Carbon::createFromFormat('Y-m-d', $whereCond['date'], 'Asia/Kolkata')->firstOfMonth()->setTimezone('UTC')->format('Y-m-d H:i:s');
+		$endDate = Carbon::createFromFormat('Y-m-d', $whereCond['date'], 'Asia/Kolkata')->endOfDay()->setTimezone('UTC')->format('Y-m-d H:i:s');
+		$statusIds = $whereCond['status_ids'];
+		$invoices = BizInvoice::select(DB::raw('max(invoice_id) as maxInv,supplier_id, count(invoice_id) as invCnt '))->whereHas('invoice_disbursed', function ($q) use ($startDate, $endDate, $statusIds) {
+			$q->where('created_at', '>=', $startDate);
+			$q->where('created_at', '<=', $endDate);
+			$q->whereIn('status_id', $statusIds);
 		})
 		->groupBy('supplier_id')
 		->get();
 
+		$collection = null;
+
+		foreach ($invoices as $key => $inv) {
+			$r = BizInvoice::with(['invoice_disbursed', 'business', 'app'])
+			->where('invoice_id',$inv->maxInv)->get();
+			if($r){
+
+				$r[0]->invCount = $inv->invCnt;
+				if($collection){
+					$collection = $collection->merge($r);
+				}else{
+					$collection = $r;
+				}
+			}
+		}
+		return $collection;
     }
 
 	public function saveChargeTransDeleteLog($attr)

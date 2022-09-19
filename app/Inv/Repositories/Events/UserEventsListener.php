@@ -855,8 +855,8 @@ class UserEventsListener extends BaseEvent
         $email_content = EmailTemplate::getEmailTemplate("LMS_USER_DISBURSAL");
         if ($email_content) {
             $mail_body = str_replace(
-                ['%receiver_user_name','%user_id' ,'%amount', '%utr_no','%benefi_name','%disbursed_date'],
-                [$user['receiver_user_name'],$user['user_id'],$user['amount'],$user['utr_no'],$user['benefi_name'],$user['disbursed_date']],
+                ['%receiver_user_name','%user_id' ,'%amount', '%utr_no','%disbursed_date'],
+                [$user['receiver_user_name'],$user['id'],$user['amount'],$user['utr_no'],$user['disbursed_date']],
                 $email_content->message
             );
             $mail_subject = str_replace(['%user_id'], $user['user_id'],$email_content->subject);
