@@ -1859,11 +1859,11 @@ class LmsRepository extends BaseRepositories implements LmsInterface {
 	}
 
     public function getAllBusinessForSheet($whereCond) {
-		$startDate = Carbon::createFromFormat('Y-m-d', $whereCond['date'], 'Asia/Kolkata')->firstOfMonth()->setTimezone('UTC')->format('Y-m-d H:i:s');
+		//$startDate = Carbon::createFromFormat('Y-m-d', $whereCond['date'], 'Asia/Kolkata')->firstOfMonth()->setTimezone('UTC')->format('Y-m-d H:i:s');
 		$endDate = Carbon::createFromFormat('Y-m-d', $whereCond['date'], 'Asia/Kolkata')->endOfDay()->setTimezone('UTC')->format('Y-m-d H:i:s');
 		$statusIds = $whereCond['status_ids'];
 		$invoices = BizInvoice::select(DB::raw('max(invoice_id) as maxInv,supplier_id, count(invoice_id) as invCnt '))->whereHas('invoice_disbursed', function ($q) use ($startDate, $endDate, $statusIds) {
-			$q->where('created_at', '>=', $startDate);
+			//$q->where('created_at', '>=', $startDate);
 			$q->where('created_at', '<=', $endDate);
 			$q->whereIn('status_id', $statusIds);
 		})
