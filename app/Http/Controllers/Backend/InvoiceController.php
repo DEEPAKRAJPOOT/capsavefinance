@@ -329,7 +329,6 @@ class InvoiceController extends Controller {
         $batchId = $request->get('disbursal_batch_id');
 
         $disbursal = $this->lmsRepo->getDisbursalByUserAndBatchId(['user_id' => $userId, 'disbursal_batch_id' => $batchId]);
-        // dd($disbursal);
         return view('backend.invoice.update_invoice_disbursal')
                 ->with(
                     ['user_id' => $userId, 
@@ -791,7 +790,8 @@ class InvoiceController extends Controller {
                     'customersDisbursalList' => $customersDisbursalList,
                     'invoiceIds' => $invoiceIds, 
                     'disburseType' => $disburseType,
-                    'bankType' => $bankType
+                    'bankType' => $bankType,
+                    'allinvoices' => $allinvoices
                 ]);;              
     }
 
@@ -1164,24 +1164,31 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
             $disburseDate = $request->get('disburse_date');
             $fundDate = date("Y-m-d h:i:s", strtotime(str_replace('/','-',$disburseDate)));
             $creatorId = Auth::user()->user_id;
-            $validator = Validator::make($request->all(), [
-               'disburse_date' => 'required'
-            ]);
-            
-            if ($validator->fails()) {
-                Session::flash('error', $validator->messages()->first());
-                return redirect()->back()->withInput();
+            $record = array_filter(explode(",",$invoiceIds));
+            $allrecords = array_unique($record);
+            $allrecords = array_map('intval', $allrecords);
+            $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
+            if(!empty($allinvoices)){
+                foreach ($allinvoices as $key => $invoice) {
+                    $dueDate[] =  !empty($invoice['invoice_due_date']) ? $invoice['invoice_due_date'] : 'N/A';
+                    $minDate = min($dueDate);
+                    
+                    $validator = Validator::make($request->all(), [
+                    'disburse_date' => 'required|date_format:d/m/Y|before:'.$minDate,
+                ]);
+                if ($validator->fails()) {
+                    Session::flash('error', $validator->messages()->first());
+                    return redirect()->back()->withInput();
+                }
             }
+            }
+            
+            
 
             $disburseType = config('lms.DISBURSE_TYPE')['OFFLINE']; // Online by Bank Api i.e 2
             if(empty($invoiceIds)){
                 return redirect()->route('backend_get_disbursed_invoice')->withErrors(trans('backend_messages.noSelectedInvoice'));
             }
-            $record = array_filter(explode(",",$invoiceIds));
-            $allrecords = array_unique($record);
-            $allrecords = array_map('intval', $allrecords);
-            $allinvoices = $this->lmsRepo->getInvoices($allrecords)->toArray();
-
 
             foreach ($allinvoices as $inv) {
                 $disbursedInvoiceId = $this->lmsRepo->findInvoiceDisbursedInvoiceIdByInvoiceId($inv['invoice_id']);
@@ -1234,7 +1241,6 @@ public function disburseTableInsert($exportData = [], $supplierIds = [], $allinv
                         $margin = $this->calMargin($invoice['invoice_approve_amount'], $invoice['program_offer']['margin']);
                         $fundedAmount = $invoice['invoice_approve_amount'] - $margin;
                         $banchMarkDateFlag = $invoice['program_offer']['benchmark_date'];
-        
                         if ($banchMarkDateFlag == 1) {
                             $tenor = $this->calDiffDays($invoice['invoice_due_date'], $disburseDate);
                         }
