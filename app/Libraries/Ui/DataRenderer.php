@@ -1363,6 +1363,9 @@ class DataRenderer implements DataProviderInterface
                           $action .='<a title="Approve" data-status="8" data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"  data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'"  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="btn btn-action-btn btn-sm pendingApproveInv"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>';
                       
                       }
+                      if(Helpers::checkPermission('update_invoice_approve') ){
+                        $action .='</br></br><div class="d-flex"><select  data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv1"><option value="0">Change Status</option><option value="14"> Reject</option></select></div>';
+                      }
                       return $action;
                 })
                    ->filter(function ($query) use ($request) {
@@ -1376,19 +1379,12 @@ class DataRenderer implements DataProviderInterface
                      })
                      ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('user_id', 'like', "%$search_keyword%");
                      });
                 });
                         }
-                        if ($request->get('customer_id') != '') {
-                            $query->where(function ($query) use ($request) {
-                                $customer_id = trim($request->get('customer_id'));
-                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
-                                        $q->where('user_id', 'like', "%$customer_id%");
-                                });
-                            });
-                        }
-                        
-                    
                 })
               ->make(true);
     } 
@@ -1618,18 +1614,12 @@ class DataRenderer implements DataProviderInterface
                      })
                      ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('user_id', 'like', "%$search_keyword%");
                      });
                 });
                         }
-                        if ($request->get('customer_id') != '') {
-                            $query->where(function ($query) use ($request) {
-                                $customer_id = trim($request->get('customer_id'));
-                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
-                                        $q->where('user_id', 'like', "%$customer_id%");
-                                });
-                            });
-                        }
-                    
                 })
               ->make(true);
     } 
@@ -2011,18 +2001,12 @@ class DataRenderer implements DataProviderInterface
                      })
                      ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('user_id', 'like', "%$search_keyword%");
                      });
                 });
                         }
-                        if ($request->get('customer_id') != '') {
-                            $query->where(function ($query) use ($request) {
-                                $customer_id = trim($request->get('customer_id'));
-                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
-                                        $q->where('user_id', 'like', "%$customer_id%");
-                                });
-                            });
-                        }
-                    
                 })
               ->make(true);
     }  
@@ -2128,28 +2112,15 @@ class DataRenderer implements DataProviderInterface
                      })
                      ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('user_id', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('invoice_disbursed.disbursal.disbursal_batch', function ($q) use ($search_keyword){
+                        $q->where('batch_id', 'like', "%$search_keyword%");
                      });
                 });
                         }
-                        if ($request->get('customer_id') != '') {
-                            $query->where(function ($query) use ($request) {
-                                $customer_id = trim($request->get('customer_id'));
-                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
-                                        $q->where('user_id', 'like', "%$customer_id%");
-                                });
-                            });
-                        }
-                        if ($request->get('batch_id') != '') {
-                            if ($request->has('batch_id')) {
-                                    $query->where(function ($query) use ($request) {
-                                        $batch_id = trim($request->get('batch_id'));
-                                            $query->whereHas('invoice_disbursed.disbursal.disbursal_batch', function ($q) use ($batch_id){
-                                                $q->where('batch_id', 'like', "%$batch_id%");
-                                        });
-                                    });
-                            }
-                        }
-                    
                 })
               ->make(true);
     }  
@@ -2234,18 +2205,12 @@ class DataRenderer implements DataProviderInterface
                      })
                      ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('user_id', 'like', "%$search_keyword%");
                      });
                 });
                         }
-                        if ($request->get('customer_id') != '') {
-                            $query->where(function ($query) use ($request) {
-                                $customer_id = trim($request->get('customer_id'));
-                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
-                                        $q->where('user_id', 'like', "%$customer_id%");
-                                });
-                            });
-                        }
-                    
                 })
               ->make(true);
     }  
@@ -2379,18 +2344,12 @@ class DataRenderer implements DataProviderInterface
                      })
                      ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('user_id', 'like', "%$search_keyword%");
                      });
                 });
                         }
-                        if ($request->get('customer_id') != '') {
-                            $query->where(function ($query) use ($request) {
-                                $customer_id = trim($request->get('customer_id'));
-                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
-                                        $q->where('user_id', 'like', "%$customer_id%");
-                                });
-                            });
-                        }
-                    
                 })
               ->make(true);
     }  
@@ -2475,46 +2434,46 @@ class DataRenderer implements DataProviderInterface
                         $inv_amount .= $invoice->invoice_approve_amount ? '<br><span><b>Date & Time:&nbsp;</b>'. \Helpers::convertDateTimeFormat($invoice->updated_at, 'Y-m-d H:i:s','d-m-Y h:i A').'</span>' : '';
                         return $inv_amount;
                 })     
-                 ->addColumn(
-                    'action',
-                    function ($invoice) {
-                        $id = Auth::user()->user_id;
-                        $inv_approval = Config::get('common.inv_approval');
-                        $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
-                        $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                //  ->addColumn(
+                //     'action',
+                //     function ($invoice) {
+                //         $id = Auth::user()->user_id;
+                //         $inv_approval = Config::get('common.inv_approval');
+                //         $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                //         $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
                         
-                         $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
-                        if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
-                        {
-                             $customer  = 1;
-                        }
-                        else if( $chkUser->id==11)
-                        {
-                             $customer  = 2;
-                        }
-                        else
-                        {
-                            $customer  = 3;
-                        }
-                       $expl  =  explode(",",$invoice->program->invoice_approval); 
-                       $action = "";
-                    //  if($invoice->userDetail->is_active==1)
-                    //  {
-                    //    if( $chkUser->id!=11)
-                    //   { 
-                    //    $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"   data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv5"><option value="0">Change Status</option>';
-                    //    $action .= '<option value="7">Pending</option>';
-                    // //    if(in_array($customer, $expl)) 
-                    // //    {
-                    // //     $action .='<option value="8">Approve</option>';
-                    // //    }
-                    //     $action .='</select></div>';
-                    //   }
-                    //  }
+                //          $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                //         if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
+                //         {
+                //              $customer  = 1;
+                //         }
+                //         else if( $chkUser->id==11)
+                //         {
+                //              $customer  = 2;
+                //         }
+                //         else
+                //         {
+                //             $customer  = 3;
+                //         }
+                //        $expl  =  explode(",",$invoice->program->invoice_approval); 
+                //        $action = "";
+                //      if($invoice->userDetail->is_active==1)
+                //      {
+                //        if( $chkUser->id!=11)
+                //       { 
+                //        $action .= '<div class="d-flex"><select data-amount="'.(($invoice->invoice_approve_amount) ? $invoice->invoice_approve_amount  : '' ).'"   data-user="'.(($invoice->supplier_id) ? $invoice->supplier_id : '' ).'" data-id="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class=" btn-success rounded approveInv5"><option value="0">Change Status</option>';
+                //        $action .= '<option value="7">Pending</option>';
+                //     //    if(in_array($customer, $expl)) 
+                //     //    {
+                //     //     $action .='<option value="8">Approve</option>';
+                //     //    }
+                //         $action .='</select></div>';
+                //       }
+                //      }
                      
-                        return $action;
+                //         return $action;
 
-                })
+                // })
                  ->filter(function ($query) use ($request) {
                   
                     if ($request->get('biz_id') != '') {                        
@@ -2526,18 +2485,12 @@ class DataRenderer implements DataProviderInterface
                      })
                      ->orwhereHas('anchor', function ($q) use ($search_keyword){
                         $q->where('comp_name', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                        $q->where('user_id', 'like', "%$search_keyword%");
                      });
                 });
                         }
-                        if ($request->get('customer_id') != '') {
-                            $query->where(function ($query) use ($request) {
-                                $customer_id = trim($request->get('customer_id'));
-                                    $query->whereHas('lms_user', function ($q) use ($customer_id){
-                                        $q->where('user_id', 'like', "%$customer_id%");
-                                });
-                            });
-                        }
-                    
                 }) 
                  
               ->make(true);
@@ -6689,28 +6642,21 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->filter(function ($query) use ($request) {
                     if ($request->get('customer_code') != '') {
-                        if ($request->has('customer_code')) {
-                            $customer_code = trim($request->get('customer_code'));
-                            $query->whereHas('lms_user', function($query1) use ($customer_code) {
-                                $query1->where('customer_id', 'like',"%$customer_code%");
-                            });
-
-                        }
+                        $query->where(function ($query) use ($request) {
+                            $search_keyword = trim($request->get('customer_code'));
+                            $query->whereHas('lms_user', function($query1) use ($search_keyword) {
+                                $query1->where('user_id', 'like',"%$search_keyword%");
+                            })
+                            ->orwhereHas('disbursal_batch', function ($q) use ($search_keyword){
+                                $q->where('batch_id', 'like', "%$search_keyword%");
+                             });
+                        });
                     }
                     if ($request->get('selected_date') != '') {
                         if ($request->has('selected_date')) {
                             $selected_date = trim($request->get('selected_date'));
                             $query->whereHas('disbursal_batch', function($query1) use ($selected_date) {
                                 $query1->where('created_at', 'like',"%$selected_date%");
-                            });
-
-                        }
-                    }
-                    if ($request->get('batch_id') != '') {
-                        if ($request->has('batch_id')) {
-                            $batch_id = trim($request->get('batch_id'));
-                            $query->whereHas('disbursal_batch', function($query1) use ($batch_id) {
-                                $query1->where('disbursal_batch_id', 'like',"%$batch_id%");
                             });
 
                         }
@@ -7885,7 +7831,7 @@ class DataRenderer implements DataProviderInterface
                     if ($request->get('batch_id') != '') {
                         if ($request->has('batch_id')) {
                             $batch_id = trim($request->get('batch_id'));
-                            $query->where('batch_no', 'like',"%$batch_id%");
+                            $query->where('batch_id', 'like',"%$batch_id%");
                         }
                     }
                 })

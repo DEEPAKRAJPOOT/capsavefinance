@@ -13,7 +13,7 @@ try {
                 "url": messages.backend_ajax_get_disbursal_batch_request, // json datasource
                 "method": 'POST',
                 data: function (d) {
-                    d.batch_id = $('select[name=batch_id]').val();
+                    d.batch_id = $('input[name=batch_id]').val();
                     d._token = messages.token;
                 },
                 "error": function () {  // error handling

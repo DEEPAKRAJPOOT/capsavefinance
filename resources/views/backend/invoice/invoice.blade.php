@@ -39,22 +39,11 @@
                                             {{-- <div class="col-md-2"> --}}
                                                  <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                             {{-- </div> --}}
-                                              <div class="col-md-4">
-                                                  <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number ">
+                                              <div class="col-md-4" style="margin-left: 10px;">
+                                                  <input class="form-control form-control-sm" style="width: 456px;" name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice Number ">
                                               </div> 
-                                              <div class="col-md-3">
-                                                {!!
-                                                Form::text('customer_id',
-                                                null,
-                                                [
-                                                'class' => 'form-control',
-                                                'placeholder' => 'Search by Customer Id',
-                                                'id'=>'customer_id'
-                                                ])
-                                                !!} 
-                                            </div> 
-                                             <div class="col-md-1">
-                                             <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
+                                             <div class="col-md-1" style="padding-left: 150px;">
+                                             <button  type="button" id="search_biz" class="btn  btn-primary btn-sm float-right">Search</button>
                                              </div>  
                                            <!-- <div class="col-md-3">				 
                                                
@@ -83,13 +72,13 @@
 
                                                 </select>
                                             </div>  -->   
-                                            <div class="col-md-2">
+                                            <div class="col-md-2" style="padding-left: 480px;">
                                              @can('backend_bulk_invoice')
-                                                <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-success btn-sm ml-2"> Bulk Invoice Upload</a>
+                                                <a href="{{Route('backend_bulk_invoice')}}"type="button" class="btn btn-primary btn-sm float-right"> Bulk Invoice Upload</a>
                                              @endcan
                                        
                                             </div>
-                                            <div class="col-md-1">
+                                            <div class="col-md-1" style="margin-left: -20px;">
                                             @can('update_bulk_invoice')
                                                 <button type="button" id="bulkApprove" data-status="8" class="btn btn-primary btn-sm ml-2 btn-app">Approve</button>
                                             @endcan
@@ -98,7 +87,7 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-12 dataTables_wrapper mt-4">
+                                            <div class="col-12 dataTables_wrapper mt-1">
                                                 <div class="overflow">
                                                     <div id="supplier-listing_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                                                         <div class="row">

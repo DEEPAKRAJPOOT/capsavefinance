@@ -17,8 +17,6 @@ try {
                      d.biz_id = $('input[name=search_biz]').val();
                     d.front = $('input[name=front]').val();
                     d.front = $('input[name=front]').val();
-                    d.customer_id = $('input[name=customer_id]').val();
-                    d.batch_id = $('select[name=batch_id]').val();
                     d._token = messages.token;
                     d.app_id = messages.appp_id;
                 },

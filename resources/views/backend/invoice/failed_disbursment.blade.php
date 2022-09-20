@@ -37,22 +37,11 @@
                                         {{-- <div class="col-md-5"> --}}
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                         {{-- </div> --}}
-                                        <div class="col-md-5">
-                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by Anchor / business name, Invoice number">
+                                        <div class="col-md-5" style="margin-left: 10px;">
+                                            <input class="form-control form-control-sm"  name="search_biz"  placeholder="Search by CustId, Anchor Business Name and Invoice Number">
                                         </div>
-                                        <div class="col-md-4">
-                                            {!!
-                                            Form::text('customer_id',
-                                            null,
-                                            [
-                                            'class' => 'form-control',
-                                            'placeholder' => 'Search by Customer Id',
-                                            'id'=>'customer_id'
-                                            ])
-                                            !!} 
-                                        </div>  
-                                        <div class="col-md-1">
-                                            <button  type="button" id="search_biz" class="btn  btn-success btn-sm float-right">Search</button>
+                                        <div class="col-md-1" style="margin-left: -20px;">
+                                            <button  type="button" id="search_biz" class="btn  btn-primary btn-sm float-right">Search</button>
                                         </div>  
                                         <!-- <div class="col-md-3">				 
                                             
