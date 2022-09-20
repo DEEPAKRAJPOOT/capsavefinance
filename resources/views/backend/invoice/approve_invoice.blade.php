@@ -41,7 +41,7 @@
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                         {{-- </div> --}}
                                         <div class="col-md-5" style="margin-left: 10px;">
-                                            <input class="form-control form-control-sm" style="width: 485px;" name="search_biz"  placeholder="Search by CustId, Anchor Business Name and Invoice number">
+                                            <input class="form-control form-control-sm" style="width: 485px;" name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice number">
                                         </div>
                                         <div class="col-md-1">
                                             <button  type="button" id="search_biz" class="btn  btn-primary btn-sm float-right">Search</button>

@@ -42,7 +42,7 @@ $role = (isset($role)) ? $role :     11;
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                         </div>
                                         <div class="col-md-4" style="margin-left: -15px;">
-                                            <input class="form-control form-control-sm"   name="search_biz"  placeholder="Search by CustId, Anchor Business Name and Invoice number" style="width: 381px;">
+                                            <input class="form-control form-control-sm"   name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice number" style="width: 381px;">
                                         </div> 
                                         <div class="col-md-1">
                                             <button  type="button" id="search_biz" class="btn btn-primary btn-sm">Search</button>
