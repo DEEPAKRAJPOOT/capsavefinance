@@ -27,8 +27,8 @@ class RegistrationFormRequest extends Request
         return $rules = [
             //'f_name' => 'required|min:2|max:50|alpha_dash|alpha',
             //'l_name' => 'required|min:2|alpha_dash|alpha',
-            'f_name' => 'required|regex:/(^[a-zA-Z ]+$)/u',
-            'l_name' => 'required|regex:/(^[a-zA-Z]+$)/u',            
+            'f_name' => 'required|regex:/(^[a-zA-Z\s]+$)/u',
+            'l_name' => 'required|regex:/(^[a-zA-Z\s]+$)/u',            
             'business_name' => 'required',
             'pan_no' => 'required|max:10|regex:/(^[A-Z]{5}[0-9]{4}[A-Z]{1}+$)/u',
             //'email'  => 'required|email|max:50|unique:users',

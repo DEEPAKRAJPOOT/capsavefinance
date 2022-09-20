@@ -21,7 +21,7 @@
                                         <label for="txtCreditPeriod">First Name
                                             <span class="mandatory">*</span>
                                         </label>
-                                        <input type="text" name="f_name" value="@if($anchorDetail){{$anchorDetail->name}}@else{{old('f_name')}}@endif" class="form-control" tabindex="1"  placeholder="First Name" @if($anchorDetail)readonly @else @endif>
+                                        <input type="text" name="f_name" id="f_name" value="@if($anchorDetail){{$anchorDetail->name}}@else{{old('f_name')}}@endif" class="form-control" tabindex="1"  placeholder="First Name" @if($anchorDetail)readonly @else @endif>
                                         <span class="text-danger error">{{$errors->first('f_name')}}</span>
                                     </div>
 
@@ -42,7 +42,7 @@
                                         <label for="txtCreditPeriod">Last Name
                                             <span class="mandatory">*</span>
                                         </label>
-                                        <input type="text" name="l_name" value="@if($anchorDetail){{$anchorDetail->l_name}}@else{{old('l_name')}}@endif" class="form-control" tabindex="3" placeholder="Last Name" @if($anchorDetail)readonly @else @endif >
+                                        <input type="text" name="l_name" id="l_name" value="@if($anchorDetail){{$anchorDetail->l_name}}@else{{old('l_name')}}@endif" class="form-control" tabindex="3" placeholder="Last Name" @if($anchorDetail)readonly @else @endif >
                                         <span class="text-danger error">{{$errors->first('l_name')}} </span>
                                     </div>
                                 </div>                                
@@ -189,7 +189,7 @@ var messages={
                     return false;
                 }
             });
-            
+           
             $.validator.addMethod("isexistemail", function(value, element) {
                 var email = value;
                 let status = false;
@@ -246,7 +246,6 @@ var messages={
             });
             
             $('#registerForm').on('submit', function (event) {
-                
                 $('input.pan_no').each(function () {
                     $(this).rules("add",
                         {
