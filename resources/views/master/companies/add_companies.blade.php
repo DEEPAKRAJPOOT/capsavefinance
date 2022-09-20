@@ -16,7 +16,7 @@
             </div>
             <div class="form-group col-md-6">
                 <label for="cmp_add">Company Address <span class="mandatory">*</span></label>
-                <textarea class="form-control" id="cmp_add" name="cmp_add" rows="1" cols="50" maxlength="100" placeholder="Enter Company Address">{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : old('cmp_add')}}</textarea>
+                <textarea class="form-control" id="cmp_add" name="cmp_add" rows="1" cols="50" maxlength="2000" placeholder="Enter Company Address">{{ isset($comData['cmp_add']) ? $comData['cmp_add'] : old('cmp_add')}}</textarea>
                 {!! $errors->first('cmp_add', '<span class="error">:message</span>') !!}
             </div>
         </div>
@@ -260,7 +260,7 @@
                 },
                 'cmp_add': {
                     required: true,
-                    alphanumericdot: true,
+                    // alphanumericdot: true,
                     unique_add: true
                 },
                 'cmp_email': {
@@ -318,7 +318,7 @@
                 },
                 'cmp_add': {
                     required: "Please enter Company Address",
-                    alphanumericdot: "Some special characters are allowed",
+                    // alphanumericdot: "Some special characters are allowed",
                     unique_add: 'The company branch is already present at this address.'
                 },
                 'gst_no': {
