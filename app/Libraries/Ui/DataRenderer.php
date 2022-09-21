@@ -6890,14 +6890,16 @@ class DataRenderer implements DataProviderInterface
                 })
                 ->filter(function ($query) use ($request) {
                     if ($request->get('customer_code') != '') {
-                        if ($request->has('customer_code')) {
-                            $customer_code = trim($request->get('customer_code'));
-                            $query->whereHas('lms_user', function($query1) use ($customer_code) {
-                                $query1->where('customer_id', 'like',"%$customer_code%");
-                            });
-
-                        }
-                    }
+                        $query->where(function ($query) use ($request) {
+                     $search_keyword = trim($request->get('customer_code'));
+                     $query->orwhereHas('lms_user', function ($q) use ($search_keyword){
+                         $q->where('customer_id', 'like', "%$search_keyword%");
+                     })
+                     ->orwhereHas('disbursal_batch', function ($q) use ($search_keyword){
+                         $q->where('batch_id', 'like', "%$search_keyword%");
+                     });
+                 });
+            }
                     if ($request->get('selected_date') != '') {
                         if ($request->has('selected_date')) {
                             $selected_date = trim($request->get('selected_date'));
@@ -6907,15 +6909,15 @@ class DataRenderer implements DataProviderInterface
 
                         }
                     }
-                    if ($request->get('batch_id') != '') {
-                        if ($request->has('batch_id')) {
-                            $batch_id = trim($request->get('batch_id'));
-                            $query->whereHas('disbursal_batch', function($query1) use ($batch_id) {
-                                $query1->where('disbursal_batch_id', 'like',"%$batch_id%");
-                            });
+                    // if ($request->get('batch_id') != '') {
+                    //     if ($request->has('batch_id')) {
+                    //         $batch_id = trim($request->get('batch_id'));
+                    //         $query->whereHas('disbursal_batch', function($query1) use ($batch_id) {
+                    //             $query1->where('disbursal_batch_id', 'like',"%$batch_id%");
+                    //         });
 
-                        }
-                    }
+                    //     }
+                    // }
                 })
                 ->make(true);
     }

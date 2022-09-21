@@ -42,14 +42,14 @@ $role = (isset($role)) ? $role :     11;
                                             <input type="hidden" name="route" value="{{Route::currentRouteName()}}">                                
                                         </div>
                                         <div class="col-md-4" style="margin-left: -15px;">
-                                            <input class="form-control form-control-sm"   name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice number" style="width: 381px;">
+                                            <input class="form-control form-control-sm"   name="search_biz"  placeholder="Search by CustId, Anchor, Business Name and Invoice number" style="width: 441px;">
                                         </div> 
-                                        <div class="col-md-1">
+                                        <div class="col-md-1" style="margin-left: 60px;">
                                             <button  type="button" id="search_biz" class="btn btn-primary btn-sm">Search</button>
                                         </div>
                                         @php if($role!=11) { @endphp
                                         <div class ="row">
-                                        <div class="col-md-12" id="buttonDiv" style="padding-left: 130px;">
+                                        <div class="col-md-12" id="buttonDiv" style="padding-left: 81px;">
 
                                            @can('disburse_confirm')
                                             <a data-url="{{ route('disburse_confirm', ['disburse_type' => 2 ]) }}" data-height="330px" data-width="100%" data-placement="top" class="btn btn-primary btn-sm ml-3 disburseClickBtn pull-right" >Send To Bank (Offline)</a>

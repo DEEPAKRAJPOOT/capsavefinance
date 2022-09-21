@@ -32,7 +32,7 @@
                         <div class="card-body">       
                             <div class="row">
                                 <div class="col-md-4" style="margin-left: 20px;">
-                                    <input class="form-control form-control-sm" id="batch_id"  name="batch_id"  placeholder="Search by Batch" style="width: 350px;">
+                                    <input class="form-control form-control-sm" id="batch_id"  name="batch_id"  placeholder="Search by Batch ID" style="width: 350px;">
                                 </div> 
                                 <button id="searchbtn" type="button" class="btn  btn-primary btn-sm float-right">Search</button>
                             </div>
