@@ -2217,6 +2217,9 @@ class DataRenderer implements DataProviderInterface
                     })
                     ->orwhereHas('lms_user', function ($q) use ($search_keyword){
                         $q->where('customer_id', 'like', "%$search_keyword%");
+                    })
+                    ->orwhereHas('invoice_disbursed.disbursal.disbursal_batch', function ($q) use ($search_keyword){
+                        $q->where('batch_id', 'like', "%$search_keyword%");
                     });
                 });
                         }
