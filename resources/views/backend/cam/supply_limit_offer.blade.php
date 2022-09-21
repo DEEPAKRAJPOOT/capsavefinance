@@ -1173,7 +1173,7 @@
     if(interest_rate == '' || isNaN(interest_rate)){
         setError('input[name=interest_rate]', 'Please fill intereset rate');
         flag = false;
-    }else if(anchor_id !='' && prgm_id != '' && is_anchor_fungible == 1){
+    }else if(anchor_id !='' && prgm_id != ''){
         if(parseFloat(interest_rate) > 100){
             setError('input[name=interest_rate]', 'Please fill correct intereset rate');
             flag = false;

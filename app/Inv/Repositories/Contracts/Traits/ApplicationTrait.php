@@ -659,19 +659,14 @@ trait ApplicationTrait
             if ($appData->app_type == 2 || $appData->app_type == 3) {
 
                 /**  Current Offer Consumed Limit */
+                if($appData->parent_app_id){
+                    $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->parent_app_id);
+                    $totalBalanceAmt += $parentAppConsumAmt;
+                }
                 if($offer_id){
-                    if($appData->app_id){
-                        $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id);
-                        $totalBalanceAmt += $parentAppConsumAmt;
-                    }
-
                     $currOfferConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->app_id, $offer_id);
                     $appUserBalLimit += $currOfferConsumAmt;
-                } else{
-                    if(!$appData->prgmOffer()->count()){
-                        $parentAppConsumAmt = \Helpers::getPrgmBalLimitAmt($appData->user_id, $program_id, $appData->parent_app_id, null);
-                        $totalBalanceAmt += $parentAppConsumAmt;
-                    }
+                    $totalBalanceAmt += $currOfferConsumAmt;
                 }
             }else {
                 if (in_array($appData->app_type, [0]) && $offer_id) {
