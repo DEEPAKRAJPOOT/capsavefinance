@@ -208,7 +208,7 @@ class SoaController extends Controller
                         }else{
                             $utr = $data->transaction->invoiceDisbursed->disbursal->tran_id;
                         }
-                    }elseif($data->transaction->entry_type == 1 && !is_null($data->transaction->payment_id)){
+                    }elseif($data->transaction->entry_type == 1 && $data->transaction->trans_type !=17 && !is_null($data->transaction->payment_id)){
                         $utr = $data->transaction->payment->transactionNo;
                         
                     }elseif($data->transaction->trans_type == 32 && $data->transaction->entry_type == 0){
