@@ -1,6 +1,6 @@
 @extends('layouts.backend.admin_popup_layout')
 @section('content')
-<form id="manualDisburse" method="POST" action="{{ Route('updateDisburseInvoice') }}" target="_top">
+<form id="manualDisburse" method="POST" action="{{ Route('updateDisburseInvoice',['funded_date'=> !empty($disbursal['disburse_date']) ? \Carbon\Carbon::parse($disbursal['disburse_date'])->format('d/m/Y') : '']) }}" target="_top">
 	@csrf
 	<input type="hidden" value="{{ $user_id }}" name="user_id">  
 	<input type="hidden" value="{{ $disbursal_batch_id }}" name="disbursal_batch_id">  
