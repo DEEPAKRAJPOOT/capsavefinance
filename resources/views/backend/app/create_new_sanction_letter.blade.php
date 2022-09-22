@@ -162,9 +162,9 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td width="50%" valign="top" height="40"><b>For Capsave Finance
-                                                            Private
-                                                            Limited</b></td>
+                                                    <td width="50%" valign="top" height="40"><b>For CAPSAVE FINANCE
+                                                        PRIVATE
+                                                        LIMITED</b></td>
                                                     <td valign="top" height="40" style="float: right;"><b>For {{ $supplyChaindata['EntityName'] }}</b>
                                                     </td>
                                                 </tr>
@@ -246,12 +246,16 @@
                                                 <tr>
                                                     <td valign="top"><b>Rate of Interest </b></td>
                                                     @if(isset($offerD->is_lending_rate) && $offerD->is_lending_rate == 1)
-                                                    <td>{{$offerD->interest_rate}}% per annum i.e., ROI equal to CFPL Benchmark Lending Rate less {{ $offerD->lending_rate_diff??0.00 }}% (to be reckoned from the date of disbursement until the date on which repayment becomes due).
-                                                    Presently Benchmark Lending Rate (BLR) as on date is {{ $offerD->lending_rate??0.00 }}%. Interest rate on repayment would change based on the changes in BLR as announced by Lender from time to time. This would lead to change in interest payable to Lender.
+                                                    <td><textarea name="offerData[{{ $offerD->prgm_offer_id }}][r_o_i]" id="r_o_i" class="form-control textarea r_o_i" cols="30" rows="10">@if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->r_o_i) && $arrayOfferData[$offerD->prgm_offer_id ]->r_o_i){!! $arrayOfferData[$offerD->prgm_offer_id ]->r_o_i !!} @else{{$offerD->interest_rate}}% per annum i.e., ROI equal to CFPL Benchmark Lending Rate less {{ $offerD->lending_rate_diff??0.00 }}% (to be reckoned from the date of disbursement until the date on which repayment becomes due).
+                                                    Presently Benchmark Lending Rate (BLR) as on date is {{ $offerD->lending_rate??0.00 }}%. Interest rate on repayment would change based on the changes in BLR as announced by Lender from time to time. This would lead to change in interest payable to Lender. @endif</textarea>
+                                                    <label id="r_o_i_{{ $offerD->prgm_offer_id }}-error" class="error" for="r_o_i_{{ $offerD->prgm_offer_id }}"></label>
                                                     </td>
                                                     @else
-                                                    <td>{{$offerD->interest_rate}}% per annum i.e., ROI equal to CFPL Benchmark Lending Rate less 0.00% (to be reckoned from the date of disbursement until the date on which repayment becomes due).
-                                                        Presently Benchmark Lending Rate (BLR) as on date is 0.00%. Interest rate on repayment would change based on the changes in BLR as announced by Lender from time to time. This would lead to change in interest payable to Lender.
+                                                    <td><textarea id="r_o_i_{{ $offerD->prgm_offer_id }}" name="offerData[{{ $offerD->prgm_offer_id }}][r_o_i]" class="form-control textarea r_o_i" cols="30" rows="10">
+                                                        @if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->r_o_i) && $arrayOfferData[$offerD->prgm_offer_id ]->r_o_i){!! $arrayOfferData[$offerD->prgm_offer_id ]->r_o_i !!} @else{{$offerD->interest_rate}}% per annum i.e., ROI equal to CFPL Benchmark Lending Rate less 0.00% (to be reckoned from the date of disbursement until the date on which repayment becomes due).
+                                                        Presently Benchmark Lending Rate (BLR) as on date is 0.00%. Interest rate on repayment would change based on the changes in BLR as announced by Lender from time to time. This would lead to change in interest payable to Lender.@endif
+                                                        </textarea>
+                                                        <label id="r_o_i_{{ $offerD->prgm_offer_id }}-error" class="error" for="r_o_i_{{ $offerD->prgm_offer_id }}"></label>
                                                     </td>
                                                     @endif
                                                 </tr>
@@ -391,11 +395,14 @@
                                                 </tr>
                                                 <tr>
                                                     <td valign="top"><b>Default/Penal Interest</b></td>
-                                                    <td><b>
+                                                    <td>
                                                         @php
                                                             $penelInterestRate = (($offerD['overdue_interest_rate'] ?? 0) + ($offerD['interest_rate'] ?? 0)); 
                                                         @endphp
-                                                        {{number_format($penelInterestRate, 2, '.', '')}}% per annum including above regular rate of interest in case any tranche remains unpaid after the expiry of approved tenor from the disbursement date. Penal interest to be charged for the relevant tranche for such overdue period till actual payment of such tranche.</b>
+                                                        <textarea class="form-control textarea penal_interest"  name="offerData[{{ $offerD->prgm_offer_id }}][penal_interest]" id="penal_interest_{{ $offerD->prgm_offer_id }}" cols="30" rows="10">@if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->penal_interest) && $arrayOfferData[$offerD->prgm_offer_id ]->penal_interest){!! $arrayOfferData[$offerD->prgm_offer_id ]->penal_interest !!} @else
+                                                        <b>{{number_format($penelInterestRate, 2, '.', '')}}% per annum including above regular rate of interest in case any tranche remains unpaid after the expiry of approved tenor from the disbursement date. Penal interest to be charged for the relevant tranche for such overdue period till actual payment of such tranche.</b>@endif
+                                                        </textarea>
+                                                        <label id="penal_interest_{{ $offerD->prgm_offer_id }}-error" class="error" for="penal_interest_{{ $offerD->prgm_offer_id }}"></label>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -498,22 +505,21 @@
                                                     <td valign="top"><b>Payment mechanism</b></td>
                                                     <td>
                                                         @php
-                                                            $selected5 = $selected6 = '';
+                                                            $selected5 = '';
                                                             if(isset($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) &&  $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism == 'Anchor'){
-                                                                $selected5 = 'selected';
+                                                                $selected5 = 'Anchor';
                                                             }elseif (isset($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) &&  $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism == 'Borrower') {
-                                                                $selected6 = 'selected';
+                                                                $selected5 = 'Borrower';
                                                             }elseif (isset($offerD->program->interest_borne_by) && $offerD->program->interest_borne_by == 1) {
-                                                                $selected5 = 'selected';
+                                                                $selected5 = 'Anchor';
                                                             }elseif (isset($offerD->program->interest_borne_by) && $offerD->program->interest_borne_by == 2) {
-                                                                $selected6 = 'selected';
+                                                                $selected5 = 'Borrower';
                                                             }
                                                         @endphp
-                                                        Direct payment by the <select style="min-height:30px; padding:0 5px; min-width:180px;" name="offerData[{{ $offerD->prgm_offer_id }}][payment_mechanism]" id="payment_mechanism">
-                                                            <option {{ $selected5 }}>Anchor</option>
-                                                            <option {{ $selected6 }}>Borrower
-                                                            </option>
-                                                        </select> to the Lender on or before the tranche due date based on tranche tenure through RTGS/NEFT/NACH/Cheque or any other mode acceptable to Lender.
+                                                        <textarea class="form-control textarea payment_mechanism" name="offerData[{{ $offerD->prgm_offer_id }}][payment_mechanism]" id="payment_mechanism_{{ $offerD->prgm_offer_id }}" cols="30" rows="10">@if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) && $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism){!! $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism !!} @else
+                                                        Direct payment by the {{ $selected5 }} to the Lender on or before the tranche due date based on tranche tenure through RTGS/NEFT/NACH/Cheque or any other mode acceptable to Lender.@endif
+                                                    </textarea>
+                                                    <label id="payment_mechanism_{{ $offerD->prgm_offer_id }}-error" class="error" for="payment_mechanism_{{ $offerD->prgm_offer_id }}"></label>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -811,7 +817,7 @@
                                                      @endif
                                                      @endif
                                                      <div class="clearfix"></div>
-                                                     <textarea class="form-control textarea" name="monitoring_covenants_select_text" id="monitoring_covenants_select_text" cols="30" rows="10">@if(!empty($supplyChainFormData->monitoring_covenants_select_text) && $supplyChainFormData->monitoring_covenants_select_text){!! $supplyChainFormData->monitoring_covenants_select_text !!} @else NA @endif</textarea>
+                                                     <textarea class="form-control" name="monitoring_covenants_select_text" id="monitoring_covenants_select_text" cols="30" rows="10">@if(!empty($supplyChainFormData->monitoring_covenants_select_text) && $supplyChainFormData->monitoring_covenants_select_text){!! $supplyChainFormData->monitoring_covenants_select_text !!} @else NA @endif</textarea>
                                                        
                                                     </td>
                                                 </tr>
@@ -948,7 +954,8 @@
                                                             </tr>
                                                             <tr>
                                                                 <td valign="top" width="5%">11.</td>
-                                                                <td>The sanction limits would be valid for acceptance for 60 days from the date of the issuance of letter.
+                                                                <td>The sanction limits would be valid for acceptance for <input type="text" value="@if(!empty($supplyChainFormData->other_cond_11) && $supplyChainFormData->other_cond_11){!! $supplyChainFormData->other_cond_11 !!} @else 60 days @endif" name="other_cond_11" id="other_cond_11" class="row_gen_input"> from the date of the issuance of letter.
+                                                                    <label id="other_cond_11-error" class="error" for="other_cond_11"></label>
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -998,8 +1005,9 @@
                                                                 Borrower</b></td>
                                                     </tr>
                                                     <tr>
-                                                        <td width="50%" valign="top" height="40"><b>For Capsave Finance
-                                                                Private Limited</b></td>
+                                                        <td width="50%" valign="top" height="40"><b>For CAPSAVE FINANCE
+                                                            PRIVATE
+                                                            LIMITED</b></td>
                                                         <td valign="top" height="40" style="float: right;"><b>For {{ $supplyChaindata['EntityName'] }}</b>
                                                         </td>
                                                     </tr>
@@ -1031,9 +1039,7 @@
                                         <td align="center">
                                             <div><span style="font-size:20px; font-weight:bold;">CAPSAVE FINANCE PRIVATE
                                                     LIMITED</span><br />
-                                                Registered office: Unit No.1501 Wing-D, Lotus Corporate Park, Western
-                                                Express
-                                                Highway, Goregaon (East), Mumbai - 400063<br />
+                                                Registered office: 3RD FLOOR, UNIT NO 301-302,D-WING, LOTUS CORPORATE PARK, CTS NO.185/A, GRAHAM FIRTH COMPOUND, WESTERN EXPRESS HIGHWAY, GOREGAON EAST, Mumbai Maharashtra, 400063<br />
                                                 Ph: +91 22 6173 7600, CIN No: U67120MH1992PTC068062
                                             </div>
                                         </td>
@@ -1096,7 +1102,17 @@
             removePlugins: 'link,image,flash,smiley,pagebreak,iframe'
 };
    CKEDITOR.replace('monitoring_covenants_select_text',ckeditorOptions);
+
     $(document).ready(function() {
+        $('.r_o_i').each(function () {
+            CKEDITOR.replace($(this).prop('id'),ckeditorOptions);
+        });
+        $('.penal_interest').each(function () {
+            CKEDITOR.replace($(this).prop('id'),ckeditorOptions);
+        });
+        $('.payment_mechanism').each(function () {
+            CKEDITOR.replace($(this).prop('id'),ckeditorOptions);
+        });
         $('.moratorium').each(function () {
             CKEDITOR.replace($(this).prop('id'),ckeditorOptions);
         });
@@ -1241,6 +1257,7 @@
         }, "Numbers and colon only please");
 
         $('#new_sanction_letter_form').validate({
+            ignore : ':hidden:not(.textarea)',
             rules: {
                 "review_date": {
                     required : true,
@@ -1269,10 +1286,50 @@
                 ,
                 'margin_input': {
                     required: true
+                },
+                'other_cond_11': {
+                    required: true
                 }
             }
         });
+         $('#new_sanction_letter_form .r_o_i').each(function() {
+            $(this).rules('add', {
+            required: function(textarea){
+                //CKEDITOR.instances[textarea.id].focus();
+                return true;
+            },
+            messages: {
+            required: "This field is required.",
 
+                    }
+                })
+            });
+
+            $('#new_sanction_letter_form .penal_interest').each(function() {
+            $(this).rules('add', {
+                required: function(textarea){
+                //CKEDITOR.instances[textarea.id].focus();
+                return true;
+            },
+            messages: {
+            required: "This field is required.",
+
+                    }
+                })
+            });
+
+            $('#new_sanction_letter_form .payment_mechanism').each(function() {
+            $(this).rules('add', {
+                required: function(textarea){
+                //CKEDITOR.instances[textarea.id].focus();
+                return true;
+            },
+            messages: {
+            required: "This field is required.",
+
+                    }
+                })
+            });
         // $("input.facility_tenor").each(function(){
         //     $(this).rules("add", {
         //         required: true,
@@ -1295,7 +1352,22 @@
             $(this).rules('add', {
                 required: true
             });
-        });            
+        });
+
+        $("#new_sanction_letter_form .r_o_i").each(function () {
+            var ID = $(this).attr('id');
+            CKEDITOR.instances[ID].updateElement();
+        }); 
+
+        $('#new_sanction_letter_form .penal_interest').each(function() {
+            var ID = $(this).attr('id');
+            CKEDITOR.instances[ID].updateElement();
+        }); 
+        $('#new_sanction_letter_form .payment_mechanism').each(function() {
+            var ID = $(this).attr('id');
+            CKEDITOR.instances[ID].updateElement();
+        });  
+
         if(whichPressed=="final_submit")
         {
             return confirm('Are you sure you want to generate the sanction letter?');

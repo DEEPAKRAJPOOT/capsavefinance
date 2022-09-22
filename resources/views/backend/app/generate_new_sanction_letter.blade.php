@@ -46,7 +46,13 @@
          }
    </style>
    </head>
-   <body style="font-size: 15px;background-color: #fff">
+   @php
+     $waterMarker = '';
+     if(isset($templateType) && $templateType == 'pdfTemplate'){
+        $waterMarker = 'background-image: url('.url('backend/assets/images/slWatermarkLogo.png').');';
+     } 
+   @endphp
+   <body style="font-size: 15px;background-color: #fff;{!! $waterMarker !!}">
       <script type="text/php">
          if (isset($pdf)) {
             $y = $pdf->get_height() - 50; 
@@ -75,7 +81,7 @@
       <header style="width: 100%;">
          <div class="row">
             <div class="column">
-               <img src="{{url('backend/assets/images/letterHeadLogo.png')}}" alt="header" style="width: 15%;">
+               <img src="{{url('backend/assets/images/letterHeadLogo.png')}}" alt="headerLogo" style="width: 15%;">
             </div>
             <div class="column1">
                CIN Number: U67120MH1992PTC068062
@@ -203,9 +209,8 @@
                         </td>
                      </tr>
                      <tr>
-                        <td width="50%"  height="40"><b>For Capsave Finance
-                           Private
-                           Limited</b>
+                        <td width="50%"  height="40"><b>For CAPSAVE FINANCE PRIVATE
+                           LIMITED</b>
                         </td>
                         <td  height="40" style="float: right;"><b>For {{ $supplyChaindata['EntityName'] }}</b>
                         </td>
@@ -292,12 +297,10 @@
                      <tr>
                         <td valign="top"><b>Rate of Interest </b></td>
                         @if(isset($offerD->is_lending_rate) && $offerD->is_lending_rate == 1)
-                        <td>{{$offerD->interest_rate}}% per annum i.e., ROI equal to CFPL Benchmark Lending Rate less {{ $offerD->lending_rate_diff??0.00 }}% (to be reckoned from the date of disbursement until the date on which repayment becomes due).
-                        Presently Benchmark Lending Rate (BLR) as on date is {{ $offerD->lending_rate??0.00 }}%. Interest rate on repayment would change based on the changes in BLR as announced by Lender from time to time. This would lead to change in interest payable to Lender.
+                        <td>{!! $arrayOfferData[$offerD->prgm_offer_id]->r_o_i??'' !!}
                         </td>
                         @else
-                        <td>{{$offerD->interest_rate}}% per annum i.e., ROI equal to CFPL Benchmark Lending Rate less 0.00% (to be reckoned from the date of disbursement until the date on which repayment becomes due).
-                           Presently Benchmark Lending Rate (BLR) as on date is 0.00%. Interest rate on repayment would change based on the changes in BLR as announced by Lender from time to time. This would lead to change in interest payable to Lender.
+                        <td>{!! $arrayOfferData[$offerD->prgm_offer_id]->r_o_i??'' !!}
                         </td>
                         @endif
                     </tr>
@@ -410,11 +413,7 @@
                      <tr>
                         <td valign="top"><b>Default/Penal Interest</b></td>
                         <td>
-                            <b>
-                            @php
-                              $penelInterestRate = (($offerD['overdue_interest_rate'] ?? 0) + ($offerD['interest_rate'] ?? 0));
-                            @endphp
-                            {{number_format($penelInterestRate, 2, '.', '')}}% per annum including above regular rate of interest in case any tranche remains unpaid after the expiry of approved tenor from the disbursement date. Penal interest to be charged for the relevant tranche for such overdue period till actual payment of such tranche.</b>
+                           {!! $arrayOfferData[$offerD->prgm_offer_id]->penal_interest??'' !!}
                         </td>
                     </tr>
                     <tr>
@@ -466,7 +465,7 @@
                      <tr>
                         <td valign="top"><b>Payment mechanism</b></td>
                         <td>
-                            Direct payment by the {{ $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism??'' }} to the Lender on or before the tranche due date based on tranche tenure through RTGS/NEFT/NACH/Cheque or any other mode acceptable to Lender.
+                           {!! $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism??'' !!}
                         </td>
                     </tr>
                     <tr>
@@ -844,7 +843,7 @@
                               </tr>
                               <tr>
                                  <td valign="top" width="1%">11.</td>
-                                 <td>The sanction limits would be valid for acceptance for 60 days from the date of the issuance of letter.
+                                 <td>The sanction limits would be valid for acceptance for {!! $supplyChainFormData->other_cond_11??'60 days' !!} from the date of the issuance of letter.
                                  </td>
                               </tr>
                               <tr>
@@ -888,7 +887,8 @@
                            <td valign="top" height="40" style="float: right;"><b>Accepted for and behalf of Borrower</b></td>
                         </tr>
                         <tr>
-                           <td width="50%" valign="top" height="40"><b>For Capsave Finance Private Limited</b></td>
+                           <td width="50%" valign="top" height="40"><b>For CAPSAVE FINANCE PRIVATE
+                              LIMITED</b></td>
                            <td valign="top" height="40" style="float: right;"><b>For {{ $supplyChaindata['EntityName'] }}</b></td>
                         </tr>
                      </tbody>
@@ -916,7 +916,7 @@
             <tr>
                <td align="center">
                   <div><span style="font-size:20px; font-weight:bold;">CAPSAVE FINANCE PRIVATE LIMITED</span><br/> 
-                     Registered office: Unit No.1501 Wing-D, Lotus Corporate Park, Western Express Highway, Goregaon (East), Mumbai - 400063<br/>
+                     Registered office: 3RD FLOOR, UNIT NO 301-302,D-WING, LOTUS CORPORATE PARK, CTS NO.185/A, GRAHAM FIRTH COMPOUND, WESTERN EXPRESS HIGHWAY, GOREGAON EAST, Mumbai Maharashtra, 400063<br/>
                      Ph: +91 22 6173 7600, CIN No: U67120MH1992PTC068062
                   </div>
                </td>

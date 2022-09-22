@@ -949,11 +949,11 @@ function numberTowords($num = false)
     }
     $num = (int) $num;
     $words = array();
-    $list1 = array('', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven',
-        'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
+    $list1 = array('', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven',
+        'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'
     );
-    $list2 = array('', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety', 'hundred');
-    $list3 = array('', 'thousand', 'million', 'billion', 'trillion');
+    $list2 = array('', 'Ten', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety', 'Hundred');
+    $list3 = array('', 'Thousand', 'Million', 'Billion', 'Trillion');
     $num_length = strlen($num);
     $levels = (int) (($num_length + 2) / 3);
     $max_length = $levels * 3;
@@ -962,18 +962,18 @@ function numberTowords($num = false)
     for ($i = 0; $i < count($num_levels); $i++) {
         $levels--;
         $hundreds = (int) ($num_levels[$i] / 100);
-        $hundreds = ($hundreds ? ' ' . $list1[$hundreds] . ' hundred' . ' ' : '');
+        $hundreds = ($hundreds ? ' ' . ucfirst($list1[$hundreds]) . ' Hundred' . ' ' : '');
         $tens = (int) ($num_levels[$i] % 100);
         $singles = '';
         if ( $tens < 20 ) {
-            $tens = ($tens ? ' ' . $list1[$tens] . ' ' : '' );
+            $tens = ($tens ? ' ' . ucfirst($list1[$tens]) . ' ' : '' );
         } else {
             $tens = (int)($tens / 10);
-            $tens = ' ' . $list2[$tens] . ' ';
+            $tens = ' ' . ucfirst($list2[$tens]) . ' ';
             $singles = (int) ($num_levels[$i] % 10);
-            $singles = ' ' . $list1[$singles] . ' ';
+            $singles = ' ' . ucfirst($list1[$singles]) . ' ';
         }
-        $words[] = $hundreds . $tens . $singles . ( ( $levels && ( int ) ( $num_levels[$i] ) ) ? ' ' . $list3[$levels] . ' ' : '' );
+        $words[] = $hundreds . $tens . $singles . ( ( $levels && ( int ) ( $num_levels[$i] ) ) ? ' ' . ucfirst($list3[$levels]) . ' ' : '' );
     } //end for loop
     $commas = count($words);
     if ($commas > 1) {
