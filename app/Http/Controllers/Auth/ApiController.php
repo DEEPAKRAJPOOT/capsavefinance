@@ -126,6 +126,7 @@ class ApiController
           'voucher_no' => $this->voucherNo,
           'voucher_type' => 'Journal',
           'voucher_date' => $jrnls->trans_date,
+          'transaction_date'=>$jrnls->created_at,
           'is_debit_credit' =>  $entry_type,
           'trans_type' =>  $trans_type_name,
           'invoice_no' =>   $invoice_no,
@@ -353,6 +354,7 @@ class ApiController
           'voucher_no' => $this->voucherNo,
           'voucher_type' => 'Payment',
           'voucher_date' => $rfnd->trans_date,
+          'transaction_date'=>$rfnd->created_at,
           'is_debit_credit' =>  'Debit',
           'trans_type' =>  $trans_type_name,
           'invoice_no' =>   $invoice_no,
@@ -381,6 +383,7 @@ class ApiController
           'voucher_no' => $this->voucherNo,
           'voucher_type' => 'Payment',
           'voucher_date' => NULL,
+          'transaction_date'=>$rfnd->created_at,
           'is_debit_credit' =>  'Credit',
           'trans_type' =>  '',
           'invoice_no' =>   '',
@@ -429,6 +432,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Payment',
               'voucher_date' => $dsbrsl->trans_date,
+              'transaction_date'=>$dsbrsl->created_at,
               'is_debit_credit' =>  'Debit',
               'trans_type' =>  $dsbrsl->getTransNameAttribute(),
               'invoice_no' =>   $invoice_no,
@@ -457,6 +461,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Payment',
               'voucher_date' => NULL,
+              'transaction_date'=>$dsbrsl->created_at,
               'is_debit_credit' =>  'Credit',
               'trans_type' =>  $dsbrsl->getTransNameAttribute(),
               'invoice_no' =>   $invoice_no,
@@ -490,6 +495,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Payment',
               'voucher_date' => NULL,
+              'transaction_date'=>$dsbrsl->created_at,
               'is_debit_credit' =>  'Credit',
               'trans_type' =>  'Interest',
               'invoice_no' =>   $invoice_no,
@@ -522,6 +528,7 @@ class ApiController
     foreach($receiptData as $rcpt){
      $this->voucherNo = $this->voucherNo + 1;
      $settledTransactoions =  $rcpt->getSettledTxns;
+     $refrenceTxns = $rcpt->paymentRefrenceTxns->first();
      $user_id = Helper::formatIdWithPrefix($rcpt->user_id, 'CUSTID');
      $userName = $rcpt->user->biz_name;
      $accountDetails = $rcpt->userRelation->companyBankDetails ?? NULL;
@@ -554,6 +561,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Receipt',
               'voucher_date' => $rcpt->date_of_payment,
+              'transaction_date'=>$refrenceTxns->created_at?$refrenceTxns->created_at:NULL,
               'is_debit_credit' =>  'Debit',
               'trans_type' =>  'Re-Payment',
               'invoice_no' =>   '',
@@ -597,6 +605,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Receipt',
               'voucher_date' => $stldTxn->trans_date,
+              'transaction_date'=>$stldTxn->created_at,
               'is_debit_credit' =>  'Credit',
               'trans_type' =>  $trans_type_name,
               'invoice_no' =>   $invoice_no,

@@ -231,6 +231,10 @@ class Payment extends BaseModel {
     public function getSettledTxns() {
        return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions','payment_id','payment_id')->whereNotIn('trans_type',[config('lms.TRANS_TYPE.REPAYMENT'), config('lms.TRANS_TYPE.REFUND')]);
     }
+
+    public function paymentRefrenceTxns(){
+        return $this->hasMany('App\Inv\Repositories\Models\Lms\Transactions','payment_id','payment_id')->whereIn('trans_type',[config('lms.TRANS_TYPE.REPAYMENT')]);
+    }
     
     /*** get all transaction  **/
     public static function getAllManualTransaction()
