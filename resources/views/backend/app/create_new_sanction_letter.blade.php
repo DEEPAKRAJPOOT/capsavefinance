@@ -516,8 +516,7 @@
                                                                 $selected5 = 'Borrower';
                                                             }
                                                         @endphp
-                                                        <textarea class="form-control textarea payment_mechanism" name="offerData[{{ $offerD->prgm_offer_id }}][payment_mechanism]" id="payment_mechanism_{{ $offerD->prgm_offer_id }}" cols="30" rows="10">@if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) && $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism){!! $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism !!} @else
-                                                        Direct payment by the {{ $selected5 }} to the Lender on or before the tranche due date based on tranche tenure through RTGS/NEFT/NACH/Cheque or any other mode acceptable to Lender.@endif
+                                                        <textarea class="form-control textarea payment_mechanism" name="offerData[{{ $offerD->prgm_offer_id }}][payment_mechanism]" id="payment_mechanism_{{ $offerD->prgm_offer_id }}" cols="30" rows="10">@if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism) && $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism){!! $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism !!} @else Direct payment by the {{ $selected5 }} to the Lender on or before the tranche due date based on tranche tenure through RTGS/NEFT/NACH/Cheque or any other mode acceptable to Lender.@endif
                                                     </textarea>
                                                     <label id="payment_mechanism_{{ $offerD->prgm_offer_id }}-error" class="error" for="payment_mechanism_{{ $offerD->prgm_offer_id }}"></label>
                                                     </td>
@@ -1037,11 +1036,10 @@
                                     </tr>
                                     <tr>
                                         <td align="center">
-                                            <div><span style="font-size:20px; font-weight:bold;">CAPSAVE FINANCE PRIVATE
-                                                    LIMITED</span><br />
-                                                Registered office: 3RD FLOOR, UNIT NO 301-302,D-WING, LOTUS CORPORATE PARK, CTS NO.185/A, GRAHAM FIRTH COMPOUND, WESTERN EXPRESS HIGHWAY, GOREGAON EAST, Mumbai Maharashtra, 400063<br />
+                                            <div><span style="font-size:20px; font-weight:bold;">CAPSAVE FINANCE PRIVATE LIMITED</span><br/> 
+                                                Registered office: 3rd Floor, Unit No 301-302,D-Wing, Lotus Corporate Park, CTS No.185/A, Graham Firth Compound, Western Express Highway, Goregaon East, Mumbai Maharashtra, 400063<br/>
                                                 Ph: +91 22 6173 7600, CIN No: U67120MH1992PTC068062
-                                            </div>
+                                             </div>
                                         </td>
                                     </tr>
                                 </tbody>

@@ -891,11 +891,10 @@
                                     </tr>
                                     <tr>
                                         <td align="center">
-                                            <div><span style="font-size:20px; font-weight:bold;">CAPSAVE FINANCE PRIVATE
-                                                    LIMITED</span><br />
-                                                Registered office: 3RD FLOOR, UNIT NO 301-302,D-WING, LOTUS CORPORATE PARK, CTS NO.185/A, GRAHAM FIRTH COMPOUND, WESTERN EXPRESS HIGHWAY, GOREGAON EAST, Mumbai Maharashtra, 400063<br />
+                                            <div><span style="font-size:20px; font-weight:bold;">CAPSAVE FINANCE PRIVATE LIMITED</span><br/> 
+                                                Registered office: 3rd Floor, Unit No 301-302,D-Wing, Lotus Corporate Park, CTS No.185/A, Graham Firth Compound, Western Express Highway, Goregaon East, Mumbai Maharashtra, 400063<br/>
                                                 Ph: +91 22 6173 7600, CIN No: U67120MH1992PTC068062
-                                            </div>
+                                             </div>
                                         </td>
                                     </tr>
                                 </tbody>

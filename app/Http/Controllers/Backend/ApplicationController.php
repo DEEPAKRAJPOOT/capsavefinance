@@ -2801,8 +2801,8 @@ class ApplicationController extends Controller
 		  //return  $html;
 		  ob_start();
           $pdf = NewPDF::loadView('backend.app.generate_new_sanction_letter',[],[],'UTF-8');
-		  $customPaper = [0,0,999,2000];
-		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true,'dpi'=>96,'disable-smart-shrinking'=> false]);
+		  $customPaper = 'A2';//[0,0,999,2000];
+		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true,'dpi'=>96,'disable-smart-shrinking'=> true]);
 		  $pdf->setPaper($customPaper);
           return $pdf->download('sanctionLetter.pdf');
         }

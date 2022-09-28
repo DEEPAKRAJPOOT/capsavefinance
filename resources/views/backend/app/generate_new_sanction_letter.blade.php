@@ -5,7 +5,7 @@
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
       <link href="https://fonts.googleapis.com/css2?family=Federo&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      {{-- <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" /> --}}
+      {{-- <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" />  --}}
       {{-- <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}""/> --}}
       <style>
          table {
@@ -25,7 +25,7 @@
          thead {display: table-row-group;}
          @page { margin-top: 120px; margin-bottom: 120px}
          header { position: fixed; left: 0px; top: -80px; right: 0px;}
-         #footer { position: fixed; left: 0px; bottom: -145px; right: 0px; height: 150px; }
+         #footer { position: fixed; left: 0px; bottom: -145px; right: 0px; height: 150px; } 
          table tr td{position:relative; padding: .5rem !important;}
          /* Create two equal columns that floats next to each other */
          .column {
@@ -44,16 +44,27 @@
          hr.new5 {
             border: 1px solid #ffa500;
          }
+         footer div {
+            width: 32%;
+            display: inline-block;
+            vertical-align: top;
+         }
+         footer div section {
+            max-width: 100%;
+            margin: 0 auto;
+            /* padding: 20px; */
+            /* /* text-align: inherit; */
+         }
    </style>
    </head>
    @php
      $waterMarker = '';
      if(isset($templateType) && $templateType == 'pdfTemplate'){
-        $waterMarker = 'background-image: url('.url('backend/assets/images/slWatermarkLogo.png').');';
+        $waterMarker = 'background-image: url('.url('backend/assets/images/slWatermarkLogo.png').');background-position: right 3% bottom 45%;background-repeat: no-repeat;background-attachment: fixed;';
      } 
    @endphp
-   <body style="font-size: 15px;background-color: #fff;{!! $waterMarker !!}">
-      <script type="text/php">
+   <body style="font-size: 15px;text-align: justify-all;background-color: #fff;{!! $waterMarker !!}">
+      {{-- <script type="text/php">
          if (isset($pdf)) {
             $y = $pdf->get_height() - 50; 
             $x = $pdf->get_width() - 900;
@@ -76,7 +87,7 @@
 
             $pdf->page_text($w1, $y1, $text1, $font1, $size1,$color, $word_space, $char_space, $angle);
        }
-      </script>
+      </script> --}}
       @if (isset($templateType) && $templateType == 'pdfTemplate')
       <header style="width: 100%;">
          <div class="row">
@@ -90,9 +101,19 @@
           <hr class="new5">
      </header>
       @endif
-     {{-- <footer style="width: 100%;" id="footer">
-         <img src="{{ public_path('img/invoice_footer.png') }}" alt="footer" style="width: 100%;">
-     </footer> --}}
+     <footer style="width: 100%;" id="footer">
+      <div>
+            <section style="text-align: left;"><img src="{{url('backend/assets/images/sladdress.png')}}" alt="sladdress"> CAPSAVE FINANCE PRIVATE LIMITED<br/> 
+               Registered office: 3rd Floor, Unit No 301-302,D-Wing, <br/>Lotus Corporate Park, CTS No.185/A, Graham Firth Compound, <br/>Western Express Highway, Goregaon East, Mumbai Maharashtra, 400063<br/>
+            </section>
+                </div>
+        <div>   
+             <section style="text-align: center;"><img src="{{url('backend/assets/images/slphone.png')}}" alt="slphone"> +91 22 6173 7600</section>
+        </div>
+        <div>
+            <section style="text-align: right;"><img src="{{url('backend/assets/images/sllink.png')}}" alt="sllink"> www.capsavefinance.com</section>
+         </div> 
+     </footer>
       <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify;">
          <thead>
             <tr>
@@ -297,10 +318,16 @@
                      <tr>
                         <td valign="top"><b>Rate of Interest </b></td>
                         @if(isset($offerD->is_lending_rate) && $offerD->is_lending_rate == 1)
-                        <td>{!! $arrayOfferData[$offerD->prgm_offer_id]->r_o_i??'' !!}
+                        @php
+                           $roi = $arrayOfferData[$offerD->prgm_offer_id]->r_o_i;
+                        @endphp
+                        <td>{!! $roi??'' !!}
                         </td>
                         @else
-                        <td>{!! $arrayOfferData[$offerD->prgm_offer_id]->r_o_i??'' !!}
+                        @php
+                           $roi = $arrayOfferData[$offerD->prgm_offer_id]->r_o_i;
+                        @endphp
+                        <td>{!! $roi??'' !!}
                         </td>
                         @endif
                     </tr>
@@ -413,7 +440,10 @@
                      <tr>
                         <td valign="top"><b>Default/Penal Interest</b></td>
                         <td>
-                           {!! $arrayOfferData[$offerD->prgm_offer_id]->penal_interest??'' !!}
+                           @php
+                              $penal_interest = $arrayOfferData[$offerD->prgm_offer_id]->penal_interest;
+                           @endphp
+                           {!! $penal_interest??'' !!}
                         </td>
                     </tr>
                     <tr>
@@ -465,19 +495,29 @@
                      <tr>
                         <td valign="top"><b>Payment mechanism</b></td>
                         <td>
-                           {!! $arrayOfferData[$offerD->prgm_offer_id ]->payment_mechanism??'' !!}
+                           @php
+                              $payment_mechanism = $arrayOfferData[$offerD->prgm_offer_id]->payment_mechanism;
+                           @endphp
+                           {!! $payment_mechanism??'' !!}
                         </td>
                     </tr>
                     <tr>
                         <td valign="top"><b>Moratorium (if applicable)</b></td>
                         <td>
-                            @if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->moratorium) && $arrayOfferData[$offerD->prgm_offer_id ]->moratorium){!! $arrayOfferData[$offerD->prgm_offer_id ]->moratorium !!} @else NA @endif
+                            @if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->moratorium) && $arrayOfferData[$offerD->prgm_offer_id ]->moratorium)
+                            @php
+                              $moratorium = $arrayOfferData[$offerD->prgm_offer_id]->moratorium;
+                           @endphp
+                            {!! $moratorium !!} @else NA @endif
                         </td>
                     </tr>
                      <tr>
                         <td valign="top"><b>Transaction process</b></td>
                         <td>
-                            {!! $arrayOfferData[$offerD->prgm_offer_id ]->transaction_process ??'NA' !!}
+                           @php
+                           $transaction_process = $arrayOfferData[$offerD->prgm_offer_id]->transaction_process;
+                        @endphp
+                            {!! $transaction_process ??'NA' !!}
                         </td>
                     </tr>
                     <tr>
@@ -548,9 +588,9 @@
          <tbody>
             <tr>
                <td>
-                  <table width="100%" border="1" >
+                  <table width="100%" border="1">
                      <tr>
-                        <td><b>Review Date</b></td>
+                        <td valign="top"><b>Review Date</b></td>
                         <td>{{
                            $supplyChainFormData->review_date?\Carbon\Carbon::parse($supplyChainFormData->review_date)->format('dS
                            F Y'):'' }}
@@ -570,7 +610,7 @@
                        </td>
                     </tr>
                      <tr>
-                        <td><b>Default Event</b></td>
+                        <td valign="top"><b>Default Event</b></td>
                         <td>
                            <table  border="0" id="defaultEvent">
                               @if(!empty($supplyChainFormData))
@@ -703,7 +743,10 @@
                            <td width="30%" valign="top"><b>Monitoring Covenants</b></td>
                            <td>
                               @if($supplyChainFormData->monitoring_covenants_select == 'Applicable')
-                              {!! $supplyChainFormData->monitoring_covenants_select_text ??'' !!}
+                              @php
+                                 $monitoring_covenants_select_text = $supplyChainFormData->monitoring_covenants_select_text;
+                              @endphp
+                              {!! $monitoring_covenants_select_text ??'' !!}
                               @else
                                  {{ $supplyChainFormData->monitoring_covenants_select??'' }} 
                               @endif
@@ -794,22 +837,22 @@
                                              <td valign="top" width="100%" colspan="2">
                                                  <table width="100%" border="1" style="font-weight: bold;">
                                                      <tr>
-                                                         <td valign="top" width="50%">If the EMI / Tranche Amount/Interest is not paid within 30 days from the due date of repayment</td>
+                                                         <td valign="top" width="60%">If the EMI / Tranche Amount/Interest is not paid within 30 days from the due date of repayment</td>
                                                          <td>SMA-0
                                                          </td>
                                                      </tr>
                                                      <tr>
-                                                         <td valign="top" width="50%">If the EMI / Tranche Amount/Interest is not paid within 60 days from the due date of repayment</td>
+                                                         <td valign="top" width="60%">If the EMI / Tranche Amount/Interest is not paid within 60 days from the due date of repayment</td>
                                                          <td>SMA-1
                                                          </td>
                                                      </tr>
                                                      <tr>
-                                                         <td valign="top" width="50%">If the EMI / Tranche Amount/Interest is not paid within 90 days from the due date of repayment</td>
+                                                         <td valign="top" width="60%">If the EMI / Tranche Amount/Interest is not paid within 90 days from the due date of repayment</td>
                                                          <td>SMA-2
                                                          </td>
                                                      </tr>
                                                      <tr>
-                                                         <td valign="top" width="50%">If the EMI / Tranche Amount/Interest is not paid for more than 90 days from the due date of repayment</td>
+                                                         <td valign="top" width="60%">If the EMI / Tranche Amount/Interest is not paid for more than 90 days from the due date of repayment</td>
                                                          <td>NPA
                                                          </td>
                                                      </tr>
@@ -910,17 +953,19 @@
                   </table>
                </td>
             </tr>
+            @if (isset($templateType) && $templateType != 'pdfTemplate')
             <tr>
                <td height="30"></td>
             </tr>
             <tr>
                <td align="center">
                   <div><span style="font-size:20px; font-weight:bold;">CAPSAVE FINANCE PRIVATE LIMITED</span><br/> 
-                     Registered office: 3RD FLOOR, UNIT NO 301-302,D-WING, LOTUS CORPORATE PARK, CTS NO.185/A, GRAHAM FIRTH COMPOUND, WESTERN EXPRESS HIGHWAY, GOREGAON EAST, Mumbai Maharashtra, 400063<br/>
+                     Registered office: 3rd Floor, Unit No 301-302,D-Wing, Lotus Corporate Park, CTS No.185/A, Graham Firth Compound, Western Express Highway, Goregaon East, Mumbai Maharashtra, 400063<br/>
                      Ph: +91 22 6173 7600, CIN No: U67120MH1992PTC068062
                   </div>
                </td>
             </tr>
+            @endif
          </tbody>
       </table>
    </body>
