@@ -680,13 +680,13 @@ class ApiController
     // }
   }
 
-  public function tally_entry($startDate = null, $endDate = null, Request $request){
+  public function tally_entry($startDate = null, $endDate = null){
     
     if(empty($startDate)){
-      $startDate = $request->get('start_date')?date('Y-m-d',strtotime($request->get('start_date'))):date('Y-m-d');
+      $startDate = date('Y-m-d');
     }
     if(empty($endDate)){
-      $endDate = $request->get('end_date')?date('Y-m-d',strtotime($request->get('end_date'))):$startDate;
+      $endDate = $startDate;
     }
     $this->selectedTxnData = [];
     $this->selectedPaymentData = [];
