@@ -106,7 +106,6 @@
           </div>
           <hr class="new5">
      </header>
-      @endif
      <footer style="width: 100%;" id="footer">
       <div>
             <section style="text-align: left;" style="text-align:justify;"><img src="{{url('backend/assets/images/sladdress.png')}}" alt="sladdress"> <b>CAPSAVE FINANCE PRIVATE LIMITED</b><br/> 
@@ -120,6 +119,7 @@
             <section style="text-align: right;"><img src="{{url('backend/assets/images/sllink.png')}}" alt="sllink"> www.capsavefinance.com</section>
          </div> 
      </footer>
+      @endif
       <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify;">
          <thead>
             <tr>
