@@ -8,6 +8,12 @@
       {{-- <link rel="stylesheet" href="{{url('backend/assets/css/style.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}"" />  --}}
       {{-- <link rel="stylesheet" href="{{url('backend/assets/css/custom.css')}}?v="{{Helpers::convertDateTimeFormat(Helpers::getSysStartDate(), 'Y-m-d H:i:s', 'd-m-Y h:i A')}}""/> --}}
       <style>
+         @media print
+         {
+         td.break-table table { page-break-after:auto }
+         td.break-table table tr    { page-break-inside:avoid; page-break-after:auto }
+         td.break-table table td    { page-break-inside:avoid; page-break-after:auto }
+         }
          table {
             border-collapse: collapse;
             width: 100% !important;
@@ -103,7 +109,7 @@
       @endif
      <footer style="width: 100%;" id="footer">
       <div>
-            <section style="text-align: left;"><img src="{{url('backend/assets/images/sladdress.png')}}" alt="sladdress"> CAPSAVE FINANCE PRIVATE LIMITED<br/> 
+            <section style="text-align: left;" style="text-align:justify;"><img src="{{url('backend/assets/images/sladdress.png')}}" alt="sladdress"> <b>CAPSAVE FINANCE PRIVATE LIMITED</b><br/> 
                Registered office: 3rd Floor, Unit No 301-302,D-Wing, <br/>Lotus Corporate Park, CTS No.185/A, Graham Firth Compound, <br/>Western Express Highway, Goregaon East, Mumbai Maharashtra, 400063<br/>
             </section>
                 </div>
@@ -206,8 +212,10 @@
                </td>
             </tr>
             <tr>
+               <td style="height:100px;">&nbsp;</td>
+            </tr>
+            <tr>
                <td>
-                  <br/><br/>
                   <span>I /We accept all the terms and conditions as per the attached
                   annexures
                   which have been read and understood by
@@ -255,7 +263,7 @@
          </tbody>
       </table>
       {{-- <div style="page-break-before: always;"></div> --}}
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="text-align:justify;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
          <thead>
             <tr>
                <th bgcolor="#cccccc" class="text-center" height="30" style="text-align: center;">Annexure I – Specific
@@ -291,10 +299,10 @@
             </tr>
             <tr>
                <td>
-                  <table width="100%" border="1">
+                  <table width="100%" border="1" cellpadding="0" cellspacing="0" border="0">
                      <tr>
                         <td width="30%" valign="top"><b>Facility</b></td>
-                        <td>Working Capital Demand Loan Facility (referred to as “Facility”
+                        <td style="text-align:justify;">Working Capital Demand Loan Facility (referred to as “Facility”
                            henceforth)
                         </td>
                      </tr>
@@ -334,7 +342,7 @@
                      @if($offerD->tenor)
                      <tr>
                         <td valign="top"><b>Tenor for each tranche</b></td>
-                        <td>
+                        <td style="text-align:justify;">
                             Upto {{($offerD->tenor + $offerD->grace_period)}} days{{($offerD->grace_period)?' (including grace period of '.$offerD->grace_period.' days)':''}} from date of disbursement of each tranche
                         </td>
                     </tr>
@@ -342,7 +350,7 @@
                      @if($offerD->tenor_old_invoice)
                      <tr>
                         <td valign="top"><b>Old Invoice</b></td>
-                        <td>Borrower can submit invoices not older than {{$offerD->tenor_old_invoice}} days. Door to door tenor shall not exceed {{ $arrayOfferData[$offerD->prgm_offer_id ]->deviation_first_disbursement??($offerD->tenor + $offerD->grace_period + $offerD->tenor_old_invoice) }} days from date of invoice.
+                        <td style="text-align:justify;">Borrower can submit invoices not older than {{$offerD->tenor_old_invoice}} days. Door to door tenor shall not exceed {{ $arrayOfferData[$offerD->prgm_offer_id ]->deviation_first_disbursement??($offerD->tenor + $offerD->grace_period + $offerD->tenor_old_invoice) }} days from date of invoice.
                         </td>
                     </tr>
                      @endif
@@ -373,7 +381,7 @@
                               <tr>
                                  <td valign="top" width="1%"><span style="margin-top:7px;display: inline-block;"><b>&bull;</b></span>
                                  </td>
-                                 <td  valign="top">
+                                 <td  valign="top" style="text-align:justify;">
                                     To be paid by Anchor
                                     upfront for a period upto {{($offerD->tenor)}} days at the time of
                                     disbursement of each tranche.
@@ -382,7 +390,7 @@
                               @else
                               <tr>
                                  <td valign="top" width="1%">&bull;</td>
-                                 <td >Lender will deduct upfront interest for
+                                 <td style="text-align:justify;">Lender will deduct upfront interest for
                                     a
                                     period upto {{($offerD->tenor)}} days at the time of disbursement of
                                     each
@@ -395,7 +403,7 @@
                               <tr>
                                  <td valign="top" width="1%">&bull;
                                  </td>
-                                 <td valign="top">
+                                 <td valign="top" style="text-align:justify;">
                                     Lender shall charge monthly interest to the
                                     {{ $arrayOfferData[$offerD->prgm_offer_id]->lender_shall_charge??'' }}
                                     at the month end based on utilization done during
@@ -430,7 +438,7 @@
                            Sanction
                            of credit facility</b>
                         </td>
-                        <td>
+                        <td style="text-align:justify;">
                            {{ $processingCharges }}% of the sanctioned
                            limit + applicable taxes payable by the
                            {{$arrayOfferData[$offerD->prgm_offer_id ]->one_time_processing_charges??'' }} (non-refundable).
@@ -439,7 +447,7 @@
                      @endif
                      <tr>
                         <td valign="top"><b>Default/Penal Interest</b></td>
-                        <td>
+                        <td style="text-align:justify;">
                            @php
                               $penal_interest = $arrayOfferData[$offerD->prgm_offer_id]->penal_interest;
                            @endphp
@@ -448,7 +456,7 @@
                     </tr>
                     <tr>
                      <td valign="top"><b>Applicable Taxes</b></td>
-                     <td>
+                     <td style="text-align:justify;">
                          Any charges/interest payable by the 
                         {{ $arrayOfferData[$offerD->prgm_offer_id ]->applicable_taxes??'' }} as mentioned
                          in
@@ -494,7 +502,7 @@
                  @endif
                      <tr>
                         <td valign="top"><b>Payment mechanism</b></td>
-                        <td>
+                        <td style="text-align:justify;">
                            @php
                               $payment_mechanism = $arrayOfferData[$offerD->prgm_offer_id]->payment_mechanism;
                            @endphp
@@ -503,7 +511,7 @@
                     </tr>
                     <tr>
                         <td valign="top"><b>Moratorium (if applicable)</b></td>
-                        <td>
+                        <td style="text-align:justify;">
                             @if(!empty($arrayOfferData[$offerD->prgm_offer_id ]->moratorium) && $arrayOfferData[$offerD->prgm_offer_id ]->moratorium)
                             @php
                               $moratorium = $arrayOfferData[$offerD->prgm_offer_id]->moratorium;
@@ -513,7 +521,7 @@
                     </tr>
                      <tr>
                         <td valign="top"><b>Transaction process</b></td>
-                        <td>
+                        <td style="text-align:justify;">
                            @php
                            $transaction_process = $arrayOfferData[$offerD->prgm_offer_id]->transaction_process;
                         @endphp
@@ -547,7 +555,7 @@
                  </tr>
                  <tr>
                  <td valign="top"><b>Specific post-disbursement conditions</b></td>
-                 <td>
+                 <td style="text-align:justify;">
                      @if(!empty($securityDataPost) && count($securityDataPost) > 0 && $securityDataPost)
                            <table width="100%" border="1">
                                  <thead>
@@ -588,342 +596,357 @@
          <tbody>
             <tr>
                <td>
-                  <table width="100%" border="1">
+                  <table width="100%" border="1" cellpadding="0" cellspacing="0">
+                     {{-- ========================start======================================= --}}
                      <tr>
-                        <td valign="top"><b>Review Date</b></td>
-                        <td>{{
+                        <td valign="top" width="25%"><b>Review Date</b></td>
+                        <td style="text-align:justify;" width="75%">{{
                            $supplyChainFormData->review_date?\Carbon\Carbon::parse($supplyChainFormData->review_date)->format('dS
                            F Y'):'' }}
                         </td>
                      </tr>
+
                      <tr>
-                        <td valign="top"><b>Sanction validity for first disbursement</b>
+                        <td valign="top" width="25%"><b>Sanction validity for first disbursement </b></td>
+                        <td style="text-align:justify;" width="75%"> 
+                           @if(!empty($supplyChainFormData))
+                           @if(isset($supplyChainFormData->sanction_applicable)  && $supplyChainFormData->sanction_applicable == 'A')
+                           {{ $supplyChainFormData->sanction_validity_for_first_disbursement ??'' }} days from the date of sanction  
+                           @else
+                           {{ 'Not applicable' }} 
+                           @endif
+                           @endif
                         </td>
-                        <td>
-                            @if(!empty($supplyChainFormData))
-                            @if(isset($supplyChainFormData->sanction_applicable)  && $supplyChainFormData->sanction_applicable == 'A')
-                            {{ $supplyChainFormData->sanction_validity_for_first_disbursement ??'' }} days from the date of sanction  
-                            @else
-                            {{ 'Not applicable' }} 
-                            @endif
-                            @endif
-                       </td>
-                    </tr>
+                     </tr>
+
                      <tr>
-                        <td valign="top"><b>Default Event</b></td>
-                        <td>
+                        <td valign="top" width="25%"><b>Default Event</b></td>
+                        <td style="text-align:justify;" width="75%">
                            <table  border="0" id="defaultEvent">
-                              @if(!empty($supplyChainFormData))
-                              @foreach($supplyChainFormData->defaultEvent as $defaultEvent)
-                              <tr>
-                                 <td>&bull;</td>
-                                 <td>{{ $defaultEvent??'' }}
-                                 </td>
-                              </tr>
-                              @endforeach
-                              @endif
-                           </table>
+                           @if(!empty($supplyChainFormData))
+                           @foreach($supplyChainFormData->defaultEvent as $defaultEvent)
+                           <tr>
+                              <td>&bull;</td>
+                              <td>{{ $defaultEvent??'' }}
+                              </td>
+                           </tr>
+                           @endforeach
+                           @endif
+                        </table>
                         </td>
+
                      </tr>
+
                      <tr>
-                        <td valign="top"><b>General pre-disbursement conditions</b></td>
-                        <td>
-                            <table width="100%" border="0">
-                                <tr>
-                                    <td colspan="2">One-time requirement:</td>
-                                </tr>
-                                <tr>
-                                    <td valign="top" width="1%"><b>1.</b></td>
-                                    <td>Accepted Sanction Letter</td>
-                                </tr>
-                                <tr>
-                                    <td valign="top" width="1%"><b>2.</b></td>
-                                    <td>Loan Agreement </td>
-                                </tr>
-                                <tr>
-                                    <td valign="top" width="1%"><b>3.</b></td>
-                                    <td>
-                                        Self-Attested KYC of borrower (True Copy)
-                                        <table width="100%" border="0">
-                                          @php
-                                             $bizConstitution = '';
-                                             if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'private limited company' || strtolower($supplyChaindata['BizConstitution']) == 'public limited company')  ){
-                                                $bizConstitution = 'Certificate of incorporation, MOA, AOA';
-                                             }else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'partnership firm')  ){
-                                                $bizConstitution = 'Partnership Deed';
-                                             }else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'proprietorship firm' || strtolower($supplyChaindata['BizConstitution']) == 'sole proprietor')  ){
-                                                $bizConstitution = 'Shop and Establishment registration certificate / Udyog Adhar';
-                                             }
-                                          @endphp
-                                           @if ($bizConstitution)
-                                           <tr>
-                                            <td valign="top" width="1%">&bull;</td>
-                                            <td>
-                                               {{ $bizConstitution }} 
+                        <td valign="top" width="25%"><b>General pre-disbursement conditions </b></td>
+                        <td style="text-align:justify;" width="75%">
+                           <table width="100%" border="0">
+                           <tr>
+                               <td colspan="2">One-time requirement:</td>
+                           </tr>
+                           <tr>
+                               <td valign="top" width="1%"><b>1.</b></td>
+                               <td>Accepted Sanction Letter</td>
+                           </tr>
+                           <tr>
+                               <td valign="top" width="1%"><b>2.</b></td>
+                               <td>Loan Agreement </td>
+                           </tr>
+                           <tr>
+                               <td valign="top" width="1%"><b>3.</b></td>
+                               <td>
+                                   Self-Attested KYC of borrower (True Copy)
+                                   <table width="100%" border="0">
+                                     @php
+                                        $bizConstitution = '';
+                                        if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'private limited company' || strtolower($supplyChaindata['BizConstitution']) == 'public limited company')  ){
+                                           $bizConstitution = 'Certificate of incorporation, MOA, AOA';
+                                        }else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'partnership firm')  ){
+                                           $bizConstitution = 'Partnership Deed';
+                                        }else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'proprietorship firm' || strtolower($supplyChaindata['BizConstitution']) == 'sole proprietor')  ){
+                                           $bizConstitution = 'Shop and Establishment registration certificate / Udyog Adhar';
+                                        }
+                                     @endphp
+                                      @if ($bizConstitution)
+                                      <tr>
+                                       <td valign="top" width="1%">&bull;</td>
+                                       <td>
+                                          {{ $bizConstitution }} 
+                                         </td>
+                                       </tr>
+                                      @endif
+                                       <tr>
+                                           <td valign="top" width="1%">&bull;</td>
+                                           <td>Valid Address Proof
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td valign="top" width="1%">&bull;</td>
+                                           <td>PAN Card</td>
+                                       </tr>
+                                       <tr>
+                                           <td valign="top" width="1%">&bull;</td>
+                                           <td>GST Registration Certificate</td>
+                                       </tr>
+                                   </table>
+                               </td>
+                           </tr>
+                           <tr>
+                            <td valign="top" width="1%"><b>4.</b></td>
+                            <td style="text-align:justify;">
+                               @php
+                               $bizConstitutionDes = '';
+                                if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'private limited company')  ){
+                                    $bizConstitutionDes = 'Board Resolution signed by 2 directors or Company Secretary in favour of company officials to execute such agreements or documents';
+                                } else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'huf letter')  ){
+                                    $bizConstitutionDes = 'HUF';
+                                }else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'partnership firm')  ){
+                                    $bizConstitutionDes = 'Partnership Authority Letter';
+                                }else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'proprietorship firm' || strtolower($supplyChaindata['BizConstitution']) == 'sole proprietor')  ){
+                                    $bizConstitutionDes = 'Proprietorship Declaration';
+                                }
+                               @endphp
+                               @if ($bizConstitutionDes)
+                                   {{ $bizConstitutionDes }}. 
+                               @endif 
+                            </td>
+                        </tr>
+                           <tr>
+                               <td valign="top" width="5%"><b>5.</b></td>
+                               <td style="text-align:justify;">
+                                   KYC of authorized signatory:
+                                   <table width="100%" border="0">
+                                       <tr>
+                                           <td valign="top" width="3%">&bull;</td>
+                                           <td>Name of authorized signatories with
+                                               their
+                                               Self Attested ID proof and address proof
+                                           </td>
+                                       </tr>
+                                       @if ($supplyChaindata['isNachPdc'])
+                                        <tr>
+                                              <td valign="top" width="3%">&bull;</td>
+                                              <td>Signature Verification of authorized
+                                                 signatories from Borrower's banker?
                                               </td>
-                                            </tr>
-                                           @endif
-                                            <tr>
-                                                <td valign="top" width="1%">&bull;</td>
-                                                <td>Valid Address Proof
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td valign="top" width="1%">&bull;</td>
-                                                <td>PAN Card</td>
-                                            </tr>
-                                            <tr>
-                                                <td valign="top" width="1%">&bull;</td>
-                                                <td>GST Registration Certificate</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                 <td valign="top" width="1%"><b>4.</b></td>
-                                 <td>
-                                    @php
-                                    $bizConstitutionDes = '';
-                                     if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'private limited company')  ){
-                                         $bizConstitutionDes = 'Board Resolution signed by 2 directors or Company Secretary in favour of company officials to execute such agreements or documents';
-                                     } else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'huf letter')  ){
-                                         $bizConstitutionDes = 'HUF';
-                                     }else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'partnership firm')  ){
-                                         $bizConstitutionDes = 'Partnership Authority Letter';
-                                     }else if(isset($supplyChaindata['BizConstitution']) && (strtolower($supplyChaindata['BizConstitution']) == 'proprietorship firm' || strtolower($supplyChaindata['BizConstitution']) == 'sole proprietor')  ){
-                                         $bizConstitutionDes = 'Proprietorship Declaration';
-                                     }
-                                    @endphp
-                                    @if ($bizConstitutionDes)
-                                        {{ $bizConstitutionDes }}. 
-                                    @endif 
-                                 </td>
-                             </tr>
-                                <tr>
-                                    <td valign="top" width="5%"><b>5.</b></td>
-                                    <td>
-                                        KYC of authorized signatory:
-                                        <table width="100%" border="0">
-                                            <tr>
-                                                <td valign="top" width="3%">&bull;</td>
-                                                <td>Name of authorized signatories with
-                                                    their
-                                                    Self Attested ID proof and address proof
-                                                </td>
-                                            </tr>
-                                            @if ($supplyChaindata['isNachPdc'])
-                                             <tr>
-                                                   <td valign="top" width="3%">&bull;</td>
-                                                   <td>Signature Verification of authorized
-                                                      signatories from Borrower's banker?
-                                                   </td>
-                                             </tr>
-                                             @endif
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td valign="top" width="5%"><b>6.</b></td>
-                                    <td>{{ $supplyChainFormData->any_other??'Any other documents considered necessary by Lender from time to time' }}
-                                    </td>
-                                </tr>
-                                @if(!empty($supplyChainFormData->general_pre_disbursement_condition))
-                                 @foreach($supplyChainFormData->general_pre_disbursement_condition as $k=>$genCondition)
-                                 <tr class='row_gen'>
-                                       <td valign="top" width="1%"><b>{{ $k+7 }}.</b></td>
-                                       <td>{{ $genCondition }}
-                                       </td>
-                                 </tr>
-                                 @endforeach
-                                 @endif
-                            </table>
+                                        </tr>
+                                        @endif
+                                   </table>
+                               </td>
+                           </tr>
+                           <tr>
+                               <td valign="top" width="5%"><b>6.</b></td>
+                               <td>{{ $supplyChainFormData->any_other??'Any other documents considered necessary by Lender from time to time' }}
+                               </td>
+                           </tr>
+                           @if(!empty($supplyChainFormData->general_pre_disbursement_condition))
+                            @foreach($supplyChainFormData->general_pre_disbursement_condition as $k=>$genCondition)
+                            <tr class='row_gen'>
+                                  <td valign="top" width="1%"><b>{{ $k+7 }}.</b></td>
+                                  <td>{{ $genCondition }}
+                                  </td>
+                            </tr>
+                            @endforeach
+                            @endif
+                       </table>
                         </td>
-                    </tr>
-                    <tr>
-                           <td width="30%" valign="top"><b>Monitoring Covenants</b></td>
-                           <td>
-                              @if($supplyChainFormData->monitoring_covenants_select == 'Applicable')
-                              @php
-                                 $monitoring_covenants_select_text = $supplyChainFormData->monitoring_covenants_select_text;
-                              @endphp
-                              {!! $monitoring_covenants_select_text ??'' !!}
-                              @else
-                                 {{ $supplyChainFormData->monitoring_covenants_select??'' }} 
-                              @endif
-                              
-                           </td>
+                     </tr>
+
+                     <tr>
+                        <td valign="top" width="25%"><b>Monitoring Covenants </b></td>
+                        <td style="text-align:justify;" width="75%">
+                           @if($supplyChainFormData->monitoring_covenants_select == 'Applicable')
+                           @php
+                              $monitoring_covenants_select_text = $supplyChainFormData->monitoring_covenants_select_text;
+                           @endphp
+                           {!! $monitoring_covenants_select_text ??'' !!}
+                           @else
+                              {{ $supplyChainFormData->monitoring_covenants_select??'' }} 
+                           @endif
+                        </td>
+                     </tr>
+                     {{-- ========================end======================================= --}}
+                     <tr>
+                        <td valign="top" width="25%"><b>Other Conditions </b></td>
+                        <td style="text-align:justify;" width="75%">1. Borrower undertakes that no deferral or moratorium will be sought by the borrower at any time during the tenor of the facility.
+                        </td>
                      </tr>
                      <tr>
-                        <td valign="top"><b>Other Conditions </b></td>
-                        <td>
+                        <td valign="top">&nbsp;</td>
+                        
+                        <td style="text-align:justify;">2. The loan shall be utilized for the purpose for which it is sanctioned, and it should not be utilized for –
                            <table width="100%" border="0">
                               <tr>
-                                 <td valign="top" width="1%">1.</td>
-                                 <td>Borrower undertakes that no deferral or moratorium will be sought by the borrower at any time during the tenor of the facility.
-                                 </td>
+                                  <td valign="top" width="3%">a.</td>
+                                  <td>Subscription to or purchase of shares/debentures.
+                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="1%">2.</td>
-                                 <td>The loan shall be utilized for the purpose for which it is sanctioned, and it should not be utilized for –
-                                    <table width="100%" border="0">
-                                       <tr>
-                                           <td valign="top" width="3%">a.</td>
-                                           <td>Subscription to or purchase of shares/debentures.
-                                           </td>
-                                       </tr>
-                                       <tr>
-                                           <td valign="top" width="3%">b.</td>
-                                           <td>Extending loans to subsidiary companies/associates or for making inter-corporate deposits.
-                                           </td>
-                                       </tr>
-                                       <tr>
-                                           <td valign="top" width="3%">c.</td>
-                                           <td>Any speculative purposes.
-                                           </td>
-                                       </tr>
-                                       <tr>
-                                          <td valign="top" width="3%">d.</td>
-                                          <td>Purchase/payment towards any immovable property.
-                                          </td>
-                                      </tr>
-                                   </table>
-                                 </td>
+                                  <td valign="top" width="3%">b.</td>
+                                  <td>Extending loans to subsidiary companies/associates or for making inter-corporate deposits.
+                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="1%">3.</td>
-                                 <td>The Borrower shall maintain adequate books and records which should correctly reflect their financial position and operations and it should submit to Lender at regular intervals such statements as may be prescribed by Lender in terms of the RBI / Bank’s instructions issued from time to time.
-                                 </td>
+                                  <td valign="top" width="3%">c.</td>
+                                  <td>Any speculative purposes.
+                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="1%">4.</td>
-                                 <td>The Borrower will keep Lender informed of the happening of any event which is likely to have an impact on their profit or business and more particularly, if the monthly production or sale and profit are likely to be substantially lower than already indicated to Lender. The Borrower will inform accordingly with reasons and the remedial steps proposed to be taken.
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td valign="top" width="1%">5.</td>
-                                 <td>Lender will have the right to examine at all times the Borrower’s books of accounts and to have the Borrower’s factory(s)/branches inspected from time to time by officer(s) of the Lender and/or qualified auditors including stock audit and/or technical experts and/or management consultants of Lender’s choice and/or we can also get the stock audit conducted by other banker. The cost of such inspections will be borne by the Borrower.
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td valign="top" width="1%"">6.</td>
-                                 <td>The Borrower should not pay any consideration by way of commission, brokerage, fees or in any other form to guarantors directly or indirectly.
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td valign="top" width="1%">7.</td>
-                                 <td>The Borrower and Guarantor(s) shall be deemed to have given their express consent to Lender to disclose the information and data furnished by them to Lender and also those regarding the credit facility/ies enjoyed by the Borrower, conduct of accounts and guarantee obligations undertaken by guarantor to the Credit Information Bureau (India) Ltd. (“CIBIL”), or RBI or any other agencies specified by RBI who are authorized to seek and publish information.
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td valign="top" width="1%">8.</td>
-                                 <td>The Borrower will keep the Lender advised of any circumstances adversely affecting their financial position including any action taken by any creditor, Government authority against them.
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td valign="top" width="1%">9.</td>
-                                 <td>In order to remove any ambiguity, it is clarified that the intervals are intended to be continuous and accordingly, the basis for classification of SMA/NPA categories shall be considered as follows:
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td valign="top" width="5%"></td>
-                                 <td valign="top" width="100%">
-                                     <table width="100%" border="0" style="border:1px #181616 solid;">
-                                         <tr valign="top" width="100%">
-                                             <td valign="top" width="100%"style="text-align: center;text-decoration: underline;" colspan="2">
-                                             <b>“Example of SMA/NPA”</b>
-                                             </td>
-                                         </tr>
-                                         <tr>
-                                             <td valign="top" width="100%" colspan="2">
-                                                 <table width="100%" border="1" style="font-weight: bold;">
-                                                     <tr>
-                                                         <td valign="top" width="60%">If the EMI / Tranche Amount/Interest is not paid within 30 days from the due date of repayment</td>
-                                                         <td>SMA-0
-                                                         </td>
-                                                     </tr>
-                                                     <tr>
-                                                         <td valign="top" width="60%">If the EMI / Tranche Amount/Interest is not paid within 60 days from the due date of repayment</td>
-                                                         <td>SMA-1
-                                                         </td>
-                                                     </tr>
-                                                     <tr>
-                                                         <td valign="top" width="60%">If the EMI / Tranche Amount/Interest is not paid within 90 days from the due date of repayment</td>
-                                                         <td>SMA-2
-                                                         </td>
-                                                     </tr>
-                                                     <tr>
-                                                         <td valign="top" width="60%">If the EMI / Tranche Amount/Interest is not paid for more than 90 days from the due date of repayment</td>
-                                                         <td>NPA
-                                                         </td>
-                                                     </tr>
-                                                 </table>
-                                             </td>
-                                         </tr>
-                                         <tr>
-                                             <td colspan="2">
-                                                <table width="100%" border="0">
-                                                <tr>
-                                                    <td valign="top" width="1%">&bull;</td>
-                                                    <td valign="top" width="50%">Any amount due to the lender under any credit facility is ‘overdue’ if it is not paid on the due date fixed by the Lender. If there is any overdue in an account, the default/ non-repayment is reported with the credit bureau companies like CIBIL etc. and the CIBIL report of the customer will reflect defaults and its classification status.
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td valign="top" width="1%">&bull;</td>
-                                                    <td valign="top" width="50%">Once an account is classified as NPAs then it shall be upgraded as ‘standard’ asset only if entire arrears of interest and principal are paid by the borrower.
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                          </td>
-                                            
-                                         </tr>
-                                     </table>
+                                 <td valign="top" width="3%">d.</td>
+                                 <td>Purchase/payment towards any immovable property.
                                  </td>
                              </tr>
-                              <tr>
-                                 <td valign="top" width="1%">10.</td>
-                                 <td>The Borrower shall procure consent every year from the auditors appointed by the borrower to comply with and give report / specific comments in respect of any query or requisition made by us as regards the audited accounts or balance sheet of the Borrower. We may provide information and documents to the Auditors in order to enable the Auditors to carry out the investigation requested for by us. In that event, we shall be entitled to make specific queries to the Auditors in the light of Statements, particulars and other information submitted by the Borrower to us for the purpose of availing finance, and the Auditors shall give specific comments on the queries made by us.
-                                 </td>
+                          </table>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        
+                        <td style="text-align:justify;">3. The Borrower shall maintain adequate books and records which should correctly reflect their financial position and operations and it should submit to Lender at regular intervals such statements as may be prescribed by Lender in terms of the RBI / Bank’s instructions issued from time to time.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        
+                        <td style="text-align:justify;">4. The Borrower will keep Lender informed of the happening of any event which is likely to have an impact on their profit or business and more particularly, if the monthly production or sale and profit are likely to be substantially lower than already indicated to Lender. The Borrower will inform accordingly with reasons and the remedial steps proposed to be taken.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        
+                        <td style="text-align:justify;">5. Lender will have the right to examine at all times the Borrower’s books of accounts and to have the Borrower’s factory(s)/branches inspected from time to time by officer(s) of the Lender and/or qualified auditors including stock audit and/or technical experts and/or management consultants of Lender’s choice and/or we can also get the stock audit conducted by other banker. The cost of such inspections will be borne by the Borrower.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        
+                        <td style="text-align:justify;">6. The Borrower should not pay any consideration by way of commission, brokerage, fees or in any other form to guarantors directly or indirectly.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        
+                        <td style="text-align:justify;">7. The Borrower and Guarantor(s) shall be deemed to have given their express consent to Lender to disclose the information and data furnished by them to Lender and also those regarding the credit facility/ies enjoyed by the Borrower, conduct of accounts and guarantee obligations undertaken by guarantor to the Credit Information Bureau (India) Ltd. (“CIBIL”), or RBI or any other agencies specified by RBI who are authorized to seek and publish information.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        
+                        <td style="text-align:justify;">8. The Borrower will keep the Lender advised of any circumstances adversely affecting their financial position including any action taken by any creditor, Government authority against them.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        
+                        <td style="text-align:justify;">9. In order to remove any ambiguity, it is clarified that the intervals are intended to be continuous and accordingly, the basis for classification of SMA/NPA categories shall be considered as follows:
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        {{-- <td valign="top"></td> --}}
+                        <td valign="top" style="text-align:justify;">
+                           <table width="100%" border="0" style="border:1px #181616 solid;" cellpadding="0" cellspacing="0">
+                              <tr valign="top" width="100%">
+                                  <td valign="middle" width="100%" style="text-align: center;text-decoration: underline;vertical-align: text-top;">
+                                  “Example of SMA/NPA”
+                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="1%">11.</td>
-                                 <td>The sanction limits would be valid for acceptance for {!! $supplyChainFormData->other_cond_11??'60 days' !!} from the date of the issuance of letter.
-                                 </td>
+                                  <td valign="top" width="100%">
+                                      <table width="100%" border="1" style="font-weight: bold;" cellpadding="0" cellspacing="0">
+                                          <tr>
+                                              <td valign="top" width="80%">If the EMI / Tranche Amount/Interest is not paid within 30 days from the due date of repayment</td>
+                                              <td width="20%">SMA-0</td>
+                                          </tr>
+                                          <tr>
+                                             <td valign="top" width="80%">If the EMI / Tranche Amount/Interest is not paid within 60 days from the due date of repayment</td>
+                                             <td width="20%" >SMA-1
+                                             </td>
+                                         </tr>
+                                         <tr>
+                                             <td valign="top" width="80%" >If the EMI / Tranche Amount/Interest is not paid within 90 days from the due date of repayment</td>
+                                             <td width="20%" >SMA-2
+                                             </td>
+                                         </tr>
+                                         <tr>
+                                             <td valign="top" width="80%" >If the EMI / Tranche Amount/Interest is not paid for more than 90 days from the due date of repayment</td>
+                                             <td width="20%" >NPA
+                                             </td>
+                                         </tr>
+                                      </table>
+                                  </td>
                               </tr>
                               <tr>
-                                 <td valign="top" width="1%">12.</td>
-                                 <td>Lender reserves the right to alter, amend any of the condition or withdraw the facility, at any time without assigning any reason and also without giving any notice.
-                                 </td>
+                                  <td>
+                                     <table width="100%" border="0">
+                                     <tr>
+                                         <td valign="top" width="2%">&bull;</td>
+                                         <td valign="top" width="98%" style="text-align:justify;">Any amount due to the lender under any credit facility is ‘overdue’ if it is not paid on the due date fixed by the Lender. If there is any overdue in an account, the default/ non-repayment is reported with the credit bureau companies like CIBIL etc. and the CIBIL report of the customer will reflect defaults and its classification status.
+                                         </td>
+                                     </tr>
+                                     <tr>
+                                         <td valign="top" width="2%">&bull;</td>
+                                         <td valign="top" width="98%" style="text-align:justify;">Once an account is classified as NPAs then it shall be upgraded as ‘standard’ asset only if entire arrears of interest and principal are paid by the borrower.
+                                         </td>
+                                     </tr>
+                                 </table>
+                               </td>
+                                 
                               </tr>
-                              <tr>
-                                 <td valign="top" width="1%">13.</td>
-                                 <td>Borrower have read and understood the terms and conditions of the Loan including the annual rate of interest and the approach for gradation of risk and rationale for charging different rates of interest to different categories of borrowers adopted by the Lender(s). The Borrower understand the Lender (s) has its own model for arriving at lending interest rates on the basis of  various (i) risks such as interest rate risk, credit  and default risk in the related business segment, (ii)based on various cost such as  average cost of borrowed funds, matching tenure cost ,market liquidity, cost of underwriting, cost of customer acquisition etc. and other factors like profile of the borrower, repayment track record of the existing customer, future potential, deviations permitted , tenure of relationship with the borrower, overall  customer yield etc. Such information is gathered based on the information provided by the borrower, credit reports, data sources and market intelligence. The Borrower accept the terms and conditions and agree that these terms and conditions may be changed by the Lender at any time, and the Borrower shall be bound by the amended terms and conditions.
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td valign="top" width="1%">14.</td>
-                                 <td>Lender(s) reserves the right to change the rate of interest and other charges, at any time, with previous notice/intimation, and any such changes shall have prospective effect.
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td valign="top" width="1%">15.</td>
-                                 <td>Provided further that notwithstanding anything to the contrary contained in this Agreement, Lender may at its sole and absolute discretion at any time, terminate, cancel or withdraw the Loan or any part thereof (even if partial or no disbursement is made) without any liability and without any obligations to give any reason whatsoever, whereupon all principal monies, interest thereon and all other costs, charges, expenses and other monies outstanding (if any) shall become due and payable to Lender by the Borrower forthwith upon demand from Lender.
-                                 </td>
-                              </tr>
-                           </table>
+                          </table>
+                        </td>
+                    </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        {{-- <td valign="top" width="1%">&nbsp;</td> --}}
+                        <td style="text-align:justify;">10. The Borrower shall procure consent every year from the auditors appointed by the borrower to comply with and give report / specific comments in respect of any query or requisition made by us as regards the audited accounts or balance sheet of the Borrower. We may provide information and documents to the Auditors in order to enable the Auditors to carry out the investigation requested for by us. In that event, we shall be entitled to make specific queries to the Auditors in the light of Statements, particulars and other information submitted by the Borrower to us for the purpose of availing finance, and the Auditors shall give specific comments on the queries made by us.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        {{-- <td valign="top" width="1%">&nbsp;</td> --}}
+                        <td style="text-align:justify;">11. The sanction limits would be valid for acceptance for {!! $supplyChainFormData->other_cond_11??'60 days' !!} from the date of the issuance of letter.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        {{-- <td valign="top" width="1%">&nbsp;</td> --}}
+                        <td style="text-align:justify;">12. Lender reserves the right to alter, amend any of the condition or withdraw the facility, at any time without assigning any reason and also without giving any notice.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        {{-- <td valign="top" width="1%">&nbsp;</td> --}}
+                        <td style="text-align:justify;">13. Borrower have read and understood the terms and conditions of the Loan including the annual rate of interest and the approach for gradation of risk and rationale for charging different rates of interest to different categories of borrowers adopted by the Lender(s). The Borrower understand the Lender (s) has its own model for arriving at lending interest rates on the basis of  various (i) risks such as interest rate risk, credit  and default risk in the related business segment, (ii)based on various cost such as  average cost of borrowed funds, matching tenure cost ,market liquidity, cost of underwriting, cost of customer acquisition etc. and other factors like profile of the borrower, repayment track record of the existing customer, future potential, deviations permitted , tenure of relationship with the borrower, overall  customer yield etc. Such information is gathered based on the information provided by the borrower, credit reports, data sources and market intelligence. The Borrower accept the terms and conditions and agree that these terms and conditions may be changed by the Lender at any time, and the Borrower shall be bound by the amended terms and conditions.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        {{-- <td valign="top" width="1%">&nbsp;</td> --}}
+                        <td style="text-align:justify;">14. Lender(s) reserves the right to change the rate of interest and other charges, at any time, with previous notice/intimation, and any such changes shall have prospective effect.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td valign="top">&nbsp;</td>
+                        {{-- <td valign="top" width="1%">&nbsp;</td> --}}
+                        <td style="text-align:justify;">15. Provided further that notwithstanding anything to the contrary contained in this Agreement, Lender may at its sole and absolute discretion at any time, terminate, cancel or withdraw the Loan or any part thereof (even if partial or no disbursement is made) without any liability and without any obligations to give any reason whatsoever, whereupon all principal monies, interest thereon and all other costs, charges, expenses and other monies outstanding (if any) shall become due and payable to Lender by the Borrower forthwith upon demand from Lender.
                         </td>
                      </tr>
                   </table>
                </td>
             </tr>
             <tr>
-               <td>I /We accept all the terms and conditions which have been read and understood by me/us. </td>
+               <td style="height:100px;">&nbsp;</td>
             </tr>
             <tr>
-               <td>We request you to acknowledge and return a copy of the same as a confirmation.</td>
+               <td style="text-align:justify;">I /We accept all the terms and conditions which have been read and understood by me/us. </td>
+            </tr>
+            <tr>
+               <td style="text-align:justify;">We request you to acknowledge and return a copy of the same as a confirmation.</td>
             </tr>
             <tr>
                <td>
-                  <table width="100%" border="0">
+                  <table width="100%" border="0" style="text-align:justify;">
                      <tbody>
                         <tr>
                            <td width="60%" valign="top" height="40"><b>Yours Sincerely,</b></td>
