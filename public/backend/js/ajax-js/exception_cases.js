@@ -26,6 +26,7 @@ try {
                 }
             },
             columns: [
+                {data: 'anchor_id'},
                 {data: 'invoice_id'},
                 {data: 'anchor_name'},
                 {data: 'supplier_name'},

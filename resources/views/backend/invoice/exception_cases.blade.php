@@ -43,7 +43,12 @@
                                         </div> 
                                         <div class="col-md-1" style="padding-right: 30px;">
                                             <button  type="button" id="search_biz" class="btn  btn-primary btn-sm float-right">Search</button>
-                                        </div>  
+                                        </div> 
+                                        <div class="col-md-1" style="margin-left: -20px;">
+                                            @can('update_bulk_invoice')
+                                                <button type="button" id="rejectExcep" data-status="14" class="btn btn-primary btn-sm ml-2 btn-app">Reject</button>
+                                            @endcan
+                                            </div> 
                                     </div>
                                     <div class="row">
                                         <div class="col-12 dataTables_wrapper mt-4">
@@ -54,6 +59,7 @@
                                                             <table id="invoiceListDisbursedQue" class="text-capitalize table white-space table-striped cell-border dataTable no-footer overview-table" cellspacing="0" width="100%" role="grid" aria-describedby="supplier-listing_info" style="width: 100%;">
                                                                 <thead>
                                                                     <tr role="row">
+                                                                        <th><input type="checkbox" id="chkAll"></th>
                                                                         <th> Inv. No. </th>
                                                                         <th> Anchor Detail </th>
                                                                         <th> Customer Detail </th>

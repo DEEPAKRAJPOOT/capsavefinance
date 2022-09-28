@@ -2328,6 +2328,38 @@ class DataRenderer implements DataProviderInterface
        return DataTables::of($invoice)
                ->rawColumns(['updated_at','anchor_name','supplier_name','invoice_date','invoice_amount','view_upload_invoice','status','anchor_id','action','invoice_id','invoice_due_date'])
                ->addColumn(
+                'anchor_id',
+                function ($invoice) {
+                    $id = Auth::user()->user_id;
+                    $inv_approval = Config::get('common.inv_approval');
+                    $role_id = DB::table('role_user')->where(['user_id' => $id])->pluck('role_id');
+                    $chkUser =    DB::table('roles')->whereIn('id',$role_id)->first();
+                    $user_type  =  DB::table('users')->where(['user_id' => $id])->first();
+                    if(in_array($chkUser->id,$inv_approval) && $user_type->user_type==2)
+                    {
+                         $customer  = 1;
+                    }
+                    else if( $chkUser->id==11)
+                    {
+                         $customer  = 2;
+                    }
+                    else
+                    {
+                        $customer  = 3;
+                    }
+
+                   $expl  =  explode(",",$invoice->program->invoice_approval);
+                  if(in_array($customer, $expl))
+                  {
+
+                         return '<input type="checkbox" data-id="'.$invoice->supplier_id.'" name="chkstatus" value="'.(($invoice->invoice_id) ? $invoice->invoice_id : '' ).'" class="chkstatus">';
+                  }
+                  else {
+                    return "";
+                  }
+                })
+
+               ->addColumn(
                     'invoice_id',
                     function ($invoice) use ($request)  {
                            if($request->front)
@@ -2432,6 +2464,7 @@ class DataRenderer implements DataProviderInterface
                        {
                         $action .='<option value="8">Approve</option>';
                         $action .='<option value="7">Pending</option>';
+                        $action .='<option value="14">Reject</option>';
                        }
                       }
 

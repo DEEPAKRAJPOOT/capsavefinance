@@ -58,6 +58,7 @@ use App\Inv\Repositories\Models\Anchor;
 use App\Inv\Repositories\Models\AppApprover;
 use App\Inv\Repositories\Models\User;
 use App\Inv\Repositories\Models\Lms\OutstandingReportLog;
+use App\Inv\Repositories\Models\BizInvoice;
 
 class AjaxController extends Controller {
 
@@ -3140,7 +3141,7 @@ if ($err) {
     
    public function updateInvoiceApprove(Request $request)
    {
-           
+        
            if($request->status==8)
            {
               return  InvoiceTrait::updateApproveStatus($request);
@@ -4089,7 +4090,6 @@ if ($err) {
     
    function updateBulkInvoice(Request $request)
    {
-      
        $result = InvoiceTrait::checkInvoiceLimitExced($request); 
        foreach($request['invoice_id'] as $row)
        {  
@@ -4098,6 +4098,14 @@ if ($err) {
             $attr['invoice_id']=$row; 
             $response =  InvoiceTrait::updateApproveStatus($attr);  
          
+          }elseif($request->status==14)
+          {
+            $attr['invoice_id']=$row;
+            $mytime = Carbon::now(); 
+            $cDate   =  $mytime->toDateTimeString();
+            $uid = Auth::user()->user_id;
+            InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],$request->status);
+            BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>$request->status,'status_update_time' => $cDate,'updated_by' =>$uid]);
           }
           else
           {

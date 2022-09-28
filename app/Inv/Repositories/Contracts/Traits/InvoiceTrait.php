@@ -1254,4 +1254,90 @@ trait InvoiceTrait
         return false;
     }
 
+    public static  function updateRejectStatus($attr)
+   {
+            $limitData[]="";
+            $mytime = Carbon::now();
+            $cDate   =  $mytime->toDateTimeString();
+            $uid = Auth::user()->user_id;
+            $inv_details =  self::getInvoiceDetail($attr);
+            //////////* get margin amount ********///////
+            $inv_apprv_amount = self::invoiceMargin($inv_details);
+            if($inv_details['is_adhoc']==1)
+            {   $inv_details['inv_apprv_amount'] = $inv_apprv_amount;
+                $inv_details['app_id']   =   $inv_details['app_id'];
+                return self::updateAdhocApproveStatus($inv_details);
+            }
+            $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']);
+            $attr['user_id']   =   $inv_details['supplier_id'];
+            $attr['anchor_id'] =   $inv_details['anchor_id'];
+            $attr['prgm_id']   =   $inv_details['program_id'];
+            $attr['app_id']   =     $inv_details['app_id'];
+            $attr['prgm_offer_id'] = $inv_details['prgm_offer_id'];
+            // $sum =  self::invoiceApproveLimit($attr);
+            // $sum = Helper::anchorSupplierUtilizedLimitByInvoice($inv_details['supplier_id'], $inv_details['anchor_id']);
+            $sum = Helper::anchorSupplierPrgmUtilizedLimitByInvoice($attr);
+            $limit   =  self::ProgramLimit($inv_details);
+            $dueDateGreaterCurrentdate =  self::limitExpire($inv_details['supplier_id']); /* get App limit by user_id*/
+            $isOverDue     =  self::isOverDue($inv_details['supplier_id']); /* get overdue by user_id*/
+            $isAnchorLimitExceeded = self::isAnchorLimitExceeded($attr['anchor_id'], $inv_details['invoice_approve_amount']);
+
+            $fungibleAnchorLimit = false;
+            if ($isAnchorLimitExceeded) {
+                $fungibleAnchorLimit = true;
+            }
+            if ($fungibleAnchorLimit) {
+             // if ($fromTab == 'initiatediscount') {
+                InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28);
+                BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'Anchor limit exceeded','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]);
+                return 5;
+             // }
+              //return 22;
+            }
+
+            if($dueDateGreaterCurrentdate)
+            {
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],28); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['remark' =>'Customer limit has been expired','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 4;
+           } 
+           if($isOverDue->is_overdue==1)
+            {
+                InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
+                BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['invoice_margin_amount'=>$inv_apprv_amount,'is_margin_deduct' =>1,'remark' => 'Overdue','status_id' =>28,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                return 3;
+
+            }   
+            if($limit  >= $sum)
+            {
+              
+              $anchorData = Anchor::getAnchorById($attr['anchor_id']);
+              if ($anchorData && isset($anchorData->is_fungible) && $anchorData->is_fungible == 1) {
+                $prmUtilizedLimit = self::anchorPrgmInvoiceApproveAmount($attr['anchor_id'], $attr['prgm_id']);
+                $prgmData        = Program::getProgram($attr['prgm_id']);
+                $remain_prgm_amount =  $prgmData->anchor_sub_limit - $prmUtilizedLimit;
+                if ($inv_details['invoice_approve_amount'] > $remain_prgm_amount) {
+                  return 2;
+                }
+              }
+              
+                $remain_amount    =  $limit - $sum;
+                if($remain_amount >= $inv_details['invoice_margin_amount'])
+                {
+                  InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],8); 
+                  BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['invoice_margin_amount'=> $inv_apprv_amount,'is_margin_deduct' =>1,'status_id' =>8,'status_update_time' => $cDate,'updated_by' =>$uid]); 
+                  return 1;         
+                }
+                else 
+                {
+                     return 2;
+                }
+             }
+            else 
+            {
+                 return 2;
+            }
+           
+           
+    }
 }
