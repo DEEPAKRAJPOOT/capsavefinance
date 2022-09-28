@@ -1028,8 +1028,7 @@ class Transactions extends BaseModel {
         return self::with('transType')->where('is_transaction', true)
         ->where(function ($query) {
             $query->whereHas('transType', function($q) { 
-                $q->where('entry_type', '=', '0')->whereIn('id',[ config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.INTEREST_OVERDUE')])
-                    ->where('is_invoice_generated', '=', '1')->where(function ($qry) {
+                $q->where('entry_type', '=', '0')->where('is_invoice_generated', '=', '1')->where(function ($qry) {
                         $qry->Where('chrg_master_id','!=','0');
                     });
             })
@@ -1039,7 +1038,8 @@ class Transactions extends BaseModel {
             })
             ->orWhere(function ($q) {
                 $q->whereIn('trans_type', [config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.CANCEL')])->where('entry_type', '=', '1');
-            });
+            })
+            ->orWhereIn('trans_type',[ config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
         })->where($where)->orderBy('trans_date', 'ASC')->get();
     }
 
