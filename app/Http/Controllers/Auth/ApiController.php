@@ -107,12 +107,12 @@ class ApiController
               $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
               $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
         }
-
-        if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
+        
+        /*if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
           if ($parentRecord->is_invoice_generated == 0 || ($invoice_date > $jrnls->trans_date && $parentRecord->is_invoice_generated == 1)) {
             continue;
           }
-        }
+        }*/
       }
       if (is_null($jrnls->parent_trans_id) && $jrnls->entry_type == 0 && $jrnls->outstanding > 0 && $is_charge) {
        continue;
