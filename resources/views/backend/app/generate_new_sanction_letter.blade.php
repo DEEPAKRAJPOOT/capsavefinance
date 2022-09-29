@@ -204,7 +204,7 @@
                      </tr>
                      <tr>
                         <td width="30%"><b>Total Sanction Amount</b></td>
-                        <td>INR {{ \Helpers::formatCurrencyNoSymbol($supplyChaindata['limit_amt']) }} (Rupees {{
+                        <td>INR {{ number_format($supplyChaindata['limit_amt']) }} (Rupees {{
                            $supplyChaindata['amountInwords'] }} only)
                         </td>
                      </tr>
@@ -308,7 +308,7 @@
                      </tr>
                      <tr>
                         <td valign="top"><b>Sanction Amount</b></td>
-                        <td>INR {{\Helpers::formatCurrencyNoSymbol($offerD->prgm_limit_amt)}} (Rupees {{
+                        <td>INR {{number_format($offerD->prgm_limit_amt)}} (Rupees {{
                            numberTowords($offerD->prgm_limit_amt) }} only)
                         </td>
                      </tr>
