@@ -3157,6 +3157,15 @@ if ($err) {
               }
                * 
                */              
+           }elseif($request->status==14)
+           {
+            $invoice_id = $request->invoice_id;
+             $mytime = Carbon::now(); 
+             $cDate   =  $mytime->toDateTimeString();
+             $uid = Auth::user()->user_id;
+             InvoiceStatusLog::saveInvoiceStatusLog($invoice_id,$request->status);
+              $res = BizInvoice::where(['invoice_id' =>$invoice_id])->update(['status_id' =>$request->status,'status_update_time' => $cDate,'updated_by' =>$uid]);
+             return \Response::json(['status' => $res]);
            }
            else
            {
@@ -4104,7 +4113,7 @@ if ($err) {
             $mytime = Carbon::now(); 
             $cDate   =  $mytime->toDateTimeString();
             $uid = Auth::user()->user_id;
-            InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],$request->status);
+            $response = InvoiceStatusLog::saveInvoiceStatusLog($attr['invoice_id'],$request->status);
             BizInvoice::where(['invoice_id' =>$attr['invoice_id']])->update(['status_id' =>$request->status,'status_update_time' => $cDate,'updated_by' =>$uid]);
           }
           else
