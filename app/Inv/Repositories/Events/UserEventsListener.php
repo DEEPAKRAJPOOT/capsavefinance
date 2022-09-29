@@ -538,7 +538,8 @@ class UserEventsListener extends BaseEvent
                 }
             $message->from(config('common.FRONTEND_FROM_EMAIL'), config('common.FRONTEND_FROM_EMAIL_NAME'));
             if(!empty($data['attachment'])){
-                $att_name = 'sanction.pdf';
+                $time = \Helpers::convertDateTimeFormat(now(), 'Y-m-d H:i:s', 'Y-m-d-H:i:s');
+                $att_name = 'sanctionLetter-'.$time.'.pdf';
                 $message->attachData($data['attachment'], $att_name);
             }
 

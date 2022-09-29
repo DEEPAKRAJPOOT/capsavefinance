@@ -230,10 +230,10 @@
             </tr>
             <tr>
                <td>
-                  <table width="100%" border="0">
+                  <table width="100%" border="0" style="text-align:justify;">
                      <tr>
-                        <td width="60%"  height="40"><b>Yours Sincerely,</b></td>
-                        <td  height="40" style="float: right;"><b>Accepted for and behalf of
+                        <td width="50%"  height="40"><b>Yours Sincerely,</b></td>
+                        <td  height="40" style="text-align: right;"><b>Accepted for and behalf of
                            Borrower</b>
                         </td>
                      </tr>
@@ -241,7 +241,7 @@
                         <td width="50%"  height="40"><b>For CAPSAVE FINANCE PRIVATE
                            LIMITED</b>
                         </td>
-                        <td  height="40" style="float: right;"><b>For {{ $supplyChaindata['EntityName'] }}</b>
+                        <td  height="40" style="text-align: right;"><b>For {{ $supplyChaindata['EntityName'] }}</b>
                         </td>
                      </tr>
                   </table>
@@ -255,7 +255,7 @@
                   <table width="100%" border="0">
                      <tr>
                         <td width="60%" valign="top" height="40"><b>Authorized Signatory</b></td>
-                        <td valign="top" height="40" style="float: right;"><b>Authorized Signatory</b></td>
+                        <td valign="top" height="40" style="text-align: right;"><b>Authorized Signatory</b></td>
                      </tr>
                   </table>
                </td>
@@ -949,13 +949,13 @@
                   <table width="100%" border="0" style="text-align:justify;">
                      <tbody>
                         <tr>
-                           <td width="60%" valign="top" height="40"><b>Yours Sincerely,</b></td>
-                           <td valign="top" height="40" style="float: right;"><b>Accepted for and behalf of Borrower</b></td>
+                           <td width="50%" valign="top" height="40"><b>Yours Sincerely,</b></td>
+                           <td valign="top" height="40" style="text-align: right;"><b>Accepted for and behalf of Borrower</b></td>
                         </tr>
                         <tr>
                            <td width="50%" valign="top" height="40"><b>For CAPSAVE FINANCE PRIVATE
                               LIMITED</b></td>
-                           <td valign="top" height="40" style="float: right;"><b>For {{ $supplyChaindata['EntityName'] }}</b></td>
+                           <td valign="top" height="40" style="text-align: right;"><b>For {{ $supplyChaindata['EntityName'] }}</b></td>
                         </tr>
                      </tbody>
                   </table>
@@ -966,11 +966,11 @@
             </tr>
             <tr>
                <td>
-                  <table width="100%" border="0">
+                  <table width="100%" border="0" style="text-align:justify;">
                      <tbody>
                         <tr>
                            <td width="60%" valign="top" height="40"><b>Authorized Signatory</b></td>
-                           <td valign="top" height="40" style="float: right;"><b>Authorized Signatory</b></td>
+                           <td valign="top" height="40" style="text-align: right;"><b>Authorized Signatory</b></td>
                         </tr>
                      </tbody>
                   </table>

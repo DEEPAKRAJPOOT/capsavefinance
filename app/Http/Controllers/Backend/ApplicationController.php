@@ -2804,7 +2804,8 @@ class ApplicationController extends Controller
 		  $customPaper = 'A2';//[0,0,999,2000];
 		  $pdf->setOptions(['isHtml5ParserEnabled'=> true,'isRemoteEnabled'=>true,'isPhpEnabled'=>true,'dpi'=>96,'disable-smart-shrinking'=> true]);
 		  $pdf->setPaper($customPaper);
-          return $pdf->download('sanctionLetter.pdf');
+		  $time = \Helpers::convertDateTimeFormat(now(), 'Y-m-d H:i:s', 'Y-m-d-H:i:s');
+          return $pdf->download('sanctionLetter-'.$time.'.pdf');
         }
         $html = view('backend.app.preview_new_sanction_letter')->render();
 		return  $html;
