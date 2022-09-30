@@ -10,6 +10,7 @@ use App\Inv\Repositories\Models\Lms\Transactions;
 use Illuminate\Http\Request;
 use App\Helpers\FileHelper;
 use App\Inv\Repositories\Contracts\LmsInterface as InvLmsRepoInterface;
+use App\Inv\Repositories\Models\Business;
 
 class CibilReportController extends Controller
 {   
@@ -114,7 +115,7 @@ class CibilReportController extends Controller
       if($cibilRecords){   
         foreach ($cibilRecords as $key => $cibilRecord) {
             $this->cibilRecord = $cibilRecord;
-            $appBusiness = $cibilRecord->business;
+            $appBusiness = Business::with('app')->find($cibilRecord->biz_id);
             $appId = $appBusiness->app->app_id;
             $userId = $appBusiness->user_id;
             
