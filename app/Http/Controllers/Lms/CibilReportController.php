@@ -328,9 +328,9 @@ class CibilReportController extends Controller
         $settledAmt = $this->lmsRepo->getSettledTrans($user->user_id)->sum('settled_outstanding');
         $sanctionDate = $appBusiness->sanctionDate->created_at ?? NULL;
         $prgmLimit = $appBusiness->prgmLimit->limit_amt ?? NULL;
-        $maxDpd = $this->lmsRepo->maxDpdTransaction($user->user_id)->max('dpd');
+        $maxDpd = $this->lmsRepo->maxDpdTransaction($user->user_id);
         $userData = isset($this->userWiseData[$user->user_id]) ? $this->userWiseData[$user->user_id] : null;
-        $od_days = isset($userData) ? (int)$userData->od_days : 0;
+        $od_days = isset($maxDpd) ? (int)$maxDpd : 0;
         $od_outstanding = isset($userData) ? round($userData->od_outstanding, 2) : 0;
         $data[] = [
             'Ac No' => $this->formatedCustId,

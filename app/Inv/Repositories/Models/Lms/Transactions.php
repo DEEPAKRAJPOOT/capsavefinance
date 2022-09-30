@@ -506,11 +506,14 @@ class Transactions extends BaseModel {
     }
 
     public static function maxDpdTransaction($user_id){
-
-        return  Transactions::where('user_id',$user_id)->where('entry_type',0)->whereNull('link_trans_id')->whereNull('parent_trans_id')
-        ->whereHas('transType',function($q1){ 
-            $q1->where('chrg_master_id','>',0)->orWhereIn('id',[9,16,33]);
-        })->get();
+        ini_set("memory_limit", "-1");
+        return  Transactions::where('user_id',$user_id)
+        ->where('entry_type',0)
+        ->whereNull('link_trans_id')
+        ->whereNull('parent_trans_id')
+        ->whereIn('trans_type',[config('lms.TRANS_TYPE.PAYMENT_DISBURSED'),config('lms.TRANS_TYPE.INTEREST')])
+        ->get()
+        ->max('dpd');
     }
     // public function getSettledOutstandingAttribute(){
     //     return round(($this->amount - self::revertedAmt()),2);
