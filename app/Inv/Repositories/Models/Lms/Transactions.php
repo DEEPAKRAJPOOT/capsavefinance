@@ -1042,16 +1042,17 @@ class Transactions extends BaseModel {
         ->where(function ($query) {
             $query->whereHas('transType', function($q) { 
                 $q->where('entry_type', '=', '0')->where('is_invoice_generated', '=', '1')->where(function ($qry) {
-                   $qry->where('id', '=', config('lms.TRANS_TYPE.INTEREST'))->orWhere('chrg_master_id','!=','0');
-                });
+                        $qry->Where('chrg_master_id','!=','0');
+                    });
             })
-            ->orWhereIn('trans_type', [config('lms.TRANS_TYPE.REVERSE'),config('lms.TRANS_TYPE.WAVED_OFF')])
+            ->orWhereIn('trans_type', [config('lms.TRANS_TYPE.REVERSE'), config('lms.TRANS_TYPE.WAVED_OFF'), config('lms.TRANS_TYPE.WRITE_OFF'), config('lms.TRANS_TYPE.ADJUSTMENT')])
             ->orWhere(function ($q) {
                 $q->whereIn('trans_type', [config('lms.TRANS_TYPE.REFUND')])->whereNotNull('parent_trans_id')->where('entry_type', '=', '1');
             })
             ->orWhere(function ($q) {
-                $q->whereIn('trans_type', [config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.TDS')])->where('entry_type', '=', '1');
-            });
+                $q->whereIn('trans_type', [config('lms.TRANS_TYPE.MARGIN'), config('lms.TRANS_TYPE.NON_FACTORED_AMT'), config('lms.TRANS_TYPE.TDS'), config('lms.TRANS_TYPE.CANCEL')])->where('entry_type', '=', '1');
+            })
+            ->orWhereIn('trans_type',[ config('lms.TRANS_TYPE.INTEREST'), config('lms.TRANS_TYPE.INTEREST_OVERDUE')]);
         })->where($where)->orderBy('trans_date', 'ASC')->get();
     }
 

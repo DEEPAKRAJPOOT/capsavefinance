@@ -80,6 +80,10 @@ class ApiController
       if ($jrnls->transType->chrg_master_id != 0) {
         $is_charge = true;
       }
+      $payment_id = '';
+      if(!empty(($jrnls->payment_id))){  
+       $payment_id = " & Payment Id ".$jrnls->payment_id;
+      }
       $user_id = Helper::formatIdWithPrefix($jrnls->user_id, 'CUSTID');
       $userName = $jrnls->user->biz_name;
       $trans_type_name = $jrnls->getTransNameAttribute();
@@ -107,12 +111,12 @@ class ApiController
               $inst_no = $parentRecord->refundReq->tran_no ?? NULL;
               $inst_date = $parentRecord->refundReq->actual_refund_date ?? NULL;
         }
-
-        if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
+        
+        /*if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
           if ($parentRecord->is_invoice_generated == 0 || ($invoice_date > $jrnls->trans_date && $parentRecord->is_invoice_generated == 1)) {
             continue;
           }
-        }
+        }*/
       }
       if (is_null($jrnls->parent_trans_id) && $jrnls->entry_type == 0 && $jrnls->outstanding > 0 && $is_charge) {
        continue;
@@ -126,6 +130,7 @@ class ApiController
           'voucher_no' => $this->voucherNo,
           'voucher_type' => 'Journal',
           'voucher_date' => $jrnls->trans_date,
+          'transaction_date'=>$jrnls->created_at,
           'is_debit_credit' =>  $entry_type,
           'trans_type' =>  $trans_type_name,
           'invoice_no' =>   $invoice_no,
@@ -145,7 +150,7 @@ class ApiController
           'favoring_name' =>  '',
           'remarks' => '',
           'generated_by' => '0',
-          'narration' => 'Being '.$trans_type_name.' Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+          'narration' => 'Being '.$trans_type_name.' Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
      ];
      $gstData = [];
      if ($jrnls->trans_type == config('lms.TRANS_TYPE.WAVED_OFF')) {
@@ -324,6 +329,10 @@ class ApiController
       if (empty($accountDetails)) {
         continue;
       }
+      $payment_id = '';
+      if(!empty(($rfnd->payment_id))){  
+       $payment_id = " & Payment Id ".$rfnd->payment_id;
+      }
       $user_id = Helper::formatIdWithPrefix($rfnd->user_id, 'CUSTID');
       $userName = $rfnd->user->biz_name;
       $trans_type_name = $rfnd->getTransNameAttribute();
@@ -353,6 +362,7 @@ class ApiController
           'voucher_no' => $this->voucherNo,
           'voucher_type' => 'Payment',
           'voucher_date' => $rfnd->trans_date,
+          'transaction_date'=>$rfnd->created_at,
           'is_debit_credit' =>  'Debit',
           'trans_type' =>  $trans_type_name,
           'invoice_no' =>   $invoice_no,
@@ -372,7 +382,7 @@ class ApiController
           'favoring_name' =>  '',
           'remarks' => '',
           'generated_by' => '0',
-          'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+          'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
      ];
      $refundPayment[] = $CustomerRow;
      $BankRow = [
@@ -381,6 +391,7 @@ class ApiController
           'voucher_no' => $this->voucherNo,
           'voucher_type' => 'Payment',
           'voucher_date' => NULL,
+          'transaction_date'=>$rfnd->created_at,
           'is_debit_credit' =>  'Credit',
           'trans_type' =>  '',
           'invoice_no' =>   '',
@@ -400,7 +411,7 @@ class ApiController
           'favoring_name' =>  $userName,
           'remarks' => '',
           'generated_by' => '1',
-          'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+          'narration' => 'Being '.$trans_type_name.' towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
      ];
      $refundPayment[] = $BankRow;
     }
@@ -415,6 +426,11 @@ class ApiController
       if (empty($accountDetails)) {
         continue;
       }
+      $payment_id = '';
+      if(!empty(($dsbrsl->payment_id))){  
+       $payment_id = " & Payment Id ".$dsbrsl->payment_id;
+      }
+       
       $user_id = Helper::formatIdWithPrefix($dsbrsl->user_id, 'CUSTID');
       $userName = $dsbrsl->user->biz_name;
       $invoice_no = $dsbrsl->invoiceDisbursed->invoice->invoice_no ?? NULL;
@@ -429,6 +445,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Payment',
               'voucher_date' => $dsbrsl->trans_date,
+              'transaction_date'=>$dsbrsl->created_at,
               'is_debit_credit' =>  'Debit',
               'trans_type' =>  $dsbrsl->getTransNameAttribute(),
               'invoice_no' =>   $invoice_no,
@@ -448,7 +465,7 @@ class ApiController
               'favoring_name' =>  '',
               'remarks' => '',
               'generated_by' => '0',
-              'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+              'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
      ];
      $disbursalPayment[] = $CustomerRow;
      $BankRow = [
@@ -457,6 +474,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Payment',
               'voucher_date' => NULL,
+              'transaction_date'=>$dsbrsl->created_at,
               'is_debit_credit' =>  'Credit',
               'trans_type' =>  $dsbrsl->getTransNameAttribute(),
               'invoice_no' =>   $invoice_no,
@@ -476,7 +494,7 @@ class ApiController
               'favoring_name' =>  $userName,
               'remarks' => '',
               'generated_by' => '1',
-              'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+              'narration' => 'Being  Payment Disbursed towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
      ];
      $disbursalPayment[] = $BankRow;
      if (!empty($total_interest) && $total_interest > 0) {
@@ -490,6 +508,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Payment',
               'voucher_date' => NULL,
+              'transaction_date'=>$dsbrsl->created_at,
               'is_debit_credit' =>  'Credit',
               'trans_type' =>  'Interest',
               'invoice_no' =>   $invoice_no,
@@ -509,7 +528,7 @@ class ApiController
               'favoring_name' =>  '',
               'remarks' => '',
               'generated_by' => '1',
-              'narration' => 'Being Interest Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no,
+              'narration' => 'Being Interest Booked towards UserId ' . $user_id . ', Invoice No '. $invoice_no .' & Batch no '. $batch_no .$payment_id,
      ];
      $disbursalPayment[] = $InterestRow;
      }
@@ -522,6 +541,7 @@ class ApiController
     foreach($receiptData as $rcpt){
      $this->voucherNo = $this->voucherNo + 1;
      $settledTransactoions =  $rcpt->getSettledTxns;
+     $refrenceTxns = $rcpt->paymentRefrenceTxns->first();
      $user_id = Helper::formatIdWithPrefix($rcpt->user_id, 'CUSTID');
      $userName = $rcpt->user->biz_name;
      $accountDetails = $rcpt->userRelation->companyBankDetails ?? NULL;
@@ -554,6 +574,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Receipt',
               'voucher_date' => $rcpt->date_of_payment,
+              'transaction_date'=>$refrenceTxns->created_at?$refrenceTxns->created_at:NULL,
               'is_debit_credit' =>  'Debit',
               'trans_type' =>  'Re-Payment',
               'invoice_no' =>   '',
@@ -597,6 +618,7 @@ class ApiController
               'voucher_no' => $this->voucherNo,
               'voucher_type' => 'Receipt',
               'voucher_date' => $stldTxn->trans_date,
+              'transaction_date'=>$stldTxn->created_at,
               'is_debit_credit' =>  'Credit',
               'trans_type' =>  $trans_type_name,
               'invoice_no' =>   $invoice_no,
@@ -672,6 +694,7 @@ class ApiController
   }
 
   public function tally_entry($startDate = null, $endDate = null){
+    
     if(empty($startDate)){
       $startDate = date('Y-m-d');
     }
@@ -744,6 +767,7 @@ class ApiController
         $response['message'] =  ($recordsTobeInserted > 1 ? $recordsTobeInserted .' Records inserted successfully' : '1 Record inserted.');
       }
     }else{
+      
       $response['message'] =  ($res[2] ?? 'DB error occured.').' No Record can be posted in tally.';
     }
     return $response;

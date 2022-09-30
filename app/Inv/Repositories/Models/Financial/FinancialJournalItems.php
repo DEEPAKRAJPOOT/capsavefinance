@@ -73,7 +73,7 @@ class FinancialJournalItems extends BaseModel {
     }
 
     public static function getTallyTxns(array $where = array()) {
-      $query = "SELECT tally_entry_id, batch_no, is_debit_credit  entry_type, trans_type, voucher_type, voucher_no, DATE(voucher_date) voucher_date, invoice_no, invoice_date, ledger_name, amount, ref_no, ref_amount, acc_no, ifsc_code, bank_name, cheque_amount, cross_using, mode_of_pay, inst_no, inst_date, favoring_name, remarks, narration, is_updated is_posted FROM rta_tally_entry ";
+      $query = "SELECT tally_entry_id, batch_no, is_debit_credit  entry_type, trans_type, voucher_type, voucher_no, DATE(voucher_date) voucher_date,DATE(transaction_date) transaction_date, invoice_no, invoice_date, ledger_name, amount, ref_no, ref_amount, acc_no, ifsc_code, bank_name, cheque_amount, cross_using, mode_of_pay, inst_no, inst_date, favoring_name, remarks, narration, is_updated is_posted FROM rta_tally_entry ";
         $cond = 'WHERE voucher_no is not null ';
         if (!empty($where)) {
             foreach ($where as $key => $value) {
